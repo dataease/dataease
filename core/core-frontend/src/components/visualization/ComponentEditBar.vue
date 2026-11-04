@@ -166,6 +166,7 @@
           >
 
           <xpack-component
+            v-if="element.innerType !== 'picture-group'"
             :chart="element"
             resource-table="snapshot"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
@@ -312,6 +313,13 @@ const componentTypeBarShow = {
 
 const barShowCheck = barName => {
   if (barName === 'details' && !shareAllows(1)) return false
+  if (
+    barName === 'enlarge' &&
+    element.value.innerType === 'picture-group' &&
+    ['canvas', 'canvasDataV'].includes(showPosition.value)
+  ) {
+    return false
+  }
   return (
     positionBarShow[showPosition.value] &&
     positionBarShow[showPosition.value].includes(barName) &&

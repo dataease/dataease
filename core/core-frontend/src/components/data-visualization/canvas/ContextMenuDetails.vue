@@ -336,6 +336,7 @@ const editQueryCriteria = () => {
               {{ t('visualization.sort') }}
             </li>
             <xpack-component
+              v-if="curComponent.innerType !== 'picture-group'"
               :chart="curComponent"
               is-screen
               resource-table="snapshot"
