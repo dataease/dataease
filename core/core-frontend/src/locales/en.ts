@@ -2449,6 +2449,14 @@ export default {
     liquid_border_distance: 'Border Distance'
   },
   dataset: {
+    dataset_field_name: 'Dataset field name',
+    dataset_field_type: 'Dataset field type',
+    source_physical_table: 'Source table',
+    field_remark: 'Remarks',
+    canvas_fullscreen: 'Expand canvas',
+    node_details_fullscreen: 'Expand node details',
+    next_data_processing: 'Next: Data processing',
+    table_relationship: 'Table relationships',
     field_value: 'Field Value',
     scope_edit: 'Only effective when editing',
     scope_all: 'Globally effective when previewing datasets',
