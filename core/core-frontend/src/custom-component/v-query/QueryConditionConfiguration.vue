@@ -29,6 +29,7 @@ import { getFieldByDQ, type Field } from '@/api/chart'
 import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig, attributes, splitConditionValues } from './options'
 import { evaluateDynamicDefault, validateDynamicDefault } from './dynamic-default-time'
+import { hasUnresolvedFixedTimeValue, normalizeFixedTimeConfig } from './fixed-time-value'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
   getThisStart,
@@ -1292,6 +1293,15 @@ const validate = () => {
   const baseline = new Date()
   return conditions.value.some(ele => {
     if (
+      ['1', '7'].includes(ele.displayType) &&
+      ele.timeType !== 'dynamic' &&
+      ele.defaultValueCheck &&
+      hasUnresolvedFixedTimeValue(ele.defaultValue)
+    ) {
+      ElMessage.error(t('v_query.fixed_time_invalid'))
+      return true
+    }
+    if (
       ele.displayType === '8' &&
       ele.conditionType === 3 &&
       ele.conditionSeparatorType === 'custom' &&
@@ -1807,6 +1817,7 @@ const weightlessness = () => {
 }
 
 const parameterCompletion = ele => {
+  normalizeFixedTimeConfig(ele)
   Object.entries(attributes).forEach(([key, val]) => {
     ele[key] ?? (ele[key] = val)
   })

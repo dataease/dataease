@@ -3125,6 +3125,7 @@ export default {
     cannot_be_empty_de: '查询条件为必填项,默认值不能为空',
     the_start_time: '结束时间必须大于开始时间!',
     and_end_time: '时间参数配置必须配置开始时间和结束时间',
+    fixed_time_invalid: '固定时间格式无效或日月顺序无法确定，请重新选择日期。',
     cannot_be_empty_time: '默认时间不能为空!',
     range_please_reset: '默认值超出日期筛选范围内，请重新设置！',
     cannot_be_empty_input: '手工输入-选项值不能为空',

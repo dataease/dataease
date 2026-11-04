@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { toRaw } from 'vue'
+import { hasUnresolvedFixedTimeValue } from '@/custom-component/v-query/fixed-time-value'
 
 const present = (value: unknown) => value !== null && value !== undefined && value !== ''
 const hasValue = (value: any) => (Array.isArray(value) ? value.some(present) : present(value))
@@ -109,7 +110,11 @@ export const queryDefaultSnapshot = (components: any[], t: (key: string) => stri
             const values = (Array.isArray(value) ? value : [value]).filter(present)
             const format =
               dateFormats[displayType === '1' ? item.timeGranularity : item.timeGranularityMultiple]
-            if (values.some(value => !dayjs(value).isValid()) || (values.length && !format)) {
+            if (
+              hasUnresolvedFixedTimeValue(values) ||
+              values.some(value => !dayjs(value).isValid()) ||
+              (values.length && !format)
+            ) {
               missing()
               return
             }

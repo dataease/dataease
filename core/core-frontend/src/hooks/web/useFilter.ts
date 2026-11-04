@@ -8,6 +8,7 @@ import {
   evaluateRuntimeDynamicDefault,
   isCustomClockDefault
 } from '@/custom-component/v-query/dynamic-default-time'
+import { readFixedTimeValue } from '@/custom-component/v-query/fixed-time-value'
 import { splitConditionValues } from '@/custom-component/v-query/condition-utils'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, componentDataMultiply } = storeToRefs(dvMainStore)
@@ -59,6 +60,7 @@ const forMatterValue = (
   if (![1, 7].includes(type)) {
     return Array.isArray(selectValue) ? selectValue : [selectValue]
   }
+  selectValue = readFixedTimeValue(selectValue)
   return Array.isArray(selectValue)
     ? getDynamicRangeTime(type, selectValue, timeGranularityMultiple)
     : getRange(selectValue, timeGranularity)

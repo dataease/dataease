@@ -3210,6 +3210,8 @@ export default {
     cannot_be_empty_de: 'The query condition is required and the default value cannot be empty',
     the_start_time: 'The end time must be greater than the start time!',
     and_end_time: 'The time parameter configuration must configure the start time and end time',
+    fixed_time_invalid:
+      'The fixed time format is invalid or the day/month order is ambiguous. Please select the date again.',
     cannot_be_empty_time: 'The default time cannot be empty!',
     range_please_reset: 'The default value exceeds the date filter range, please reset it! ',
     cannot_be_empty_input: 'Manual input - option value cannot be empty',

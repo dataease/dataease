@@ -3106,6 +3106,7 @@ export default {
     cannot_be_empty_de: '查詢條件為必填項,預設值不能為空',
     the_start_time: '結束時間必須大於開始時間!',
     and_end_time: '時間參數配置必須配置開始時間與結束時間',
+    fixed_time_invalid: '固定時間格式無效或日月順序無法確定，請重新選擇日期。',
     cannot_be_empty_time: '預設時間不能為空!',
     range_please_reset: '預設值超出日期篩選範圍內，請重新設定！ ',
     cannot_be_empty_input: '手作輸入-選項值不能為空',

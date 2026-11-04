@@ -38,6 +38,7 @@ import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { DynamicTimeError } from '@/custom-component/v-query/dynamic-default-time'
+import { FixedTimeError } from '@/custom-component/v-query/fixed-time-value'
 import { useChartViewportLoad } from '@/hooks/web/useChartViewportLoad'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -426,7 +427,9 @@ const initTitle = () => {
 
 const drillJump = (index: number) => {
   state.drillClickDimensionList.splice(index)
-  view.value.chartExtRequest = filter()
+  const queryFilter = filter()
+  if (!queryFilter) return
+  view.value.chartExtRequest = queryFilter
   calcData(view.value)
 }
 
@@ -459,7 +462,9 @@ const chartClick = param => {
       dimensionList: param.data.dimensionList,
       extra: param.extra
     })
-    view.value.chartExtRequest = filter()
+    const queryFilter = filter()
+    if (!queryFilter) return
+    view.value.chartExtRequest = queryFilter
     calcData(view.value)
   } else if (props.view.drillFields.length > 0) {
     ElMessage.error(t('chart.last_layer'))
@@ -468,7 +473,14 @@ const chartClick = param => {
 
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = (firstLoad?: boolean) => {
-  const { filter } = useFilter(view.value.id, firstLoad, showPosition.value)
+  let filter: ReturnType<typeof useFilter>['filter']
+  try {
+    filter = useFilter(view.value.id, firstLoad, showPosition.value).filter
+  } catch (error) {
+    if (!(error instanceof FixedTimeError)) throw error
+    ElMessage.error({ message: t(error.key), grouping: true })
+    return
+  }
   const result = {
     user: wsCache.get('user.uid'),
     filter,
@@ -694,12 +706,18 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
     ElMessage.error({ message: t(error.key), grouping: true })
     return
   }
+  if (!queryFilter) return
   if (showPosition.value.includes('viewDialog') || autoRefresh) {
     queryFilter = dvMainStore.getLastViewRequestInfo(view.value.id)
   }
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
+  if (view.value.isPlugin && !loadPlugin.value) {
+    view.value.chartExtRequest = queryFilter
+    loadPlugin.value = true
+    return
+  }
   calcData(params, autoRefresh)
 }, 300)
 
@@ -869,9 +887,11 @@ onMounted(() => {
       ElMessage.error({ message: t(error.key), grouping: true })
       return
     }
-    view.value['chartExtRequest'] = queryFilter
-    chartExtRequest.value = queryFilter
-    loadPlugin.value = true
+    if (queryFilter) {
+      view.value['chartExtRequest'] = queryFilter
+      chartExtRequest.value = queryFilter
+      loadPlugin.value = true
+    }
   }
   if (!listenerEnable.value) {
     return
@@ -903,7 +923,9 @@ onMounted(() => {
           cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id) ||
           cacheViewInfo.snapshotCacheViewCalc.includes('all')
         ) {
-          view.value.chartExtRequest = filter(false)
+          const queryFilter = filter(false)
+          if (!queryFilter) return
+          view.value.chartExtRequest = queryFilter
           calcData(view.value)
         } else if (
           cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
@@ -923,7 +945,9 @@ onMounted(() => {
       }
       initTitle()
       nextTick(() => {
-        view.value.chartExtRequest = filter(false)
+        const queryFilter = filter(false)
+        if (!queryFilter) return
+        view.value.chartExtRequest = queryFilter
         const targetVal = val || view.value
         calcData(targetVal)
       })
@@ -938,7 +962,9 @@ onMounted(() => {
       }
       initTitle()
       nextTick(() => {
-        view.value.chartExtRequest = filter(false)
+        const queryFilter = filter(false)
+        if (!queryFilter) return
+        view.value.chartExtRequest = queryFilter
         calcData(view.value)
       })
     }
