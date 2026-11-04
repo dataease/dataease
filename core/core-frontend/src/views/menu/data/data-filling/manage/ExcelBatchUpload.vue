@@ -1,200 +1,188 @@
 <script setup lang="tsx">
-import icon_upload_outlined from "@/assets/svg/icon_upload_outlined.svg";
-import icon_close_outlined from "@/assets/svg/icon_close_outlined.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import ExcelInfo from "@/views/visualized/data/datasource/ExcelInfo.vue";
-import type {ColumnItem} from "../data-filling";
-import {Icon} from "@/components/icon-custom";
-import {useI18n} from "@/hooks/web/useI18n";
-import {computed, nextTick, onBeforeUnmount, onMounted, ref} from "vue";
-import {
-  ElButton,
-  ElCheckbox,
-  ElFormItem,
-  ElMessage,
-} from "element-plus-secondary";
-import {debounce, every, filter, join, map} from "lodash-es";
+import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
+import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import ExcelInfo from '@/views/visualized/data/datasource/ExcelInfo.vue'
+import type { ColumnItem } from '../data-filling'
+import { Icon } from '@/components/icon-custom'
+import { useI18n } from '@/hooks/web/useI18n'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { ElButton, ElCheckbox, ElFormItem, ElMessage } from 'element-plus-secondary'
+import { debounce, every, filter, join, map } from 'lodash-es'
 import {
   confirmUpload,
   DfFormItem,
   downloadExcelTemplate,
   formatDate,
-  uploadDfExcel,
-} from "../data-filling";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import {appendConfirmUpload} from "../fill/fill_api";
+  uploadDfExcel
+} from '../data-filling'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { appendConfirmUpload } from '../fill/fill_api'
 
 const props = withDefaults(
-    defineProps<{
-      formId: string;
-      formName: string;
-      columns: Array<ColumnItem>;
-      taskInstanceId?: string;
-    }>(),
-    {
-      columns: () => [],
-    }
-);
+  defineProps<{
+    formId: string
+    formName: string
+    columns: Array<ColumnItem>
+    taskInstanceId?: string
+  }>(),
+  {
+    columns: () => []
+  }
+)
 
-const {t} = useI18n();
+const { t } = useI18n()
 
-const upload = ref();
-const uploadAgain = ref();
+const upload = ref()
+const uploadAgain = ref()
 
-const excelName = ref(undefined);
-const dataList = ref<Array<any>>([]);
-const excelId = ref(undefined);
+const excelName = ref(undefined)
+const dataList = ref<Array<any>>([])
+const excelId = ref(undefined)
 
-const status = ref(false);
+const status = ref(false)
 
 const sheetFile = computed(() => {
   return {
     name: excelName.value,
-    size: excelName.value,
-  };
-});
+    size: excelName.value
+  }
+})
 
 const generatedColumns = computed(() => {
-  return props.columns.map((ele) => ({
+  return props.columns.map(ele => ({
     key: ele.props,
     dataKey: ele.props,
     title: ele.label,
     width: 150,
-    headerCellRenderer: ({column, columnIndex}) => {
-      const c = props.columns[columnIndex];
+    headerCellRenderer: ({ column, columnIndex }) => {
+      const c = props.columns[columnIndex]
       return (
-          <div class="flex-align-center icon">
-          <span
-              class="ellipsis"
-              title={column.title}
-              style={{width: "100px"}}
-          >
-            {column.title}{" "}
+        <div class="flex-align-center icon">
+          <span class="ellipsis" title={column.title} style={{ width: '100px' }}>
+            {column.title}{' '}
             {c.rangeIndex === 0 ? (
-                <span>{t("data_fill.data.start")}</span>
+              <span>{t('data_fill.data.start')}</span>
             ) : c.rangeIndex === 1 ? (
-                <span>{t("data_fill.data.end")}</span>
+              <span>{t('data_fill.data.end')}</span>
             ) : (
-                <span/>
+              <span />
             )}
           </span>
-          </div>
-      );
+        </div>
+      )
     },
-    cellRenderer: ({cellData, columnIndex}) => {
-      const c = props.columns[columnIndex];
+    cellRenderer: ({ cellData, columnIndex }) => {
+      const c = props.columns[columnIndex]
       if (c.date) {
-        const _str = formatDate(cellData, c.dateType);
+        const _str = formatDate(cellData, c.dateType)
         return (
-            <div
-                style="color: black; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;"
-                title={cellData}
-            >
-              {_str}
-            </div>
-        );
-      } else if (
-          ((c.type === "select" && c.multiple) || c.type === "checkbox") &&
-          cellData
-      ) {
-        const _list: Array<any> = JSON.parse(cellData);
-        const _str = join(_list, "; ");
+          <div
+            style="color: black; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;"
+            title={cellData}
+          >
+            {_str}
+          </div>
+        )
+      } else if (((c.type === 'select' && c.multiple) || c.type === 'checkbox') && cellData) {
+        const _list: Array<any> = JSON.parse(cellData)
+        const _str = join(_list, '; ')
         return (
-            <div
-                style="color: black; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;"
-                title={cellData}
-            >
-              {_str}
-            </div>
-        );
+          <div
+            style="color: black; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;"
+            title={cellData}
+          >
+            {_str}
+          </div>
+        )
       }
       return (
-          <div
-              style="color: black; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;"
-              title={cellData}
-          >
-            {cellData}
-          </div>
-      );
-    },
-  }));
-});
+        <div
+          style="color: black; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;"
+          title={cellData}
+        >
+          {cellData}
+        </div>
+      )
+    }
+  }))
+})
 
-const fileList = ref();
-const loading = ref(false);
+const fileList = ref()
+const loading = ref(false)
 
-const onChange = (file) => {
-  fileList.value = file;
-};
-const uploadFail = (response) => {
-  let myError = response.toString();
-  myError.replace("Error: ", "");
-};
+const onChange = file => {
+  fileList.value = file
+}
+const uploadFail = response => {
+  let myError = response.toString()
+  myError.replace('Error: ', '')
+}
 
 const handleExcelDel = () => {
-  dataList.value = [];
-  excelName.value = undefined;
-  excelId.value = undefined;
-};
+  dataList.value = []
+  excelName.value = undefined
+  excelId.value = undefined
+}
 
 const componentList = ref({
   input: {
-    type: "input",
-    typeName: t("common.component.input"),
-    icon: "icon_single_line_outlined",
+    type: 'input',
+    typeName: t('common.component.input'),
+    icon: 'icon_single_line_outlined'
   },
   textarea: {
-    type: "textarea",
-    typeName: t("common.component.textarea"),
-    icon: "icon_multi_line_outlined",
+    type: 'textarea',
+    typeName: t('common.component.textarea'),
+    icon: 'icon_multi_line_outlined'
   },
   select: {
-    type: "select",
-    typeName: t("common.component.select"),
-    icon: "icon_down_outlined",
+    type: 'select',
+    typeName: t('common.component.select'),
+    icon: 'icon_down_outlined'
   },
   radio: {
-    type: "radio",
-    typeName: t("common.component.radio"),
-    icon: "icon_radio_outlined",
+    type: 'radio',
+    typeName: t('common.component.radio'),
+    icon: 'icon_radio_outlined'
   },
   checkbox: {
-    type: "checkbox",
-    typeName: t("common.component.checkbox"),
-    icon: "icon_todo_outlined",
+    type: 'checkbox',
+    typeName: t('common.component.checkbox'),
+    icon: 'icon_todo_outlined'
   },
   date: {
-    type: "date",
-    typeName: t("common.component.date"),
-    icon: "icon_calendar_outlined",
+    type: 'date',
+    typeName: t('common.component.date'),
+    icon: 'icon_calendar_outlined'
   },
   dateRange: {
-    type: "dateRange",
-    typeName: t("common.component.dateRange"),
-    icon: "icon_calendar_outlined",
-  },
-});
+    type: 'dateRange',
+    typeName: t('common.component.dateRange'),
+    icon: 'icon_calendar_outlined'
+  }
+})
 
-const uploadType = ref<0, 1>(0);
+const uploadType = ref<0, 1>(0)
 
-const ruleVisible = ref(false);
+const ruleVisible = ref(false)
 
-const ruleSetting = ref([]);
-const ruleSettingTemp = ref([]);
+const ruleSetting = ref([])
+const ruleSettingTemp = ref([])
 
 const ruleSettingNameStr = computed(() => {
   return join(
-      map(
-          filter(ruleSetting.value, (r) => r.checked),
-          (s) => s.name
-      ),
-      ", "
-  );
-});
+    map(
+      filter(ruleSetting.value, r => r.checked),
+      s => s.name
+    ),
+    ', '
+  )
+})
 
 function toSetUploadRule() {
   if (ruleSetting.value.length === 0) {
-    props.columns.forEach((c) => {
+    props.columns.forEach(c => {
       if (!c.date) {
         ruleSetting.value.push({
           checked: false,
@@ -202,189 +190,180 @@ function toSetUploadRule() {
           props: c.props,
           type: c.type,
           icon: componentList.value[c.type]?.icon,
-          component: componentList.value[c.type]?.typeName,
-        });
+          component: componentList.value[c.type]?.typeName
+        })
       }
-    });
+    })
   }
-  ruleSettingTemp.value = JSON.parse(JSON.stringify(ruleSetting.value));
-  ruleVisible.value = true;
+  ruleSettingTemp.value = JSON.parse(JSON.stringify(ruleSetting.value))
+  ruleVisible.value = true
 }
 
 function closeRuleDialog() {
-  ruleVisible.value = false;
+  ruleVisible.value = false
 }
 
 function saveRuleDialog() {
-  if (every(ruleSettingTemp.value, (r) => r.checked)) {
-    ElMessage.warning(t("data_fill.data.cannot_select_all"));
-    return;
+  if (every(ruleSettingTemp.value, r => r.checked)) {
+    ElMessage.warning(t('data_fill.data.cannot_select_all'))
+    return
   }
-  ruleSetting.value = JSON.parse(JSON.stringify(ruleSettingTemp.value));
-  closeRuleDialog();
+  ruleSetting.value = JSON.parse(JSON.stringify(ruleSettingTemp.value))
+  closeRuleDialog()
 }
 
 function downloadTemplate() {
-  loading.value = true;
+  loading.value = true
   downloadExcelTemplate(props.formId)
-      .then((res) => {
-        const blobData = res.data;
-        const temp = res.headers["content-disposition"]
-            ?.split(";")[1]
-            ?.split("filename*=utf-8''")[1];
-        const fileName = temp
-            ? decodeURIComponent(temp)
-            : `${props.formName}.xlsx`;
-        const blob = new Blob([blobData], {
-          type:
-              res.headers["content-type"] ??
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8",
-        });
-        const link = document.createElement("a");
-        link.style.display = "none";
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName; // 下载的文件名
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    .then(res => {
+      const blobData = res.data
+      const temp = res.headers['content-disposition']?.split(';')[1]?.split("filename*=utf-8''")[1]
+      const fileName = temp ? decodeURIComponent(temp) : `${props.formName}.xlsx`
+      const blob = new Blob([blobData], {
+        type:
+          res.headers['content-type'] ??
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'
       })
-      .finally(() => {
-        loading.value = false;
-      });
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = URL.createObjectURL(blob)
+      link.download = fileName // 下载的文件名
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const beforeUpload = () => {
-  loading.value = true;
-};
+  loading.value = true
+}
 
 const uploadExcel = () => {
-  const formData = new FormData();
-  formData.append("file", fileList.value.raw);
-  loading.value = true;
+  const formData = new FormData()
+  formData.append('file', fileList.value.raw)
+  loading.value = true
   return uploadDfExcel(props.formId, formData)
-      .then((res) => {
-        upload.value?.clearFiles();
-        uploadAgain.value?.clearFiles();
-        uploadSuccess(res);
-        loading.value = false;
-      })
-      .catch((error) => {
-        if (error.code === "ECONNABORTED") {
-          ElMessage({
-            type: "error",
-            message: error.message,
-            showClose: true,
-          });
-        }
-        loading.value = false;
-      });
-};
+    .then(res => {
+      upload.value?.clearFiles()
+      uploadAgain.value?.clearFiles()
+      uploadSuccess(res)
+      loading.value = false
+    })
+    .catch(error => {
+      if (error.code === 'ECONNABORTED') {
+        ElMessage({
+          type: 'error',
+          message: error.message,
+          showClose: true
+        })
+      }
+      loading.value = false
+    })
+}
 
 function uploadSuccess(res) {
   if (res?.code !== 0) {
-    ElMessage.warning(res.msg);
-    return;
+    ElMessage.warning(res.msg)
+    return
   }
-  loading.value = false;
+  loading.value = false
 
-  excelName.value = res.data.excelName;
-  excelId.value = res.data.id;
+  excelName.value = res.data.excelName
+  excelId.value = res.data.id
 
-  const _list: Array<any> = map(res.data.dataList, (d) => d.data);
+  const _list: Array<any> = map(res.data.dataList, d => d.data)
 
-  dataList.value = _list;
+  dataList.value = _list
 }
 
-const emit = defineEmits(["close", "finish"]);
+const emit = defineEmits(['close', 'finish'])
 
 function close() {
-  emit("close");
+  emit('close')
 }
 
 function save() {
-  loading.value = true;
+  loading.value = true
   const param = {
-    excelId: excelId.value,
-  };
+    excelId: excelId.value
+  }
 
   if (props.taskInstanceId) {
     appendConfirmUpload(props.taskInstanceId, props.formId, param)
-        .then((res) => {
-          if (res.code === 0) {
-            emit("finish");
-          }
-        })
-        .finally(() => {
-          loading.value = false;
-        });
+      .then(res => {
+        if (res.code === 0) {
+          emit('finish')
+        }
+      })
+      .finally(() => {
+        loading.value = false
+      })
   } else {
     confirmUpload(props.formId, param)
-        .then((res) => {
-          if (res.code === 0) {
-            emit("finish");
-          }
-        })
-        .finally(() => {
-          loading.value = false;
-        });
+      .then(res => {
+        if (res.code === 0) {
+          emit('finish')
+        }
+      })
+      .finally(() => {
+        loading.value = false
+      })
   }
 }
 
-const isResize = ref(true);
+const isResize = ref(true)
 
 const handleResize = debounce(() => {
-  isResize.value = false;
+  isResize.value = false
   nextTick(() => {
-    isResize.value = true;
-  });
-}, 500);
+    isResize.value = true
+  })
+}, 500)
 onMounted(() => {
-  window.addEventListener("resize", handleResize);
-});
+  window.addEventListener('resize', handleResize)
+})
 
 onBeforeUnmount(() => {
-  window.removeEventListener("resize", handleResize);
-});
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
-  <div class="df-excel-detail" v-loading="loading">
+  <div class="df-excel-detail" v-loading.fullscreen.lock="loading">
     <el-main class="main-area">
       <div class="detail-inner">
-        <el-form
-            ref="excelForm"
-            require-asterisk-position="right"
-            label-position="top"
-            v-loading="loading"
-        >
+        <el-form ref="excelForm" require-asterisk-position="right" label-position="top">
           <el-form-item
-              v-if="sheetFile.name"
-              prop="id"
-              label="文件"
-              key="sheetFile"
-              :rules="[
+            v-if="sheetFile.name"
+            prop="id"
+            label="文件"
+            key="sheetFile"
+            :rules="[
               {
-                required: true,
-              },
+                required: true
+              }
             ]"
           >
             <ExcelInfo
-                @del="handleExcelDel"
-                show-del
-                :name="sheetFile.name"
-                :size="sheetFile.size"
+              @del="handleExcelDel"
+              show-del
+              :name="sheetFile.name"
+              :size="sheetFile.size"
             />
             <el-upload
-                action=""
-                :multiple="false"
-                ref="uploadAgain"
-                :show-file-list="false"
-                accept=".xls,.xlsx"
-                :before-upload="beforeUpload"
-                :on-change="onChange"
-                :http-request="uploadExcel"
-                :on-error="uploadFail"
-                name="file"
+              action=""
+              :multiple="false"
+              ref="uploadAgain"
+              :show-file-list="false"
+              accept=".xls,.xlsx"
+              :before-upload="beforeUpload"
+              :on-change="onChange"
+              :http-request="uploadExcel"
+              :on-error="uploadFail"
+              name="file"
             >
               <template #trigger>
                 <el-button text>重新上传</el-button>
@@ -392,48 +371,46 @@ onBeforeUnmount(() => {
             </el-upload>
           </el-form-item>
           <el-form-item
-              v-else
-              prop="id"
-              key="sheetId"
-              label="文件"
-              :rules="[
+            v-else
+            prop="id"
+            key="sheetId"
+            label="文件"
+            :rules="[
               {
-                required: true,
-              },
+                required: true
+              }
             ]"
           >
             <el-upload
-                :multiple="false"
-                action=""
-                ref="upload"
-                :show-file-list="false"
-                accept=".xls,.xlsx"
-                :before-upload="beforeUpload"
-                :on-change="onChange"
-                :http-request="uploadExcel"
-                :on-error="uploadFail"
-                name="file"
+              :multiple="false"
+              action=""
+              ref="upload"
+              :show-file-list="false"
+              accept=".xls,.xlsx"
+              :before-upload="beforeUpload"
+              :on-change="onChange"
+              :http-request="uploadExcel"
+              :on-error="uploadFail"
+              name="file"
             >
               <template #trigger>
                 <el-button secondary>
                   <template #icon>
                     <Icon name="icon_upload_outlined">
-                      <icon_upload_outlined class="svg-icon"/>
+                      <icon_upload_outlined class="svg-icon" />
                     </Icon>
                   </template>
-                  {{ t("dataset.upload_file") }}
+                  {{ t('dataset.upload_file') }}
                 </el-button>
               </template>
             </el-upload>
-            <p class="upload-tip" style="width: 100%">
-              仅支持xls,xlsx格式的文件
-            </p>
+            <p class="upload-tip" style="width: 100%">仅支持xls,xlsx格式的文件</p>
             <p class="upload-tip" style="width: 100%">
               上传数据需要与表单表头保持一致，如有需要，请点击<a
                 @click="downloadTemplate"
                 class="download-link"
-            >下载模版</a
-            >
+                >下载模版</a
+              >
             </p>
             <div class="ed-form-item__error" v-if="status">请上传文件</div>
           </el-form-item>
@@ -456,31 +433,29 @@ onBeforeUnmount(() => {
               <el-button text @click="toSetUploadRule">
                 <template #icon>
                   <Icon name="icon_edit_outlined">
-                    <icon_edit_outlined class="svg-icon"/>
+                    <icon_edit_outlined class="svg-icon" />
                   </Icon>
                 </template>
               </el-button>
             </div>
-            <div style="font-size: 12px">
-              设置字段组件: {{ ruleSettingNameStr }}
-            </div>
+            <div style="font-size: 12px">设置字段组件: {{ ruleSettingNameStr }}</div>
           </template>
         </el-form>
         <template v-if="dataList.length > 0">
           <div class="title-form_primary">
-            {{ t("chart.data_preview") }}
+            {{ t('chart.data_preview') }}
           </div>
 
           <div class="info-table" v-if="isResize">
             <el-auto-resizer>
               <template #default="{ height, width }">
                 <el-table-v2
-                    :columns="generatedColumns"
-                    header-class="excel-header-cell"
-                    :data="dataList"
-                    :width="width"
-                    :height="height"
-                    fixed
+                  :columns="generatedColumns"
+                  header-class="excel-header-cell"
+                  :data="dataList"
+                  :width="width"
+                  :height="height"
+                  fixed
                 />
               </template>
             </el-auto-resizer>
@@ -490,60 +465,49 @@ onBeforeUnmount(() => {
     </el-main>
     <el-footer>
       <div class="upload-footer">
-        <el-button @click="close()">{{ t("commons.cancel") }}</el-button>
+        <el-button @click="close()">{{ t('commons.cancel') }}</el-button>
         <el-button type="primary" :disabled="!excelId" @click="save()">
-          {{ t("commons.confirm") }}
+          {{ t('commons.confirm') }}
         </el-button>
       </div>
     </el-footer>
 
     <el-dialog
-        v-model="ruleVisible"
-        width="840"
-        destroy-on-close
-        class="reci-dialog"
-        align-center
-        :close-on-click-modal="false"
+      v-model="ruleVisible"
+      width="840"
+      destroy-on-close
+      class="reci-dialog"
+      align-center
+      :close-on-click-modal="false"
     >
       <div class="reci-dialog-container">
         <div class="reci-dialog-header">
-          <span>{{ t("data_fill.task.template_setting") }}</span>
+          <span>{{ t('data_fill.task.template_setting') }}</span>
           <el-icon @click="closeRuleDialog" class="dialog-close">
             <Icon name="icon_close_outlined">
-              <icon_close_outlined class="svg-icon"/>
+              <icon_close_outlined class="svg-icon" />
             </Icon>
           </el-icon>
         </div>
         <div class="reci-dialog-main template-setting">
-          <div
-              style="
-              padding: 12px;
-              margin-bottom: 12px;
-              background: #d0defd;
-              height: 87px;
-            "
-          >
+          <div style="height: 87px; padding: 12px; margin-bottom: 12px; background: #d0defd">
             <div>
               提交表单数据时，将选择的组件作为主键，对表单中的已有数据进行匹配更新，更新规则如下：
             </div>
-            <div>
-              1、当新提交的数据，与表单中已有数据主键相匹配时，则更新表单已有数据；
-            </div>
-            <div>
-              2、当新提交的数据，与表单中已有数据主键匹配不上时，则将新提交的数据插入表单。
-            </div>
+            <div>1、当新提交的数据，与表单中已有数据主键相匹配时，则更新表单已有数据；</div>
+            <div>2、当新提交的数据，与表单中已有数据主键匹配不上时，则将新提交的数据插入表单。</div>
           </div>
 
           <div style="height: calc(100% - 99px)">
             <GridTable
-                ref="multipleTableRef"
-                :table-data="ruleSettingTemp"
-                style="width: 100%; height: 100%"
-                :show-pagination="false"
+              ref="multipleTableRef"
+              :table-data="ruleSettingTemp"
+              style="width: 100%; height: 100%"
+              :show-pagination="false"
             >
               <el-table-column>
                 <template #default="scope">
-                  <el-checkbox v-model="scope.row.checked"/>
+                  <el-checkbox v-model="scope.row.checked" />
                 </template>
               </el-table-column>
               <el-table-column :label="t('data_fill.task.component')">
@@ -560,14 +524,8 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="reci-dialog-footer">
-          <el-button secondary @click="closeRuleDialog">{{
-              t("commons.cancel")
-            }}
-          </el-button>
-          <el-button type="primary" @click="saveRuleDialog">{{
-              t("commons.confirm")
-            }}
-          </el-button>
+          <el-button secondary @click="closeRuleDialog">{{ t('commons.cancel') }} </el-button>
+          <el-button type="primary" @click="saveRuleDialog">{{ t('commons.confirm') }} </el-button>
         </div>
       </div>
     </el-dialog>
@@ -614,7 +572,7 @@ onBeforeUnmount(() => {
         transform: rotate(180deg);
       }
 
-      &[aria-expanded="true"] {
+      &[aria-expanded='true'] {
         .down-outlined {
           transform: rotate(0);
         }
@@ -629,7 +587,7 @@ onBeforeUnmount(() => {
 
     .upload-tip {
       color: #8f959e;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -674,7 +632,7 @@ onBeforeUnmount(() => {
           span {
             height: 24px;
             line-height: 24px;
-            font-family: var(--de-custom_font, "PingFang");
+            font-family: var(--de-custom_font, 'PingFang');
             font-size: 16px;
             font-weight: 500;
             line-height: 24px;
@@ -824,7 +782,7 @@ onBeforeUnmount(() => {
                 height: 22px;
                 line-height: 22px;
                 font-size: 14px;
-                font-family: var(--de-custom_font, "PingFang");
+                font-family: var(--de-custom_font, 'PingFang');
                 color: #1f2329;
               }
 
