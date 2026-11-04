@@ -4838,6 +4838,22 @@ export default {
     target_database_status_is_abnormal: 'Target database status abnormal',
     editable_check_failed:
       'Unable to confirm the target table status. Editing the sync structure is temporarily disabled. Check the target datasource configuration',
+    connection_unavailable: 'Deleted or inaccessible',
+    connection_not_recorded: 'No connection recorded',
+    source_connection_missing:
+      'The original source database connection has been deleted or is inaccessible',
+    target_connection_missing:
+      'The original target database connection has been deleted or is inaccessible',
+    target_table_missing:
+      'The original target table does not exist. Check the table name and target database',
+    target_table_check_failed: 'Unable to verify the original target table. View the check details',
+    original_target: 'Original target: {0} · Table: {1}',
+    target_check_readonly:
+      'The original task configuration is preserved. Sync structure changes and saving are temporarily disabled. Resolve the issue and check again',
+    check_error_details: 'View check details',
+    recheck_target: 'Check again',
+    existing_table_readonly:
+      'The target table contains data. Only basic information and scheduling can be edited here. Use Field adjustment to change fields',
     edit_task: 'Edit task',
     basic_information: 'Basic information',
     source_database: 'Source database',

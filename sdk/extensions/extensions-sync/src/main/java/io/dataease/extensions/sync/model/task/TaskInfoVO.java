@@ -35,6 +35,13 @@ public class TaskInfoVO {
     private boolean editing;
     private boolean editable;
     private boolean editableCheckFailed;
+    /**
+     * 连接可用性和目标表检查分别展示，避免把连接改名或目标表缺失误认为绑定了其他数据库
+     */
+    private boolean sourceDatasourceMissing;
+    private boolean targetDatasourceMissing;
+    private String targetTableCheckStatus;
+    private String targetTableCheckError;
 
     private String userName;
     private String lastExecuteStatus;

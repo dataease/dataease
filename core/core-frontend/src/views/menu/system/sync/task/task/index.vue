@@ -877,7 +877,14 @@ const copyInfo = async val => {
             min-width="120"
           >
             <template #default="scope">
-              <span>{{ scope.row.source.datasource.name }}</span>
+              <span
+                >{{ scope.row.source.datasource.name
+                }}{{
+                  scope.row.sourceDatasourceMissing
+                    ? `（${t('sync_task.connection_unavailable')}）`
+                    : ''
+                }}</span
+              >
             </template>
           </el-table-column>
           <el-table-column
@@ -888,7 +895,14 @@ const copyInfo = async val => {
             min-width="120"
           >
             <template #default="scope">
-              <span>{{ scope.row.target.datasource.name }}</span>
+              <span
+                >{{ scope.row.target.datasource.name
+                }}{{
+                  scope.row.targetDatasourceMissing
+                    ? `（${t('sync_task.connection_unavailable')}）`
+                    : ''
+                }}</span
+              >
             </template>
           </el-table-column>
           <el-table-column

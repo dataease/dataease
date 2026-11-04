@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, Ref, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasourceListByTypeApi,
@@ -28,7 +28,12 @@ const formLoading = ref<boolean>(false)
 const props = withDefaults(
   defineProps<{
     modelValue: ITaskInfoRes
-    dsTypeListData: Object
+    dsTypeListData: {
+      type: string
+      name: string
+      isPlugin?: boolean
+      staticMap?: Record<string, string>
+    }[]
     isEdit: boolean
   }>(),
   {
@@ -162,11 +167,12 @@ onMounted(() => {
         form.value.target.dsList = (res.data || []).filter(
           item => item.datasourceRole === SYNC_DATASOURCE_ROLE.TARGET
         )
-        if (!form.value.target.datasourceId) {
+        // 默认连接只用于新增任务，历史任务缺少绑定时保留原配置供核对
+        if (!props.isEdit && !form.value.target.datasourceId) {
           form.value.target.datasourceId = (form.value.target.dsList?.[0]?.id || '') as string
         }
         void refreshSinkKeyPolicy()
-        // 内置目标组件直接初始化，插件组件由加载完成事件通过 invokeMethod 初始化
+        // 内置组件只转换 property 展示值，保留旧容错率和分区显示；只读校验不会将其写回 targetProperty
         if (!isPlugin.value) {
           targetPropertyFormRef.value?.initTargetCustomProperty()
         }
@@ -200,7 +206,7 @@ const buildSearchSourceFieldParams = computed(() => {
  * 设置源数据字段以及目标数据库字段类型
  */
 const setSourceFieldAndTargetFieldTypeList = callBack => {
-  if (props.isEdit && form.value.editable === false) {
+  if (props.isEdit && (form.value.editable === false || form.value.sourceDatasourceMissing)) {
     if (callBack) callBack()
     return
   }
@@ -257,7 +263,9 @@ const targetFieldList = computed(() => {
 
 const isUnknownField = (field: ITableField) => field.fieldType?.trim().toUpperCase() === 'UNKNOWN'
 
-const targetFieldsReadOnly = computed(() => props.isEdit && form.value.editable === false)
+const targetFieldsReadOnly = computed(
+  () => props.isEdit && (form.value.editable === false || form.value.sourceDatasourceMissing)
+)
 
 const normalizeFieldType = (fieldType?: string) =>
   fieldType?.split('(')[0].trim().toUpperCase() || ''
@@ -431,7 +439,7 @@ const summarizeFieldNames = (fields: ITableField[]) => {
 /**
  * 原任务建表配置继续区分不支持映射与需确认风险，警告确认不表示真实数据写入已经验证
  */
-const confirmFieldMappingWarnings = async (loading?: Ref<boolean>) => {
+const confirmFieldMappingWarnings = async () => {
   if (!fieldMappingWarningCount.value) {
     return true
   }
@@ -450,9 +458,6 @@ const confirmFieldMappingWarnings = async (loading?: Ref<boolean>) => {
     return true
   } catch {
     formLoading.value = false
-    if (loading) {
-      loading.value = false
-    }
     scrollToFieldMappingWarnings()
     return false
   }
@@ -569,8 +574,10 @@ const changeTargetType = () => {
         form.value.target.dsList = (res.data || []).filter(
           item => item.datasourceRole === SYNC_DATASOURCE_ROLE.TARGET
         )
-        const id = form.value.target.dsList?.[0]?.id || ''
-        form.value.target.datasourceId = id as string
+        if (!props.isEdit) {
+          const id = form.value.target.dsList?.[0]?.id || ''
+          form.value.target.datasourceId = id as string
+        }
         if (!isPlugin.value) {
           targetPropertyFormRef.value?.initTargetCustomProperty()
         }
@@ -766,7 +773,12 @@ const validatePluginTargetProperty = () => {
   })
 }
 
-const validate = async (loading?: Ref<boolean>) => {
+/**
+ * 校验只返回结果，父表单按当前请求归属管理自己的加载状态
+ */
+const validate = async () => {
+  // 只读编辑只保存基本信息，不能由字段或插件校验重写历史运行配置
+  if (targetFieldsReadOnly.value) return true
   if (!unsupportedKeyFieldTypes.value) {
     ElMessage.error(t('sync_task.key_policy_load_failed'))
     return false
@@ -794,9 +806,6 @@ const validate = async (loading?: Ref<boolean>) => {
   } catch (error) {
     console.error(error)
     ElMessage.error(t('sync_datasource.plugin_load_failed'))
-    if (loading) {
-      loading.value = false
-    }
     return false
   }
   if (!targetPropertyValid) {
@@ -805,7 +814,7 @@ const validate = async (loading?: Ref<boolean>) => {
   if (!(await validateSinkKeyPolicy())) {
     return false
   }
-  return confirmFieldMappingWarnings(loading)
+  return confirmFieldMappingWarnings()
 }
 const closeLoading = () => {
   formLoading.value = false
@@ -880,7 +889,12 @@ const getPluginStatic = type => {
 }
 const pluginComponentLoadDone = () => {
   pluginLoadFailed.value = false
-  targetPropertyFormRef?.value?.invokeMethod({ methodName: 'initTargetCustomProperty', args: [{}] })
+  if (!targetFieldsReadOnly.value) {
+    targetPropertyFormRef?.value?.invokeMethod({
+      methodName: 'initTargetCustomProperty',
+      args: [{}]
+    })
+  }
   targetPropertyFormRef.value?.invokeMethod({
     methodName: 'getSupportedIncrementFieldType',
     args: [
@@ -934,8 +948,22 @@ defineExpose({ validate, closeLoading })
             v-model="form.target.datasourceId"
             :filterable="true"
             @change="changeTargetDs"
-            :placeholder="t('sync_task.please_choose_database')"
+            :placeholder="
+              isEdit && !form.target.datasourceId
+                ? form.target.datasource?.name || t('sync_task.connection_not_recorded')
+                : t('sync_task.please_choose_database')
+            "
           >
+            <el-option
+              v-if="
+                isEdit &&
+                form.target.datasourceId &&
+                !form.target.dsList?.some(item => item.id === form.target.datasourceId)
+              "
+              :value="form.target.datasourceId"
+              :label="form.target.datasource?.name || form.target.datasourceId"
+              disabled
+            />
             <el-option
               v-for="item in form.target.dsList"
               :key="item.id"
@@ -948,7 +976,7 @@ defineExpose({ validate, closeLoading })
       <el-col :span="6">
         <el-form-item :label="t('sync_task.table') + t('sync_task.name')" prop="target.tableName">
           <el-input
-            :disabled="form.editable"
+            :disabled="isEdit"
             v-model="form.target.tableName"
             :placeholder="t('sync_task.please_enter')"
           />
@@ -960,6 +988,14 @@ defineExpose({ validate, closeLoading })
         </el-form-item>
       </el-col>
     </el-row>
+    <el-alert
+      v-if="isEdit && form.editable === false && !form.editableCheckFailed"
+      type="info"
+      :closable="false"
+      show-icon
+      class="field-mapping-alert"
+      :title="t('sync_task.existing_table_readonly')"
+    />
     <FormTitle>
       <template v-slot:title>
         <span> {{ t('sync_task.define_mapping_field') }}</span>
@@ -1060,6 +1096,7 @@ defineExpose({ validate, closeLoading })
         </div>
         <div class="field-table-body">
           <TargetFields
+            :show-actions="!targetFieldsReadOnly"
             :rows="targetFieldList"
             :columns="tableFields"
             :pagination="pageState.paginationConfig"

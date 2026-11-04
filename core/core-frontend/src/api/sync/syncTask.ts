@@ -15,13 +15,14 @@ export interface ISchedulerOption {
 }
 
 export interface ISource {
+  datasource?: { id: string; name: string }
   type: string
   query: string
   tables: string
   datasourceId: string
   tableExtract: string
   dsTableList?: IDsTable[]
-  dsList?: []
+  dsList?: { id: string; name: string }[]
   fieldList?: ITableField[]
   targetFieldTypeList?: string[]
   incrementCheckbox?: string
@@ -109,6 +110,7 @@ export interface ITargetProperty {
 }
 
 export interface ITarget {
+  datasource?: { id: string; name: string }
   createTable?: string
   type: string
   fieldList: ITableField[]
@@ -141,6 +143,11 @@ export class ITaskInfoRes {
   maintenanceNeedsAttention?: boolean
   logStatus?: string
   editable?: boolean
+  editableCheckFailed?: boolean
+  sourceDatasourceMissing?: boolean
+  targetDatasourceMissing?: boolean
+  targetTableCheckStatus?: 'AVAILABLE' | 'DATASOURCE_MISSING' | 'TABLE_MISSING' | 'CHECK_FAILED'
+  targetTableCheckError?: string
 
   id: string
 
