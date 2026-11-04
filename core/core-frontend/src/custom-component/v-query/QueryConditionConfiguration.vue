@@ -1981,16 +1981,21 @@ const isQueryField = (field: Field) =>
   String(field.id) !== '-1' && !field.agg && !field.params?.length
 
 const getOptions = (id, component) => {
+  const isTree = component.displayType === '9'
   const chartId = component.field.chartId
+  const isCurrentRequest = () =>
+    (component.displayType === '9') === isTree &&
+    (isTree ? component.treeDatasetId : component.dataset.id) === id &&
+    component.field.chartId === chartId
   if (chartId) {
     getFieldByDQ(id, chartId, {}).then(res => {
-      if (component.dataset.id !== id || component.field.chartId !== chartId) return
+      if (!isCurrentRequest()) return
       component.dataset.fields = [...res.dimensionList, ...res.quotaList].filter(isQueryField)
     })
     return
   }
   listFieldsWithPermissions(id).then(res => {
-    if (component.dataset.id !== id || component.field.chartId !== chartId) return
+    if (!isCurrentRequest()) return
     component.dataset.fields = res.data
   })
 }
