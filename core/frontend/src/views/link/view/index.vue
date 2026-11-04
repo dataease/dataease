@@ -84,7 +84,20 @@ export default {
     initBrowserTimer() {
       if (this.canvasStyleData.refreshBrowserEnable) {
         const browserRefreshTime = this.canvasStyleData.refreshBrowserTime * 60 * 1000
-        setTimeout(() => { window.location.reload() }, browserRefreshTime)
+        setTimeout(() => {
+          const url = new URL('link.html', window.location.href)
+          // link.html encodes these values when redirecting to /#/delink.
+          const query = window.location.hash.split('?').slice(1).join('?')
+          url.search = query.split('&').map(param => {
+            const index = param.indexOf('=')
+            const key = param.substring(0, index)
+            return ['link', 'user', 'attachParams'].includes(key)
+              ? key + '=' + decodeURIComponent(param.substring(index + 1))
+              : param
+          }).join('&')
+          url.hash = ''
+          window.location.replace(url.toString())
+        }, browserRefreshTime)
       }
     },
     setPanelInfo() {
