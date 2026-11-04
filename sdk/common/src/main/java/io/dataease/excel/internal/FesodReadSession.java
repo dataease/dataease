@@ -58,6 +58,9 @@ public class FesodReadSession implements ExcelReadSession {
         for (ReadSheet readSheet : readSheets) {
             sheets.add(new ExcelSheetInfo(readSheet.getSheetNo(), readSheet.getSheetName()));
         }
+        if (sheets.isEmpty() || sheets.stream().anyMatch(sheet -> sheet.getSheetName() == null)) {
+            throw new IllegalStateException("invalid workbook or no sheet found");
+        }
     }
 
     @Override
