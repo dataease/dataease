@@ -868,6 +868,8 @@ export class GroupLineMix extends G2ChartView {
     const multiDimension = chart.extBubble?.length > 0
     switch (emptyDataStrategy) {
       case 'breakLine': {
+        // 空柱仅使用零高度绘制，保留原始空值及分组占位供标签、提示和交互使用
+        intervalMark.encode.y = d => d.value ?? 0
         if (multiDimension) {
           handleBreakLineMultiDimension(rightData)
         }
