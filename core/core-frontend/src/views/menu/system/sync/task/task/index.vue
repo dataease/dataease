@@ -22,7 +22,9 @@ import { terminationTaskApi } from '@/api/sync/syncTaskLog'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import TaskForm from './TaskForm.vue'
-import { find, some, map } from 'lodash-es'
+import FieldAdjustmentDialog from './FieldAdjustmentDialog.vue'
+import FullRefreshDialog from './FullRefreshDialog.vue'
+import { find, map } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
@@ -37,6 +39,24 @@ const { toClipboard } = useClipboard()
 
 const { t } = useI18n()
 const taskFormDialogRef = ref()
+const fieldAdjustmentRef = ref<InstanceType<typeof FieldAdjustmentDialog>>()
+const fullRefreshRef = ref<InstanceType<typeof FullRefreshDialog>>()
+/**
+ * 只有未完成维护在列表中显示处理入口，成功历史记录不长期占用名称行；后端仍独立执行门禁
+ */
+const maintenanceBlocked = (row: ITaskInfoRes) =>
+  !!row.maintenanceState && row.maintenanceState !== 'DONE'
+const maintenanceLabel = (row: ITaskInfoRes) => {
+  if (row.maintenanceNeedsAttention) return t('sync_maintenance.needs_attention')
+  if (row.maintenanceState === 'REINIT_REQUIRED' && row.logStatus === 'RUNNING')
+    return t('sync_maintenance.initializing_short')
+  if (
+    row.maintenanceState === 'REINIT_REQUIRED' &&
+    ['FAIL', 'TERMINATION', 'CONNECTION_LOST'].includes(row.logStatus)
+  )
+    return t('sync_maintenance.needs_attention')
+  return t(`sync_maintenance.state_${row.maintenanceState.toLowerCase()}`)
+}
 const drawerMainRef = ref()
 const taskId = ref<string>('')
 const activeName = ref('ds')
@@ -202,11 +222,22 @@ const getMoreList = row => {
       label: t('sync_task.start'),
       divided: false,
       command: 'start',
-      disabled: row.status != 'suspend' || row.schedulerType === 'NONE'
+      disabled: maintenanceBlocked(row) || row.status != 'suspend' || row.schedulerType === 'NONE'
+    },
+    {
+      label: t('sync_maintenance.menu'),
+      divided: true,
+      command: 'adjustFields'
+    },
+    {
+      label: t('sync_maintenance.full_once'),
+      divided: false,
+      command: 'fullRefresh',
+      disabled: row.logStatus === 'RUNNING' || row.maintenanceState === 'APPLYING'
     },
     {
       label: t('sync_task.show_log'),
-      divided: false,
+      divided: true,
       command: 'showLog'
     },
     {
@@ -216,9 +247,9 @@ const getMoreList = row => {
     },
     {
       label: t('sync_task.delete'),
-      divided: false,
+      divided: true,
       command: 'delete',
-      disabled: row.status === 'running'
+      disabled: row.status === 'running' || maintenanceBlocked(row)
     }
   ]
   return moreList
@@ -234,6 +265,14 @@ const showTaskId = row => {
   dialogTaskId.value = row.id
 }
 const moreHandler = (cmd: string, row) => {
+  if (cmd === 'adjustFields') {
+    fieldAdjustmentRef.value?.open(row.id, row.name)
+    return
+  }
+  if (cmd === 'fullRefresh') {
+    fullRefreshRef.value?.open(row.id)
+    return
+  }
   if (cmd === 'terminationTask') {
     terminationTask(row)
     return
@@ -367,7 +406,7 @@ const search = () => {
     .then(res => {
       tableLoading.value = false
       state.taskList = res.data.records
-      if (some(state.taskList, ['status', 'running'])) {
+      if (state.taskList.some(row => row.status === 'running' || maintenanceBlocked(row))) {
         startInterval()
       }
       if (state.paginationConfig.currentPage > 1 && state.taskList.length === 0) {
@@ -440,7 +479,7 @@ const sortChange = (param: any) => {
 }
 
 const rowCheckStatus = (row: any) => {
-  return row.id !== taskId.value && row.id !== '1'
+  return row.id !== taskId.value && row.id !== '1' && !maintenanceBlocked(row)
 }
 const handleAddTask = () => {
   taskFormDialogRef.value.taskFormVisible = true
@@ -456,6 +495,10 @@ const refreshList = () => {
 }
 
 const edit = (row: ITaskInfoRes) => {
+  if (maintenanceBlocked(row)) {
+    fieldAdjustmentRef.value?.open(row.id, row.name)
+    return
+  }
   taskFormDialogRef.value.taskFormVisible = true
   taskId.value = row.id
 }
@@ -489,6 +532,10 @@ const changeStatus = (row: ITaskInfoRes) => {
 }
 
 const execute = (row: ITaskInfoRes) => {
+  if (maintenanceBlocked(row)) {
+    ElMessage.warning(t('sync_maintenance.blocked'))
+    return
+  }
   ElMessageBox.confirm(t('sync_task.confirm') + ' ' + t('sync_task.running_one'), {
     confirmButtonText: t('sync_task.confirm'),
     cancelButtonText: t('sync_datasource.cancel'),
@@ -581,6 +628,9 @@ const partDataUpdate = () => {
         item.status = resItem.status
         item.logStatus = resItem.logStatus
         item.lastExecuteStatus = resItem.lastExecuteStatus
+        item.maintenanceState = resItem.maintenanceState
+        item.maintenanceNeedsAttention = resItem.maintenanceNeedsAttention
+        if (maintenanceBlocked(resItem)) isRunning = true
         if (item.currentTime) {
           if (item.currentTime > resItem.executorStartTime || resItem.status === 'running') {
             isRunning = true
@@ -693,8 +743,26 @@ const copyInfo = async val => {
             min-width="170"
           >
             <template #default="scope">
-              <div class="task-span-link" @click="edit(scope.row)">
-                <span>{{ scope.row.name }}</span>
+              <div
+                class="task-span-link"
+                :class="{
+                  'maintenance-task-name':
+                    maintenanceBlocked(scope.row) || scope.row.maintenanceNeedsAttention
+                }"
+              >
+                <span class="task-name-text" :title="scope.row.name" @click="edit(scope.row)">{{
+                  scope.row.name
+                }}</span>
+                <el-button
+                  v-if="maintenanceBlocked(scope.row) || scope.row.maintenanceNeedsAttention"
+                  class="maintenance-status"
+                  link
+                  type="warning"
+                  :title="maintenanceLabel(scope.row)"
+                  @click.stop="fieldAdjustmentRef?.open(scope.row.id, scope.row.name)"
+                >
+                  {{ maintenanceLabel(scope.row) }}
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -906,6 +974,8 @@ const copyInfo = async val => {
     @task-add-visible-close="taskAddVisibleClose"
     @refresh-list="refreshList"
   />
+  <FieldAdjustmentDialog ref="fieldAdjustmentRef" @changed="refreshList" />
+  <FullRefreshDialog ref="fullRefreshRef" @submitted="refreshList" />
   <log-details
     ref="jobLogDetailRef"
     :job-log-status="logStatus"
@@ -945,6 +1015,39 @@ const copyInfo = async val => {
   </el-dialog>
 </template>
 <style scoped lang="less">
+.task-name-text {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.maintenance-task-name {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px 0;
+  min-width: 0;
+  .maintenance-status {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  :deep(.ed-button.maintenance-status) {
+    height: auto;
+    padding: 0;
+    text-align: left;
+    > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
 .source-ds-table_task {
   line-height: 1.15;
   border-radius: 12px !important;

@@ -4437,6 +4437,304 @@ export default {
     execution_results_in_the_past_7_days: 'Executions in the past 7 days',
     sync_status_distribution: 'Sync status distribution'
   },
+  sync_maintenance: {
+    menu: 'Field adjustment',
+    title: 'Adjust target fields',
+    task_name: 'Task',
+    source_connection: 'Source connection',
+    target_connection: 'Target connection',
+    target_datasource: 'Target datasource',
+    database_type: 'Database type',
+    database_version: 'Version',
+    source_table: 'Source table',
+    target_table: 'Target table',
+    query_source: 'Source: query result',
+    view_query: 'View query',
+    hide_query: 'Hide query',
+    query_readonly:
+      'Read only. This does not execute the query. Fields come from the query result, which may span multiple tables.',
+    current_fields: 'Current task field configuration',
+    editing_fields: 'Edited fields take effect only after you confirm the adjustment',
+    source_field_type: 'Source field / type',
+    target_field_type: 'Target field / type',
+    generated_field: 'System generated',
+    standard_type: 'Standard type: {0}',
+    saved_type: 'Saved: {0} (not currently verified)',
+    type_unavailable: 'Type unavailable',
+    unverified:
+      'The target schema has not been verified. Only saved task configuration is shown below.',
+    no_configured_fields: 'This task has no saved field configuration. Check its field mappings.',
+    only_protected_fields:
+      'Only protected fields are configured. Expand the section below to view them.',
+    protected_fields: 'Protected fields ({0})',
+    special: 'Protected fields cannot be adjusted',
+    start_adjustment: 'Edit fields',
+    confirm_field: 'Confirm changes',
+    draft_saved: 'Draft updated. Changes take effect only after you confirm the adjustment.',
+    added: 'To be added',
+    modified: 'To be modified',
+    deleted: 'To be deleted',
+    change: 'Change',
+    undo: 'Undo deletion',
+    restore_conflict:
+      'The restored field conflicts with the current configuration. Check field names and source mappings.',
+    pending_count: 'Changes to {0} fields have not taken effect',
+    no_changes: 'No field changes',
+    check_all: 'Check and confirm',
+    check_failed: 'Checks failed. No changes have been executed.',
+    check_failed_help:
+      'Resolve the highlighted field errors and issues below, then check again. All edits are retained.',
+    locate_issue: 'Locate field error',
+    discard_draft: 'Cancel editing',
+    cancel_editing_title: 'Cancel these edits?',
+    discard:
+      'Discard all unsubmitted edits and restore the current field configuration. Changes that have already taken effect are retained.',
+    discard_changes: 'Discard all edits',
+    continue_editing: 'Continue editing',
+    close: 'Close',
+    back_edit: 'Back to editing',
+    back_fields: 'Back to fields',
+    back_result: 'Back to results',
+    view_current_configuration: 'View current configuration',
+    confirm: 'Confirm field adjustment',
+    apply: 'Confirm adjustment',
+    apply_reinit: 'Confirm and initialize',
+    confirm_init_title: 'Full initialization is required',
+    confirm_impact_title: 'Impact of this adjustment',
+    history_replace:
+      'Target data will be replaced with a fresh full read of the source. Content that exists only in the target may be lost.',
+    history_preserve:
+      'No full initialization is planned. Type changes affect existing target data; changing a source mapping does not automatically backfill historical values.',
+    confirm_delete_impact:
+      'Selected target columns and their historical values will be deleted. Data in other columns is retained.',
+    confirm_preserve_impact:
+      'No full source read is planned. Existing data in retained columns is preserved, subject to the database conversion results.',
+    confirm_init_schedule:
+      'Subsequent synchronization is paused until the adjustment and initialization succeed. Previously disabled tasks remain disabled.',
+    confirm_adjust_schedule:
+      'Subsequent synchronization is paused until the schema and task configuration are verified as consistent. Previously disabled tasks remain disabled.',
+    confirm_more_impact: 'Execution flow and impact',
+    confirm_execution_flow:
+      'Adjust and verify target schema → Save task configuration → Complete required initialization → Verify completion',
+    downstream_help:
+      'Renaming or deleting fields may affect datasets, charts and SQL. Check downstream references; this operation does not automatically detect or update them.',
+    failure_help:
+      'Edits can be discarded before submission. Submitted changes are not automatically rolled back. After partial completion, a lost response or a restart, recorded results and the actual schema are checked before unfinished work is handled.',
+    exclusive:
+      'I confirm that no other task or program will write to the target table during this operation',
+    delete_confirm: 'I confirm deletion of the selected fields and their historical values',
+    confirm_initialization:
+      'I understand that full initialization reads the source again and replaces target data',
+    confirm_conversion_short: 'I understand the conversion and data write risks described above',
+    confirm_pending: 'Confirm {0} remaining items',
+    confirm_ready: 'Confirm to start this adjustment',
+    confirm_blocked: 'Return to editing to resolve {0} issues',
+    changes_title: 'Changes in this adjustment',
+    change_summary: '{0} fields · {1} changes',
+    field_change_count: '{0} changes',
+    changed_attribute: 'Attribute',
+    before: 'Before',
+    after: 'After',
+    deleted_field_effect:
+      'The target column and its historical values will be deleted. The source field is unaffected.',
+    comment_modified: 'Modified',
+    view_comparison: 'Show comparison',
+    hide_comparison: 'Hide comparison',
+    index_enabled: 'Index configured',
+    index_none: 'No index configured',
+    index_add: 'Add index',
+    index_remove: 'Remove index',
+    view_changes: 'View changes',
+    applying: 'Adjusting target fields. Subsequent synchronization is paused.',
+    collapse: 'Close; continue in background',
+    collapse_help:
+      'You can close this window while execution continues. Reopen the same adjustment from the task list without submitting it again.',
+    current_stage: 'Current stage',
+    schema_stage: 'Target schema adjustment',
+    configuration_stage: 'Task field configuration update',
+    initialization_stage: 'Full initialization',
+    execution_pending_title: 'This adjustment has not completed',
+    structure_incomplete_help:
+      'Completed changes are retained and subsequent synchronization remains restricted. Review the cause, then return to editing or keep the completed changes and end the adjustment.',
+    configuration_pending_title: 'Schema adjustment completed; updating task configuration',
+    configuration_pending_help:
+      'The target schema has been verified, but task configuration has not been saved. Restrictions remain until it is saved successfully.',
+    configuration_init_help:
+      'The target schema has been verified. Task configuration must be saved and full initialization completed before subsequent synchronization can resume.',
+    config_save_failed_title: 'Schema changes completed; task configuration not saved',
+    config_updated: 'Updated',
+    config_not_updated: 'Not updated',
+    not_completed: 'Not fully completed',
+    save_configuration: 'Save task configuration',
+    retry_configuration: 'Retry saving configuration',
+    save_and_initialize: 'Save configuration and initialize',
+    schema_failed_title: 'Field adjustment failed; no changes have taken effect',
+    partial_apply_title: 'Adjustment incomplete; some changes have taken effect',
+    unknown_result_title: 'Some adjustment results need verification',
+    response_unknown: 'Submission result unconfirmed; checking recorded results',
+    response_unknown_help:
+      'An interrupted request does not mean the adjustment failed. Check again so the system can verify recorded results and the actual schema without repeating changes.',
+    recovery_required_title:
+      'Task configuration needs recovery; subsequent synchronization is paused',
+    recovery_required_help:
+      'Completed changes are retained. The actual schema must be verified and consistent configuration saved before editing can continue or the adjustment can end.',
+    check_result: 'Check again',
+    check_status: 'Check again',
+    resume: 'Continue remaining steps',
+    resume_original: 'Continue original adjustment',
+    resume_original_help:
+      'Continue unfinished work from the original plan. New page edits are not used, and completed steps are not repeated.',
+    keep_completed: 'Keep completed changes and end',
+    finish_title: 'Keep completed changes and end?',
+    finish_help:
+      'Keep verified completed changes and discard unfinished changes. The system verifies the schema and saves consistent configuration before ending. Synchronization remains restricted if initialization is still required.',
+    keep_and_finish: 'Keep and end',
+    return_editing_title: 'Return to unfinished changes?',
+    edit_remaining_help:
+      'Completed changes are retained. The system verifies the schema and restores consistent configuration before reopening unfinished edits. Recovery errors remain available for resolution.',
+    continue_viewing: 'Continue viewing',
+    initialization_pending_title:
+      'Field configuration updated; full initialization is still required',
+    initialization_pending_help:
+      'Subsequent synchronization remains paused until initialization succeeds. View the current configuration or resolve the cause and retry initialization.',
+    initialization_running_title:
+      'Full initialization is running; synchronization cannot resume yet',
+    initialization_failed_title:
+      'Full initialization did not succeed; synchronization remains restricted',
+    initialization_failed_help:
+      'The schema and task configuration have been updated, but initialization has not succeeded. Review the task log, resolve the cause and retry initialization.',
+    initialization_unknown_title:
+      'Full initialization results need verification; synchronization remains restricted',
+    initialization_unknown_help:
+      'The executor or table replacement result is unconfirmed. Review the task log and verify the actual result before retrying; synchronization remains restricted.',
+    retry_initialization: 'Retry this full initialization',
+    init_not_required: 'Not required',
+    init_pending: 'Pending initialization',
+    init_running: 'Running',
+    init_success: 'Succeeded and verified',
+    init_failed: 'Not successful',
+    init_unknown: 'Result needs verification',
+    success_title: 'Field schema and task configuration updated',
+    applied_count: 'Applied changes to {0} fields',
+    applied_brief: 'Field adjustment completed',
+    last_completed: 'Previous field adjustment completed',
+    ended_summary: 'Adjustment ended; completed changes were retained',
+    adjustment_without_sync:
+      'This status confirms field adjustment only. Check task logs for data synchronization results.',
+    initialization_completed:
+      'Full initialization succeeded. Check task logs for subsequent synchronization results.',
+    initialization_not_verified:
+      'The initialization result record is currently unavailable. Check task logs for synchronization results.',
+    sync_result_logs:
+      'This status confirms the previous field adjustment only. Check task logs for synchronization results.',
+    no_record: 'No field adjustment record',
+    operation_record: 'Adjustment record',
+    technical_details: 'Technical details',
+    adjustment_step: 'Field adjustment step',
+    execution_result: 'Execution result',
+    failure_reason: 'Failure or verification reason',
+    full_once: 'Run full synchronization once',
+    full_warning:
+      'Read all data within the current source scope again. On completion, target data reflects this source read; data that exists only in the target may be lost.',
+    full_mode:
+      'Run a full synchronization using the current saved configuration. Unsubmitted field edits are not applied, and the original synchronization mode and schedule are retained.',
+    full_exclusive:
+      'I confirm that no other task or program will write to the target table during this synchronization',
+    full_submitted: 'Full synchronization submitted. Check task logs for execution results.',
+    full_unsupported:
+      'Target connection {0} ({1}) does not currently support one-time full synchronization',
+    rules_entry: 'Modification rules',
+    rules_expand_hint: 'Expand to view supported changes, restrictions and official documentation.',
+    rules_effect_brief:
+      'This window shows modification rules. Specific changes and data impact are shown when you confirm.',
+    rule_source_database: 'Official restriction',
+    rule_source_plugin: 'Plugin support scope',
+    rule_source_task: 'Task execution rule',
+    rule_supported: 'Supported',
+    rule_restricted: 'Restrictions / unsupported',
+    official_excerpt: 'Official documentation excerpt',
+    official_documentation: 'View official documentation',
+    rules_unavailable: 'The target plugin does not provide field adjustment rules',
+    plugin_rules_help:
+      'Available capabilities depend on the target plugin checks. Changes without declared support cannot be applied.',
+    name_help: 'Up to {0} characters. Duplicate names and case-only renames are not allowed.',
+    use_source_name: 'Use source field name',
+    conversion_unavailable: 'Unsupported',
+    conversion_risk: 'Risk confirmation required',
+    recommended_type: 'Recommended type: {0}',
+    use_recommended_type: 'Use recommendation',
+    no_recommended_type:
+      'No recommended type is available for this source field. Select a type supported by the target database.',
+    recommendation_blocked:
+      'The current target column cannot be converted to the recommended type. Keep its current type or choose an allowed type.',
+    existing_type_help:
+      'The current target type is retained. Recommended or manual changes still require target database conversion checks.',
+    new_type_help:
+      'New fields use recommendations from source type and target plugin mappings. You can select another supported type.',
+    decimal_help:
+      'Length is the total number of digits; precision is the number of decimal places. Existing integer and fractional capacity must not be reduced.',
+    minimum_size: 'The field length must be at least {0}',
+    size_range: 'Allowed range: {0}–{1}',
+    needs_attention: 'Field adjustment needs attention',
+    initializing_short: 'Full initialization running',
+    blocked:
+      'An adjustment or run is unfinished. Review and resolve the field adjustment result first.',
+    backend_unavailable:
+      'Field maintenance endpoints are unavailable. Check that frontend and backend versions match and restart the backend.',
+    read_failed: 'Unable to load data. Reopen the window or retry.',
+    completed_count: '{0} completed',
+    failed_count: '{0} failed',
+    not_executed_count: '{0} not executed',
+    unconfirmed_count: '{0} awaiting verification',
+    state_ready: 'No adjustment',
+    state_applying: 'Adjusting fields',
+    state_recovery_required: 'Configuration recovery required',
+    state_reinit_required: 'Full initialization required',
+    state_done: 'Fields adjusted',
+    step_planned: 'Not executed',
+    step_submitting: 'Submitting',
+    step_waiting: 'Running',
+    step_done: 'Completed',
+    step_failed: 'Failed',
+    step_unknown: 'Result needs verification',
+    step_skipped: 'Not executed',
+    step_partial: 'Partially completed',
+    action_add: 'Add',
+    action_delete: 'Delete',
+    action_update: 'Modify',
+    action_drop: 'Drop column',
+    action_rename: 'Rename',
+    action_type: 'Change type, length or precision',
+    action_comment: 'Change comment',
+    action_add_index: 'Add index',
+    action_drop_index: 'Drop index',
+    recovery_checking:
+      'The table replacement result is unverified. Automatic verification is in progress.',
+    recovery_manual_required:
+      'The table replacement result requires manual verification. Automatic checks have stopped.',
+    recovery_recheck: 'Check again',
+    recovery_manual: 'Verify table replacement manually',
+    recovery_last_checked: 'Last checked: {0} · Checks: {1}',
+    recovery_never_checked: 'Not checked yet',
+    recovery_manual_help:
+      'Verify that related database operations have ended and check the actual target data first. Manual verification records the confirmed result. It does not repeat table replacement or undo completed database changes.',
+    recovery_success: 'Table replacement succeeded and the target data has been verified',
+    recovery_failed: 'Table replacement did not complete; end this run as failed',
+    recovery_note:
+      'Provide supporting details, such as database jobs, target data, and the resolution',
+    recovery_confirm:
+      'I have confirmed that related tasks and database operations have ended and checked the actual data result',
+    recovery_record: 'Confirm and record result',
+    recovery_context: 'Task: {0} · Target table: {1}',
+    recovery_log: 'Run record: {0}',
+    recovery_execution_manual: 'Verify execution manually',
+    recovery_execution_help:
+      'Confirm that all related tasks and database operations have ended first. This action only ends this run as failed. It does not undo data already written or remove any outstanding initialization requirement.',
+    recovery_execution_required:
+      'The execution result requires manual verification. Automatic checks have stopped.',
+    recovery_execution_pending: 'Verifying the latest attempt; subsequent syncs remain restricted',
+    recovery_execution_failed: 'Related operations have ended; end this run as failed'
+  },
   sync_task: {
     cleanup_result: 'Cleanup result',
     cleanup_submitted:

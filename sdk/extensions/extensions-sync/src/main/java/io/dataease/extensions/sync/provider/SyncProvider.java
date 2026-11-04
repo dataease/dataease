@@ -112,29 +112,31 @@ public abstract class SyncProvider {
         }
         long startTime = System.currentTimeMillis();
         String operationType = getOperationType(queryStr);
+        boolean statementCompleted = false;
         try (Connection con = getConnection(configuration).getConnection()) {
             con.setNetworkTimeout(Runnable::run, queryTimeout * 1000);
             Statement statement = ProviderUtil.getStatement(con, queryTimeout);
             // 执行SQL
             int result = statement.executeUpdate(queryStr);
+            statementCompleted = true;
             return result >= 0;
 
         } catch (SQLTimeoutException e) {
             long executeTime = System.currentTimeMillis() - startTime;
             String errorMsg = String.format("%s operation timed out, execution time: %dms, timeout setting: %ds",
                     operationType, executeTime, queryTimeout);
-            throw new SyncSqlException(errorMsg, e, configuration);
+            throw new SyncSqlException(errorMsg, e, configuration, statementCompleted);
         } catch (SQLException e) {
             long executeTime = System.currentTimeMillis() - startTime;
             String errorCode = e.getSQLState();
             String errorMsg = String.format("%s operation failed, execution time: %dms, error code: %s, error message: %s",
                     operationType, executeTime, errorCode, e.getMessage());
-            throw new SyncSqlException(errorMsg, e, configuration);
+            throw new SyncSqlException(errorMsg, e, configuration, statementCompleted);
         } catch (Exception e) {
             long executeTime = System.currentTimeMillis() - startTime;
             String errorMsg = String.format("%s operation exception, execution time: %dms, exception message: %s",
                     operationType, executeTime, e.getMessage());
-            throw new SyncSqlException(errorMsg, e, configuration);
+            throw new SyncSqlException(errorMsg, e, configuration, statementCompleted);
         }
     }
 

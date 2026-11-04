@@ -21,9 +21,22 @@ public class SyncSqlException extends DEException {
             "(?i)([\\\"']?(?:password|passwd|pwd|username|user|token|secret|api[_-]?key|access[_-]?key)[\\\"']?\\s*[=:]\\s*)(?:\\\"[^\\\"]*\\\"|'[^']*'|[^\\s,;&}]+)");
     private static final Pattern USER_INFO = Pattern.compile("(://)[^/\\s@]+@");
     private final String diagnosticMessage;
+    private final boolean executionUncertain;
 
     public SyncSqlException(String message, Throwable error, DatasourceConfiguration configuration) {
+        this(message, error, configuration, false);
+    }
+
+    /**
+     * SQL 已返回成功后发生的连接关闭异常不能被当作数据库拒绝，避免错误开放再次执行
+     */
+    public SyncSqlException(String message, Throwable error, DatasourceConfiguration configuration, boolean statementCompleted) {
         super(ResultCode.SYSTEM_INNER_ERROR.code(), message);
+        // 只有数据库明确返回的 SQL 错误才表示失败，断线、超时和缺少 SQLState 都不能据此重发 DDL
+        executionUncertain = statementCompleted || !(error instanceof SQLException sql) || sql.getSQLState() == null
+                || sql.getSQLState().startsWith("08") || sql.getSQLState().startsWith("HYT")
+                || "40003".equals(sql.getSQLState())
+                || error instanceof java.sql.SQLTimeoutException || error instanceof java.sql.SQLRecoverableException;
         StringBuilder details = new StringBuilder(redact(message, configuration));
         Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
         Throwable current = error;
@@ -44,6 +57,13 @@ public class SyncSqlException extends DEException {
 
     public String getDiagnosticMessage() {
         return diagnosticMessage;
+    }
+
+    /**
+     * 供 DDL 收尾区分数据库明确拒绝与提交后结果未知，不向调用方暴露未脱敏的异常链
+     */
+    public boolean isExecutionUncertain() {
+        return executionUncertain;
     }
 
     /**

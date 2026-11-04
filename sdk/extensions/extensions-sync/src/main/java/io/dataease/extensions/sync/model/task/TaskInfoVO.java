@@ -52,5 +52,10 @@ public class TaskInfoVO {
     private Long executorEndTime;
     private String executorMsg;
     private String logStatus;
+    /**
+     * 当前维护摘要独立于原任务启停和运行状态，供列表展示处理入口，不携带恢复快照
+     */
+    private String maintenanceState;
+    private boolean maintenanceNeedsAttention;
 
 }
