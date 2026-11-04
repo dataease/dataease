@@ -234,6 +234,19 @@ public class EngineManage {
         coreDatasource.setId(985188400292302848L);
         coreDatasource.setCreateTime(1715053684176L);
         Example<CoreDatasource> example = Example.of(coreDatasource);
+        if (LocalModelUtils.isDesktop()) {
+            if (coreDatasourceRepository.count(example) > 0) {
+                return;
+            }
+            Map<String, String> configuration = new HashMap<>();
+            configuration.put("jdbc", env.getProperty("spring.datasource.url"));
+            configuration.put("dataBase", "PUBLIC");
+            configuration.put("username", env.getProperty("spring.datasource.username"));
+            configuration.put("password", env.getProperty("spring.datasource.password"));
+            saveDemoDatasource(configuration, "h2");
+            return;
+        }
+
         // 版本检查
         Specification<DeTemplateVersion> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -242,27 +255,11 @@ public class EngineManage {
         };
         // Spring Data JPA 在某些数据库下exists方法会自动生成 fetch first ? rows only，在 Oracle 11g 及以下会报 ORA-00933 错误
         // 使用count方法替代exists方法
-        if (!(coreDatasourceRepository.count(example) > 0) && !(deTemplateVersionRepository.count(spec) > 0) && !LocalModelUtils.isDesktop()) {
+        if (!(coreDatasourceRepository.count(example) > 0) && !(deTemplateVersionRepository.count(spec) > 0)) {
             Map<String, String> configuration = parseJdbcUrl();
             if (configuration == null) return;
 
-            DatasourceDTO initDatasource = new DatasourceDTO();
-            initDatasource.setId(985188400292302848L);
-            initDatasource.setName("Demo");
-            initDatasource.setPid(0L);
-            initDatasource.setType(configuration.get("type"));
-            initDatasource.setConfiguration((String) JsonUtil.toJSONString(configuration));
-            initDatasource.setCreateTime(System.currentTimeMillis());
-            initDatasource.setUpdateTime(System.currentTimeMillis());
-            initDatasource.setCreateBy("1");
-            initDatasource.setUpdateBy(1L);
-            initDatasource.setStatus("success");
-            initDatasource.setTaskStatus("WaitingForExecution");
-            V3UserUtil.setUid(1L);
-            coreDatasourceRepository.findById(985188400292302848L).ifPresent(coreDatasource1 -> {
-                datasourceServer.delete(coreDatasource1.getId());
-            });
-            dataSourceManage.innerSave(initDatasource);
+            saveDemoDatasource(configuration, configuration.get("type"));
 
             DeTemplateVersion version = new DeTemplateVersion();
             version.setVersion("985188400292302848");
@@ -272,7 +269,26 @@ public class EngineManage {
             version.setInstalledRank(IDUtils.snowID());
             deTemplateVersionRepository.saveAndFlush(version);
         }
+    }
 
+    private void saveDemoDatasource(Map<String, String> configuration, String type) {
+        DatasourceDTO initDatasource = new DatasourceDTO();
+        initDatasource.setId(985188400292302848L);
+        initDatasource.setName("Demo");
+        initDatasource.setPid(0L);
+        initDatasource.setType(type);
+        initDatasource.setConfiguration((String) JsonUtil.toJSONString(configuration));
+        initDatasource.setCreateTime(System.currentTimeMillis());
+        initDatasource.setUpdateTime(System.currentTimeMillis());
+        initDatasource.setCreateBy("1");
+        initDatasource.setUpdateBy(1L);
+        initDatasource.setStatus("success");
+        initDatasource.setTaskStatus("WaitingForExecution");
+        V3UserUtil.setUid(1L);
+        coreDatasourceRepository.findById(985188400292302848L).ifPresent(coreDatasource1 -> {
+            datasourceServer.delete(coreDatasource1.getId());
+        });
+        dataSourceManage.innerSave(initDatasource);
     }
 
     /**

@@ -119,18 +119,29 @@ const getEngine = () => {
         type: '',
         sort: 0
       },
-      {
-        pkey: type === 'StarRocks' ? 'FE ' + t('datasource.host') : 'datasource.host',
-        pval: configuration?.host,
-        type: '',
-        sort: 0
-      },
-      {
-        pkey: 'datasource.port',
-        pval: configuration?.port,
-        type: '',
-        sort: 0
-      },
+      ...(type === 'h2'
+        ? [
+            {
+              pkey: t('data_source.jdbc_connection_string'),
+              pval: configuration?.jdbc || configuration?.jdbcUrl,
+              type: '',
+              sort: 0
+            }
+          ]
+        : [
+            {
+              pkey: type === 'StarRocks' ? 'FE ' + t('datasource.host') : 'datasource.host',
+              pval: configuration?.host,
+              type: '',
+              sort: 0
+            },
+            {
+              pkey: 'datasource.port',
+              pval: configuration?.port,
+              type: '',
+              sort: 0
+            }
+          ]),
       ...(type === 'StarRocks'
         ? [
             {

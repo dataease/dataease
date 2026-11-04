@@ -568,7 +568,11 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public List<DatasourceConfiguration.DatasourceType> datasourceTypes() {
-        return Arrays.asList(DatasourceConfiguration.DatasourceType.values());
+        List<DatasourceConfiguration.DatasourceType> types = new ArrayList<>(Arrays.asList(DatasourceConfiguration.DatasourceType.values()));
+        if (!LocalModelUtils.isDesktop()) {
+            types.remove(DatasourceConfiguration.DatasourceType.h2);
+        }
+        return types;
     }
 
     @Override
@@ -1212,7 +1216,6 @@ public class DatasourceServer implements DatasourceApi {
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
         List<String> list = datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList());
-        list.remove(DatasourceConfiguration.DatasourceType.h2.getType());
         if (LicenseUtil.licenseValid()) {
             List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
             xpackPluginsDatasourceVOS.forEach(ele -> list.add(ele.getType()));

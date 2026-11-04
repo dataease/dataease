@@ -717,6 +717,13 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: 
         if (form.configuration.sshType == undefined) {
           form.configuration.sshType = 'password'
         }
+        if (form.type === 'h2') {
+          form.configuration.urlType = 'jdbcUrl'
+          if (!form.configuration.jdbcUrl && form.configuration.jdbc) {
+            form.configuration.jdbcUrl = form.configuration.jdbc
+          }
+          delete form.configuration.jdbc
+        }
       }
     }
     pid.value = nodeInfo.pid || '0'

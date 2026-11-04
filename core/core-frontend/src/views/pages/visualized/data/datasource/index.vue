@@ -1634,14 +1634,20 @@ const getMenuList = (val: boolean, data?: any) => {
                   nodeInfo.weight >= 7
                 "
               >
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType !== 'jdbcUrl' && nodeInfo.type !== 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.host')">{{
                       nodeInfo.configuration.host
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType !== 'jdbcUrl' && nodeInfo.type !== 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.port')">{{
                       nodeInfo.configuration.port
@@ -1653,7 +1659,10 @@ const getMenuList = (val: boolean, data?: any) => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType !== 'jdbcUrl' && nodeInfo.type !== 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.user_name')">{{
                       nodeInfo.configuration.username
@@ -1665,14 +1674,20 @@ const getMenuList = (val: boolean, data?: any) => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType === 'jdbcUrl' || nodeInfo.type === 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.jdbcUrl')">{{
-                      nodeInfo.configuration.jdbcUrl
+                      nodeInfo.configuration.jdbcUrl || nodeInfo.configuration.jdbc
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType === 'jdbcUrl' || nodeInfo.type === 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.user_name')">{{
                       nodeInfo.configuration.username

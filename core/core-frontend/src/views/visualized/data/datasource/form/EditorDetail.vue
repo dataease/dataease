@@ -192,6 +192,9 @@ const initForm = (type, pluginDsList, indexPlugin, isPluginDs) => {
   if (type === 'oracle') {
     form.value.configuration.connectionType = 'sid'
   }
+  if (type === 'h2') {
+    form.value.configuration.urlType = 'jdbcUrl'
+  }
   form.value.type = type
 
   time = setTimeout(() => {
@@ -1146,7 +1149,7 @@ defineExpose({
           <el-form-item
             :label="t('data_source.connection_method')"
             prop="type"
-            v-if="form.type !== 'es'"
+            v-if="form.type !== 'es' && form.type !== 'h2'"
           >
             <el-radio-group v-model="form.configuration.urlType">
               <el-radio value="hostName">{{ t('data_source.hostname') }}</el-radio>
