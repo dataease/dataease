@@ -45,16 +45,22 @@ public class FesodColumnDateConverter extends StringNumberConverter {
             return "";
         }
         String columnFormat = columnDateFormats.get(cellData.getColumnIndex());
-        String targetFormat = StringUtils.isNotBlank(columnFormat) ? columnFormat : defaultDatePattern;
-        if (StringUtils.isNotBlank(targetFormat)) {
-            boolean applyFormat = StringUtils.isNotBlank(columnFormat) || isDateCell(cellData, dataFormat);
-            if (applyFormat) {
+        boolean dateCell = isDateCell(cellData, dataFormat);
+        if (StringUtils.isNotBlank(columnFormat) || dateCell) {
+            String targetFormat = StringUtils.isNotBlank(columnFormat) ? columnFormat : defaultDatePattern;
+            if (StringUtils.isNotBlank(targetFormat)) {
                 if (StringUtils.equals("yyyy", targetFormat) && !StringUtils.equals(cellData.getDataFormatData().getFormat(), "General")) {
                     cellData.getDataFormatData().setFormat(targetFormat);
                 } else if (!StringUtils.equals("yyyy", targetFormat)) {
                     cellData.getDataFormatData().setFormat(targetFormat);
                 }
             }
+            return super.convertToJavaData(cellData, contentProperty, globalConfiguration);
+        }
+        // 非日期数值按原始存储值读取，不使用单元格显示格式（例如 0.125 配 0.0% 不再读成 12.5%）。
+        BigDecimal numberValue = cellData.getNumberValue();
+        if (numberValue != null) {
+            return numberValue.stripTrailingZeros().toPlainString();
         }
         return super.convertToJavaData(cellData, contentProperty, globalConfiguration);
     }

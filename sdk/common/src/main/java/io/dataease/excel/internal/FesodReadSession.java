@@ -22,6 +22,7 @@ import org.apache.fesod.sheet.FesodSheet;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +42,20 @@ public class FesodReadSession implements ExcelReadSession {
 
     public FesodReadSession(InputStream inputStream, ExcelReadOptions options) {
         ExcelReaderBuilder builder = FesodSheet.read(inputStream, listener);
+        Map<Integer, String> columnDateFormats = Collections.emptyMap();
+        String defaultDatePattern = ExcelReadOptions.DEFAULT_DATE_PATTERN;
         if (options != null) {
+            columnDateFormats = options.getColumnDateFormats() == null ? Collections.emptyMap() : options.getColumnDateFormats();
+            defaultDatePattern = options.getDefaultDatePattern();
             if (options.getHeadRowNumber() != null) {
                 builder.headRowNumber(options.getHeadRowNumber());
             }
             if (options.getAutoCloseStream() != null) {
                 builder.autoCloseStream(options.getAutoCloseStream());
             }
-            if (MapUtils.isNotEmpty(options.getColumnDateFormats()) || StringUtils.isNotBlank(options.getDefaultDatePattern())) {
-                builder.registerConverter(new FesodColumnDateConverter(options.getColumnDateFormats(), options.getDefaultDatePattern()));
-            }
+        }
+        if (MapUtils.isNotEmpty(columnDateFormats) || StringUtils.isNotBlank(defaultDatePattern)) {
+            builder.registerConverter(new FesodColumnDateConverter(columnDateFormats, defaultDatePattern));
         }
         this.excelReader = builder.build();
         this.readSheets = excelReader.excelExecutor().sheetList();

@@ -149,9 +149,9 @@ public class FesodExcelRegression {
             dateStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd"));
             date1900.setCellStyle(dateStyle);
             Cell percent = row.createCell(5);
-            percent.setCellValue(0.25d);
+            percent.setCellValue(0.125d);
             CellStyle percentStyle = workbook.createCellStyle();
-            percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+            percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.0%"));
             percent.setCellStyle(percentStyle);
             row.createCell(6).setCellValue(true);
             Cell error = row.createCell(7);
@@ -299,7 +299,8 @@ public class FesodExcelRegression {
                 "high precision numeric value");
         check(row.get(4).getStringValue() != null && row.get(4).getStringValue().contains("2024"),
                 "1900 date system");
-        check(row.get(5).getStringValue() != null, "percent cell");
+        check("0.125".equals(row.get(5).getStringValue()),
+                "percent cell read as raw value 0.125 instead of formatted display");
         check(row.get(6).getStringValue() != null && row.get(6).getStringValue().contains("true"),
                 "boolean cell");
         check(row.get(8).getStringValue() != null && row.get(8).getStringValue().contains("中文"),
