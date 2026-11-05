@@ -1,5 +1,6 @@
 import { configureMixSeries, formatMixSeriesLegend, createMixSeriesTooltip } from './mix-series'
 import { resolveMixTooltipCategory, updateMixTooltipCrosshair } from './tooltip-category'
+import { createOrderedMixPathMark } from './path-order'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   flow,
@@ -58,6 +59,8 @@ import {
 const { t } = useI18n()
 
 const stackMixLibrary = stdlib() as Record<string, any>
+stackMixLibrary['mark.line'] = createOrderedMixPathMark(stackMixLibrary['mark.line'])
+stackMixLibrary['mark.area'] = createOrderedMixPathMark(stackMixLibrary['mark.area'])
 stackMixLibrary['interaction.elementHighlight'] = createMixElementHighlight(
   stackMixLibrary['interaction.elementHighlight']
 )
