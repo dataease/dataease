@@ -1,0 +1,25 @@
+[
+  {
+    "file": "sample-01-local.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 9,
+    "previewRows": 1,
+    "dataRows": 1,
+    "sha256": "optional fixture digest"
+  },
+  {
+    "file": "sample-02-sparse.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 6,
+    "previewRows": 3,
+    "dataRows": 3,
+    "verifyPersisted": false
+  },
+  {
+    "file": "sample-03-invalid.xlsx",
+    "expect": "reject",
+    "errorContains": "not a valid workbook"
+  }
+]

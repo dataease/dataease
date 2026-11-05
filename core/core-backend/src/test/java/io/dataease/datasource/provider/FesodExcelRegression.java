@@ -45,9 +45,12 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +69,8 @@ public class FesodExcelRegression {
     public static void main(String[] args) throws Exception {
         new Translator().setMessageSource(new StaticMessageSource());
         new LocalModelUtils().setModelValue("standalone");
+        Path samplesDir = parseSamplesDir(args);
+        Path manifestFile = parseManifestFile(args);
         Path directory = Files.createTempDirectory("de-fesod-excel-");
         Path downloads = Files.createDirectory(directory.resolve("downloads"));
         Field path = ExcelUtils.class.getDeclaredField("path");
@@ -74,6 +79,7 @@ public class FesodExcelRegression {
         path.set(null, downloads + "/");
         try {
             testDataCorrectnessXlsx(directory);
+            testDate1904Workbook(directory);
             testMultiSheetAndXls(directory);
             testCsvBusinessFlow(directory);
             testPreviewStopAndFullParse(directory);
@@ -85,6 +91,9 @@ public class FesodExcelRegression {
             testRemoteXlsx(directory, downloads);
             testExcelSaveAndParse(directory);
             testMergeSheets();
+            if (samplesDir != null) {
+                testExternalSamples(samplesDir, manifestFile);
+            }
             System.out.println("RESULT: all Fesod Excel regression checks passed");
         } finally {
             path.set(null, originalPath);
@@ -92,6 +101,26 @@ public class FesodExcelRegression {
                 for (Path file : files.sorted(Comparator.reverseOrder()).toList()) Files.deleteIfExists(file);
             }
         }
+    }
+
+    private static Path parseSamplesDir(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if ("--samples".equals(args[i]) && i + 1 < args.length) {
+                return Path.of(args[i + 1]).toAbsolutePath().normalize();
+            }
+        }
+        String env = System.getenv("FESOD_SAMPLE_DIR");
+        return env == null || env.isBlank() ? null : Path.of(env).toAbsolutePath().normalize();
+    }
+
+    private static Path parseManifestFile(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if ("--manifest".equals(args[i]) && i + 1 < args.length) {
+                return Path.of(args[i + 1]).toAbsolutePath().normalize();
+            }
+        }
+        String env = System.getenv("FESOD_SAMPLE_MANIFEST");
+        return env == null || env.isBlank() ? null : Path.of(env).toAbsolutePath().normalize();
     }
 
     // ------------------------------------------------------------------
@@ -104,7 +133,7 @@ public class FesodExcelRegression {
             Sheet sheet = workbook.createSheet("data");
             Row header = sheet.createRow(0);
             String[] headers = {"text", "empty_col", "long_text", "high_precision", "date_1900",
-                    "date_1904", "percent", "bool", "error", "special"};
+                    "percent", "bool", "error", "special"};
             for (int i = 0; i < headers.length; i++) header.createCell(i).setCellValue(headers[i]);
 
             Row row = sheet.createRow(1);
@@ -119,20 +148,42 @@ public class FesodExcelRegression {
             CellStyle dateStyle = workbook.createCellStyle();
             dateStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd"));
             date1900.setCellStyle(dateStyle);
-            Cell date1904 = row.createCell(5);
-            date1904.setCellValue(45292d);
-            CellStyle date1904Style = workbook.createCellStyle();
-            date1904Style.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd"));
-            date1904.setCellStyle(date1904Style);
-            Cell percent = row.createCell(6);
+            Cell percent = row.createCell(5);
             percent.setCellValue(0.25d);
             CellStyle percentStyle = workbook.createCellStyle();
             percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
             percent.setCellStyle(percentStyle);
-            row.createCell(7).setCellValue(true);
-            Cell error = row.createCell(8);
+            row.createCell(6).setCellValue(true);
+            Cell error = row.createCell(7);
             error.setCellErrorValue(FormulaError.DIV0.getCode());
-            row.createCell(9).setCellValue("中文,逗号;分号\"引号\n换行");
+            row.createCell(8).setCellValue("中文,逗号;分号\"引号\n换行");
+            try (var out = Files.newOutputStream(file)) {
+                workbook.write(out);
+            }
+        }
+        return file;
+    }
+
+    /**
+     * A workbook whose {@code workbookPr/date1904} flag is set must use the 1904 epoch.
+     * Serial 45292 is 2024-01-02 in the 1900 system but 2028-01-02 in the 1904 system.
+     */
+    private static Path writeDate1904Xlsx(Path directory) throws IOException {
+        Path file = directory.resolve("date-1904.xlsx");
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbook ctWorkbook = workbook.getCTWorkbook();
+            org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbookPr workbookPr =
+                    ctWorkbook.isSetWorkbookPr() ? ctWorkbook.getWorkbookPr() : ctWorkbook.addNewWorkbookPr();
+            workbookPr.setDate1904(true);
+            Sheet sheet = workbook.createSheet("dates");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("date");
+            Row row = sheet.createRow(1);
+            Cell date1904 = row.createCell(0);
+            date1904.setCellValue(45292d);
+            CellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd"));
+            date1904.setCellStyle(dateStyle);
             try (var out = Files.newOutputStream(file)) {
                 workbook.write(out);
             }
@@ -237,7 +288,7 @@ public class FesodExcelRegression {
         Path file = writeDataCorrectnessXlsx(directory);
         CollectingHandler handler = new CollectingHandler();
         ExcelIO.read(Files.newInputStream(file), new ExcelReadOptions(), handler);
-        check(handler.header.size() == 10, "header column count");
+        check(handler.header.size() == 9, "header column count");
         check(handler.rows.size() == 1, "data row count");
         Map<Integer, ExcelCell> row = handler.rows.get(0);
         check("hello".equals(row.get(0).getStringValue()), "plain text cell");
@@ -248,14 +299,24 @@ public class FesodExcelRegression {
                 "high precision numeric value");
         check(row.get(4).getStringValue() != null && row.get(4).getStringValue().contains("2024"),
                 "1900 date system");
-        check(row.get(5).getStringValue() != null && row.get(5).getStringValue().contains("2024"),
-                "1904 date system sample");
-        check(row.get(6).getStringValue() != null, "percent cell");
-        check(row.get(7).getStringValue() != null && row.get(7).getStringValue().contains("true"),
+        check(row.get(5).getStringValue() != null, "percent cell");
+        check(row.get(6).getStringValue() != null && row.get(6).getStringValue().contains("true"),
                 "boolean cell");
-        check(row.get(9).getStringValue() != null && row.get(9).getStringValue().contains("中文"),
+        check(row.get(8).getStringValue() != null && row.get(8).getStringValue().contains("中文"),
                 "special characters");
-        System.out.println("PASS: data correctness XLSX (empty columns, long text, precision, dates, percent, bool, special chars)");
+        System.out.println("PASS: data correctness XLSX (empty columns, long text, precision, 1900 dates, percent, bool, special chars)");
+    }
+
+    private static void testDate1904Workbook(Path directory) throws Exception {
+        Path file = writeDate1904Xlsx(directory);
+        CollectingHandler handler = new CollectingHandler();
+        ExcelIO.read(Files.newInputStream(file), new ExcelReadOptions(), handler);
+        check(handler.header.size() == 1, "1904 workbook header count");
+        check(handler.rows.size() == 1, "1904 workbook row count");
+        String value = handler.rows.get(0).get(0).getStringValue();
+        check(value != null && value.contains("2028"),
+                "1904 date system uses workbook 1904 epoch, expected 2028 but got: " + value);
+        System.out.println("PASS: 1904 date system workbook (workbookPr date1904=true)");
     }
 
     private static void testMultiSheetAndXls(Path directory) throws Exception {
@@ -486,6 +547,186 @@ public class FesodExcelRegression {
         check(replaced.stream().filter(sheet -> "new_table".equals(sheet.getDeTableName())).count() == 1,
                 "mergeSheets replace deduplicates same deTableName");
         System.out.println("PASS: append/replace sheet merge semantics through ExcelUtils.mergeSheets");
+    }
+
+    // ------------------------------------------------------------------
+    // external sample acceptance (e.g. the 31 review attachments)
+    // ------------------------------------------------------------------
+
+    private static void testExternalSamples(Path samplesDir, Path manifestFile) throws Exception {
+        if (!Files.isDirectory(samplesDir)) {
+            throw new AssertionError("sample directory does not exist: " + samplesDir);
+        }
+        Path effectiveManifest = manifestFile != null && Files.exists(manifestFile)
+                ? manifestFile
+                : samplesDir.resolve("samples-manifest.json");
+        if (manifestFile != null && !Files.exists(manifestFile)) {
+            throw new AssertionError("manifest file does not exist: " + manifestFile);
+        }
+        if (Files.exists(effectiveManifest)) {
+            List<SampleExpectation> expectations = JsonUtil.parseList(Files.readString(effectiveManifest),
+                    new TypeReference<List<SampleExpectation>>() {});
+            if (expectations == null || expectations.isEmpty()) {
+                throw new AssertionError("manifest is empty: " + effectiveManifest);
+            }
+            runManifestSamples(samplesDir, expectations);
+        } else {
+            runGenericSamples(samplesDir);
+        }
+    }
+
+    private static void runManifestSamples(Path samplesDir, List<SampleExpectation> expectations) throws Exception {
+        int accepted = 0;
+        int rejected = 0;
+        for (SampleExpectation expectation : expectations) {
+            Path sample = samplesDir.resolve(expectation.file).normalize();
+            if (!sample.startsWith(samplesDir)) {
+                throw new AssertionError("sample path escapes sample directory: " + expectation.file);
+            }
+            if (!Files.isRegularFile(sample)) {
+                throw new AssertionError("sample file missing: " + sample);
+            }
+            if (expectation.sha256 != null) {
+                String actual = sha256(sample);
+                if (!expectation.sha256.equalsIgnoreCase(actual)) {
+                    throw new AssertionError("sample sha256 mismatch [" + expectation.file + "]: expected "
+                            + expectation.sha256 + " but was " + actual);
+                }
+            }
+            try {
+                if ("accept".equalsIgnoreCase(expectation.expect)) {
+                    runAcceptSample(sample, expectation);
+                    accepted++;
+                    System.out.println("SAMPLE ACCEPT OK: " + expectation.file + " -> " + sample.getFileName());
+                } else {
+                    runRejectSample(sample, expectation);
+                    rejected++;
+                    System.out.println("SAMPLE REJECT OK: " + expectation.file + " -> " + sample.getFileName());
+                }
+            } catch (AssertionError | Exception e) {
+                throw new AssertionError("sample mismatch [" + expectation.file + "]: " + e.getMessage(), e);
+            }
+        }
+        System.out.printf("SAMPLE SUMMARY: %d manifest entries, %d accepted, %d rejected%n",
+                expectations.size(), accepted, rejected);
+    }
+
+    private static void runGenericSamples(Path samplesDir) throws Exception {
+        List<Path> samples = listSampleFiles(samplesDir);
+        int accepted = 0;
+        int rejected = 0;
+        for (Path sample : samples) {
+            try {
+                runAcceptSample(sample, null);
+                accepted++;
+                System.out.println("SAMPLE ACCEPT: " + sample.getFileName());
+            } catch (Exception e) {
+                rejected++;
+                System.out.println("SAMPLE REJECT: " + sample.getFileName() + " -> " + e.getMessage());
+            }
+        }
+        System.out.printf("SAMPLE SUMMARY: %d files, %d accepted, %d rejected (no manifest; " +
+                "provide samples-manifest.json for deterministic expectations)%n", samples.size(), accepted, rejected);
+    }
+
+    private static void runAcceptSample(Path sample, SampleExpectation expectation) throws Exception {
+        String filename = sample.getFileName().toString();
+        byte[] bytes = Files.readAllBytes(sample);
+        ExcelFileData data = new ExcelUtils().excelSaveAndParse(new SyntheticMultipartFile(filename, bytes), "12345");
+        if (data == null || data.getSheets() == null || data.getSheets().isEmpty()) {
+            throw new AssertionError("no sheet parsed from " + filename);
+        }
+        ExcelSheetData first = data.getSheets().get(0);
+        if (expectation != null) {
+            if (expectation.sheets != null) {
+                check(data.getSheets().size() == expectation.sheets, filename + " sheet count");
+            }
+            if (expectation.fields != null) {
+                check(first.getFields().size() == expectation.fields, filename + " field count");
+            }
+            if (expectation.previewRows != null) {
+                check(first.getData().size() == expectation.previewRows, filename + " preview row count");
+            }
+            if (expectation.dataRows != null) {
+                List<ExcelSheetData> full = parseExcel(filename, new ByteArrayInputStream(bytes), false, filename);
+                check(full.get(0).getData().size() == expectation.dataRows, filename + " full data row count");
+            }
+        }
+        String persisted = first.getPath();
+        check(persisted != null && Files.isReadable(Path.of(persisted)), filename + " persisted import file readable");
+        if (expectation != null && (expectation.verifyPersisted == null || expectation.verifyPersisted)) {
+            verifyPersistedFile(filename, Path.of(persisted), first.getFields().size(), first.getData().size());
+        }
+    }
+
+    private static void verifyPersistedFile(String filename, Path persisted, int fields, int previewRows) throws Exception {
+        String suffix = filename.toLowerCase();
+        if (suffix.endsWith(".csv")) {
+            List<ExcelSheetData> full = parseExcel(filename, Files.newInputStream(persisted), false, filename);
+            check(full.get(0).getFields().size() == fields, filename + " persisted csv field count");
+            check(full.get(0).getData().size() >= previewRows, filename + " persisted csv row count");
+            return;
+        }
+        CollectingHandler handler = new CollectingHandler();
+        ExcelIO.read(Files.newInputStream(persisted), new ExcelReadOptions(), handler);
+        check(handler.header.size() == fields, filename + " persisted workbook field count");
+        check(handler.rows.size() >= previewRows, filename + " persisted workbook row count");
+    }
+
+    private static void runRejectSample(Path sample, SampleExpectation expectation) throws Exception {
+        String filename = sample.getFileName().toString();
+        byte[] bytes = Files.readAllBytes(sample);
+        try {
+            new ExcelUtils().excelSaveAndParse(new SyntheticMultipartFile(filename, bytes), "12345");
+            throw new AssertionError(filename + " was expected to be rejected but import succeeded");
+        } catch (AssertionError expected) {
+            throw expected;
+        } catch (Exception expected) {
+            if (expectation != null && expectation.errorContains != null
+                    && !containsIgnoreCase(String.valueOf(expected.getMessage()), expectation.errorContains)) {
+                throw new AssertionError(filename + " rejection reason expected to contain ["
+                        + expectation.errorContains + "] but was: " + expected.getMessage());
+            }
+        }
+    }
+
+    private static List<Path> listSampleFiles(Path samplesDir) throws IOException {
+        List<String> suffixes = List.of(".xlsx", ".xls", ".csv");
+        try (var files = Files.walk(samplesDir)) {
+            return files.filter(path -> Files.isRegularFile(path))
+                    .filter(path -> suffixes.stream().anyMatch(suffix ->
+                            path.getFileName().toString().toLowerCase().endsWith(suffix)))
+                    .sorted()
+                    .toList();
+        }
+    }
+
+    private static boolean containsIgnoreCase(String text, String fragment) {
+        return text != null && text.toLowerCase().contains(fragment.toLowerCase());
+    }
+
+    private static String sha256(Path file) throws IOException, NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        try (InputStream input = Files.newInputStream(file)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = input.read(buffer)) >= 0) {
+                if (read > 0) digest.update(buffer, 0, read);
+            }
+        }
+        return HexFormat.of().formatHex(digest.digest());
+    }
+
+    public static class SampleExpectation {
+        public String file;
+        public String expect;
+        public Integer sheets;
+        public Integer fields;
+        public Integer previewRows;
+        public Integer dataRows;
+        public String errorContains;
+        public Boolean verifyPersisted;
+        public String sha256;
     }
 
     // ------------------------------------------------------------------

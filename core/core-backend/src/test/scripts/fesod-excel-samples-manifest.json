@@ -1,0 +1,261 @@
+[
+  {
+    "file": "files/xlsx/01_types.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 12,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "d9ae472e84e579579b625fe12b6b238d61ee06fb540f672b934ddadd98f0b79c"
+  },
+  {
+    "file": "files/xlsx/02_sparse_columns.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 6,
+    "previewRows": 3,
+    "dataRows": 3,
+    "verifyPersisted": false,
+    "sha256": "0c387f381e6d461fb5369e014af0ebdcc504ca9f078908450555aae4c976b1d6"
+  },
+  {
+    "file": "files/xlsx/03_multi_sheet.xlsx",
+    "expect": "reject",
+    "errorContains": "首行不能为空",
+    "sha256": "5d8166cc8999bc1e13b8b50d51d699fd755b156f6e395aeabe390cb9dfc28de9"
+  },
+  {
+    "file": "files/xlsx/04_dates_1900.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 4,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "567ee6edf5f09dd39d3e635bec48ab67f670aedf905f476396d43c2441b2693a"
+  },
+  {
+    "file": "files/xlsx/05_dates_1904.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 4,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "b548da1d7de240e0381a74ad673f88b63df9314386acc5977e25ba62cf6b8ae6"
+  },
+  {
+    "file": "files/xlsx/06_preview_150.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 4,
+    "previewRows": 100,
+    "dataRows": 150,
+    "sha256": "69c7a5bba38612634c096cb3ab762d3b18bc9f41c69e17a31a2a97865e075eb1"
+  },
+  {
+    "file": "files/xlsx/07_import_base.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 5,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "d8584d2668bb02d4dc79a68d0b26c26c0c55d5830248b757aa62cea5db80dafd"
+  },
+  {
+    "file": "files/xlsx/08_import_append.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 5,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "a33b3620ab05d53e5ffa512b687539dc86e7ff2c387074e7f1f8dadb492ae37d"
+  },
+  {
+    "file": "files/xlsx/09_import_replace.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 5,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "6677180a7512038a42bc37b27d5541eb87f33c3f2e481a6eca044f7db0235a1a"
+  },
+  {
+    "file": "files/xlsx/10_confirm_types.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 4,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "8cdef3d437285b460cd9e31f56d93a65c4f83761135624802e159e969b46c02b"
+  },
+  {
+    "file": "files/xlsx/11_template_comments.xlsx",
+    "expect": "accept",
+    "sheets": 2,
+    "fields": 4,
+    "previewRows": 0,
+    "dataRows": 0,
+    "sha256": "6b18415d27e5d7e7bafd7bd2c42edaa52031530451e0d5f5360911f8f764449c"
+  },
+  {
+    "file": "files/xlsx/12_errors_formulas.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 5,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "3770fd89707fd0bf7fafb3e8a2518e87000481a576d5ebd6ad561eb2c1c41c06"
+  },
+  {
+    "file": "files/xlsx/13_long_text.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 3,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "9b88003b11d209fd856f9ad057235a8fd18e1e23c721ec31acd23981525e77e1"
+  },
+  {
+    "file": "files/xlsx/14_merged_headers.xlsx",
+    "expect": "reject",
+    "errorContains": "i18n_excel_empty_header_with_data",
+    "sha256": "8b77b041311d73ad3951fbe9b57ab0300c5228768585b6eaf98993e72141229d"
+  },
+  {
+    "file": "files/xlsx/15_multi_valid.xlsx",
+    "expect": "accept",
+    "sheets": 2,
+    "fields": 2,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "ee9186f832769b3c7fd150b2a807d69f40049d95ebe0ac577b8bde8871793edc"
+  },
+  {
+    "file": "files/csv/01_utf8_lf.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 8,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "04e6536472127b1c33af14f92e47f61ddbd2d0c6ec374b559938c6d7bd5e23be"
+  },
+  {
+    "file": "files/csv/02_utf8_bom_crlf.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 8,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "7c99960f5c6f38cedf89298b44b4f919641cf3e3d7a97528cd00a9cbb92a9c0d"
+  },
+  {
+    "file": "files/csv/03_utf16le_bom_crlf.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 8,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "99f2d90df9088cdb626b83f1ba7bf6ab949fa1af65c72f3e4ce3196e07aee707"
+  },
+  {
+    "file": "files/csv/04_utf16be_bom_crlf.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 8,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "22138115ced8025e7b4377c1b725d25539a2c9c02546ec8898a9178fefdb31c8"
+  },
+  {
+    "file": "files/csv/05_gb18030_cr.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 8,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "f43e1c8f9a65e198f0ac8973cc6e63daec007d3b969bfe0df1c3d53074e8702c"
+  },
+  {
+    "file": "files/csv/06_preview_150.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 4,
+    "previewRows": 100,
+    "dataRows": 150,
+    "sha256": "64a52c6f3c05133746ca4442d9675123beee3724035fe4aca4df40d6067078d2"
+  },
+  {
+    "file": "files/csv/07_header_only.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 3,
+    "previewRows": 0,
+    "dataRows": 0,
+    "sha256": "2baa596e15615c0fb65aa73b8d93021da3d56e6033fa3e3a5c653857494ec752"
+  },
+  {
+    "file": "files/csv/08_empty_lines.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 4,
+    "previewRows": 3,
+    "dataRows": 3,
+    "sha256": "fc20c6c6a5298122588696daa86494e616977a505a4cdd05ba465d4e2f7c0d81"
+  },
+  {
+    "file": "files/csv/09_boundary_multiline.csv",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 2,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "11a2ebe53774ae2465124d0dc00db5fb5541e26f5952c2b30eecf9eb391c09e8"
+  },
+  {
+    "file": "files/csv/10_boundary_semicolon.csv",
+    "expect": "reject",
+    "errorContains": "编号;数量",
+    "sha256": "b211921d58f4a5f4b0bd0301830bba81c20f5e8f306309f3ed135eb7acca5dd4"
+  },
+  {
+    "file": "files/negative/01_zero_bytes.xlsx",
+    "expect": "reject",
+    "errorContains": "empty",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "files/negative/02_truncated_zip.xlsx",
+    "expect": "reject",
+    "errorContains": "Truncated ZIP",
+    "sha256": "d215b418138f3d0c18177d988a4291fd56c67cab90a31080687ced6401b31ad2"
+  },
+  {
+    "file": "files/negative/03_text_disguised.xlsx",
+    "expect": "reject",
+    "errorContains": "unsupported file type",
+    "sha256": "b0e38519d6f3fb3d158f2034ffb680bbcfd03507676da71e748c01d786090640"
+  },
+  {
+    "file": "files/negative/04_cell_32768.csv",
+    "expect": "reject",
+    "errorContains": "i18n_csv_cell_limit",
+    "sha256": "a713590808d0a4a9d90c2839f37dc540285f163797050c1179591de6216a6798"
+  },
+  {
+    "file": "files/wps/01_types_wps.xlsx",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 12,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "5adba471f56ffc0be01d83b3314db39f0c849e5e7031536da9dca13045477d9b"
+  },
+  {
+    "file": "files/wps/02_native_wps.xls",
+    "expect": "accept",
+    "sheets": 1,
+    "fields": 6,
+    "previewRows": 2,
+    "dataRows": 2,
+    "sha256": "342bcb3446dc2fedd706dc88ca928afc31b7cc4953c91e4f45f7195eeb26a311"
+  }
+]
