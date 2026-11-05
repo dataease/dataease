@@ -4272,7 +4272,7 @@ defineExpose({
               width: 100%;
               padding-left: 24px;
               .ed-date-editor {
-                width: 325px !important;
+                width: 322px !important;
               }
             }
             margin-left: auto;
@@ -4289,7 +4289,7 @@ defineExpose({
               &.select {
                 margin-top: 0;
                 .ed-select {
-                  width: 325px;
+                  width: 322px;
                 }
               }
             }

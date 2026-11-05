@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, ref, watch, toRefs } from 'vue'
 import { useElementSize } from '@vueuse/core'
-import dayjs from 'dayjs'
 import { Calendar } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
@@ -96,9 +95,6 @@ watch(
       :placeholder="t('commons.date.select_date_time')"
     />
     <div ref="notes" class="preview-notes">
-      <div v-if="isCustomClockDefault(rule)" class="baseline">
-        {{ t('dynamic_time.baseline') }}{{ dayjs(baseline).format('YYYY-MM-DD HH:mm:ss') }}
-      </div>
       <div v-if="error" class="error" role="alert">{{ t(error) }}</div>
     </div>
   </div>
@@ -131,9 +127,6 @@ watch(
     font-size: 12px;
     line-height: 18px;
     white-space: normal;
-  }
-  .baseline {
-    color: #8f959e;
   }
   .error {
     color: var(--ed-color-danger);

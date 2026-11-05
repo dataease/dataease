@@ -129,12 +129,11 @@ for (const lang of ['zh', 'tw', 'en']) {
               const row = el.closest('.parameters.setting')
               const label = row.querySelector('.setting-label').getBoundingClientRect()
               const controls = el.getBoundingClientRect()
-              const notes = [...el.querySelectorAll('.baseline, .error')].map(note =>
+              const notes = [...el.querySelectorAll('.error')].map(note =>
                 note.getBoundingClientRect()
               )
               return (
                 Math.abs(center(label) - center(controls)) < 1 &&
-                notes.length > 0 &&
                 notes.every(
                   note =>
                     note.top >= controls.bottom &&
@@ -165,7 +164,7 @@ test('旧配置指定时刻、切换保留值、预览基准一致，实际UI无
   await page.getByRole('spinbutton', { name: '时', exact: true }).fill('1')
   await page.getByRole('spinbutton', { name: '分', exact: true }).fill('30')
   await expect(page.locator('.dynamic-default-preview input')).toHaveValue('2026-10-30 13:55:53')
-  await expect(page.locator('.baseline')).toHaveText('当前时刻：2026-10-30 15:25:53')
+  await expect(page.locator('.baseline')).toHaveCount(0)
   await page.locator('.clock-offset-editor').getByText('指定时刻', { exact: true }).click()
   await expect(page.locator('.dynamic-default-preview input')).toHaveValue('2026-10-30 09:10:11')
   await relative(page)
