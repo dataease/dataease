@@ -2364,6 +2364,7 @@ export default {
     liquid_border_distance: '邊框間距'
   },
   dataset: {
+    field_details: '欄位詳情',
     dataset_field_name: '資料集欄位名稱',
     dataset_field_type: '資料集欄位類型',
     source_physical_table: '來源實體表',

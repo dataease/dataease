@@ -1,5 +1,17 @@
 const { test, expect } = require(process.env.PLAYWRIGHT_TEST_MODULE ||
   "@playwright/test");
+async function openRelations(page, url) {
+  await page.goto(url);
+  if (url.includes("create")) return;
+  await expect(page.locator(".sql-result .preview-data")).toContainText(
+    "orders:"
+  );
+  await page.getByRole("button", { name: "数据表关联", exact: true }).click();
+  await page.evaluate(() => {
+    window.previewRequests = [];
+    window.previewCompleted = [];
+  });
+}
 test("relation details, processing layout and save preserve nodes", async ({
   page,
 }, testInfo) => {
@@ -8,7 +20,7 @@ test("relation details, processing layout and save preserve nodes", async ({
     errors.push(e.message);
     console.log("PAGE ERROR:", e.message);
   });
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-title")).toHaveText("orders");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "items", exact: true }).click();
@@ -77,7 +89,7 @@ test("relation details, processing layout and save preserve nodes", async ({
 test("rapid canvas selection ignores stale fields and node preview responses", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields")).toContainText("orders_extra");
   await page
     .getByRole("tab", { name: "数据预览", exact: true })
@@ -110,7 +122,7 @@ test("rapid canvas selection ignores stale fields and node preview responses", a
 test("field lookup failure blocks transition and can retry", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields")).toContainText("orders_extra");
   await page.evaluate(() => {
     window.failFields = true;
@@ -135,7 +147,7 @@ test("field lookup failure blocks transition and can retry", async ({
 test("removing a referenced field confirms immediately and cancellation restores selection", async ({
   page,
 }) => {
-  await page.goto("/?dependency=1");
+  await openRelations(page, "/?dependency=1");
   const first = page.locator(".node-fields .ed-table__body tr").first();
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await first.locator(".ed-checkbox").click();
@@ -163,7 +175,7 @@ test("removing a referenced field confirms immediately and cancellation restores
 test("adding the first table enters inline field selection without a drawer", async ({
   page,
 }) => {
-  await page.goto("/?create=1");
+  await openRelations(page, "/?create=1");
   const dataTransfer = await page.evaluateHandle(() => {
     const data = new DataTransfer();
     data.setData(
@@ -193,7 +205,7 @@ test("adding the first table enters inline field selection without a drawer", as
 test("returning to relations invalidates the previous processing preview", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields")).toContainText("orders_extra");
   await page.evaluate(() => {
     window.previewDelays = [450, 20];
@@ -217,7 +229,7 @@ test("returning to relations invalidates the previous processing preview", async
 test("field selections apply immediately and reuse loaded metadata", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   const rows = page.locator(".node-fields .ed-table__body tr");
   await rows.nth(2).locator(".ed-checkbox").click();
@@ -253,7 +265,7 @@ test("back navigation warns about unsaved field changes after saving", async ({
 }) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "下一步，数据处理" }).click();
   await page.getByRole("button", { name: "保存", exact: true }).click();
@@ -285,7 +297,7 @@ test("back navigation warns about unsaved field changes after saving", async ({
 test("dragging over the canvas without dropping does not reload node fields", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   const canvas = page.locator(".drag-mask_dataset");
   const before = await page.evaluate(() => window.fieldRequests.length);
@@ -316,7 +328,7 @@ for (const sql of [false, true]) {
   test(`node preview serializes an isolated canvas (${
     sql ? "SQL" : "table"
   })`, async ({ page }) => {
-    await page.goto("/?dependency=1" + (sql ? "&sqlNode=1" : ""));
+    await openRelations(page, "/?dependency=1" + (sql ? "&sqlNode=1" : ""));
     await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(
       3
     );
@@ -381,7 +393,7 @@ const openNodeMenu = async (page, name) => {
 test("list nodes share canvas field selection and deletion commands", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   let menu = await openNodeMenu(page, "items");
   await expect(menu.getByRole("menuitem")).toHaveCount(2);
@@ -403,7 +415,7 @@ test("list nodes share canvas field selection and deletion commands", async ({
 });
 
 test("list SQL node supports rename and edit SQL", async ({ page }) => {
-  await page.goto("/?sqlNode=1");
+  await openRelations(page, "/?sqlNode=1");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page
     .locator(".node-union")
@@ -448,7 +460,7 @@ test("list SQL node supports rename and edit SQL", async ({ page }) => {
 test("deleting a list node preserves dependency confirmation", async ({
   page,
 }) => {
-  await page.goto("/?dependency=1");
+  await openRelations(page, "/?dependency=1");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   let menu = await openNodeMenu(page, "orders");
   await menu.getByRole("menuitem", { name: "删除", exact: true }).click();
@@ -471,7 +483,7 @@ test("deleting a list node preserves dependency confirmation", async ({
 test("filtered selection applies immediately without clearing search or other checked fields", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   const search = page.locator(".node-field-search input");
   await search.fill("extra");
@@ -510,7 +522,7 @@ test("filtered selection applies immediately without clearing search or other ch
 });
 
 test("field count and search share the standard tabs row", async ({ page }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(
     page.getByRole("tab", { name: "字段选择(2/3)", exact: true })
   ).toBeVisible();
@@ -543,7 +555,7 @@ test("field count and search share the standard tabs row", async ({ page }) => {
 test("canvas fullscreen hides details and restores the split and field search", async ({
   page,
 }, testInfo) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "items", exact: true }).click();
   await expect(page.locator(".node-title")).toHaveText("items");
@@ -583,7 +595,7 @@ test("canvas fullscreen hides details and restores the split and field search", 
 test("node details fullscreen preserves preview and resets on step changes", async ({
   page,
 }, testInfo) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "items", exact: true }).click();
   await expect(page.locator(".node-title")).toHaveText("items");
@@ -646,7 +658,7 @@ test("node details fullscreen preserves preview and resets on step changes", asy
 test("expanded canvas follows viewport resizing and restores a fitting split", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.locator(".canvas-fullscreen").getByRole("button").click();
   await page.setViewportSize({ width: 1280, height: 760 });
@@ -672,7 +684,7 @@ test("expanded canvas follows viewport resizing and restores a fitting split", a
 test("SQL node dialogs remain available with the canvas hidden by details fullscreen", async ({
   page,
 }) => {
-  await page.goto("/?sqlNode=1");
+  await openRelations(page, "/?sqlNode=1");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page
     .locator(".details-fullscreen")
@@ -705,7 +717,7 @@ test("prototype field table edits dataset metadata and preserves it through prev
 }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await expect(page.locator(".node-fields .ed-table__header th")).toHaveText([
     "",
@@ -754,6 +766,7 @@ test("prototype field table edits dataset metadata and preserves it through prev
     )
     .toBe("订单标识");
   await page.reload();
+  await page.getByRole("button", { name: "数据表关联", exact: true }).click();
   await expect(
     page.getByRole("textbox", { name: "数据集字段名 orders_id", exact: true })
   ).toHaveValue("订单标识");
@@ -775,7 +788,7 @@ test("prototype field table edits dataset metadata and preserves it through prev
 test("unchecked field metadata survives node switching and applies when selected", async ({
   page,
 }) => {
-  await page.goto("/");
+  await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   let row = page.locator(".node-fields .ed-table__body tr").nth(2);
   await row
@@ -806,7 +819,7 @@ test("unchecked field metadata survives node switching and applies when selected
 });
 
 const openSingleSqlRefresh = async (page, suffix = "") => {
-  await page.goto("/?singleSql=1" + suffix);
+  await openRelations(page, "/?singleSql=1" + suffix);
   await expect(page.locator(".node-fields")).toContainText("orders_extra");
   await page.evaluate(() => {
     window.holdFieldRequests = true;
@@ -882,7 +895,7 @@ test("single-node field lookup failure retries without losing saved metadata", a
   await page.addInitScript(() => {
     window.failFields = true;
   });
-  await page.goto("/?singleSql=1");
+  await openRelations(page, "/?singleSql=1");
   const retry = page
     .locator(".node-fields")
     .getByRole("button", { name: "刷新数据", exact: true });
@@ -1022,4 +1035,188 @@ test("closing unchanged SQL editor does not invalidate an in-flight refresh", as
     "orders_extra",
   ]);
   expect(errors).toEqual([]);
+});
+
+test("editing opens processing with centered icon tools and preserves changes on round trips", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator(".sql-result")).toBeVisible();
+  await expect(page.locator(".drag-mask_dataset")).toBeHidden();
+  const tools = page.locator(".top .editor-tools");
+  await expect(tools.getByRole("button")).toHaveCount(3);
+  await expect(tools.locator(".ed-icon")).toHaveCount(3);
+  expect(
+    await tools.evaluate((el) =>
+      Math.abs(
+        el.getBoundingClientRect().x +
+          el.getBoundingClientRect().width / 2 -
+          innerWidth / 2
+      )
+    )
+  ).toBeLessThan(2);
+  await expect(
+    page
+      .locator(".sql-result")
+      .getByRole("button", { name: "新建计算字段", exact: true })
+  ).toHaveCount(0);
+  await tools.getByRole("button", { name: "数据表关联", exact: true }).click();
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  await page
+    .getByRole("textbox", { name: "数据集字段名 orders_id", exact: true })
+    .fill("保留的修改");
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await expect(page.locator(".sql-result .preview-data")).toContainText(
+    "保留的修改"
+  );
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.saved?.allFields[0].name))
+    .toBe("保留的修改");
+  await page.reload();
+  await expect(page.locator(".sql-result")).toBeVisible();
+  await expect(page.locator(".sql-result .preview-data")).toContainText(
+    "保留的修改"
+  );
+});
+
+test("source table opens a readonly preview and searchable field dialog without adding nodes", async ({
+  page,
+}) => {
+  await openRelations(page, "/");
+  const before = await page.locator(".node-item").count();
+  const source = page
+    .locator(".table-checkbox-list .list-item_primary")
+    .filter({ hasText: "orders" });
+  await source.click();
+  const dialog = page.getByRole("dialog", { name: "orders", exact: true });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator(".ed-table__body")).toContainText(
+    "orders:orders_id"
+  );
+  await dialog.getByRole("tab", { name: "字段详情", exact: true }).click();
+  await expect(dialog.locator(".ed-table__body tr")).toHaveCount(3);
+  await dialog.getByRole("textbox").fill("ORDERS_NAME");
+  await expect(dialog.locator(".ed-table__body tr")).toHaveCount(1);
+  await expect(dialog.locator(".ed-table__body")).toContainText("orders_name");
+  await expect(dialog.getByRole("checkbox")).toHaveCount(0);
+  expect(await page.locator(".node-item").count()).toBe(before);
+  const request = await page.evaluate(() => window.previewRequests.at(-1));
+  expect(request.union).toHaveLength(1);
+  expect(request.union[0].currentDs.tableName).toBe("orders");
+  expect(request.union[0].childrenDs).toEqual([]);
+  expect(request.union[0].currentDs.id).not.toBe("orders");
+  for (const field of request.allFields) {
+    expect(field.id).toBeTruthy();
+    expect(field.datasetTableId).toBe(request.union[0].currentDs.id);
+    expect(field.checked).toBe(true);
+  }
+  expect(new Set(request.allFields.map((f) => f.id)).size).toBe(3);
+});
+
+test("closed source metadata cannot overwrite a reopened table and failed requests can retry", async ({
+  page,
+}) => {
+  await openRelations(page, "/");
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  await page.evaluate(() => {
+    window.holdFieldRequests = true;
+  });
+  await page
+    .locator(".table-checkbox-list .list-item_primary")
+    .filter({ hasText: "orders" })
+    .click();
+  await expect
+    .poll(() => page.evaluate(() => window.pendingFields?.length))
+    .toBe(1);
+  await page
+    .getByRole("dialog", { name: "orders", exact: true })
+    .getByRole("button", { name: "Close this dialog" })
+    .click();
+  await page.evaluate(() => {
+    window.holdFieldRequests = false;
+  });
+  await page
+    .locator(".table-checkbox-list .list-item_primary")
+    .filter({ hasText: "items" })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "items", exact: true });
+  await expect(dialog.locator(".ed-table__body")).toContainText(
+    "items:items_id"
+  );
+  await page.evaluate(() =>
+    window.pendingFields.splice(0).forEach((resolve) => resolve())
+  );
+  await expect(dialog.locator(".ed-table__body")).not.toContainText("orders:");
+  await page.evaluate(() => {
+    window.failFields = true;
+  });
+  await dialog.getByRole("button", { name: "刷新数据", exact: true }).click();
+  await expect(dialog.locator(".ed-table__body tr")).toHaveCount(0);
+  await dialog.getByRole("button", { name: "刷新数据", exact: true }).click();
+  await expect(dialog.locator(".ed-table__body")).toContainText(
+    "items:items_id"
+  );
+});
+
+test("late source preview stays isolated and source dragging still adds a node", async ({
+  page,
+}, testInfo) => {
+  await openRelations(page, "/");
+  await page.evaluate(() => {
+    window.previewDelays = [500, 20];
+  });
+  const source = (name) =>
+    page
+      .locator(".table-checkbox-list .list-item_primary")
+      .filter({ hasText: name });
+  await source("orders").click();
+  await expect
+    .poll(() => page.evaluate(() => window.previewRequests.length))
+    .toBe(1);
+  await page
+    .getByRole("dialog", { name: "orders", exact: true })
+    .getByRole("button", { name: "Close this dialog" })
+    .click();
+  await source("items").click();
+  const dialog = page.getByRole("dialog", { name: "items", exact: true });
+  await expect(dialog.locator(".ed-table__body")).toContainText(
+    "items:items_id"
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        window.previewCompleted.includes(
+          window.fieldRequestDetails.find(
+            (r) => r.tableName === "orders" && r.id !== "orders"
+          ).id
+        )
+      )
+    )
+    .toBe(true);
+  await expect(dialog.locator(".ed-table__body")).not.toContainText("orders:");
+  await dialog.getByRole("tab", { name: "字段详情", exact: true }).click();
+  await page.screenshot({
+    path: testInfo.outputPath("source-table-details.png"),
+    animations: "disabled",
+  });
+  await dialog.getByRole("button", { name: "Close this dialog" }).click();
+  await page.goto("/?create=1");
+  await expect(source("orders")).toBeVisible();
+  const before = await page.evaluate(() => window.fieldRequests?.length || 0);
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await source("orders").dispatchEvent("dragstart", { dataTransfer });
+  expect(await page.evaluate(() => window.fieldRequests?.length || 0)).toBe(
+    before
+  );
+  await expect(
+    page.getByRole("dialog", { name: "orders", exact: true })
+  ).toHaveCount(0);
+  await page
+    .locator(".drag-mask_dataset")
+    .dispatchEvent("drop", { dataTransfer });
+  await expect
+    .poll(() => page.evaluate(() => window.fieldRequests.length))
+    .toBeGreaterThan(before);
+  await expect(page.locator(".node-list .node-item")).toHaveCount(1);
 });

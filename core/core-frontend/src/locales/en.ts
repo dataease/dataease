@@ -2449,6 +2449,7 @@ export default {
     liquid_border_distance: 'Border Distance'
   },
   dataset: {
+    field_details: 'Field details',
     dataset_field_name: 'Dataset field name',
     dataset_field_type: 'Dataset field type',
     source_physical_table: 'Source table',

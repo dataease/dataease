@@ -2383,6 +2383,7 @@ export default {
     liquid_border_distance: '边框间距'
   },
   dataset: {
+    field_details: '字段详情',
     dataset_field_name: '数据集字段名',
     dataset_field_type: '数据集字段类型',
     source_physical_table: '来源物理表',
