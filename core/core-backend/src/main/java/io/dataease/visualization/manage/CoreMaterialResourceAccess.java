@@ -6,7 +6,9 @@ import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.constant.*;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.exception.DEException;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.result.ResultCode;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.MaterialReferences;
@@ -23,6 +25,7 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
     @Resource private DataVisualizationInfoRepository resources;
     @Resource private SnapshotDataVisualizationInfoRepository snapshots;
     @Resource private VisualizationTemplateRepository templates;
+    @Resource private PerBusiResourceRepository registeredResources;
     private final ObjectProvider<InteractiveAuthApi> authProvider;
 
     public CoreMaterialResourceAccess(ObjectProvider<InteractiveAuthApi> authProvider) {
@@ -71,11 +74,14 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
             if (permissions.creatorPermissions(resource.getId()) == 0) throw denied();
         } else {
             if (V3UserUtil.getUid() == null) throw denied();
-            if (!(edit && Objects.equals(resource.getPid(), -1L)
-                    && Objects.equals(resource.getCreateBy(), V3UserUtil.getUid().toString())))
-            requireAuth().checkAuth(new BusiPerCheckDTO(resource.getId(),
-                    "dataV".equals(resource.getType()) ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL,
-                    edit || draft ? AuthEnum.MANAGE : AuthEnum.READ));
+            if (!LicenseUtil.licenseValid()) {
+                requireCommunityResource(resource, edit);
+            } else if (!(edit && Objects.equals(resource.getPid(), -1L)
+                    && Objects.equals(resource.getCreateBy(), V3UserUtil.getUid().toString()))) {
+                requireAuth().checkAuth(new BusiPerCheckDTO(resource.getId(),
+                        "dataV".equals(resource.getType()) ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL,
+                        edit || draft ? AuthEnum.MANAGE : AuthEnum.READ));
+            }
         }
         if (draft) {
             var snapshot = snapshots.findById(resource.getId()).orElseThrow(this::denied);
@@ -137,6 +143,19 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
             var batch = templates.findAll(PageRequest.of(page, 200));
             if (batch.stream().anyMatch(value -> MaterialReferences.collect(value.getTemplateStyle(), value.getTemplateData()).contains(materialId))) return true;
             if (!batch.hasNext()) return false;
+        }
+    }
+
+    private void requireCommunityResource(DataVisualizationInfo resource, boolean edit) {
+        Long uid = V3UserUtil.getUid();
+        boolean ownDraft = edit && Objects.equals(resource.getPid(), -1L)
+                && Objects.equals(resource.getCreateBy(), String.valueOf(uid));
+        // Community trees exclude registered enterprise resources, even after a license expires.
+        if (!Objects.equals(uid, 1L) || V3UserUtil.getProxy().isProxy()
+                || Boolean.TRUE.equals(resource.getDeleteFlag()) || !"leaf".equals(resource.getNodeType())
+                || (Objects.equals(resource.getPid(), -1L) && !ownDraft)
+                || registeredResources.existsById(resource.getId())) {
+            throw denied();
         }
     }
 
