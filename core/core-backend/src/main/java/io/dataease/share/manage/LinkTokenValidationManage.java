@@ -74,6 +74,8 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
         String context = WhitelistUtils.getContextPath();
         if (context != null && !context.isBlank() && path.startsWith(context + "/")) path = path.substring(context.length());
         if (path.startsWith("/de2api/")) path = path.substring("/de2api".length());
+        // Both gateway and standalone requests still check resource scope in the material service.
+        if ("POST".equalsIgnoreCase(method) && path.matches("/material/(?:content/[1-9][0-9]{0,18}|export)")) return;
         if (Set.of("/user/ipInfo", "/datasetData/enumValue", "/datasetData/enumValueObj",
                 "/datasetData/getFieldTree", "/dekey", "/symmetricKey", "/share/validate",
                 "/sysParameter/queryOnlineMap", "/xpackComponent/viewPlugins").contains(path)) return;

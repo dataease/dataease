@@ -9,9 +9,12 @@ import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.exception.DEException;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.result.ResultCode;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.MaterialReferences;
+import io.dataease.utils.ServletUtils;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import jakarta.annotation.Resource;
@@ -35,6 +38,9 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
     @Override
     public Set<Long> authorize(MaterialContext context, boolean edit) {
         if (context == null) throw denied();
+        boolean embedded = ServletUtils.isEmbeddedRequest();
+        if (embedded && (edit || context.getResourceId() == null || context.getTemplateId() != null
+                || !"core".equals(context.getResourceTable()))) throw denied();
         if (context.getTemplateId() != null) {
             // Templates use the existing authenticated global template catalogue.
             if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null || edit) throw denied();
@@ -50,19 +56,22 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
             if (!edit || V3UserUtil.getUid() == null || V3UserUtil.getLink() != null
                     || !("dashboard".equals(context.getResourceType()) || "dataV".equals(context.getResourceType()))) throw denied();
             boolean screen = "dataV".equals(context.getResourceType());
+            BusiResourceEnum type = screen ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL;
             Long parentId = context.getParentId();
             if (parentId == null || parentId == 0L) {
-                // New canvases can choose their destination on first save; no folder ID exists yet.
                 long menuId = (screen ? AuthResourceEnum.SCREEN : AuthResourceEnum.PANEL).getMenuId();
-                if (!requireAuth().menuIds().contains(menuId)) throw denied();
+                InteractiveAuthApi auth = requireAuth();
+                if (!auth.menuIds().contains(menuId) || !hasWritableDestination(auth, type)) throw denied();
             } else {
-                requireAuth().checkAuth(new BusiPerCheckDTO(parentId,
-                        screen ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL, AuthEnum.MANAGE));
+                requireAuth().checkAuth(new BusiPerCheckDTO(parentId, type, AuthEnum.MANAGE));
             }
             return Set.of();
         }
         DataVisualizationInfo resource = resources.findById(context.getResourceId()).orElseThrow(this::denied);
         if (!Set.of("dashboard", "dataV").contains(resource.getType())) throw denied();
+        if (embedded && (Boolean.TRUE.equals(resource.getDeleteFlag()) || !"leaf".equals(resource.getNodeType())
+                || !(Objects.equals(resource.getStatus(), CommonConstants.DV_STATUS.PUBLISHED)
+                || Objects.equals(resource.getStatus(), CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)))) throw denied();
         boolean draft = "snapshot".equals(context.getResourceTable());
         if (!draft && !"core".equals(context.getResourceTable())) throw denied();
         var link = V3UserUtil.getLink();
@@ -157,6 +166,27 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
                 || registeredResources.existsById(resource.getId())) {
             throw denied();
         }
+    }
+
+    private boolean hasWritableDestination(InteractiveAuthApi auth, BusiResourceEnum type) {
+        // A new canvas may choose its destination on first save. A menu grants no write access.
+        var request = new BusiNodeRequest();
+        request.setBusiFlag(type.name());
+        request.setResourceTable("core");
+        request.setLeaf(false);
+        request.setWeight(AuthEnum.MANAGE.getWeight());
+        return hasWritableFolder(auth.resource(request));
+    }
+
+    private boolean hasWritableFolder(List<BusiNodeVO> nodes) {
+        if (nodes == null) return false;
+        for (BusiNodeVO node : nodes) {
+            if ((Boolean.FALSE.equals(node.getLeaf()) && node.getWeight() != null
+                    && node.getWeight() >= AuthEnum.MANAGE.getWeight()) || hasWritableFolder(node.getChildren())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private InteractiveAuthApi requireAuth() {
