@@ -54,7 +54,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -577,7 +576,7 @@ public class CoreVisualizationManage {
                 .execute();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void removeDvCore(Long dvId) {
         if (dvId != null) {
             // 清理历史数据（主表 data_visualization_info 不做删除，仅由 dvRestore 原地更新，

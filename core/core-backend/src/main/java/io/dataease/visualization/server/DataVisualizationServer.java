@@ -706,6 +706,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.innerEdit(visualizationInfo);
         if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
             coreVisualizationManage.removeDvCore(dvId);
+            // 先执行删除再清理托管状态，保证同 ID 图表从镜像重新插入且发布失败时整体回滚
+            entityManager.flush();
             entityManager.clear();
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
