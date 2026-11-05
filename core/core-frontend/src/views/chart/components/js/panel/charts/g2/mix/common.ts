@@ -15,6 +15,7 @@ import { setGradientColor } from '../../../common/common_antv'
 import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
 import type { MixAxisScaleOptions, MixAxisState } from './axis-alignment'
 import type { TransformComponent } from '@antv/g2/esm/runtime/types/transform'
+import { createOrderedMixPathMark } from './path-order'
 import {
   getCategoryLegendStyle,
   getHorizontalLegendLabelMaxWidth,
@@ -376,6 +377,8 @@ const hideEmptyMixAxis: TransformComponent = () => (indices, mark) =>
 register('transform.deMixHideEmptyAxis', hideEmptyMixAxis)
 
 const mixLegendLibrary = stdlib() as Record<string, any>
+mixLegendLibrary['mark.line'] = createOrderedMixPathMark(mixLegendLibrary['mark.line'])
+mixLegendLibrary['mark.area'] = createOrderedMixPathMark(mixLegendLibrary['mark.area'])
 mixLegendLibrary['interaction.elementHighlight'] = createMixElementHighlight(
   mixLegendLibrary['interaction.elementHighlight']
 )
