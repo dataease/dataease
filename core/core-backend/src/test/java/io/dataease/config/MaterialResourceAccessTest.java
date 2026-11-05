@@ -7,11 +7,14 @@ import io.dataease.constant.AuthEnum;
 import io.dataease.constant.AuthResourceEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.visualization.manage.CoreMaterialResourceAccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
@@ -28,10 +31,11 @@ class MaterialResourceAccessTest {
 
     @BeforeEach
     void setup() {
-        access = new CoreMaterialResourceAccess();
         auth = mock(InteractiveAuthApi.class);
         resources = mock(DataVisualizationInfoRepository.class);
-        ReflectionTestUtils.setField(access, "auth", auth);
+        var beans = new StaticListableBeanFactory();
+        beans.addBean("interactiveAuthApi", auth);
+        access = new CoreMaterialResourceAccess(beans.getBeanProvider(InteractiveAuthApi.class));
         ReflectionTestUtils.setField(access, "resources", resources);
     }
 
@@ -44,13 +48,21 @@ class MaterialResourceAccessTest {
     }
 
     @Test
-    void unsavedCanvasesUseTheirExistingMenuPermission() {
+    void unsavedCanvasesRequireMenuAndWritableDestination() {
         try (var identity = mockStatic(V3UserUtil.class)) {
             identity.when(V3UserUtil::getUid).thenReturn(11L);
             for (String type : List.of("dashboard", "dataV")) {
                 long menuId = ("dataV".equals(type) ? AuthResourceEnum.SCREEN : AuthResourceEnum.PANEL).getMenuId();
-                // A normal editor has the canvas menu, without the material management menu.
                 when(auth.menuIds()).thenReturn(List.of(menuId));
+                var request = new BusiNodeRequest();
+                request.setBusiFlag("dataV".equals(type) ? "SCREEN" : "PANEL");
+                request.setResourceTable("core");
+                request.setLeaf(false);
+                request.setWeight(AuthEnum.MANAGE.getWeight());
+                var folder = new BusiNodeVO();
+                folder.setLeaf(false);
+                folder.setWeight(AuthEnum.MANAGE.getWeight());
+                when(auth.resource(request)).thenReturn(List.of(folder));
                 for (Long parentId : new Long[]{null, 0L}) {
                     var context = creating(type, parentId);
                     assertEquals(Set.of(), access.authorize(context, true));

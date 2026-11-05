@@ -1,16 +1,20 @@
 package io.dataease.config;
 
 import io.dataease.api.material.*;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.material.vo.MaterialBundle;
 import io.dataease.api.template.request.TemplateManageRequest;
+import io.dataease.visualization.manage.CoreMaterialResourceAccess;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.*;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.mock.web.*;
@@ -122,34 +126,42 @@ class MaterialPersistenceTest {
     }
 
     @Test void materialReadUsesStoredResourceTypeAndDraftRequiresEditing() {
-        var access = new io.dataease.visualization.manage.CoreMaterialResourceAccess();
         var resources = mock(DataVisualizationInfoRepository.class);
         var snapshots = mock(io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoRepository.class);
-        var auth = mock(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class);
+        var auth = mock(InteractiveAuthApi.class);
+        var beans = new StaticListableBeanFactory();
+        beans.addBean("interactiveAuthApi", auth);
+        var access = new CoreMaterialResourceAccess(beans.getBeanProvider(InteractiveAuthApi.class));
         org.springframework.test.util.ReflectionTestUtils.setField(access, "resources", resources);
         org.springframework.test.util.ReflectionTestUtils.setField(access, "snapshots", snapshots);
-        org.springframework.test.util.ReflectionTestUtils.setField(access, "auth", auth);
         var resource = resource();
         resource.setType("dataV");
         when(resources.findById(101L)).thenReturn(Optional.of(resource));
         var context = new io.dataease.api.material.dto.MaterialContext();
         context.setResourceId(101L);
         context.setResourceType("dashboard");
-        try (var identity = mockStatic(io.dataease.permission.util.V3UserUtil.class)) {
-            identity.when(io.dataease.permission.util.V3UserUtil::getUid).thenReturn(11L);
-            assertEquals(Set.of(123L, 456L), access.authorize(context, false));
-            verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
-                    io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.READ));
-            var snapshot = new io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo();
-            snapshot.setCanvasStyleData(resource.getCanvasStyleData());
-            snapshot.setComponentData(resource.getComponentData());
-            when(snapshots.findById(101L)).thenReturn(Optional.of(snapshot));
-            context.setResourceTable("snapshot");
-            access.authorize(context, false);
-            verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
-                    io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.MANAGE));
-            doThrow(new io.dataease.exception.DEException(403, "Denied")).when(auth).checkAuth(any());
-            assertThrows(io.dataease.exception.DEException.class, () -> access.authorize(context, false));
+        try (var application = new StaticApplicationContext();
+             var licenseBeans = mockStatic(io.dataease.license.utils.CommonBeanFactory.class)) {
+            application.refresh();
+            licenseBeans.when(io.dataease.license.utils.CommonBeanFactory::getApplicationContext).thenReturn(application);
+            try (var identity = mockStatic(io.dataease.permission.util.V3UserUtil.class);
+                 var license = mockStatic(LicenseUtil.class)) {
+                license.when(LicenseUtil::licenseValid).thenReturn(true);
+                identity.when(io.dataease.permission.util.V3UserUtil::getUid).thenReturn(11L);
+                assertEquals(Set.of(123L, 456L), access.authorize(context, false));
+                verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
+                        io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.READ));
+                var snapshot = new io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo();
+                snapshot.setCanvasStyleData(resource.getCanvasStyleData());
+                snapshot.setComponentData(resource.getComponentData());
+                when(snapshots.findById(101L)).thenReturn(Optional.of(snapshot));
+                context.setResourceTable("snapshot");
+                access.authorize(context, false);
+                verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
+                        io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.MANAGE));
+                doThrow(new io.dataease.exception.DEException(403, "Denied")).when(auth).checkAuth(any());
+                assertThrows(io.dataease.exception.DEException.class, () -> access.authorize(context, false));
+            }
         }
     }
 
