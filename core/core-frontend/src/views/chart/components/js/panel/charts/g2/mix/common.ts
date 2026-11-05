@@ -1,4 +1,12 @@
-import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec, type LinearScale } from '@antv/g2'
+import {
+  Chart as G2Chart,
+  extend,
+  Runtime,
+  stdlib,
+  register,
+  type G2Spec,
+  type LinearScale
+} from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -6,6 +14,7 @@ import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { setGradientColor } from '../../../common/common_antv'
 import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
 import type { MixAxisScaleOptions, MixAxisState } from './axis-alignment'
+import type { TransformComponent } from '@antv/g2/esm/runtime/types/transform'
 import {
   getCategoryLegendStyle,
   getHorizontalLegendLabelMaxWidth,
@@ -347,6 +356,25 @@ export const createMixElementHighlight = baseElementHighlight => {
   return mixElementHighlight
 }
 
+/**
+ * 图例过滤后柱形仍可能保留零基线，只关闭空系列的轴显示，不影响辅助线保域
+ */
+const hideEmptyMixAxis: TransformComponent = () => (indices, mark) =>
+  [
+    indices,
+    indices.length
+      ? mark
+      : {
+          ...mark,
+          scale: {
+            ...mark.scale,
+            y: { ...mark.scale.y, guide: null }
+          }
+        }
+  ]
+
+register('transform.deMixHideEmptyAxis', hideEmptyMixAxis)
+
 const mixLegendLibrary = stdlib() as Record<string, any>
 mixLegendLibrary['interaction.elementHighlight'] = createMixElementHighlight(
   mixLegendLibrary['interaction.elementHighlight']
@@ -570,6 +598,7 @@ export const getMixAssistLineOptions = <T extends { value: number }>(
   axisIndex: number,
   assistLines: AssistLine[]
 ) => {
+  axisMark.transform = [...(axisMark.transform ?? []), { type: 'deMixHideEmptyAxis' }]
   axisMark.scale.y = {
     ...axisMark.scale.y,
     dataeaseAssistAxis: axisIndex,
