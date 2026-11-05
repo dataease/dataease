@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import { useI18n } from '@/hooks/web/useI18n'
 import { createClockOffset } from './dynamic-default-time'
 
@@ -9,6 +10,8 @@ const props = defineProps({
 })
 const { t } = useI18n()
 const { config } = toRefs(props)
+const hint = ref<HTMLElement>()
+const { height: hintHeight } = useElementSize(hint)
 const key = computed(() => (props.end ? 'clockOffsetRange' : 'clockOffset'))
 const timeKey = computed(() => (props.end ? 'arbitraryTimeRange' : 'arbitraryTime'))
 const offset = computed(() => config.value[key.value])
@@ -23,7 +26,10 @@ const numberValue = (value: number | string | null) =>
 </script>
 
 <template>
-  <div class="clock-offset-editor">
+  <div
+    class="clock-offset-editor"
+    :style="{ paddingBottom: hintHeight ? `${hintHeight + 4}px` : undefined }"
+  >
     <div class="clock-row">
       <div class="clock-label">{{ t('dynamic_time.clock') }}</div>
       <el-radio-group :model-value="offset?.mode || 'fixed'" @change="changeMode">
@@ -56,7 +62,7 @@ const numberValue = (value: number | string | null) =>
             <el-option value="b" :label="t('dynamic_time.after')" />
           </el-select>
         </div>
-        <div class="clock-hint">{{ t('dynamic_time.offset_hint') }}</div>
+        <div ref="hint" class="clock-hint">{{ t('dynamic_time.offset_hint') }}</div>
       </div>
     </div>
   </div>
@@ -79,6 +85,9 @@ const numberValue = (value: number | string | null) =>
   .relative-clock {
     flex: 1;
     min-width: 0;
+  }
+  .relative-clock {
+    position: relative;
   }
   :deep(.fixed-clock.ed-date-editor.ed-input) {
     width: 100%;
@@ -111,7 +120,10 @@ const numberValue = (value: number | string | null) =>
     }
   }
   .clock-hint {
-    margin-top: 4px;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
     font-size: 12px;
     line-height: 18px;
     color: #8f959e;

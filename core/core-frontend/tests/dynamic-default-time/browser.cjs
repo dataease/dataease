@@ -101,6 +101,63 @@ const open = async (page, query = '') => {
 const relative = async (page, index = 0) =>
   page.locator('.clock-offset-editor').nth(index).getByText('相对当前', { exact: true }).click()
 
+for (const lang of ['zh', 'tw', 'en']) {
+  for (const range of [false, true]) {
+    test(`说明不影响标签居中且不遮挡后续内容 ${lang} ${range ? 'range' : 'single'}`, async ({
+      page
+    }) => {
+      const errors = await open(page, `lang=${lang}${range ? '&range' : ''}`)
+      const editors = page.locator('.clock-offset-editor')
+      for (let index = 0; index < (range ? 2 : 1); index++) {
+        await editors.nth(index).locator('.ed-radio').nth(1).click()
+      }
+      const aligned = () =>
+        page.evaluate(() => {
+          const center = rect => (rect.top + rect.bottom) / 2
+          return (
+            [...document.querySelectorAll('.relative-clock')].every(el => {
+              const label = el.previousElementSibling.getBoundingClientRect()
+              const inputs = el.querySelector('.clock-inputs').getBoundingClientRect()
+              const hint = el.querySelector('.clock-hint').getBoundingClientRect()
+              return (
+                Math.abs(center(label) - center(inputs)) < 1 &&
+                hint.top >= inputs.bottom &&
+                hint.bottom <= el.closest('.clock-offset-editor').getBoundingClientRect().bottom + 1
+              )
+            }) &&
+            [...document.querySelectorAll('.dynamic-default-preview')].every(el => {
+              const row = el.closest('.parameters.setting')
+              const label = row.querySelector('.setting-label').getBoundingClientRect()
+              const controls = el.getBoundingClientRect()
+              const notes = [...el.querySelectorAll('.baseline, .error')].map(note =>
+                note.getBoundingClientRect()
+              )
+              return (
+                Math.abs(center(label) - center(controls)) < 1 &&
+                notes.length > 0 &&
+                notes.every(
+                  note =>
+                    note.top >= controls.bottom &&
+                    note.bottom <= row.getBoundingClientRect().bottom + 1
+                )
+              )
+            })
+          )
+        })
+      await expect.poll(aligned).toBe(true)
+      await editors.first().locator('.clock-inputs input').nth(1).fill('60')
+      await page.getByRole('button', { name: '保存', exact: true }).click()
+      await expect(page.getByRole('alert')).toBeVisible()
+      await expect.poll(aligned).toBe(true)
+      await editors.first().locator('.clock-inputs input').nth(1).fill('0')
+      await page.getByRole('button', { name: '保存', exact: true }).click()
+      await expect(page.getByRole('alert')).toHaveCount(0)
+      await expect.poll(aligned).toBe(true)
+      expect(errors).toEqual([])
+    })
+  }
+}
+
 test('旧配置指定时刻、切换保留值、预览基准一致，实际UI无溢出', async ({ page }) => {
   const errors = await open(page)
   await expect(page.locator('.dynamic-default-preview input')).toHaveValue('2026-10-30 09:10:11')
