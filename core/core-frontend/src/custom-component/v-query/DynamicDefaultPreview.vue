@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, ref, watch, toRefs } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, toRefs } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import dayjs from 'dayjs'
 import { Calendar } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -15,6 +16,11 @@ const props = defineProps({
 })
 const { t } = useI18n()
 const { config } = toRefs(props)
+const emit = defineEmits<{ notesHeight: [height: number] }>()
+const notes = ref<HTMLElement>()
+const { height: notesHeight } = useElementSize(notes)
+watch(notesHeight, height => emit('notesHeight', height ? height + 4 : 0), { immediate: true })
+onBeforeUnmount(() => emit('notesHeight', 0))
 const baseline = ref(new Date())
 const value = ref<Date | [Date, Date]>()
 const error = ref('')
@@ -89,16 +95,19 @@ watch(
       :end-placeholder="t('datasource.end_time')"
       :placeholder="t('commons.date.select_date_time')"
     />
-    <div v-if="isCustomClockDefault(rule)" class="baseline">
-      {{ t('dynamic_time.baseline') }}{{ dayjs(baseline).format('YYYY-MM-DD HH:mm:ss') }}
+    <div ref="notes" class="preview-notes">
+      <div v-if="isCustomClockDefault(rule)" class="baseline">
+        {{ t('dynamic_time.baseline') }}{{ dayjs(baseline).format('YYYY-MM-DD HH:mm:ss') }}
+      </div>
+      <div v-if="error" class="error" role="alert">{{ t(error) }}</div>
     </div>
-    <div v-if="error" class="error" role="alert">{{ t(error) }}</div>
   </div>
 </template>
 
 <style lang="less" scoped>
 .dynamic-default-preview {
-  width: 325px;
+  position: relative;
+  width: 322px;
   max-width: 100%;
   :deep(.ed-date-editor) {
     width: 100%;
@@ -111,9 +120,14 @@ watch(
     margin-bottom: 4px;
     color: #646a73;
   }
-  .baseline,
-  .error {
-    margin-top: 4px;
+  .preview-notes {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     font-size: 12px;
     line-height: 18px;
     white-space: normal;

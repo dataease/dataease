@@ -59,6 +59,7 @@ const props = defineProps({
 const showFlag = computed(() => props.showPosition === 'main')
 const { curComponent } = toRefs(props)
 const loadingDefault = ref(true)
+const previewNotesHeight = ref(0)
 watch(
   () => curComponent.value.id,
   val => {
@@ -753,6 +754,9 @@ defineExpose({
       v-if="curComponent.defaultValueCheck && loadingDefault"
       class="parameters"
       :class="dynamicTime && 'setting'"
+      :style="{
+        paddingBottom: dynamicTime && previewNotesHeight ? `${previewNotesHeight}px` : undefined
+      }"
     >
       <div class="setting-label" v-if="dynamicTime">{{ t('template_manage.preview') }}</div>
       <div v-if="defaultValueFirstItemShow" class="first-item" style="margin-bottom: 8px">
@@ -761,7 +765,13 @@ defineExpose({
         }}</el-checkbox>
       </div>
       <div :class="dynamicTime ? 'setting-value' : 'w100'">
-        <component :config="curComponent" isConfig ref="inputCom" :is="filterTypeCom"></component>
+        <component
+          :config="curComponent"
+          isConfig
+          ref="inputCom"
+          :is="filterTypeCom"
+          @notes-height="previewNotesHeight = $event"
+        ></component>
       </div>
     </div>
   </div>
@@ -975,7 +985,7 @@ defineExpose({
       width: 100%;
       padding-left: 24px;
       .ed-date-editor {
-        width: 325px !important;
+        width: 322px !important;
       }
     }
     margin-left: auto;
@@ -992,7 +1002,7 @@ defineExpose({
       &.select {
         margin-top: 0;
         .ed-select {
-          width: 325px;
+          width: 322px;
         }
       }
     }

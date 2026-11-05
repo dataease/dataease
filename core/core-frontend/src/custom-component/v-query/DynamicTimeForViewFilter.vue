@@ -138,7 +138,7 @@ onBeforeMount(() => {
 
 <style lang="less">
 .date-editor_granularity .ed-input__wrapper {
-  width: 325px;
+  width: 322px;
   margin-top: 0;
 }
 </style>
