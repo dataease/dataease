@@ -516,25 +516,7 @@ public class DatasourceServer implements DatasourceApi {
             dataSourceManage.innerEdit(requestDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             requestDatasource.setEnableDataFill(null);
-            List<String> sourceTables = ExcelUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
-            List<String> tables = ExcelUtils.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             if (Objects.equals(dataSourceDTO.getEditType(), replace)) {
-                toCreateTables = tables;
-                toDeleteTables = sourceTables.stream().filter(s -> tables.contains(s)).collect(Collectors.toList());
-                for (String deleteTable : toDeleteTables) {
-                    try {
-                        datasourceSyncManage.dropEngineTable(deleteTable);
-                    } catch (Exception ignore) {
-                    }
-                }
-                for (String toCreateTable : toCreateTables) {
-                    datasourceRequest.setTable(toCreateTable);
-                    try {
-                        datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(datasourceRequest));
-                    } catch (Exception e) {
-                        DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
-                    }
-                }
                 datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
                 dataSourceManage.checkName(dataSourceDTO);
                 ExcelUtils.mergeSheets(requestDatasource, sourceData);
