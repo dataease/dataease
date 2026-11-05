@@ -250,14 +250,19 @@ const setChangeStatus = (to, from) => {
   changedNodeId.value.push({ from, to })
 }
 
+const fieldEditVersions = new Map<Node['id'], number>()
+let sqlFieldRequest = 0
 const closeSqlNode = () => {
   if (
     state.nodeList.length === 1 &&
     !state.nodeList[0].children?.length &&
     changeSqlId.value.length === 1
   ) {
-    currentNode.value = state.nodeList[0]
-    const { datasourceId, id, info, tableName, sqlVariableDetails } = currentNode.value
+    const request = ++sqlFieldRequest
+    const pendingNode = state.nodeList[0]
+    const pendingEditVersion = fieldEditVersions.get(pendingNode.id)
+    const pendingFields = pendingNode.currentDsFields
+    const { datasourceId, id, info, tableName, sqlVariableDetails } = pendingNode
     getTableField({
       datasourceId,
       id,
@@ -266,19 +271,31 @@ const closeSqlNode = () => {
       type: 'sql',
       isCross: isCross.value,
       sqlVariableDetails: sqlVariableDetails
-    }).then(res => {
-      const idOriginNameMap = allfields.value.reduce((pre, next) => {
-        pre[`${next.datasetTableId}${next.originName}`] = next.id
-        return pre
-      }, {})
-      const fields = res as unknown as Field[]
-      fields.forEach(ele => {
-        ele.id = idOriginNameMap[`${id}${ele.originName}`]
-        ele.checked = true
-      })
-      state.nodeList[0].currentDsFields = cloneDeep(res)
-      void confirmEditUnion()
     })
+      .catch(() => null) // The shared request interceptor reports field lookup failures.
+      .then(res => {
+        if (
+          !res ||
+          request !== sqlFieldRequest ||
+          fieldEditVersions.get(id) !== pendingEditVersion ||
+          state.nodeList[0] !== pendingNode ||
+          pendingNode.info !== info ||
+          pendingNode.sqlVariableDetails !== sqlVariableDetails ||
+          pendingNode.currentDsFields !== pendingFields
+        )
+          return
+        const idOriginNameMap = allfields.value.reduce((pre, next) => {
+          pre[`${next.datasetTableId}${next.originName}`] = next.id
+          return pre
+        }, {})
+        const fields = res as unknown as Field[]
+        fields.forEach(ele => {
+          ele.id = idOriginNameMap[`${id}${ele.originName}`]
+          ele.checked = true
+        })
+        // Keep the old fields intact until dependency deletion has been confirmed.
+        return applyNodeFields(pendingNode, fields)
+      })
     changeSqlId.value = []
   }
   if (state.visualNode?.confirm) {
@@ -348,8 +365,10 @@ const delUpdateDsFieldsFake = (id, arr: Node[]) => {
 }
 
 const confirmEditUnion = async () => {
-  delUpdateDsFieldsFake(currentNode.value.id, state.nodeList)
-  const currentIds = currentNode.value.currentDsFields.map(ele => ele.id)
+  const target = currentNode.value
+  if (!target) return false
+  delUpdateDsFieldsFake(target.id, state.nodeList)
+  const currentIds = target.currentDsFields.map(ele => ele.id)
   let ids = fakeDelId.filter(ele => !currentIds.includes(ele))
   fakeDelId = []
   if (!!ids.length) {
@@ -392,7 +411,8 @@ const confirmEditUnion = async () => {
     }
   }
 
-  delUpdateDsFields(currentNode.value.id, state.nodeList)
+  if (currentNode.value !== target) return false
+  delUpdateDsFields(target.id, state.nodeList)
   const [fir] = state.nodeList
   if (fir?.isShadow) {
     delete fir.isShadow
@@ -405,6 +425,8 @@ const confirmEditUnion = async () => {
 }
 
 const applyNodeFields = async (node: Node, fields: Field[]) => {
+  // Invalidate older SQL lookups before a dependency confirmation can suspend this edit.
+  fieldEditVersions.set(node.id, (fieldEditVersions.get(node.id) || 0) + 1)
   currentNode.value = cloneDeep(node)
   currentNode.value.currentDsFields = cloneDeep(fields)
   return confirmEditUnion()
