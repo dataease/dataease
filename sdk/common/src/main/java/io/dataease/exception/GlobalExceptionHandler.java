@@ -12,6 +12,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,6 +25,12 @@ public class GlobalExceptionHandler {
         msg = Translator.get(msg);
         LogUtil.error(msg);
         return ResponseEntity.badRequest().body(new ResultMessage(ResultCode.PARAM_IS_INVALID.code(), msg));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ResultMessage> maxUploadSizeExceededHandler(MaxUploadSizeExceededException e) {
+        return ResponseEntity.status(e.getStatusCode())
+                .body(new ResultMessage(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_upload_size_exceeded")));
     }
 
     @ExceptionHandler(DEException.class)

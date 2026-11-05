@@ -12,6 +12,10 @@ spring:
     active: '@profiles.active@'
   application:
     name: core-backend
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
   messages:
     encoding: UTF-8
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
