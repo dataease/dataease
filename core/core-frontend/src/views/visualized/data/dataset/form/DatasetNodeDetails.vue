@@ -164,7 +164,9 @@ const loadFields = async () => {
     })
     if (request !== fieldRequest) return
     fields.value = (result as unknown as Field[]).map(field => {
-      const saved = node.currentDsFields.find(item => item.originName === field.originName)
+      const saved = selectedNode.value?.currentDsFields.find(
+        item => item.originName === field.originName
+      )
       return { ...field, ...(saved || {}), checked: !!saved }
     })
     selectedFields.value = fields.value.filter(field => field.checked)
@@ -302,6 +304,12 @@ watch(
     }
   },
   { immediate: true }
+)
+watch(
+  () => selectedNode.value?.currentDsFields,
+  () => {
+    if (fieldsLoaded.value && !applying.value) resetFields()
+  }
 )
 watch(activeTab, tab => {
   if (tab === 'preview') void preview()

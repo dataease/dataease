@@ -804,3 +804,222 @@ test("unchecked field metadata survives node switching and applies when selected
   expect(field).toMatchObject({ name: "新增金额", deType: 2 });
   expect(field.id).toBeTruthy();
 });
+
+const openSingleSqlRefresh = async (page, suffix = "") => {
+  await page.goto("/?singleSql=1" + suffix);
+  await expect(page.locator(".node-fields")).toContainText("orders_extra");
+  await page.evaluate(() => {
+    window.holdFieldRequests = true;
+  });
+  const menu = await openNodeMenu(page, "orders");
+  await menu.getByRole("menuitem", { name: "编辑SQL", exact: true }).click();
+  await page.getByRole("button", { name: "保存合成 SQL", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.pendingFields?.length))
+    .toBe(2);
+};
+
+const releaseFields = async (page, index) => {
+  await page.evaluate((i) => window.pendingFields[i](), index);
+};
+
+test("SQL refresh cannot overwrite a newer inline field selection", async ({
+  page,
+}) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await openSingleSqlRefresh(page);
+  // closeSqlNode starts first; the detail watcher starts the second request.
+  await releaseFields(page, 1);
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  const first = page.locator(".node-fields .ed-table__body tr").first();
+  await first.locator(".ed-checkbox").click();
+  await expect(first.getByRole("checkbox")).not.toBeChecked();
+  await releaseFields(page, 0);
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(() => window.saved?.allFields.map((f) => f.originName))
+    )
+    .toEqual(["orders_name"]);
+  expect(
+    await page.evaluate(() =>
+      window.saved.union[0].currentDsFields.map((f) => f.originName)
+    )
+  ).toEqual(["orders_name"]);
+  expect(errors).toEqual([]);
+});
+
+test("SQL refresh ignores a node deleted before the response returns", async ({
+  page,
+}) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await openSingleSqlRefresh(page);
+  const menu = await openNodeMenu(page, "orders");
+  await menu.getByRole("menuitem", { name: "删除", exact: true }).click();
+  await expect(page.locator(".node-title")).toHaveCount(0);
+  await releaseFields(page, 0);
+  await releaseFields(page, 1);
+  await expect(page.locator(".node-title")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "下一步，数据处理" })
+  ).toBeDisabled();
+  // Wait for the rejected/fulfilled request's continuation, not a fixed network delay.
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      )
+  );
+  expect(errors).toEqual([]);
+});
+
+test("single-node field lookup failure retries without losing saved metadata", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.failFields = true;
+  });
+  await page.goto("/?singleSql=1");
+  const retry = page
+    .locator(".node-fields")
+    .getByRole("button", { name: "刷新数据", exact: true });
+  await expect(retry).toBeVisible();
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await expect(page.locator(".drag-mask_dataset")).toBeVisible();
+  await retry.click();
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.saved?.allFields.map((f) => f.id)))
+    .toEqual(["orders1", "orders2"]);
+  expect(
+    await page.evaluate(() =>
+      window.saved.union[0].currentDsFields.map((f) => f.id)
+    )
+  ).toEqual(["orders1", "orders2"]);
+});
+
+for (const firstResponse of [0, 1]) {
+  test(`SQL refresh synchronizes selected fields and IDs, response ${firstResponse} first`, async ({
+    page,
+  }) => {
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await openSingleSqlRefresh(page);
+    await releaseFields(page, firstResponse);
+    await releaseFields(page, 1 - firstResponse);
+    await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(
+      3
+    );
+    await expect(
+      page.locator(
+        '.node-fields .ed-table__body input[type="checkbox"]:checked'
+      )
+    ).toHaveCount(3);
+    await page.getByRole("button", { name: "下一步，数据处理" }).click();
+    await page.getByRole("button", { name: "保存", exact: true }).click();
+    await expect
+      .poll(() => page.evaluate(() => window.saved?.allFields.length))
+      .toBe(3);
+    const saved = await page.evaluate(() => window.saved);
+    expect(saved.union[0].currentDsFields.map((f) => f.id)).toEqual(
+      saved.allFields.map((f) => f.id)
+    );
+    expect(
+      saved.allFields.every((f) => f.id && f.datasetTableId === "orders")
+    ).toBe(true);
+    expect(new Set(saved.allFields.map((f) => f.id)).size).toBe(3);
+    expect(errors).toEqual([]);
+  });
+}
+
+for (const confirmDeletion of [true, false]) {
+  test(`pending dependency deletion survives SQL response, confirm=${confirmDeletion}`, async ({
+    page,
+  }) => {
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await openSingleSqlRefresh(page, "&dependency=1");
+    await releaseFields(page, 1);
+    const first = page.locator(".node-fields .ed-table__body tr").first();
+    await expect(first.getByRole("checkbox")).toBeChecked();
+    await first.locator(".ed-checkbox").click();
+    const dialog = page.locator(".ed-message-box");
+    await expect(dialog).toBeVisible();
+    await releaseFields(page, 0);
+    await page.evaluate(
+      () =>
+        new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve))
+        )
+    );
+    await expect(dialog).toBeVisible();
+    await dialog
+      .getByRole("button", {
+        name: confirmDeletion ? "确认" : "取消",
+        exact: true,
+      })
+      .click();
+    await page.evaluate(
+      () =>
+        new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve))
+        )
+    );
+    expect(errors).toEqual([]);
+    if (confirmDeletion)
+      await expect(first.getByRole("checkbox")).not.toBeChecked();
+    else await expect(first.getByRole("checkbox")).toBeChecked();
+    await page.getByRole("button", { name: "下一步，数据处理" }).click();
+    await page.getByRole("button", { name: "保存", exact: true }).click();
+    const expectedIds = confirmDeletion
+      ? ["orders2"]
+      : ["orders1", "orders2", "calc"];
+    await expect
+      .poll(() => page.evaluate(() => window.saved?.allFields.map((f) => f.id)))
+      .toEqual(expectedIds);
+    expect(
+      await page.evaluate(() =>
+        window.saved.union[0].currentDsFields.map((f) => f.id)
+      )
+    ).toEqual(expectedIds.filter((id) => id !== "calc"));
+    expect(errors).toEqual([]);
+  });
+}
+
+test("closing unchanged SQL editor does not invalidate an in-flight refresh", async ({
+  page,
+}) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await openSingleSqlRefresh(page);
+  const menu = await openNodeMenu(page, "orders");
+  await menu.getByRole("menuitem", { name: "编辑SQL", exact: true }).click();
+  await page.getByRole("button", { name: "关闭合成 SQL", exact: true }).click();
+  expect(await page.evaluate(() => window.pendingFields.length)).toBe(2);
+  await releaseFields(page, 1);
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  await releaseFields(page, 0);
+  await expect(
+    page.locator('.node-fields .ed-table__body input[type="checkbox"]:checked')
+  ).toHaveCount(3);
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.saved?.allFields.length))
+    .toBe(3);
+  const saved = await page.evaluate(() => window.saved);
+  expect(saved.union[0].currentDsFields.map((f) => f.id)).toEqual(
+    saved.allFields.map((f) => f.id)
+  );
+  expect(saved.allFields.map((f) => f.originName)).toEqual([
+    "orders_id",
+    "orders_name",
+    "orders_extra",
+  ]);
+  expect(errors).toEqual([]);
+});

@@ -26,9 +26,10 @@ const field=(id,name,node)=>({id,name,originName:name,description:'字段说明 
 const nodes=['orders','items'].map((name,i)=>({currentDs:{id:name,tableName:name,datasourceId:'source',type:'db',info:JSON.stringify({table:name,sql:''})},currentDsFields:[field(name+'1',name+'_id',name),field(name+'2',name+'_name',name)],childrenDs:[],unionToParent:{unionType:'left',unionFields:[]}}));nodes[1].unionToParent={unionType:'inner',unionFields:[{parentField:nodes[0].currentDsFields[0],currentField:nodes[1].currentDsFields[0]}]};
 if(location.search.includes('sqlNode')){nodes[1].currentDs.type='sql';nodes[1].currentDs.info=JSON.stringify({table:'items',sql:'c2VsZWN0IDE='});nodes[1].currentDs.sqlVariableDetails=JSON.stringify([{variableName:'amount',type:'LONG',defaultValue:'1'}])}
 nodes[0].childrenDs=[nodes[1]];
+if(location.search.includes('singleSql')){nodes.splice(1);nodes[0].childrenDs=[];nodes[0].currentDs.type='sql';nodes[0].currentDs.sqlVariableDetails='[]'}
 export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[{...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]}]:[])]}));
 export const getDatasourceList=async()=>[];export const getTables=async()=>[];export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
-export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return [field('',data.id+'_id',data.id),field('',data.id+'_name',data.id),field('',data.id+'_extra',data.id)]};
+export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}if(window.holdFieldRequests){await new Promise(resolve=>{window.pendingFields??=[];window.pendingFields.push(resolve)})}else await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return [field('',data.id+'_id',data.id),field('',data.id+'_name',data.id),field('',data.id+'_extra',data.id)]};
 export const getPreviewData=async(data)=>{window.previewRequests??=[];window.previewRequests.push(JSON.parse(JSON.stringify(data)));await new Promise(r=>setTimeout(r,window.previewDelays?.shift()??(data.union[0].currentDs.id==='orders'?180:20)));window.previewCompleted??=[];window.previewCompleted.push(data.union[0].currentDs.id);return {data:{fields:data.allFields.map(f=>({...f,dataeaseName:f.id})),data:[Object.fromEntries(data.allFields.map(f=>[f.id,data.union[0].currentDs.tableName+':'+f.name]))]}}};
 export const saveDatasetTree=async(data)=>{window.saved=JSON.parse(JSON.stringify(data));sessionStorage.setItem('savedDataset',JSON.stringify(data))};
 `
@@ -39,7 +40,10 @@ export const saveDatasetTree=async(data)=>{window.saved=JSON.parse(JSON.stringif
   );
   await fs.writeFile(
     dir + "/sql-stub.vue",
-    `<script setup>defineProps({sqlNode:Object})</script><template><div data-testid="sql-editor">{{ JSON.stringify(sqlNode) }}</div></template>`
+    `<script setup>
+const props=defineProps({sqlNode:Object});const emit=defineEmits(['save','close']);
+const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited */',sqlVariableDetails:'[]',changeFlag:true},()=>{});emit('close')}
+</script><template><div data-testid="sql-editor">{{ JSON.stringify(sqlNode) }}<button @click="save">保存合成 SQL</button><button @click="emit('close')">关闭合成 SQL</button></div></template>`
   );
   await fs.writeFile(
     dir + "/main.ts",
