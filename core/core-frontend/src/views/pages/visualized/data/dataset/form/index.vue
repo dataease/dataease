@@ -3,6 +3,8 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import referenceTable from '@/assets/svg/reference-table.svg'
+import dvParams from '@/assets/svg/dv-params.svg'
+import dvFilter from '@/assets/svg/dv-filter.svg'
 import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
@@ -75,6 +77,7 @@ import {
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from '@/views/visualized/data/dataset/form/DatasetUnion.vue'
+import DatasetTableDetails from '@/views/visualized/data/dataset/form/DatasetTableDetails.vue'
 import DatasetNodeDetails from '@/views/visualized/data/dataset/form/DatasetNodeDetails.vue'
 import DatasetPanelFullscreen from '@/views/visualized/data/dataset/form/DatasetPanelFullscreen.vue'
 import { cloneDeep, debounce } from 'lodash-es'
@@ -156,7 +159,7 @@ const changeEditorStep = async (step: 'relation' | 'process') => {
     (step === 'process' ? document.documentElement.clientHeight - 56 : sqlResultHeight.value) - 242
   if (step === 'process' && allfields.value.length) datasetPreview()
 }
-const activeName = ref('')
+const tableDetails = ref<InstanceType<typeof DatasetTableDetails>>()
 const dataSource = ref('')
 const searchTable = ref('')
 const showInput = ref(false)
@@ -827,6 +830,11 @@ const initEdite = async () => {
     dataSource.value = fir?.currentDs?.datasourceId
     dsChange(dataSource.value)
     datasetDrag.value.initState(arr)
+    if (id && !copyId) {
+      editorStep.value = 'process'
+      await nextTick()
+      if (allfields.value.length) datasetPreview()
+    }
     loading.value = false
   } catch (error) {
     console.error(error)
@@ -1306,9 +1314,9 @@ const dragstart = (e: DragEvent, ele) => {
   e.dataTransfer.setData('text/plain', JSON.stringify(ele))
   maskShow.value = true
 }
-const setActiveName = (data: Table) => {
+const openTableDetails = (data: Table) => {
   if (data.unableCheck) return
-  activeName.value = data.tableName
+  if (data.type !== 'sql') tableDetails.value?.open(data)
 }
 
 const verify = () => {
@@ -1426,7 +1434,10 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize)
   getSingleVal()
   getSqlResultHeight()
-  quotaTableHeight.value = sqlResultHeight.value - 242
+  quotaTableHeight.value =
+    (editorStep.value === 'process'
+      ? document.documentElement.clientHeight - 56
+      : sqlResultHeight.value) - 242
 })
 
 const getSingleVal = () => {
@@ -1833,6 +1844,32 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           }}</span>
         </template>
       </span>
+      <nav v-if="editorStep === 'process'" class="editor-tools">
+        <el-button text @click="changeEditorStep('relation')">
+          <span class="editor-tool-content">
+            <el-icon
+              ><Icon><icon_organization_outlined class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.table_relationship') }}</span>
+          </span>
+        </el-button>
+        <el-button text :disabled="!allfields.length" @click="addCalcField('q')">
+          <span class="editor-tool-content">
+            <el-icon
+              ><Icon><dvParams class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.add_calc_field') }}</span>
+          </span>
+        </el-button>
+        <el-button text :disabled="!allfields.length" @click="addGroupField">
+          <span class="editor-tool-content">
+            <el-icon
+              ><Icon><dvFilter class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.create_grouping_field') }}</span>
+          </span>
+        </el-button>
+      </nav>
       <span class="operate">
         <el-button
           v-if="editorStep === 'relation'"
@@ -1841,9 +1878,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           @click="changeEditorStep('process')"
           >{{ t('dataset.next_data_processing') }}</el-button
         >
-        <el-button v-else secondary @click="changeEditorStep('relation')">{{
-          t('dataset.table_relationship')
-        }}</el-button>
         <el-button
           v-if="editorStep === 'process'"
           :disabled="showInput"
@@ -1860,6 +1894,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         >
       </span>
     </div>
+    <dataset-table-details ref="tableDetails" />
     <div class="container dataset-db" @mouseup="mouseupDrag">
       <p
         v-show="editorStep === 'relation' && !showLeft"
@@ -1973,7 +2008,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             @dragstart="$event => dragstart($event, sqlNode)"
             @dragend="dragEnd"
             :draggable="true"
-            @click="setActiveName(sqlNode)"
           >
             <el-icon class="icon-color">
               <Icon name="icon_sql_outlined_1"><icon_sql_outlined_1 class="svg-icon" /></Icon>
@@ -2004,7 +2038,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     currentDsId &&
                     datasourceTableData[index].datasourceId === currentDsId)
                 "
-                @click="setActiveName(datasourceTableData[index])"
+                @click="openTableDetails(datasourceTableData[index])"
               >
                 <el-icon class="icon-color">
                   <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
@@ -2077,22 +2111,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         <div v-show="editorStep === 'process'" class="sql-result" style="height: 100%">
           <div class="sql-title">
             <div class="field-data">
-              <el-button :disabled="!allfields.length" @click="addCalcField('q')" secondary>
-                <template #icon>
-                  <el-icon>
-                    <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                </template>
-                {{ t('dataset.add_calc_field') }}
-              </el-button>
-              <el-button :disabled="!allfields.length" @click="addGroupField" secondary>
-                <template #icon>
-                  <el-icon>
-                    <Icon><icon_organization_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                </template>
-                {{ t('dataset.create_grouping_field') }}
-              </el-button>
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
@@ -3045,12 +3063,53 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   --ed-border-color-lighter: #1f232926 !important;
   .top {
     height: 56px;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     padding: 0 24px;
     background: #050e21;
     box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
+
+    .operate {
+      grid-column: 3;
+      justify-self: end;
+      white-space: nowrap;
+    }
+
+    .editor-tools {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+
+      .editor-tool-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .ed-button {
+        height: 48px;
+        margin: 0;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 12px;
+
+        &:hover {
+          background: #ffffff1a;
+        }
+
+        &.is-disabled {
+          color: #ffffff66;
+        }
+
+        .ed-icon {
+          font-size: 18px;
+          transform: translateY(2px);
+        }
+      }
+    }
 
     .name {
       color: #fff;
@@ -3059,7 +3118,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       font-weight: 400;
       display: flex;
       align-items: center;
-      width: 50%;
+      min-width: 0;
       position: relative;
 
       .ed-form-item__error {
