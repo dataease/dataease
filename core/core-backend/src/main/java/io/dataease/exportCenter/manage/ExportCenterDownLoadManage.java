@@ -74,7 +74,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -955,18 +954,5 @@ public class ExportCenterDownLoadManage {
             }
         }
         cell.setCellValue(value);
-    }
-
-
-    private void validateDownloadPath(String filePath) {
-        try {
-            File resolved = new File(filePath).getCanonicalFile();
-            File base = new File(exportData_path).getCanonicalFile();
-            if (!resolved.getAbsolutePath().startsWith(base.getAbsolutePath())) {
-                throw new RuntimeException("非法的下载路径");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("路径解析失败");
-        }
     }
 }
