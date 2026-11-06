@@ -49,7 +49,7 @@ import InfoTemplate from '@/views/system/common/InfoTemplate.vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import { getDeEngine } from '@/api/datasource'
 import request from '@/config/axios'
-import { symmetricDecryptJson } from '@/utils/encryption'
+import { parseConfigurationJson } from '@/utils/encryption'
 import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceDataFillingInfo = defineAsyncComponent(
   () => import('@/views/component/data-filling/DatasourceDataFillingInfo.vue')
@@ -82,7 +82,7 @@ const getEngine = () => {
     xPackInfo.value.enableDataFill = !!res.data.enableDataFill
     xPackInfo.value.type = type
     if (configuration) {
-      configuration = await symmetricDecryptJson(configuration)
+      configuration = await parseConfigurationJson(configuration)
     }
     nodeInfoId = id
     templateListTime.value = [

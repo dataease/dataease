@@ -77,7 +77,7 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
         // Both gateway and standalone requests still check resource scope in the material service.
         if ("POST".equalsIgnoreCase(method) && path.matches("/material/(?:content/[1-9][0-9]{0,18}|export)")) return;
         if (Set.of("/user/ipInfo", "/datasetData/enumValue", "/datasetData/enumValueObj",
-                "/datasetData/getFieldTree", "/dekey", "/symmetricKey", "/share/validate",
+                "/datasetData/getFieldTree", "/dekey", "/share/validate",
                 "/sysParameter/queryOnlineMap", "/xpackComponent/viewPlugins").contains(path)) return;
         if (path.startsWith("/static-resource/") && method.equalsIgnoreCase("GET")) {
             checkStaticResource(V3UserUtil.getLink(), path);

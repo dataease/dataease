@@ -64,14 +64,13 @@ public class EngineServer implements EngineApi {
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Sqlserver.class)).toString());
                 break;
         }
-        datasourceDTO.setConfiguration(RsaUtils.symmetricEncrypt(datasourceDTO.getConfiguration()));
         return datasourceDTO;
     }
 
     @Override
     public void save(DatasourceDTO datasourceDTO) {
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
-            datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
+            datasourceDTO.setConfiguration(restoreConfiguration(datasourceDTO));
         }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
@@ -122,8 +121,17 @@ public class EngineServer implements EngineApi {
         }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
-        coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
+        coreDeEngine.setConfiguration(restoreConfiguration(datasourceDTO));
         engineManage.validate(coreDeEngine, false);
+    }
+
+    private String restoreConfiguration(DatasourceDTO request) {
+        String plain = new String(Base64.getDecoder().decode(request.getConfiguration()), java.nio.charset.StandardCharsets.UTF_8);
+        CoreDeEngine stored = request.getId() == null ? null : coreDeEngineRepository.findById(request.getId()).orElse(null);
+        if (stored != null && !stored.getType().equals(request.getType())) {
+            throw new DEException(ResultCode.PARAM_IS_INVALID.code(), io.dataease.i18n.Translator.get("i18n_configuration_type_mismatch"));
+        }
+        return ConfigurationCredentials.restore(plain, stored == null ? null : stored.getConfiguration());
     }
 
     @Override

@@ -54,6 +54,11 @@ import {
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
+// Discard the old /dekey response, which contained the deployment storage AES key.
+const cachedDekey = wsCache.get('DataEaseKey')
+if (cachedDekey && (typeof cachedDekey !== 'string' || !/^MI[A-Za-z0-9+/=]+$/.test(cachedDekey))) {
+  wsCache.delete('DataEaseKey')
+}
 const requestStore = useRequestStoreWithOut()
 const embeddedStore = useEmbedded()
 const basePath = import.meta.env.VITE_API_BASEPATH

@@ -428,6 +428,7 @@ const doValidateDs = request => {
   dsLoading.value = true
   if (currentDsType.value === 'ExcelRemote') {
     let excelRequest = JSON.parse(JSON.stringify(form2.configuration))
+    excelRequest.copySourceId = form2.copySourceId
     excelRequest.datasourceId = form2.id || 0
     excelRequest.editType = form2.editType
     excelRequest.userName = Base64.encode(excelRequest.userName)

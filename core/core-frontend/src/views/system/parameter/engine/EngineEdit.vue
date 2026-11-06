@@ -11,7 +11,7 @@ import { cloneDeep } from 'lodash-es'
 import { getDeEngine, getSchema } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
-import { symmetricDecryptJson } from '@/utils/encryption'
+import { parseConfigurationJson } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
 import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceEnableDataFilling = defineAsyncComponent(
@@ -243,7 +243,7 @@ const edit = () => {
         enableDataFill
       } = res.data
       if (configuration) {
-        configuration = await symmetricDecryptJson(configuration)
+        configuration = await parseConfigurationJson(configuration)
       }
       Object.assign(nodeInfo, {
         name,
