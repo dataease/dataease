@@ -15,8 +15,6 @@ public class CommonThreadPool {
 
     private int maxQueueSize = 10;
 
-    private int maximumPoolSize = 10;
-
     private int keepAliveSeconds = 600;
 
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
