@@ -78,12 +78,6 @@ export const deleteChartField = async (id): Promise<IResponse> => {
   })
 }
 
-export const deleteChartFieldByChartId = async (chartId): Promise<IResponse> => {
-  return request.post({ url: `/chart/deleteFieldByChart/${chartId}`, data: {} }).then(res => {
-    return res?.data
-  })
-}
-
 // 通过图表对象获取数据
 export const getData = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
   delete data.data
@@ -147,14 +141,6 @@ export const innerExportDataSetDetails = async (data): Promise<IResponse> => {
 // 通过图表id获取数据
 export const getChart = async (id): Promise<IResponse> => {
   return request.post({ url: `/chart/getChart/${id}`, data: {} }).then(res => {
-    return res?.data
-  })
-}
-
-// 单个图表保存测试
-export const saveChart = async (data): Promise<IResponse> => {
-  delete data.data
-  return request.post({ url: '/chart/save', data }).then(res => {
     return res?.data
   })
 }
