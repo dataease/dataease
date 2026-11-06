@@ -1,12 +1,13 @@
 package io.dataease.visualization.manage;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.dto.LinkageInfoDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
 import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
+import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
-import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.dao.auto.entity.QCoreChartView;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -185,8 +186,17 @@ public class VisualizationLinkageManage {
                 .map(Long::valueOf)
                 .collect(Collectors.toList());
 
-        // 1. 获取目标视图信息
-        List<SnapshotCoreChartView> targetViews = snapshotCoreChartViewRepository.findByIdInAndTypeNot(targetViewIdList, "VQuery");
+        // 1. 联动列表只需基础信息，避免加载完整的图表配置。
+        QSnapshotCoreChartView chartView = QSnapshotCoreChartView.snapshotCoreChartView;
+        List<VisualizationViewTableVO> targetViews = queryFactory
+                .select(Projections.fields(VisualizationViewTableVO.class,
+                        chartView.id,
+                        chartView.type,
+                        chartView.tableId,
+                        chartView.title))
+                .from(chartView)
+                .where(chartView.id.in(targetViewIdList), chartView.type.ne("VQuery"))
+                .fetch();
 
         // 2. 获取联动信息
         List<SnapshotVisualizationLinkage> linkages = snapshotLinkageRepository.findByDvIdAndSourceViewId(dvId, sourceViewId);
@@ -254,8 +264,17 @@ public class VisualizationLinkageManage {
                 .map(Long::valueOf)
                 .collect(Collectors.toList());
 
-        // 1. 获取目标视图信息
-        List<CoreChartView> targetViews = coreChartViewRepository.findByIdInAndTypeNot(targetViewIdList, "VQuery");
+        // 1. 联动列表只需基础信息，避免加载完整的图表配置。
+        QCoreChartView chartView = QCoreChartView.coreChartView;
+        List<VisualizationViewTableVO> targetViews = queryFactory
+                .select(Projections.fields(VisualizationViewTableVO.class,
+                        chartView.id,
+                        chartView.type,
+                        chartView.tableId,
+                        chartView.title))
+                .from(chartView)
+                .where(chartView.id.in(targetViewIdList), chartView.type.ne("VQuery"))
+                .fetch();
 
         // 2. 获取联动信息
         List<VisualizationLinkage> linkages = linkageRepository.findByDvIdAndSourceViewId(dvId, sourceViewId);
