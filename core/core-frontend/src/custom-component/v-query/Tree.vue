@@ -16,6 +16,8 @@ import {
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { cloneDeep, debounce, sortBy } from 'lodash-es'
 import { getFieldTree } from '@/api/dataset'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import type { QueryRequest } from '@/config/axios/queryScope'
 import { colorStringToHex } from '@/utils/color'
 import { mixColor } from '@/utils/color'
 import { ElMessage } from 'element-plus-secondary'
@@ -352,58 +354,77 @@ function containsNodeById(source, params) {
   return false
 }
 
-const getTreeOption = debounce(() => {
-  loading.value = true
-  getFieldTree({
-    fieldIds: props.config.treeFieldList.map(ele => ele.id),
-    resultMode: config.value.resultMode || 0,
-    filter: getCascadeFieldId()
-  })
-    .then(res => {
-      treeOptionList.value = filterTree(dfs(res), config.value.optionFilter)
-      if (config.value?.required && config.value?.optionFilter?.length > 0) {
-        const isValid = containsNodeById(treeOptionList.value, config.value.selectValue)
-        if (!isValid) {
-          config.value.selectValue = null
-          ElMessage({
-            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
-            type: 'error',
-            duration: 3000
-          })
-        }
+const treeQuery = useLatestQuery('tree-options')
+const loadTreeOptions = debounce(async (query: QueryRequest) => {
+  if (!query.isCurrent()) {
+    query.finish()
+    return
+  }
+  try {
+    const res = await getFieldTree(
+      {
+        fieldIds: props.config.treeFieldList.map(ele => ele.id),
+        resultMode: config.value.resultMode || 0,
+        filter: getCascadeFieldId()
+      },
+      query
+    )
+    if (!query.isCurrent()) return
+    treeOptionList.value = filterTree(dfs(res), config.value.optionFilter)
+    if (config.value?.required && config.value?.optionFilter?.length > 0) {
+      const isValid = containsNodeById(treeOptionList.value, config.value.selectValue)
+      if (!isValid) {
+        config.value.selectValue = null
+        ElMessage({
+          message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+          type: 'error',
+          duration: 3000
+        })
       }
+    }
+    if (fromSelect) {
+      fromTreeSelectConfirm.value = true
+      if (multiple.value && Array.isArray(treeValue.value) && treeValue.value.length) {
+        treeValue.value = treeValue.value.filter(ele => dfsAuth(treeOptionList.value, ele))
+      } else if (treeValue.value && !dfsAuth(treeOptionList.value, treeValue.value)) {
+        treeValue.value = undefined
+      } else {
+        fromSelect = false
+        fromTreeSelectConfirm.value = false
+      }
+
       if (fromSelect) {
-        fromTreeSelectConfirm.value = true
-        if (multiple.value && Array.isArray(treeValue.value) && treeValue.value.length) {
-          treeValue.value = treeValue.value.filter(ele => dfsAuth(treeOptionList.value, ele))
-        } else if (treeValue.value && !dfsAuth(treeOptionList.value, treeValue.value)) {
-          treeValue.value = undefined
-        } else {
-          fromSelect = false
+        config.value.selectValue = Array.isArray(treeValue.value)
+          ? [...treeValue.value]
+          : treeValue.value
+        config.value.defaultValue = config.value.selectValue
+
+        if (props.isConfig) return
+
+        nextTick(() => {
+          if (!query.isCurrent()) return
           fromTreeSelectConfirm.value = false
-        }
-
-        if (fromSelect) {
-          config.value.selectValue = Array.isArray(treeValue.value)
-            ? [...treeValue.value]
-            : treeValue.value
-          config.value.defaultValue = config.value.selectValue
-
-          if (props.isConfig) return
-
-          nextTick(() => {
-            fromTreeSelectConfirm.value = false
-            isConfirmSearchNoRequiredName(config.value.id)
-          })
-        }
+          isConfirmSearchNoRequiredName(config.value.id)
+        })
       }
-    })
-    .finally(() => {
+    }
+  } catch (error) {
+    if (query.isCurrent()) console.error(error)
+  } finally {
+    query.finish()
+    if (query.isCurrent()) {
       loading.value = false
       showWholePath.value = true
       fromSelect = false
-    })
+    }
+  }
 }, 300)
+const getTreeOption = () => {
+  const query = treeQuery.start()
+  loading.value = true
+  loadTreeOptions(query)
+}
+
 watch(
   () => props.config.treeFieldList,
   val => {
@@ -543,6 +564,8 @@ const visibleChange = val => {
   }
 }
 onUnmounted(() => {
+  loadTreeOptions.cancel()
+  treeQuery.invalidate()
   clearTimeout(time)
 })
 </script>

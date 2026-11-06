@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
@@ -81,11 +83,12 @@ function createNew() {
 const loadCanvasData = (dvId, weight?, ext?) => {
   const initMethod = props.showPosition === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
   const sequence = ++loadSequence
+  const query = canvasQuery.start()
   dataInitState.value = false
   loadError.value = false
   initMethod(
     dvId,
-    { busiFlag: 'dataV', resourceTable: 'core', awaitLoad: true },
+    { busiFlag: 'dataV', resourceTable: 'core', awaitLoad: true, queryRequest: query },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -93,7 +96,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
-      if (sequence !== loadSequence) return
+      if (sequence !== loadSequence || !query.isCurrent()) return
       dvInfo['weight'] = weight
       dvInfo['ext'] = ext || 0
       state.canvasDataPreview = canvasDataResult
@@ -112,11 +115,13 @@ const loadCanvasData = (dvId, weight?, ext?) => {
         onInitReady({ resourceId: dvId })
       })
     }
-  ).catch(() => {
-    if (sequence !== loadSequence) return
-    loadError.value = true
-    dataInitState.value = true
-  })
+  )
+    .catch(() => {
+      if (sequence !== loadSequence || !query.isCurrent()) return
+      loadError.value = true
+      dataInitState.value = true
+    })
+    .finally(query.finish)
 }
 
 const download = type => {

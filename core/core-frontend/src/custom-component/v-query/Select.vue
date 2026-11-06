@@ -28,6 +28,7 @@ import { mixColor } from '@/utils/color'
 import { isCascadeParentCleared, isEmptyCascadeValue, cascadeResetState } from './cascade-utils'
 import { ElMessage } from 'element-plus-secondary'
 import { filterValueEquals } from '@/utils/componentUtils'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
 
 interface SelectConfig {
   selectValue: any
@@ -125,26 +126,18 @@ const cascade = computed(() => {
   return cascadeList() || []
 })
 let time: ReturnType<typeof setTimeout>
-let optionRequestId = 0
-let optionRequestController: AbortController | undefined
+const optionsQuery = useLatestQuery('options')
 let disposed = false
 const invalidateOptionsRequest = () => {
-  optionRequestId++
-  optionRequestController?.abort()
-  optionRequestController = undefined
+  optionsQuery.invalidate()
   clearTimeout(time)
   loading.value = false
 }
 const startOptionsRequest = () => {
   invalidateOptionsRequest()
-  const requestId = optionRequestId
-  const controller = new AbortController()
-  optionRequestController = controller
+  const request = optionsQuery.start()
   loading.value = true
-  return {
-    signal: controller.signal,
-    isCurrent: () => !disposed && requestId === optionRequestId
-  }
+  return request
 }
 const disabledFirstItem = computed(() => {
   const { defaultValueFirstItem, optionValueSource } = props.config
@@ -302,7 +295,7 @@ const displayTypeChange = () => {
 }
 
 const handleFieldIdDefaultChange = (val: string[]) => {
-  const { signal, isCurrent } = startOptionsRequest()
+  const { signal, isCurrent, finish } = startOptionsRequest()
   return getEnumValue(
     {
       fieldIds: val,
@@ -348,6 +341,7 @@ const handleFieldIdDefaultChange = (val: string[]) => {
       if (isCurrent() && !signal.aborted) console.error(error)
     })
     .finally(() => {
+      finish()
       if (isCurrent()) loading.value = false
     })
 }
@@ -373,7 +367,7 @@ const customSort = () => {
 
 const handleFieldIdChange = (val: EnumValue) => {
   let change = false
-  const { signal, isCurrent } = startOptionsRequest()
+  const { signal, isCurrent, finish } = startOptionsRequest()
   return enumValueObj(val, signal)
     .then(res => {
       if (!isCurrent()) return
@@ -513,6 +507,7 @@ const handleFieldIdChange = (val: EnumValue) => {
       if (isCurrent() && !signal.aborted) console.error(error)
     })
     .finally(() => {
+      finish()
       if (isCurrent()) loading.value = false
     })
 }

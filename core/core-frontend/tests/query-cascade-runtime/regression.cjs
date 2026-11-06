@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires -- Node CommonJS 测试入口。 */
 // Run: node --test tests/query-cascade-runtime/regression.cjs
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -78,11 +79,21 @@ const setup = (extra = {}, { button = false, isConfig = false } = {}) => {
     filterValueEquals: (a, b) => a === b,
     isEmptyCascadeValue: value =>
       Array.isArray(value) ? value.length === 0 : value == null || value === '',
-    startOptionsRequest: () => ({ signal: new AbortController().signal, isCurrent: () => true }),
+    startOptionsRequest: () => ({
+      signal: new AbortController().signal,
+      isCurrent: () => true,
+      finish: () => undefined
+    }),
     enumValueObj: async () => records,
-    customSort() {},
-    releaseSelect() {},
-    setDefaultValueFirstItem() {},
+    customSort() {
+      return undefined
+    },
+    releaseSelect() {
+      return undefined
+    },
+    setDefaultValueFirstItem() {
+      return undefined
+    },
     setCascadeDefault: value => configEvents.push(value),
     emitCascadeConfig: () => [],
     useEmitt: () => ({ emitter: { emit: name => events.push(name) } }),
@@ -91,7 +102,9 @@ const setup = (extra = {}, { button = false, isConfig = false } = {}) => {
     },
     queryDataForId: () => queries.push(cloneDeep(context.config.value)),
     console: { error: error => errors.push(error) },
-    ElMessage() {},
+    ElMessage() {
+      return undefined
+    },
     t: key => key
   }
   vm.runInNewContext(code, context)

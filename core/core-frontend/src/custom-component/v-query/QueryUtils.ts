@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const { emitter } = useEmitt()
 
-export const reRenderAll = (oldArr, newArr) => {
+export const reRenderAll = (oldArr, newArr, scopeId?: number) => {
   const newArrIds = newArr.map(ele => ele.id)
   const emitterList = (oldArr || []).reduce((pre, next) => {
     if (newArrIds.includes(next.id)) return pre
@@ -12,7 +12,7 @@ export const reRenderAll = (oldArr, newArr) => {
   }, [])
   if (!emitterList.length) return
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    emitter.emit(`query-data-${ele}`, { scopeId })
   })
 }
 

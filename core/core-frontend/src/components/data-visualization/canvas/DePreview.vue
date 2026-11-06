@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
+const refreshQuery = useLatestQuery('canvas-refresh')
+import { registerCanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
 import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
 import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
@@ -132,6 +135,7 @@ const {
   showPopBar,
   fontFamily
 } = toRefs(props)
+provideQueryScope(!isMainCanvas(canvasId.value))
 const domId = 'preview-' + canvasId.value
 const scaleWidthPoint = ref(100)
 const scaleHeightPoint = ref(100)
@@ -140,6 +144,15 @@ const previewCanvas = ref(null)
 const previewCanvasInner = ref(null)
 const cellWidth = ref(10)
 const cellHeight = ref(10)
+const canvasRuntimeId = registerCanvasRuntime(
+  () => ({
+    componentData: props.componentData,
+    canvasStyleData: props.canvasStyleData,
+    canvasViewInfo: props.canvasViewInfo as Record<string, Chart>,
+    dvInfo: props.dvInfo as { id: string; type: string }
+  }),
+  !isMainCanvas(canvasId.value)
+)
 const userViewEnlargeRef = ref(null)
 const searchCount = ref(0)
 const renderReady = ref(false)
@@ -429,7 +442,10 @@ useChartRefreshTimer(
 const refreshDataV = () => {
   searchCount.value++
   if (isMainCanvas(canvasId.value)) {
-    refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
+    refreshOtherComponent(dvInfo.value.id, dvInfo.value.type, {
+      componentData: componentData.value,
+      queryRequest: refreshQuery.start()
+    })
   }
 }
 
@@ -489,13 +505,13 @@ onBeforeUnmount(() => {
   }
 })
 
-const userViewEnlargeOpen = (opt, item) => {
+const userViewEnlargeOpen = (opt, item, runtime?) => {
   userViewEnlargeRef.value?.dialogInit(
     canvasStyleData.value,
     canvasViewInfo.value[item.id],
     item,
     opt,
-    { scale: scaleMin.value / 100 }
+    { scale: scaleMin.value / 100, runtime }
   )
 }
 const handleMouseDown = () => {
@@ -585,6 +601,7 @@ defineExpose({
   <div
     :id="domId"
     class="canvas-container"
+    :data-canvas-runtime="canvasRuntimeId"
     :style="canvasStyle"
     :class="{
       'de-download-custom': downloadStatus,
@@ -637,7 +654,7 @@ defineExpose({
           :is-selector="props.isSelector"
           :font-family="canvasStyleData.fontFamily || fontFamily"
           :scroll-main="state.scrollMain"
-          @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+          @userViewEnlargeOpen="(opt, runtime) => userViewEnlargeOpen(opt, item, runtime)"
           @datasetParamsInit="datasetParamsInit(item)"
           @onPointClick="onPointClick"
           :index="index"

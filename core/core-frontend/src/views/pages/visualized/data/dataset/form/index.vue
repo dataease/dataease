@@ -64,7 +64,10 @@ import {
   type Field as DatasetField
 } from '@/views/visualized/data/dataset/form/util'
 import { fieldType } from '@/utils/attr'
-import { cancelMap } from '@/config/axios/service'
+import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
+
+provideQueryScope()
+const previewQuery = useLatestQuery('dataset-preview')
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import {
@@ -150,6 +153,7 @@ const changeEditorStep = async (step: 'relation' | 'process') => {
   if (step === 'process' && !(await nodeDetails.value?.commit())) return
   if (step === 'relation') {
     ++datasetPreviewRequest
+    previewQuery.invalidate()
     datasetPreviewLoading.value = false
   }
   expandedPanel.value = null
@@ -894,7 +898,8 @@ const addComplete = () => {
     columns.value = []
     tableData.value = []
   }
-  cancelMap['/datasetData/previewData']?.()
+  ++datasetPreviewRequest
+  previewQuery.invalidate()
   datasetPreviewLoading.value = false
   reGetName()
 }
@@ -1343,11 +1348,15 @@ const verify = () => {
       const arr = []
       dfsNodeList(arr, datasetDrag.value.getNodeList())
       datasetPreviewLoading.value = true
-      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value })
+      const query = previewQuery.start()
+      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value }, query)
         .then(() => {
-          ElMessage.success(t('data_set.validation_succeeded'))
+          if (query.isCurrent()) ElMessage.success(t('data_set.validation_succeeded'))
         })
+        .catch(() => undefined)
         .finally(() => {
+          query.finish()
+          if (!query.isCurrent()) return
           datasetPreviewLoading.value = false
         })
     }
@@ -1539,15 +1548,18 @@ const datasetPreview = () => {
   const arr = []
   dfsNodeList(arr, datasetDrag.value.getNodeList())
   const request = ++datasetPreviewRequest
+  const query = previewQuery.start()
   datasetPreviewLoading.value = true
-  getPreviewData({ union: arr, allFields: allfields.value, isCross: isCross.value })
+  getPreviewData({ union: arr, allFields: allfields.value, isCross: isCross.value }, query)
     .then(res => {
-      if (request !== datasetPreviewRequest) return
+      if (request !== datasetPreviewRequest || !query.isCurrent()) return
       columns.value = generateColumns((res.data.fields as Field[]) || [])
       tableData.value = (res.data.data as Array<{}>) || []
     })
+    .catch(() => undefined)
     .finally(() => {
-      if (request !== datasetPreviewRequest) return
+      query.finish()
+      if (request !== datasetPreviewRequest || !query.isCurrent()) return
       datasetPreviewLoading.value = false
     })
 }

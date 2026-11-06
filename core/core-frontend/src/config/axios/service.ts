@@ -28,15 +28,28 @@ type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
     handleErrorLocally?: boolean
+    queryRequest?: QueryRequest
+    releaseCancellation?: () => void
+    loadingPath?: string
   }
 }
 
 type InternalAxiosRequestConfigWidthLoading<T> = T & {
   loading?: boolean
+  queryRequest?: QueryRequest
+  releaseCancellation?: () => void
+  loadingPath?: string
 }
 
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import router from '@/router'
+import { type QueryRequest } from './queryScope'
+import {
+  cancelMap,
+  cancelRequestBatch,
+  cancelAllRequest,
+  registerLegacyCancellation
+} from './legacyCancellation'
 
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
@@ -51,7 +64,11 @@ export const PATH_URL = embeddedStore.baseUrl ? embeddedStore?.baseUrl + embedde
 
 export interface AxiosInstanceWithLoading extends AxiosInstance {
   <T = any, R = AxiosResponse<T>, D = any>(
-    config: AxiosRequestConfig<D> & { loading?: boolean; handleErrorLocally?: boolean }
+    config: AxiosRequestConfig<D> & {
+      loading?: boolean
+      handleErrorLocally?: boolean
+      queryRequest?: QueryRequest
+    }
   ): Promise<R>
 }
 
@@ -100,8 +117,6 @@ const mapping = {
 }
 const permissionStore = usePermissionStoreWithOut()
 const linkStore = useLinkStoreWithOut()
-const CancelToken = axios.CancelToken
-const cancelMap = {}
 let reloadingLink = false
 
 const revalidateLink = (requestConfig: InternalAxiosRequestConfig) => {
@@ -168,36 +183,41 @@ service.interceptors.request.use(
       config.url = url
     }
 
-    if (config.url.endsWith('chartData/getData')) {
-      const chartKey = `chartData/getData/${(config.data as any).id}`
-      config.cancelToken = new CancelToken(function executor(c) {
-        cancelMap[chartKey] = c
-      })
+    if (config.queryRequest) {
+      if (!config.queryRequest.isCurrent()) {
+        throw new axios.CanceledError('Obsolete query', config)
+      }
+      config.signal = config.queryRequest.signal
     } else {
-      config.cancelToken = new CancelToken(function executor(c) {
-        cancelMap[config.url] = c
-      })
+      config.releaseCancellation = registerLegacyCancellation(config)
     }
 
-    config.loading && tryShowLoading(permissionStore.getCurrentPath)
+    config.loadingPath = permissionStore.getCurrentPath
+    config.loading && tryShowLoading(config.loadingPath)
     return config
   },
   (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
-    error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 
 // response 拦截器
 service.interceptors.response.use(
   (
-    response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
+    response: AxiosResponse<any> & {
+      config: InternalAxiosRequestConfigWidthLoading<InternalAxiosRequestConfig>
+    }
   ) => {
+    response.config.releaseCancellation?.()
+    response.config.queryRequest?.finish()
+    response.config.loading && tryHideLoading(response.config.loadingPath)
+    if (response.config.queryRequest && !response.config.queryRequest.isCurrent()) {
+      return Promise.reject(new axios.CanceledError('Obsolete query', response.config))
+    }
     executeVersionHandler(response)
     if (response.headers['x-de-link-token']) {
       linkStore.setLinkToken(response.headers['x-de-link-token'])
     }
-    response.config.loading && tryHideLoading(permissionStore.getCurrentPath)
 
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过
@@ -247,7 +267,15 @@ service.interceptors.response.use(
     }
   },
   async (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
-    error.config?.loading && tryHideLoading(permissionStore.getCurrentPath)
+    error.config?.releaseCancellation?.()
+    error.config?.queryRequest?.finish()
+    error.config?.loading && tryHideLoading(error.config.loadingPath)
+    if (
+      axios.isCancel(error) ||
+      (error.config?.queryRequest && !error.config.queryRequest.isCurrent())
+    ) {
+      return Promise.reject(error)
+    }
     // Image failures belong to the image loader, as with native <img> requests. Preserve
     // the rejection so denied/missing images cannot become successful exports or trigger a login loop.
     if (error.config?.handleErrorLocally) {
@@ -376,29 +404,4 @@ const executeVersionHandler = (response: AxiosResponse) => {
   }
 }
 
-const cancelRequestBatch = cancelKey => {
-  if (cancelKey) {
-    if (cancelKey.indexOf('/**') > -1) {
-      const cancelKeyPre = cancelKey.split('/**')[0]
-      Object.keys(cancelMap).forEach(key => {
-        if (key.indexOf(cancelKeyPre) > -1) {
-          cancelMap[key]?.(() => {
-            console.warn('Operation canceled by the user,url:' + key)
-          })
-        }
-      })
-    } else {
-      cancelMap[cancelKey]?.(() => {
-        console.warn('Operation canceled by the user,url:' + cancelKey)
-      })
-    }
-  }
-}
-const cancelAllRequest = () => {
-  Object.keys(cancelMap).forEach(key => {
-    cancelMap[key]?.(() => {
-      console.warn('Operation canceled by the user,url:' + key)
-    })
-  })
-}
 export { service, cancelMap, cancelRequestBatch, cancelAllRequest }

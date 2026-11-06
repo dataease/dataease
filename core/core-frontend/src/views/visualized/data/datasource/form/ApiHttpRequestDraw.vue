@@ -14,7 +14,14 @@ import { checkApiItem } from '@/api/datasource'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import type { ApiConfiguration } from '@/views/visualized/data/datasource/form/option'
-import { cancelMap } from '@/config/axios/service'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const apiQuery = useLatestQuery('api-check')
+const invalidateApiQuery = () => {
+  apiQuery.invalidate()
+  loading.value = false
+  formLoading.value = false
+  disabledNext.value = false
+}
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { PluginComponent } from '@/components/plugin'
 
@@ -191,6 +198,7 @@ const initApiItem = (
   indexPlugin,
   isPluginDs
 ) => {
+  invalidateApiQuery()
   pluginDs.value = pluginDsList
   pluginIndex.value = indexPlugin
   if (!isPluginDs) {
@@ -249,15 +257,22 @@ const showApiData = () => {
       const data = Base64.encode(JSON.stringify(apiItem))
       const params = Base64.encode(JSON.stringify(paramsList))
       loading.value = true
-      cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({ dsType: dsType.value, data: data, type: 'apiStructure', paramsList: params })
+      const query = apiQuery.start()
+      checkApiItem(
+        { dsType: dsType.value, data: data, type: 'apiStructure', paramsList: params },
+        query
+      )
         .then(response => {
+          if (!query.isCurrent()) return
           originFieldItem.jsonFields = response.data.jsonFields
         })
         .catch(error => {
-          console.warn(error?.message)
+          if (query.isCurrent()) console.warn(error?.message)
         })
-      loading.value = false
+        .finally(() => {
+          query.finish()
+          if (query.isCurrent()) loading.value = false
+        })
     } else {
       return false
     }
@@ -429,16 +444,19 @@ const stepNext = () => {
       }
     }
   }
-  cancelMap['/datasource/checkApiDatasource']?.()
+  invalidateApiQuery()
   const params = Base64.encode(JSON.stringify(paramsList))
   disabledNext.value = true
   formLoading.value = true
-  checkApiItem({
+  const payload = {
     dsType: dsType.value,
     data: Base64.encode(JSON.stringify(apiItem)),
     paramsList: params
-  })
+  }
+  const query = apiQuery.start()
+  checkApiItem(payload, query)
     .then(response => {
+      if (!query.isCurrent()) return
       disabledNext.value = false
       formLoading.value = false
       apiItem.jsonFields = response.data.jsonFields
@@ -449,10 +467,12 @@ const stepNext = () => {
       active.value += 1
     })
     .catch(error => {
+      if (!query.isCurrent()) return
       disabledNext.value = false
       formLoading.value = false
       console.warn(error?.message)
     })
+    .finally(query.finish)
 }
 const validate = () => {
   if (isPlugin.value) {
@@ -476,15 +496,18 @@ const validateItem = () => {
     ElMessage.error(t('datasource.please_input_dataPath'))
     return
   }
-  cancelMap['/datasource/checkApiDatasource']?.()
+  invalidateApiQuery()
   const params = Base64.encode(JSON.stringify(paramsList))
   formLoading.value = true
-  checkApiItem({
+  const payload = {
     dsType: dsType.value,
     data: Base64.encode(JSON.stringify(apiItem)),
     paramsList: params
-  })
+  }
+  const query = apiQuery.start()
+  checkApiItem(payload, query)
     .then(response => {
+      if (!query.isCurrent()) return
       formLoading.value = false
       apiItem.jsonFields = response.data.jsonFields
       apiItem.fields = []
@@ -494,9 +517,11 @@ const validateItem = () => {
       ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
+      if (!query.isCurrent()) return
       formLoading.value = false
       ElMessage.error(t('data_source.verification_failed'))
     })
+    .finally(query.finish)
 }
 
 const handleSubmit = param => {
@@ -513,7 +538,7 @@ const handleSubmit = param => {
 }
 
 const closeEditItem = () => {
-  cancelMap['/datasource/checkApiDatasource']?.()
+  invalidateApiQuery()
   if (isPlugin.value) {
     xpackApiItemBasicInfo?.value?.invokeMethod({
       methodName: 'resetForm',

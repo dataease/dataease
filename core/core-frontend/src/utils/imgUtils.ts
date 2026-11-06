@@ -1,3 +1,4 @@
+import { collectChartRuntimeCaches, getCanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
 import { withMapPictures } from './mapExport'
 import { prepareViewportChartsForExport } from '@/hooks/web/useChartViewportLoad'
 import html2canvas from 'html2canvas'
@@ -28,8 +29,13 @@ export function imgUrlTrans(url: string) {
   return authenticatedImageUrl(formatterUrl(url.replace('com//', 'com/')))
 }
 
-function prePareTemplateBaseData(dvId, callback) {
-  if (dvInfo.value.type === 'dataV' && canvasStyleData.value.screenAdaptor === 'full') {
+function prePareTemplateBaseData(dvId, callback, context?) {
+  const current = context || {
+    dvInfo: dvInfo.value,
+    canvasStyleData: canvasStyleData.value,
+    componentData: componentData.value
+  }
+  if (current.dvInfo.type === 'dataV' && current.canvasStyleData.screenAdaptor === 'full') {
     initCanvasDataPrepare(
       dvId,
       { busiFlag: 'dataV', resourceTable: 'core' },
@@ -42,8 +48,8 @@ function prePareTemplateBaseData(dvId, callback) {
     )
   } else {
     callback({
-      canvasDataResult: JSON.stringify(componentData.value),
-      canvasStyleResult: JSON.stringify(canvasStyleData.value)
+      canvasDataResult: JSON.stringify(current.componentData),
+      canvasStyleResult: JSON.stringify(current.canvasStyleData)
     })
   }
 }
@@ -51,9 +57,19 @@ function prePareTemplateBaseData(dvId, callback) {
 export async function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   try {
     await prepareViewportChartsForExport(canvasDom)
-    const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
+    const localCanvas = getCanvasRuntime(canvasDom)
+    const localCharts = collectChartRuntimeCaches(canvasDom)
+    const canvasViewDataTemplate = deepCopy(localCanvas?.canvasViewInfo || canvasViewInfo.value)
     Object.keys(canvasViewDataTemplate).forEach(viewId => {
-      canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
+      const cache = localCharts.find(cache => cache.view?.id === viewId)
+      // 有运行时上下文时不回退另一个画布的共享缓存；缺数据仍由既有校验提示。
+      canvasViewDataTemplate[viewId].data = deepCopy(
+        cache && !cache.legacy
+          ? cache.data
+          : cache?.legacy || !localCanvas
+          ? canvasViewDataInfo.value[viewId]
+          : undefined
+      )
     })
     const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
       const view = canvasViewDataTemplate[viewId]
@@ -75,7 +91,22 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
     const { canvasDataResult, canvasStyleResult } = await new Promise<{
       canvasDataResult: string
       canvasStyleResult: string
-    }>(resolve => prePareTemplateBaseData(dvInfo.value.id, resolve))
+    }>(resolve => {
+      if (
+        localCanvas &&
+        !(
+          localCanvas.dvInfo.type === 'dataV' &&
+          localCanvas.canvasStyleData.screenAdaptor === 'full'
+        )
+      ) {
+        resolve({
+          canvasDataResult: JSON.stringify(localCanvas.componentData),
+          canvasStyleResult: JSON.stringify(localCanvas.canvasStyleData)
+        })
+      } else {
+        prePareTemplateBaseData(localCanvas?.dvInfo.id || dvInfo.value.id, resolve, localCanvas)
+      }
+    })
     const materialBundle = useAppStoreWithOut().getXpackValid
       ? (await exportMaterialBundle(canvasStyleResult, canvasDataResult)).data
       : null
@@ -98,7 +129,7 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
       name: templateName,
       templateType: 'self',
       snapshot: dataUrl,
-      dvType: dvInfo.value.type,
+      dvType: localCanvas?.dvInfo.type || dvInfo.value.type,
       nodeType: downloadType,
       version: 3,
       canvasStyleData: remapMaterialDocument(canvasStyleResult, materialBundle?.referenceMap),

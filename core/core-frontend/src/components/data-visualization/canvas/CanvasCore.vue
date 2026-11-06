@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
+
+provideQueryScope(true)
+const refreshQuery = useLatestQuery('canvas-refresh')
 import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import {
@@ -256,7 +260,9 @@ useChartRefreshTimer(
     previewSearchCount.value++
     // 非图表组件的刷新通知只由主画布发送，避免组合或 Tab 子画布重复通知
     if (isMainCanvas(canvasId.value)) {
-      refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
+      refreshOtherComponent(dvInfo.value.id, dvInfo.value.type, {
+        queryRequest: refreshQuery.start()
+      })
     }
   }
 )
@@ -1501,7 +1507,7 @@ const getMoveItem = () => {
   return infoBox.value.moveItem
 }
 const userViewEnlarge = ref()
-const userViewEnlargeOpen = (opt, item) => {
+const userViewEnlargeOpen = (opt, item, runtime?) => {
   import('@/components/visualization/UserViewEnlarge.vue').then(res => {
     userViewEnlarge.value = res.default
     nextTick(() => {
@@ -1510,7 +1516,7 @@ const userViewEnlargeOpen = (opt, item) => {
         canvasViewInfo.value[item.id],
         item,
         opt,
-        { scale: curBaseScale.value }
+        { scale: curBaseScale.value, runtime }
       )
     })
   })
@@ -1762,7 +1768,7 @@ defineExpose({
         @onMouseUp="onMouseUp($event)"
         @onDragging="onDragging($event, item)"
         @onResizing="onResizing($event, item)"
-        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+        @userViewEnlargeOpen="(opt, runtime) => userViewEnlargeOpen(opt, item, runtime)"
         @datasetParamsInit="datasetParamsInit(item)"
         @linkJumpSetOpen="linkJumpSetOpen(item)"
         @linkageSetOpen="linkageSetOpen(item)"

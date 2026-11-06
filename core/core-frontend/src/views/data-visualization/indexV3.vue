@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import dvRuler from '@/assets/svg/dv-ruler.svg'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import {
@@ -337,7 +339,7 @@ const initLocalCanvasData = async callback => {
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
   await initCanvasData(
     resourceId,
-    { busiFlag, resourceTable: 'snapshot', source: 'main-edit' },
+    { busiFlag, resourceTable: 'snapshot', source: 'main-edit', queryRequest: canvasQuery.start() },
     function () {
       state.canvasInitStatus = true
       // afterInit

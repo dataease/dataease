@@ -1,3 +1,4 @@
+import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
 import type { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { originNameHandleWithArr } from '@/utils/CalculateFields'
@@ -21,30 +22,42 @@ export interface Panel {
   updateBy: string
 }
 
-export const findCopyResource = async (dvId, busiFlag): Promise<IResponse> => {
-  return request.get({ url: '/dataVisualization/findCopyResource/' + dvId + '/' + busiFlag })
+export const findCopyResource = async (
+  dvId,
+  busiFlag,
+  attachInfo?,
+  queryRequest?: QueryRequest
+): Promise<IResponse> => {
+  return request.get({
+    url: '/dataVisualization/findCopyResource/' + dvId + '/' + busiFlag,
+    queryRequest
+  })
 }
 
 export const findById = async (
   dvId,
   busiFlag,
-  attachInfo = { source: 'main', taskId: null }
+  attachInfo = { source: 'main', taskId: null },
+  queryRequest?: QueryRequest
 ): Promise<IResponse> => {
   let busiFlagResult = busiFlag
   if (!busiFlagResult) {
-    await findDvType(dvId).then(res => {
+    await findDvType(dvId, queryRequest?.fork('canvas-type')).then(res => {
       busiFlagResult = res.data
     })
   }
   const data = { id: dvId, busiFlag: busiFlagResult, ...attachInfo }
-  return request.post({ url: '/dataVisualization/findById', data })
+  return request.post({ url: '/dataVisualization/findById', data, queryRequest })
 }
 
 export const updateCheckVersion = dvId =>
   request.get({ url: `/dataVisualization/updateCheckVersion/${dvId}` })
 
-export const queryTreeApi = async (data: BusiTreeRequest): Promise<IResponse> => {
-  return request.post({ url: '/dataVisualization/tree', data }).then(res => {
+export const queryTreeApi = async (
+  data: BusiTreeRequest,
+  queryRequest?: QueryRequest
+): Promise<IResponse> => {
+  return request.post({ url: '/dataVisualization/tree', data, queryRequest }).then(res => {
     return res?.data
   })
 }
@@ -55,8 +68,8 @@ export const queryBusiTreeApi = async (data): Promise<IResponse> => {
   })
 }
 
-export const findDvType = async dvId =>
-  request.get({ url: `/dataVisualization/findDvType/${dvId}` })
+export const findDvType = async (dvId, queryRequest?: QueryRequest) =>
+  request.get({ url: `/dataVisualization/findDvType/${dvId}`, queryRequest })
 
 export const save = data => request.post({ url: '/dataVisualization/save', data })
 

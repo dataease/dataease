@@ -6,6 +6,9 @@ import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import { cloneDeep } from 'lodash-es'
 import { getPreviewData, getTableField } from '@/api/dataset'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const fieldsQuery = useLatestQuery('node-fields')
+const previewQuery = useLatestQuery('node-preview')
 import { useI18n } from '@/hooks/web/useI18n'
 import type { CascaderOption, CascaderValue } from 'element-plus-secondary'
 import UnionFieldList from './UnionFieldList.vue'
@@ -135,6 +138,8 @@ const resetFields = () => {
 
 const loadFields = async () => {
   const request = ++fieldRequest
+  fieldsQuery.invalidate()
+  previewQuery.invalidate()
   const node = selectedNode.value
   fieldsLoaded.value = false
   fieldSearch.value = ''
@@ -152,17 +157,21 @@ const loadFields = async () => {
     return
   }
   loading.value = true
+  const query = fieldsQuery.start()
   try {
-    const result = await getTableField({
-      datasourceId: node.datasourceId,
-      id: node.id,
-      info: node.info,
-      tableName: node.tableName,
-      type: node.type,
-      sqlVariableDetails: node.sqlVariableDetails,
-      isCross: props.isCross
-    })
-    if (request !== fieldRequest) return
+    const result = await getTableField(
+      {
+        datasourceId: node.datasourceId,
+        id: node.id,
+        info: node.info,
+        tableName: node.tableName,
+        type: node.type,
+        sqlVariableDetails: node.sqlVariableDetails,
+        isCross: props.isCross
+      },
+      query
+    )
+    if (request !== fieldRequest || !query.isCurrent()) return
     fields.value = (result as unknown as Field[]).map(field => {
       const saved = selectedNode.value?.currentDsFields.find(
         item => item.originName === field.originName
@@ -174,7 +183,8 @@ const loadFields = async () => {
   } catch {
     // API errors are reported by the shared request interceptor. Keep edits blocked until retry.
   } finally {
-    if (request === fieldRequest) loading.value = false
+    query.finish()
+    if (request === fieldRequest && query.isCurrent()) loading.value = false
   }
 }
 
@@ -204,6 +214,7 @@ const commit = (): Promise<boolean> => {
             delete fieldDrafts.value[field.originName]
           })
         ++previewRequest
+        previewQuery.invalidate()
         previewFields.value = []
         previewRows.value = []
         previewLoading.value = false
@@ -250,31 +261,36 @@ const preview = async () => {
   const node = selectedNode.value
   if (!node || !node.currentDsFields.length) return
   const request = ++previewRequest
+  const query = previewQuery.start()
   previewLoading.value = true
   previewFields.value = []
   previewRows.value = []
-  const { sqlVariableDetails, tableName, type, datasourceId, id, info, currentDsFields } =
-    cloneDeep(node)
   try {
-    const result = await getPreviewData({
-      union: [
-        {
-          currentDs: { sqlVariableDetails, tableName, type, datasourceId, id, info },
-          currentDsFields,
-          childrenDs: [],
-          unionToParent: { unionType: 'left', unionFields: [] }
-        }
-      ],
-      allFields: cloneDeep(currentDsFields.map(field => getDatasetField(field))),
-      isCross: props.isCross
-    })
-    if (request !== previewRequest) return
+    const { sqlVariableDetails, tableName, type, datasourceId, id, info, currentDsFields } =
+      cloneDeep(node)
+    const result = await getPreviewData(
+      {
+        union: [
+          {
+            currentDs: { sqlVariableDetails, tableName, type, datasourceId, id, info },
+            currentDsFields,
+            childrenDs: [],
+            unionToParent: { unionType: 'left', unionFields: [] }
+          }
+        ],
+        allFields: cloneDeep(currentDsFields.map(field => getDatasetField(field))),
+        isCross: props.isCross
+      },
+      query
+    )
+    if (request !== previewRequest || !query.isCurrent()) return
     previewFields.value = result.data.fields || []
     previewRows.value = result.data.data || []
   } catch {
     // Leave the preview empty after a failed request instead of showing another node's data.
   } finally {
-    if (request === previewRequest) previewLoading.value = false
+    query.finish()
+    if (request === previewRequest && query.isCurrent()) previewLoading.value = false
   }
 }
 // Drag previews replace the cloned node tree without changing the field query inputs.

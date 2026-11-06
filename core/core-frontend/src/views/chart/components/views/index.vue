@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+import { useQueryScope } from '@/hooks/web/useQueryScope'
+const queryScope = useQueryScope()
+const canvasRuntime = useCanvasRuntime()
+import { provideChartRuntimeCache, useCanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_linkRecord_outlined from '@/assets/svg/icon_link-record_outlined.svg'
 import icon_viewinchat_outlined from '@/assets/svg/icon_viewinchat_outlined.svg'
-import { cancelRequestBatch } from '@/config/axios/service'
 import icon_drilling_outlined from '@/assets/svg/icon_drilling_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
@@ -295,6 +298,11 @@ const hasDrillIcon = computed(() => {
 })
 
 const loading = ref(false)
+const chartRuntime = provideChartRuntimeCache(
+  () => view.value as Chart,
+  () => showPosition.value
+)
+const instanceSuffixId = computed(() => `${suffixId.value}-${chartRuntime.id}`)
 const chartAreaRef = ref<HTMLElement | null>(null)
 const viewportLoadEnabled = () =>
   !isMobile() &&
@@ -351,11 +359,11 @@ watch([() => searchCount.value], () => {
 })
 // 仪表板的查询结果设置变化 图表数据需要刷新
 watch([() => resultCount.value], () => {
-  queryData()
+  queryDataFromSelect()
 })
 
 watch([() => resultMode.value], () => {
-  queryData()
+  queryDataFromSelect()
 })
 
 watch([() => scale.value], () => {
@@ -475,7 +483,7 @@ const chartClick = param => {
 const filter = (firstLoad?: boolean) => {
   let filter: ReturnType<typeof useFilter>['filter']
   try {
-    filter = useFilter(view.value.id, firstLoad, showPosition.value).filter
+    filter = useFilter(view.value.id, firstLoad, showPosition.value, canvasRuntime?.()).filter
   } catch (error) {
     if (!(error instanceof FixedTimeError)) throw error
     ElMessage.error({ message: t(error.key), grouping: true })
@@ -563,7 +571,7 @@ const jumpClick = param => {
   }
   if (jumpInfo) {
     // 维度日期类型转换
-    viewFieldTimeTrans(dvMainStore.getViewDataDetails(param.viewId), param)
+    viewFieldTimeTrans(chartRuntime.data, param)
     param.sourceDvId = dvInfo.value.id
     param.sourceViewId = param.viewId
     param.sourceFieldId = dimension.id
@@ -584,7 +592,7 @@ const jumpClick = param => {
           ? '&editPreview=true'
           : ''
         const filterOuterParams = {}
-        const curFilter = dvMainStore.getLastViewRequestInfo(param.viewId)
+        const curFilter = chartRuntime.request
         const targetViewInfoList = jumpInfo.targetViewInfoList
         if (
           curFilter &&
@@ -678,8 +686,13 @@ const jumpClick = param => {
   }
 }
 
+let chartQueryVersion = 0
+const invalidateChartQuery = () => {
+  chartQueryVersion++
+  if (!view.value.isPlugin) chartComponent.value?.invalidateQuery?.()
+}
 const queryDataFromSelect = (firstLoad = false) => {
-  cancelRequestBatch(`chartData/getData/${view.value.id}`)
+  invalidateChartQuery()
   loading.value = false
   queryData(firstLoad)
 }
@@ -697,7 +710,9 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
   ) {
     return
   }
-  const searched = dvMainStore.firstLoadMap.includes(element.value.id)
+  const searched = queryScope
+    ? queryScope.loadedCharts.has(element.value.id)
+    : dvMainStore.firstLoadMap.includes(element.value.id)
   let queryFilter
   try {
     queryFilter = filter(searched ? false : firstLoad)
@@ -708,7 +723,7 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
   }
   if (!queryFilter) return
   if (showPosition.value.includes('viewDialog') || autoRefresh) {
-    queryFilter = dvMainStore.getLastViewRequestInfo(view.value.id)
+    queryFilter = chartRuntime.request
   }
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
@@ -726,33 +741,32 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
  * 插件沿用原调用参数，原生图表额外接收刷新来源
  */
 const calcData = (params, autoRefresh = false) => {
-  dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
+  invalidateChartQuery()
+  const version = chartQueryVersion
+  chartRuntime.request = cloneDeep(params.chartExtRequest)
+  if (chartRuntime.publishToStore)
+    dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
   const request = cloneDeep(params)
-  viewportLoad.run(() => performCalcData(request, autoRefresh))
+  viewportLoad.run(() => {
+    if (version === chartQueryVersion) performCalcData(request, autoRefresh)
+  })
 }
 
 const performCalcData = (params, autoRefresh = false) => {
+  const version = chartQueryVersion
+  const complete = () => {
+    if (version === chartQueryVersion) loading.value = false
+  }
   if (chartComponent?.value) {
     isAutoRefreshing.value = autoRefresh
     loading.value = true
     if (view.value.isPlugin) {
       chartComponent?.value?.invokeMethod({
         methodName: 'calcData',
-        args: [
-          params,
-          res => {
-            loading.value = false
-          }
-        ]
+        args: [params, complete]
       })
     } else {
-      chartComponent?.value?.calcData?.(
-        params,
-        () => {
-          loading.value = false
-        },
-        autoRefresh
-      )
+      chartComponent?.value?.calcData?.(params, complete, autoRefresh)
     }
   }
 }
@@ -771,7 +785,15 @@ onBeforeMount(() => {
     nextTick(() => {
       useEmitt({
         name: `query-data-${view.value.id}`,
-        callback: queryDataFromSelect
+        callback: (payload?: { scopeId?: number } | boolean) => {
+          if (
+            typeof payload === 'object' &&
+            payload?.scopeId !== undefined &&
+            payload.scopeId !== queryScope?.scopeId
+          )
+            return
+          queryDataFromSelect(typeof payload === 'boolean' ? payload : false)
+        }
       })
     })
   }
@@ -869,7 +891,18 @@ const changeDataset = () => {
   checkFieldIsAllowEmpty()
 }
 
-onBeforeUnmount(() => queryData.cancel())
+watch(
+  () => view.value.id,
+  () => {
+    invalidateChartQuery()
+    queryData.cancel()
+    loading.value = false
+  }
+)
+onBeforeUnmount(() => {
+  invalidateChartQuery()
+  queryData.cancel()
+})
 
 const loadPlugin = ref(false)
 
@@ -878,7 +911,9 @@ onMounted(() => {
     state.drillClickDimensionList = view.value?.chartExtRequest?.drill ?? []
     queryData(!showPosition.value.includes('viewDialog'))
   } else {
-    const searched = dvMainStore.firstLoadMap.includes(element.value.id)
+    const searched = queryScope
+      ? queryScope.loadedCharts.has(element.value.id)
+      : dvMainStore.firstLoadMap.includes(element.value.id)
     let queryFilter
     try {
       queryFilter = filter(!searched)
@@ -986,7 +1021,7 @@ onMounted(() => {
   const notifyRenderChartAllItem = (eventName: string, payload: RenderChartAllPayload) => {
     emitter.emit(eventName, {
       ...payload,
-      viewId: `${showPosition.value}-${view.value.id}-${suffixId.value}`
+      viewId: `${showPosition.value}-${view.value.id}-${instanceSuffixId.value}`
     })
   }
 
@@ -1064,7 +1099,7 @@ onMounted(() => {
     callback: () => {
       const chart = cloneDeep(view.value)
       chart.container =
-        'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
+        'container-' + showPosition.value + '-' + view.value.id + '-' + instanceSuffixId.value
     }
   })
 
@@ -1300,6 +1335,7 @@ const clearG2Tooltip = () => {
 <template>
   <div
     ref="chartAreaRef"
+    :data-chart-runtime="chartRuntime.id"
     class="chart-area report-load"
     :class="{ 'report-load-finish': !loadingFlag }"
     v-loading="loadingFlag"
@@ -1433,6 +1469,7 @@ const clearG2Tooltip = () => {
       >
       </de-picture-group>
       <de-rich-text-view
+        :view="view"
         v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
         :scale="scale"
         :themes="canvasStyleData.dashboard.themeColor"

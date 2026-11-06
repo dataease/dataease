@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import {
   computed,
   nextTick,
@@ -209,7 +211,7 @@ const initLocalCanvasData = callBack => {
   const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
   initCanvasData(
     resourceId,
-    { busiFlag, resourceTable: 'snapshot', source: 'main-edit' },
+    { busiFlag, resourceTable: 'snapshot', source: 'main-edit', queryRequest: canvasQuery.start() },
     function () {
       dataInitState.value = true
       if (dvInfo.value && opt === 'copy') {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires -- Node CommonJS 回归入口。 */
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -17,6 +18,7 @@ const setup = (plugin = false) => {
     saved = [],
     tasks = []
   const context = {
+    chartRuntime: { publishToStore: true },
     dvMainStore: { setLastViewRequestInfo: (...args) => saved.push(args) },
     cloneDeep: value => structuredClone(value),
     viewportLoad: { run: task => tasks.splice(0, tasks.length, task) },
@@ -29,7 +31,14 @@ const setup = (plugin = false) => {
       value: { calcData: (...args) => calls.push(args), invokeMethod: data => calls.push(data) }
     }
   }
-  vm.runInNewContext(methods + ';this.calcData=calcData', context)
+  const invalidation = source.slice(
+    source.indexOf('let chartQueryVersion = '),
+    source.indexOf('const queryDataFromSelect = ')
+  )
+  vm.runInNewContext(
+    invalidation + methods + ';this.calcData=calcData;this.invalidate=invalidateChartQuery',
+    context
+  )
   return { ...context, calls, saved, activate: () => tasks.pop()?.() }
 }
 
@@ -111,6 +120,8 @@ test('模板导出先补齐屏外数据，再校验并生成快照和数据包',
   let saved,
     completed = 0
   const state = {
+    collectChartRuntimeCaches: () => [],
+    getCanvasRuntime: () => undefined,
     prepareViewportChartsForExport: async () => {
       state.canvasViewDataInfo.value.view = { rows: ['loaded'] }
     },
@@ -126,7 +137,7 @@ test('模板导出先补齐屏外数据，再校验并生成快照和数据包',
       return Promise.resolve()
     },
     withMapPictures: (_, render) => render(),
-    waitForResourceImages: async () => {},
+    waitForResourceImages: async () => undefined,
     domToPng: async () => 'snapshot',
     window: { devicePixelRatio: 1 },
     remapMaterialDocument: value => value,
@@ -158,15 +169,41 @@ test('补齐数据失败时模板导出明确提示并结束加载', async () =>
   const errors = []
   let completed = 0
   const state = {
+    collectChartRuntimeCaches: () => [],
+    getCanvasRuntime: () => undefined,
     prepareViewportChartsForExport: async () => {
       throw new Error('load failed')
     },
     useI18n: () => ({ t: key => key }),
     ElMessage: { error: value => errors.push(value) },
-    console: { error: () => {} }
+    console: { error: () => undefined }
   }
   vm.runInNewContext(templateExportJS + ';this.exportTemplate=download2AppTemplate', state)
   await state.exportTemplate('template', {}, 'name', null, () => completed++)
   assert.deepEqual(errors, ['material.export_failed'])
   assert.equal(completed, 1)
+})
+
+test('旧图表和插件回调均不能关闭新查询的 loading', () => {
+  for (const plugin of [false, true]) {
+    const state = setup(plugin)
+    state.calcData({ id: 'same', chartExtRequest: { value: 'old' } })
+    state.activate()
+    const oldCallback = plugin ? state.calls[0].args[1] : state.calls[0][1]
+    state.calcData({ id: 'same', chartExtRequest: { value: 'new' } })
+    state.activate()
+    oldCallback()
+    assert.equal(state.loading.value, true)
+    const latestCallback = plugin ? state.calls[1].args[1] : state.calls[1][1]
+    latestCallback()
+    assert.equal(state.loading.value, false)
+  }
+})
+
+test('失效屏外待执行查询后，不再启动旧参数取数', () => {
+  const state = setup()
+  state.calcData({ id: 'same', chartExtRequest: { value: 'old' } })
+  state.invalidate()
+  state.activate()
+  assert.equal(state.calls.length, 0)
 })

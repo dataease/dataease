@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { getPreviewData, getTableField, type Table } from '@/api/dataset'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const fieldsQuery = useLatestQuery('table-fields')
+const previewQuery = useLatestQuery('table-preview')
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid, type Field } from './util'
 import { iconFieldMap } from '@/components/icon-group/field-list'
@@ -27,6 +30,8 @@ const load = async () => {
   const source = table.value
   if (!source) return
   const request = ++requestId
+  previewQuery.invalidate()
+  const query = fieldsQuery.start()
   loading.value = true
   fields.value = []
   previewFields.value = []
@@ -39,7 +44,7 @@ const load = async () => {
     info: JSON.stringify({ table: source.tableName, sql: '' })
   }
   try {
-    const result = await getTableField({ ...currentDs, isCross: false })
+    const result = await getTableField({ ...currentDs, isCross: false }, query)
     if (request !== requestId) return
     fields.value = ((result as unknown as SourceField[]) || []).map(field => ({
       ...field,
@@ -49,24 +54,29 @@ const load = async () => {
       datasourceId: currentDs.datasourceId
     }))
     if (!fields.value.length) return
-    const preview = await getPreviewData({
-      union: [
-        {
-          currentDs,
-          currentDsFields: fields.value,
-          childrenDs: [],
-          unionToParent: { unionType: 'left', unionFields: [] }
-        }
-      ],
-      allFields: fields.value,
-      isCross: false
-    })
-    if (request !== requestId) return
+    const previewRequest = previewQuery.start()
+    const preview = await getPreviewData(
+      {
+        union: [
+          {
+            currentDs,
+            currentDsFields: fields.value,
+            childrenDs: [],
+            unionToParent: { unionType: 'left', unionFields: [] }
+          }
+        ],
+        allFields: fields.value,
+        isCross: false
+      },
+      previewRequest
+    ).finally(previewRequest.finish)
+    if (request !== requestId || !previewRequest.isCurrent()) return
     previewFields.value = preview?.data?.fields || []
     rows.value = preview?.data?.data || []
   } catch {
     // The shared request interceptor reports errors; keep failed previews empty.
   } finally {
+    query.finish()
     if (request === requestId) loading.value = false
   }
 }
@@ -80,6 +90,8 @@ const open = (source: Table) => {
 watch(visible, value => {
   if (!value) {
     ++requestId
+    fieldsQuery.invalidate()
+    previewQuery.invalidate()
     loading.value = false
   }
 })
