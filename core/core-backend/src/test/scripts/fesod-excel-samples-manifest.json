@@ -98,12 +98,9 @@
   },
   {
     "file": "files/xlsx/12_errors_formulas.xlsx",
-    "expect": "accept",
-    "sheets": 1,
-    "fields": 5,
-    "previewRows": 2,
-    "dataRows": 2,
-    "sha256": "3770fd89707fd0bf7fafb3e8a2518e87000481a576d5ebd6ad561eb2c1c41c06"
+    "expect": "reject",
+    "sha256": "3770fd89707fd0bf7fafb3e8a2518e87000481a576d5ebd6ad561eb2c1c41c06",
+    "errorContains": "i18n_excel_formula_cache_missing"
   },
   {
     "file": "files/xlsx/13_long_text.xlsx",
@@ -225,13 +222,13 @@
   {
     "file": "files/negative/02_truncated_zip.xlsx",
     "expect": "reject",
-    "errorContains": "Truncated ZIP",
+    "errorContains": "Invalid OOXML/zip",
     "sha256": "d215b418138f3d0c18177d988a4291fd56c67cab90a31080687ced6401b31ad2"
   },
   {
     "file": "files/negative/03_text_disguised.xlsx",
     "expect": "reject",
-    "errorContains": "unsupported file type",
+    "errorContains": "invalid workbook or no sheet found",
     "sha256": "b0e38519d6f3fb3d158f2034ffb680bbcfd03507676da71e748c01d786090640"
   },
   {

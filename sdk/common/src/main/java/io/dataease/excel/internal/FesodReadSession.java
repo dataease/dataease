@@ -16,6 +16,7 @@ import org.apache.fesod.sheet.enums.CellDataTypeEnum;
 import org.apache.fesod.sheet.event.AnalysisEventListener;
 import org.apache.fesod.sheet.exception.ExcelAnalysisStopSheetException;
 import org.apache.fesod.sheet.metadata.data.ReadCellData;
+import org.apache.fesod.sheet.metadata.Cell;
 import org.apache.fesod.sheet.read.builder.ExcelReaderBuilder;
 import org.apache.fesod.sheet.read.metadata.ReadSheet;
 import org.apache.fesod.sheet.FesodSheet;
@@ -112,7 +113,8 @@ public class FesodReadSession implements ExcelReadSession {
                 ReadCellData<?> cellData = entry.getValue();
                 cells.put(entry.getKey(), new ExcelCell(entry.getKey(), mapType(cellData.getType()),
                         cellData.getStringValue(), cellData.getNumberValue(), cellData.getBooleanValue(),
-                        cellData.getDataFormatData() == null ? null : cellData.getDataFormatData().getFormat()));
+                        cellData.getDataFormatData() == null ? null : cellData.getDataFormatData().getFormat(),
+                        cellData.getFormulaData() != null));
             }
             handler.onHeader(cells);
         }
@@ -123,9 +125,12 @@ public class FesodReadSession implements ExcelReadSession {
             if (handler == null) {
                 return;
             }
+            Map<Integer, Cell> rawCells = context.readRowHolder() == null ? null : context.readRowHolder().getCellMap();
             Map<Integer, ExcelCell> cells = new LinkedHashMap<>();
             for (Map.Entry<Integer, String> entry : dataMap.entrySet()) {
-                cells.put(entry.getKey(), new ExcelCell(entry.getKey(), null, entry.getValue(), null, null, null));
+                boolean formula = rawCells != null && rawCells.get(entry.getKey()) instanceof ReadCellData<?> cellData
+                        && cellData.getFormulaData() != null;
+                cells.put(entry.getKey(), new ExcelCell(entry.getKey(), null, entry.getValue(), null, null, null, formula));
             }
             try {
                 handler.onRow(context.readRowHolder().getRowIndex(), cells);
