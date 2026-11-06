@@ -215,6 +215,7 @@ public class ExportCenterDownLoadManage {
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         Future future = exportThreadPool.submit(() -> {
             try {
+                LocaleContextHolder.setLocale(parseLocale(request));
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
                     V3UserUtil.setProxy(proxyOid);
@@ -240,6 +241,7 @@ public class ExportCenterDownLoadManage {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             } finally {
+                LocaleContextHolder.resetLocaleContext();
                 V3UserUtil.clear();
             }
         });
