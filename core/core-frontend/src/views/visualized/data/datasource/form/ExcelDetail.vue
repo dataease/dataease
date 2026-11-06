@@ -28,6 +28,7 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
 
 export interface Param {
+  copySourceId?: string | number
   editType: number
   pid?: string
   type?: string

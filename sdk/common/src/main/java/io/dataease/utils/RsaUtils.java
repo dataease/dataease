@@ -196,12 +196,7 @@ public class RsaUtils {
     }
 
     public static String publicKey() {
-        CoreRsa coreRsa = rsaManage.query();
-        String publicKey = coreRsa.getPublicKey();
-        String aesKey = coreRsa.getAesKey();
-        String pk = ascEncrypt(publicKey, aesKey).replaceAll("[\\s*\t\n\r]", "");
-        String separator = Base64.getUrlEncoder().encodeToString(PK_SEPARATOR.getBytes(StandardCharsets.UTF_8));
-        return pk + separator + aesKey;
+        return rsaManage.query().getPublicKey();
     }
 
     private static String generateAesKey() {
@@ -243,10 +238,6 @@ public class RsaUtils {
 
 
     private static final String ALGORITHM = "AES";
-
-    public static String generateSymmetricKey() {
-        return Base64.getEncoder().encodeToString(staticAesKey.getBytes(StandardCharsets.UTF_8));
-    }
 
     public static String symmetricEncrypt(String data) {
         try {

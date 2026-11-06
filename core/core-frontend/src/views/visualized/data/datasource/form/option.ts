@@ -212,6 +212,7 @@ export interface Node {
   name: string
   createBy: string
   creator: string
+  copySourceId?: string | number
   copy: boolean
   createTime: string
   id: number | string

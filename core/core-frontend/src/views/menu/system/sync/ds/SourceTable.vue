@@ -22,7 +22,7 @@ import EditorDatasource from './form/index.vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { dsTypes, filterOption } from './form/option'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
-import { symmetricDecryptJson } from '@/utils/encryption'
+import { parseConfigurationJson } from '@/utils/encryption'
 import { formatDate } from '@/utils/DateUtil'
 
 const props = defineProps({
@@ -223,7 +223,7 @@ const getDsInfo = async data => {
     let { configuration, datasourceRole, desc, id, name, status, statusRemark, type } = res.data
     if (configuration) {
       try {
-        configuration = await symmetricDecryptJson(configuration)
+        configuration = await parseConfigurationJson(configuration)
       } catch {
         ElMessage.error(t('sync_datasource.configuration_decrypt_failed'))
         return false
