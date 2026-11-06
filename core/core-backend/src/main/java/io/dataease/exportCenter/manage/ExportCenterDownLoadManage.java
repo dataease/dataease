@@ -81,8 +81,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -101,13 +102,15 @@ public class ExportCenterDownLoadManage {
     private int core;
     @Value("${dataease.export.max.size:10}")
     private int max;
+    @Value("${dataease.export.queue.size:100}")
+    private int queueSize;
 
     @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
-    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private ThreadPoolExecutor exportThreadPool;
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
     @Resource
@@ -157,9 +160,8 @@ public class ExportCenterDownLoadManage {
 
     @PostConstruct
     public void init() {
-        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(core);
-        scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
-        scheduledThreadPoolExecutor.setMaximumPoolSize(max);
+        exportThreadPool = new ThreadPoolExecutor(core, max, keepAliveSeconds, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(Math.max(1, queueSize)), new ThreadPoolExecutor.AbortPolicy());
     }
 
     @Scheduled(fixedRate = 5000)
@@ -211,7 +213,7 @@ public class ExportCenterDownLoadManage {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -253,7 +255,7 @@ public class ExportCenterDownLoadManage {
         Object proxyObj = request.get("proxy");
         Long proxyOid = ObjectUtils.isNotEmpty(proxyObj) ? Long.parseLong(proxyObj.toString()) : null;
         final List<Long> scope = resolveLogScope(request);
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             V3UserUtil.setUid(userId);
             if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -310,7 +312,7 @@ public class ExportCenterDownLoadManage {
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -552,7 +554,7 @@ public class ExportCenterDownLoadManage {
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
