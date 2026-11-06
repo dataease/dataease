@@ -1,3 +1,4 @@
+import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
 import { originNameHandleWithArr, originNameHandleBackWithArr } from '@/utils/CalculateFields'
 import { cloneDeep } from 'lodash-es'
@@ -84,7 +85,7 @@ export const deleteChartFieldByChartId = async (chartId): Promise<IResponse> => 
 }
 
 // 通过图表对象获取数据
-export const getData = async (data): Promise<IResponse> => {
+export const getData = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
   delete data.data
   const copyData = cloneDeep(data)
   // K线图查询时先按横轴降序取最新数据，渲染阶段再恢复升序
@@ -104,7 +105,7 @@ export const getData = async (data): Promise<IResponse> => {
   ]
   const dataFields = ['fields', 'sourceFields']
   originNameHandleWithArr(copyData, fields)
-  return request.post({ url: '/chartData/getData', data: copyData }).then(res => {
+  return request.post({ url: '/chartData/getData', data: copyData, queryRequest }).then(res => {
     if (res.code === 0) {
       originNameHandleBackWithArr(res?.data, fields)
       // 动态计算字段在数据中，也需要转码

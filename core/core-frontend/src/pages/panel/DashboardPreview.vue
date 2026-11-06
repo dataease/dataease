@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import { ref, reactive, onBeforeMount, nextTick, inject } from 'vue'
 import { initCanvasData, initCanvasDataMobile, onInitReady } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
@@ -88,7 +90,7 @@ onBeforeMount(async () => {
 
   req(
     embeddedParams.dvId,
-    { busiFlag: embeddedParams.busiFlag },
+    { busiFlag: embeddedParams.busiFlag, queryRequest: canvasQuery.start() },
     function ({
       canvasDataResult,
       canvasStyleResult,

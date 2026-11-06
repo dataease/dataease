@@ -162,12 +162,20 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   return selectValue ? selectValue : multiple ? [] : ''
 }
 
-export const useFilter = (curComponentId: string, firstLoad = false, showPosition: any) => {
+export const useFilter = (
+  curComponentId: string,
+  firstLoad = false,
+  showPosition: any,
+  context?: { componentData: object; canvasStyleData: { popupAvailable?: boolean } }
+) => {
   // 弹窗区域过滤组件是否生效
-  const popupAvailable = canvasStyleData.value.popupAvailable
+  const popupAvailable = (context?.canvasStyleData || canvasStyleData.value).popupAvailable
   const filter = []
-  const componentDataCustom =
-    showPosition === 'multiplexing' ? componentDataMultiply.value : componentData.value
+  const componentDataCustom = context?.componentData
+    ? (context.componentData as typeof componentData.value)
+    : showPosition === 'multiplexing'
+    ? componentDataMultiply.value
+    : componentData.value
   const queryComponentList = componentDataCustom.filter(
     ele =>
       ele.component === 'VQuery' &&

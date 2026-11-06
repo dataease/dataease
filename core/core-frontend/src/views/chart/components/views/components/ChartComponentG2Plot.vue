@@ -16,6 +16,8 @@ import {
   toRefs
 } from 'vue'
 import { getData } from '@/api/chart'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { provideChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import { G2ChartView, isLargeDataLabelMark } from '@/views/chart/components/js/panel/types/impl/g2'
 import { L7PlotChartView } from '@/views/chart/components/js/panel/types/impl/l7plot'
@@ -153,7 +155,20 @@ let chartData = shallowRef<Partial<Chart['data']>>({
   fields: []
 })
 
-const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
+const chartRuntime = provideChartRuntimeCache(
+  () => props.view as Chart,
+  () => props.showPosition
+)
+
+const containerId =
+  'container-' +
+  showPosition.value +
+  '-' +
+  view.value.id +
+  '-' +
+  suffixId.value +
+  '-' +
+  chartRuntime.id
 const viewTrack = ref(null)
 const chartStroke = computed(() => {
   const customAttr = parseJson(view.value.customAttr)
@@ -538,68 +553,95 @@ const checkSelected = param => {
  * 查询图表数据并传递刷新来源，开发模拟仅在显式开启时修改响应副本
  * autoRefresh 只标记定时刷新，手动查询仍使用完整绘制流程
  */
+
+const dataQuery = useLatestQuery('chart-data')
+const invalidateQuery = () => {
+  dataQuery.invalidate()
+  chartRenderVersion++
+  clearTimeout(g2Timer)
+  finishG2Schedule?.()
+  clearTimeout(mapTimer)
+  clearTimeout(mapL7Timer)
+}
+
 const calcData = async (view, callback, autoRefresh = false) => {
-  if (view.tableId || view['dataFrom'] === 'template') {
-    isError.value = false
-    const v = JSON.parse(JSON.stringify(view))
-    getData(v)
-      .then(async res => {
-        if (res.code && res.code !== 0) {
-          isError.value = true
-          errMsg.value = res.msg
-          callback?.()
-        } else {
-          if (mockRefreshResponse) {
-            res = mockRefreshResponse(res, view, autoRefresh)
-          }
-          chartData.value = res?.data as Partial<Chart['data']>
-          emit('onDrillFilters', res?.drillFilters)
-          if (!res?.drillFilters?.length) {
-            dynamicAreaId.value = ''
-            scope = null
-            gadmName = null
+  invalidateQuery()
+  const request = dataQuery.start()
+  try {
+    const complete = () => {
+      if (request.isCurrent()) callback?.()
+    }
+    if (view.tableId || view['dataFrom'] === 'template') {
+      isError.value = false
+      const v = JSON.parse(JSON.stringify(view))
+      return getData(v, request)
+        .then(async res => {
+          if (!request.isCurrent()) return
+          if (res.code && res.code !== 0) {
+            isError.value = true
+            errMsg.value = res.msg
+            complete()
           } else {
-            const chartExtRequest = view.chartExtRequest || view.value?.chartExtRequest
-            const extra = chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra
-            dynamicAreaId.value = extra?.adcode ? extra.adcode + '' : ''
-            scope = extra?.scope
-            gadmName = extra?.gadmName
-            // 地图
-            const map = parseJson(view.customAttr)?.map
-            if (map) {
-              let areaId = map.id
-              country.value = areaId.slice(0, 3)
-              if (country.value === '000' || dynamicAreaId.value?.startsWith('000')) {
-                const firstAdcode = chartExtRequest?.drill?.[0]?.extra?.adcode
-                if (firstAdcode) {
-                  country.value = firstAdcode + ''
+            if (mockRefreshResponse) {
+              res = mockRefreshResponse(res, view, autoRefresh)
+            }
+            chartData.value = res?.data as Partial<Chart['data']>
+            emit('onDrillFilters', res?.drillFilters)
+            if (!res?.drillFilters?.length) {
+              dynamicAreaId.value = ''
+              scope = null
+              gadmName = null
+            } else {
+              const chartExtRequest = view.chartExtRequest || view.value?.chartExtRequest
+              const extra = chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra
+              dynamicAreaId.value = extra?.adcode ? extra.adcode + '' : ''
+              scope = extra?.scope
+              gadmName = extra?.gadmName
+              // 地图
+              const map = parseJson(view.customAttr)?.map
+              if (map) {
+                let areaId = map.id
+                country.value = areaId.slice(0, 3)
+                if (country.value === '000' || dynamicAreaId.value?.startsWith('000')) {
+                  const firstAdcode = chartExtRequest?.drill?.[0]?.extra?.adcode
+                  if (firstAdcode) {
+                    country.value = firstAdcode + ''
+                  }
+                }
+              }
+              if (dynamicAreaId.value && !dynamicAreaId.value?.startsWith(country.value)) {
+                if (country.value === 'cus') {
+                  dynamicAreaId.value = '156' + dynamicAreaId.value
+                } else {
+                  dynamicAreaId.value = country.value + dynamicAreaId.value
                 }
               }
             }
-            if (dynamicAreaId.value && !dynamicAreaId.value?.startsWith(country.value)) {
-              if (country.value === 'cus') {
-                dynamicAreaId.value = '156' + dynamicAreaId.value
-              } else {
-                dynamicAreaId.value = country.value + dynamicAreaId.value
-              }
+            chartRuntime.setDetails(res)
+            if (chartRuntime.publishToStore) dvMainStore.setViewDataDetails(view.id, res)
+            if (!res.drill && !res.chartExtRequest?.linkageFilters?.length) {
+              chartRuntime.originData = chartData.value
+              if (chartRuntime.publishToStore)
+                dvMainStore.setViewOriginData(view.id, chartData.value)
+              emitter.emit('chart-data-change')
             }
+            await renderChart(res, complete, autoRefresh)
           }
-          dvMainStore.setViewDataDetails(view.id, res)
-          if (!res.drill && !res.chartExtRequest?.linkageFilters?.length) {
-            dvMainStore.setViewOriginData(view.id, chartData.value)
-            emitter.emit('chart-data-change')
-          }
-          await renderChart(res, callback, autoRefresh)
-        }
-      })
-      .catch(() => {
-        callback?.()
-      })
-  } else {
-    if (['bubble-map', 'map', 'flow-map', 'heat-map'].includes(view.type)) {
-      await renderChart(view, callback)
+        })
+        .catch(() => {
+          complete()
+        })
+        .finally(request.finish)
+    } else {
+      if (['bubble-map', 'map', 'flow-map', 'heat-map'].includes(view.type)) {
+        await renderChart(view, complete)
+      }
+      complete()
+      request.finish()
     }
-    callback?.()
+  } catch (error) {
+    request.finish()
+    throw error
   }
 }
 let curView
@@ -1169,7 +1211,7 @@ const trackClick = trackAction => {
       if (view.value.type === 'box-plot') {
         linkageActivePre()
       }
-      dvMainStore.addViewTrackFilter(linkageParam)
+      dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
       emit('onChartClick', param)
       break
     case 'drill':
@@ -1177,7 +1219,7 @@ const trackClick = trackAction => {
       break
     case 'linkage':
       linkageActivePre()
-      dvMainStore.addViewTrackFilter(linkageParam)
+      dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
       break
     case 'jump':
       if (mobileInPc.value && !inMobile.value) return
@@ -1335,6 +1377,7 @@ const unPreparePicture = id => {
   }
 }
 defineExpose({
+  invalidateQuery,
   calcData,
   renderChart,
   trackMenu,
@@ -1437,6 +1480,7 @@ const onWheel = (e: WheelEvent) => {
 onBeforeUnmount(() => {
   try {
     chartComponentUnmounted = true
+    invalidateQuery()
     chartRenderVersion++
     clearTimeout(mapTimer)
     clearTimeout(mapL7Timer)

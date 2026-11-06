@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useQueryScope } from '@/hooks/web/useQueryScope'
+const queryScope = useQueryScope()
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
@@ -482,7 +484,8 @@ const queryDataForId = id => {
   }
   fillRequireVal(emitterList)
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    queryScope?.loadedCharts.add(ele)
+    emitter.emit(`query-data-${ele}`, { scopeId: queryScope?.scopeId })
   })
 }
 const getQueryConditionWidth = () => {
@@ -555,7 +558,8 @@ const isConfirmSearchNoRequiredName = id => {
   }
   fillRequireVal(emitterList)
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    queryScope?.loadedCharts.add(ele)
+    emitter.emit(`query-data-${ele}`, { scopeId: queryScope?.scopeId })
   })
 }
 
@@ -688,7 +692,7 @@ const delQueryConfig = index => {
   list.value.splice(index, 1)
   element.value.propValue = [...list.value]
   snapshotStore.recordSnapshotCache('delQueryConfig')
-  reRenderAll(com, cloneDeep(unref(list)))
+  reRenderAll(com, cloneDeep(unref(list)), queryScope?.scopeId)
 }
 
 const resetData = () => {
@@ -910,7 +914,8 @@ const queryData = () => {
     dvMainStore.setFirstLoadMap([...new Set([...emitterList, ...firstLoadMap.value])])
   }
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    queryScope?.loadedCharts.add(ele)
+    emitter.emit(`query-data-${ele}`, { scopeId: queryScope?.scopeId })
   })
 }
 const titleStyle = computed(() => {

@@ -228,6 +228,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
+const chartRuntime = useChartRuntimeCache()
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import dvBarEnlarge from '@/assets/svg/dv-bar-enlarge.svg'
@@ -498,21 +500,41 @@ const callbackExport = () => {
 }
 const exportAsFormattedExcel = () => {
   if (!shareAllows(2)) return
-  const s2Instance = dvMainStore.getViewInstanceInfo(element.value.id)
+  const s2Instance =
+    chartRuntime && !chartRuntime.legacy
+      ? chartRuntime.instance
+      : dvMainStore.getViewInstanceInfo(element.value.id)
   if (!s2Instance) {
     return
   }
-  const chart = dvMainStore.getViewDetails(element.value.id)
+  const chart =
+    chartRuntime && !chartRuntime.legacy
+      ? chartRuntime.view
+      : dvMainStore.getViewDetails(element.value.id)
   exportPivotExcel(s2Instance, chart)
 }
 
 const exportAsExcel = () => {
   if (!shareAllows(2)) return
-  const viewDataInfo = dvMainStore.getViewDataDetails(element.value.id)
-  const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
-  const viewInfo = dvMainStore.getViewDetails(element.value.id)
-  const chart = { ...viewInfo, chartExtRequest, data: viewDataInfo, busiFlag: dvInfo.value.type }
-  exportExcelDownload(chart, dvInfo.value.name, () => {
+  const viewDataInfo =
+    chartRuntime && !chartRuntime.legacy
+      ? chartRuntime.data
+      : dvMainStore.getViewDataDetails(element.value.id)
+  const chartExtRequest =
+    chartRuntime && !chartRuntime.legacy
+      ? chartRuntime.request
+      : dvMainStore.getLastViewRequestInfo(element.value.id)
+  const viewInfo =
+    chartRuntime && !chartRuntime.legacy
+      ? chartRuntime.view
+      : dvMainStore.getViewDetails(element.value.id)
+  const chart = {
+    ...viewInfo,
+    chartExtRequest,
+    data: viewDataInfo,
+    busiFlag: chartRuntime?.canvasInfo?.type || dvInfo.value.type
+  }
+  exportExcelDownload(chart, chartRuntime?.canvasInfo?.name || dvInfo.value.name, () => {
     openMessageLoading(callbackExport)
   })
 }

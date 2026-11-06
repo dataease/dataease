@@ -554,45 +554,53 @@ export function historyAdaptor(
 }
 
 // 重置仪表板、大屏中的其他组件
-export function refreshOtherComponent(dvId, busiFlag) {
+export function refreshOtherComponent(dvId, busiFlag, context?) {
+  const currentComponents = context?.componentData || componentData.value
   // 富文本 跑马灯组件进行刷新
-  const refreshComponentList = componentData.value.filter(
+  const refreshComponentList = currentComponents.filter(
     ele => ['ScrollText'].includes(ele.component) || ele.innerType === 'rich-text'
   )
   if (refreshComponentList && refreshComponentList.length > 0) {
     const refreshIdList = refreshComponentList.map(ele => ele.id)
-    findById(dvId, busiFlag, {}).then(rsp => {
-      const canvasInfo = rsp.data
-      const canvasDataResult = JSON.parse(canvasInfo.componentData)
-      const canvasDataResultMap = canvasDataResult.reduce((acc, comp) => {
-        acc[comp.id] = comp
-        return acc
-      }, {})
-      // 遍历数组并替换
-      for (let i = 0; i < componentData.value.length; i++) {
-        const component = componentData.value[i]
-        if (refreshIdList.includes(component.id) && canvasDataResultMap[component.id]) {
-          if (inMobile.value) {
-            componentData.value[i].propValue = canvasDataResultMap[component.id].propValue
-          } else {
-            const { top, left, height, width, fontSize } = componentData.value[i].style
-            const { linkageFilters, outerParamsFilters, webParamsFilters } = componentData.value[i]
-            canvasDataResultMap[component.id].style.top = top
-            canvasDataResultMap[component.id].style.left = left
-            canvasDataResultMap[component.id].style.height = height
-            canvasDataResultMap[component.id].style.width = width
-            canvasDataResultMap[component.id]['linkageFilters'] = linkageFilters
-            canvasDataResultMap[component.id]['outerParamsFilters'] = outerParamsFilters
-            canvasDataResultMap[component.id]['webParamsFilters'] = webParamsFilters
-            if (fontSize) {
-              canvasDataResultMap[component.id].style.fontSize = fontSize
+    return findById(dvId, busiFlag, {}, context?.queryRequest)
+      .then(rsp => {
+        if (context?.queryRequest && !context.queryRequest.isCurrent()) return
+        const canvasInfo = rsp.data
+        const canvasDataResult = JSON.parse(canvasInfo.componentData)
+        const canvasDataResultMap = canvasDataResult.reduce((acc, comp) => {
+          acc[comp.id] = comp
+          return acc
+        }, {})
+        // 遍历数组并替换
+        for (let i = 0; i < currentComponents.length; i++) {
+          const component = currentComponents[i]
+          if (refreshIdList.includes(component.id) && canvasDataResultMap[component.id]) {
+            if (inMobile.value) {
+              currentComponents[i].propValue = canvasDataResultMap[component.id].propValue
+            } else {
+              const { top, left, height, width, fontSize } = currentComponents[i].style
+              const { linkageFilters, outerParamsFilters, webParamsFilters } = currentComponents[i]
+              canvasDataResultMap[component.id].style.top = top
+              canvasDataResultMap[component.id].style.left = left
+              canvasDataResultMap[component.id].style.height = height
+              canvasDataResultMap[component.id].style.width = width
+              canvasDataResultMap[component.id]['linkageFilters'] = linkageFilters
+              canvasDataResultMap[component.id]['outerParamsFilters'] = outerParamsFilters
+              canvasDataResultMap[component.id]['webParamsFilters'] = webParamsFilters
+              if (fontSize) {
+                canvasDataResultMap[component.id].style.fontSize = fontSize
+              }
+              currentComponents[i] = canvasDataResultMap[component.id]
             }
-            componentData.value[i] = canvasDataResultMap[component.id]
           }
         }
-      }
-    })
+      })
+      .catch(error => {
+        if (!context?.queryRequest || context.queryRequest.isCurrent()) console.error(error)
+      })
+      .finally(() => context?.queryRequest?.finish())
   }
+  context?.queryRequest?.finish()
 }
 
 export function initCanvasDataPrepare(dvId, params, callBack) {
@@ -613,52 +621,55 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
     }
   }
   attachInfo['resourceTable'] = params.resourceTable ? params.resourceTable : 'core'
-  return method(dvId, busiFlagCustom, attachInfo).then(res => {
-    const canvasInfo = res.data
-    const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
+  return method(dvId, busiFlagCustom, attachInfo, params.queryRequest)
+    .then(res => {
+      if (params.queryRequest && !params.queryRequest.isCurrent()) return
+      const canvasInfo = res.data
+      const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
 
-    const dvInfo = {
-      id: canvasInfo.id,
-      name: canvasInfo.name,
-      pid: canvasInfo.pid,
-      status: canvasInfo.status,
-      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-      type: canvasInfo.type,
-      creatorName: canvasInfo.creatorName,
-      updateName: canvasInfo.updateName,
-      createTime: canvasInfo.createTime,
-      updateTime: canvasInfo.updateTime,
-      watermarkInfo: watermarkInfo,
-      weight: canvasInfo.weight,
-      ext: canvasInfo.ext,
-      contentId: canvasInfo.contentId,
-      mobileLayout: canvasInfo.mobileLayout || false
-    }
-    attachInfo['dvType'] = canvasInfo.type
-    const canvasVersion = canvasInfo.version
+      const dvInfo = {
+        id: canvasInfo.id,
+        name: canvasInfo.name,
+        pid: canvasInfo.pid,
+        status: canvasInfo.status,
+        selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
+        type: canvasInfo.type,
+        creatorName: canvasInfo.creatorName,
+        updateName: canvasInfo.updateName,
+        createTime: canvasInfo.createTime,
+        updateTime: canvasInfo.updateTime,
+        watermarkInfo: watermarkInfo,
+        weight: canvasInfo.weight,
+        ext: canvasInfo.ext,
+        contentId: canvasInfo.contentId,
+        mobileLayout: canvasInfo.mobileLayout || false
+      }
+      attachInfo['dvType'] = canvasInfo.type
+      const canvasVersion = canvasInfo.version
 
-    const canvasDataResult = JSON.parse(canvasInfo.componentData)
-    const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
-    const canvasViewInfoPreview = canvasInfo.canvasViewInfo
-    historyAdaptor(canvasStyleResult, canvasDataResult, canvasInfo, attachInfo, canvasVersion)
-    const curPreviewGap =
-      dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
-        ? canvasStyleResult['dashboard'].gapSize
-        : 0
-    const appearanceStore = useAppearanceStoreWithOut()
-    appearanceStore.setCurrentFont(canvasStyleResult.fontFamily)
-    document.documentElement.style.setProperty(
-      '--de-canvas_custom_font',
-      `${canvasStyleResult.fontFamily}`
-    )
-    return callBack({
-      canvasDataResult,
-      canvasStyleResult,
-      dvInfo,
-      canvasViewInfoPreview,
-      curPreviewGap
+      const canvasDataResult = JSON.parse(canvasInfo.componentData)
+      const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
+      const canvasViewInfoPreview = canvasInfo.canvasViewInfo
+      historyAdaptor(canvasStyleResult, canvasDataResult, canvasInfo, attachInfo, canvasVersion)
+      const curPreviewGap =
+        dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
+          ? canvasStyleResult['dashboard'].gapSize
+          : 0
+      const appearanceStore = useAppearanceStoreWithOut()
+      appearanceStore.setCurrentFont(canvasStyleResult.fontFamily)
+      document.documentElement.style.setProperty(
+        '--de-canvas_custom_font',
+        `${canvasStyleResult.fontFamily}`
+      )
+      return callBack({
+        canvasDataResult,
+        canvasStyleResult,
+        dvInfo,
+        canvasViewInfoPreview,
+        curPreviewGap
+      })
     })
-  })
+    .finally(() => params.queryRequest?.finish())
 }
 
 export async function initCanvasData(dvId, params, callBack) {
@@ -672,19 +683,36 @@ export async function initCanvasData(dvId, params, callBack) {
         dvMainStore.updateCurDvInfo(dvInfo)
         dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
         // 刷新联动信息
-        getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
-          dvMainStore.setNowPanelTrackInfo(rsp.data)
-        })
+        getPanelAllLinkageInfo(
+          dvInfo.id,
+          params.resourceTable,
+          params.queryRequest?.fork('linkage')
+        )
+          .then(rsp => {
+            if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            dvMainStore.setNowPanelTrackInfo(rsp.data)
+          })
+          .catch(() => undefined)
         // 刷新跳转信息
-        queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
-          dvMainStore.setNowPanelJumpInfo(rsp.data)
-        })
+        queryVisualizationJumpInfo(
+          dvInfo.id,
+          params.resourceTable,
+          params.queryRequest?.fork('jump')
+        )
+          .then(rsp => {
+            if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            dvMainStore.setNowPanelJumpInfo(rsp.data)
+          })
+          .catch(() => undefined)
       }
       return callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )
   // Share pages await initialization to render a persistent error; other callers keep their timing.
   if (params.awaitLoad) return loading
+  void loading.catch(error => {
+    if (!params.queryRequest || params.queryRequest.isCurrent()) console.error(error)
+  })
 }
 
 export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
@@ -795,13 +823,19 @@ export function initCanvasDataMobile(dvId, params, callBack) {
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
-        dvMainStore.setNowPanelTrackInfo(rsp.data)
-      })
+      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable, params.queryRequest?.fork('linkage'))
+        .then(rsp => {
+          if (params.queryRequest && !params.queryRequest.isCurrent()) return
+          dvMainStore.setNowPanelTrackInfo(rsp.data)
+        })
+        .catch(() => undefined)
       // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
-        dvMainStore.setNowPanelJumpInfo(rsp.data)
-      })
+      queryVisualizationJumpInfo(dvInfo.id, 'snapshot', params.queryRequest?.fork('jump'))
+        .then(rsp => {
+          if (params.queryRequest && !params.queryRequest.isCurrent()) return
+          dvMainStore.setNowPanelJumpInfo(rsp.data)
+        })
+        .catch(() => undefined)
       return callBack({
         canvasDataResult: componentData,
         canvasStyleResult,
@@ -812,6 +846,9 @@ export function initCanvasDataMobile(dvId, params, callBack) {
   )
   // Share pages await initialization to render a persistent error; other callers keep their timing.
   if (params.awaitLoad) return loading
+  void loading.catch(error => {
+    if (!params.queryRequest || params.queryRequest.isCurrent()) console.error(error)
+  })
 }
 
 export function checkCanvasChangePre(callBack) {

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import request from '@/config/axios'
 import { queryDefaultSnapshot } from '@/utils/queryDefaultSnapshot'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -153,7 +155,8 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
       busiFlag: dvType,
       resourceTable: state.editPreview ? 'snapshot' : 'core',
       onlyPreview: !!props.outerId,
-      awaitLoad: props.publicLinkStatus
+      awaitLoad: props.publicLinkStatus,
+      queryRequest: canvasQuery.start()
     },
     async function ({
       canvasDataResult,

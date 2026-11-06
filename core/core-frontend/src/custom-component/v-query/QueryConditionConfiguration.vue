@@ -58,7 +58,6 @@ import { iconChartMap } from '@/components/icon-group/chart-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
-import { cancelAllRequest } from '@/config/axios/service'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -1859,7 +1858,6 @@ const handleFastClick = (item, idx = 0) => {
     }
     clearTimeout(fastClickId)
     fastClickLoading.value = true
-    cancelAllRequest()
     handleCondition(item, idx)
     fastClickId = setTimeout(() => {
       fastClickLoading.value = false

@@ -29,6 +29,8 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getData } from '@/api/chart'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { provideChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
 import { parseJson } from '@/views/chart/components/js/util'
 import { mappingColorCustom } from '@/views/chart/components/js/panel/common/common_table'
 import { storeToRefs } from 'pinia'
@@ -36,7 +38,7 @@ import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmpty
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo, mobileInPc, fullscreenFlag } = storeToRefs(dvMainStore)
+const { mobileInPc, fullscreenFlag } = storeToRefs(dvMainStore)
 const state = reactive({
   emptyValue: '-',
   data: null,
@@ -239,62 +241,85 @@ const withInit = () => {
   initCarousel()
 }
 
+const chartRuntime = provideChartRuntimeCache(
+  () => props.view as Chart,
+  () => props.showPosition
+)
+const dataQuery = useLatestQuery('chart-data')
+const invalidateQuery = () => dataQuery.invalidate()
+
 const calcData = (viewCalc: Chart, callback) => {
-  isError.value = false
-  const { threshold } = parseJson(viewCalc.senior)
-  if (!threshold.enable) {
-    withInit()
-    callback?.()
-    return
-  }
-  if (viewCalc.tableId || viewCalc['dataFrom'] === 'template') {
-    const v = JSON.parse(JSON.stringify(viewCalc))
-    v.type = 'table-info'
-    v.render = 'antv'
-    v.resultCount = 1
-    getData(v)
-      .then(res => {
-        if (res.code && res.code !== 0) {
-          isError.value = true
-          errMsg.value = res.msg
-        } else {
-          res.type = 'picture-group'
-          res.render = 'custom'
-          state.data = res?.data
-          state.viewDataInfo = res
-          state.totalItems = res?.totalItems
-          const curViewInfo = canvasViewInfo.value[element.value.id]
-          curViewInfo['curFields'] = res.data.fields
-          dvMainStore.setViewDataDetails(element.value.id, res)
-          initReady.value = true
-          initCurFields(res)
-          initCarousel()
-        }
-        callback?.()
-        nextTick(() => {
-          initReady.value = true
+  const request = dataQuery.start()
+  try {
+    isError.value = false
+    const { threshold } = parseJson(viewCalc.senior)
+    if (!threshold.enable) {
+      withInit()
+      callback?.()
+      request.finish()
+      return
+    }
+    if (viewCalc.tableId || viewCalc['dataFrom'] === 'template') {
+      const v = JSON.parse(JSON.stringify(viewCalc))
+      v.type = 'table-info'
+      v.render = 'antv'
+      v.resultCount = 1
+      return getData(v, request)
+        .then(res => {
+          if (!request.isCurrent()) return
+          if (res.code && res.code !== 0) {
+            isError.value = true
+            errMsg.value = res.msg
+          } else {
+            res.type = 'picture-group'
+            res.render = 'custom'
+            state.data = res?.data
+            state.viewDataInfo = res
+            state.totalItems = res?.totalItems
+            const curViewInfo = chartRuntime.view
+            if (curViewInfo) curViewInfo['curFields'] = res.data.fields
+            chartRuntime.setDetails(res)
+            if (chartRuntime.publishToStore) dvMainStore.setViewDataDetails(element.value.id, res)
+            initReady.value = true
+            initCurFields(res)
+            initCarousel()
+          }
+          callback?.()
+          nextTick(() => {
+            if (!request.isCurrent()) return
+            initReady.value = true
+          })
         })
-      })
-      .catch(e => {
-        console.error(e)
-        nextTick(() => {
-          initReady.value = true
+        .catch(e => {
+          if (!request.isCurrent()) return
+          console.error(e)
+          nextTick(() => {
+            if (!request.isCurrent()) return
+            initReady.value = true
+          })
+          callback?.()
         })
-        callback?.()
+        .finally(request.finish)
+    } else if (!viewCalc.tableId) {
+      initReady.value = true
+      withInit()
+      callback?.()
+      nextTick(() => {
+        if (!request.isCurrent()) return
+        initReady.value = true
       })
-  } else if (!viewCalc.tableId) {
-    initReady.value = true
-    withInit()
-    callback?.()
-    nextTick(() => {
-      initReady.value = true
-    })
-  } else {
-    withInit()
-    nextTick(() => {
-      initReady.value = true
-    })
-    callback?.()
+    } else {
+      withInit()
+      nextTick(() => {
+        if (!request.isCurrent()) return
+        initReady.value = true
+      })
+      callback?.()
+    }
+    request.finish()
+  } catch (error) {
+    request.finish()
+    throw error
   }
 }
 
@@ -312,6 +337,7 @@ onBeforeMount(() => {
 })
 
 defineExpose({
+  invalidateQuery,
   calcData,
   renderChart
 })

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type CanvasIdentity, provideChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
 import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 import {
@@ -178,11 +179,18 @@ const suspensionViewButtonAvailable = computed(
     dvMainStore.canvasStyleData.suspensionViewButtonAvailable === undefined ||
     dvMainStore.canvasStyleData.suspensionViewButtonAvailable
 )
-const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
+const chartRuntime = provideChartRuntimeCache(
+  () => props.viewInfo as Chart,
+  () => props.showPosition,
+  () => props.dvInfo as CanvasIdentity
+)
+const viewDemoInnerId = computed(
+  () => 'enlarge-inner-content-' + config.value.id + '-' + chartRuntime.id
+)
 const htmlToImage = () => {
   downLoading.value = true
   setTimeout(() => {
-    const vueDom = document.getElementById(viewDemoInnerId.value)
+    const vueDom = componentWrapperInnerRef.value
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
     downloadCanvas2('img', vueDom, t('chart.chart'), () => {
       // do callback
@@ -532,6 +540,7 @@ onBeforeUnmount(() => {
       }
     ]"
     :id="wrapperId"
+    :data-chart-runtime="chartRuntime.id"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
     v-loading="downLoading"
@@ -560,7 +569,7 @@ onBeforeUnmount(() => {
       :show-position="showPositionActive"
       :class="{ 'wrapper-edit-bar-active': active }"
       @componentImageDownload="htmlToImage"
-      @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
+      @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt, chartRuntime.snapshot())"
       @datasetParamsInit="() => emits('datasetParamsInit')"
     ></component-edit-bar>
     <component-selector

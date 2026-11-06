@@ -1,3 +1,4 @@
+import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
 import {
   originNameHandle,
@@ -192,25 +193,27 @@ export const getTables = async (data): Promise<Table[]> => {
   })
 }
 
-export const getTableField = async (data): Promise<IResponse> => {
-  return request.post({ url: '/datasetData/tableField', data }).then(res => {
+export const getTableField = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
+  return request.post({ url: '/datasetData/tableField', data, queryRequest }).then(res => {
     return res?.data
   })
 }
 
-export const getPreviewData = async (data): Promise<IResponse> => {
+export const getPreviewData = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
   const copyData = cloneDeep(data)
   originNameHandle(copyData.allFields)
-  return request.post({ url: '/datasetData/previewData', data: copyData }).then(res => {
-    if (res?.data?.allFields?.length) {
-      originNameHandleBack(res?.data?.allFields)
-    }
+  return request
+    .post({ url: '/datasetData/previewData', data: copyData, queryRequest })
+    .then(res => {
+      if (res?.data?.allFields?.length) {
+        originNameHandleBack(res?.data?.allFields)
+      }
 
-    if (res?.data?.data?.fields?.length) {
-      originNameHandleBack(res?.data?.data?.fields)
-    }
-    return res?.data
-  })
+      if (res?.data?.data?.fields?.length) {
+        originNameHandleBack(res?.data?.data?.fields)
+      }
+      return res?.data
+    })
 }
 
 export const getDatasetPreview = async (id, signal?: AbortSignal): Promise<FieldData> => {
@@ -401,8 +404,8 @@ export const listByDsIds = async (data): Promise<IResponse> => {
   })
 }
 
-export const getFieldTree = async (data): Promise<IResponse> => {
-  return request.post({ url: 'datasetData/getFieldTree', data }).then(res => {
+export const getFieldTree = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
+  return request.post({ url: 'datasetData/getFieldTree', data, queryRequest }).then(res => {
     return res?.data
   })
 }

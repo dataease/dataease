@@ -14,15 +14,17 @@ const request = (option: any) => {
     responseType,
     loading,
     signal,
+    queryRequest,
     handleErrorLocally,
     onUploadProgress,
     headers = {}
   } = option
-  return service({
+  const result = service({
     url: url,
     method,
     loading,
     signal,
+    queryRequest,
     handleErrorLocally,
     onUploadProgress,
     params,
@@ -37,6 +39,7 @@ const request = (option: any) => {
       ...headers
     }
   })
+  return queryRequest ? result.finally(queryRequest.finish) : result
 }
 
 export default {
