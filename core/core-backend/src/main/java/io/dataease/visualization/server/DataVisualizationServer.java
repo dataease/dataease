@@ -2,6 +2,7 @@ package io.dataease.visualization.server;
 import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
@@ -95,8 +96,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private EntityManager entityManager;
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
-    @Resource
-    private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
 
@@ -852,12 +851,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 复制图表 chart_view
         chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
         chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
-        List<CoreChartView> viewList = coreChartViewRepository.findViewInfoByCopyId(copyId);
+        QCoreChartView coreChartView = QCoreChartView.coreChartView;
+        // 替换画布中的图表引用只需复制前后的 ID，避免重复加载完整配置。
+        List<Tuple> viewList = queryFactory
+                .select(coreChartView.id, coreChartView.copyFrom)
+                .from(coreChartView)
+                .where(coreChartView.copyId.eq(copyId))
+                .fetch();
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();
             // componentData viewId 数据  并保存
-            for (CoreChartView viewInfo : viewList) {
-                componentData = componentData.replace(String.valueOf(viewInfo.getCopyFrom()), String.valueOf(viewInfo.getId()));
+            for (Tuple viewInfo : viewList) {
+                Long sourceViewId = viewInfo.get(coreChartView.copyFrom);
+                Long targetViewId = viewInfo.get(coreChartView.id);
+                componentData = componentData.replace(String.valueOf(sourceViewId), String.valueOf(targetViewId));
             }
             newDv.setComponentData(componentData);
         }
@@ -1280,20 +1287,29 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<Long> getEnabledViewIds(Long dvId, String resourceTable) {
         List<Long> result = new ArrayList<>();
         DataVisualizationVO dvInfo = coreVisualizationManage.findDvInfo(dvId, null, resourceTable);
-        List<CoreChartView> views;
+        // 画布过滤只使用图表 ID，正式表和快照表都无需加载完整实体。
+        List<Long> viewIds;
         if (resourceTable.equalsIgnoreCase("core")) {
-            views = coreChartViewRepository.findBySceneId(dvId);
+            QCoreChartView coreChartView = QCoreChartView.coreChartView;
+            viewIds = queryFactory
+                    .select(coreChartView.id)
+                    .from(coreChartView)
+                    .where(coreChartView.sceneId.eq(dvId))
+                    .fetch();
         } else {
-            views = snapshotCoreChartViewRepository.findBySceneId(dvId).stream().map(ele -> {
-                CoreChartView coreChartView = new CoreChartView();
-                BeanUtils.copyBean(coreChartView, ele);
-                return coreChartView;
-            }).collect(Collectors.toList());
+            QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+            viewIds = queryFactory
+                    .select(snapshotCoreChartView.id)
+                    .from(snapshotCoreChartView)
+                    .where(snapshotCoreChartView.sceneId.eq(dvId))
+                    .fetch();
         }
 
-        if (CollectionUtils.isNotEmpty(views) && dvInfo != null) {
+        if (CollectionUtils.isNotEmpty(viewIds) && dvInfo != null) {
             String componentData = dvInfo.getComponentData();
-            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId).collect(Collectors.toList());
+            result = viewIds.stream()
+                    .filter(viewId -> componentData.indexOf("\"id\":\"" + viewId) > 0)
+                    .collect(Collectors.toList());
 
         }
         return result;
