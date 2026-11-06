@@ -12,6 +12,7 @@ import $ from 'jquery'
 import { _$ } from '@/utils/utils'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
+import type { Handler } from 'mitt'
 import { changeStyleWithScale } from '@/utils/translate'
 import {
   ref,
@@ -1632,6 +1633,8 @@ const popAreaAvailable = computed(
   () => canvasStyleData.value?.popupAvailable && isMainCanvas(canvasId.value)
 )
 
+const canvasEventCleanups: Array<() => void> = []
+
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
@@ -1640,15 +1643,20 @@ onMounted(() => {
   }
   // 获取编辑器元素
   composeStore.getEditor(canvasId.value)
-  eventBus.on('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
-  eventBus.on('handleDragEnd-' + canvasId.value, handleDragEnd)
-  eventBus.on('hideArea-' + canvasId.value, hideArea)
-  eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
-  eventBus.on('removeMatrixItemPosition-' + canvasId.value, removeItemComponent)
-  eventBus.on('removeMatrixItemById-' + canvasId.value, removeItemById)
-  eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
-  eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
-  eventBus.on('doCanvasInit-' + canvasId.value, canvasInit)
+  const subscribe = (name: string, handler: Handler) => {
+    const eventName = `${name}-${canvasId.value}`
+    eventBus.on(eventName, handler)
+    canvasEventCleanups.push(() => eventBus.off(eventName, handler))
+  }
+  subscribe('handleDragStartMoveIn', handleDragStartMoveIn)
+  subscribe('handleDragEnd', handleDragEnd)
+  subscribe('hideArea', hideArea)
+  subscribe('removeMatrixItem', removeItem)
+  subscribe('removeMatrixItemPosition', removeItemComponent)
+  subscribe('removeMatrixItemById', removeItemById)
+  subscribe('addDashboardItem', addItemBox)
+  subscribe('snapshotChange', canvasInit)
+  subscribe('doCanvasInit', canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -1656,15 +1664,8 @@ onBeforeUnmount(() => {
     clearInterval(snapshotTimer.value)
     snapshotTimer.value = null
   }
-  eventBus.off('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
-  eventBus.off('handleDragEnd-' + canvasId.value, handleDragEnd)
-  eventBus.off('hideArea-' + canvasId.value, hideArea)
-  eventBus.off('removeMatrixItem-' + canvasId.value, removeItem)
-  eventBus.off('removeMatrixItemPosition-' + canvasId.value, removeItemComponent)
-  eventBus.off('removeMatrixItemById-' + canvasId.value, removeItemById)
-  eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
-  eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
-  eventBus.off('doCanvasInit' + canvasId.value, canvasInit)
+  canvasEventCleanups.forEach(unsubscribe => unsubscribe())
+  canvasEventCleanups.length = 0
 })
 
 defineExpose({
