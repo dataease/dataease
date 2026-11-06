@@ -79,20 +79,38 @@ public class EngineServer implements EngineApi {
         if (coreDeEngine.getId() == null) {
             coreDeEngine.setId(IDUtils.snowID());
             datasourceDTO.setId(coreDeEngine.getId());
+            coreDeEngine.setCreateTime(System.currentTimeMillis());
+            coreDeEngine.setUpdateTime(System.currentTimeMillis());
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         } else {
+            coreDeEngine.setUpdateTime(System.currentTimeMillis());
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
+        Long revision = coreDeEngine.getUpdateTime();
         commonThreadPool.addTask(() -> {
             CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+            if (ds == null) {
+                LogUtil.error("Failed to update engine status: engine not found, id=" + coreDeEngine.getId());
+                return;
+            }
             try {
                 calciteProvider.update(datasourceDTO);
+                CoreDeEngine current = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                if (current != null && java.util.Objects.equals(current.getUpdateTime(), revision)) {
+                    current.setStatus("success");
+                    coreDeEngineRepository.saveAndFlush(current);
+                } else {
+                    LogUtil.info("Skip engine status update, a newer configuration revision exists for id=" + coreDeEngine.getId());
+                }
             } catch (Exception e) {
                 LogUtil.error("Failed to init engine: " + e.getMessage());
-                ds.setStatus("Error");
-            } finally {
-                ds.setStatus("success");
-                coreDeEngineRepository.saveAndFlush(ds);
+                CoreDeEngine current = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                if (current != null && java.util.Objects.equals(current.getUpdateTime(), revision)) {
+                    current.setStatus("Error");
+                    coreDeEngineRepository.saveAndFlush(current);
+                } else {
+                    LogUtil.info("Skip engine error status update, a newer configuration revision exists for id=" + coreDeEngine.getId());
+                }
             }
         });
     }
