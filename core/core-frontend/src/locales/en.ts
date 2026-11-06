@@ -677,6 +677,9 @@ export default {
     upload_json_files: 'Only json files can be uploaded',
     maximum_upload_200m: 'Maximum upload size 200M',
     geographic_information: 'Geographic information',
+    unsupported_geo_parent:
+      'This region does not support subregions. Select another parent region.',
+    geo_suffix_length: 'Please enter a {0}-digit suffix',
     superior_region_first: 'Please select the superior region first',
     region_name: 'Region name',
     appearance_configuration: 'Appearance Configuration',

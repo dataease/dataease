@@ -652,6 +652,8 @@ export default {
     upload_json_files: '只能上传json文件',
     maximum_upload_200m: '最大上传200M',
     geographic_information: '地理信息',
+    unsupported_geo_parent: '该区域不支持新增下级，请选择其他上级区域',
+    geo_suffix_length: '请输入{0}位数字后缀',
     superior_region_first: '请先选择上级区域',
     region_name: '区域名称',
     appearance_configuration: '外观配置',

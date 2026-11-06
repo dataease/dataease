@@ -2,7 +2,7 @@
 import dvInfo from '@/assets/svg/dv-info.svg'
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import deJson from '@/assets/svg/de-json.svg'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type {
@@ -20,6 +20,11 @@ const dialogVisible = ref(false)
 const loadingInstance = ref(null)
 const geoForm = ref<FormInstance>()
 const geoFile = ref()
+interface GeometryTreeNode {
+  id: string
+  level?: string
+  children?: GeometryTreeNode[]
+}
 const state = reactive({
   form: reactive<GeometryFrom>({
     pid: null,
@@ -28,7 +33,7 @@ const state = reactive({
     fileName: null,
     country: null
   }),
-  treeData: []
+  treeData: [] as GeometryTreeNode[]
 })
 const treeProps = {
   value: 'id',
@@ -40,37 +45,75 @@ const getBusiGeoCode = (code?: string) => {
 }
 const isCountry = computed(() => state.form.pid === '000')
 const isChina = computed(() => getBusiGeoCode(state.form.pid)?.startsWith('156'))
-const getAncestorCount = (nodes, pid, count = 0) => {
+/**
+ * 自定义节点没有 level，沿真实父子关系继承层级，避免根据末尾零误判区县
+ */
+const findParentPath = (nodes: GeometryTreeNode[], pid?: string): GeometryTreeNode[] | null => {
   for (const node of nodes) {
-    if (node.id === pid) {
-      return count
-    }
-    if (node.children) {
-      const res = getAncestorCount(node.children, pid, count + 1)
-      if (res !== null) return res
-    }
+    if (node.id === pid) return [node]
+    const path = node.children && findParentPath(node.children, pid)
+    if (path) return [node, ...path]
   }
   return null
 }
+const parentPath = computed(() => findParentPath(state.treeData, state.form.pid))
+const chinaParentLevel = computed(() => {
+  let level = -2
+  for (const node of parentPath.value || []) {
+    const knownLevel = ['world', 'country', 'province', 'city', 'district'].indexOf(node.level)
+    level = knownLevel >= 0 ? knownLevel - 1 : level + 1
+  }
+  return level
+})
+const parentError = computed(() => {
+  if (!state.form.pid) return t('system.superior_region_first')
+  if (
+    !parentPath.value ||
+    (!isChina.value && !isCountry.value && formatPid.value.length >= 9) ||
+    (isChina.value && (chinaParentLevel.value < 0 || chinaParentLevel.value > 3))
+  ) {
+    return t('system.unsupported_geo_parent')
+  }
+  return ''
+})
 const formatPid = computed(() => {
   if (!state.form.pid) return ''
   const pid = getBusiGeoCode(state.form.pid) || ''
-  const ancestorCount = pid.startsWith('156') ? 0 : getAncestorCount(state.treeData, state.form.pid)
+  if (isChina.value) return pid.substring(0, 3 + chinaParentLevel.value * 2)
+  const ancestorCount = parentPath.value ? parentPath.value.length - 1 : null
   const countSuffix = ancestorCount ? ancestorCount : ''
   const numericPid = pid.replace(/\D/g, '').replace(/(\d{3})(0+)$/, '$1') + countSuffix
   return state.form.country ? numericPid.substring(3, numericPid.length) : numericPid
 })
+const saveError = ref('')
 const codeTips = ref(t('system.at_the_end'))
-const pidChange = () => {
-  state.form.code = null
-  state.form.country = null
-}
+const suffixLength = computed(() =>
+  isChina.value ? (chinaParentLevel.value === 3 ? 11 : 9) - formatPid.value.length : undefined
+)
+watch(
+  () => state.form.pid,
+  () => {
+    state.form.code = null
+    state.form.country = null
+    saveError.value = ''
+    geoForm.value?.clearValidate(['pid', 'code'])
+  },
+  { flush: 'sync' }
+)
 const onPidChanged = () => {
   if (!isCountry.value && !isChina.value) {
     state.form.code = formatPid.value.padEnd(9, '0').slice(formatPid.value.length)
   }
 }
 const validateCode = (_: any, value: any, callback: any) => {
+  if (parentError.value) {
+    callback(new Error(parentError.value))
+    return
+  }
+  if (isChina.value && !new RegExp(`^\\d{${suffixLength.value}}$`).test(value)) {
+    callback(new Error(t('system.geo_suffix_length', [suffixLength.value])))
+    return
+  }
   const isCountry = !formatPid.value
   if (isCountry) {
     const reg = /^[0-9]\d{2}$/
@@ -133,6 +176,7 @@ const rule = reactive<FormRules>({
 const edit = (pid?: string) => {
   const key = 'de-area-tree'
   state.treeData = wsCache.get(key) || []
+  saveError.value = ''
   state.form.pid = pid
   state.form.code = null
   state.form.name = null
@@ -145,12 +189,13 @@ const edit = (pid?: string) => {
 const emits = defineEmits(['saved'])
 
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
+  if (!formEl || parentError.value) return
   await formEl.validate(valid => {
     if (valid) {
       const param = { ...state.form }
       param['code'] = formatPid.value ? formatPid.value + param['code'] : param['code']
       const formData = buildFormData(geoFile.value, param)
+      saveError.value = ''
       showLoading()
       request
         .post({ url: '/geometry/save', data: formData, headersType: 'multipart/form-data;' })
@@ -162,7 +207,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
           }
           closeLoading()
         })
-        .catch(() => {
+        .catch(error => {
+          saveError.value =
+            typeof error === 'string'
+              ? error
+              : error?.response?.data?.msg ||
+                error?.message ||
+                t('system.contact_the_administrator')
           closeLoading()
         })
     }
@@ -256,7 +307,7 @@ defineExpose({
       label-width="80px"
       label-position="top"
     >
-      <el-form-item :label="t('system.superior_region')" prop="pid">
+      <el-form-item :label="t('system.superior_region')" prop="pid" :error="parentError">
         <el-tree-select
           class="map-tree-selector"
           node-key="id"
@@ -266,7 +317,6 @@ defineExpose({
           check-strictly
           :render-after-expand="false"
           :placeholder="t('common.please_select') + t('common.empty') + t('system.superior_region')"
-          @current-change="pidChange"
           @change="onPidChanged"
         />
       </el-form-item>
@@ -307,7 +357,8 @@ defineExpose({
           :placeholder="t('common.please_input') + t('common.empty') + t('system.region_code')"
           v-if="state.form.pid"
           v-model="state.form.code"
-          :disabled="isCountry || !isChina"
+          :disabled="isCountry || !isChina || !!parentError"
+          :maxlength="suffixLength"
         >
           <template #prefix>
             {{ formatPid }}
@@ -363,10 +414,11 @@ defineExpose({
         </el-upload>
       </el-form-item>
     </el-form>
+    <el-alert v-if="saveError" :title="saveError" type="error" :closable="false" />
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="resetForm(geoForm)">{{ t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="submitForm(geoForm)">
+        <el-button type="primary" :disabled="!!parentError" @click="submitForm(geoForm)">
           {{ t('commons.save') }}
         </el-button>
       </span>
