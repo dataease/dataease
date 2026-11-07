@@ -259,22 +259,17 @@ const showApiData = () => {
       const data = Base64.encode(JSON.stringify(apiItem))
       const params = Base64.encode(JSON.stringify(paramsList))
       loading.value = true
-<<<<<<< HEAD
       const query = apiQuery.start()
       checkApiItem(
-        { dsType: dsType.value, data: data, type: 'apiStructure', paramsList: params },
+        {
+          datasourceId: credentialSourceId,
+          dsType: dsType.value,
+          data: data,
+          type: 'apiStructure',
+          paramsList: params
+        },
         query
       )
-=======
-      cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({
-        datasourceId: credentialSourceId,
-        dsType: dsType.value,
-        data: data,
-        type: 'apiStructure',
-        paramsList: params
-      })
->>>>>>> 849c25c80a (fix: AES 密钥泄漏)
         .then(response => {
           if (!query.isCurrent()) return
           originFieldItem.jsonFields = response.data.jsonFields
@@ -461,12 +456,8 @@ const stepNext = () => {
   const params = Base64.encode(JSON.stringify(paramsList))
   disabledNext.value = true
   formLoading.value = true
-<<<<<<< HEAD
   const payload = {
-=======
-  checkApiItem({
     datasourceId: credentialSourceId,
->>>>>>> 849c25c80a (fix: AES 密钥泄漏)
     dsType: dsType.value,
     data: Base64.encode(JSON.stringify(apiItem)),
     paramsList: params
@@ -517,12 +508,8 @@ const validateItem = () => {
   invalidateApiQuery()
   const params = Base64.encode(JSON.stringify(paramsList))
   formLoading.value = true
-<<<<<<< HEAD
   const payload = {
-=======
-  checkApiItem({
     datasourceId: credentialSourceId,
->>>>>>> 849c25c80a (fix: AES 密钥泄漏)
     dsType: dsType.value,
     data: Base64.encode(JSON.stringify(apiItem)),
     paramsList: params
