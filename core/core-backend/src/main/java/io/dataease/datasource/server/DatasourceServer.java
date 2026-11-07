@@ -161,6 +161,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public boolean checkRepeat(@RequestBody BusiDsRequest dataSourceDTO) {
+        if (dataSourceDTO == null || StringUtils.isBlank(dataSourceDTO.getType())) {
+            throw new DEException(ResultCode.PARAM_NOT_COMPLETE.code(), ResultCode.PARAM_NOT_COMPLETE.message());
+        }
         if (Arrays.asList("folder", "es").contains(dataSourceDTO.getType()) || dataSourceDTO.getType().contains("API") || dataSourceDTO.getType().contains("Excel")) {
             return false;
         }
@@ -1212,6 +1215,23 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private CorePermissionManage corePermissionManage;
 
+    /** Use the same representation for form output and credential-preservation checks. */
+    private String configurationForEdit(String type, String configuration) {
+        Configuration editable = switch (type) {
+            case "mysql" -> JsonUtil.parseObject(configuration, Mysql.class);
+            case "h2" -> JsonUtil.parseObject(configuration, H2.class);
+            case "oracle" -> JsonUtil.parseObject(configuration, Oracle.class);
+            case "sqlServer" -> JsonUtil.parseObject(configuration, Sqlserver.class);
+            default -> null;
+        };
+        if (editable == null) return configuration;
+        if (StringUtils.isBlank(editable.getUrlType())) {
+            editable.setUrlType("h2".equals(type) ? "jdbcUrl" : "hostName");
+        }
+        if (StringUtils.isBlank(editable.getSshType())) editable.setSshType("password");
+        return JsonUtil.toJSONString(editable).toString();
+    }
+
     private Long credentialSourceId(BusiDsRequest request) {
         return request.getId() != null && request.getId() > 0 ? request.getId() : request.getCopySourceId();
     }
@@ -1234,7 +1254,8 @@ public class DatasourceServer implements DatasourceApi {
                 throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_configuration_type_mismatch"));
             }
         }
-        return ConfigurationCredentials.restore(requested, stored == null ? null : stored.getConfiguration());
+        return ConfigurationCredentials.restore(requested, stored == null ? null
+                : configurationForEdit(type, stored.getConfiguration()));
     }
 
     private void validateExcelFiles(DatasourceDTO requested, DatasourceDTO stored) {
@@ -1621,20 +1642,7 @@ public class DatasourceServer implements DatasourceApi {
                 Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
                 provider.hidePW(datasourceDTO);
             } else {
-                switch (datasourceDTO.getType()) {
-                    case "mysql":
-                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
-                        break;
-                    case "h2":
-                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
-                        break;
-                    case "oracle":
-                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
-                        break;
-                    case "sqlServer":
-                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Sqlserver.class)).toString());
-                        break;
-                }
+                datasourceDTO.setConfiguration(configurationForEdit(datasourceDTO.getType(), datasourceDTO.getConfiguration()));
             }
         }
         if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.Excel.toString())) {

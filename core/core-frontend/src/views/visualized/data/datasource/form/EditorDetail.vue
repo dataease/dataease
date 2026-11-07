@@ -1242,6 +1242,8 @@ defineExpose({
             v-if="form.type === 'presto'"
           >
             <CustomPassword
+              :reveal-resource-id="form.id"
+              reveal-secret-type="DATASOURCE_PASSWORD"
               :placeholder="t('common.inputText') + ' ' + t('datasource.keytab_Key_path')"
               show-password
               type="password"
@@ -1271,6 +1273,8 @@ defineExpose({
           </el-form-item>
           <el-form-item :label="t('datasource.password')" v-if="form.type !== 'presto'">
             <CustomPassword
+              :reveal-resource-id="form.id"
+              reveal-secret-type="DATASOURCE_PASSWORD"
               :placeholder="t('common.inputText') + ' ' + t('datasource.password')"
               show-password
               type="password"
@@ -1469,6 +1473,8 @@ defineExpose({
               prop="configuration.sshPassword"
             >
               <CustomPassword
+                :reveal-resource-id="form.id"
+                reveal-secret-type="DATASOURCE_SSH_PASSWORD"
                 :placeholder="t('common.inputText') + ' ' + t('datasource.password')"
                 show-password
                 type="password"
@@ -1495,6 +1501,8 @@ defineExpose({
               v-if="form.configuration.sshType === 'sshkey'"
             >
               <CustomPassword
+                :reveal-resource-id="form.id"
+                reveal-secret-type="DATASOURCE_SSH_KEY_PASSWORD"
                 :placeholder="t('common.inputText') + ' ' + t('datasource.password')"
                 show-password
                 type="password"

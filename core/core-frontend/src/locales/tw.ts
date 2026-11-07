@@ -1,4 +1,21 @@
 export default {
+  sensitive_reveal: {
+    action: '查看已儲存值',
+    datasource_title: '查看資料來源敏感資訊',
+    datasource_hint: '請輸入目前使用者的密碼，驗證後可查看此資料來源已儲存的敏感資訊。',
+    engine_title: '查看引擎連線資訊',
+    engine_hint: '請輸入目前使用者的密碼，驗證後可查看引擎已儲存的連線密碼。',
+    sync_title: '查看同步連線敏感資訊',
+    sync_hint: '請輸入目前使用者的密碼，驗證後可查看此同步連線已儲存的敏感資訊。',
+    remote_title: '查看遠端檔案存取密碼',
+    remote_hint: '請輸入目前使用者的密碼，驗證後可查看遠端檔案已儲存的存取密碼。',
+    current_password: '目前使用者密碼',
+    verify: '驗證並查看',
+    failed: '無法查看，請檢查密碼、存取權限或稍後重試。外部認證使用者暫不支援密碼驗證。',
+    auto_hide: '以下為已儲存值，{seconds} 秒後自動關閉。不會修改目前表單。',
+    result: '已儲存的敏感資訊',
+    close: '關閉'
+  },
   material: {
     package_size_hint: '素材資源包不能超過 300MiB，包內素材總大小不能超過 200MiB。',
     title: '素材管理',

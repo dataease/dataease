@@ -3,6 +3,7 @@ package io.dataease.api.ds;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.ConfigurationSecurity;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
@@ -36,15 +37,18 @@ public interface DatasourceApi {
      */
     @GetMapping("/query/{keyWord}")
     @Operation(summary = "查询")
+    @ConfigurationSecurity(maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     List<DatasourceDTO> query(@PathVariable("keyWord") String keyWord);
 
     @PostMapping("/save")
     @Operation(summary = "保存")
+    @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO save(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
     @DePermit({"#p0.id+':manage'"})
     @PostMapping("/update")
     @Operation(summary = "更新")
+    @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO update(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
     @PostMapping("/move")
@@ -61,6 +65,7 @@ public interface DatasourceApi {
 
     @PostMapping("/checkRepeat")
     @Operation(summary = "校验重复")
+    @ConfigurationSecurity(encryptedRequest = true)
     boolean checkRepeat(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
     @GetMapping("/types")
@@ -70,10 +75,12 @@ public interface DatasourceApi {
     @DePermit
     @PostMapping("/validate")
     @Operation(summary = "校验")
+    @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO validate(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
     @PostMapping("/getSchema")
     @Operation(summary = "获取 schema")
+    @ConfigurationSecurity(encryptedRequest = true)
     List<String> getSchema(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
     @PostMapping("/cronNextTimes")
@@ -83,6 +90,7 @@ public interface DatasourceApi {
     @DePermit({"#p0+':manage'"})
     @GetMapping("/validate/{datasourceId}")
     @Operation(summary = "校验")
+    @ConfigurationSecurity(maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO validate(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @DePermit({"#p0+':manage'"})
@@ -98,16 +106,19 @@ public interface DatasourceApi {
     @DePermit({"#p0+':manage'"})
     @GetMapping("/get/{datasourceId}")
     @Operation(summary = "数据源详情")
+    @ConfigurationSecurity(maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @DePermit({"#p0+':manage'"})
     @GetMapping("/hidePw/{datasourceId}")
     @Operation(summary = "数据源详情")
+    @ConfigurationSecurity(maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO hidePw(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @DePermit({"#p0+':read'"})
     @GetMapping("/getSimpleDs/{datasourceId}")
     @Operation(summary = "数据源详情")
+    @ConfigurationSecurity(maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO getSimpleDs(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
 
@@ -141,6 +152,7 @@ public interface DatasourceApi {
 
     @PostMapping("/checkApiDatasource")
     @Operation(summary = "校验API数据源")
+    @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"request", "url", "token", "appToken"})
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
 
     @PostMapping("/uploadFile")
@@ -179,10 +191,12 @@ public interface DatasourceApi {
 
     @PostMapping("/multidimensionalTables")
     @Operation(summary = "获取多维表格列表")
+    @ConfigurationSecurity(encryptedRequest = true)
     List<Map<String, String>> multidimensionalTables(@RequestBody Map<String, String> data) throws DEException;
 
     @PostMapping("/loadRemoteFile")
     @Operation(summary = "加载文件")
+    @ConfigurationSecurity(encryptedRequest = true)
     ExcelFileData loadRemoteFile(@RequestBody RemoteExcelRequest remoteExcelRequeste) throws DEException, IOException;
 
     @Hidden

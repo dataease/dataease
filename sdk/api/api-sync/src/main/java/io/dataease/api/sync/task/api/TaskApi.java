@@ -3,6 +3,7 @@ package io.dataease.api.sync.task.api;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.sync.task.dto.TaskGridRequest;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.ConfigurationSecurity;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.sync.model.task.Target;
@@ -32,16 +33,19 @@ public interface TaskApi {
     @Operation(hidden = true)
     @PostMapping("/pager/{goPage}/{pageSize}")
     @DePermit("m:read")
+    @ConfigurationSecurity(maskedResponse = {"source.datasource.configuration", "target.datasource.configuration"})
     PageResult<TaskInfoVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody TaskGridRequest request);
 
     @Operation(hidden = true)
     @PostMapping("/add")
     @DePermit("m:manage")
+    @ConfigurationSecurity(encryptedRequest = true)
     void add(@RequestBody TaskInfoVO jobInfo) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/update")
     @DePermit("m:manage")
+    @ConfigurationSecurity(encryptedRequest = true)
     void update(@RequestBody TaskInfoVO jobInfo) throws DEException;
 
     @Operation(hidden = true)
@@ -62,11 +66,13 @@ public interface TaskApi {
     @Operation(hidden = true)
     @GetMapping("/get/{id}")
     @DePermit("m:read")
+    @ConfigurationSecurity(maskedResponse = {"source.datasource.configuration", "target.datasource.configuration"})
     TaskInfoVO getOneById(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/target/keyPolicy")
     @DePermit("m:manage")
+    @ConfigurationSecurity(encryptedRequest = true)
     SinkKeyPolicy targetKeyPolicy(@RequestBody Target target) throws DEException;
 
     @Operation(summary = "执行一次任务")

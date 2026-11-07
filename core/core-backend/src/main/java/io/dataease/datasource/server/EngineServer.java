@@ -11,6 +11,7 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.type.*;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.vo.Configuration;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,28 +43,7 @@ public class EngineServer implements EngineApi {
             return datasourceDTO;
         }
         BeanUtils.copyBean(datasourceDTO, deEngines.get(0));
-        switch (datasourceDTO.getType()) {
-            case "mysql":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
-                break;
-            case "StarRocks":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), StarRocks.class)).toString());
-                break;
-            case "h2":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
-                break;
-            case "oracle":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
-                break;
-            case "pg":
-            case "kingbase":
-            case "gaussdb":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class)).toString());
-                break;
-            case "sqlServer":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Sqlserver.class)).toString());
-                break;
-        }
+        datasourceDTO.setConfiguration(configurationForEdit(datasourceDTO.getType(), datasourceDTO.getConfiguration()));
         return datasourceDTO;
     }
 
@@ -125,13 +105,27 @@ public class EngineServer implements EngineApi {
         engineManage.validate(coreDeEngine, false);
     }
 
+    /** Use the form representation on both sides of credential-preservation checks. */
+    private String configurationForEdit(String type, String configuration) {
+        Configuration editable = switch (type) {
+            case "mysql" -> JsonUtil.parseObject(configuration, Mysql.class);
+            case "StarRocks" -> JsonUtil.parseObject(configuration, StarRocks.class);
+            case "h2" -> JsonUtil.parseObject(configuration, H2.class);
+            case "oracle" -> JsonUtil.parseObject(configuration, Oracle.class);
+            case "pg", "kingbase", "gaussdb" -> JsonUtil.parseObject(configuration, Pg.class);
+            case "sqlServer" -> JsonUtil.parseObject(configuration, Sqlserver.class);
+            default -> null;
+        };
+        return editable == null ? configuration : JsonUtil.toJSONString(editable).toString();
+    }
+
     private String restoreConfiguration(DatasourceDTO request) {
         String plain = new String(Base64.getDecoder().decode(request.getConfiguration()), java.nio.charset.StandardCharsets.UTF_8);
         CoreDeEngine stored = request.getId() == null ? null : coreDeEngineRepository.findById(request.getId()).orElse(null);
-        if (stored != null && !stored.getType().equals(request.getType())) {
-            throw new DEException(ResultCode.PARAM_IS_INVALID.code(), io.dataease.i18n.Translator.get("i18n_configuration_type_mismatch"));
-        }
-        return ConfigurationCredentials.restore(plain, stored == null ? null : stored.getConfiguration());
+        // Type changes require fresh credentials, while preserving the existing engine-edit operation.
+        String original = stored != null && stored.getType().equals(request.getType())
+                ? configurationForEdit(stored.getType(), stored.getConfiguration()) : null;
+        return ConfigurationCredentials.restore(plain, original);
     }
 
     @Override

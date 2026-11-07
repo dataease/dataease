@@ -807,6 +807,8 @@ defineExpose({
         </el-form-item>
         <el-form-item :label="t('datasource.password')" v-show="activeStep !== 2">
           <CustomPassword
+            :reveal-resource-id="form.id"
+            reveal-secret-type="DATASOURCE_REMOTE_PASSWORD"
             :placeholder="t('common.inputText') + t('common.empty') + t('datasource.password')"
             show-password
             type="password"
