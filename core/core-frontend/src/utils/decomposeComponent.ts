@@ -16,10 +16,7 @@ export default function decomposeComponent(
   const originWidth = component.groupStyle?.['width']
   const originHeight = component.groupStyle?.['height']
   const canScale =
-    parentGroupWidth > 0 &&
-    parentGroupHeight > 0 &&
-    originWidth > 0 &&
-    originHeight > 0
+    parentGroupWidth > 0 && parentGroupHeight > 0 && originWidth > 0 && originHeight > 0
   if (canScale) {
     const originLeftScale = component.groupStyle['left'] / originWidth
     const originTopScale = component.groupStyle['top'] / originHeight
@@ -27,8 +24,7 @@ export default function decomposeComponent(
     component.groupStyle['height'] = originHeight * parentGroupHeight
     component.groupStyle['left'] =
       parentStyle.left + component.groupStyle['width'] * originLeftScale
-    component.groupStyle['top'] =
-      parentStyle.top + component.groupStyle['height'] * originTopScale
+    component.groupStyle['top'] = parentStyle.top + component.groupStyle['height'] * originTopScale
   }
   component.canvasId = canvasId
 }
