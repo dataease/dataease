@@ -1,4 +1,21 @@
 export default {
+  sensitive_reveal: {
+    action: '查看已保存值',
+    datasource_title: '查看数据源敏感信息',
+    datasource_hint: '请输入当前用户的密码，验证后可查看此数据源已保存的敏感信息。',
+    engine_title: '查看引擎连接信息',
+    engine_hint: '请输入当前用户的密码，验证后可查看引擎已保存的连接密码。',
+    sync_title: '查看同步连接敏感信息',
+    sync_hint: '请输入当前用户的密码，验证后可查看此同步连接已保存的敏感信息。',
+    remote_title: '查看远程文件访问密码',
+    remote_hint: '请输入当前用户的密码，验证后可查看远程文件已保存的访问密码。',
+    current_password: '当前用户密码',
+    verify: '验证并查看',
+    failed: '无法查看，请检查密码、访问权限或稍后重试。外部认证用户暂不支持密码验证。',
+    auto_hide: '以下为已保存值，{seconds} 秒后自动关闭。不会修改当前表单。',
+    result: '已保存的敏感信息',
+    close: '关闭'
+  },
   material: {
     package_size_hint: '素材资源包不能超过 300MiB，包内素材总大小不能超过 200MiB。',
     title: '素材管理',

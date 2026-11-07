@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /** HTTP boundary copies only. Persisted entities and internal execution retain their credentials. */
 public final class ConfigurationCredentials {
-    public static final String MASK = "***";
+    public static final String MASK = "******";
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final Set<String> SECRETS = Set.of("password", "passwd", "pwd", "sshpassword",
             "sshkey", "sshkeypassword", "privatekey", "passphrase", "token", "accesstoken", "refreshtoken",

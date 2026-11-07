@@ -497,6 +497,8 @@ defineExpose({
       </el-form-item>
       <el-form-item :label="t('datasource.password')">
         <CustomPassword
+          :reveal-resource-id="nodeInfo.id"
+          reveal-secret-type="ENGINE_PASSWORD"
           :placeholder="t('common.inputText') + t('datasource.password')"
           show-password
           type="password"

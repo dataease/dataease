@@ -1,4 +1,24 @@
 export default {
+  sensitive_reveal: {
+    action: 'View saved value',
+    datasource_title: 'View datasource credentials',
+    datasource_hint:
+      'Enter your current password to view the saved credential for this datasource.',
+    engine_title: 'View engine credentials',
+    engine_hint: 'Enter your current password to view the saved engine connection password.',
+    sync_title: 'View sync connection credentials',
+    sync_hint: 'Enter your current password to view the saved credential for this sync connection.',
+    remote_title: 'View remote file password',
+    remote_hint: 'Enter your current password to view the saved remote file access password.',
+    current_password: 'Current password',
+    verify: 'Verify and view',
+    failed:
+      'Unable to view. Check your password and permissions or try again later. External authentication is not supported.',
+    auto_hide:
+      'This saved value closes automatically after {seconds} seconds. The form will not be changed.',
+    result: 'Saved credential',
+    close: 'Close'
+  },
   material: {
     package_size_hint: 'Packages must be under 300MiB, with at most 200MiB of material files.',
     title: 'Material library',

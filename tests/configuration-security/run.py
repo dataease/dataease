@@ -17,6 +17,18 @@ entries = [str(root / 'core/core-backend/target/classes')]
 entries += [str(path) for path in (root / 'sdk').glob('**/target/classes')]
 entries += [args.classpath_file.read_text().strip(), str(spring_test)]
 sources = [
+    'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/user/api/CurrentPasswordVerifier.java',
+    'sdk/common/src/main/java/io/dataease/utils/SensitiveConfigurationProvider.java',
+    'core/core-backend/src/main/java/io/dataease/sensitive/SensitiveServer.java',
+    'tests/configuration-security/SensitiveRegression.java',
+    'tests/configuration-security/EngineRegression.java',
+    'sdk/api/api-base/src/main/java/io/dataease/api/sensitive/SecretType.java',
+    'sdk/api/api-base/src/main/java/io/dataease/api/sensitive/SensitiveApi.java',
+    'sdk/common/src/main/java/io/dataease/auth/ConfigurationSecurity.java',
+    'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
+    'sdk/api/api-base/src/main/java/io/dataease/api/ds/EngineApi.java',
+    'sdk/api/api-sync/src/main/java/io/dataease/api/sync/datasource/api/SyncDatasourceApi.java',
+    'sdk/api/api-sync/src/main/java/io/dataease/api/sync/task/api/TaskApi.java',
     'sdk/common/src/main/java/io/dataease/utils/ConfigurationCredentials.java',
     'sdk/common/src/main/java/io/dataease/utils/RsaUtils.java',
     'sdk/api/api-base/src/main/java/io/dataease/api/ds/vo/BusiDsRequest.java',

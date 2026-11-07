@@ -1,4 +1,5 @@
 const protectedPaths = new Set([
+  '/sensitive/reveal',
   '/datasource/checkRepeat',
   '/datasource/save',
   '/datasource/update',
