@@ -179,9 +179,9 @@ test('details chunk failure falls back to the existing raw log viewer', async ({
 test('mobile drawer stays inside the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await open(page, initial())
-  const box = await page
-    .getByRole('dialog', { name: '\u6267\u884c\u65e5\u5fd7', exact: true })
-    .boundingBox()
+  const drawer = page.getByRole('dialog', { name: '\u6267\u884c\u65e5\u5fd7', exact: true })
+  await expect(drawer).toHaveCSS('transform', 'none')
+  const box = await drawer.boundingBox()
   expect(box.width).toBeLessThanOrEqual(390)
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
 })
@@ -245,5 +245,31 @@ for (const width of [1440, 390]) {
     await expect(dialog.getByRole('checkbox')).toBeInViewport()
     await expect(dialog.getByRole('button', { name: /确认补发/ })).toBeDisabled()
     await dialog.getByRole('button', { name: '取消', exact: true }).click()
+  })
+}
+
+for (const status of [409, 403]) {
+  test(`initial log lookup ${status} closes empty drawer and stops polling`, async ({ page }) => {
+    let requests = 0
+    const errors = []
+    page.on('pageerror', error => errors.push(error.message))
+    await page.route('**/report/delivery', route => {
+      requests++
+      return route.fulfill({
+        status,
+        json: { code: status === 409 ? 50001 : 70001, msg: '日志不可用' }
+      })
+    })
+    await page.goto('/')
+    await page.getByRole('button', { name: '打开执行日志', exact: true }).click()
+    await expect.poll(() => requests).toBe(1)
+    await expect(page.locator('.report-delivery-drawer:visible')).toHaveCount(0)
+    await page.waitForTimeout(4500)
+    expect(requests).toBe(1)
+    expect(errors).toEqual([])
+    await page.unroute('**/report/delivery')
+    await page.route('**/report/delivery', route => route.fulfill({ json: { data: initial() } }))
+    await page.getByRole('button', { name: '打开执行日志', exact: true }).click()
+    await expect(page.getByText('定时报告回归', { exact: true })).toBeVisible()
   })
 }
