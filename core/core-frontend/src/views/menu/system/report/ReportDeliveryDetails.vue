@@ -315,6 +315,11 @@ const refresh = async (initial = false, showLoading = true) => {
     detail.value = response.data
     checkResendFinished()
     if (initial) selectedStatus.value = count(3) ? 3 : count(4) ? 4 : count(5) ? 5 : -1
+    return true
+  } catch {
+    // The request interceptor displays the business error; do not leave an empty drawer polling.
+    if (initial && currentGeneration === generation) jobLogDetailVisible.value = false
+    return false
   } finally {
     if (currentGeneration === generation) loading.value = false
   }
@@ -337,8 +342,8 @@ const startInterval = async (instanceId?: string, taskId?: string) => {
   keyword.value = ''
   channel.value = ''
   detail.value = undefined
-  await refresh(true)
-  poll()
+  const currentGeneration = generation
+  if ((await refresh(true)) && currentGeneration === generation && jobLogDetailVisible.value) poll()
 }
 watch(jobLogDetailVisible, visible => {
   if (!visible) {
