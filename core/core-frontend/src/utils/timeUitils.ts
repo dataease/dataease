@@ -125,15 +125,15 @@ const getUtcTime = timestamp => {
 }
 
 // 年季度：后端 CONCAT(year,'-',quarter) 产出形如 "2026-3"（季度取值 1-4）
-// 按自然季度换算成左闭右开再回退 1ms 的闭区间
+// 按自然季度换算为秒精度的闭区间
 const getQuarterEnd = value => {
-  const matched = /^(\d{4})-(\d{1,2})$/.exec(`${value}`)
+  const matched = /^(\d{4})[-/](\d{1,2})$/.exec(`${value}`)
   if (!matched) {
     return value
   }
   const year = Number(matched[1])
   const quarter = Number(matched[2])
-  if (quarter < 1 || quarter > 4) {
+  if (year < 1000 || quarter < 1 || quarter > 4) {
     return value
   }
   const start = +new Date(year, (quarter - 1) * 3, 1)
@@ -141,26 +141,25 @@ const getQuarterEnd = value => {
   return [start, end]
 }
 
-// 年周：后端 %Y-%u 产出形如 "2026-44"，%u 是周一为起始的周序号（00-53）
-// MySQL 的 %u 等价于 WEEK(date, 1)：第 1 周是「当年第一个包含 4 天以上的周」，
-// 也就是 ISO 8601 口径 —— 含 1 月 4 日的那一周为第 1 周。
-// 因此必须以 1 月 4 日为基准回退到当周周一，不能用 1 月 1 日，
-// 否则在「1 月 1 日落在周五~周日」的年份会整体偏移一周（如 2027 年）。
+// %Y 是日历年，%u 是 MySQL WEEK(date, 1)，第 00 周和跨年周只包含当前年份的日期。
 const getWeekEnd = value => {
-  const matched = /^(\d{4})-(\d{1,2})$/.exec(`${value}`)
+  const matched = /^(\d{4})[-/](\d{1,2})$/.exec(`${value}`)
   if (!matched) {
     return value
   }
   const year = Number(matched[1])
   const week = Number(matched[2])
-  if (week < 1 || week > 53) {
+  if (year < 1000 || week > 53) {
     return value
   }
   // 含 1 月 4 日的那一周即为该年第 1 周，取其周一
   const jan4 = new Date(year, 0, 4)
   const offset = (jan4.getDay() + 6) % 7
-  const firstWeekMonday = +new Date(year, 0, 4 - offset)
-  const start = firstWeekMonday + (week - 1) * 7 * 24 * 60 * 60 * 1000
-  const end = start + 7 * 24 * 60 * 60 * 1000 - 1000
-  return [start, end]
+  const weekStart = new Date(year, 0, 4 - offset + (week - 1) * 7)
+  const weekEnd = new Date(year, 0, 4 - offset + week * 7)
+  const yearStart = +new Date(year, 0, 1)
+  const yearEnd = +new Date(year + 1, 0, 1)
+  const start = Math.max(+weekStart, yearStart)
+  const end = Math.min(+weekEnd, yearEnd)
+  return start < end ? [start, end - 1000] : value
 }
