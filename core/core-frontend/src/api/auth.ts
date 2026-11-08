@@ -3,8 +3,6 @@ import request from '@/config/axios'
 export const queryUserApi = (isSystem?: boolean) =>
   isSystem ? request.get({ url: '/user/query' }) : request.get({ url: '/user/byCurOrg' })
 
-export const queryRoleApi = () => request.get({ url: '/role/query' })
-
 export const resourceTreeApi = (flag: string, system?: boolean) => {
   const param = {
     flag,
