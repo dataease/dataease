@@ -1,14 +1,11 @@
 package io.dataease.dataset.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.permissions.dataset.api.DatasetAssistantEnterpriseService;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
-import io.dataease.api.dataset.vo.DataSQLBotDatasetVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
@@ -94,9 +91,6 @@ public class DatasetSQLBotManage {
 
     @Autowired(required = false)
     private RowPermissionsApi rowPermissionsApi;
-
-    @Resource
-    private JPAQueryFactory queryFactory;
 
     @Autowired(required = false)
     private DatasetAssistantEnterpriseService enterpriseService;
@@ -209,41 +203,6 @@ public class DatasetSQLBotManage {
                 }
             }
         }
-    }
-
-    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo) {
-        Long dvId;
-        try {
-            dvId = Long.parseLong(dvInfo);
-        } catch (NumberFormatException e) {
-            LogUtil.warn("sqlbot: invalid dvInfo parameter: {}", dvInfo);
-            return Collections.emptyList();
-        }
-
-        QCoreDatasetTable cdt = QCoreDatasetTable.coreDatasetTable;
-        QCoreDatasource cd = QCoreDatasource.coreDatasource;
-        QCoreDatasetGroup cdg = QCoreDatasetGroup.coreDatasetGroup;
-        QCoreChartView cv = QCoreChartView.coreChartView;
-
-        List<Tuple> tuples = queryFactory
-                .select(cdt.datasetGroupId, cdt.name, cd.id, cd.name)
-                .from(cdt)
-                .innerJoin(cd).on(cdt.datasourceId.eq(cd.id))
-                .innerJoin(cdg).on(cdt.datasetGroupId.eq(cdg.id))
-                .innerJoin(cv).on(cv.tableId.eq(cdt.datasetGroupId))
-                .where(cv.sceneId.eq(dvId))
-                .fetch();
-
-        List<DataSQLBotDatasetVO> result = new ArrayList<>();
-        for (Tuple tuple : tuples) {
-            DataSQLBotDatasetVO vo = new DataSQLBotDatasetVO();
-            vo.setTableId(Objects.toString(tuple.get(cdt.datasetGroupId), null));
-            vo.setTableName(tuple.get(cdt.name));
-            vo.setDsId(Objects.toString(tuple.get(cd.id), null));
-            vo.setDsName(tuple.get(cd.name));
-            result.add(vo);
-        }
-        return result;
     }
 
     public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
