@@ -11,8 +11,6 @@ export const userInfo = () => request.get({ url: '/user/info' })
 
 export const searchRoleApi = () => request.get({ url: '/role/query' })
 
-export const searchRoleByOidApi = (oid: number) => request.get({ url: `/role/queryWithOid/${oid}` })
-
 export const userOptionForRoleApi = data => request.post({ url: '/user/role/option', data })
 
 export const userSelectedForRoleApi = (page: number, limit: number, data) =>
@@ -23,9 +21,6 @@ export const userPageApi = (page: number, limit: number, data) =>
 
 export const memberPageApi = (page: number, limit: number, data) =>
   request.post({ url: `/user/mumberPager/${page}/${limit}`, data })
-
-export const personSysVariableInfoApi = uid =>
-  request.get({ url: `/user/personSysVariableInfo/${uid}` })
 
 export const userCreateApi = data => request.post({ url: '/user/create', data })
 
@@ -50,8 +45,6 @@ export const roleEditApi = data => request.post({ url: '/role/edit', data })
 export const roleDetailApi = rid => request.get({ url: `/role/detail/${rid}` })
 
 export const roleDelApi = rid => request.post({ url: `/role/delete/${rid}` })
-
-export const beforeUnmountInfoApi = data => request.post({ url: '/role/beforeUnmountInfo', data })
 
 export const unMountUserApi = data => request.post({ url: '/role/unMountUser', data })
 
