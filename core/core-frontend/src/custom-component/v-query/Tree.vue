@@ -14,10 +14,11 @@ import {
   shallowRef
 } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { cloneDeep, debounce, sortBy } from 'lodash-es'
+import { cloneDeep, sortBy } from 'lodash-es'
 import { getFieldTree } from '@/api/dataset'
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
 import type { QueryRequest } from '@/config/axios/queryScope'
+import { createCandidateLoader } from './candidate-loader'
 import { colorStringToHex } from '@/utils/color'
 import { mixColor } from '@/utils/color'
 import { ElMessage } from 'element-plus-secondary'
@@ -355,20 +356,10 @@ function containsNodeById(source, params) {
 }
 
 const treeQuery = useLatestQuery('tree-options')
-const loadTreeOptions = debounce(async (query: QueryRequest) => {
-  if (!query.isCurrent()) {
-    query.finish()
-    return
-  }
+const candidateLoader = createCandidateLoader(treeQuery, loading)
+const loadTreeOptions = async (query: QueryRequest, data: Parameters<typeof getFieldTree>[0]) => {
   try {
-    const res = await getFieldTree(
-      {
-        fieldIds: props.config.treeFieldList.map(ele => ele.id),
-        resultMode: config.value.resultMode || 0,
-        filter: getCascadeFieldId()
-      },
-      query
-    )
+    const res = await getFieldTree(data, query)
     if (!query.isCurrent()) return
     treeOptionList.value = filterTree(dfs(res), config.value.optionFilter)
     if (config.value?.required && config.value?.optionFilter?.length > 0) {
@@ -408,21 +399,24 @@ const loadTreeOptions = debounce(async (query: QueryRequest) => {
         })
       }
     }
-  } catch (error) {
-    if (query.isCurrent()) console.error(error)
   } finally {
-    query.finish()
     if (query.isCurrent()) {
-      loading.value = false
       showWholePath.value = true
       fromSelect = false
     }
   }
-}, 300)
+}
 const getTreeOption = () => {
-  const query = treeQuery.start()
-  loading.value = true
-  loadTreeOptions(query)
+  const data = {
+    fieldIds: props.config.treeFieldList.map(ele => ele.id),
+    resultMode: config.value.resultMode || 0,
+    filter: getCascadeFieldId()
+  }
+  return candidateLoader.run(
+    { data, id: config.value.id },
+    query => loadTreeOptions(query, data),
+    300
+  )
 }
 
 watch(
@@ -564,8 +558,7 @@ const visibleChange = val => {
   }
 }
 onUnmounted(() => {
-  loadTreeOptions.cancel()
-  treeQuery.invalidate()
+  candidateLoader.dispose()
   clearTimeout(time)
 })
 </script>
