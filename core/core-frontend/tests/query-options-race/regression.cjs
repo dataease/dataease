@@ -4,6 +4,7 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const vm = require('node:vm')
 const { test } = require('node:test')
+const { loadCandidateLoader } = require('../query-candidate-loader/load.cjs')
 const ts = require('typescript')
 const { parse, compileScript } = require('@vue/compiler-sfc')
 const filename = 'src/custom-component/v-query/Select.vue'
@@ -19,7 +20,7 @@ const names = new Set([
   'optionsQuery',
   'disposed',
   'invalidateOptionsRequest',
-  'startOptionsRequest',
+  'candidateLoader',
   'handleFieldIdDefaultChange',
   'handleFieldIdChange',
   'pendingOptions',
@@ -76,6 +77,8 @@ const setup = () => {
     },
     options: { value: [] },
     selectValue: { value: 'kept' },
+    searchText: { value: '' },
+    getCascadeFieldId: () => [],
     loading: { value: false },
     enumValueArr: [],
     disabledFirstItem: { value: true },
@@ -129,6 +132,11 @@ const setup = () => {
     },
     console: { error: error => effects.push(error) }
   }
+  context.createCandidateLoader = loadCandidateLoader({
+    console: context.console,
+    setTimeout: context.setTimeout,
+    clearTimeout: context.clearTimeout
+  })
   vm.runInNewContext(code, context)
   return {
     ...context,
@@ -144,11 +152,28 @@ const setup = () => {
   }
 }
 const field = { queryId: 'id' }
+test('production source dispatch coalesces repeated loads during delay and in flight', async () => {
+  const ctx = setup()
+  ctx.api.applyOptions(1)
+  ctx.api.applyOptions(1)
+  assert.equal(ctx.timers.size, 1)
+  assert.equal(ctx.calls.length, 0)
+  ctx.flush()
+  await Promise.resolve()
+  assert.equal(ctx.calls.length, 1)
+  ctx.api.applyOptions(1)
+  assert.equal(ctx.calls[0].signal.aborted, false)
+  assert.equal(ctx.timers.size, 0)
+  ctx.calls[0].resolve([{ id: 'kept' }])
+  for (let i = 0; i < 12; i++) await Promise.resolve()
+  assert.equal(ctx.options.value[0].value, 'kept')
+  assert.equal(ctx.loading.value, false)
+})
 for (const kind of ['handleFieldIdDefaultChange', 'handleFieldIdChange']) {
   test(`${kind}: old responses cannot replace latest options or clear its loading`, async () => {
     const ctx = setup()
     const old = ctx.api[kind](kind === 'handleFieldIdChange' ? field : ['old'])
-    const latest = ctx.api[kind](kind === 'handleFieldIdChange' ? field : ['new'])
+    const latest = ctx.api[kind](kind === 'handleFieldIdChange' ? { queryId: 'new' } : ['new'])
     assert.equal(ctx.calls[0].signal.aborted, true)
     ctx.calls[0].resolve(kind === 'handleFieldIdChange' ? [] : ['old'])
     await old
@@ -156,7 +181,7 @@ for (const kind of ['handleFieldIdDefaultChange', 'handleFieldIdChange']) {
     assert.equal(ctx.selectValue.value, 'kept')
     assert.equal(ctx.config.value.defaultValue, 'kept')
     assert.equal(ctx.effects.length, 0)
-    ctx.calls[1].resolve(kind === 'handleFieldIdChange' ? [{ id: 'kept' }] : ['kept'])
+    ctx.calls[1].resolve(kind === 'handleFieldIdChange' ? [{ new: 'kept' }] : ['kept'])
     await latest
     assert.equal(ctx.options.value[0].value, 'kept')
     assert.equal(ctx.loading.value, false)
@@ -190,11 +215,11 @@ test('both enumeration sources share the same request generation', async () => {
 test('unmount aborts requests, cancels queued loads and ignores late results', async () => {
   const ctx = setup()
   const pending = ctx.api.handleFieldIdChange(field)
-  ctx.api.debounceOptions(1)
+  ctx.api.debounceOptions(2)
   ctx.unmount()
   ctx.calls[0].resolve([])
   await pending
-  ctx.api.debounceOptions(1)
+  ctx.api.debounceOptions(2)
   ctx.flush()
   assert.equal(ctx.calls[0].signal.aborted, true)
   assert.equal(ctx.effects.length, 0)

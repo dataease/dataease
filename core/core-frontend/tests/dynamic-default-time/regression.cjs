@@ -359,6 +359,7 @@ test('原生图表首次加载的非法默认规则显示错误并停止取数',
   vm.runInNewContext(code + ';queryData(true)', {
     debounce: fn => fn,
     loading: { value: false },
+    queryScope: undefined,
     dvMainStore: { firstLoadMap: [] },
     element: { value: { id: 'chart' } },
     showPosition: { value: 'preview' },
@@ -385,6 +386,7 @@ test('插件初次过滤失败时提示并阻止带空过滤参数的加载', ()
   vm.runInNewContext(code, {
     onMounted: fn => fn(),
     view: { value: { isPlugin: true } },
+    queryScope: undefined,
     dvMainStore: { firstLoadMap: [] },
     element: { value: { id: 'chart' } },
     filter: () => {
