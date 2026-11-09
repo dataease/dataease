@@ -19,7 +19,7 @@ import { UniverSheetsNoteUIPlugin } from '@univerjs/sheets-note-ui'
 import { UniverSheetsNumfmtUIPlugin } from '@univerjs/sheets-numfmt-ui'
 import { UniverSheetsSortUIPlugin } from '@univerjs/sheets-sort-ui'
 import { UniverSheetsTableUIPlugin } from '@univerjs/sheets-table-ui'
-import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui'
+import { CellPopupManagerService, UniverSheetsUIPlugin } from '@univerjs/sheets-ui'
 import { UniverWatermarkPlugin } from '@univerjs/watermark'
 import { UniverVue3AdapterPlugin } from '@univerjs/ui-adapter-vue3'
 
@@ -41,6 +41,7 @@ import {
 } from '../plugins/DataEaseToolbarUIPlugin/locales'
 import { DATAEASE_PROTECTION_MENU_CONFIG } from '../plugins/DataEaseToolbarUIPlugin/config/protection-config'
 import { DataEasePreviewModePlugin } from '../plugins/DataEasePreviewModePlugin'
+import { PreviewCellPopupManagerService } from '../plugins/DataEasePreviewModePlugin/services/preview-cell-popup-manager.service'
 import { DataEaseRuntimePlugin } from '../plugins/DataEaseRuntimePlugin'
 import { PREVIEW_MENU_CONFIG } from '../plugins/DataEasePreviewModePlugin/config/preview-menu-config'
 import { RangeSelectPlugin } from '../plugins/RangeSelectPlugin'
@@ -241,6 +242,7 @@ export function createUniverInstance(
   options: SpreadsheetRuntimeOptions = {}
 ): UniverInstance {
   const mode = options.mode ?? 'edit'
+  const isPreview = mode === 'preview'
 
   // Map locale string to Univer LocaleType
   let localeType = LocaleType.ZH_CN
@@ -260,7 +262,7 @@ export function createUniverInstance(
 
   univer.registerPlugin(UniverUIPlugin, {
     container,
-    menu: mode === 'preview' ? PREVIEW_MENU_CONFIG : undefined
+    menu: isPreview ? PREVIEW_MENU_CONFIG : undefined
   })
 
   univer.registerPlugin(UniverDocsPlugin)
@@ -270,14 +272,11 @@ export function createUniverInstance(
   univer.registerPlugin(UniverSheetsUIPlugin, {
     menu: DATAEASE_PROTECTION_MENU_CONFIG,
     protectedRangeShadow: false,
-    disableEdit: mode === 'preview',
-    footer: mode === 'preview'
-      ? {
-          addSheetButtonConfig: {
-            show: false
-          }
-        }
-      : undefined
+    override: isPreview
+      ? [[CellPopupManagerService, { useClass: PreviewCellPopupManagerService }]]
+      : undefined,
+    disableEdit: isPreview,
+    footer: isPreview ? { addSheetButtonConfig: { show: false } } : undefined
   })
   univer.registerPlugin(UniverSheetsFormulaUIPlugin)
   univer.registerPlugin(UniverSheetsNumfmtUIPlugin)

@@ -1,10 +1,12 @@
 import {
+  IConfigService,
   Inject,
   Injector,
   Plugin,
   UniverInstanceType,
   touchDependencies
 } from '@univerjs/core'
+import { type IUniverUIConfig, UI_PLUGIN_CONFIG_KEY } from '@univerjs/ui'
 import { SpreadsheetModeService } from '../../services/spreadsheet-mode.service'
 import type { SpreadsheetRuntimeOptions } from '../../types/mode'
 import { PreviewCommandGuardController } from './controllers/preview-command-guard.controller'
@@ -38,5 +40,27 @@ export class DataEasePreviewModePlugin extends Plugin {
       [PreviewCommandGuardController],
       [PreviewSheetTabContextMenuController]
     ])
+
+    if (!this.modeService.isPreview()) return
+
+    const config = this._injector
+      .get(IConfigService)
+      .getConfig<IUniverUIConfig>(UI_PLUGIN_CONFIG_KEY)
+    const popupRoot = config?.popupRootId ? document.getElementById(config.popupRootId) : null
+    if (!popupRoot) return
+
+    // Univer 的批注组件没有只读配置，在当前实例的浮层容器内保留原生文本选择和滚动。
+    const makeNotesReadOnly = () => {
+      popupRoot
+        .querySelectorAll<HTMLTextAreaElement>('textarea[data-u-comp="note-textarea"]')
+        .forEach(note => {
+          note.readOnly = true
+          note.style.resize = 'none'
+        })
+    }
+    const observer = new MutationObserver(makeNotesReadOnly)
+    observer.observe(popupRoot, { childList: true, subtree: true })
+    this.disposeWithMe({ dispose: () => observer.disconnect() })
+    makeNotesReadOnly()
   }
 }
