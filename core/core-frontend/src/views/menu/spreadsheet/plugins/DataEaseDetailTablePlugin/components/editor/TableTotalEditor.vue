@@ -77,6 +77,7 @@
               <div class="background-color-control">
                 <el-color-picker
                   is-custom
+                  effect="light"
                   :model-value="totalStyle.backgroundColor"
                   :disabled="!totalStyle.enable"
                   @change="value => updateTotalStyle('backgroundColor', value || '')"
@@ -98,6 +99,7 @@
               <div class="text-toolbar-row">
                 <el-color-picker
                   is-custom
+                  effect="light"
                   :model-value="totalStyle.textColor"
                   :disabled="!totalStyle.enable"
                   @change="value => updateTotalStyle('textColor', value)"
