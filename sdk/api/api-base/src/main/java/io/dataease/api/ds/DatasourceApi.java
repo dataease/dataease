@@ -152,7 +152,7 @@ public interface DatasourceApi {
 
     @PostMapping("/checkApiDatasource")
     @Operation(summary = "校验API数据源")
-    @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"request", "url", "token", "appToken"})
+    @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"request", "url", "token"})
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
 
     @PostMapping("/uploadFile")

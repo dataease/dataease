@@ -37,6 +37,10 @@ public final class ConfigurationCredentials {
 
     private static boolean secret(String name) {
         String key = normalized(name);
+        // 飞书多维表格的 appToken 不是凭证，仅用于定位多维表格应用，不参与服务端鉴权。
+        if ("apptoken".equals(key)) {
+            return false;
+        }
         return SECRETS.contains(key) || key.endsWith("password") || key.endsWith("secret") || key.endsWith("token") || key.endsWith("apikey");
     }
 
