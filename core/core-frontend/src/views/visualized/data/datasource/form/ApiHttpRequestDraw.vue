@@ -55,6 +55,7 @@ export interface ApiItem {
   showApiStructure: boolean
   jsonPath: string
   serialNumber: number
+  datasourceId?: string | number
 }
 
 export interface JsonField {
@@ -234,7 +235,11 @@ const initApiItem = (
       valueList.value = valueList.value.concat(paramsList[i].fields)
     }
   }
-  Object.assign(apiItem, { maxResponseSizeMb: 16, transferTimeoutSeconds: 120 }, val)
+  Object.assign(
+    apiItem,
+    { maxResponseSizeMb: 16, transferTimeoutSeconds: 120, datasourceId: credentialSourceId },
+    val
+  )
   edit_api_item.value = true
   active.value = 0
   nextTick(() => {

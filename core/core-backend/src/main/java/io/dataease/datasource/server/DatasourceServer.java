@@ -1713,6 +1713,21 @@ public class DatasourceServer implements DatasourceApi {
     public List<Map<String, String>> multidimensionalTables(Map<String, String> request) throws DEException {
         List<ApiDefinition> paramsList = new ArrayList<>();
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
+        String sourceId = request.get("datasourceId");
+        List<ApiDefinition> originals = List.of();
+        if (sourceId != null && !sourceId.isBlank() && !"0".equals(sourceId)) {
+            Long id = Long.valueOf(sourceId);
+            if (V3UserUtil.getLink() != null || !corePermissionManage.checkAuth(
+                    new BusiPerCheckDTO(id, BusiResourceEnum.DATASOURCE, AuthEnum.MANAGE))) {
+                throw new DEException(ResultCode.PERMISSION_NO_ACCESS.code(), ResultCode.PERMISSION_NO_ACCESS.message());
+            }
+            DatasourceDTO stored = dataSourceManage.getDs(id);
+            if (stored == null || !Objects.equals(stored.getType(), request.get("dsType"))) {
+                throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_configuration_type_mismatch"));
+            }
+            originals = JsonUtil.parseList(stored.getConfiguration(), listTypeReference);
+        }
+        apiDefinition = restoreApiDefinition(apiDefinition, originals);
         paramsList.add(apiDefinition);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO datasource = new DatasourceDTO();
