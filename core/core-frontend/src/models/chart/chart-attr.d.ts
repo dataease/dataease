@@ -521,6 +521,28 @@ declare interface ChartBasicStyle {
    */
   tableEmptyFontColor: string
 }
+
+/**
+ * 混合图基础样式
+ */
+declare interface MixChartBasicStyle extends ChartBasicStyle {
+  subAlpha: number
+  subColors: string[]
+  subSeriesColor: {
+    /**
+     * 序列识别id，多指标就是轴id，分组或者堆叠就是类别值
+     */
+    id: string
+    /**
+     * 显示名称
+     */
+    name: string
+    /**
+     * 序列颜色
+     */
+    color: string
+  }[]
+}
 /**
  * 表头属性
  */
