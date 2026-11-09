@@ -17,6 +17,7 @@ const props = defineProps<{
   saving?: boolean
   publishing?: boolean
   recovering?: boolean
+  disabled?: boolean
   status: SpreadsheetPublishStatus
 }>()
 
@@ -105,7 +106,9 @@ const handleReplaceDataset = () => {
   emit('replace-dataset')
 }
 
-const mutating = computed(() => props.saving || props.publishing || props.recovering)
+const mutating = computed(
+  () => props.disabled || props.saving || props.publishing || props.recovering
+)
 </script>
 
 <template>
