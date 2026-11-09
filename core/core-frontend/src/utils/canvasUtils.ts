@@ -1,6 +1,7 @@
 import { hasErrorContract } from '@/config/axios/error'
 import { checkCanvasRevision } from '@/api/visualization/canvasRevision'
 import { saveWithConflict } from '@/utils/canvasSaveConflict'
+import { captureCanvasSave, failCanvasEditSession } from '@/utils/canvasEditSession'
 import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
@@ -629,6 +630,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
   return method(dvId, busiFlagCustom, attachInfo, params.queryRequest)
     .then(res => {
       if (params.queryRequest && !params.queryRequest.isCurrent()) return
+      if (params.isCurrent && !params.isCurrent()) return
       const canvasInfo = res.data
       const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
 
@@ -699,6 +701,7 @@ export async function initCanvasData(dvId, params, callBack) {
         )
           .then(rsp => {
             if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            if (params.isCurrent && !params.isCurrent()) return
             dvMainStore.setNowPanelTrackInfo(rsp.data)
           })
           .catch(() => undefined)
@@ -710,6 +713,7 @@ export async function initCanvasData(dvId, params, callBack) {
         )
           .then(rsp => {
             if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            if (params.isCurrent && !params.isCurrent()) return
             dvMainStore.setNowPanelJumpInfo(rsp.data)
           })
           .catch(() => undefined)
@@ -865,6 +869,11 @@ export function initCanvasDataMobile(dvId, params, callBack) {
 }
 
 export function checkCanvasChangePre(callBack) {
+  const save = captureCanvasSave(dvMainStore, () => curDvInfo.value)
+  if (!save) return
+  const complete = () => {
+    if (save.isCurrent()) callBack()
+  }
   // do pre
   const isUpdate = curDvInfo.value.id && curDvInfo.value.optType !== 'copy'
   // 桌面版为单人模式不需要检查
@@ -875,9 +884,10 @@ export function checkCanvasChangePre(callBack) {
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
+      if (!save.isCurrent()) return
       if (hasErrorContract(rsp)) {
         // New servers check under a lock at save time. Old servers keep their original precheck.
-        callBack()
+        complete()
         return
       }
       if (rsp && rsp.data === 'Repeat') {
@@ -887,14 +897,14 @@ export function checkCanvasChangePre(callBack) {
           autofocus: false,
           showClose: false
         }).then(() => {
-          callBack()
+          complete()
         })
       } else {
-        callBack()
+        complete()
       }
     })
   } else {
-    callBack()
+    complete()
   }
 }
 
@@ -946,7 +956,16 @@ export async function recoverPublishedCanvas() {
   if (isCurrentCanvasRevision(revision)) return { id, pid }
 }
 
-export async function canvasSave(callBack: (target: CanvasPublishTarget) => unknown) {
+export async function canvasSave(
+  callBack: (target: CanvasPublishTarget, isCurrent: () => boolean) => unknown
+) {
+  return canvasSaveWithParams(null, callBack)
+}
+
+export async function canvasSaveWithParams(params, callBack) {
+  // 会话快照在保存入口捕获；切走或文档被替换后不再回写当前编辑器。
+  const save = captureCanvasSave(dvMainStore, () => curDvInfo.value)
+  if (!save) return
   const savingDvInfo = curDvInfo.value
   const sourceResourceId = savingDvInfo.id
   nameTrim(savingDvInfo, t('components.length_1_64_characters'))
@@ -972,8 +991,8 @@ export async function canvasSave(callBack: (target: CanvasPublishTarget) => unkn
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentDataToSave),
     canvasViewInfo: cloneDeep(canvasViewInfo.value),
-    appData: appData.value,
-    ...curDvInfo.value,
+    appData: cloneDeep(appData.value),
+    ...cloneDeep(savingDvInfo),
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
     ...checkCanvasRevision(savingDvInfo.contentId),
@@ -981,7 +1000,7 @@ export async function canvasSave(callBack: (target: CanvasPublishTarget) => unkn
   }
 
   let dsNameCheck = 'success'
-  if (appData.value) {
+  if (canvasInfo.appData) {
     await appCanvasNameCheck({
       datasetFolderPid: canvasInfo.datasetFolderPid,
       datasetFolderName: canvasInfo.datasetFolderName
@@ -989,6 +1008,7 @@ export async function canvasSave(callBack: (target: CanvasPublishTarget) => unkn
       dsNameCheck = rsp.data
     })
   }
+  if (!save.isCurrent()) return
   if (dsNameCheck === 'repeat') {
     ElMessage.error('数据集分组名称已存在')
     return
@@ -1003,6 +1023,7 @@ export async function canvasSave(callBack: (target: CanvasPublishTarget) => unkn
       id: sourceResourceId
     })
   }
+  if (!save.isCurrent()) return
   return saveWithConflict(canvasInfo, method, () =>
     ElMessageBox.confirm(
       (curDvInfo.value.type === 'dashboard'
@@ -1025,6 +1046,8 @@ export async function canvasSave(callBack: (target: CanvasPublishTarget) => unkn
     ) {
       await snapshotStore.clearCanvasDraft(res.data)
     }
+    // 写请求已发出时允许完成；切换会话后不再更新当前文档或执行页面回调。
+    if (!save.isCurrent()) return res
     if (
       curDvInfo.value !== savingDvInfo ||
       String(curDvInfo.value.id) !== String(sourceResourceId)
@@ -1032,28 +1055,45 @@ export async function canvasSave(callBack: (target: CanvasPublishTarget) => unkn
       return res
     }
     if (method === updateCanvas) {
-      dvMainStore.updateDvInfoCall(res.data?.status, null, newContentId)
+      // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
+      const status = params?.status ? params.status : res.data?.status
+      dvMainStore.updateDvInfoCall(status, null, newContentId)
     } else {
       dvMainStore.updateDvInfoCall(0, res.data, newContentId)
     }
+    save.saved(curDvInfo.value.id)
     if (canvasInfo.materialBundle) {
       delete curDvInfo.value.materialBundle
-      await new Promise<void>(resolve =>
-        initCanvasData(
+      try {
+        await initCanvasData(
           curDvInfo.value.id,
           {
             busiFlag: curDvInfo.value.type,
-            resourceTable: 'snapshot'
+            resourceTable: 'snapshot',
+            awaitLoad: true,
+            isCurrent: save.isCurrent
           },
-          resolve
+          () => undefined
         )
-      )
+      } catch (error) {
+        if (save.isCurrent()) {
+          dvMainStore.setAppDataInfo(null)
+          dvMainStore.setDataPrepareState(false)
+          failCanvasEditSession(dvMainStore)
+          ElMessage.error(t('visualization.saved_reload_failed'))
+        }
+        throw error
+      }
+      if (!save.isCurrent()) return res
       clearMaterialPreviews()
       snapshotStore.resetSnapshot()
     }
     snapshotStore.resetStyleChangeTimes()
     const savedId = method === updateCanvas ? sourceResourceId : res.data
-    await callBack(getCanvasPublishTarget({ ...canvasInfo, id: savedId }, componentDataToSave))
+    return callBack(
+      getCanvasPublishTarget({ ...canvasInfo, id: savedId }, componentDataToSave),
+      save.isCurrent
+    )
   })
 }
 
@@ -1370,8 +1410,9 @@ export function findParentIdByChildIdRecursive(tree, targetChildId) {
   return null // 没有找到匹配的子节点
 }
 
-export async function decompressionPre(params, callBack) {
+export async function decompressionPre(params, callBack, isCurrent = () => true) {
   const response = await decompression(params)
+  if (!isCurrent()) return
   const deTemplateDataTemp = response.data
   const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
   const appData = deTemplateDataTemp['appData']

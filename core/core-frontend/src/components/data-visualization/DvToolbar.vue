@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { captureCanvasSave, failCanvasEditSession } from '@/utils/canvasEditSession'
 import { EditPen } from '@element-plus/icons-vue'
 import DvMaterialPanel from '@/components/material/DvMaterialPanel.vue'
 import dvFilter from '@/assets/svg/dv-filter.svg'
@@ -188,49 +189,70 @@ const saveCanvasWithCheck = (withPublish = false) => {
   })
 }
 
-const saveResource = (withPublish: boolean) => {
+const saveResource = async (withPublish: boolean) => {
+  // 会话在保存入口捕获；切走或文档被替换后不再回写当前编辑器。
+  const save = captureCanvasSave(dvMainStore, () => dvInfo.value)
+  if (!save) return
   if (styleChangeTimes.value > 0 || withPublish) {
     eventBus.emit('hideArea-canvas-main')
+    await nextTick()
+    if (!save.isCurrent()) return
     const loadingKey = permissionStore.getCurrentPath
     // 保存 + 发布合并为一次 loading：先占一个引用，保证两次请求之间计数不归零
     if (withPublish) {
       tryShowLoading(loadingKey)
     }
-    nextTick(() => {
-      canvasSave(async savedCanvas => {
+    try {
+      await canvasSave(async (savedCanvas, isCurrent) => {
+        wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         if (!embeddedStore.baseUrl) {
-          // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前大屏
           try {
             await router.replace({
               name: 'dvCanvas',
               query: { dvId: String(savedCanvas.id) }
             })
-          } catch (e) {
-            console.error(e)
+          } catch (error) {
+            console.error(error)
           }
         }
+        if (!isCurrent()) return
         if (appData.value) {
-          initCanvasData(savedCanvas.id, { busiFlag: 'dataV', resourceTable: 'snapshot' }, () => {
-            useEmitt().emitter.emit('refresh-dataset-selector')
-            resourceAppOpt.value.close()
-            dvMainStore.setAppDataInfo(null)
-            useEmitt().emitter.emit('calcData-all')
-            snapshotStore.resetSnapshot()
-          })
+          // 应用已保存；后续失败不能再次携带应用内容创建数据集。
+          dvMainStore.setAppDataInfo(null)
+          try {
+            await initCanvasData(
+              dvInfo.value.id,
+              { busiFlag: 'dataV', resourceTable: 'snapshot', awaitLoad: true, isCurrent },
+              () => {
+                if (!isCurrent()) return
+                useEmitt().emitter.emit('refresh-dataset-selector')
+                resourceAppOpt.value.close()
+                useEmitt().emitter.emit('calcData-all')
+                snapshotStore.resetSnapshot()
+              }
+            )
+          } catch (error) {
+            if (isCurrent()) {
+              dvMainStore.setDataPrepareState(false)
+              failCanvasEditSession(dvMainStore)
+              ElMessage.error(t('visualization.saved_reload_failed'))
+            }
+            console.error(error)
+            return
+          }
         }
+        if (!isCurrent()) return
         if (withPublish) {
           await changeCanvasPublishStatus(1, savedCanvas)
         } else {
           ElMessage.success(t('commons.save_success'))
         }
       })
-        .catch(() => {
-          // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
-        })
-        .finally(() => {
-          if (withPublish) tryHideLoading(loadingKey)
-        })
-    })
+    } catch (error) {
+      console.error(error)
+    } finally {
+      if (withPublish) tryHideLoading(loadingKey)
+    }
   }
 }
 

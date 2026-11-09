@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { useCanvasEditSession } from '@/hooks/web/useCanvasEditSession'
 const canvasQuery = useLatestQuery('canvas-load')
 import dvRuler from '@/assets/svg/dv-ruler.svg'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
@@ -139,6 +140,17 @@ const state = reactive({
   baseWidth: 10,
   baseHeight: 10
 })
+
+const editorRoutePath = router.currentRoute.value.path
+const editorLocation = () => ({
+  id: embeddedStore.dvId || router.currentRoute.value.query.dvId,
+  type: router.currentRoute.value.path === editorRoutePath ? 'dataV' : '',
+  opt: embeddedStore.opt || router.currentRoute.value.query.opt,
+  template: embeddedStore.templateParams || router.currentRoute.value.query.templateParams,
+  parent: embeddedStore.pid || router.currentRoute.value.query.pid,
+  createType: embeddedStore.createType || router.currentRoute.value.query.createType
+})
+const editorSession = useCanvasEditSession(dvMainStore, editorLocation, () => dvInfo.value)
 
 const tabSort = () => {
   if (loadFinish.value && curComponent.value) {
@@ -348,9 +360,11 @@ const doUseCache = async flag => {
   const pending = pendingCanvasDraft
   if (!pending || !isCurrentDraftResource(pending.resourceId)) return
   pendingCanvasDraft = undefined
+  const load = editorSession.begin()
   if (flag && pending.data) {
     const canvasCacheSeries = deepCopy(pending.data)
     snapshotStore.snapshotPublish(canvasCacheSeries)
+    if (!load.ready()) return
     state.canvasInitStatus = true
     nextTick(() => {
       dvMainStore.setDataPrepareState(true)
@@ -371,6 +385,7 @@ const doUseCache = async flag => {
 
 const initLocalCanvasData = async (callback?: () => void, awaitRelations = false) => {
   if (!loadFinish.value) return
+  const load = editorSession.begin()
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
   const queryRequest = canvasQuery.start()
@@ -383,9 +398,11 @@ const initLocalCanvasData = async (callback?: () => void, awaitRelations = false
         source: 'main-edit',
         awaitLoad: true,
         awaitRelations,
-        queryRequest
+        queryRequest,
+        isCurrent: load.isCurrent
       },
       function () {
+        if (!load.ready()) return
         state.canvasInitStatus = true
         if (dvInfo.value && opt === 'copy') {
           dvInfo.value.dataState = 'prepare'
@@ -408,6 +425,7 @@ const initLocalCanvasData = async (callback?: () => void, awaitRelations = false
     )
   } catch (error) {
     if (!queryRequest.isCurrent()) return
+    load.fail()
     revokeEditorAccess()
     console.error(error)
   }
@@ -543,6 +561,7 @@ onMounted(async () => {
       })
     }
   } else if (opt && opt === 'create') {
+    const load = editorSession.begin()
     state.canvasInitStatus = false
     let watermarkBaseInfo
     try {
@@ -571,6 +590,7 @@ onMounted(async () => {
     }
     dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
     nextTick(() => {
+      if (!load.ready()) return
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
       snapshotStore.recordSnapshotCache('renderChart')
