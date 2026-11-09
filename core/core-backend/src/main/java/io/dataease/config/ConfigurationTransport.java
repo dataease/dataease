@@ -38,7 +38,7 @@ public class ConfigurationTransport {
             "/sync/task/add", "/sync/task/update", "/sync/task/target/keyPolicy");
 
     public static boolean protects(String path) {
-        return PATHS.contains(path);
+        return PATHS.contains(path) || path.matches("/ai/models(?:/[0-9]+|/discover|/test)?");
     }
 
     protected String owner() {

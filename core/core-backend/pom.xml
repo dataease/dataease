@@ -14,6 +14,15 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-openai</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>smbj</artifactId>
             <version>0.14.0</version>

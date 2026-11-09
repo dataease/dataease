@@ -11,4 +11,11 @@
 
     <artifactId>api-base</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-client-chat</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
+    </dependencies>
 </project>

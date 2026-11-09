@@ -50,6 +50,9 @@
         </encoder>
     </appender>
 
+    <!-- Spring AI 1.1.8 的空响应告警包含完整 Prompt，由 AI 底座返回安全错误替代。 -->
+    <logger name="org.springframework.ai.openai.OpenAiChatModel" level="OFF"/>
+
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="info_log" />

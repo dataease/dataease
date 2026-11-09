@@ -21,6 +21,7 @@
     <properties>
         <dataease.version>3.2.1</dataease.version>
         <java.version>21</java.version>
+        <spring-ai.version>1.1.8</spring-ai.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>

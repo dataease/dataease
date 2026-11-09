@@ -24,6 +24,22 @@ import java.util.List;
 @Hidden
 public interface InteractiveAuthApi {
 
+    /** 社区模式内部账号检查；复用已有认证身份，不检查企业菜单或组织。 */
+    default void checkAiCommunityAccess(Long actorId) {
+        throw new UnsupportedOperationException("AI community identity unavailable");
+    }
+
+    /** 全局 AI 配置目录的最小投影；无 HTTP 路由，不改变组织管理及业务资源授权。 */
+    record AiOrganization(Long id, String name, Long parentId) { }
+    default List<AiOrganization> aiOrganizations(Long actorId, Long organizationId, Long proxyOrganizationId) {
+        throw new UnsupportedOperationException("AI organization directory unavailable");
+    }
+
+    /** 内部 Java 调用：按明确主体校验 AI 身份及可选配置菜单使用权，不暴露 HTTP 路由。 */
+    default void checkAiAccess(Long actorId, Long organizationId, Long proxyOrganizationId, boolean configuration) {
+        throw new UnsupportedOperationException("AI authorization unavailable");
+    }
+
     @Operation(summary = "查询菜单ID")
     @ApiOperationSupport(order = 1)
     @GetMapping("/menuIds")
