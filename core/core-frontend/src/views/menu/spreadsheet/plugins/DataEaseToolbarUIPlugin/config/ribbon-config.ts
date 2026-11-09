@@ -52,6 +52,7 @@ export const DATAEASE_RIBBON_POSITION_ORDER = [
   RibbonPosition.OTHERS
 ]
 
+// 明细表、透视表与工具栏共用同一插入菜单 ID，确保子菜单挂载到同一入口。
 export const DATAEASE_INSERT_DROPDOWN_MENU_ID = 'dataease.operation.insert-dropdown'
 export const DATAEASE_QUERY_CONTROL_MENU_ID = 'dataease.operation.toggle-spreadsheet-filter'
 export const DATAEASE_QUERY_CONTROL_GROUP_KEY = 'dataease.ribbon.query-control'
