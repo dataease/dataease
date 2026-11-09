@@ -47,7 +47,7 @@ import { isPluginEditorCellSelection } from '../../../utils/plugin-editor-select
 import type { PluginActionToolbarPayload } from '../../../types/editor'
 import DetailTableCreateDialog from '../components/DetailTableCreateDialog.vue'
 import { InsertDetailTableMenuFactory } from './menu'
-import { DATAEASE_INSERT_DROPDOWN_ID } from '../../DataEaseInsertPlugin/controllers/menu'
+import { DATAEASE_INSERT_DROPDOWN_MENU_ID } from '../../DataEaseToolbarUIPlugin/config/ribbon-config'
 import { DetailTableInstanceService } from '../services/detail-table-instance.service'
 import { DetailTableInsertionService } from '../services/detail-table-insertion.service'
 import { DetailTableRenderStyleService } from '../services/detail-table-render-style.service'
@@ -185,7 +185,7 @@ export class DataEaseDetailTableController extends Disposable {
   private _initMenus(): void {
     this._menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [DATAEASE_INSERT_DROPDOWN_ID]: {
+        [DATAEASE_INSERT_DROPDOWN_MENU_ID]: {
           [InsertDetailTableOperation.id]: {
             order: 10,
             menuItemFactory: InsertDetailTableMenuFactory

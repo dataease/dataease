@@ -44,7 +44,7 @@ import {
   onSpreadsheetFilterQuery,
   type SpreadsheetFilterQueryPayload
 } from '../../DataEaseFilterPlugin/utils/events'
-import { DATAEASE_INSERT_DROPDOWN_ID } from '../../DataEaseInsertPlugin/controllers/menu'
+import { DATAEASE_INSERT_DROPDOWN_MENU_ID } from '../../DataEaseToolbarUIPlugin/config/ribbon-config'
 import { SlashCellRenderService } from '../../DataEaseSlashCellPlugin/services/slash-cell-render.service'
 import { InsertPivotTableOperation } from '../commands/insert-operations'
 import { registerTableSheetHistory } from '../../../services/table-sheet-history'
@@ -176,7 +176,7 @@ export class DataEasePivotTableController extends Disposable {
   private initMenus(): void {
     this.menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [DATAEASE_INSERT_DROPDOWN_ID]: {
+        [DATAEASE_INSERT_DROPDOWN_MENU_ID]: {
           [InsertPivotTableOperation.id]: {
             order: 20,
             menuItemFactory: InsertPivotTableMenuFactory
