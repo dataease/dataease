@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useCanvasEditSession } from '@/hooks/web/useCanvasEditSession'
+import { isCanvasDraft } from '@/utils/canvasEditSession'
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
 const canvasQuery = useLatestQuery('canvas-load')
 import {
@@ -96,6 +98,44 @@ const state = reactive({
   resourceId: null
 })
 
+const editorRoutePath = router.currentRoute.value.path
+const editorLocation = () => ({
+  id: embeddedStore.resourceId || router.currentRoute.value.query.resourceId,
+  type: router.currentRoute.value.path === editorRoutePath ? 'dashboard' : '',
+  opt: embeddedStore.opt || router.currentRoute.value.query.opt,
+  template: embeddedStore.templateParams || router.currentRoute.value.query.templateParams,
+  parent: embeddedStore.pid || router.currentRoute.value.query.pid,
+  createType: embeddedStore.createType || router.currentRoute.value.query.createType
+})
+const editorSession = useCanvasEditSession(dvMainStore, editorLocation, () => dvInfo.value)
+let editorMounted = false
+watch(
+  () => [
+    editorLocation().type,
+    editorLocation().id,
+    editorLocation().opt,
+    editorLocation().template,
+    editorLocation().parent,
+    editorLocation().createType
+  ],
+  () => {
+    if (!editorMounted) return
+    if (editorLocation().type !== 'dashboard') {
+      editorSession.dispose()
+      canvasQuery.invalidate()
+      return
+    }
+    // 首次保存后仅替换路由参数，文档和会话继续使用新 ID。
+    if (editorSession.capture()) {
+      state.resourceId = dvInfo.value.id
+      state.opt = null
+      return
+    }
+    void initializeEditor()
+  },
+  { flush: 'sync' }
+)
+
 const initDataset = () => {
   getDatasetTree({}).then(res => {
     state.datasetTree = (res as unknown as Tree[]) || []
@@ -189,13 +229,22 @@ const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
 
-const doUseCache = flag => {
+const doUseCache = (flag, resourceId) => {
+  if (
+    String(resourceId) !== String(state.resourceId) ||
+    String(resourceId) !== String(editorLocation().id)
+  )
+    return
   const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
-  if (flag && canvasCache) {
+  const load = editorSession.begin()
+  canvasQuery.invalidate()
+  if (flag && state.opt !== 'copy' && isCanvasDraft(canvasCache, state.resourceId, 'dashboard')) {
     const canvasCacheSeries = deepCopy(canvasCache)
     snapshotStore.snapshotPublish(canvasCacheSeries)
+    if (!load.ready()) return
     dataInitState.value = true
     setTimeout(() => {
+      if (!load.isCurrent()) return
       snapshotStore.recordSnapshotCache('doUseCache')
       // 使用缓存时，初始化的保存按钮为激活状态
       snapshotStore.recordSnapshotCache('renderChart')
@@ -206,26 +255,44 @@ const doUseCache = flag => {
   }
 }
 
-const initLocalCanvasData = callBack => {
+const initLocalCanvasData = async callBack => {
+  const load = editorSession.begin()
+  canvasQuery.invalidate()
+  dataInitState.value = false
   const { resourceId, opt, sourcePid } = state
   const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
-  initCanvasData(
-    resourceId,
-    { busiFlag, resourceTable: 'snapshot', source: 'main-edit', queryRequest: canvasQuery.start() },
-    function () {
-      dataInitState.value = true
-      if (dvInfo.value && opt === 'copy') {
-        dvInfo.value.dataState = 'prepare'
-        dvInfo.value.optType = 'copy'
-        dvInfo.value.pid = sourcePid
-        setTimeout(() => {
-          snapshotStore.recordSnapshotCache('initLocalCanvasData')
-        }, 1500)
+  try {
+    await initCanvasData(
+      resourceId,
+      {
+        busiFlag,
+        resourceTable: 'snapshot',
+        source: 'main-edit',
+        queryRequest: canvasQuery.start(),
+        awaitLoad: true,
+        isCurrent: load.isCurrent
+      },
+      function () {
+        if (!load.ready()) return
+        dataInitState.value = true
+        if (dvInfo.value && opt === 'copy') {
+          dvInfo.value.dataState = 'prepare'
+          dvInfo.value.optType = 'copy'
+          dvInfo.value.pid = sourcePid
+          setTimeout(() => {
+            if (load.isCurrent()) snapshotStore.recordSnapshotCache('initLocalCanvasData')
+          }, 1500)
+        }
+        onInitReady({ resourceId: resourceId })
+        callBack && callBack()
       }
-      onInitReady({ resourceId: resourceId })
-      callBack && callBack()
+    )
+  } catch (error) {
+    if (load.isCurrent()) {
+      load.fail()
+      console.error(error)
     }
-  )
+  }
 }
 onMounted(async () => {
   document.body.style.overflow = 'hidden'
@@ -239,6 +306,7 @@ onMounted(async () => {
   if (appStore.getXpackValid) {
     await new Promise(r => (p = r))
   }
+  if (!editorSession.begin().isCurrent()) return
   loadFinish.value = true
   useEmitt({
     name: 'mobileConfig',
@@ -248,65 +316,93 @@ onMounted(async () => {
   })
   window.addEventListener('storage', eventCheck)
   window.addEventListener('message', winMsgHandle)
-  const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
-  const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-  const createType = embeddedStore.createType || router.currentRoute.value.query.createType
-  const templateParams =
-    embeddedStore.templateParams || router.currentRoute.value.query.templateParams
-  const checkResourceId = opt && opt === 'copy' ? null : resourceId
-  const checkResult = await checkPer(checkResourceId as string)
-  if (!checkResult) {
-    return
-  }
-  initDataset()
+  editorMounted = true
+  await initializeEditor()
+})
 
-  state.sourcePid = pid
-  state.opt = opt
-  state.resourceId = resourceId
-  if (resourceId) {
-    dataInitState.value = false
-    const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
-    if (canvasCache) {
-      canvasCacheOutRefShow.value = true
-      nextTick(() => {
-        setTimeout(() => {
-          canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
-        }, 300)
-      })
-    } else {
-      initLocalCanvasData(() => {
-        // do init
-      })
+const initializeEditor = async () => {
+  const load = editorSession.begin()
+  canvasQuery.invalidate()
+  dataInitState.value = false
+  templateLoadError.value = false
+  canvasCacheOutRef.value?.close?.()
+  snapshotStore.initSnapShot()
+  dvMainStore.setDataPrepareState(false)
+  dvMainStore.setAppDataInfo(null)
+  delete dvInfo.value.materialBundle
+  dvMainStore.setCurComponent({ component: null, index: null })
+  try {
+    const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
+    const pid = embeddedStore.pid || router.currentRoute.value.query.pid
+    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
+    const createType = embeddedStore.createType || router.currentRoute.value.query.createType
+    const templateParams =
+      embeddedStore.templateParams || router.currentRoute.value.query.templateParams
+    const checkResourceId = opt && opt === 'copy' ? null : resourceId
+    const checkResult = await checkPer(checkResourceId as string)
+    if (!load.isCurrent()) return
+    if (!checkResult) {
+      load.fail()
+      return
     }
-  } else if (opt && opt === 'create') {
-    dataInitState.value = false
-    let watermarkBaseInfo
-    try {
-      await watermarkFind().then(rsp => {
-        watermarkBaseInfo = rsp.data
-        watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
-      })
-    } catch (e) {
-      console.error('can not find watermark info')
-    }
-    let deTemplateData
-    let preName
-    if (createType === 'template') {
-      try {
-        const templateParamsApply = JSON.parse(
-          Base64.decode(decodeURIComponent(templateParams + ''))
-        )
-        await decompressionPre(templateParamsApply, result => {
-          deTemplateData = result
-          preName = deTemplateData.baseInfo?.preName
+    initDataset()
+
+    state.sourcePid = pid
+    state.opt = opt
+    state.resourceId = resourceId
+    if (resourceId) {
+      dataInitState.value = false
+      const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
+      if (opt !== 'copy' && isCanvasDraft(canvasCache, resourceId, 'dashboard')) {
+        canvasCacheOutRefShow.value = true
+        nextTick(() => {
+          setTimeout(() => {
+            if (!load.isCurrent()) return
+            canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
+          }, 300)
         })
-      } catch {
-        templateLoadError.value = true
-        return
+      } else {
+        initLocalCanvasData(() => {
+          // do init
+        })
       }
-    }
-    nextTick(() => {
+    } else if (opt && opt === 'create') {
+      dataInitState.value = false
+      let watermarkBaseInfo
+      try {
+        await watermarkFind().then(rsp => {
+          watermarkBaseInfo = rsp.data
+          watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
+        })
+      } catch (e) {
+        console.error('can not find watermark info')
+      }
+      if (!load.isCurrent()) return
+      let deTemplateData
+      let preName
+      if (createType === 'template') {
+        try {
+          const templateParamsApply = JSON.parse(
+            Base64.decode(decodeURIComponent(templateParams + ''))
+          )
+          await decompressionPre(
+            templateParamsApply,
+            result => {
+              deTemplateData = result
+              preName = deTemplateData.baseInfo?.preName
+            },
+            load.isCurrent
+          )
+        } catch {
+          if (!load.isCurrent()) return
+          load.fail()
+          templateLoadError.value = true
+          return
+        }
+      }
+      if (!load.isCurrent()) return
+      await nextTick()
+      if (!load.isCurrent()) return
       dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo, preName)
       // 从模板新建
       if (createType === 'template') {
@@ -318,21 +414,25 @@ onMounted(async () => {
         dvInfo.value.materialBundle = deTemplateData.materialBundle
         dvInfo.value.materialSourceTemplateId = deTemplateData.materialSourceTemplateId
         setTimeout(() => {
-          snapshotStore.recordSnapshotCache('template')
+          if (load.isCurrent()) snapshotStore.recordSnapshotCache('template')
         }, 1500)
-        if (dvMainStore.getAppDataInfo()) {
-          eventBus.emit('save')
-        }
       }
+      if (!load.ready()) return
       dataInitState.value = true
       // preOpt
       canvasStyleData.value.component.chartTitle.color = '#000000'
-    })
-  } else {
-    let url = '#/panel/index'
-    window.open(url, '_self')
+      if (dvMainStore.getAppDataInfo()) eventBus.emit('save')
+    } else {
+      let url = '#/panel/index'
+      window.open(url, '_self')
+    }
+  } catch (error) {
+    if (load.isCurrent()) {
+      load.fail()
+      console.error(error)
+    }
   }
-})
+}
 
 // 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
@@ -367,13 +467,18 @@ const cancelHidden = item => {
 }
 
 const doRecoverToPublished = () => {
+  const save = editorSession.capture()
+  if (!save) return
   recoverToPublished({ id: dvInfo.value.id, type: 'dashboard', name: dvInfo.value.name }).then(
     () => {
+      if (!save.isCurrent()) return
       state.resourceId = dvInfo.value.id
       state.sourcePid = dvInfo.value.pid
       state.opt = null
       initLocalCanvasData(() => {
+        const restored = editorSession.capture()
         nextTick(() => {
+          if (!restored?.isCurrent()) return
           deCanvasRef.value.canvasInit(false)
           dvMainStore.updateDvInfoCall(1)
           useEmitt().emitter.emit('calcData-all')

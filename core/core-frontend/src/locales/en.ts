@@ -3318,6 +3318,8 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    saved_reload_failed:
+      'The document was saved, but reloading failed. Publishing was not continued. Reopen the document and try again.',
     canvas_load_failed:
       'Unable to load this visualization. Reopen it, or contact an administrator to check its configuration.',
     template_load_failed: 'Failed to load the template. Check it and reopen, or try again later.',

@@ -57,12 +57,15 @@ const dialogInit = initInfo => {
 }
 
 const doUseCache = flag => {
-  emits('doUseCache', flag)
+  emits('doUseCache', flag, dialogInfo.resourceId)
   dialogShow.value = false
 }
 
 defineExpose({
-  dialogInit
+  dialogInit,
+  close: () => {
+    dialogShow.value = false
+  }
 })
 </script>
 

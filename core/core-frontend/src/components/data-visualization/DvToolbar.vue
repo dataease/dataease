@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { captureCanvasSave, failCanvasEditSession } from '@/utils/canvasEditSession'
 import { EditPen } from '@element-plus/icons-vue'
 import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import dvFilter from '@/assets/svg/dv-filter.svg'
@@ -149,6 +150,7 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = (withPublish = false, status?) => {
+  if (!captureCanvasSave(dvMainStore, () => dvInfo.value)) return
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
       confirmButtonType: 'primary',
@@ -192,47 +194,66 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
   })
 }
 
-const saveResource = (checkParams?) => {
+const saveResource = async (checkParams = { withPublish: false, status: undefined }) => {
+  const save = captureCanvasSave(dvMainStore, () => dvInfo.value)
+  if (!save) return
   if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     eventBus.emit('hideArea-canvas-main')
+    await nextTick()
+    if (!save.isCurrent()) return
     const loadingKey = permissionStore.getCurrentPath
-    // 保存 + 发布合并为一次 loading：先占一个引用，保证两次请求之间计数不归零
-    if (checkParams.withPublish) {
-      tryShowLoading(loadingKey)
-    }
-    nextTick(() => {
-      canvasSaveWithParams(checkParams, async () => {
-        snapshotStore.resetStyleChangeTimes()
+    if (checkParams.withPublish) tryShowLoading(loadingKey)
+    try {
+      await canvasSaveWithParams(checkParams, async (_res, isCurrent) => {
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         if (!embeddedStore.baseUrl) {
-          // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前大屏
           try {
             await router.replace({
               name: 'dvCanvas',
               query: { dvId: String(dvInfo.value.id) }
             })
-          } catch (e) {
-            console.error(e)
+          } catch (error) {
+            console.error(error)
           }
         }
+        if (!isCurrent()) return
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, { busiFlag: 'dataV', resourceTable: 'snapshot' }, () => {
-            useEmitt().emitter.emit('refresh-dataset-selector')
-            resourceAppOpt.value.close()
-            dvMainStore.setAppDataInfo(null)
-            useEmitt().emitter.emit('calcData-all')
-            snapshotStore.resetSnapshot()
-          })
+          // 应用已保存；后续失败不能再次携带应用内容创建数据集。
+          dvMainStore.setAppDataInfo(null)
+          try {
+            await initCanvasData(
+              dvInfo.value.id,
+              { busiFlag: 'dataV', resourceTable: 'snapshot', awaitLoad: true, isCurrent },
+              () => {
+                if (!isCurrent()) return
+                useEmitt().emitter.emit('refresh-dataset-selector')
+                resourceAppOpt.value.close()
+                useEmitt().emitter.emit('calcData-all')
+                snapshotStore.resetSnapshot()
+              }
+            )
+          } catch (error) {
+            if (isCurrent()) {
+              dvMainStore.setDataPrepareState(false)
+              failCanvasEditSession(dvMainStore)
+              ElMessage.error(t('visualization.saved_reload_failed'))
+            }
+            console.error(error)
+            return
+          }
         }
+        if (!isCurrent()) return
         if (checkParams.withPublish) {
-          publishStatusChange(checkParams.status).finally(() => {
-            tryHideLoading(loadingKey)
-          })
+          await publishStatusChange(checkParams.status)
         } else {
           ElMessage.success(t('commons.save_success'))
         }
       })
-    })
+    } catch (error) {
+      console.error(error)
+    } finally {
+      if (checkParams.withPublish) tryHideLoading(loadingKey)
+    }
   }
 }
 
@@ -341,6 +362,8 @@ const multiplexingCanvasOpen = () => {
 }
 
 const publishStatusChange = status => {
+  const save = captureCanvasSave(dvMainStore, () => dvInfo.value)
+  if (!save) return Promise.resolve()
   const targetViewIds = []
   findAllViewsId(componentData.value, targetViewIds)
   // do update
@@ -352,6 +375,7 @@ const publishStatusChange = status => {
     activeViewIds: targetViewIds,
     type: 'dataV'
   }).then(() => {
+    if (!save.isCurrent()) return
     dvMainStore.updateDvInfoCall(status)
     status
       ? ElMessage.success(t('visualization.published_success'))

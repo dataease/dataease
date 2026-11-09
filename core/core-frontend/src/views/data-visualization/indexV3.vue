@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useCanvasEditSession } from '@/hooks/web/useCanvasEditSession'
+import { isCanvasDraft } from '@/utils/canvasEditSession'
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
 const canvasQuery = useLatestQuery('canvas-load')
 import dvRuler from '@/assets/svg/dv-ruler.svg'
@@ -121,7 +123,6 @@ const dvLayout = ref(null)
 const canvasCenterRef = ref(null)
 const mainHeight = ref(300)
 const templateLoadError = ref(false)
-let createType = null
 let isDragging = false // 标记是否在拖动
 let startX, startY, scrollLeft, scrollTop
 const state = reactive({
@@ -312,18 +313,27 @@ const initScroll = () => {
     }
   })
 }
-const doUseCache = flag => {
+const doUseCache = (flag, resourceId) => {
+  if (
+    String(resourceId) !== String(state.resourceId) ||
+    String(resourceId) !== String(editorLocation().id)
+  )
+    return
   const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
-  if (flag && canvasCache) {
+  const load = editorSession.begin()
+  canvasQuery.invalidate()
+  if (flag && state.opt !== 'copy' && isCanvasDraft(canvasCache, state.resourceId, 'dataV')) {
     const canvasCacheSeries = deepCopy(canvasCache)
     snapshotStore.snapshotPublish(canvasCacheSeries)
+    if (!load.ready()) return
     state.canvasInitStatus = true
     nextTick(() => {
+      if (!load.isCurrent()) return
       dvMainStore.setDataPrepareState(true)
       snapshotStore.recordSnapshotCache('renderChart')
       setTimeout(() => {
         // 使用缓存时，初始化的保存按钮为激活状态
-        snapshotStore.recordSnapshotCache('renderChart')
+        if (load.isCurrent()) snapshotStore.recordSnapshotCache('renderChart')
       }, 2000)
     })
   } else {
@@ -335,30 +345,49 @@ const doUseCache = flag => {
 }
 
 const initLocalCanvasData = async callback => {
+  const load = editorSession.begin()
+  canvasQuery.invalidate()
+  state.canvasInitStatus = false
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
-  await initCanvasData(
-    resourceId,
-    { busiFlag, resourceTable: 'snapshot', source: 'main-edit', queryRequest: canvasQuery.start() },
-    function () {
-      state.canvasInitStatus = true
-      // afterInit
-      nextTick(() => {
-        dvMainStore.setDataPrepareState(true)
-        snapshotStore.recordSnapshotCache('renderChart')
-        if (dvInfo.value && opt === 'copy') {
-          dvInfo.value.dataState = 'prepare'
-          dvInfo.value.optType = 'copy'
-          dvInfo.value.pid = sourcePid
-          setTimeout(() => {
-            snapshotStore.recordSnapshotCache('renderChart')
-          }, 1500)
-        }
-        onInitReady({ resourceId: resourceId })
-        callback && callback()
-      })
+  try {
+    await initCanvasData(
+      resourceId,
+      {
+        busiFlag,
+        resourceTable: 'snapshot',
+        source: 'main-edit',
+        queryRequest: canvasQuery.start(),
+        awaitLoad: true,
+        isCurrent: load.isCurrent
+      },
+      function () {
+        if (!load.ready()) return
+        state.canvasInitStatus = true
+        // afterInit
+        nextTick(() => {
+          if (!load.isCurrent()) return
+          dvMainStore.setDataPrepareState(true)
+          snapshotStore.recordSnapshotCache('renderChart')
+          if (dvInfo.value && opt === 'copy') {
+            dvInfo.value.dataState = 'prepare'
+            dvInfo.value.optType = 'copy'
+            dvInfo.value.pid = sourcePid
+            setTimeout(() => {
+              if (load.isCurrent()) snapshotStore.recordSnapshotCache('renderChart')
+            }, 1500)
+          }
+          onInitReady({ resourceId: resourceId })
+          callback && callback()
+        })
+      }
+    )
+  } catch (error) {
+    if (load.isCurrent()) {
+      load.fail()
+      console.error(error)
     }
-  )
+  }
 }
 
 const previewScaleChange = () => {
@@ -412,6 +441,44 @@ const afterSave = () => {
   state.opt = null
 }
 
+const editorRoutePath = router.currentRoute.value.path
+const editorLocation = () => ({
+  id: embeddedStore.dvId || router.currentRoute.value.query.dvId,
+  type: router.currentRoute.value.path === editorRoutePath ? 'dataV' : '',
+  opt: embeddedStore.opt || router.currentRoute.value.query.opt,
+  template: embeddedStore.templateParams || router.currentRoute.value.query.templateParams,
+  parent: embeddedStore.pid || router.currentRoute.value.query.pid,
+  createType: embeddedStore.createType || router.currentRoute.value.query.createType
+})
+const editorSession = useCanvasEditSession(dvMainStore, editorLocation, () => dvInfo.value)
+let editorMounted = false
+watch(
+  () => [
+    editorLocation().type,
+    editorLocation().id,
+    editorLocation().opt,
+    editorLocation().template,
+    editorLocation().parent,
+    editorLocation().createType
+  ],
+  () => {
+    if (!editorMounted) return
+    if (editorLocation().type !== 'dataV') {
+      editorSession.dispose()
+      canvasQuery.invalidate()
+      return
+    }
+    // 首次保存后仅替换路由参数，文档和会话继续使用新 ID。
+    if (editorSession.capture()) {
+      state.resourceId = dvInfo.value.id
+      state.opt = null
+      return
+    }
+    void initializeEditor()
+  },
+  { flush: 'sync' }
+)
+
 const loadFinish = ref(false)
 const newWindowFromDiv = ref(false)
 let p = null
@@ -425,65 +492,100 @@ onMounted(async () => {
   if (appStore.getXpackValid) {
     await new Promise(r => (p = r))
   }
+  if (!editorSession.begin().isCurrent()) return
   loadFinish.value = true
   window.addEventListener('blur', releaseAttachKey)
   window.addEventListener('message', winMsgHandle)
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)
   }
-  const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
-  const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const templateParams =
-    embeddedStore.templateParams || router.currentRoute.value.query.templateParams
-  createType = embeddedStore.createType || router.currentRoute.value.query.createType
-  const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-  const checkResult = await checkPer(dvId)
-  if (!checkResult) {
-    return
-  }
-  initDataset()
-  state.resourceId = dvId
-  state.sourcePid = pid
-  state.opt = opt
-  if (dvId) {
-    state.canvasInitStatus = false
-    const canvasCache = wsCache.get('DE-DV-CATCH-' + dvId)
-    if (canvasCache) {
-      canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
-    } else {
-      await initLocalCanvasData(() => {
-        // do init
-      })
+  editorMounted = true
+  await initializeEditor()
+  initScroll()
+  useEmitt({
+    name: 'initScroll',
+    callback: function () {
+      initScroll()
     }
-  } else if (opt && opt === 'create') {
-    state.canvasInitStatus = false
-    let watermarkBaseInfo
-    try {
-      await watermarkFind().then(rsp => {
-        watermarkBaseInfo = rsp.data
-        watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
-      })
-    } catch (e) {
-      console.error('can not find watermark info')
+  })
+})
+
+const initializeEditor = async () => {
+  const load = editorSession.begin()
+  canvasQuery.invalidate()
+  state.canvasInitStatus = false
+  templateLoadError.value = false
+  canvasCacheOutRef.value?.close?.()
+  snapshotStore.initSnapShot()
+  dvMainStore.setDataPrepareState(false)
+  dvMainStore.setAppDataInfo(null)
+  delete dvInfo.value.materialBundle
+  dvMainStore.setCurComponent({ component: null, index: null })
+  try {
+    const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+    const pid = embeddedStore.pid || router.currentRoute.value.query.pid
+    const templateParams =
+      embeddedStore.templateParams || router.currentRoute.value.query.templateParams
+    const createType = embeddedStore.createType || router.currentRoute.value.query.createType
+    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
+    const checkResult = await checkPer(dvId)
+    if (!load.isCurrent()) return
+    if (!checkResult) {
+      load.fail()
+      return
     }
-    let deTemplateData
-    let preName
-    if (createType === 'template') {
-      try {
-        const templateParamsApply = JSON.parse(
-          Base64.decode(decodeURIComponent(templateParams + ''))
-        )
-        await decompressionPre(templateParamsApply, result => {
-          deTemplateData = result
-          preName = deTemplateData.baseInfo?.preName
+    initDataset()
+    state.resourceId = dvId
+    state.sourcePid = pid
+    state.opt = opt
+    if (dvId) {
+      state.canvasInitStatus = false
+      const canvasCache = wsCache.get('DE-DV-CATCH-' + dvId)
+      if (opt !== 'copy' && isCanvasDraft(canvasCache, dvId, 'dataV')) {
+        canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
+      } else {
+        await initLocalCanvasData(() => {
+          // do init
         })
-      } catch {
-        templateLoadError.value = true
-        return
       }
-    }
-    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
-    nextTick(() => {
+    } else if (opt && opt === 'create') {
+      state.canvasInitStatus = false
+      let watermarkBaseInfo
+      try {
+        await watermarkFind().then(rsp => {
+          watermarkBaseInfo = rsp.data
+          watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
+        })
+      } catch (e) {
+        console.error('can not find watermark info')
+      }
+      if (!load.isCurrent()) return
+      let deTemplateData
+      let preName
+      if (createType === 'template') {
+        try {
+          const templateParamsApply = JSON.parse(
+            Base64.decode(decodeURIComponent(templateParams + ''))
+          )
+          await decompressionPre(
+            templateParamsApply,
+            result => {
+              deTemplateData = result
+              preName = deTemplateData.baseInfo?.preName
+            },
+            load.isCurrent
+          )
+        } catch {
+          if (!load.isCurrent()) return
+          load.fail()
+          templateLoadError.value = true
+          return
+        }
+      }
+      if (!load.isCurrent()) return
+      dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
+      await nextTick()
+      if (!load.isCurrent()) return
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
       snapshotStore.recordSnapshotCache('renderChart')
@@ -496,25 +598,25 @@ onMounted(async () => {
         dvInfo.value.materialBundle = deTemplateData.materialBundle
         dvInfo.value.materialSourceTemplateId = deTemplateData.materialSourceTemplateId
         setTimeout(() => {
-          snapshotStore.recordSnapshotCache('template')
+          if (load.isCurrent()) snapshotStore.recordSnapshotCache('template')
         }, 1500)
       }
+      if (!load.ready()) return
       if (dvMainStore.getAppDataInfo()) {
         eventBus.emit('save')
       }
-    })
-  } else {
-    let url = '#/screen/index'
-    window.open(url, '_self')
-  }
-  initScroll()
-  useEmitt({
-    name: 'initScroll',
-    callback: function () {
-      initScroll()
+    } else {
+      let url = '#/screen/index'
+      window.open(url, '_self')
     }
-  })
-})
+    initScroll()
+  } catch (error) {
+    if (load.isCurrent()) {
+      load.fail()
+      console.error(error)
+    }
+  }
+}
 
 onUnmounted(() => {
   window.removeEventListener('storage', eventCheck)
@@ -560,7 +662,10 @@ const popComponentData = computed(() =>
 )
 
 const doRecoverToPublished = () => {
+  const save = editorSession.capture()
+  if (!save) return
   recoverToPublished({ id: dvInfo.value.id, type: 'dataV', name: dvInfo.value.name }).then(() => {
+    if (!save.isCurrent()) return
     state.resourceId = dvInfo.value.id
     state.sourcePid = dvInfo.value.pid
     state.opt = null

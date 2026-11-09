@@ -1,3 +1,4 @@
+import { captureCanvasSave, failCanvasEditSession } from '@/utils/canvasEditSession'
 import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
@@ -624,6 +625,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
   return method(dvId, busiFlagCustom, attachInfo, params.queryRequest)
     .then(res => {
       if (params.queryRequest && !params.queryRequest.isCurrent()) return
+      if (params.isCurrent && !params.isCurrent()) return
       const canvasInfo = res.data
       const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
 
@@ -690,6 +692,7 @@ export async function initCanvasData(dvId, params, callBack) {
         )
           .then(rsp => {
             if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            if (params.isCurrent && !params.isCurrent()) return
             dvMainStore.setNowPanelTrackInfo(rsp.data)
           })
           .catch(() => undefined)
@@ -701,6 +704,7 @@ export async function initCanvasData(dvId, params, callBack) {
         )
           .then(rsp => {
             if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            if (params.isCurrent && !params.isCurrent()) return
             dvMainStore.setNowPanelJumpInfo(rsp.data)
           })
           .catch(() => undefined)
@@ -852,6 +856,11 @@ export function initCanvasDataMobile(dvId, params, callBack) {
 }
 
 export function checkCanvasChangePre(callBack) {
+  const save = captureCanvasSave(dvMainStore, () => curDvInfo.value)
+  if (!save) return
+  const complete = () => {
+    if (save.isCurrent()) callBack()
+  }
   // do pre
   const isUpdate = curDvInfo.value.id && curDvInfo.value.optType !== 'copy'
   // 桌面版为单人模式不需要检查
@@ -862,6 +871,7 @@ export function checkCanvasChangePre(callBack) {
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
+      if (!save.isCurrent()) return
       if (rsp && rsp.data === 'Repeat') {
         ElMessageBox.confirm(tips, {
           confirmButtonType: 'danger',
@@ -869,23 +879,26 @@ export function checkCanvasChangePre(callBack) {
           autofocus: false,
           showClose: false
         }).then(() => {
-          callBack()
+          complete()
         })
       } else {
-        callBack()
+        complete()
       }
     })
   } else {
-    callBack()
+    complete()
   }
 }
 
 export async function canvasSave(callBack) {
-  await canvasSaveWithParams(null, callBack)
+  return canvasSaveWithParams(null, callBack)
 }
 
 export async function canvasSaveWithParams(params, callBack) {
+  const save = captureCanvasSave(dvMainStore, () => curDvInfo.value)
+  if (!save) return
   dvMainStore.removeGroupArea()
+  nameTrim(curDvInfo.value, t('components.length_1_64_characters'))
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
     if (item.component === 'UserView') {
@@ -906,16 +919,17 @@ export async function canvasSaveWithParams(params, callBack) {
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentDataToSave),
-    canvasViewInfo: canvasViewInfo.value,
-    appData: appData.value,
-    ...curDvInfo.value,
+    canvasViewInfo: cloneDeep(canvasViewInfo.value),
+    appData: cloneDeep(appData.value),
+    ...cloneDeep(curDvInfo.value),
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
     watermarkInfo: null
   }
 
+  const method = canvasInfo.id && canvasInfo.optType !== 'copy' ? updateCanvas : saveCanvas
   let dsNameCheck = 'success'
-  if (appData.value) {
+  if (canvasInfo.appData) {
     await appCanvasNameCheck({
       datasetFolderPid: canvasInfo.datasetFolderPid,
       datasetFolderName: canvasInfo.datasetFolderName
@@ -923,23 +937,24 @@ export async function canvasSaveWithParams(params, callBack) {
       dsNameCheck = rsp.data
     })
   }
+  if (!save.isCurrent()) return
   if (dsNameCheck === 'repeat') {
     ElMessage.error('数据集分组名称已存在')
     return
   }
-  nameTrim(curDvInfo.value, t('components.length_1_64_characters'))
-  const method =
-    curDvInfo.value.id && curDvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
   if (method === updateCanvas) {
     await dvNameCheck({
       opt: 'edit',
       nodeType: 'leaf',
-      name: curDvInfo.value.name,
-      type: curDvInfo.value.type,
-      id: curDvInfo.value.id
+      name: canvasInfo.name,
+      type: canvasInfo.type,
+      id: canvasInfo.id
     })
   }
+  if (!save.isCurrent()) return
   return method(canvasInfo).then(async res => {
+    // 写请求已发出时允许完成；切换会话后不再更新当前文档或执行页面回调。
+    if (!save.isCurrent()) return res
     if (method === updateCanvas) {
       // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
       const status = params?.status ? params?.status : res.data?.status
@@ -947,23 +962,35 @@ export async function canvasSaveWithParams(params, callBack) {
     } else {
       dvMainStore.updateDvInfoCall(0, res.data, newContentId)
     }
+    save.saved(curDvInfo.value.id)
     if (canvasInfo.materialBundle) {
       delete curDvInfo.value.materialBundle
-      await new Promise<void>(resolve =>
-        initCanvasData(
+      try {
+        await initCanvasData(
           curDvInfo.value.id,
           {
             busiFlag: curDvInfo.value.type,
-            resourceTable: 'snapshot'
+            resourceTable: 'snapshot',
+            awaitLoad: true,
+            isCurrent: save.isCurrent
           },
-          resolve
+          () => undefined
         )
-      )
+      } catch (error) {
+        if (save.isCurrent()) {
+          dvMainStore.setAppDataInfo(null)
+          dvMainStore.setDataPrepareState(false)
+          failCanvasEditSession(dvMainStore)
+          ElMessage.error(t('visualization.saved_reload_failed'))
+        }
+        throw error
+      }
+      if (!save.isCurrent()) return res
       clearMaterialPreviews()
       snapshotStore.resetSnapshot()
     }
     snapshotStore.resetStyleChangeTimes()
-    callBack(res)
+    return callBack(res, save.isCurrent)
   })
 }
 
@@ -1280,8 +1307,9 @@ export function findParentIdByChildIdRecursive(tree, targetChildId) {
   return null // 没有找到匹配的子节点
 }
 
-export async function decompressionPre(params, callBack) {
+export async function decompressionPre(params, callBack, isCurrent = () => true) {
   const response = await decompression(params)
+  if (!isCurrent()) return
   const deTemplateDataTemp = response.data
   const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
   const appData = deTemplateDataTemp['appData']
