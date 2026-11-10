@@ -1,5 +1,5 @@
 import { nextTick, shallowReactive } from 'vue'
-import { isAxiosError } from 'axios'
+import { isRequestError } from '@/config/axios/error'
 
 interface ImageEntry {
   url: string
@@ -66,7 +66,7 @@ export const resourceImage = (
           // Retry a transient transport/server failure once; never retry authentication failures.
           if (
             signal.aborted ||
-            !isAxiosError(error) ||
+            !isRequestError(error) ||
             error.code === 'ERR_CANCELED' ||
             (error.response && error.response.status < 500)
           )

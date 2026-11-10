@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
@@ -408,7 +410,7 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
         return
       }
       console.error(e)
-      ElMessage.error(t('spreadsheet.load_error'))
+      presentError(e, t('spreadsheet.load_error'))
       favoriteLoading.value = false
     } finally {
       if (currentPreviewRequestVersion === previewRequestVersion) {
@@ -598,7 +600,7 @@ const operation = async (cmd: string, data: SpreadsheetTreeNode, nodeType: 'fold
       ElMessage.success(t('spreadsheet.cancel_publish_success'))
     } catch (error) {
       console.error(error)
-      ElMessage.error(t('spreadsheet.cancel_publish_error'))
+      presentError(error, t('spreadsheet.cancel_publish_error'))
     }
     return
   } else if (cmd === 'delete') {

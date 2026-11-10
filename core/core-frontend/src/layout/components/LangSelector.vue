@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import { ref, onMounted, reactive } from 'vue'
 import { Icon } from '@/components/icon-custom'
@@ -6,7 +8,6 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import { switchLangApi } from '@/api/user'
-import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -21,9 +22,10 @@ const handleSetLanguage = async (lang: string) => {
     permissionStore.$reset()
     window.location.reload()
   } catch (error) {
-    // Business-error strings have already been displayed by the Axios interceptor.
+    // Legacy business-error strings have already been displayed by older request adapters.
     if (typeof error === 'string') return
-    ElMessage.error(
+    presentError(
+      error,
       error?.response?.data?.msg || error?.message || useI18n().t('common.language_switch_failed')
     )
   }

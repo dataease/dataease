@@ -271,7 +271,6 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
 }
 
 const saveResource = (checkParams?) => {
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     dvMainStore.matrixSizeAdaptor()
     queryList.value.forEach(ele => {
@@ -284,6 +283,7 @@ const saveResource = (checkParams?) => {
     }
     try {
       canvasSaveWithParams(checkParams, async () => {
+        wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         snapshotStore.resetStyleChangeTimes()
         if (!embeddedStore.baseUrl) {
           // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前仪表板
@@ -319,6 +319,9 @@ const saveResource = (checkParams?) => {
         } else {
           ElMessage.success(t('commons.save_success'))
         }
+      }).catch(() => {
+        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
+        if (checkParams.withPublish) tryHideLoading(loadingKey)
       })
     } catch (e) {
       console.error(e)

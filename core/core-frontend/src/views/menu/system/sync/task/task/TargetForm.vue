@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { presentError } from '@/config/axios/errorPresenter'
+
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import {
@@ -179,7 +181,7 @@ onMounted(() => {
       }
     })
     .catch(err => {
-      ElMessage.error(err.message)
+      presentError(err, err.message)
     })
   if (!props.isEdit) {
     refreshFieldList()
@@ -584,7 +586,7 @@ const changeTargetType = () => {
       }
     })
     .catch(err => {
-      ElMessage.error(err.message)
+      presentError(err, err.message)
     })
 }
 /**
@@ -703,7 +705,7 @@ const refreshSinkKeyPolicy = async (showError = false) => {
   } catch (error: any) {
     sinkKeyPolicy.value = 'OPTIONAL'
     if (showError) {
-      ElMessage.error(error?.message || t('sync_task.key_policy_load_failed'))
+      presentError(error, error?.message || t('sync_task.key_policy_load_failed'))
     }
     return false
   }
@@ -805,7 +807,7 @@ const validate = async () => {
     }
   } catch (error) {
     console.error(error)
-    ElMessage.error(t('sync_datasource.plugin_load_failed'))
+    presentError(error, t('sync_datasource.plugin_load_failed'))
     return false
   }
   if (!targetPropertyValid) {

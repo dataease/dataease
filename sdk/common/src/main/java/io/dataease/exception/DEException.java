@@ -18,6 +18,25 @@ public class DEException extends RuntimeException {
 
     private String msg;
 
+    private ErrorCategory category;
+    private String messageKey;
+    private Object[] args;
+    private Object errorData;
+
+    /** Only pass public message keys and safe interpolation arguments here. */
+    public static DEException of(ErrorCategory category, String messageKey, Object... args) {
+        DEException exception = new DEException(category.code(), io.dataease.i18n.Translator.get(messageKey, args));
+        exception.category = category;
+        exception.messageKey = messageKey;
+        exception.args = args.clone();
+        return exception;
+    }
+
+    public DEException causedBy(Throwable cause) {
+        initCause(cause);
+        return this;
+    }
+
     public DEException(int code, String msg) {
         super(msg);
         this.code = code;
@@ -29,7 +48,7 @@ public class DEException extends RuntimeException {
     }
 
     private DEException(Throwable t) {
-        super(t);
+        super(t.getMessage(), t);
         this.code = ResultCode.SYSTEM_INNER_ERROR.code();
         this.msg = t.getMessage();
     }

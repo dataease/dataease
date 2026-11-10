@@ -231,6 +231,9 @@ const saveResource = (checkParams?) => {
         } else {
           ElMessage.success(t('commons.save_success'))
         }
+      }).catch(() => {
+        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
+        if (checkParams.withPublish) tryHideLoading(loadingKey)
       })
     })
   }

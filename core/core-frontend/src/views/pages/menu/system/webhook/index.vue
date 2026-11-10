@@ -134,6 +134,8 @@
 </template>
 
 <script lang="ts" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
@@ -205,7 +207,7 @@ const batchDelHandler = () => {
       }
     })
     .catch(err => {
-      ElMessage.error(err)
+      presentError(err)
     })
 }
 

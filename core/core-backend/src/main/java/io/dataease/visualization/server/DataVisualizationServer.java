@@ -650,6 +650,22 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public DataVisualizationVO updateCanvas(DataVisualizationBaseRequest request) {
+        if (request.getId() == null) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        // Serialize saves, including legacy callers. Check and all writes share this transaction.
+        DataVisualizationInfo saved = dataVisualizationInfoRepository.lockForSave(request.getId())
+                .filter(info -> !Boolean.TRUE.equals(info.getDeleteFlag()))
+                .orElseThrow(() -> io.dataease.exception.DEException.of(
+                        io.dataease.exception.ErrorCategory.NOT_FOUND, "i18n_error_not_found"));
+        if (Boolean.TRUE.equals(request.getCheckHistory())
+                && !java.util.Objects.equals(saved.getContentId(), request.getExpectedContentId())) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.CONFLICT, "i18n_error_conflict")
+                    .setErrorData(java.util.Collections.singletonMap("currentContentId", saved.getContentId()));
+        }
+        if (request.getCanvasViewInfo() == null || request.getPid() == null) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
         for (Map.Entry<Long, ChartViewDTO> ele : request.getCanvasViewInfo().entrySet()) {
             DatasetUtils.viewDecode(ele.getValue());
         }
@@ -691,6 +707,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
+        if (request == null || request.getId() == null || StringUtils.isBlank(request.getName())
+                || request.getStatus() == null || ((request.getStatus() == 0 || request.getStatus() == 1)
+                && request.getActiveViewIds() == null)) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
         /**
          * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
          * 统一处理为1.删除主表数据，2.将镜像表数据统一copy到主表 不删除镜像数据（发布状态后镜像数据和主表数据是保持一致的）
