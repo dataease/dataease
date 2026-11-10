@@ -1,4 +1,21 @@
 export default {
+  ai_conversation: {
+    title: 'AI 對話開發驗收',
+    description:
+      '選擇目前工作空間有讀取權限的資料來源，圍繞目前 SQL 連續提問。請勿輸入業務樣本或憑據。修改 SQL 或資料來源會開啟新上下文；回答僅作建議，不執行或儲存 SQL。',
+    resource: '資料來源',
+    sql: '目前 SQL',
+    message: '訊息',
+    conversation: '對話',
+    send: '傳送',
+    end: '結束會話',
+    running: '正在產生',
+    ready: '等待提問',
+    failed: '請求失敗或連線中斷，請檢查服務狀態後重試。',
+    incomplete: '未完成',
+    user: '使用者',
+    assistant: '助手'
+  },
   ai_service: {
     records: '呼叫記錄',
     records_pending: '呼叫記錄功能待完善',

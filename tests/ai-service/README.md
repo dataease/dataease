@@ -180,3 +180,21 @@ npm --prefix tests/browser test -- --config=playwright.ai-service-live.config.mj
 上述带 `--ai-classpath` 的回归命令包含 `KeyringRegression`：使用仅绑定回环地址的临时 H2 TCP 数据库，4 个独立 JVM 同时首次初始化，再启动第 5 个 JVM 验证重启/扩容。覆盖提交失败不发布、跨节点解密/验签、普通设置保存和 JSON 隔离、迁移重试、旧手工密钥登记、轮换保留旧密文/证明、版本冲突、节点配置不一致、材料丢失及数据库不可用时拒绝。HTTP/H2 端口均为隔离测试端口，不启动 DataEase，不连接业务库或真实模型。
 
 H2 证明事务和跨 JVM 回归，不代表 MySQL/GreatSQL、PostgreSQL、SQL Server、Oracle、达梦及 Kingbase 已验收；生产数据库方言、实际安装/滚动升级、网络分区和备份恢复仍需对应环境验证。
+
+### Temporary conversation acceptance entry
+
+In the Vite development application, authenticated users can open `#/ai-assistant` (no product navigation item). Select a readable datasource in the current workspace, enter SQL and ask successive questions. Changing the datasource/SQL, ending the session, leaving or refreshing starts a new editing activity. The page never executes or saves SQL. The synchronous stage does not register tools or offer suggestion application.
+
+The shared SDK exposes `/ai/conversations`: `GET /resources`, `POST` to open a context, `POST /{id}/turns`, and `DELETE /{id}`. Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene uses the current datasource tree and existing datasource READ authorization before reading a safe datasource projection. Verified community mode follows the SQL business permission entry; licensed mode requires the original resource authorization provider and never falls back on missing or denied permissions. The trusted AI deployment/identity check runs before and after these operations; an unavailable enterprise endpoint does not change the deployment mode. It rechecks identity, workspace, resource and revision before history reuse, at every model boundary, and before delivery. Revocation invalidates the temporary session. Each turn obtains a new request-bound model proxy; the existing effective model policy, final aggregate input/output limits, admission and hard deadline remain authoritative.
+
+Sessions are process-local, fixed at 30 minutes, at most 200 per process and four per current identity/workspace, and at most 50 completed turns. Concurrent turns on one session are rejected. No conversation persistence or cross-refresh recovery is provided. Failed turns never enter model history; final history/context exceeding the configured budget is rejected without sending upstream. Multiple server instances require routing a temporary session to its owning process; this stage does not claim distributed conversation recovery.
+
+`ConversationRegression.java` extends the existing isolated H2 runner through the actual dialogue MVC routes and controlled model HTTP, replacing only the scene/identity boundary. It covers multiround history, editor/user/workspace isolation, forged versions, aggregate input budget, and permission revocation before model invocation and delivery. `RuntimeRegression` also checks native synchronous delivery after revocation. `ConversationPermissionRegression` uses the real SQL scene and dialogue routes to cover operation parity with an installed expired-license community deployment, current identity refusal, licensed READ allow/deny and missing-provider rejection; deployment and DE API boundaries are synthetic. The Vue page uses the existing AI-service browser fixture:
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.ai-conversation.config.mjs
+```
+
+This browser fixture tests multiround interaction, ending sessions, context switching with a late response, failed output and identity changes. It does not establish real authentication, resource permissions or model compatibility. Real acceptance must use an already isolated development deployment, the existing configured compatible model and an authorized test datasource; record that evidence separately.
+
+When reusing an older `CoreApplication.jar`, `--ai-classpath` may include current compiled SDK/dependency directories as well as jars. The runner prioritizes the compiled test/source overlay and those current directories before the packaged baseline. The installed license SDK must match the current parent version. No product Maven lifecycle or dependency download is performed by the runner.

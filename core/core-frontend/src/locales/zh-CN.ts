@@ -1,4 +1,21 @@
 export default {
+  ai_conversation: {
+    title: 'AI 对话开发验收',
+    description:
+      '选择当前工作空间有读取权限的数据源，围绕当前 SQL 连续提问。请勿输入业务样本或凭据。修改 SQL 或数据源会开启新上下文；回答仅作建议，不执行或保存 SQL。',
+    resource: '数据源',
+    sql: '当前 SQL',
+    message: '消息',
+    conversation: '对话',
+    send: '发送',
+    end: '结束会话',
+    running: '正在生成',
+    ready: '等待提问',
+    failed: '请求失败或连接中断，请检查服务状态后重试。',
+    incomplete: '未完成',
+    user: '用户',
+    assistant: '助手'
+  },
   ai_service: {
     records: '调用记录',
     records_pending: '调用记录功能待完善',

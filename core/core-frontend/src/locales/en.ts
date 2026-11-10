@@ -1,4 +1,21 @@
 export default {
+  ai_conversation: {
+    title: 'AI conversation acceptance',
+    description:
+      'Select a datasource you can read in the current workspace and ask about the current SQL. Do not enter business samples or credentials. Changing SQL or datasource starts a new context. Answers are advice; SQL is never executed or saved.',
+    resource: 'Datasource',
+    sql: 'Current SQL',
+    message: 'Message',
+    conversation: 'Conversation',
+    send: 'Send',
+    end: 'End session',
+    running: 'Generating',
+    ready: 'Ready',
+    failed: 'The request failed or the connection was interrupted. Check the service and retry.',
+    incomplete: 'Incomplete',
+    user: 'User',
+    assistant: 'Assistant'
+  },
   ai_service: {
     records: 'Call records',
     records_pending: 'Call records are coming soon',

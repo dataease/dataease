@@ -73,14 +73,18 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 inspect(context, finalPrompt);
                 var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(),
                         model.getBaseUrl(), secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
-                return transport.call(connection, s, finalPrompt, context.background(), deadline, () -> {
+                Runnable recheck = () -> {
                     inspect(context, finalPrompt);
                     CoreAiSetting latest = configuration.setting();
                     CoreAiModel current = resolve(context, latest);
                     if (!Objects.equals(latest.getRevision(), s.getRevision()) || !Objects.equals(current.getId(), model.getId())
                             || !Objects.equals(current.getConfigRevision(), model.getConfigRevision())
                             || !Objects.equals(current.getCredentialRevision(), model.getCredentialRevision())) throw AiErrors.error("conflict");
-                });
+                };
+                ChatResponse response = transport.call(connection, s, finalPrompt, context.background(), deadline, recheck);
+                caller(context); recheck.run();
+                if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+                return response;
             }
             @Override public Flux<ChatResponse> stream(Prompt prompt) { return Flux.error(AiErrors.error("unsupported")); }
             @Override public ChatOptions getDefaultOptions() { return ChatOptions.builder().build(); }
