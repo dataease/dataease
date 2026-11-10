@@ -6,6 +6,19 @@ export default {
     tool_succeeded: '成功',
     tool_failed: '失敗',
     tool_parameters: '參數',
+    validation_pass: '靜態校驗通過',
+    validation_invalid: '引用無效',
+    validation_unsupported: '不支援靜態校驗',
+    validation_unknown: '無法識別校驗結果',
+    validation_verified: '已檢查支援的語法和授權資料表/欄位引用。SQL 未執行。',
+    validation_reference:
+      '授權中繼資料中不存在對應的精確資料表名稱、欄位名稱或資料表限定名稱。請修正引用後重新校驗。',
+    validation_parse: '無法依本工具支援的語法解析完整輸入；未驗證資料庫語法。',
+    validation_subset: '超出聲明的靜態校驗子集。SQL 未執行。',
+    validation_dialect: '此靜態校驗僅支援 MySQL。SQL 未執行。',
+    validation_unknown_scope: '請查看原始結果；無法確認校驗範圍。',
+    validation_scope:
+      '僅支援 MySQL；單條 SELECT、單張大小寫精確匹配的資料表；明確欄位及可選別名、WHERE 比較（=、<>、>、>=、<、<=）、AND/OR/NOT 和真實欄位排序。不支援註解、函數、星號、連接、子查詢、聚合、LIMIT 或其他方言。通過僅表示已檢查該子集和授權引用，不保證資料庫可執行性或資料類型正確。',
     tool_result: '結果',
 
     stop: '停止產生',

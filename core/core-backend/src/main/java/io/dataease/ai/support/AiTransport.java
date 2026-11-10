@@ -241,27 +241,12 @@ public class AiTransport {
             @Override public int read() throws IOException { int value = super.read(); if (value != -1) budget.raw(1); return value; }
             @Override public int read(byte[] bytes, int offset, int length) throws IOException { int count = in.read(bytes, offset, length); if (count > 0) budget.raw(count); return count; }
         };
-        var decoder = java.nio.charset.StandardCharsets.UTF_8.newDecoder().onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
-                .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT);
-        var reader = new InputStreamReader(bounded, decoder);
-        var line = new StringBuilder(); var data = new StringBuilder(); var text = new StringBuilder(); var arguments = new StringBuilder();
+        var frames = new SseFrames(bounded, guard);
+        var text = new StringBuilder(); var arguments = new StringBuilder();
         String id = null, name = null, callType = null, finish = null;
-        Long usage = null; int frames = 0; long generated = 0; boolean previousCr = false, sawTool = false;
-        for (int value; (value = reader.read()) != -1;) {
-            guard.run(); char ch = (char) value;
-            if (previousCr && ch == '\n') { previousCr = false; continue; } previousCr = ch == '\r';
-            if (ch != '\n' && ch != '\r') { if (line.length() >= 65536) throw AiErrors.error("response_invalid"); line.append(ch); continue; }
-            String field = line.toString(); line.setLength(0);
-            if (!field.isEmpty()) {
-                if (field.startsWith("data:")) {
-                    String part = field.substring(5); if (part.startsWith(" ")) part = part.substring(1);
-                    if (data.length() + part.length() > 65536) throw AiErrors.error("response_invalid"); data.append(part).append('\n');
-                }
-                continue;
-            }
-            if (data.isEmpty()) continue;
-            if (++frames > 20000) throw AiErrors.error("response_invalid"); budget.frame();
-            String event = data.substring(0, data.length() - 1); data.setLength(0); guard.run();
+        Long usage = null; long generated = 0; boolean sawTool = false;
+        while (true) {
+            String event = frames.next(); budget.frame(); guard.run();
             if ("[DONE]".equals(event)) {
                 if ("stop".equals(finish) && !sawTool && !text.toString().isBlank()) return new AiToolProtocol.Step(text.toString(), List.of());
                 if ("tool_calls".equals(finish) && id != null && name != null && "function".equals(callType) && !arguments.isEmpty())
@@ -320,7 +305,6 @@ public class AiTransport {
                 if (!java.util.Set.of("stop", "tool_calls").contains(finish)) throw AiErrors.error("response_invalid");
             }
         }
-        throw AiErrors.error("response_invalid");
     }
     private void rejectUnknown(com.fasterxml.jackson.databind.JsonNode node, java.util.Set<String> allowed) {
         var names = node.fieldNames(); while (names.hasNext()) if (!allowed.contains(names.next())) throw AiErrors.error("unsupported");
@@ -342,37 +326,53 @@ public class AiTransport {
         org.springframework.context.i18n.LocaleContextHolder.resetLocaleContext();
         org.slf4j.MDC.clear();
     }
+    /** Shared framing only. Callers retain protocol checks, raw/global budgets and response ownership. */
+    private static final class SseFrames {
+        private final InputStreamReader reader;
+        private final Runnable guard;
+        private final StringBuilder line = new StringBuilder(), data = new StringBuilder();
+        private boolean previousCr;
+        private int frames;
+        SseFrames(InputStream input, Runnable guard) {
+            var decoder = java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT).onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT);
+            reader = new InputStreamReader(input, decoder);
+            this.guard = guard;
+        }
+        String next() throws IOException {
+            for (int value; (value = reader.read()) != -1;) {
+                guard.run();
+                char ch = (char) value;
+                if (previousCr && ch == '\n') { previousCr = false; continue; }
+                previousCr = ch == '\r';
+                if (ch != '\n' && ch != '\r') {
+                    if (line.length() >= 65536) throw AiErrors.error("response_invalid");
+                    line.append(ch); continue;
+                }
+                String field = line.toString(); line.setLength(0);
+                if (!field.isEmpty()) {
+                    if (field.startsWith("data:")) {
+                        String part = field.substring(5); if (part.startsWith(" ")) part = part.substring(1);
+                        if (data.length() + part.length() > 65536) throw AiErrors.error("response_invalid");
+                        data.append(part).append('\n');
+                    }
+                    continue;
+                }
+                if (data.isEmpty()) continue;
+                if (++frames > 20000) throw AiErrors.error("response_invalid");
+                String event = data.substring(0, data.length() - 1); data.setLength(0);
+                return event;
+            }
+            throw AiErrors.error("response_invalid");
+        }
+    }
     /** Bounded SSE framing, incrementally decoded UTF-8 including split multibyte characters. */
     private void readEvents(InputStream input, int maxTokens, Runnable guard, java.util.function.Consumer<String> delta) throws IOException {
-        var decoder = java.nio.charset.StandardCharsets.UTF_8.newDecoder()
-                .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT).onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT);
-        var reader = new InputStreamReader(input, decoder);
-        StringBuilder line = new StringBuilder(), data = new StringBuilder();
-        boolean finished = false, text = false, previousCr = false;
-        int frames = 0;
+        var frames = new SseFrames(input, guard);
+        boolean finished = false, text = false;
         long characters = 0;
-        for (int value; (value = reader.read()) != -1;) {
-            guard.run();
-            char ch = (char) value;
-            if (previousCr && ch == '\n') { previousCr = false; continue; }
-            previousCr = ch == '\r';
-            if (ch != '\n' && ch != '\r') {
-                if (line.length() >= 65536) throw AiErrors.error("response_invalid");
-                line.append(ch); continue;
-            }
-            String field = line.toString(); line.setLength(0);
-            if (!field.isEmpty()) {
-                if (field.startsWith("data:")) {
-                    String part = field.substring(5); if (part.startsWith(" ")) part = part.substring(1);
-                    if (data.length() + part.length() > 65536) throw AiErrors.error("response_invalid");
-                    data.append(part).append('\n');
-                }
-                continue;
-            }
-            if (data.isEmpty()) continue;
-            if (++frames > 20000) throw AiErrors.error("response_invalid");
-            String event = data.substring(0, data.length() - 1); data.setLength(0);
-            guard.run();
+        while (true) {
+            String event = frames.next(); guard.run();
             if ("[DONE]".equals(event)) {
                 if (!finished || !text) throw AiErrors.error("response_invalid");
                 return;
@@ -410,7 +410,6 @@ public class AiTransport {
                 finished = true;
             }
         }
-        throw AiErrors.error("response_invalid");
     }
     // 注册与取消使用同一把短锁，覆盖超时发生在请求创建之前的竞态；只取消当前请求。
     private static final class RequestCancellation {

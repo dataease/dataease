@@ -6,6 +6,21 @@ export default {
     tool_succeeded: 'Succeeded',
     tool_failed: 'Failed',
     tool_parameters: 'Parameters',
+    validation_pass: 'Static validation passed',
+    validation_invalid: 'Invalid reference',
+    validation_unsupported: 'Static validation unsupported',
+    validation_unknown: 'Unrecognized validation result',
+    validation_verified:
+      'Supported syntax and authorized table/column references checked. SQL was not executed.',
+    validation_reference:
+      'Unknown exact table, column or table qualifier in authorized metadata. Correct the reference and validate again.',
+    validation_parse:
+      'Cannot parse the whole input within this tool’s supported syntax; database syntax was not verified.',
+    validation_subset: 'Outside the declared static validation subset. SQL was not executed.',
+    validation_dialect: 'Static validation supports MySQL only. SQL was not executed.',
+    validation_unknown_scope: 'See the raw result; the validation scope cannot be confirmed.',
+    validation_scope:
+      'MySQL only; one SELECT from one exact-case table; explicit columns with optional aliases, WHERE comparisons (=, <>, >, >=, <, <=), AND/OR/NOT, ORDER BY real columns. No comments, functions, star, joins, subqueries, aggregates, LIMIT or other dialects. PASS checks only this subset and authorized references, never database executability or data types.',
     tool_result: 'Result',
 
     stop: 'Stop generating',

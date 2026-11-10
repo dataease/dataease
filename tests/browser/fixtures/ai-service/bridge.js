@@ -1,5 +1,8 @@
 import { reactive } from 'vue'
-import language from '@/locales/zh-CN'
+import zh from '@/locales/zh-CN'
+import tw from '@/locales/tw'
+import en from '@/locales/en'
+const language = { 'zh-CN': zh, tw, en }[new URLSearchParams(location.search).get('language')] ?? zh
 export const useI18n = () => ({
   t: (key, args = {}) => {
     const text = key.split('.').reduce((value, part) => value?.[part], language) ?? key
@@ -7,8 +10,10 @@ export const useI18n = () => ({
   }
 })
 const user = reactive({ uid: '1', oid: null, proxyInfo: { proxyOid: null } })
-window.aiSwitchUser = () => {
-  user.uid = '2'
+window.aiSwitchUser = (context = 'user') => {
+  if (context === 'workspace') user.oid = 'workspace-2'
+  else if (context === 'proxy') user.proxyInfo.proxyOid = 'proxy-2'
+  else user.uid = '2'
 }
 export const useUserStoreWithOut = () => user
 const send = async (method, option) => {
