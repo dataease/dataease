@@ -98,10 +98,10 @@ public class DatasetSQLBotManage {
     @Value("${dataease.sqlbot.encrypt:false}")
     private boolean encryptEnabled;
 
-    @Value("${dataease.sqlbot.aes-key:y5txe1mRmS_JpOrUzFzHEu-kIQn3lf7l}")
+    @Value("${dataease.sqlbot.aes-key:}")
     private String aesKey;
 
-    @Value("${dataease.sqlbot.aes-iv:sqlbot_em_aes_iv}")
+    @Value("${dataease.sqlbot.aes-iv:}")
     private String aesIv;
 
     @Value("${dataease.sqlbot.log:false}")
