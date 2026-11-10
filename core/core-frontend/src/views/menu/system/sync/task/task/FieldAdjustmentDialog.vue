@@ -386,6 +386,11 @@ const rows = computed(() => {
     pagination.currentPage * pagination.pageSize
   )
 })
+const sizeChange = (size: number) => {
+  const config = activeTab.value === 'draft' ? pagination : currentPagination
+  config.currentPage = Math.min(config.currentPage, Math.max(1, Math.ceil(config.total / size)))
+  config.pageSize = size
+}
 watchEffect(() => {
   pagination.total = ordinaryDraft.value.length
   currentPagination.total = ordinaryCurrent.value.length
@@ -1334,11 +1339,7 @@ defineExpose({ open })
                 ? (pagination.currentPage = $event)
                 : (currentPagination.currentPage = $event)
             "
-            @size="
-              activeTab === 'draft'
-                ? (pagination.pageSize = $event)
-                : (currentPagination.pageSize = $event)
-            "
+            @size="sizeChange"
             @edit="edit"
             @delete="remove"
             @undo="undo"
