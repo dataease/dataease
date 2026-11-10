@@ -15,6 +15,7 @@ public class DatasourceConfiguration extends Configuration {
         mysql("mysql", "MySQL", "OLTP", "`", "`", 27, DatasourceRole.SOURCE, "mySQLSourceProvider"),
         es("elasticsearch", "Elasticsearch", "OLAP", "\"", "\"", 14, DatasourceRole.SOURCE, "elasticsearchSourceProvider"),
         doris("doris", "Apache Doris", "OLAP", "`", "`", 26, DatasourceRole.TARGET, "dorisSinkProvider"),
+        dorisSource("doris", "Apache Doris", "OLAP", "`", "`", 26, DatasourceRole.SOURCE, "dorisSourceProvider"),
         oracle("oracle", "ORACLE", "OLTP", "\"", "\"", 1, DatasourceRole.SOURCE, "oracleSourceProvider"),
         db2("db2", "DB2", "OLTP", "", "", 12, DatasourceRole.SOURCE, "db2SourceProvider"),
         sqlServer("sqlServer", "SQL Server", "DL", "[", "]", 2, DatasourceRole.SOURCE, "sqlServerSourceProvider");

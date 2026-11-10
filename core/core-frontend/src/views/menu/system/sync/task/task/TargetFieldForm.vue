@@ -7,6 +7,7 @@ import type { FormInstance } from 'element-plus-secondary'
 import { ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
 import { includes } from 'lodash-es'
+import { maintenanceFieldType, normalizeFieldType } from './fieldType'
 
 const { t } = useI18n()
 const dialogVisible = ref(false)
@@ -98,6 +99,19 @@ const availableTargetFieldTypeList = computed(() => {
   return typeList.filter(type => !type.endsWith('_ARRAY'))
 })
 
+/**
+ * 原生名称用于选中和展示，重新选择当前类型时保留原标准值，避免产生假变更
+ */
+const targetFieldType = computed<string>({
+  get: () =>
+    props.adjustmentMode
+      ? maintenanceFieldType(state.form, baseline.value, props.maintenanceStructure)
+      : state.form.fieldType,
+  set: value => {
+    if (value !== targetFieldType.value) state.form.fieldType = value
+  }
+})
+
 const selectedSourceField = computed(() =>
   form.value.source.fieldList?.find(item => item.fieldName === state.form.fieldSource)
 )
@@ -131,14 +145,6 @@ const fieldMappingMessageType = computed(() =>
   state.form.fieldType?.trim().toUpperCase() === 'UNKNOWN' ? 'error' : 'warning'
 )
 
-const normalizeFieldType = (fieldType?: string) => {
-  const type = fieldType?.split('(')[0].trim().toUpperCase() || ''
-  if (['DECIMALV2', 'DECIMALV3', 'DECIMAL32', 'DECIMAL64', 'DECIMAL128'].includes(type))
-    return 'DECIMAL'
-  if (type === 'DATETIMEV2') return 'DATETIME'
-  if (type === 'DATEV2') return 'DATE'
-  return type
-}
 /**
  * 已有字段的目标类型转换使用原目标类型作为基线，不能把源类型推荐误当作原表允许变更范围
  */
@@ -177,13 +183,16 @@ const minimumSize = computed(() => {
  */
 const recommendedTargetField = computed(() => {
   const source = selectedSourceField.value
-  if (
-    !source ||
-    source.fieldType === 'UNKNOWN' ||
-    !availableTargetFieldTypeList.value.includes(source.fieldType)
-  )
-    return undefined
-  const type = normalizeFieldType(source.fieldType)
+  if (!source || source.fieldType === 'UNKNOWN') return undefined
+  const fieldType =
+    availableTargetFieldTypeList.value.find(type => type === source.fieldType) ||
+    (props.adjustmentMode
+      ? availableTargetFieldTypeList.value.find(
+          type => normalizeFieldType(type) === normalizeFieldType(source.fieldType)
+        )
+      : undefined)
+  if (!fieldType) return undefined
+  const type = normalizeFieldType(fieldType)
   // 已有字符字段只允许扩容，推荐定义不能缩小当前目标容量
   const size = ['CHAR', 'VARCHAR'].includes(type)
     ? Math.max(
@@ -195,7 +204,7 @@ const recommendedTargetField = computed(() => {
       )
     : source.fieldSize || 0
   return {
-    fieldType: source.fieldType,
+    fieldType,
     fieldSize: size,
     fieldPrecision: source.fieldPrecision || 0
   }
@@ -218,7 +227,7 @@ const recommendationDiffers = computed(() => {
   if (!field) return false
   const type = normalizeFieldType(field.fieldType)
   return (
-    state.form.fieldType !== field.fieldType ||
+    normalizeFieldType(state.form.fieldType) !== type ||
     (['CHAR', 'VARCHAR', 'DECIMAL'].includes(type) && state.form.fieldSize !== field.fieldSize) ||
     (['DECIMAL', 'DATETIME'].includes(type) && state.form.fieldPrecision !== field.fieldPrecision)
   )
@@ -701,11 +710,21 @@ defineExpose({
               class="field-mapping-alert"
             />
             <el-select
-              v-model="state.form.fieldType"
+              v-model="targetFieldType"
               @change="changeTargetType"
               :filterable="true"
               :placeholder="t('sync_task.please_choose')"
             >
+              <el-option
+                v-if="
+                  adjustmentMode &&
+                  targetFieldType &&
+                  !availableTargetFieldTypeList.includes(targetFieldType)
+                "
+                :label="fieldTypeLabel(targetFieldType)"
+                :value="targetFieldType"
+                disabled
+              />
               <el-option
                 v-for="(item, index) in availableTargetFieldTypeList"
                 :key="index"
@@ -937,7 +956,7 @@ defineExpose({
   .ed-drawer__body {
     min-height: 0;
     overflow-y: auto;
-    padding: 16px 24px !important;
+    padding: 16px 24px 80px !important;
 
     .target-body {
       padding-bottom: 8px;

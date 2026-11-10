@@ -56,9 +56,8 @@ const iconMap = {
 };
 
 const databaseList = shallowRef();
-const isCurrentRoleDatasource = (datasource) => {
-  return !datasource.isPlugin ||
-      Number(datasource.datasourceRole) === Number(props.datasourceRole)
+const isCurrentRoleDatasource = datasource => {
+  return Number(datasource.datasourceRole) === Number(props.datasourceRole)
 }
 const filterByName = (datasource) => {
   return datasource.name.toLowerCase().includes(props.filterText.trim())

@@ -284,7 +284,12 @@ export interface IMaintenanceStructure {
   blockedReason?: string
   fullRefresh: boolean
   operations: string[]
-  columns: { field: ITableField; nullable: boolean; protectedReason?: string }[]
+  columns: {
+    field: ITableField
+    nativeType?: string
+    nullable: boolean
+    protectedReason?: string
+  }[]
   indexes: Record<string, string>
   indexType?: string
   indexFieldTypes: string[]
