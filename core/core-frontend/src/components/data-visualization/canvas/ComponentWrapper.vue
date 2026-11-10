@@ -393,7 +393,8 @@ const eventEnable = computed(
     (['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
       config.value.component
     ) ||
-      ['indicator', 'rich-text'].includes(config.value.innerType)) &&
+      ['indicator', 'rich-text'].includes(config.value.innerType) ||
+      config.value.materialPicture) &&
     config.value.events &&
     config.value.events.checked &&
     showPositionActive.value !== 'canvas-multiplexing'

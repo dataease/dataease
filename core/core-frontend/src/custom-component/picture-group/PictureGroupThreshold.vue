@@ -38,7 +38,7 @@ const { view, element } = toRefs(props)
 const onThresholdChange = val => {
   // do
   view.value.senior.threshold = val
-  if (val.enable) {
+  if (val.enable && element.value.carousel) {
     element.value.carousel.enable = false
   }
   nextTick(() => {

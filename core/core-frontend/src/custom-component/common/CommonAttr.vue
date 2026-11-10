@@ -89,7 +89,9 @@ const eventsShow = computed(() => {
   return (
     ['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
       element.value.component
-    ) || element.value.innerType === 'rich-text'
+    ) ||
+    element.value.innerType === 'rich-text' ||
+    element.value.materialPicture
   )
 })
 

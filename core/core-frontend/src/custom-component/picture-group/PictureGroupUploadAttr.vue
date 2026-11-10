@@ -64,8 +64,8 @@ const handleRemove = (file, fileListArray) => {
   if (index !== -1) {
     element.value.propValue['urlList'].splice(index, 1)
     useEmitt().emitter.emit('calcData-' + element.value.id)
+    snapshotStore.recordSnapshotCache('calcData', element.value.id)
   }
-  snapshotStore.recordSnapshotCache('picture-handleRemove')
 }
 async function upload(file) {
   if (element.value.propValue.urlList.length < 10) {
@@ -78,9 +78,14 @@ async function upload(file) {
         console.error('上传失败:', error)
       } else {
         // 上传成功
-        snapshotStore.recordSnapshotCache('pic-upload')
-        element.value.propValue.urlList.unshift({ name: file.file.name, url: fileUrl })
+        const image = { name: file.file.name, url: fileUrl }
+        if (element.value.materialPicture) {
+          element.value.propValue.urlList.push(image)
+        } else {
+          element.value.propValue.urlList.unshift(image)
+        }
         useEmitt().emitter.emit('calcData-' + element.value.id)
+        snapshotStore.recordSnapshotCache('calcData', element.value.id)
       }
 
       // 无论成功失败，都增加完成计数
@@ -124,12 +129,7 @@ const toolTip = computed(() => {
   return props.themes || 'dark'
 })
 
-watch(
-  () => element.value.propValue['urlList'],
-  () => {
-    init()
-  }
-)
+watch(() => element.value.propValue.urlList, init, { deep: true })
 
 onMounted(() => {
   init()
@@ -142,7 +142,7 @@ const applyMaterial = (reference: string) => {
   if (element.value.propValue.urlList.length >= 10) return
   element.value.propValue.urlList.push({ name: reference, url: reference })
   useEmitt().emitter.emit('calcData-' + element.value.id)
-  snapshotStore.recordSnapshotCache('renderChart')
+  snapshotStore.recordSnapshotCache('calcData', element.value.id)
 }
 </script>
 
@@ -152,7 +152,11 @@ const applyMaterial = (reference: string) => {
     :disabled="element.propValue.urlList.length >= 10"
     @select="applyMaterial"
   />
-  <el-collapse-item :effect="themes" :title="t('visualization.pic_group')" name="picture">
+  <el-collapse-item
+    :effect="themes"
+    :title="t(element.materialPicture ? 'visualization.picture' : 'visualization.pic_group')"
+    name="picture"
+  >
     <el-row class="img-area" :class="`img-area_${themes}`">
       <el-col style="width: 130px !important">
         <el-upload
