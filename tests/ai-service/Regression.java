@@ -173,6 +173,7 @@ public class Regression {
             manage.saveSettings(new SettingsChange(runtimeSetting.getRowVersion(),true,next.id(),false,60,30000,4096,5,2,runtimeImpact));
             RuntimeRegression.run(manage,policies,keys,new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager),access);
             ConversationRegression.run(manage,policies,keys,limiter,access);
+            ToolConversationRegression.run(manage,policies,keys,limiter,access);
             HttpRegression.run(new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager));
             TokenCapabilityRegression.run(manage,policies,access,keys,limiter,permitted);
             directory.set(List.of(new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(88L,"Sales",0L),

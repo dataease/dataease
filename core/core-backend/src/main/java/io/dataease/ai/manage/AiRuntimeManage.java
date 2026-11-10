@@ -91,7 +91,13 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         };
     }
     /** Created only in the authenticated request; the worker receives no Servlet state or request-bound model. */
-    public final class Streaming implements AutoCloseable {
+    public interface StreamHandle extends AutoCloseable {
+        String executionId();
+        long deadline();
+        void verifyDelivery();
+        @Override void close();
+    }
+    public final class Streaming implements StreamHandle {
         private final Context context;
         private Prompt prompt;
         private AiConfigurationManage.Connection connection;
@@ -140,6 +146,68 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         // Only detached setting values enter admission; no JPA/request-bound entity crosses threads.
         var settings = json.convertValue(original, CoreAiSetting.class);
         return new Streaming(detached, prompt, connection, settings, verify, delivery);
+    }
+    /** Same execution/model snapshot across the entire bounded dialogue. No request or managed entity crosses threads. */
+    public final class ToolStreaming implements StreamHandle {
+        private final Context context;
+        private final CoreAiSetting settings;
+        private final Long modelId, configRevision, credentialRevision, settingRevision;
+        private final AiToolProtocol.Budget budget;
+        private AiTransport.ToolStream active;
+        private volatile boolean closed;
+        private ToolStreaming(Context context, CoreAiSetting settings, CoreAiModel model) {
+            this.context = context; this.settings = settings;
+            modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
+            budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens());
+        }
+        public String executionId() { return context.executionId(); }
+        public long deadline() { return context.deadline(); }
+        private CoreAiModel verify(boolean deadline) {
+            var latest = configuration.setting(); var current = resolve(context, latest, deadline);
+            if (!Objects.equals(settingRevision, latest.getRevision()) || !Objects.equals(modelId, current.getId())
+                    || !Objects.equals(configRevision, current.getConfigRevision()) || !Objects.equals(credentialRevision, current.getCredentialRevision())) throw AiErrors.error("conflict");
+            return current;
+        }
+        public void verifyDelivery() { verify(false); }
+        public void verifyStep() { verify(true); }
+        public void result(String result) { budget.result(result); }
+        public void send(AiToolProtocol.Input input, Runnable progress, java.util.function.Consumer<String> delta,
+                                      java.util.function.Consumer<AiToolProtocol.Step> completed, java.util.function.Consumer<Throwable> failed) {
+            if (closed) throw AiErrors.error("cancelled"); progress.run();
+            var model = verify(true);
+            var feature = (AiToolConversationFeature) feature(context.feature()); feature.authorizeToolInput(context, input);
+            int allocation = budget.allocate();
+            var payload = AiToolProtocol.payload(input);
+            payload.put("model", model.getModelIdentifier()); payload.put("stream", true); payload.put("n", 1);
+            payload.put("MAX_COMPLETION_TOKENS".equals(model.getOutputTokenParameter()) ? "max_completion_tokens" : "max_tokens", allocation);
+            String serialized = payload.toString();
+            // Conservative complete JSON count includes definitions, roles, ids, history, arguments, results and escaping.
+            if (serialized.codePointCount(0, serialized.length()) > settings.getMaxInputChars()
+                    || serialized.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 4 * 1024 * 1024) throw AiErrors.error("input_limit");
+            String fingerprint = AiToolProtocol.fingerprint(input);
+            Runnable recheck = () -> {
+                progress.run(); verify(true); feature.authorizeToolInput(context, input);
+                if (!fingerprint.equals(AiToolProtocol.fingerprint(input))) throw AiErrors.error("scope_changed");
+            };
+            var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
+                    secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
+            synchronized (this) {
+                if (closed) throw AiErrors.error("cancelled"); progress.run();
+                active = transport.toolStream();
+                active.start(connection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed);
+            }
+        }
+        public synchronized void close() { closed = true; if (active != null) active.close(); active = null; }
+    }
+    public ToolStreaming streamTools(String feature, AiDataScope scope, AiToolProtocol.Input input) {
+        Context request = (Context) current(feature, scope); caller(request);
+        if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
+        if (!(feature(feature) instanceof AiToolConversationFeature toolFeature) || !toolFeature.supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
+        if (scope.inputFingerprint() == null || !scope.inputFingerprint().equals(AiToolProtocol.fingerprint(input))) throw AiErrors.error("scope_changed");
+        var original = configuration.setting(); var model = resolve(request, original); toolFeature.authorizeToolInput(request, input);
+        Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), false,
+                request.deadline(), null, request.proxyBinding(), null, null, request.scope(), request.deployment());
+        return new ToolStreaming(detached, json.convertValue(original, CoreAiSetting.class), model);
     }
     private void inspect(Context context, Prompt prompt) {
         java.util.List<org.springframework.ai.chat.messages.Message> messages = prompt.getInstructions().stream().map(message ->

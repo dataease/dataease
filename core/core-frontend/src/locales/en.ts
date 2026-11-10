@@ -1,5 +1,13 @@
 export default {
   ai_conversation: {
+    tool: 'Program tool',
+    tool_started: 'Started',
+    tool_running: 'Running',
+    tool_succeeded: 'Succeeded',
+    tool_failed: 'Failed',
+    tool_parameters: 'Parameters',
+    tool_result: 'Result',
+
     stop: 'Stop generating',
     hide: 'Hide assistant',
     expand: 'Expand assistant',

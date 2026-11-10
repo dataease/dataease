@@ -445,3 +445,69 @@ test('an old identity resource response cannot overwrite the new identity list',
   await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled()
   expect(loads).toBe(2)
 })
+
+test('program tool states expose safe parameters/results, deduplicate replay and stay distinct from model text', async ({
+  page
+}) => {
+  let finished = false
+  const tool = {
+    callId: 'call-tables',
+    name: 'get_table_fields',
+    parameters: { table: 'AI_PROBE' }
+  }
+  const events = [
+    { sequence: 1, type: 'TEXT', text: 'I will read the fields.' },
+    { sequence: 2, type: 'TOOL', tool: { ...tool, status: 'STARTED' } },
+    { sequence: 3, type: 'TOOL', tool: { ...tool, status: 'RUNNING' } },
+    {
+      sequence: 4,
+      type: 'TOOL',
+      tool: {
+        ...tool,
+        status: 'SUCCEEDED',
+        result: '{"fields":[{"name":"ID","type":"BIGINT","comment":"<script>private</script>"}]}'
+      }
+    },
+    { sequence: 5, type: 'TEXT', text: 'The actual field is ID.' },
+    { sequence: 6, type: 'COMPLETED' }
+  ]
+  await page.route('**/fixture-api/ai/conversations**', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'tools-run',
+          status: finished ? 'COMPLETED' : 'RUNNING',
+          cursor: finished ? 6 : 3,
+          events: finished ? events : events.slice(0, 3)
+        }
+      })
+    if (url.pathname.endsWith('/executions'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'tools-run',
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    return route.fulfill({ json: session })
+  })
+  await selectResource(page)
+  await send(page, 'Read actual fields')
+  const toolPanel = page.locator('[data-tool-id="call-tables"]')
+  await expect(toolPanel).toHaveCount(1)
+  await expect(toolPanel).toContainText('get_table_fields')
+  await expect(toolPanel).toContainText('执行中')
+  finished = true
+  await expect(toolPanel).toContainText('成功')
+  await expect(toolPanel).toContainText('AI_PROBE')
+  await expect(toolPanel).toContainText('BIGINT')
+  await expect(toolPanel.locator('script')).toHaveCount(0)
+  await expect(
+    page.getByText('I will read the fields.The actual field is ID.', { exact: true })
+  ).toBeVisible()
+})

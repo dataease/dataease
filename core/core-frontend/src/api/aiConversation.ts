@@ -43,13 +43,26 @@ export interface AiConversationExecution {
   status: 'RUNNING' | 'COMPLETED' | 'CANCELLED' | 'FAILED'
   deadline: number
 }
+export interface AiConversationTool {
+  callId: string
+  name: string
+  status: 'STARTED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED'
+  parameters: Record<string, string>
+  result?: string
+}
 export interface AiConversationEvents {
   sessionId: string
   executionId: string
   contextVersion: string
   status: AiConversationExecution['status']
   cursor: number
-  events: { sequence: number; type: string; text?: string; error?: string }[]
+  events: {
+    sequence: number
+    type: string
+    text?: string
+    error?: string
+    tool?: AiConversationTool
+  }[]
 }
 export const startConversationExecution = (id: string, contextVersion: string, text: string) =>
   data<AiConversationExecution>(

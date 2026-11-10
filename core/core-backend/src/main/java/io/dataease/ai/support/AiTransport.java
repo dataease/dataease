@@ -197,6 +197,138 @@ public class AiTransport {
             closed = true; cancellation.cancel(); if (future != null) { future.cancel(true); executor.purge(); }
         }
     }
+    /** One model step, scheduled directly: its completion may enqueue the next step, never await a child worker. */
+    public final class ToolStream implements AutoCloseable {
+        private final RequestCancellation cancellation = new RequestCancellation();
+        private Future<?> future;
+        private boolean closed;
+        public synchronized void start(Connection connection, CoreAiSetting settings, com.fasterxml.jackson.databind.node.ObjectNode payload,
+                                       long deadline, int allocation, AiToolProtocol.Budget budget, Runnable recheck, Runnable progress,
+                                       java.util.function.Consumer<String> delta, java.util.function.Consumer<AiToolProtocol.Step> completed,
+                                       java.util.function.Consumer<Throwable> failed) {
+            if (closed || future != null) throw AiErrors.error("cancelled");
+            Runnable guard = () -> {
+                if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+                if (cancellation.cancelled() || Thread.currentThread().isInterrupted()) throw AiErrors.error("cancelled");
+                progress.run();
+            };
+            try {
+                future = executor.submit(() -> {
+                    try {
+                        var result = perform(connection, settings, false, deadline, recheck, cancellation, builder ->
+                            builder.baseUrl(connection.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + connection.key()).build()
+                                .post().uri(outbound.completionPath(connection.url())).contentType(MediaType.APPLICATION_JSON).body(payload)
+                                .exchange((request, response) -> {
+                                    if (response.getStatusCode().value() >= 300) throw providerError(response);
+                                    var type = response.getHeaders().getContentType();
+                                    if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
+                                    return readToolEvents(response.getBody(), allocation, budget, guard, delta);
+                                }));
+                        guard.run(); if (!cancellation.cancelled()) completed.accept(result);
+                    } catch (Throwable failure) { if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline)); }
+                    finally { clearWorker(); }
+                });
+            } catch (RejectedExecutionException failure) { throw AiErrors.error("concurrency"); }
+        }
+        @Override public synchronized void close() {
+            closed = true; cancellation.cancel(); if (future != null) { future.cancel(true); executor.purge(); }
+        }
+    }
+    public ToolStream toolStream() { return new ToolStream(); }
+    private AiToolProtocol.Step readToolEvents(InputStream input, int allocation, AiToolProtocol.Budget budget, Runnable guard,
+                                               java.util.function.Consumer<String> delta) throws IOException {
+        var bounded = new FilterInputStream(input) {
+            @Override public int read() throws IOException { int value = super.read(); if (value != -1) budget.raw(1); return value; }
+            @Override public int read(byte[] bytes, int offset, int length) throws IOException { int count = in.read(bytes, offset, length); if (count > 0) budget.raw(count); return count; }
+        };
+        var decoder = java.nio.charset.StandardCharsets.UTF_8.newDecoder().onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT);
+        var reader = new InputStreamReader(bounded, decoder);
+        var line = new StringBuilder(); var data = new StringBuilder(); var text = new StringBuilder(); var arguments = new StringBuilder();
+        String id = null, name = null, callType = null, finish = null;
+        Long usage = null; int frames = 0; long generated = 0; boolean previousCr = false, sawTool = false;
+        for (int value; (value = reader.read()) != -1;) {
+            guard.run(); char ch = (char) value;
+            if (previousCr && ch == '\n') { previousCr = false; continue; } previousCr = ch == '\r';
+            if (ch != '\n' && ch != '\r') { if (line.length() >= 65536) throw AiErrors.error("response_invalid"); line.append(ch); continue; }
+            String field = line.toString(); line.setLength(0);
+            if (!field.isEmpty()) {
+                if (field.startsWith("data:")) {
+                    String part = field.substring(5); if (part.startsWith(" ")) part = part.substring(1);
+                    if (data.length() + part.length() > 65536) throw AiErrors.error("response_invalid"); data.append(part).append('\n');
+                }
+                continue;
+            }
+            if (data.isEmpty()) continue;
+            if (++frames > 20000) throw AiErrors.error("response_invalid"); budget.frame();
+            String event = data.substring(0, data.length() - 1); data.setLength(0); guard.run();
+            if ("[DONE]".equals(event)) {
+                if ("stop".equals(finish) && !sawTool && !text.toString().isBlank()) return new AiToolProtocol.Step(text.toString(), List.of());
+                if ("tool_calls".equals(finish) && id != null && name != null && "function".equals(callType) && !arguments.isEmpty())
+                    return new AiToolProtocol.Step(text.toString(), List.of(new AiToolProtocol.Call(id, name, arguments.toString())));
+                throw AiErrors.error("response_invalid");
+            }
+            com.fasterxml.jackson.databind.JsonNode root;
+            try (var parser = json.getFactory().createParser(event)) {
+                parser.enable(com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+                root = json.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(parser);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw AiErrors.error("response_invalid"); }
+            if (root == null || !root.isObject() || root.has("error") || !root.path("choices").isArray()) throw AiErrors.error("response_invalid");
+            if (root.hasNonNull("usage")) {
+                var count = root.path("usage").path("completion_tokens");
+                if (!root.path("usage").isObject() || !count.isIntegralNumber() || !count.canConvertToLong() || count.asLong() < 0) throw AiErrors.error("response_invalid");
+                if (count.asLong() > allocation) throw AiErrors.error("output_limit");
+                if (usage != null && usage != count.asLong()) throw AiErrors.error("response_invalid"); usage = count.asLong();
+            }
+            var choices = root.path("choices"); if (choices.isEmpty() && root.path("usage").isObject()) continue;
+            if (choices.size() != 1 || !choices.get(0).path("index").isInt() || choices.get(0).path("index").asInt() != 0 || finish != null) throw AiErrors.error("response_invalid");
+            var choice = choices.get(0); var chunk = choice.path("delta"); if (!chunk.isObject()) throw AiErrors.error("response_invalid");
+            var names = chunk.fieldNames();
+            while (names.hasNext()) { String key = names.next(); if (!java.util.Set.of("role", "content", "reasoning", "reasoning_content", "tool_calls").contains(key) && !chunk.path(key).isNull()) throw AiErrors.error("unsupported"); }
+            if (chunk.hasNonNull("role") && !"assistant".equals(chunk.path("role").asText())) throw AiErrors.error("response_invalid");
+            for (String key : List.of("content", "reasoning", "reasoning_content")) {
+                if (!chunk.hasNonNull(key)) continue;
+                if (!chunk.path(key).isTextual()) throw AiErrors.error("response_invalid");
+                String part = chunk.path(key).asText(); generated += part.length(); budget.generated(part.length());
+                if (generated > Math.min(262144L, allocation * 16L)) throw AiErrors.error("output_limit");
+                if ("content".equals(key) && !part.isEmpty()) { text.append(part); delta.accept(part); }
+            }
+            if (chunk.hasNonNull("tool_calls")) {
+                sawTool = true;
+                var calls = chunk.path("tool_calls");
+                // Deliberate first capability: one serial tool per model step. Never mis-correlate a batch.
+                if (!calls.isArray() || calls.size() != 1 || !calls.get(0).path("index").isInt() || calls.get(0).path("index").asInt() != 0) throw AiErrors.error("unsupported");
+                var call = calls.get(0);
+                for (String generatedField : List.of("id", "type")) if (call.path(generatedField).isTextual()) budget.generated(call.path(generatedField).asText().length());
+                if (call.path("function").path("name").isTextual()) budget.generated(call.path("function").path("name").asText().length());
+                rejectUnknown(call, java.util.Set.of("index", "id", "type", "function"));
+                if (call.hasNonNull("id")) id = stable(id, call.path("id"), "[A-Za-z0-9_-]{1,128}");
+                if (call.hasNonNull("type")) callType = stable(callType, call.path("type"), "function");
+                if (call.hasNonNull("function")) {
+                    var function = call.path("function"); if (!function.isObject()) throw AiErrors.error("response_invalid");
+                    rejectUnknown(function, java.util.Set.of("name", "arguments"));
+                    if (function.hasNonNull("name")) name = stable(name, function.path("name"), "[A-Za-z0-9_-]{1,64}");
+                    if (function.hasNonNull("arguments")) {
+                        var part = function.path("arguments"); if (!part.isTextual() || arguments.length() + part.asText().length() > AiToolProtocol.MAX_ARGUMENTS) throw AiErrors.error("response_invalid");
+                        arguments.append(part.asText()); generated += part.asText().length(); budget.generated(part.asText().length());
+                        if (generated > allocation * 16L) throw AiErrors.error("output_limit");
+                    }
+                }
+            }
+            if (choice.hasNonNull("finish_reason")) {
+                finish = choice.path("finish_reason").asText();
+                if (!java.util.Set.of("stop", "tool_calls").contains(finish)) throw AiErrors.error("response_invalid");
+            }
+        }
+        throw AiErrors.error("response_invalid");
+    }
+    private void rejectUnknown(com.fasterxml.jackson.databind.JsonNode node, java.util.Set<String> allowed) {
+        var names = node.fieldNames(); while (names.hasNext()) if (!allowed.contains(names.next())) throw AiErrors.error("unsupported");
+    }
+    private String stable(String previous, com.fasterxml.jackson.databind.JsonNode value, String pattern) {
+        if (!value.isTextual() || !value.asText().matches(pattern) || previous != null && !previous.equals(value.asText())) throw AiErrors.error("response_invalid");
+        return value.asText();
+    }
     public Stream stream() { return new Stream(); }
     private RuntimeException safeFailure(Throwable failure, long deadline) {
         if (System.currentTimeMillis() >= deadline) return AiErrors.error("timeout");

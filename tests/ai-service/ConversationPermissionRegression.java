@@ -9,6 +9,7 @@ import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.constant.AuthEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.license.bo.F2CLicResult;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.permission.util.V3UserUtil;
@@ -62,6 +63,10 @@ public final class ConversationPermissionRegression {
             if (method.getName().equals("getSimpleDs")) {
                 var value = new DatasourceDTO(); value.setId(11L); value.setName("Community resource"); value.setType("MySQL"); value.setUpdateTime(1L); return value;
             }
+            if (method.getName().equals("getTables")) {
+                if (!allowed.get() || !identityAllowed.get()) throw new AssertionError("denied metadata operation executed");
+                var table = new DatasetTableDTO(); table.setTableName("AI_PROBE"); return List.of(table);
+            }
             throw new UnsupportedOperationException(method.getName());
         });
         var permissions = new CorePermissionManage();
@@ -75,12 +80,17 @@ public final class ConversationPermissionRegression {
         V3UserUtil.clear(); V3UserUtil.setUid(1L);
         try {
             if (open(mvc) != 200) throw new AssertionError("SQL assistant must preserve existing expired-license community operation access");
+            var context = scene.resolve("11", "select 1");
+            if (!scene.execute(context, "list_tables", Map.of()).contains("AI_PROBE")) throw new AssertionError("installed expired-license community metadata must match existing business permission path");
             identityAllowed.set(false);
             if (open(mvc) < 400) throw new AssertionError("community fallback bypassed current identity denial");
             identityAllowed.set(true);
             fixture.status.set(F2CLicResult.Status.valid);
             if (open(mvc) != 200) throw new AssertionError("licensed authorized operation denied");
+            if (!scene.execute(context, "list_tables", Map.of()).contains("AI_PROBE")) throw new AssertionError("licensed authorized metadata denied");
             allowed.set(false);
+            try { scene.execute(context, "list_tables", Map.of()); throw new AssertionError("licensed metadata READ refusal bypassed"); }
+            catch (AiErrors.Failure expected) { }
             if (open(mvc) < 400) throw new AssertionError("licensed READ denial used community fallback");
             allowed.set(true);
             var empty = new StaticListableBeanFactory();
@@ -92,7 +102,7 @@ public final class ConversationPermissionRegression {
                 if (open(MockMvcBuilders.standaloneSetup(new AiConversationServer(missing)).build()) < 400)
                     throw new AssertionError("licensed missing provider used community fallback");
             } finally { missing.destroy(); }
-            System.out.println("PASS SQL dialogue operation parity for installed expired-license community, current identity denial, licensed READ allow/deny and missing-provider rejection");
+            System.out.println("PASS SQL dialogue and real scene metadata operation parity for installed expired-license community, current identity denial, licensed READ allow/deny and missing-provider rejection");
         } finally { manage.destroy(); V3UserUtil.clear(); V3UserUtil.setUid(1L); }
     }
 }

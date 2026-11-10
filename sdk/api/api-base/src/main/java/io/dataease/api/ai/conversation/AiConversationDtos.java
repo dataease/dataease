@@ -17,7 +17,10 @@ public final class AiConversationDtos {
     public record Turn(@NotBlank @Size(max = 100) String contextVersion,
                        @NotBlank @Size(max = 30000) String text) { }
     public record Execution(String sessionId, String executionId, String contextVersion, String status, long deadline) { }
-    public record Event(long sequence, String type, String text, String error) { }
+    public record Tool(String callId, String name, String status, java.util.Map<String, String> parameters, String result) { }
+    public record Event(long sequence, String type, String text, String error, Tool tool) {
+        public Event(long sequence, String type, String text, String error) { this(sequence, type, text, error, null); }
+    }
     public record Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events) { }
     public record Answer(String sessionId, String executionId, String contextVersion, String status, String text) { }
 }
