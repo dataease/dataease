@@ -27,6 +27,8 @@ public class AiConfigurationInit implements CoreSqlBlock {
     public Version getVersion() { return new Version("2.44"); }
     public void execute() {
         create(CoreAiSetting.class); create(CoreAiModel.class); create(CoreAiOrgPolicy.class);
+        // A retry of an earlier partial 2.44 migration must support the current entity mapping.
+        AiKeyringInit.ensureColumns(jdbc, factory);
         tokenParameter();
         index("core_ai_model", "uk_ai_model_name", "name_key", true);
         index("core_ai_org_policy", "idx_ai_org_model", "model_id", false);

@@ -63,6 +63,7 @@ def main():
             'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/auth/api/InteractiveAuthApi.java',
             'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/org/api/AiOrganizationLifecycle.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiKeyringInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecordsMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/menu/manage/MenuManage.java',

@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        ModeRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence();
+        ModeRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence(); KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
     private static void crypto() {
@@ -113,7 +113,9 @@ public class Regression {
             check(menus.count()==1 && menus.findById(130L).isEmpty(),"early development AI130 is cleaned without being recreated");
             MenuRegression.run(em,manager,menus);
             var directory = new java.util.concurrent.atomic.AtomicReference<java.util.List<io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization>>();
-            AiSecrets keys=secrets();
+            var keyring = new AiKeyringManage(em, manager, "", "");
+            keyring.initialize();
+            AiSecrets keys = new AiSecrets(keyring, JSON);
             var permitted = new java.util.concurrent.atomic.AtomicBoolean(true);
             AiDeploymentMode mode = new AiDeploymentMode(new StaticListableBeanFactory().getBeanProvider(io.dataease.license.manage.F2CLicManage.class),new StaticListableBeanFactory().getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class),new org.springframework.context.support.StaticApplicationContext()) {
                 public State current() { return new State(Mode.LICENSED,"test-license-v1"); }

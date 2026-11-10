@@ -1,5 +1,6 @@
 package io.dataease.ai.dao.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,4 +52,29 @@ public class CoreAiSetting extends AiConfigEntity {
     @Column(name = "revision", nullable = false)
     @Comment("revision")
     private Long revision = 1L;
+
+    @JsonIgnore
+    @Column(name = "key_source", length = 16)
+    @Comment("AI 密钥来源，非空表示已经初始化")
+    private String keySource;
+
+    @JsonIgnore
+    @Column(name = "key_ring", length = 4000)
+    @Comment("数据库模式的独立 AI 密钥集合，不通过配置接口读写")
+    private String keyRing;
+
+    @JsonIgnore
+    @Column(name = "active_key_id", length = 32)
+    @Comment("当前 AI 加密和签名密钥标识")
+    private String activeKeyId;
+
+    @JsonIgnore
+    @Column(name = "key_revision")
+    @Comment("AI 密钥版本")
+    private Long keyRevision;
+
+    @JsonIgnore
+    @Column(name = "key_fingerprint", length = 64)
+    @Comment("AI 密钥集合及当前密钥的一致性摘要")
+    private String keyFingerprint;
 }
