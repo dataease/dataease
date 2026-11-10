@@ -224,7 +224,7 @@ git -C de-xpack push origin dev-v3
 
 ### Issue tracker
 
-使用这些技能处理工作项前，读取 `docs/agents/issue-tracker.md`；
+使用这些技能读取工作项，或创建、更新规格、任务、依赖及附件前，读取 [工作项路由](docs/agents/issue-tracker.md)；
 GitHub 与 TAPD 按任务来源选择，来源不明确时先确定跟踪位置。
 
 ### Triage labels
