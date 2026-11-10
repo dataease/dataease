@@ -1,11 +1,17 @@
 package io.dataease.ai.manage;
 
 import java.util.List;
+import java.util.Map;
+import io.dataease.ai.support.AiToolProtocol;
+import io.dataease.ai.support.AiErrors;
 
 /** 业务上下文与权限边界。共享引擎不解析或执行 SQL，不持有数据源凭据。 */
 public interface AiConversationScene {
     record Resource(String id, String name) { }
     record Context(String resourceId, String resourceName, String revision, String instruction) { }
+    default List<AiToolProtocol.Definition> tools() { return List.of(); }
+    /** Parameters were strictly validated; context is always the server-owned scope. */
+    default String execute(Context context, String name, Map<String, String> arguments) { throw AiErrors.error("unsupported"); }
     String code();
     List<Resource> resources();
     Context resolve(String resourceId, String input);

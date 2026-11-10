@@ -1,5 +1,13 @@
 export default {
   ai_conversation: {
+    tool: '程序工具',
+    tool_started: '开始',
+    tool_running: '执行中',
+    tool_succeeded: '成功',
+    tool_failed: '失败',
+    tool_parameters: '参数',
+    tool_result: '结果',
+
     stop: '停止生成',
     hide: '收起助手',
     expand: '展开助手',

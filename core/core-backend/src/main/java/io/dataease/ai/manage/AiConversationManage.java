@@ -1,6 +1,7 @@
 package io.dataease.ai.manage;
 
 import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiToolProtocol;
 import io.dataease.api.ai.conversation.AiConversationDtos.*;
 import io.dataease.api.ai.runtime.*;
 import io.dataease.permission.util.V3UserUtil;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 /** 有界临时会话；同步请求与受控异步执行共享身份、上下文及最终 Prompt 预算。 */
 @Component
-public class AiConversationManage implements AiFeature {
+public class AiConversationManage implements AiToolConversationFeature {
     private static final long SESSION_MILLIS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSIONS = 200, MAX_USER_SESSIONS = 4, MAX_TURNS = 50;
     private static final class State {
@@ -27,6 +28,8 @@ public class AiConversationManage implements AiFeature {
         final AiAccess.Identity owner;
         final AiConversationScene.Context context;
         final List<Message> history = new ArrayList<>();
+        final List<AiToolProtocol.Message> toolHistory = new ArrayList<>();
+        int turns;
         volatile boolean closed;
         final Map<String, Run> runs = new LinkedHashMap<>();
         Run active;
@@ -39,18 +42,22 @@ public class AiConversationManage implements AiFeature {
     private static final class Run {
         final State state;
         String question;
-        final AiRuntimeManage.Streaming stream;
+        final AiRuntimeManage.StreamHandle stream;
+        List<AiToolProtocol.Message> transcript = new ArrayList<>();
+        final Set<String> toolIds = new HashSet<>(), toolRequests = new HashSet<>();
+        int toolSteps;
         List<Event> events = new ArrayList<>();
         StringBuilder text = new StringBuilder();
         long sequence;
         volatile long lease = System.currentTimeMillis() + LEASE_MILLIS;
         volatile String status = "RUNNING";
-        Run(State state, String question, AiRuntimeManage.Streaming stream) { this.state = state; this.question = question; this.stream = stream; }
+        Run(State state, String question, AiRuntimeManage.StreamHandle stream) { this.state = state; this.question = question; this.stream = stream; }
     }
     private final Map<String, State> sessions = new ConcurrentHashMap<>();
     private final Map<String, AiConversationScene> scenes;
     private final ObjectProvider<AiRuntimeManage> runtime;
     private final AiAccess access;
+    private final ThreadLocal<Integer> authorityDepth = ThreadLocal.withInitial(() -> 0);
     private final ScheduledExecutorService expiry = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread thread = new Thread(r, "de-ai-sessions"); thread.setDaemon(true); return thread;
     });
@@ -93,7 +100,8 @@ public class AiConversationManage implements AiFeature {
         if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
         try {
             authorized(state.owner, () -> { check(state); return null; });
-            if (state.history.size() >= MAX_TURNS * 2) throw AiErrors.error("input_limit");
+            if (state.turns >= MAX_TURNS) throw AiErrors.error("input_limit");
+            if (!state.toolHistory.isEmpty()) throw AiErrors.error("unsupported");
             var messages = new ArrayList<Message>();
             messages.add(new SystemMessage(state.context.instruction()));
             messages.addAll(state.history); messages.add(new UserMessage(request.text()));
@@ -107,7 +115,7 @@ public class AiConversationManage implements AiFeature {
             if (System.currentTimeMillis() >= execution.deadline()) throw AiErrors.error("timeout");
             String text = response.getResult().getOutput().getText();
             if (text == null || text.isBlank()) throw AiErrors.error("response_invalid");
-            state.history.add(new UserMessage(request.text())); state.history.add(new AssistantMessage(text));
+            state.history.add(new UserMessage(request.text())); state.history.add(new AssistantMessage(text)); state.turns++;
             return new Answer(id, execution.executionId(), state.view.contextVersion(), "COMPLETED", text);
         } finally { state.executing.set(false); }
     }
@@ -119,21 +127,28 @@ public class AiConversationManage implements AiFeature {
             if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
             try {
                 authorized(state.owner, () -> { check(state); return null; });
-                if (state.history.size() >= MAX_TURNS * 2) throw AiErrors.error("input_limit");
+                if (state.turns >= MAX_TURNS) throw AiErrors.error("input_limit");
                 var messages = new ArrayList<Message>(); messages.add(new SystemMessage(state.context.instruction()));
                 messages.addAll(state.history); messages.add(new UserMessage(request.text()));
                 Prompt prompt = new Prompt(messages);
                 var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(prompt), false, null);
-                var stream = runtime.getObject().stream(code(), scope, prompt);
+                var definitions = scene(state.view.scene()).tools();
+                var input = toolInput(state, request.text(), definitions);
+                AiRuntimeManage.StreamHandle stream = definitions.isEmpty() ? runtime.getObject().stream(code(), scope, prompt)
+                        : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(input), false, null), input);
                 var run = new Run(state, request.text(), stream);
+                if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(input.messages());
                 // Terminal logs are bounded independently of the completed-history turn limit.
                 for (Run old : state.runs.values()) {
                     old.question = null; old.text = new StringBuilder();
-                    old.events = new ArrayList<>(old.events.stream().filter(event -> !"TEXT".equals(event.type())).toList());
+                    old.events = new ArrayList<>(old.events.stream().filter(event -> !"TEXT".equals(event.type()) && event.tool() == null).toList());
                 }
                 while (state.runs.size() >= 50) state.runs.remove(state.runs.keySet().iterator().next());
                 state.runs.put(stream.executionId(), run); state.active = run;
-                try { stream.start(() -> progress(run), text -> append(run, text), () -> complete(run), failure -> fail(run, failure)); }
+                try {
+                    if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), text -> append(run, text), step -> toolStep(run, step), failure -> fail(run, failure));
+                    else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), text -> append(run, text), () -> complete(run), failure -> fail(run, failure));
+                }
                 catch (RuntimeException failure) { fail(run, failure); throw failure; }
                 return new Execution(id, stream.executionId(), state.view.contextVersion(), run.status, stream.deadline());
             } catch (RuntimeException failure) { state.executing.set(false); throw failure; }
@@ -193,12 +208,82 @@ public class AiConversationManage implements AiFeature {
             if (!"RUNNING".equals(run.status)) return;
             try {
                 authorized(run.state.owner, () -> { check(run.state); run.stream.verifyDelivery(); return null; });
-                if (System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
+                progress(run);
                 if (run.text.isEmpty() || run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
-                run.state.history.add(new UserMessage(run.question)); run.state.history.add(new AssistantMessage(run.text.toString()));
+                if (run.stream instanceof AiRuntimeManage.ToolStreaming) {
+                    run.state.history.clear(); run.state.toolHistory.clear(); run.state.toolHistory.addAll(run.transcript.subList(1, run.transcript.size()));
+                } else {
+                    run.state.history.add(new UserMessage(run.question)); run.state.history.add(new AssistantMessage(run.text.toString()));
+                }
+                run.state.turns++;
                 terminate(run, "COMPLETED", null);
             } catch (RuntimeException failure) { fail(run, failure); }
         }
+    }
+    private AiToolProtocol.Input toolInput(State state, String question, List<AiToolProtocol.Definition> definitions) {
+        var messages = new ArrayList<AiToolProtocol.Message>();
+        messages.add(AiToolProtocol.Message.text("system", state.context.instruction()));
+        // A session's text-only synchronous history remains compatible when its first tool run starts.
+        if (state.toolHistory.isEmpty()) for (Message message : state.history)
+            messages.add(AiToolProtocol.Message.text(message.getMessageType().getValue(), message.getText()));
+        else messages.addAll(state.toolHistory);
+        messages.add(AiToolProtocol.Message.text("user", question));
+        return new AiToolProtocol.Input(messages, definitions);
+    }
+    @Override public void authorizeToolInput(AiExecutionContext context, AiToolProtocol.Input input) {
+        authorize(context);
+        State state = sessions.get(context.scope().reference());
+        if (state == null || !scene(state.view.scene()).tools().equals(input.tools())) throw AiErrors.error("scope_changed");
+    }
+    private void toolEvent(Run run, AiToolProtocol.Call call, String status, Map<String, String> arguments, String result) {
+        synchronized (run.state) {
+            progress(run);
+            if (run.events.size() >= 20000) throw AiErrors.error("output_limit");
+            run.events.add(new Event(++run.sequence, "TOOL", null, null, new Tool(call.id(), call.name(), status, arguments, result)));
+        }
+    }
+    private void toolStep(Run run, AiToolProtocol.Step step) {
+        try {
+            var stream = (AiRuntimeManage.ToolStreaming) run.stream;
+            progress(run);
+            authorized(run.state.owner, () -> { check(run.state); stream.verifyStep(); return null; });
+            if (step.calls().isEmpty()) {
+                synchronized (run.state) { progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); }
+                complete(run); return;
+            }
+            if (step.calls().size() != 1 || run.toolSteps >= AiToolProtocol.MAX_MODEL_STEPS - 1) throw AiErrors.error("output_limit");
+            var call = step.calls().get(0); var scene = scene(run.state.view.scene());
+            var definition = scene.tools().stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
+            var arguments = AiToolProtocol.arguments(definition, call);
+            String canonical = call.name() + ":" + new TreeMap<>(arguments);
+            synchronized (run.state) {
+                progress(run);
+                if (!run.toolIds.add(call.id()) || !run.toolRequests.add(canonical)) throw AiErrors.error("output_limit");
+                run.toolSteps++;
+            }
+            toolEvent(run, call, "STARTED", arguments, null);
+            String result;
+            try {
+                result = authorized(run.state.owner, () -> {
+                    progress(run); check(run.state); stream.verifyStep();
+                    toolEvent(run, call, "RUNNING", arguments, null);
+                    String value = scene.execute(run.state.context, call.name(), arguments);
+                    progress(run); check(run.state); stream.verifyStep(); return value;
+                });
+                progress(run); stream.result(result);
+            } catch (RuntimeException failure) {
+                if (!(failure instanceof AiErrors.Failure known) || !Set.of("forbidden", "scope_changed", "conflict").contains(known.safeCode()))
+                    toolEvent(run, call, "FAILED", arguments, null);
+                throw failure;
+            }
+            synchronized (run.state) {
+                progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, result));
+                toolEvent(run, call, "SUCCEEDED", arguments, result);
+            }
+            // The previous response/permit is already closed. Enqueue the next step, without waiting on this worker.
+            var input = new AiToolProtocol.Input(run.transcript, scene.tools());
+            stream.send(input, () -> progress(run), text -> append(run, text), next -> toolStep(run, next), failure -> fail(run, failure));
+        } catch (RuntimeException failure) { fail(run, failure); }
     }
     private void fail(Run run, Throwable failure) {
         synchronized (run.state) {
@@ -211,13 +296,14 @@ public class AiConversationManage implements AiFeature {
         if (!"RUNNING".equals(run.status)) return;
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }
-        if (!"COMPLETED".equals(status)) run.stream.close();
+        run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear();
+        run.stream.close();
     }
     private void invalidate(State state) {
         synchronized (state) {
             state.closed = true;
             if (state.active != null) terminate(state.active, "CANCELLED", "scope_changed");
-            state.history.clear(); state.runs.clear(); sessions.remove(state.view.sessionId(), state);
+            state.history.clear(); state.toolHistory.clear(); state.runs.clear(); sessions.remove(state.view.sessionId(), state);
         }
     }
     public void close(String id) { invalidate(owned(id)); }
@@ -244,6 +330,7 @@ public class AiConversationManage implements AiFeature {
     private <T> T authorized(AiAccess.Identity owner, Supplier<T> operation) {
         // 不复制 Servlet 请求/事务。HTTP 传输线程只安装服务器保存的身份，并可靠清理。
         boolean request = RequestContextHolder.getRequestAttributes() != null;
+        int depth = authorityDepth.get(); authorityDepth.set(depth + 1);
         Long uid = V3UserUtil.getUid(); var proxy = V3UserUtil.getProxy(); var link = V3UserUtil.getLink();
         boolean community = CommunityUtils.isCommunityMode();
         V3UserUtil.clear(); CommunityUtils.clear(); V3UserUtil.setUid(owner.actor());
@@ -258,7 +345,8 @@ public class AiConversationManage implements AiFeature {
         }
         finally {
             V3UserUtil.clear(); CommunityUtils.clear();
-            if (request) {
+            if (depth == 0) authorityDepth.remove(); else authorityDepth.set(depth);
+            if (request || depth > 0) {
                 CommunityUtils.setCommunityMode(community);
                 if (link != null) V3UserUtil.setLink(link);
                 else { V3UserUtil.setUid(uid); if (proxy.isProxy()) V3UserUtil.setProxy(proxy.getProxyOid()); }

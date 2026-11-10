@@ -14,6 +14,7 @@ import {
   type AiConversationExecution,
   type AiConversationEvents,
   type AiConversationResource,
+  type AiConversationTool,
   type AiConversationSession
 } from '@/api/aiConversation'
 
@@ -36,7 +37,13 @@ const sql = ref('')
 const input = ref('')
 const session = ref<AiConversationSession>()
 const messages = ref<
-  { role: 'user' | 'assistant'; text: string; status: string; executionId?: string }[]
+  {
+    role: 'user' | 'assistant'
+    text: string
+    status: string
+    executionId?: string
+    tools?: AiConversationTool[]
+  }[]
 >([])
 const busy = ref(false)
 const failure = ref('')
@@ -117,7 +124,8 @@ const send = async () => {
       role: 'assistant',
       text: '',
       status: 'RUNNING',
-      executionId: run.executionId
+      executionId: run.executionId,
+      tools: []
     })
     const answerIndex = messages.value.length - 1
     let cursor = 0
@@ -177,7 +185,14 @@ const applyEvents = (events: AiConversationEvents, index: number, cursor: number
     if (event.sequence <= cursor) continue
     cursor = event.sequence
     if (event.type === 'TEXT' && event.text) message.text += event.text
-    else if (event.type === 'FAILED') {
+    else if (event.type === 'TOOL' && event.tool) {
+      const tool = event.tool
+      if (!['STARTED', 'RUNNING', 'SUCCEEDED', 'FAILED'].includes(tool.status)) continue
+      const tools = (message.tools ??= [])
+      const existing = tools.findIndex(item => item.callId === tool.callId)
+      if (existing >= 0) tools[existing] = tool
+      else tools.push(tool)
+    } else if (event.type === 'FAILED') {
       const key = aiFailureKey(event.error ?? null)
       failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
     }
@@ -282,6 +297,27 @@ onBeforeUnmount(() => {
             · {{ tr('incomplete') }}</span
           >
           <pre>{{ message.text }}</pre>
+          <details
+            v-for="tool in message.tools"
+            :key="tool.callId"
+            :data-tool-id="tool.callId"
+            open
+          >
+            <summary>
+              {{ tr('tool') }} · {{ tool.name }} · {{ tr(`tool_${tool.status.toLowerCase()}`) }}
+              <span
+                v-if="message.status !== 'RUNNING' && ['STARTED', 'RUNNING'].includes(tool.status)"
+              >
+                · {{ tr('incomplete') }}
+              </span>
+            </summary>
+            <div>{{ tr('tool_parameters') }}</div>
+            <pre>{{ JSON.stringify(tool.parameters, null, 2) }}</pre>
+            <template v-if="tool.result">
+              <div>{{ tr('tool_result') }}</div>
+              <pre>{{ tool.result }}</pre>
+            </template>
+          </details>
           <small v-if="message.executionId">{{ message.executionId }}</small>
         </article>
       </section>
