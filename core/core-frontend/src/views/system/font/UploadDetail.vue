@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { wasErrorPresented } from '@/config/axios/errorPresenter'
+
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import { ref, reactive } from 'vue'
 import { uploadFontFile } from '@/api/font'
@@ -30,7 +32,7 @@ const uploadExcel = () => {
       upload.value?.clearFiles()
     })
     .catch(error => {
-      if (error.code === 'ECONNABORTED') {
+      if (!wasErrorPresented(error) && error.code === 'ECONNABORTED') {
         ElMessage({
           type: 'error',
           message: error.message,

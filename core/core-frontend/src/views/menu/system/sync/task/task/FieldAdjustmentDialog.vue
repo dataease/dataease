@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
+import { isRequestError } from '@/config/axios/error'
 import { computed, onBeforeUnmount, reactive, ref, watchEffect } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import {
@@ -46,7 +46,7 @@ const loading = ref(false)
 const error = ref('')
 const showError = (cause: unknown) => {
   error.value =
-    isAxiosError(cause) && cause.response?.status === 404
+    isRequestError(cause) && cause.response?.status === 404
       ? t('sync_maintenance.backend_unavailable')
       : typeof cause === 'string'
       ? cause
@@ -777,7 +777,7 @@ const apply = async () => {
     emit('changed')
     pollTimer = setTimeout(poll, 1000)
   } catch (cause) {
-    const uncertain = isAxiosError(cause) && (!cause.response || cause.response.status >= 500)
+    const uncertain = isRequestError(cause) && (!cause.response || cause.response.status >= 500)
     // 提交已离开页面仍保留原任务的核对编号，不能把请求中断当作允许重新提交
     if (uncertain) pendingSubmissions.set(submittedRequest.taskId, submittedRequest.operationId)
     if (!isCurrentView(version)) return

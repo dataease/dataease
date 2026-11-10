@@ -1,92 +1,80 @@
 package io.dataease.exception;
 
-
 import io.dataease.i18n.Translator;
-import io.dataease.result.ResultCode;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.LogUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResultMessage> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
-        ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
-        String msg = objectError.getDefaultMessage();
-        msg = Translator.get(msg);
-        LogUtil.error(msg);
-        return ResponseEntity.badRequest().body(new ResultMessage(ResultCode.PARAM_IS_INVALID.code(), msg));
+        LogUtil.getLogger().warn("Request bean validation failed");
+        DEException exception = DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        ResultMessage body = ErrorResponses.body(exception);
+        if (!e.getBindingResult().getAllErrors().isEmpty()) {
+            body.setMsg(Translator.get(java.util.Objects.toString(e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), "i18n_error_invalid_parameter")));
+        }
+        if (ErrorResponses.modern()) {
+            body.setFieldErrors(e.getBindingResult().getAllErrors().stream().map(error ->
+                    new ResultMessage.FieldError(error instanceof FieldError field ? field.getField() : "",
+                            error.getCode(), Translator.get(java.util.Objects.toString(error.getDefaultMessage(), "i18n_error_invalid_parameter")))).toList());
+        }
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class,
+            MissingServletRequestParameterException.class, HandlerMethodValidationException.class,
+            ConstraintViolationException.class})
+    public ResponseEntity<ResultMessage> invalidParameterHandler(Exception e) {
+        LogUtil.getLogger().warn("Request parameter binding failed");
+        return ResponseEntity.badRequest().body(ErrorResponses.body(
+                DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter")));
+    }
+
+    @ExceptionHandler({org.springframework.web.servlet.resource.NoResourceFoundException.class,
+            org.springframework.web.servlet.NoHandlerFoundException.class,
+            org.springframework.web.HttpRequestMethodNotSupportedException.class,
+            org.springframework.web.HttpMediaTypeNotSupportedException.class,
+            org.springframework.web.HttpMediaTypeNotAcceptableException.class})
+    public ResponseEntity<ResultMessage> protocolErrorHandler(Exception e) {
+        org.springframework.web.ErrorResponse error = (org.springframework.web.ErrorResponse) e;
+        DEException failure = DEException.of(error.getStatusCode().value() == 404
+                ? ErrorCategory.NOT_FOUND : ErrorCategory.VALIDATION, error.getStatusCode().value() == 404
+                ? "i18n_error_not_found" : "i18n_error_invalid_parameter");
+        return ResponseEntity.status(error.getStatusCode()).headers(error.getHeaders()).body(ErrorResponses.body(failure));
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ResultMessage> maxUploadSizeExceededHandler(MaxUploadSizeExceededException e) {
-        return ResponseEntity.status(e.getStatusCode())
-                .body(new ResultMessage(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_upload_size_exceeded")));
+        return ResponseEntity.status(e.getStatusCode()).body(ErrorResponses.body(
+                DEException.of(ErrorCategory.VALIDATION, "i18n_upload_size_exceeded")));
     }
 
     @ExceptionHandler(DEException.class)
     public ResponseEntity<ResultMessage> deExceptionHandler(DEException e) {
-        LogUtil.error(e.getMessage(), e);
-        LogUtil.error(e);
-        HttpStatus status = resolveHttpStatus(e.getCode());
-        return ResponseEntity.status(status).body(new ResultMessage(e.getCode(), e.getMessage()));
-    }
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ResultMessage> noUserExceptionHandler(Exception e) {
-        String message = e.getMessage();
-        LogUtil.error(message, e);
-        LogUtil.error(e);
-        if (StringUtils.contains(message, "Cannot invoke \"io.dataease.auth.bo.TokenUserBO.getUserId()\" because \"user\" is null")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResultMessage(ResultCode.USER_NOT_LOGGED_IN.code(), ResultCode.USER_NOT_LOGGED_IN.message()));
+        // Exceptions wrapping unknown failures are not safe business messages.
+        if (e.getCategory() == null && e.getCause() != null && !(e.getCause() instanceof DEException)) {
+            return exceptionHandler(e);
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ResultMessage(ResultCode.PARAM_IS_BLANK.code(), message));
+        LogUtil.error("Request failed: code=" + e.getCode(), e);
+        return ResponseEntity.status(ErrorResponses.status(e)).body(ErrorResponses.body(e));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResultMessage> exceptionHandler(Exception e) {
-        LogUtil.error(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ResultMessage(ResultCode.SYSTEM_INNER_ERROR.code(), e.getMessage()));
+        LogUtil.error("Unhandled request failure", e);
+        return ResponseEntity.internalServerError().body(ErrorResponses.body(
+                DEException.of(ErrorCategory.INTERNAL, "i18n_error_internal")));
     }
-
-    private HttpStatus resolveHttpStatus(Integer code) {
-        if (code == null) {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        if (code >= 10001 && code <= 19999) {
-            return HttpStatus.BAD_REQUEST;
-        }
-        if (code >= 20001 && code <= 29999) {
-            return HttpStatus.UNAUTHORIZED;
-        }
-        if (code >= 30001 && code <= 39999) {
-            return HttpStatus.UNPROCESSABLE_ENTITY;
-        }
-        if (code >= 40001 && code <= 49999) {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        if (code >= 50001 && code <= 59999) {
-            return HttpStatus.CONFLICT;
-        }
-        if (code >= 60001 && code <= 69999) {
-            return HttpStatus.BAD_GATEWAY;
-        }
-        if (code >= 70001 && code <= 79999) {
-            return HttpStatus.FORBIDDEN;
-        }
-        return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-
 }

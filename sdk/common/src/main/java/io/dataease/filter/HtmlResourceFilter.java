@@ -43,11 +43,19 @@ public class HtmlResourceFilter implements Filter, Ordered {
         // 继续执行过滤器链
         try {
             filterChain.doFilter(servletRequest, httpResponse);
-        }catch (Exception e){
+        } catch (Exception e) {
+            if (httpResponse.isCommitted()) {
+                if (e instanceof IOException io) throw io;
+                if (e instanceof ServletException servlet) throw servlet;
+                throw new ServletException(e);
+            }
+            io.dataease.utils.LogUtil.error("Servlet request failed", e);
+            httpResponse.resetBuffer();
             httpResponse.setContentType("application/json");
             httpResponse.setCharacterEncoding("UTF-8");
-            httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            httpResponse.getWriter().write(JsonUtil.toJSONString(new ResultMessage(HttpServletResponse.SC_BAD_REQUEST,e.getMessage())).toString());
+            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            httpResponse.getWriter().write(JsonUtil.toJSONString(io.dataease.exception.ErrorResponses.body(
+                    io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.INTERNAL, "i18n_error_internal"), (jakarta.servlet.http.HttpServletRequest) servletRequest)).toString());
         }
     }
 

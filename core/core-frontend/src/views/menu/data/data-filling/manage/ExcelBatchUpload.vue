@@ -1,4 +1,6 @@
 <script setup lang="tsx">
+import { wasErrorPresented } from '@/config/axios/errorPresenter'
+
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
@@ -253,7 +255,7 @@ const uploadExcel = () => {
       loading.value = false
     })
     .catch(error => {
-      if (error.code === 'ECONNABORTED') {
+      if (!wasErrorPresented(error) && error.code === 'ECONNABORTED') {
         ElMessage({
           type: 'error',
           message: error.message,

@@ -56,17 +56,17 @@ public final class SmbFileDownloader {
                 throw new IllegalArgumentException();
             }
         } catch (RuntimeException e) {
-            DEException.throwException(Translator.get("i18n_smb_invalid_address"));
-            return Map.of();
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_smb_invalid_address");
+
         }
         String fileName = segments[segments.length - 1];
         String suffix = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
         if (!Arrays.asList("csv", "xls", "xlsx").contains(suffix)) {
-            DEException.throwException(Translator.get("i18n_unsupported_file_format"));
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_unsupported_file_format");
         }
         String username = configuration.getUserName();
         if (username == null || username.isBlank()) {
-            DEException.throwException(Translator.get("i18n_smb_username_required"));
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_smb_username_required");
         }
         char[] password = configuration.getPasswd() == null ? new char[0] : configuration.getPasswd().toCharArray();
         long timeout = RemoteTransfer.timeoutMillis(configuration.getTransferTimeoutSeconds());
@@ -105,7 +105,7 @@ public final class SmbFileDownloader {
                     // Preserve the original download error.
                 }
             }
-            DEException.throwException(Translator.get("i18n_smb_download_failed"));
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
         } finally {
             Arrays.fill(password, '\0');
         }

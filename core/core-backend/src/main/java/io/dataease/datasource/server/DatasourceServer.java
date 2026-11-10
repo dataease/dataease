@@ -1032,8 +1032,17 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public ExcelFileData loadRemoteFile(RemoteExcelRequest remoteExcelRequest) throws DEException, IOException {
-        remoteExcelRequest.setUserName(new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName())));
-        remoteExcelRequest.setPasswd(new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd())));
+        if (remoteExcelRequest == null || StringUtils.isBlank(remoteExcelRequest.getUrl())) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        try {
+            remoteExcelRequest.setUserName(new String(Base64.getDecoder().decode(
+                    java.util.Objects.toString(remoteExcelRequest.getUserName(), "")), java.nio.charset.StandardCharsets.UTF_8));
+            remoteExcelRequest.setPasswd(new String(Base64.getDecoder().decode(
+                    java.util.Objects.toString(remoteExcelRequest.getPasswd(), "")), java.nio.charset.StandardCharsets.UTF_8));
+        } catch (IllegalArgumentException e) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter").causedBy(e);
+        }
         String restored = restorePlainConfiguration(JsonUtil.toJSONString(remoteExcelRequest).toString(),
                 remoteExcelRequest.getDatasourceId() != null && remoteExcelRequest.getDatasourceId() > 0
                         ? remoteExcelRequest.getDatasourceId() : remoteExcelRequest.getCopySourceId(), "ExcelRemote");

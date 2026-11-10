@@ -466,6 +466,7 @@ public class HttpClientUtil {
         } catch (IOException | RuntimeException e) {
             request.abort();
             transfer.close();
+            transfer.checkLength(0); // Preserve deadline failures instead of generic request-aborted IO.
             throw e;
         }
     }
@@ -499,11 +500,7 @@ public class HttpClientUtil {
             config.getHeader().forEach(httpGet::addHeader);
             HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxFileBytes(), config.getResponseTimeout());
             if (response.getStatusLine().getStatusCode() >= 400) {
-                String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
-                if (StringUtils.isEmpty(msg)) {
-                    msg = "StatusCode: " + response.getStatusLine().getStatusCode();
-                }
-                throw new Exception(msg);
+                throw new org.apache.http.client.HttpResponseException(response.getStatusLine().getStatusCode(), "Remote download failed");
             }
             String fileName = normalizeDownloadFileName(extractFileName(response, url));
             String suffix = extractSuffix(fileName);

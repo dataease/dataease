@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import { wasErrorPresented } from '@/config/axios/errorPresenter'
+
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import { Icon } from '@/components/icon-custom'
 import { ElIcon } from 'element-plus-secondary'
@@ -407,7 +409,7 @@ const uploadExcel = () => {
       activeTab.value = ''
       tabList.value = []
       Object.assign(sheetObj, cloneDeep(defaultSheetObj))
-      if (error.code === 'ECONNABORTED') {
+      if (!wasErrorPresented(error) && error.code === 'ECONNABORTED') {
         ElMessage({
           type: 'error',
           message: error.message,
