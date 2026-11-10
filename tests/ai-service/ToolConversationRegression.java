@@ -109,12 +109,16 @@ public final class ToolConversationRegression {
                             + frame(Map.of("tool_calls", List.of(Map.of("index", 0, "function", Map.of("arguments", "ble\":\"AI_PROBE\"}")))), "tool_calls");
                 } else if (sent.size() == 1) {
                     content = frame(Map.of("tool_calls", List.of(Map.of("index", 0, "id", "call-tables", "type", "function", "function", Map.of("name", "list_tables", "arguments", "{}")))), "tool_calls");
-                } else content = frame(Map.of("content", "AI_PROBE metadata received"), "stop");
+                } else content = frame(Map.of("content", mode.get().equals("framed-tools") ? "多字节工具结果" : "AI_PROBE metadata received"), "stop");
                 if (sent.size() == 1 && mode.get().equals("tables")) content = "data: {\"choices\":[{\"index\":0,\"delta\":{\"reasoning\":\"private-tool-only-sentinel\"}}]}\n\n" + content;
                 content += "data: [DONE]\n\n";
+                if (mode.get().equals("framed-tools")) {
+                    content = ": comment\r\n" + content.replace("data: {\"choices\":", "data: {\n" + "data: \"choices\":").replace("\n", "\r\n");
+                }
                 byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
                 exchange.getResponseHeaders().set("Content-Type", "text/event-stream"); exchange.sendResponseHeaders(200, bytes.length);
-                exchange.getResponseBody().write(bytes);
+                if (mode.get().equals("framed-tools")) for (byte value : bytes) { exchange.getResponseBody().write(value); exchange.getResponseBody().flush(); }
+                else exchange.getResponseBody().write(bytes);
             } catch (Exception error) { throw new RuntimeException(error); }
             finally { exchange.close(); }
         }); server.start();
@@ -183,6 +187,13 @@ public final class ToolConversationRegression {
             if (sent.toString().contains("connection-secret") || result.toString().contains("connection-secret") || sent.toString().contains("private-tool-only-sentinel") || result.toString().contains("private-tool-only-sentinel")) throw new AssertionError("metadata credentials/private reasoning escaped projection");
             result = terminal(mvc, start(mvc, session, "Remember tables?"));
             if (!result.path("status").asText().equals("COMPLETED") || sent.get(2).path("messages").size() != 6 || !sent.get(2).path("messages").get(3).path("role").asText().equals("tool")) throw new AssertionError("follow-up must retain valid complete tool transcript");
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            sent.clear(); reads.clear(); mode.set("framed-tools"); session = open(mvc);
+            result = terminal(mvc, start(mvc, session, "Read metadata with multiline CRLF and split UTF-8 frames"));
+            if (!result.path("status").asText().equals("COMPLETED") || !result.toString().contains("多字节工具结果")
+                    || !reads.equals(List.of("tables")) || sent.size() != 2
+                    || !sent.get(1).path("messages").get(3).path("tool_call_id").asText().equals("call-tables"))
+                throw new AssertionError("SSE framing must preserve program tool execution/correlation and visible UTF-8 result: " + result);
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             sent.clear(); reads.clear(); mode.set("fields"); session = open(mvc);
             result = terminal(mvc, start(mvc, session, "Read fields"));

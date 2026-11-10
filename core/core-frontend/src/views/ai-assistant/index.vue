@@ -30,18 +30,34 @@ const failureMessage = (error: unknown) => {
   }
   return tr('failed')
 }
-const validationStatus = (tool: AiConversationTool) => {
-  if (tool.name !== 'validate_sql' || tool.status !== 'SUCCEEDED' || !tool.result) return ''
+const validationDetails = (tool: AiConversationTool) => {
+  if (tool.name !== 'validate_sql' || tool.status !== 'SUCCEEDED' || !tool.result) return
+  let status = 'unknown'
+  let code = 'unknown'
   try {
     const result: unknown = JSON.parse(tool.result)
-    if (result && typeof result === 'object' && 'status' in result) {
-      const status = result.status
-      if (status === 'PASS' || status === 'INVALID' || status === 'UNSUPPORTED') return status
+    if (result && typeof result === 'object' && 'status' in result && 'code' in result) {
+      const pairs = [
+        ['PASS', 'verified'],
+        ['INVALID', 'reference'],
+        ['UNSUPPORTED', 'parse'],
+        ['UNSUPPORTED', 'subset'],
+        ['UNSUPPORTED', 'dialect']
+      ]
+      if (pairs.some(([verdict, reason]) => result.status === verdict && result.code === reason)) {
+        status = String(result.status)
+        code = String(result.code)
+      }
     }
   } catch {
-    return ''
+    // Unrecognized results remain escaped evidence, never translated as a trusted verdict.
   }
-  return ''
+  return {
+    verdict:
+      tr(`validation_${status.toLowerCase()}`) + (status === 'unknown' ? '' : ` (${status})`),
+    reason: tr(`validation_${code}`),
+    scope: tr(status === 'unknown' ? 'validation_unknown_scope' : 'validation_scope')
+  }
 }
 const user = useUserStoreWithOut()
 const resources = ref<AiConversationResource[]>([])
@@ -94,6 +110,8 @@ watch(
   () => {
     reset()
     resourceId.value = ''
+    sql.value = ''
+    input.value = ''
     resources.value = []
     void load()
   },
@@ -318,13 +336,17 @@ onBeforeUnmount(() => {
           >
             <summary>
               {{ tr('tool') }} · {{ tool.name }} · {{ tr(`tool_${tool.status.toLowerCase()}`) }}
-              <span v-if="validationStatus(tool)"> · {{ validationStatus(tool) }}</span>
+              <span v-if="validationDetails(tool)"> · {{ validationDetails(tool)?.verdict }}</span>
               <span
                 v-if="message.status !== 'RUNNING' && ['STARTED', 'RUNNING'].includes(tool.status)"
               >
                 · {{ tr('incomplete') }}
               </span>
             </summary>
+            <template v-if="validationDetails(tool)">
+              <p>{{ validationDetails(tool)?.reason }}</p>
+              <p class="validation-scope">{{ validationDetails(tool)?.scope }}</p>
+            </template>
             <div>{{ tr('tool_parameters') }}</div>
             <pre>{{ JSON.stringify(tool.parameters, null, 2) }}</pre>
             <template v-if="tool.result">

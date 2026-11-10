@@ -512,66 +512,212 @@ test('program tool states expose safe parameters/results, deduplicate replay and
   ).toBeVisible()
 })
 
-test('SQL validation cards show program verdicts distinctly from success and model prose', async ({
-  page
-}) => {
-  const run = { ...session, executionId: 'validation-run' }
-  const events = ['INVALID', 'PASS', 'UNSUPPORTED'].map((status, index) => ({
-    sequence: index + 1,
-    type: 'TOOL',
-    tool: {
-      callId: 'validation-' + status,
-      name: 'validate_sql',
-      status: 'SUCCEEDED',
-      parameters: {
-        sql: status === 'INVALID' ? 'SELECT TYPO FROM AI_PROBE' : 'SELECT ID FROM AI_PROBE'
-      },
-      result: JSON.stringify({
-        status,
-        code: 'fixture',
-        message: '<script>unsafe</script>',
-        scope: 'SQL was not executed; no database executability guarantee.'
-      })
-    }
-  }))
-  await page.route('**/fixture-api/ai/conversations**', async (route) => {
-    const url = new URL(route.request().url())
-    if (url.pathname.endsWith('/resources'))
-      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
-    if (url.pathname.endsWith('/executions'))
-      return route.fulfill({
-        json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
-      })
-    if (url.pathname.endsWith('/events'))
-      return route.fulfill({
-        json: {
-          ...run,
-          status: 'COMPLETED',
-          cursor: 5,
-          events: [
-            ...events,
-            {
-              sequence: 4,
-              type: 'TEXT',
-              text: 'Corrected and revalidated; this is static advice.'
-            },
-            { sequence: 5, type: 'COMPLETED' }
-          ]
+for (const locale of [
+  {
+    language: 'zh-CN',
+    resource: '数据源',
+    message: '消息',
+    send: '发送',
+    verdict: '静态校验通过',
+    reason: '已检查支持的语法和授权表/字段引用。SQL 未执行。',
+    scope: '仅支持 MySQL',
+    invalid: '引用无效',
+    unsupported: '不支持静态校验',
+    unknown: '无法识别校验结果',
+    reference: '授权元数据中不存在对应的精确表名、字段名或表限定名。请修正引用后重新校验。',
+    subset: '超出声明的静态校验子集。SQL 未执行。'
+  },
+  {
+    language: 'tw',
+    resource: '資料來源',
+    message: '訊息',
+    send: '傳送',
+    verdict: '靜態校驗通過',
+    reason: '已檢查支援的語法和授權資料表/欄位引用。SQL 未執行。',
+    scope: '僅支援 MySQL',
+    invalid: '引用無效',
+    unsupported: '不支援靜態校驗',
+    unknown: '無法識別校驗結果',
+    reference:
+      '授權中繼資料中不存在對應的精確資料表名稱、欄位名稱或資料表限定名稱。請修正引用後重新校驗。',
+    subset: '超出聲明的靜態校驗子集。SQL 未執行。'
+  },
+  {
+    language: 'en',
+    resource: 'Datasource',
+    message: 'Message',
+    send: 'Send',
+    verdict: 'Static validation passed',
+    reason:
+      'Supported syntax and authorized table/column references checked. SQL was not executed.',
+    scope: 'MySQL only',
+    invalid: 'Invalid reference',
+    unsupported: 'Static validation unsupported',
+    unknown: 'Unrecognized validation result',
+    reference:
+      'Unknown exact table, column or table qualifier in authorized metadata. Correct the reference and validate again.',
+    subset: 'Outside the declared static validation subset. SQL was not executed.'
+  }
+]) {
+  test(`SQL validation cards localize program verdict, reason and scope in ${locale.language}`, async ({
+    page
+  }) => {
+    const run = { ...session, executionId: 'validation-run' }
+    const events = ['INVALID', 'PASS', 'UNSUPPORTED'].map((status, index) => ({
+      sequence: index + 1,
+      type: 'TOOL',
+      tool: {
+        callId: 'validation-' + status,
+        name: 'validate_sql',
+        status: 'SUCCEEDED',
+        parameters: {
+          sql: status === 'INVALID' ? 'SELECT TYPO FROM AI_PROBE' : 'SELECT ID FROM AI_PROBE'
+        },
+        result: JSON.stringify({
+          status,
+          code: { PASS: 'verified', INVALID: 'reference', UNSUPPORTED: 'subset' }[status],
+          message: '<script>unsafe</script>',
+          scope: 'SQL was not executed; no database executability guarantee.'
+        })
+      }
+    }))
+    const unrecognized = [
+      '{"status":"PASS","code":"constructor","message":"<script>bad</script>"}',
+      '{"status":"INVALID","code":"verified"}',
+      '{"status":"unexpected","code":"verified"}',
+      '{malformed'
+    ]
+    for (const [index, result] of unrecognized.entries())
+      events.push({
+        sequence: events.length + 1,
+        type: 'TOOL',
+        tool: {
+          callId: 'unknown-' + index,
+          name: 'validate_sql',
+          status: 'SUCCEEDED',
+          parameters: {},
+          result
         }
       })
-    return route.fulfill({ json: session })
-  })
-  await selectResource(page)
-  await send(page, 'Correct invalid SQL and validate again')
-  for (const status of ['INVALID', 'PASS', 'UNSUPPORTED']) {
-    const card = page.locator(`[data-tool-id="validation-${status}"]`)
-    await expect(card.locator('summary')).toContainText(status)
-    await expect(card.locator('pre')).toContainText(['SELECT', 'SQL was not executed'])
-    await expect(card.locator('script')).toHaveCount(0)
-  }
-  await expect(
-    page.getByText('Corrected and revalidated; this is static advice.', {
-      exact: true
+    await page.route('**/fixture-api/ai/conversations**', async (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname.endsWith('/resources'))
+        return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+      if (url.pathname.endsWith('/executions'))
+        return route.fulfill({
+          json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
+        })
+      if (url.pathname.endsWith('/events'))
+        return route.fulfill({
+          json: {
+            ...run,
+            status: 'COMPLETED',
+            cursor: events.length + 2,
+            events: [
+              ...events,
+              {
+                sequence: events.length + 1,
+                type: 'TEXT',
+                text: 'Corrected and revalidated; this is static advice.'
+              },
+              { sequence: events.length + 2, type: 'COMPLETED' }
+            ]
+          }
+        })
+      return route.fulfill({ json: session })
     })
-  ).toBeVisible()
-})
+    await page.goto('/?view=conversation&language=' + locale.language)
+    await page.getByRole('combobox', { name: locale.resource }).click()
+    await page.getByRole('option', { name: 'Isolated database' }).click()
+    await page
+      .getByRole('textbox', { name: locale.message })
+      .fill('Correct invalid SQL and validate again')
+    await page.getByRole('button', { name: locale.send, exact: true }).click()
+    for (const status of ['INVALID', 'PASS', 'UNSUPPORTED']) {
+      const card = page.locator(`[data-tool-id="validation-${status}"]`)
+      await expect(card.locator('summary')).toContainText(status)
+      await expect(card.locator('pre')).toContainText(['SELECT', 'SQL was not executed'])
+      await expect(card.locator('script')).toHaveCount(0)
+    }
+    const invalid = page.locator('[data-tool-id="validation-INVALID"]')
+    await expect(invalid.locator('summary')).toContainText(locale.invalid)
+    await expect(invalid.getByText(locale.reference, { exact: true })).toBeVisible()
+    const unsupported = page.locator('[data-tool-id="validation-UNSUPPORTED"]')
+    await expect(unsupported.locator('summary')).toContainText(locale.unsupported)
+    await expect(unsupported.getByText(locale.subset, { exact: true })).toBeVisible()
+    for (const [index, result] of unrecognized.entries()) {
+      const card = page.locator(`[data-tool-id="unknown-${index}"]`)
+      await expect(card.locator('summary')).toContainText(locale.unknown)
+      await expect(card.locator('summary')).not.toContainText('PASS')
+      await expect(card.locator('pre').last()).toHaveText(result)
+      await expect(card.locator('script')).toHaveCount(0)
+    }
+    const passed = page.locator('[data-tool-id="validation-PASS"]')
+    await expect(passed.locator('summary')).toContainText(locale.verdict)
+    await expect(passed.getByText(locale.reason, { exact: true })).toBeVisible()
+    await expect(passed.locator('.validation-scope')).toContainText(locale.scope)
+    // Display text comes from safe codes, while exact program JSON remains escaped evidence.
+    await expect(passed.locator('pre').last()).toHaveText(events[1].tool.result)
+    await expect(
+      page.getByText('Corrected and revalidated; this is static advice.', {
+        exact: true
+      })
+    ).toBeVisible()
+  })
+}
+
+for (const context of ['user', 'workspace', 'proxy']) {
+  test(`${context} changes exclude the old SQL and unsent draft from new requests`, async ({
+    page
+  }) => {
+    const opens = [],
+      turns = []
+    await page.route('**/fixture-api/ai/conversations**', async (route) => {
+      const request = route.request(),
+        url = new URL(request.url())
+      if (url.pathname.endsWith('/resources'))
+        return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+      if (request.method() === 'DELETE') return route.fulfill({ json: {} })
+      if (url.pathname.endsWith('/executions')) {
+        turns.push(request.postDataJSON())
+        return route.fulfill({ json: { ...session, executionId: 'new-run', status: 'RUNNING' } })
+      }
+      if (url.pathname.endsWith('/events'))
+        return route.fulfill({
+          json: {
+            ...session,
+            executionId: 'new-run',
+            status: 'COMPLETED',
+            cursor: 1,
+            events: [{ sequence: 1, type: 'COMPLETED' }]
+          }
+        })
+      opens.push(request.postDataJSON())
+      return route.fulfill({ json: session })
+    })
+    await selectResource(page)
+    await page.getByRole('textbox', { name: '当前 SQL' }).fill('SELECT PRIVATE_A FROM OLD_CONTEXT')
+    await page.getByRole('textbox', { name: '消息' }).fill('Unsent private draft A')
+    // Ending a conversation keeps editor drafts in the same identity.
+    await page.getByRole('button', { name: '结束会话' }).click()
+    await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
+      'SELECT PRIVATE_A FROM OLD_CONTEXT'
+    )
+    await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('Unsent private draft A')
+    await page.evaluate((value) => window.aiSwitchUser(value), context)
+    await page.getByRole('combobox', { name: '数据源' }).click()
+    await page.getByRole('option', { name: 'Isolated database' }).click()
+    const sendButton = page.getByRole('button', { name: '发送', exact: true })
+    // Even a direct send attempt cannot carry the previous identity's draft.
+    await sendButton.evaluate((button) => button.click())
+    await expect(sendButton).toBeDisabled()
+    expect(opens).toHaveLength(0)
+    expect(turns).toHaveLength(0)
+    await send(page, 'New context question')
+    await expect.poll(() => turns.length).toBe(1)
+    expect(opens).toEqual([
+      { scene: 'sql', resourceId: '11', editorId: expect.any(String), sql: '' }
+    ])
+    expect(turns).toEqual([{ contextVersion: 'v1', text: 'New context question' }])
+  })
+}

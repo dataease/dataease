@@ -6,6 +6,19 @@ export default {
     tool_succeeded: '成功',
     tool_failed: '失败',
     tool_parameters: '参数',
+    validation_pass: '静态校验通过',
+    validation_invalid: '引用无效',
+    validation_unsupported: '不支持静态校验',
+    validation_unknown: '无法识别校验结果',
+    validation_verified: '已检查支持的语法和授权表/字段引用。SQL 未执行。',
+    validation_reference:
+      '授权元数据中不存在对应的精确表名、字段名或表限定名。请修正引用后重新校验。',
+    validation_parse: '无法按本工具支持的语法解析完整输入；未验证数据库语法。',
+    validation_subset: '超出声明的静态校验子集。SQL 未执行。',
+    validation_dialect: '此静态校验仅支持 MySQL。SQL 未执行。',
+    validation_unknown_scope: '请查看原始结果；无法确认校验范围。',
+    validation_scope:
+      '仅支持 MySQL；单条 SELECT、单张大小写精确匹配的表；显式字段及可选别名、WHERE 比较（=、<>、>、>=、<、<=）、AND/OR/NOT 和真实字段排序。不支持注释、函数、星号、连接、子查询、聚合、LIMIT 或其他方言。通过仅表示已检查该子集和授权引用，不保证数据库可执行性或数据类型正确。',
     tool_result: '结果',
 
     stop: '停止生成',
