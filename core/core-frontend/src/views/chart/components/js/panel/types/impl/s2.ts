@@ -7,17 +7,21 @@ import {
   S2Theme,
   SpreadSheet,
   Style,
+  type RawData,
   S2Options,
   Meta,
   SERIES_NUMBER_FIELD,
   setTooltipContainerStyle,
   S2DataConfig,
-  S2Event
+  S2Event,
+  TableSheet,
+  ViewMeta
 } from '@antv/s2'
 import {
   configHeaderInteraction,
   configMergeCells,
   configTooltip,
+  getTooltipPosition,
   SortTooltip,
   getConditions,
   getCustomTheme,
@@ -28,6 +32,9 @@ import '@antv/s2/dist/s2.min.css'
 import { find, merge } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { Renderer as SVGRenderer } from '@antv/g-svg'
+import { Image as GImage, type FederatedPointerEvent } from '@antv/g'
+import { parseJson } from '@/views/chart/components/js/util'
+import { getTableTooltipFields } from '../../charts/table/common'
 
 declare interface PageInfo {
   currentPage: number
@@ -78,14 +85,110 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     configMergeCells(chart, option, dataConfig)
   }
 
-  protected showTooltip(s2Instance: P, event, metaConfig: Meta[]) {
+  private getTableTooltipContent(
+    sheet: TableSheet,
+    meta: ViewMeta,
+    metaConfig: Meta[],
+    chart: Chart,
+    selectedFields: string[]
+  ) {
+    const row = sheet.dataSet.getRowData(meta) as RawData | undefined
+    if (!row || row.SUMMARY || meta.valueField === SERIES_NUMBER_FIELD) {
+      return
+    }
+    // 从 S2 当前展示行取值，排序和分页后仍能命中正确的行，也保留后端脱敏结果。
+    const tooltipFields = getTableTooltipFields(chart.type, chart.xAxis, chart.yAxis)
+    const fields = selectedFields.filter(
+      name =>
+        Object.prototype.hasOwnProperty.call(row, name) &&
+        tooltipFields.some(field => field.dataeaseName === name)
+    )
+    if (!fields.length) {
+      return
+    }
+    const visibleColumns = sheet.facet.getColLeafNodes()
+    const names = [...new Set([...fields, meta.valueField])]
+    const content = document.createElement('div')
+    Object.assign(content.style, {
+      boxSizing: 'border-box',
+      overflow: 'auto',
+      overflowWrap: 'anywhere',
+      overscrollBehavior: 'contain',
+      padding: '4px 12px',
+      textAlign: 'left',
+      touchAction: 'pan-y',
+      whiteSpace: 'pre-wrap'
+    })
+    content.dataset.tableTooltipCell = meta.id
+    for (const name of names) {
+      const value = row[name]
+      const formatter = metaConfig.find(item => item.field === name)?.formatter
+      const formatted = value == null || value === '' ? '—' : formatter?.(value) ?? value
+      const line = document.createElement('div')
+      const field = tooltipFields.find(field => field.dataeaseName === name)
+      const label =
+        visibleColumns.find(column => column.field === name)?.value ??
+        field?.chartShowName ??
+        field?.name ??
+        name
+      line.textContent = names.length === 1 ? String(formatted) : `${label}：${formatted}`
+      content.appendChild(line)
+    }
+    content.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'mouse' && sheet.tooltip.options?.content === content) {
+        sheet.hideTooltip()
+      }
+    })
+    return content
+  }
+
+  protected showTooltip(s2Instance: P, event, metaConfig: Meta[], chart?: Chart) {
     // 排序菜单打开时，悬浮单元格不能覆盖菜单内容或重置容器样式
     if (s2Instance.tooltip instanceof SortTooltip && s2Instance.tooltip.isSortMenuVisible()) {
       return
     }
     const cell = s2Instance.getCell(event.target)
+    if (!cell) {
+      return
+    }
     const meta = cell.getMeta()
-    let content = ''
+    const activeContent = s2Instance.tooltip.options?.content
+    const activeTableTooltip =
+      activeContent instanceof HTMLElement && activeContent.dataset.tableTooltipCell
+    const tooltipConfig = chart && parseJson(chart.customAttr)?.tooltip
+    const selectedFields = tooltipConfig?.tableDisplayFields
+    let tableContent: HTMLElement | undefined
+    if (
+      cell.cellType === 'dataCell' &&
+      s2Instance instanceof TableSheet &&
+      selectedFields?.length
+    ) {
+      if (event.pointerType === 'touch' && event.type !== 'touchend') {
+        return
+      }
+      const { tooltip } = s2Instance
+      if (tooltip.visible && tooltip.container && activeTableTooltip === meta.id) {
+        // 同一单元格只更新位置，保留提示内容和长文本滚动位置。
+        event.s2Instance = s2Instance
+        event.tableTooltipContent = activeContent
+        const position = getTooltipPosition(event)
+        tooltip.position = position
+        tooltip.container.style.left = `${position.x}px`
+        tooltip.container.style.top = `${position.y}px`
+        return true
+      }
+      tableContent = this.getTableTooltipContent(
+        s2Instance,
+        meta as ViewMeta,
+        metaConfig,
+        chart,
+        selectedFields
+      )
+      if (tableContent && !tooltipConfig.show) {
+        return
+      }
+    }
+    let content: string | HTMLElement = ''
     let field
     switch (cell.cellType) {
       case 'dataCell':
@@ -111,10 +214,15 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         }
         break
     }
+    content = tableContent ?? content
     if (!content) {
+      if (activeTableTooltip) {
+        s2Instance.hideTooltip()
+      }
       return
     }
     event.s2Instance = s2Instance
+    event.tableTooltipContent = tableContent
     const style = s2Instance.options.tooltip.style
     setTooltipContainerStyle(s2Instance.tooltip.container, { style })
     s2Instance.showTooltip({
@@ -126,10 +234,14 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
       meta,
       event
     })
+    return true
   }
 
   protected configTouchEvent(s2Instance: P, option: S2DrawOptions<P>, meta: Meta[]) {
-    const { touchAction } = option
+    const { chart, touchAction } = option
+    const hasTableDisplayFields =
+      s2Instance instanceof TableSheet &&
+      !!parseJson(chart.customAttr)?.tooltip?.tableDisplayFields?.length
     // touch action
     s2Instance.once(S2Event.LAYOUT_AFTER_RENDER, () => {
       const touchActionInit = s2Instance.store.get('touchActionInit')
@@ -137,44 +249,39 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         return
       }
       s2Instance.store.set('touchActionInit', true)
-      const canvas = s2Instance.getCanvasElement()
-      let startTime = Date.now()
-      canvas.addEventListener('touchstart', () => {
-        startTime = Date.now()
+      const canvas = s2Instance.container
+      let startTouch: { x: number; y: number; time: number } | undefined
+      let moved = false
+      canvas.on('touchstart', (event: FederatedPointerEvent) => {
+        moved = !event.isPrimary
+        startTouch = { x: event.clientX, y: event.clientY, time: Date.now() }
       })
-      canvas.addEventListener('touchend', e => {
-        const duration = Date.now() - startTime
-        // 超过 300ms 触发复制
-        if (duration > 300) {
-          return
-        }
-        const canvasPosition = canvas.getBoundingClientRect()
-        const touchPosition = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
-        const relativePosition = [
-          touchPosition[0] - canvasPosition.x,
-          touchPosition[1] - canvasPosition.y
-        ]
-        const shape = s2Instance.container.getShape(relativePosition[0], relativePosition[1])
-        // 图片单元格，表头排序图标点击放大图片
-        if (shape.cfg?.type === 'image') {
-          return
-        }
-        const callback = () => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (shape) {
-            const event = {
-              target: shape,
-              x: relativePosition[0],
-              y: relativePosition[1],
-              clientX: touchPosition[0],
-              clientY: touchPosition[1],
-              originEvent: e
-            }
-            this.showTooltip(s2Instance, event, meta)
+      if (hasTableDisplayFields) {
+        canvas.on('touchmove', (event: FederatedPointerEvent) => {
+          if (
+            startTouch &&
+            Math.hypot(event.clientX - startTouch.x, event.clientY - startTouch.y) > 8
+          ) {
+            moved = true
           }
+        })
+      }
+      canvas.on('touchend', (event: FederatedPointerEvent) => {
+        const touch = startTouch
+        startTouch = undefined
+        // 超过 300ms 触发复制
+        if (!touch || Date.now() - touch.time > 300 || (hasTableDisplayFields && moved)) {
+          return
         }
-        touchAction(callback)
+        // 使用画布事件的命中结果，和悬停共用缩放坐标。图片预览和排序图标优先。
+        if (event.target instanceof GImage) {
+          return
+        }
+        touchAction?.(() => {
+          if (this.showTooltip(s2Instance, event, meta, chart)) {
+            event.preventDefault()
+          }
+        })
       })
     })
   }

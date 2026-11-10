@@ -1265,6 +1265,7 @@ declare interface ChartLabelAttr {
  * 提示设置
  */
 declare interface ChartTooltipAttr {
+  tableDisplayFields?: string[]
   /**
    * 显隐
    */

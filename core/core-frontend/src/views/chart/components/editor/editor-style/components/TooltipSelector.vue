@@ -21,6 +21,7 @@ import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { getTableTooltipFields } from '../../../js/panel/charts/table/common'
 
 const { t } = useI18n()
 
@@ -308,6 +309,26 @@ const changeTooltipAttr = (prop: string, requestData = false, render = true) => 
   }
   emit('onTooltipChange', { data: state.tooltipForm, requestData, render }, prop)
 }
+
+const tableTooltipOptions = computed(() =>
+  getTableTooltipFields(props.chart.type, props.chart.xAxis, props.chart.yAxis).map(field => {
+    const name = field.chartShowName ?? field.name
+    return {
+      value: field.dataeaseName,
+      label: field.hide ? `${name} (${t('visualization.hidden')})` : name
+    }
+  })
+)
+const tableDisplayFields = computed({
+  get: () =>
+    (state.tooltipForm.tableDisplayFields ?? []).filter(name =>
+      tableTooltipOptions.value.some(option => option.value === name)
+    ),
+  set: (fields: string[]) => {
+    state.tooltipForm.tableDisplayFields = fields
+    changeTooltipAttr('tableDisplayFields')
+  }
+})
 
 function changeUnitLanguage(cfg: BaseFormatter, lang, prop: string) {
   onChangeFormatCfgUnitLanguage(cfg, lang)
@@ -612,6 +633,32 @@ onMounted(() => {
         </el-tooltip>
       </el-form-item>
     </el-space>
+
+    <el-form-item
+      v-if="showProperty('tableDisplayFields') && !batchOptStatus && !mobileInPc"
+      :label="t('v_query.display_field')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        v-model="tableDisplayFields"
+        :effect="themes"
+        :placeholder="t('chart.pls_select_field')"
+        style="width: 100%"
+        filterable
+        multiple
+        clearable
+        collapse-tags
+        collapse-tags-tooltip
+      >
+        <el-option
+          v-for="option in tableTooltipOptions"
+          :key="option.value"
+          :value="option.value"
+          :label="option.label"
+        />
+      </el-select>
+    </el-form-item>
 
     <div v-if="showProperty('showFields') && !batchOptStatus && !mobileInPc">
       <el-form-item :label="t('chart.tooltip')" class="form-item" :class="'form-item-' + themes">
