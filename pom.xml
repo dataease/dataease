@@ -26,7 +26,7 @@
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.5.15</spring-boot.version>
         <jackson-bom.version>2.21.7</jackson-bom.version>
-        <tomcat.version>10.1.55</tomcat.version>
+        <tomcat.version>10.1.59</tomcat.version>
         <logback.version>1.5.34</logback.version>
         <netty.version>4.1.137.Final</netty.version>
         <maven.compiler.source>21</maven.compiler.source>
