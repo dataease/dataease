@@ -692,7 +692,7 @@ eventBus.on('tabSort', tabSort)
             :view="canvasViewInfo[curComponent.id]"
             :class="{ 'preview-aside': editMode === 'preview' }"
           >
-            <component :is="findComponentAttr(curComponent)" />
+            <component :is="findComponentAttr(curComponent)" :key="curComponent.id" />
           </dv-sidebar>
           <dv-sidebar
             v-show="canvasPropertiesShow"

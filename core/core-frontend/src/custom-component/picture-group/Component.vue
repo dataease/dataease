@@ -197,7 +197,8 @@ const initCurFields = chartDetails => {
 }
 
 const conditionAdaptor = (chart: Chart) => {
-  state.showUrl = null
+  const images = element.value.propValue.urlList || []
+  state.showUrl = element.value.materialPicture ? images[0]?.url : null
   if (!chart || !chart.senior) {
     return
   }
@@ -224,7 +225,10 @@ const conditionAdaptor = (chart: Chart) => {
         field,
         'url'
       ).color
-      if (checkResult) {
+      if (
+        checkResult &&
+        (!element.value.materialPicture || images.some(image => image.url === checkResult))
+      ) {
         state.showUrl = checkResult
       }
     }

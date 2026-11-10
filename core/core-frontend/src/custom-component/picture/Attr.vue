@@ -2,6 +2,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
+import { CollapseSwitchItem } from '@/components/collapse-switch-item'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
@@ -34,6 +35,16 @@ const uploadDisabled = ref(false)
 const files = ref(null)
 const maxImageSize = 15000000
 const state = reactive({})
+const materialPicture = computed(() =>
+  /^material:\/\/[1-9][0-9]{0,18}$/.test(curComponent.value?.propValue?.url || '')
+)
+
+const enableThreshold = (enabled: boolean) => {
+  if (!enabled || !materialPicture.value) return
+  const component = curComponent.value
+  dvMainStore.enableMaterialPictureThreshold(component)
+  snapshotStore.recordSnapshotCache('renderChart', component.id)
+}
 
 const handlePictureCardPreview = file => {
   dialogImageUrl.value = file.sourceUrl || file.url
@@ -201,6 +212,15 @@ const applyMaterial = (reference: string) => {
           </el-form-item>
         </el-row>
       </el-collapse-item>
+      <template v-if="materialPicture && !mobileInPc" #threshold>
+        <collapse-switch-item
+          :title="t('chart.threshold')"
+          :themes="themes"
+          :model-value="false"
+          name="threshold"
+          @update:model-value="enableThreshold"
+        />
+      </template>
     </CommonAttr>
   </div>
 </template>
