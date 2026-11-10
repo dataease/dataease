@@ -3,7 +3,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import referenceTable from '@/assets/svg/reference-table.svg'
-import dvParams from '@/assets/svg/dv-params.svg'
+import iconCalculatedField from '@/assets/svg/icon_calculated-field_outlined.svg'
 import dvFilter from '@/assets/svg/dv-filter.svg'
 import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
@@ -1868,7 +1868,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         <el-button text :disabled="!allfields.length" @click="addCalcField('q')">
           <span class="editor-tool-content">
             <el-icon
-              ><Icon><dvParams class="svg-icon" /></Icon
+              ><Icon><iconCalculatedField class="svg-icon" /></Icon
             ></el-icon>
             <span>{{ t('dataset.add_calc_field') }}</span>
           </span>
