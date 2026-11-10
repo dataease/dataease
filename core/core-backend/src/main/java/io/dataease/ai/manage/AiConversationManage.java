@@ -267,7 +267,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                 result = authorized(run.state.owner, () -> {
                     progress(run); check(run.state); stream.verifyStep();
                     toolEvent(run, call, "RUNNING", arguments, null);
-                    String value = scene.execute(run.state.context, call.name(), arguments);
+                    String value = scene.execute(run.state.context, call.name(), arguments, () -> progress(run), run.stream.deadline());
                     progress(run); check(run.state); stream.verifyStep(); return value;
                 });
                 progress(run); stream.result(result);

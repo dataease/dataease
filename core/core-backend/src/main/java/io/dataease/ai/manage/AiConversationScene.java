@@ -12,6 +12,10 @@ public interface AiConversationScene {
     default List<AiToolProtocol.Definition> tools() { return List.of(); }
     /** Parameters were strictly validated; context is always the server-owned scope. */
     default String execute(Context context, String name, Map<String, String> arguments) { throw AiErrors.error("unsupported"); }
+    default String execute(Context context, String name, Map<String, String> arguments, Runnable active, long deadline) {
+        active.run();
+        return execute(context, name, arguments);
+    }
     String code();
     List<Resource> resources();
     Context resolve(String resourceId, String input);

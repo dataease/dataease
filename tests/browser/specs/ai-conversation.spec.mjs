@@ -511,3 +511,67 @@ test('program tool states expose safe parameters/results, deduplicate replay and
     page.getByText('I will read the fields.The actual field is ID.', { exact: true })
   ).toBeVisible()
 })
+
+test('SQL validation cards show program verdicts distinctly from success and model prose', async ({
+  page
+}) => {
+  const run = { ...session, executionId: 'validation-run' }
+  const events = ['INVALID', 'PASS', 'UNSUPPORTED'].map((status, index) => ({
+    sequence: index + 1,
+    type: 'TOOL',
+    tool: {
+      callId: 'validation-' + status,
+      name: 'validate_sql',
+      status: 'SUCCEEDED',
+      parameters: {
+        sql: status === 'INVALID' ? 'SELECT TYPO FROM AI_PROBE' : 'SELECT ID FROM AI_PROBE'
+      },
+      result: JSON.stringify({
+        status,
+        code: 'fixture',
+        message: '<script>unsafe</script>',
+        scope: 'SQL was not executed; no database executability guarantee.'
+      })
+    }
+  }))
+  await page.route('**/fixture-api/ai/conversations**', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (url.pathname.endsWith('/executions'))
+      return route.fulfill({
+        json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
+      })
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...run,
+          status: 'COMPLETED',
+          cursor: 5,
+          events: [
+            ...events,
+            {
+              sequence: 4,
+              type: 'TEXT',
+              text: 'Corrected and revalidated; this is static advice.'
+            },
+            { sequence: 5, type: 'COMPLETED' }
+          ]
+        }
+      })
+    return route.fulfill({ json: session })
+  })
+  await selectResource(page)
+  await send(page, 'Correct invalid SQL and validate again')
+  for (const status of ['INVALID', 'PASS', 'UNSUPPORTED']) {
+    const card = page.locator(`[data-tool-id="validation-${status}"]`)
+    await expect(card.locator('summary')).toContainText(status)
+    await expect(card.locator('pre')).toContainText(['SELECT', 'SQL was not executed'])
+    await expect(card.locator('script')).toHaveCount(0)
+  }
+  await expect(
+    page.getByText('Corrected and revalidated; this is static advice.', {
+      exact: true
+    })
+  ).toBeVisible()
+})
