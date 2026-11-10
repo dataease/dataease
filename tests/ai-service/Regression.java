@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        ModeRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence(); KeyringRegression.run();
+        ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence(); KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
     private static void crypto() {
@@ -172,6 +172,7 @@ public class Regression {
             String runtimeImpact=manage.impact("SETTINGS",next.id()+":true").token();
             manage.saveSettings(new SettingsChange(runtimeSetting.getRowVersion(),true,next.id(),false,60,30000,4096,5,2,runtimeImpact));
             RuntimeRegression.run(manage,policies,keys,new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager),access);
+            ConversationRegression.run(manage,policies,keys,limiter,access);
             HttpRegression.run(new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager));
             TokenCapabilityRegression.run(manage,policies,access,keys,limiter,permitted);
             directory.set(List.of(new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(88L,"Sales",0L),

@@ -10,6 +10,7 @@ import socket
 import time
 from contextlib import ExitStack
 from zipfile import ZipFile
+import xml.etree.ElementTree as ET
 
 
 def main():
@@ -50,16 +51,27 @@ def main():
             parser.error('Spring AI 1.1.8 dependencies must already be installed')
         if args.ai_classpath:
             resolved = [Path(path) for path in Path(args.ai_classpath).read_text().strip().split(os.pathsep)]
-            if not all(path.is_file() for path in resolved):
+            if not all(path.exists() for path in resolved):
                 parser.error('Resolved AI dependency files missing')
             libraries = [*resolved, *libraries]
+        # Match the current parent version rather than the old packaged license SDK.
+        parent = ET.parse(root / 'pom.xml').getroot()
+        version = parent.find('{*}properties/{*}dataease.version').text
+        license_sdk = repository / f'io/dataease/dataease-license-sdk/{version}/dataease-license-sdk-{version}.jar'
+        if not license_sdk.is_file():
+            parser.error('Current license SDK must already be installed')
+        libraries = [license_sdk, *[file for file in libraries if not file.name.startswith('dataease-license-sdk-')]]
         classes = work / 'classes'
         classes.mkdir()
-        classpath = os.pathsep.join(map(str, [classes, boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
+        classpath = os.pathsep.join(map(str, [classes, *[path for path in libraries if path.is_dir()], boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
         sources = [file for file in (root/'core/core-backend/src/main/java/io/dataease/ai').rglob('*.java') if file.name != 'AiBaseService.java']
         sources.extend((root/'sdk/api/api-base/src/main/java/io/dataease/api/ai').rglob('*.java'))
         sources.extend(root/path for path in [
             'sdk/common/src/main/java/io/dataease/constant/AuthResourceEnum.java',
+            'sdk/common/src/main/java/io/dataease/auth/ConfigurationSecurity.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
+            'core/core-backend/src/main/java/io/dataease/menu/dao/auto/entity/CoreMenu.java',
+            'core/core-backend/src/main/java/io/dataease/system/manage/CorePermissionManage.java',
             'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/auth/api/InteractiveAuthApi.java',
             'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/org/api/AiOrganizationLifecycle.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationInit.java',

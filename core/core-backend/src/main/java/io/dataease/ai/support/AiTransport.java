@@ -112,7 +112,11 @@ public class AiTransport {
                             try { recheck.run(); return bounded(execution.execute(request, bytes), permit, deadline); }
                             catch (Throwable e) { permit.close(); throw e; }
                         });
-                        return work.run(builder);
+                        T result = work.run(builder);
+                        // 在无请求持久化上下文的传输线程复核，避免请求级实体缓存延续旧配置/资源授权。
+                        recheck.run();
+                        if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+                        return result;
                     } finally { abort.cancel(false); }
                 } finally {
                     io.dataease.permission.util.V3UserUtil.clear();

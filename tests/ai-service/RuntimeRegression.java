@@ -21,6 +21,7 @@ public final class RuntimeRegression {
                            AiAdmission admission, AiAccess access) throws Exception {
         AtomicBoolean allowed = new AtomicBoolean(true);
         AtomicInteger calls = new AtomicInteger();
+        AtomicBoolean revokeOnResponse = new AtomicBoolean();
         AiFeature feature = new AiFeature() {
             public String code(){return "synthetic-sql";}
             public void authorize(AiExecutionContext context){if(!allowed.get())throw AiErrors.error("forbidden");}
@@ -36,6 +37,7 @@ public final class RuntimeRegression {
             @Override public ChatResponse call(AiConfigurationManage.Connection c,CoreAiSetting s,Prompt p,boolean background,long deadline,Runnable recheck){
                 recheck.run();calls.incrementAndGet();
                 if(!"general-chat".equals(p.getOptions().getModel()))throw new AssertionError("resolved model");
+                if (revokeOnResponse.get()) allowed.set(false);
                 return new ChatResponse(List.of(new Generation(new AssistantMessage("OK"))));
             }
         };
@@ -47,6 +49,9 @@ public final class RuntimeRegression {
             var context=provider.current("synthetic-sql",scope);ChatModel model=provider.current(context);
             if(!"OK".equals(model.call("hello")))throw new AssertionError("direct call");
             if(!"OK".equals(ChatClient.builder(model).build().prompt().user("hello via ChatClient").call().content()))throw new AssertionError("ChatClient call");
+            revokeOnResponse.set(true);
+            try { model.call("revoke during generation"); throw new AssertionError("delivery after permission revoked"); } catch (AiErrors.Failure expected) { }
+            revokeOnResponse.set(false); allowed.set(true);
             int before=calls.get();
             var advisor = new org.springframework.ai.chat.client.advisor.api.CallAdvisor() {
                 public String getName(){return "synthetic-over-budget";}

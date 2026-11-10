@@ -3,6 +3,17 @@ import type { RouteRecordRaw } from 'vue-router_2'
 import type { App } from 'vue'
 
 export const routes: AppRouteRecordRaw[] = [
+  ...(import.meta.env.DEV
+    ? [
+        {
+          path: '/ai-assistant',
+          name: 'ai-assistant',
+          hidden: true,
+          meta: { hidden: true },
+          component: () => import('@/views/ai-assistant/index.vue')
+        }
+      ]
+    : []),
   {
     path: '/',
     name: 'index',

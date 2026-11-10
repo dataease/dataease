@@ -1,9 +1,8 @@
 import { reactive } from 'vue'
 import language from '@/locales/zh-CN'
-const messages = language.ai_service
 export const useI18n = () => ({
   t: (key, args = {}) => {
-    const text = messages[key.replace('ai_service.', '')] ?? key
+    const text = key.split('.').reduce((value, part) => value?.[part], language) ?? key
     return text.replace(/\{(\w+)\}/g, (_, name) => String(args[name] ?? `{${name}}`))
   }
 })
