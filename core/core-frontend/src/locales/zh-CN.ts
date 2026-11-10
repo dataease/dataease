@@ -1,5 +1,8 @@
 export default {
   ai_conversation: {
+    stop: '停止生成',
+    hide: '收起助手',
+    expand: '展开助手',
     title: 'AI 对话开发验收',
     description:
       '选择当前工作空间有读取权限的数据源，围绕当前 SQL 连续提问。请勿输入业务样本或凭据。修改 SQL 或数据源会开启新上下文；回答仅作建议，不执行或保存 SQL。',

@@ -1,5 +1,8 @@
 export default {
   ai_conversation: {
+    stop: 'Stop generating',
+    hide: 'Hide assistant',
+    expand: 'Expand assistant',
     title: 'AI conversation acceptance',
     description:
       'Select a datasource you can read in the current workspace and ask about the current SQL. Do not enter business samples or credentials. Changing SQL or datasource starts a new context. Answers are advice; SQL is never executed or saved.',

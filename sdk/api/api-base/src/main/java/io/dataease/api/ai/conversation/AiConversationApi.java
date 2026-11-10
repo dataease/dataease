@@ -11,5 +11,8 @@ public interface AiConversationApi {
     @GetMapping("/resources") List<Resource> resources();
     @PostMapping Session open(@Valid @RequestBody Open request);
     @PostMapping("/{id}/turns") Answer turn(@PathVariable String id, @Valid @RequestBody Turn request);
+    @PostMapping("/{id}/executions") Execution start(@PathVariable String id, @Valid @RequestBody Turn request);
+    @GetMapping("/{id}/executions/{execution}/events") Events events(@PathVariable String id, @PathVariable String execution, @RequestParam(defaultValue = "0") long after);
+    @PostMapping("/{id}/executions/{execution}/stop") Events stop(@PathVariable String id, @PathVariable String execution);
     @DeleteMapping("/{id}") void close(@PathVariable String id);
 }
