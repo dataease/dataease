@@ -60,7 +60,7 @@ public class AiTransport {
                     .toolExecutionEligibilityPredicate((options, output) -> false).build().call(prompt);
             if (response == null || response.getResults().isEmpty() || response.getResult().getOutput().getText() == null
                     || response.getResult().getOutput().getText().isBlank()) throw AiErrors.error("response_invalid");
-            for (var result : response.getResults()) if (result.getOutput().hasToolCalls() || "length".equals(result.getMetadata().getFinishReason())) throw AiErrors.error("response_invalid");
+            for (var result : response.getResults()) if (result.getOutput().hasToolCalls() || "length".equalsIgnoreCase(result.getMetadata().getFinishReason())) throw AiErrors.error("response_invalid");
             return response;
         });
     }
@@ -86,43 +86,9 @@ public class AiTransport {
         try {
             future = executor.submit(() -> {
                 try {
-                    recheck.run();
-                    outbound.normalize(c.url());
-                    long budget = deadline - System.currentTimeMillis();
-                    if (budget <= 0 || Thread.currentThread().isInterrupted()) throw AiErrors.error("timeout");
-                    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(http) {
-                        @Override protected org.apache.hc.core5.http.ClassicHttpRequest createHttpUriRequest(HttpMethod method, URI uri) {
-                            HttpUriRequestBase request = new HttpUriRequestBase(method.name(), uri);
-                            request.setConfig(RequestConfig.custom().setConnectionRequestTimeout(Timeout.ofMilliseconds(budget))
-                                    .setResponseTimeout(Timeout.ofMilliseconds(budget)).setHardCancellationEnabled(true).build());
-                            cancellation.attach(request);
-                            return request;
-                        }
-                    };
-                    ScheduledFuture<?> abort = deadlines.schedule(cancellation::cancel,
-                            Math.max(1, deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
-                    try {
-                        RestClient.Builder builder = RestClient.builder().requestFactory(factory)
-                                .defaultStatusHandler(status -> status.value() >= 300, (request, response) -> { throw providerError(response); })
-                                .requestInterceptor((request, bytes, execution) -> {
-                            if (bytes.length > 4 * 1024 * 1024) throw AiErrors.error("input_limit");
-                            recheck.run();
-                            if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
-                            AiAdmission.Permit permit = admission.acquire(s, background, deadline);
-                            try { recheck.run(); return bounded(execution.execute(request, bytes), permit, deadline); }
-                            catch (Throwable e) { permit.close(); throw e; }
-                        });
-                        T result = work.run(builder);
-                        // 在无请求持久化上下文的传输线程复核，避免请求级实体缓存延续旧配置/资源授权。
-                        recheck.run();
-                        if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
-                        return result;
-                    } finally { abort.cancel(false); }
+                    return perform(c, s, background, deadline, recheck, cancellation, work);
                 } finally {
-                    io.dataease.permission.util.V3UserUtil.clear();
-                    org.springframework.web.context.request.RequestContextHolder.resetRequestAttributes();
-                    org.springframework.context.i18n.LocaleContextHolder.resetLocaleContext();
-                    org.slf4j.MDC.clear();
+                    clearWorker();
                 }
             });
         } catch (RejectedExecutionException e) { throw AiErrors.error("concurrency"); }
@@ -140,6 +106,179 @@ public class AiTransport {
             // 不将供应商正文、URL、认证头或异常 cause 透传到管理 API。
             throw AiErrors.error(connectionFailure(e.getCause()));
         }
+    }
+    private <T> T perform(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck,
+                          RequestCancellation cancellation, Work<T> work) {
+        recheck.run();
+        outbound.normalize(c.url());
+        long budget = deadline - System.currentTimeMillis();
+        if (budget <= 0 || Thread.currentThread().isInterrupted()) throw AiErrors.error("timeout");
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(http) {
+            @Override protected org.apache.hc.core5.http.ClassicHttpRequest createHttpUriRequest(HttpMethod method, URI uri) {
+                HttpUriRequestBase request = new HttpUriRequestBase(method.name(), uri);
+                request.setConfig(RequestConfig.custom().setConnectionRequestTimeout(Timeout.ofMilliseconds(budget))
+                        .setResponseTimeout(Timeout.ofMilliseconds(budget)).setHardCancellationEnabled(true).build());
+                cancellation.attach(request);
+                return request;
+            }
+        };
+        ScheduledFuture<?> abort = deadlines.schedule(cancellation::cancel,
+                Math.max(1, deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+        try {
+            RestClient.Builder builder = RestClient.builder().requestFactory(factory)
+                    .defaultStatusHandler(status -> status.value() >= 300, (request, response) -> { throw providerError(response); })
+                    .requestInterceptor((request, bytes, execution) -> {
+                if (bytes.length > 4 * 1024 * 1024) throw AiErrors.error("input_limit");
+                recheck.run();
+                if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+                AiAdmission.Permit permit = admission.acquire(s, background, deadline);
+                try { recheck.run(); return bounded(execution.execute(request, bytes), permit, deadline); }
+                catch (Throwable e) { permit.close(); throw e; }
+            });
+            T result = work.run(builder);
+            // 在无请求持久化上下文的传输线程复核，避免请求级实体缓存延续旧配置/资源授权。
+            recheck.run();
+            if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+            return result;
+        } finally { abort.cancel(false); }
+    }
+    /** One controlled interactive upstream stream. No default WebClient, retry or model-side tool execution. */
+    public final class Stream implements AutoCloseable {
+        private final RequestCancellation cancellation = new RequestCancellation();
+        private Future<?> future;
+        private boolean started, closed;
+        public synchronized void start(Connection c, CoreAiSetting s, Prompt prompt, long deadline, Runnable recheck, Runnable progress,
+                                       java.util.function.Consumer<String> delta, Runnable completed,
+                                       java.util.function.Consumer<Throwable> failed) {
+            if (started || closed) throw AiErrors.error("cancelled");
+            started = true;
+            Runnable guard = () -> {
+                if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+                if (cancellation.cancelled() || Thread.currentThread().isInterrupted()) throw AiErrors.error("cancelled");
+                progress.run();
+            };
+            try {
+                future = executor.submit(() -> {
+                    try {
+                        perform(c, s, false, deadline, recheck, cancellation, builder -> {
+                            var options = (org.springframework.ai.openai.OpenAiChatOptions) prompt.getOptions();
+                            var payload = json.createObjectNode();
+                            payload.put("model", options.getModel()); payload.put("stream", true); payload.put("n", 1);
+                            if (options.getMaxTokens() != null) payload.put("max_tokens", options.getMaxTokens());
+                            if (options.getMaxCompletionTokens() != null) payload.put("max_completion_tokens", options.getMaxCompletionTokens());
+                            if (options.getTemperature() != null) payload.put("temperature", options.getTemperature());
+                            if (options.getTopP() != null) payload.put("top_p", options.getTopP());
+                            if (options.getFrequencyPenalty() != null) payload.put("frequency_penalty", options.getFrequencyPenalty());
+                            if (options.getPresencePenalty() != null) payload.put("presence_penalty", options.getPresencePenalty());
+                            if (options.getStopSequences() != null) payload.set("stop", json.valueToTree(options.getStopSequences()));
+                            if (options.getResponseFormat() != null) payload.set("response_format", json.valueToTree(options.getResponseFormat()));
+                            var messages = payload.putArray("messages");
+                            for (var message : prompt.getInstructions()) {
+                                var item = messages.addObject(); item.put("role", message.getMessageType().getValue()); item.put("content", message.getText());
+                            }
+                            return builder.baseUrl(c.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + c.key()).build()
+                                    .post().uri(outbound.completionPath(c.url())).contentType(MediaType.APPLICATION_JSON).body(payload)
+                                    .exchange((request, response) -> {
+                                        if (response.getStatusCode().value() >= 300) throw providerError(response);
+                                        MediaType type = response.getHeaders().getContentType();
+                                        if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
+                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens(), guard, delta);
+                                        return Boolean.TRUE;
+                                    });
+                        });
+                        if (!cancellation.cancelled()) completed.run();
+                    } catch (Throwable failure) {
+                        if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline));
+                    } finally { clearWorker(); }
+                });
+            } catch (RejectedExecutionException failure) { throw AiErrors.error("concurrency"); }
+        }
+        @Override public synchronized void close() {
+            closed = true; cancellation.cancel(); if (future != null) { future.cancel(true); executor.purge(); }
+        }
+    }
+    public Stream stream() { return new Stream(); }
+    private RuntimeException safeFailure(Throwable failure, long deadline) {
+        if (System.currentTimeMillis() >= deadline) return AiErrors.error("timeout");
+        if (failure instanceof io.dataease.exception.DEException known) return known;
+        return AiErrors.error(connectionFailure(failure));
+    }
+    private static void clearWorker() {
+        io.dataease.permission.util.V3UserUtil.clear();
+        io.dataease.utils.CommunityUtils.clear();
+        org.springframework.web.context.request.RequestContextHolder.resetRequestAttributes();
+        org.springframework.context.i18n.LocaleContextHolder.resetLocaleContext();
+        org.slf4j.MDC.clear();
+    }
+    /** Bounded SSE framing, incrementally decoded UTF-8 including split multibyte characters. */
+    private void readEvents(InputStream input, int maxTokens, Runnable guard, java.util.function.Consumer<String> delta) throws IOException {
+        var decoder = java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT).onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT);
+        var reader = new InputStreamReader(input, decoder);
+        StringBuilder line = new StringBuilder(), data = new StringBuilder();
+        boolean finished = false, text = false, previousCr = false;
+        int frames = 0;
+        long characters = 0;
+        for (int value; (value = reader.read()) != -1;) {
+            guard.run();
+            char ch = (char) value;
+            if (previousCr && ch == '\n') { previousCr = false; continue; }
+            previousCr = ch == '\r';
+            if (ch != '\n' && ch != '\r') {
+                if (line.length() >= 65536) throw AiErrors.error("response_invalid");
+                line.append(ch); continue;
+            }
+            String field = line.toString(); line.setLength(0);
+            if (!field.isEmpty()) {
+                if (field.startsWith("data:")) {
+                    String part = field.substring(5); if (part.startsWith(" ")) part = part.substring(1);
+                    if (data.length() + part.length() > 65536) throw AiErrors.error("response_invalid");
+                    data.append(part).append('\n');
+                }
+                continue;
+            }
+            if (data.isEmpty()) continue;
+            if (++frames > 20000) throw AiErrors.error("response_invalid");
+            String event = data.substring(0, data.length() - 1); data.setLength(0);
+            guard.run();
+            if ("[DONE]".equals(event)) {
+                if (!finished || !text) throw AiErrors.error("response_invalid");
+                return;
+            }
+            com.fasterxml.jackson.databind.JsonNode root;
+            try { root = json.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(event); }
+            catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw AiErrors.error("response_invalid"); }
+            if (root == null || !root.isObject() || root.has("error") || !root.path("choices").isArray()) throw AiErrors.error("response_invalid");
+            if (root.path("usage").path("completion_tokens").canConvertToLong() && root.path("usage").path("completion_tokens").asLong() > maxTokens) throw AiErrors.error("output_limit");
+            var choices = root.path("choices");
+            if (choices.isEmpty() && root.path("usage").isObject()) continue;
+            if (choices.size() != 1 || !choices.get(0).path("index").isInt() || choices.get(0).path("index").asInt() != 0 || finished)
+                throw AiErrors.error("response_invalid");
+            var choice = choices.get(0); var chunk = choice.path("delta");
+            if (!chunk.isObject()) throw AiErrors.error("response_invalid");
+            var names = chunk.fieldNames();
+            while (names.hasNext()) {
+                String name = names.next();
+                if (!java.util.Set.of("role", "content", "reasoning_content", "reasoning").contains(name) && !chunk.path(name).isNull()) throw AiErrors.error("unsupported");
+            }
+            if (chunk.hasNonNull("reasoning_content") && !chunk.path("reasoning_content").isTextual()
+                    || chunk.hasNonNull("reasoning") && !chunk.path("reasoning").isTextual()) throw AiErrors.error("response_invalid");
+            if (chunk.hasNonNull("role") && !"assistant".equals(chunk.path("role").asText())) throw AiErrors.error("response_invalid");
+            if (chunk.hasNonNull("content")) {
+                if (!chunk.path("content").isTextual()) throw AiErrors.error("response_invalid");
+                String content = chunk.path("content").asText();
+                if (!content.isEmpty()) {
+                    characters += content.length();
+                    if (characters > Math.min(262144L, maxTokens * 16L)) throw AiErrors.error("output_limit");
+                    guard.run(); delta.accept(content); text |= !content.isBlank();
+                }
+            }
+            if (choice.hasNonNull("finish_reason")) {
+                if (!"stop".equals(choice.path("finish_reason").asText())) throw AiErrors.error("response_invalid");
+                finished = true;
+            }
+        }
+        throw AiErrors.error("response_invalid");
     }
     // 注册与取消使用同一把短锁，覆盖超时发生在请求创建之前的竞态；只取消当前请求。
     private static final class RequestCancellation {

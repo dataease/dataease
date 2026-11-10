@@ -16,5 +16,8 @@ public final class AiConversationDtos {
                           String resourceName, String editorId, long expiresAt) { }
     public record Turn(@NotBlank @Size(max = 100) String contextVersion,
                        @NotBlank @Size(max = 30000) String text) { }
+    public record Execution(String sessionId, String executionId, String contextVersion, String status, long deadline) { }
+    public record Event(long sequence, String type, String text, String error) { }
+    public record Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events) { }
     public record Answer(String sessionId, String executionId, String contextVersion, String status, String text) { }
 }

@@ -90,6 +90,57 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             @Override public ChatOptions getDefaultOptions() { return ChatOptions.builder().build(); }
         };
     }
+    /** Created only in the authenticated request; the worker receives no Servlet state or request-bound model. */
+    public final class Streaming implements AutoCloseable {
+        private final Context context;
+        private Prompt prompt;
+        private AiConfigurationManage.Connection connection;
+        private final CoreAiSetting settings;
+        private Runnable verify;
+        private final Runnable delivery;
+        private final AiTransport.Stream stream = transport.stream();
+        private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery) {
+            this.context = context; this.prompt = prompt; this.connection = connection; this.settings = settings; this.verify = verify; this.delivery = delivery;
+        }
+        public String executionId() { return context.executionId(); }
+        public long deadline() { return context.deadline(); }
+        public void verifyDelivery() { delivery.run(); }
+        public synchronized void start(Runnable progress, java.util.function.Consumer<String> delta, Runnable completed, java.util.function.Consumer<Throwable> failed) {
+            if (connection == null) throw AiErrors.error("cancelled");
+            try { stream.start(connection, settings, prompt, context.deadline(), verify, progress, delta, completed, failed); }
+            finally { connection = null; prompt = null; verify = null; }
+        }
+        @Override public synchronized void close() { stream.close(); connection = null; prompt = null; verify = null; }
+    }
+    public Streaming stream(String feature, AiDataScope scope, Prompt input) {
+        Context request = (Context) current(feature, scope);
+        caller(request);
+        if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
+        if (!feature(feature).supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
+        CoreAiSetting original = configuration.setting();
+        CoreAiModel model = resolve(request, original);
+        Prompt prompt = AiPromptPolicy.constrain(input, model.getModelIdentifier(), original.getMaxOutputTokens(), original.getMaxInputChars(), json, model.getOutputTokenParameter());
+        if (scope.inputFingerprint() != null && !AiPromptFingerprint.of(prompt).equals(scope.inputFingerprint())) throw AiErrors.error("scope_changed");
+        inspect(request, prompt);
+        // Detached immutable authorization coordinates; never copy RequestAttributes into a worker.
+        Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), false,
+                request.deadline(), null, request.proxyBinding(), null, null, request.scope(), request.deployment());
+        var settingRevision = original.getRevision(); var modelId = model.getId();
+        var configRevision = model.getConfigRevision(); var credentialRevision = model.getCredentialRevision();
+        java.util.function.Consumer<Boolean> policy = enforceDeadline -> {
+            var latest = configuration.setting(); var selected = resolve(detached, latest, enforceDeadline);
+            if (!Objects.equals(settingRevision, latest.getRevision()) || !Objects.equals(modelId, selected.getId())
+                    || !Objects.equals(configRevision, selected.getConfigRevision()) || !Objects.equals(credentialRevision, selected.getCredentialRevision()))
+                throw AiErrors.error("conflict");
+        };
+        Runnable verify = () -> { inspect(detached, prompt); policy.accept(true); };
+        Runnable delivery = () -> { feature(feature).authorize(detached); policy.accept(false); };
+        var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
+                secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
+        // Only detached setting values enter admission; no JPA/request-bound entity crosses threads.
+        var settings = json.convertValue(original, CoreAiSetting.class);
+        return new Streaming(detached, prompt, connection, settings, verify, delivery);
+    }
     private void inspect(Context context, Prompt prompt) {
         java.util.List<org.springframework.ai.chat.messages.Message> messages = prompt.getInstructions().stream().map(message ->
                 switch (message.getMessageType()) {
@@ -112,8 +163,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private AiFeature feature(String code) {
         AiFeature f = features.get(code); if (f == null) throw AiErrors.error("forbidden"); return f;
     }
-    private CoreAiModel resolve(Context c, CoreAiSetting s) {
-        if (System.currentTimeMillis() >= c.deadline()) throw AiErrors.error("timeout");
+    private CoreAiModel resolve(Context c, CoreAiSetting s) { return resolve(c, s, true); }
+    private CoreAiModel resolve(Context c, CoreAiSetting s, boolean enforceDeadline) {
+        if (enforceDeadline && System.currentTimeMillis() >= c.deadline()) throw AiErrors.error("timeout");
         AiFeature feature = feature(c.feature());
         if (c.background()) {
             AiFeature.TaskIdentity now = feature.taskIdentity(c.taskId());

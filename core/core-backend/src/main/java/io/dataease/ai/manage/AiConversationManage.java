@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/** 有界临时会话。每轮创建请求绑定的模型代理，最终完整 Prompt 仍由既有底座限制。 */
+/** 有界临时会话；同步请求与受控异步执行共享身份、上下文及最终 Prompt 预算。 */
 @Component
 public class AiConversationManage implements AiFeature {
     private static final long SESSION_MILLIS = TimeUnit.MINUTES.toMillis(30);
@@ -28,10 +28,24 @@ public class AiConversationManage implements AiFeature {
         final AiConversationScene.Context context;
         final List<Message> history = new ArrayList<>();
         volatile boolean closed;
+        final Map<String, Run> runs = new LinkedHashMap<>();
+        Run active;
         final AtomicBoolean executing = new AtomicBoolean();
         State(Session view, AiAccess.Identity owner, AiConversationScene.Context context) {
             this.view = view; this.owner = owner; this.context = context;
         }
+    }
+    private static final long LEASE_MILLIS = 15000;
+    private static final class Run {
+        final State state;
+        String question;
+        final AiRuntimeManage.Streaming stream;
+        List<Event> events = new ArrayList<>();
+        StringBuilder text = new StringBuilder();
+        long sequence;
+        volatile long lease = System.currentTimeMillis() + LEASE_MILLIS;
+        volatile String status = "RUNNING";
+        Run(State state, String question, AiRuntimeManage.Streaming stream) { this.state = state; this.question = question; this.stream = stream; }
     }
     private final Map<String, State> sessions = new ConcurrentHashMap<>();
     private final Map<String, AiConversationScene> scenes;
@@ -43,8 +57,9 @@ public class AiConversationManage implements AiFeature {
     public AiConversationManage(ObjectProvider<AiConversationScene> scenes, ObjectProvider<AiRuntimeManage> runtime, AiAccess access) {
         this.scenes = scenes.stream().collect(Collectors.toUnmodifiableMap(AiConversationScene::code, scene -> scene));
         this.runtime = runtime; this.access = access;
-        expiry.scheduleWithFixedDelay(this::expire, 1, 1, TimeUnit.MINUTES);
+        expiry.scheduleWithFixedDelay(this::expire, 1, 1, TimeUnit.SECONDS);
     }
+    @Override public boolean supportsStreaming() { return true; }
     @Override public String code() { return "development-assistant"; }
     public List<Resource> resources() {
         var owner = identity();
@@ -96,15 +111,123 @@ public class AiConversationManage implements AiFeature {
             return new Answer(id, execution.executionId(), state.view.contextVersion(), "COMPLETED", text);
         } finally { state.executing.set(false); }
     }
-    public void close(String id) {
-        State state = owned(id); state.closed = true; sessions.remove(id, state);
+    public Execution start(String id, Turn request) {
+        State state = owned(id);
+        if (request == null || request.text() == null || request.text().isBlank() || request.text().length() > 30000
+                || !Objects.equals(request.contextVersion(), state.view.contextVersion())) throw AiErrors.error("scope_changed");
+        synchronized (state) {
+            if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
+            try {
+                authorized(state.owner, () -> { check(state); return null; });
+                if (state.history.size() >= MAX_TURNS * 2) throw AiErrors.error("input_limit");
+                var messages = new ArrayList<Message>(); messages.add(new SystemMessage(state.context.instruction()));
+                messages.addAll(state.history); messages.add(new UserMessage(request.text()));
+                Prompt prompt = new Prompt(messages);
+                var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(prompt), false, null);
+                var stream = runtime.getObject().stream(code(), scope, prompt);
+                var run = new Run(state, request.text(), stream);
+                // Terminal logs are bounded independently of the completed-history turn limit.
+                for (Run old : state.runs.values()) {
+                    old.question = null; old.text = new StringBuilder();
+                    old.events = new ArrayList<>(old.events.stream().filter(event -> !"TEXT".equals(event.type())).toList());
+                }
+                while (state.runs.size() >= 50) state.runs.remove(state.runs.keySet().iterator().next());
+                state.runs.put(stream.executionId(), run); state.active = run;
+                try { stream.start(() -> progress(run), text -> append(run, text), () -> complete(run), failure -> fail(run, failure)); }
+                catch (RuntimeException failure) { fail(run, failure); throw failure; }
+                return new Execution(id, stream.executionId(), state.view.contextVersion(), run.status, stream.deadline());
+            } catch (RuntimeException failure) { state.executing.set(false); throw failure; }
+        }
     }
+    public Events events(String id, String execution, long after) {
+        State state = owned(id);
+        synchronized (state) {
+            Run run = run(state, execution);
+            if (after < 0 || after > run.sequence) throw AiErrors.error("invalid");
+            try {
+                authorized(state.owner, () -> { check(state); run.stream.verifyDelivery(); return null; });
+            } catch (RuntimeException failure) {
+                invalidate(state); throw failure;
+            }
+            if (System.currentTimeMillis() >= run.stream.deadline()) terminate(run, "FAILED", "timeout");
+            run.lease = System.currentTimeMillis() + LEASE_MILLIS;
+            return view(run, after);
+        }
+    }
+    public Events stop(String id, String execution) {
+        State state = owned(id);
+        synchronized (state) {
+            Run run = run(state, execution);
+            // Ownership is enough to clean up one's execution even after resource permission was lost.
+            terminate(run, "CANCELLED", "cancelled");
+            try { authorized(state.owner, () -> { check(state); return null; }); }
+            catch (RuntimeException failure) { invalidate(state); throw failure; }
+            return view(run, run.sequence - 1);
+        }
+    }
+    private Run run(State state, String execution) {
+        Run run = state.runs.get(execution); if (run == null) throw AiErrors.error("forbidden"); return run;
+    }
+    private Events view(Run run, long after) {
+        var session = run.state.view;
+        return new Events(session.sessionId(), run.stream.executionId(), session.contextVersion(), run.status, run.sequence,
+                run.events.stream().filter(event -> event.sequence() > after).toList());
+    }
+    /** Parsing only fills a bounded private buffer; event delivery/history commit always verify current authority. */
+    private void progress(Run run) {
+        if (run.state.closed || !"RUNNING".equals(run.status)) throw AiErrors.error("cancelled");
+        long now = System.currentTimeMillis();
+        if (now >= run.stream.deadline()) throw AiErrors.error("timeout");
+        if (now >= run.lease || now >= run.state.view.expiresAt()) throw AiErrors.error("scope_changed");
+    }
+    private void append(Run run, String text) {
+        synchronized (run.state) {
+            if (!"RUNNING".equals(run.status)) return;
+            progress(run);
+            if (run.events.size() >= 20000 || run.text.length() + text.length() > 262144) throw AiErrors.error("response_invalid");
+            run.text.append(text); run.events.add(new Event(++run.sequence, "TEXT", text, null));
+        }
+    }
+    private void complete(Run run) {
+        synchronized (run.state) {
+            if (!"RUNNING".equals(run.status)) return;
+            try {
+                authorized(run.state.owner, () -> { check(run.state); run.stream.verifyDelivery(); return null; });
+                if (System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
+                if (run.text.isEmpty() || run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
+                run.state.history.add(new UserMessage(run.question)); run.state.history.add(new AssistantMessage(run.text.toString()));
+                terminate(run, "COMPLETED", null);
+            } catch (RuntimeException failure) { fail(run, failure); }
+        }
+    }
+    private void fail(Run run, Throwable failure) {
+        synchronized (run.state) {
+            String error = failure instanceof AiErrors.Failure known ? known.safeCode() : "upstream_failed";
+            if (Set.of("forbidden", "scope_changed", "conflict").contains(error)) invalidate(run.state);
+            else terminate(run, "FAILED", error);
+        }
+    }
+    private void terminate(Run run, String status, String error) {
+        if (!"RUNNING".equals(run.status)) return;
+        run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
+        if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }
+        if (!"COMPLETED".equals(status)) run.stream.close();
+    }
+    private void invalidate(State state) {
+        synchronized (state) {
+            state.closed = true;
+            if (state.active != null) terminate(state.active, "CANCELLED", "scope_changed");
+            state.history.clear(); state.runs.clear(); sessions.remove(state.view.sessionId(), state);
+        }
+    }
+    public void close(String id) { invalidate(owned(id)); }
     @Override public void authorize(AiExecutionContext context) {
         State state = sessions.get(context.scope().reference());
         if (state == null || !Objects.equals(context.scope().permissionVersion(), state.view.contextVersion())
                 || !Objects.equals(context.actorId(), state.owner.actor()) || !Objects.equals(context.organizationId(), state.owner.organization())
                 || !Objects.equals(context.proxyOrganizationId(), state.owner.proxy())) throw AiErrors.error("forbidden");
-        authorized(state.owner, () -> { check(state); return null; });
+        try { authorized(state.owner, () -> { check(state); return null; }); }
+        catch (RuntimeException failure) { invalidate(state); throw failure; }
     }
     @Override public void authorizeInput(AiExecutionContext context, Prompt prompt) { authorize(context); }
     private void check(State state) {
@@ -114,7 +237,7 @@ public class AiConversationManage implements AiFeature {
             if (!same(access.capture(), state.owner)) throw AiErrors.error("forbidden");
             scene(state.view.scene()).authorize(state.context);
         } catch (RuntimeException failure) {
-            state.closed = true; sessions.remove(state.view.sessionId(), state);
+            invalidate(state);
             throw failure instanceof AiErrors.Failure ? failure : AiErrors.error("forbidden");
         }
     }
@@ -143,8 +266,20 @@ public class AiConversationManage implements AiFeature {
         }
     }
     private State owned(String id) {
-        var owner = identity(); State state = sessions.get(id);
-        if (state == null || !same(owner, state.owner)) throw AiErrors.error("forbidden");
+        State state = sessions.get(id);
+        AiAccess.Identity owner;
+        try { owner = identity(); }
+        catch (RuntimeException failure) {
+            // A trusted logged-in actor may always retire their own stale state, even when current access was revoked.
+            if (state != null && RequestContextHolder.getRequestAttributes() != null && V3UserUtil.getLink() == null
+                    && Objects.equals(V3UserUtil.getUid(), state.owner.actor())) invalidate(state);
+            throw failure;
+        }
+        if (state == null) throw AiErrors.error("forbidden");
+        if (!same(owner, state.owner)) {
+            if (Objects.equals(owner.actor(), state.owner.actor())) invalidate(state);
+            throw AiErrors.error("forbidden");
+        }
         return state;
     }
     private AiAccess.Identity identity() {
@@ -157,7 +292,16 @@ public class AiConversationManage implements AiFeature {
     }
     private void expire() {
         long now = System.currentTimeMillis();
-        sessions.forEach((id, state) -> { if (state.view.expiresAt() <= now) { state.closed = true; sessions.remove(id, state); } });
+        sessions.forEach((id, state) -> {
+            synchronized (state) {
+                if (state.view.expiresAt() <= now) invalidate(state);
+                else if (state.active != null) {
+                    Run run = state.active;
+                    if (now >= run.stream.deadline()) terminate(run, "FAILED", "timeout");
+                    else if (now >= run.lease) invalidate(state);
+                }
+            }
+        });
     }
-    @PreDestroy public void destroy() { expiry.shutdownNow(); sessions.values().forEach(state -> state.closed = true); sessions.clear(); }
+    @PreDestroy public void destroy() { expiry.shutdownNow(); sessions.values().forEach(this::invalidate); sessions.clear(); }
 }

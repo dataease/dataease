@@ -13,5 +13,8 @@ public class AiConversationServer implements AiConversationApi {
     public List<Resource> resources() { return manage.resources(); }
     public Session open(Open request) { return manage.open(request); }
     public Answer turn(String id, Turn request) { return manage.turn(id, request); }
+    public Execution start(String id, Turn request) { return manage.start(id, request); }
+    public Events events(String id, String execution, long after) { return manage.events(id, execution, after); }
+    public Events stop(String id, String execution) { return manage.stop(id, execution); }
     public void close(String id) { manage.close(id); }
 }

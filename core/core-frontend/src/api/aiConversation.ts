@@ -35,3 +35,48 @@ export const sendConversationTurn = (id: string, contextVersion: string, text: s
   )
 export const closeConversation = (id: string) =>
   request.delete({ url: `/ai/conversations/${id}`, handleErrorLocally: true })
+
+export interface AiConversationExecution {
+  sessionId: string
+  executionId: string
+  contextVersion: string
+  status: 'RUNNING' | 'COMPLETED' | 'CANCELLED' | 'FAILED'
+  deadline: number
+}
+export interface AiConversationEvents {
+  sessionId: string
+  executionId: string
+  contextVersion: string
+  status: AiConversationExecution['status']
+  cursor: number
+  events: { sequence: number; type: string; text?: string; error?: string }[]
+}
+export const startConversationExecution = (id: string, contextVersion: string, text: string) =>
+  data<AiConversationExecution>(
+    request.post({
+      url: `/ai/conversations/${id}/executions`,
+      data: { contextVersion, text },
+      handleErrorLocally: true
+    })
+  )
+export const getConversationEvents = (
+  id: string,
+  execution: string,
+  after: number,
+  signal: AbortSignal
+) =>
+  data<AiConversationEvents>(
+    request.get({
+      url: `/ai/conversations/${id}/executions/${execution}/events`,
+      params: { after },
+      signal,
+      handleErrorLocally: true
+    })
+  )
+export const stopConversationExecution = (id: string, execution: string) =>
+  data<AiConversationEvents>(
+    request.post({
+      url: `/ai/conversations/${id}/executions/${execution}/stop`,
+      handleErrorLocally: true
+    })
+  )
