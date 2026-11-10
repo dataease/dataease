@@ -86,6 +86,10 @@ public final class SinkMaintenance {
     @Data
     public static class Column {
         private TableFieldDTO field;
+        /**
+         * 数据库返回的原始目标类型，仅用于展示，不代替标准类型校验
+         */
+        private String nativeType;
         private boolean nullable;
         private String defaultExpression;
         private String protectedReason;

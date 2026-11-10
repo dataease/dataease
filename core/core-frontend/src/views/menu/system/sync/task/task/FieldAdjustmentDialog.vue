@@ -30,6 +30,7 @@ import FullRefreshDialog from './FullRefreshDialog.vue'
 import ExecutionRecovery from './ExecutionRecovery.vue'
 import FieldChangeDetails from './FieldChangeDetails.vue'
 import FieldExecutionResults from './FieldExecutionResults.vue'
+import { maintenanceFieldType } from './fieldType'
 
 const { t } = useI18n()
 const emit = defineEmits<{ (event: 'changed'): void }>()
@@ -347,8 +348,11 @@ const targetType = (row: ITableField) => {
   const size = structure?.sizeLimits?.[row.fieldType] ? row.fieldSize : 0
   const precision = structure?.precisionLimits?.[row.fieldType] ? row.fieldPrecision : 0
   return (
-    row.fieldType +
-    (size ? `(${size}${precision ? `, ${precision}` : ''})` : precision ? `(${precision})` : '')
+    maintenanceFieldType(
+      row,
+      original.value.find(field => field.id === row.id),
+      structure
+    ) + (size ? `(${size}${precision ? `, ${precision}` : ''})` : precision ? `(${precision})` : '')
   )
 }
 const pendingDelete = (row: ITableField) => removed.value.some(field => field.id === row.id)

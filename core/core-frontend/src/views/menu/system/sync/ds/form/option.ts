@@ -38,6 +38,14 @@ export const dsTypes = [
             'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
+        type: 'doris',
+        name: 'Apache Doris',
+        catalog: 'OLAP',
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
+        extraParams:
+            'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+    },
+    {
         type: 'sqlServer',
         name: 'SQL Server',
         catalog: 'OLTP',
