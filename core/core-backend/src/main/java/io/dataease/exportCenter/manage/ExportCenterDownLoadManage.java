@@ -1,7 +1,10 @@
 package io.dataease.exportCenter.manage;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
@@ -117,6 +120,8 @@ public class ExportCenterDownLoadManage {
     private ChartDataServer chartDataServer;
     @Resource
     private VisualizationWatermarkRepository watermarkRepository;
+    @Resource
+    private ObjectMapper objectMapper;
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Resource
@@ -722,7 +727,16 @@ public class ExportCenterDownLoadManage {
         if (watermark == null || StringUtils.isBlank(watermark.getSettingContent())) {
             return;
         }
-        WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
+        WatermarkContentDTO watermarkContent;
+        try {
+            // 配置损坏必须中止导出，不能与合法 JSON null 一样跳过水印。
+            watermarkContent = objectMapper.readerFor(WatermarkContentDTO.class)
+                    .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                    .without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    .readValue(watermark.getSettingContent());
+        } catch (JsonProcessingException e) {
+            throw DEException.getException(Translator.get("i18n_watermark_config_invalid"));
+        }
         if (watermarkContent == null || !Boolean.TRUE.equals(watermarkContent.getEnable()) || !Boolean.TRUE.equals(watermarkContent.getExcelEnable())) {
             return;
         }
