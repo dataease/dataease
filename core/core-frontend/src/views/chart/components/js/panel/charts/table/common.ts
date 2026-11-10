@@ -57,3 +57,14 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'function-cfg': ['emptyDataStrategy'],
   threshold: ['tableThreshold']
 }
+
+export function getTableTooltipFields(type: string, xAxis: Axis[] = [], yAxis: Axis[] = []) {
+  const dimensions = xAxis.filter(field => field.groupType === 'd')
+  if (type === 'table-info') {
+    return dimensions
+  }
+  if (type === 'table-normal') {
+    return [...dimensions, ...yAxis].filter(field => !field.hide)
+  }
+  return []
+}
