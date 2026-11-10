@@ -30,6 +30,19 @@ const failureMessage = (error: unknown) => {
   }
   return tr('failed')
 }
+const validationStatus = (tool: AiConversationTool) => {
+  if (tool.name !== 'validate_sql' || tool.status !== 'SUCCEEDED' || !tool.result) return ''
+  try {
+    const result: unknown = JSON.parse(tool.result)
+    if (result && typeof result === 'object' && 'status' in result) {
+      const status = result.status
+      if (status === 'PASS' || status === 'INVALID' || status === 'UNSUPPORTED') return status
+    }
+  } catch {
+    return ''
+  }
+  return ''
+}
 const user = useUserStoreWithOut()
 const resources = ref<AiConversationResource[]>([])
 const resourceId = ref('')
@@ -305,6 +318,7 @@ onBeforeUnmount(() => {
           >
             <summary>
               {{ tr('tool') }} · {{ tool.name }} · {{ tr(`tool_${tool.status.toLowerCase()}`) }}
+              <span v-if="validationStatus(tool)"> · {{ validationStatus(tool) }}</span>
               <span
                 v-if="message.status !== 'RUNNING' && ['STARTED', 'RUNNING'].includes(tool.status)"
               >

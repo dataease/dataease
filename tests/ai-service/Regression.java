@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence(); KeyringRegression.run();
+        SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence(); KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
     private static void crypto() {

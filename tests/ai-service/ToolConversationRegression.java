@@ -78,7 +78,11 @@ public final class ToolConversationRegression {
             try {
                 var body = JSON.readTree(exchange.getRequestBody()); sent.add(body);
                 String content;
-                if (mode.get().equals("chain") && sent.size() <= 4) {
+                if (Set.of("validate-stop", "validate-revoke").contains(mode.get()) && sent.size() == 1) {
+                    content = call("validation-boundary", "validate_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
+                } else if (mode.get().equals("correction") && sent.size() <= 2) {
+                    content = call("validate-" + sent.size(), "validate_sql", JSON.writeValueAsString(Map.of("sql", sent.size() == 1 ? "SELECT TYPO FROM AI_PROBE" : "SELECT ID FROM AI_PROBE")));
+                } else if (mode.get().equals("chain") && sent.size() <= 4) {
                     content = call("chain-" + sent.size(), "get_table_fields", "{\"table\":\"AI_PROBE" + (sent.size() == 1 ? "" : sent.size()) + "\"}");
                 } else if (sent.size() == 1 && Set.of("unknown", "extra", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation").contains(mode.get())) {
                     content = switch (mode.get()) {
@@ -122,8 +126,8 @@ public final class ToolConversationRegression {
                 case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId(11L); ds.setName("Probe"); ds.setType("MySQL"); ds.setUpdateTime(1L); yield ds; }
                 case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Objects.equals(request.getDatasourceId(), 11L) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables");
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
-                    if (mode.get().equals("slow")) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
-                    if (mode.get().equals("revoke")) operationAllowed.set(false);
+                    if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
+                    if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
                     for (String tableName : mode.get().equals("chain") ? List.of("AI_PROBE", "AI_PROBE2", "AI_PROBE3", "AI_PROBE4") : List.of("AI_PROBE")) {
                         var table = new DatasetTableDTO(); table.setTableName(tableName); table.setName("Probe table"); table.setInfo("connection-secret"); tables.add(table);
@@ -185,6 +189,14 @@ public final class ToolConversationRegression {
             if (!result.path("status").asText().equals("COMPLETED") || !reads.equals(List.of("tables", "fields")) || !result.toString().contains("BIGINT") || result.toString().contains("sample-secret")) throw new AssertionError("fragmented field request must use exact existing metadata path and safe projection: " + result);
             if (!sent.get(1).path("messages").get(3).path("content").asText().contains("Identifier")) throw new AssertionError("real field projection did not return to model");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            sent.clear(); reads.clear(); mode.set("correction"); session = open(mvc);
+            result = terminal(mvc, start(mvc, session, "Validate and correct the unknown field"));
+            if (!result.path("status").asText().equals("COMPLETED") || sent.size() != 3
+                    || !sent.get(1).toString().contains("INVALID") || !sent.get(2).toString().contains("PASS")
+                    || !result.toString().contains("validate_sql") || !result.toString().contains("PASS"))
+                throw new AssertionError("static validation must return INVALID to model then revalidate corrected SQL as PASS: " + result);
+            if (!reads.equals(List.of("tables", "fields", "tables", "fields"))) throw new AssertionError("validator must read authorized metadata only");
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             for (String invalid : List.of("unknown", "extra", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation")) {
                 sent.clear(); reads.clear(); mode.set(invalid); session = open(mvc);
                 String run = start(mvc, session, "Invalid tool");
@@ -201,20 +213,25 @@ public final class ToolConversationRegression {
             sent.clear(); reads.clear(); mode.set("repeat"); session = open(mvc); result = terminal(mvc, start(mvc, session, "Repeat tools"));
             if (!result.path("status").asText().equals("FAILED") || sent.size() != 2 || reads.size() != 1) throw new AssertionError("repeated requests must terminate without executing again");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
-            sent.clear(); reads.clear(); mode.set("slow"); session = open(mvc); String stopped = start(mvc, session, "Slow metadata");
-            if (!toolEntered.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("metadata execution never started");
-            result = JSON.readTree(mvc.perform(post(stopped + "/stop")).andReturn().getResponse().getContentAsString());
-            if (!result.path("status").asText().equals("CANCELLED")) throw new AssertionError("stop must finish while tool is blocked");
-            mode.set("tables"); toolRelease.get().countDown(); Thread.sleep(100);
-            result = terminal(mvc, stopped);
-            if (sent.size() != 1 || result.toString().contains("SUCCEEDED")) throw new AssertionError("late tool result escaped cancellation");
-            result = terminal(mvc, start(mvc, session, "Follow up after stop"));
-            if (!result.path("status").asText().equals("COMPLETED") || sent.get(1).path("messages").size() != 2) throw new AssertionError("cancelled tool transcript entered history");
-            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
-            sent.clear(); reads.clear(); mode.set("revoke"); session = open(mvc); String revoked = start(mvc, session, "Revoke during metadata");
-            for (int attempt = 0; attempt < 100 && operationAllowed.get(); attempt++) Thread.sleep(20);
-            denied(mvc, revoked); operationAllowed.set(true); denied(mvc, revoked);
-            if (sent.size() != 1) throw new AssertionError("revoked metadata result reached next model");
+            for (String boundary : List.of("slow", "validate-stop")) {
+                toolEntered.set(new CountDownLatch(1)); toolRelease.set(new CountDownLatch(1));
+                sent.clear(); reads.clear(); mode.set(boundary); session = open(mvc); String stopped = start(mvc, session, "Slow tool metadata");
+                if (!toolEntered.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("metadata execution never started");
+                result = JSON.readTree(mvc.perform(post(stopped + "/stop")).andReturn().getResponse().getContentAsString());
+                if (!result.path("status").asText().equals("CANCELLED")) throw new AssertionError("stop must finish while tool is blocked");
+                mode.set("tables"); toolRelease.get().countDown(); Thread.sleep(100);
+                result = terminal(mvc, stopped);
+                if (sent.size() != 1 || result.toString().contains("SUCCEEDED")) throw new AssertionError("late tool result escaped cancellation");
+                result = terminal(mvc, start(mvc, session, "Follow up after stop"));
+                if (!result.path("status").asText().equals("COMPLETED") || sent.get(1).path("messages").size() != 2) throw new AssertionError("cancelled tool transcript entered history");
+                mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            }
+            for (String boundary : List.of("revoke", "validate-revoke")) {
+                sent.clear(); reads.clear(); mode.set(boundary); session = open(mvc); String revoked = start(mvc, session, "Revoke during tool metadata");
+                for (int attempt = 0; attempt < 100 && operationAllowed.get(); attempt++) Thread.sleep(20);
+                denied(mvc, revoked); operationAllowed.set(true); denied(mvc, revoked);
+                if (sent.size() != 1) throw new AssertionError("revoked metadata result reached next model");
+            }
             sent.clear(); reads.clear(); mode.set("input-results");
             setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 4000, 4096, 5, 2, null));
             session = open(mvc); result = terminal(mvc, start(mvc, session, "Read fields"));
@@ -233,7 +250,7 @@ public final class ToolConversationRegression {
                 catch (jakarta.servlet.ServletException failure) { if (!(failure.getCause() instanceof AiErrors.Failure)) throw failure; }
             }
             V3UserUtil.clear(); V3UserUtil.setUid(1L);
-            System.out.println("PASS dialogue actual SQL scene metadata tool roundtrip, split arguments/correlation, safe projections/history, invalid/out-of-scope tools, definitions/results input budget, global allocation, repeat bounds, cancel/late results and mid-tool READ revocation");
+            System.out.println("PASS dialogue actual SQL scene metadata and static SQL correction/revalidation tools, split arguments/correlation, safe projections/history, invalid/out-of-scope tools, definitions/results input budget, global allocation, repeat bounds, cancel/late results and mid-tool READ revocation");
         } finally {
             V3UserUtil.clear(); V3UserUtil.setUid(1L);
             if (manage != null) manage.destroy(); toolRelease.get().countDown(); transport.close(); server.stop(0); providerWorkers.shutdownNow();
