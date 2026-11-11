@@ -264,9 +264,11 @@ const edit = () => {
       if (nodeInfo.type === 'oracle' && !nodeInfo.configuration?.connectionType) {
         nodeInfo.configuration.connectionType = 'sid'
       }
-    })
-    .finally(() => {
       dialogVisible.value = true
+    })
+    .catch(() => {
+      // 权限不足或请求失败时保持抽屉关闭，错误提示由请求拦截器统一处理
+      dialogVisible.value = false
     })
 }
 const basicForm = ref()
