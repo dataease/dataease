@@ -7,11 +7,20 @@ export const routes: AppRouteRecordRaw[] = [
   ...(import.meta.env.DEV
     ? [
         {
-          path: '/demo/ai-assistant',
-          name: 'demo-ai-assistant',
+          // 页面准入的 pathValid 按路径层级检查，前缀需要注册为父路由。
+          path: '/demo',
+          name: 'development-demo',
           hidden: true,
           meta: { hidden: true },
-          component: () => import('@/views/demo/ai-assistant/index.vue')
+          children: [
+            {
+              path: 'ai-assistant',
+              name: 'demo-ai-assistant',
+              hidden: true,
+              meta: { hidden: true },
+              component: () => import('@/views/demo/ai-assistant/index.vue')
+            }
+          ]
         }
       ]
     : []),

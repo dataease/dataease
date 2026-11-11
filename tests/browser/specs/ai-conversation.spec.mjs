@@ -18,6 +18,33 @@ const send = async (page, text) => {
   await page.getByRole('button', { name: '发送', exact: true }).click()
 }
 
+test('registered Demo route passes the application permission path check', async ({ page }) => {
+  await page.route('**/route-check', (route) =>
+    route.fulfill({ contentType: 'text/html', body: '<div id="app"></div>' })
+  )
+  await page.goto('/route-check')
+  const access = await page.evaluate(async () => {
+    const { default: router } = await import('/src/router/index.ts')
+    const { pathValid, usePermissionStoreWithOut } = await import(
+      '/src/store/modules/permission.ts'
+    )
+    usePermissionStoreWithOut().clear()
+    return {
+      registered: router.resolve('/demo/ai-assistant').matched.length > 0,
+      allowed: pathValid('/demo/ai-assistant'),
+      unknownDemoAllowed: pathValid('/demo/unknown')
+    }
+  })
+  expect(access.registered).toBe(true)
+  expect(access.allowed).toBe(true)
+  expect(access.unknownDemoAllowed).toBe(false)
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.goto('/?view=conversation-route#/demo/ai-assistant')
+  await expect(page.getByRole('heading', { name: 'AI 对话 Demo（开发验收）' })).toBeVisible()
+})
+
 test('real page renders increments, deduplicates cursors, keeps execution while hidden and stops before follow-up', async ({
   page
 }) => {
