@@ -30,7 +30,7 @@ import FullRefreshDialog from './FullRefreshDialog.vue'
 import ExecutionRecovery from './ExecutionRecovery.vue'
 import FieldChangeDetails from './FieldChangeDetails.vue'
 import FieldExecutionResults from './FieldExecutionResults.vue'
-import { maintenanceFieldType } from './fieldType'
+import { maintenanceFieldType, normalizeFieldType } from './fieldType'
 import { fieldSignature as signature, getFieldChanges } from './fieldChanges'
 
 const { t } = useI18n()
@@ -64,6 +64,7 @@ const preview = ref<ITaskMaintenance>()
 const validationIssues = ref<IMaintenanceFieldIssue[]>([])
 const validationBlockers = ref<string[]>([])
 const confirmation = ref(false)
+const precisionAlignment = ref(false)
 const exclusive = ref(false)
 const deleteConfirmed = ref(false)
 const riskConfirmed = ref(false)
@@ -287,7 +288,8 @@ const locked = computed(
     !!uncertainOperation.value ||
     submitted.value ||
     ['RUNNING', 'CONNECTION_LOST'].includes(context.value?.initializationStatus) ||
-    !!context.value?.blockedReason
+    (!!context.value?.blockedReason &&
+      !(precisionAlignment.value && context.value.blockedCode === 'PRECISION_UNSPECIFIED'))
 )
 const processing = computed(
   () =>
@@ -323,6 +325,16 @@ const sourceType = (row: ITableField) => {
 }
 const targetType = (row: ITableField) => {
   const structure = context.value?.structure
+  if (normalizeFieldType(row.fieldType) === 'DECIMAL') {
+    const type = maintenanceFieldType(
+      row,
+      original.value.find(field => field.id === row.id),
+      structure
+    )
+    return row.fieldSize > 0
+      ? `${type}(${row.fieldSize}, ${row.fieldPrecision})`
+      : `${type}（${t('sync_maintenance.precision_unspecified')}）`
+  }
   const size = structure?.sizeLimits?.[row.fieldType] ? row.fieldSize : 0
   const precision = structure?.precisionLimits?.[row.fieldType] ? row.fieldPrecision : 0
   return (
@@ -333,6 +345,18 @@ const targetType = (row: ITableField) => {
     ) + (size ? `(${size}${precision ? `, ${precision}` : ''})` : precision ? `(${precision})` : '')
   )
 }
+const actualTargetType = (row: ITableField) => {
+  const column = context.value?.structure?.columns.find(
+    item => item.field.fieldName.toLowerCase() === row.fieldName.toLowerCase()
+  )
+  return column
+    ? column.nativeType?.toUpperCase() || targetType(column.field)
+    : t('sync_maintenance.actual_column_missing')
+}
+const showActualDefinition = computed(
+  () =>
+    activeTab.value === 'current' && !!context.value?.structure && !context.value.structureVerified
+)
 const pendingDelete = (row: ITableField) => removed.value.some(field => field.id === row.id)
 const protectedReason = (row: ITableField) =>
   context.value?.structure?.columns.find(
@@ -340,7 +364,8 @@ const protectedReason = (row: ITableField) =>
       column.field.fieldName ===
       (original.value.find(field => field.id === row.id)?.fieldName || row.fieldName)
   )?.protectedReason
-const editable = (row: ITableField) => !locked.value && !protectedReason(row)
+const editable = (row: ITableField) =>
+  !locked.value && !precisionAlignment.value && !protectedReason(row)
 const deletable = (row: ITableField) =>
   editable(row) && context.value.structure?.operations.includes('DELETE')
 
@@ -350,7 +375,11 @@ const ordinaryCurrent = computed(() => original.value.filter(row => !isProtected
 const ordinaryDraft = computed(() =>
   [...(form.value?.target.fieldList || []), ...removed.value].filter(row => !isProtected(row))
 )
-const protectedFields = computed(() => original.value.filter(isProtected))
+const protectedFields = computed(() =>
+  (precisionAlignment.value ? form.value?.target.fieldList || [] : original.value).filter(
+    isProtected
+  )
+)
 const currentRows = computed(() =>
   ordinaryCurrent.value.slice(
     (currentPagination.currentPage - 1) * currentPagination.pageSize,
@@ -464,6 +493,7 @@ const load = async (id: string, version: number, overview = false) => {
       targetFieldTypeList: response.data.fieldTypes
     },
     target: {
+      type: response.data.targetType,
       fieldList: deepCopy(original.value),
       datasourceId: 'maintenance',
       dsList: [
@@ -619,6 +649,7 @@ const open = async (id: string, name: string) => {
   changesVisible.value = false
   uncertainOperation.value = pendingSubmissions.get(id) || ''
   confirmation.value = false
+  precisionAlignment.value = false
   preview.value = undefined
   validationIssues.value = []
   validationBlockers.value = []
@@ -650,6 +681,7 @@ const open = async (id: string, name: string) => {
  */
 const startEditing = async () => {
   if (loading.value || !visible.value || !context.value) return
+  precisionAlignment.value = false
   const version = viewVersion
   const taskId = context.value.taskId
   stopPolling()
@@ -685,6 +717,38 @@ const startEditing = async () => {
   ) {
     activeTab.value = 'result'
   }
+}
+/**
+ * 历史缺失精度只生成配置校准草稿，预检查和正式提交仍由服务端核对实际结构与全部字段
+ */
+const startPrecisionAlignment = async () => {
+  if (loading.value || !context.value || context.value.blockedCode !== 'PRECISION_UNSPECIFIED')
+    return
+  const version = viewVersion
+  loading.value = true
+  error.value = ''
+  try {
+    if (!(await load(context.value.taskId, version)) || !isCurrentView(version)) return
+    if (context.value.blockedCode !== 'PRECISION_UNSPECIFIED' || !context.value.sourceFingerprint)
+      return
+    form.value.target.fieldList.forEach(field => {
+      if (normalizeFieldType(field.fieldType) !== 'DECIMAL' || field.fieldSize > 0) return
+      const actual = context.value.structure.columns.find(
+        column => column.field.fieldName.toLowerCase() === field.fieldName.toLowerCase()
+      )?.field
+      if (actual) {
+        field.fieldSize = actual.fieldSize
+        field.fieldPrecision = actual.fieldPrecision
+      }
+    })
+    precisionAlignment.value = true
+    activeTab.value = 'draft'
+  } catch (cause) {
+    if (isCurrentView(version)) showError(cause)
+  } finally {
+    if (isCurrentView(version)) loading.value = false
+  }
+  if (isCurrentView(version) && precisionAlignment.value) await inspect()
 }
 /**
  * 删除仍是本地草稿操作，清除该行旧检查结果，提交时由服务端重新校验整批
@@ -730,7 +794,8 @@ const request = (operationId: string): ITaskMaintenanceRequest => ({
   configFingerprint: context.value.configFingerprint,
   schemaFingerprint: context.value.schemaFingerprint,
   sourceFingerprint: context.value.sourceFingerprint,
-  changes: changes.value
+  changes: changes.value,
+  alignTargetPrecision: precisionAlignment.value || undefined
 })
 /**
  * 预检查失败留在编辑页保留全部草稿，通过后才进入执行确认，不在此处修改任务配置
@@ -794,6 +859,7 @@ const apply = async () => {
     ).data
     if (!isCurrentView(version)) return
     mergeStatus(result)
+    precisionAlignment.value = false
     form.value.target.fieldList = deepCopy(original.value)
     removed.value = []
     confirmation.value = false
@@ -912,6 +978,7 @@ const fullSubmitted = (taskId: string) => {
  */
 const discardDraft = () => {
   if (!form.value || submitted.value) return
+  precisionAlignment.value = false
   form.value.target.fieldList = deepCopy(original.value)
   removed.value = []
   validationIssues.value = []
@@ -1171,6 +1238,13 @@ defineExpose({ open })
         </div>
       </div>
       <div class="adjustment-content">
+        <el-alert
+          v-if="precisionAlignment"
+          :title="t('sync_maintenance.precision_alignment_help')"
+          type="info"
+          :closable="false"
+          show-icon
+        />
         <ExecutionRecovery
           v-if="context?.executionRecovery"
           :key="context.taskId + context.executionRecovery.logId"
@@ -1356,7 +1430,7 @@ defineExpose({ open })
               )
             }}</span>
             <el-button
-              v-if="activeTab === 'draft'"
+              v-if="activeTab === 'draft' && !precisionAlignment"
               :disabled="locked || !context.structure?.operations.includes('ADD')"
               @click="edit()"
               >{{ t('sync_task.add_field') }}</el-button
@@ -1374,10 +1448,11 @@ defineExpose({ open })
             :deletable="deletable"
             :status="activeTab === 'draft' ? rowStatus : undefined"
             :deleted="pendingDelete"
-            :show-actions="activeTab === 'draft'"
+            :show-actions="activeTab === 'draft' && !precisionAlignment"
             :compact="true"
             :source-type="sourceType"
             :target-type="targetType"
+            :actual-target-type="showActualDefinition ? actualTargetType : undefined"
             :protected-hint="protectedReason"
             :field-errors="activeTab === 'draft' ? fieldErrors : undefined"
             @page="
@@ -1411,7 +1486,15 @@ defineExpose({ open })
               <p class="context-label">{{ t('sync_maintenance.special') }}</p>
               <div v-for="field in protectedFields" :key="field.fieldName" class="protected-field">
                 <span>{{ field.fieldName }}</span
-                ><span class="context-label">{{ targetType(field) }}</span>
+                ><span class="context-label"
+                  >{{ showActualDefinition ? t('sync_maintenance.saved_definition') + '：' : ''
+                  }}{{ targetType(field) }}</span
+                >
+                <span v-if="showActualDefinition" class="context-label"
+                  >{{ t('sync_maintenance.actual_definition') }}：{{
+                    actualTargetType(field)
+                  }}</span
+                >
               </div>
             </el-collapse-item>
           </el-collapse>
@@ -1462,7 +1545,7 @@ defineExpose({ open })
           <el-button :disabled="loading" @click="cancelEditing">{{
             t('sync_maintenance.discard_draft')
           }}</el-button>
-          <el-button :disabled="loading" @click="reloadFields">{{
+          <el-button v-if="!precisionAlignment" :disabled="loading" @click="reloadFields">{{
             t('sync_maintenance.reload')
           }}</el-button>
           <el-button type="primary" :disabled="locked || !changes.length" @click="inspect">{{
@@ -1533,6 +1616,13 @@ defineExpose({ open })
         <el-button v-else-if="activeTab === 'result'" @click="activeTab = 'current'">{{
           t('sync_maintenance.back_fields')
         }}</el-button>
+        <el-button
+          v-else-if="context?.blockedCode === 'PRECISION_UNSPECIFIED' && !context.executionRecovery"
+          type="primary"
+          :disabled="loading"
+          @click="startPrecisionAlignment"
+          >{{ t('sync_maintenance.align_precision') }}</el-button
+        >
         <el-button v-else type="primary" :disabled="loading" @click="startEditing">{{
           t('sync_maintenance.start_adjustment')
         }}</el-button>
@@ -1584,13 +1674,15 @@ defineExpose({ open })
         <div class="impact-title">
           {{
             t(
-              preview.plan.requiresReinitialization
+              precisionAlignment
+                ? 'sync_maintenance.align_precision'
+                : preview.plan.requiresReinitialization
                 ? 'sync_maintenance.confirm_init_title'
                 : 'sync_maintenance.confirm_impact_title'
             )
           }}
         </div>
-        <p>
+        <p v-if="!precisionAlignment">
           {{
             t(
               preview.plan.requiresReinitialization
@@ -1603,7 +1695,7 @@ defineExpose({ open })
             )
           }}
         </p>
-        <p>
+        <p v-if="!precisionAlignment">
           {{
             t(
               preview.plan.requiresReinitialization
@@ -1613,7 +1705,7 @@ defineExpose({ open })
           }}
         </p>
         <p v-for="warning in preview.plan.warnings" :key="warning">{{ warning }}</p>
-        <details class="impact-details">
+        <details v-if="!precisionAlignment" class="impact-details">
           <summary>{{ t('sync_maintenance.confirm_more_impact') }}</summary>
           <p v-if="affectsDownstream">{{ t('sync_maintenance.downstream_help') }}</p>
           <p>{{ t('sync_maintenance.confirm_execution_flow') }}</p>
@@ -1636,7 +1728,13 @@ defineExpose({ open })
             v-if="preview.plan.riskConfirmationRequired"
             v-model="riskConfirmed"
             class="confirmation-option"
-            >{{ t('sync_maintenance.confirm_conversion_short') }}</el-checkbox
+            >{{
+              t(
+                precisionAlignment
+                  ? 'sync_maintenance.confirm_precision_alignment'
+                  : 'sync_maintenance.confirm_conversion_short'
+              )
+            }}</el-checkbox
           >
           <el-checkbox v-model="exclusive" class="confirmation-option">{{
             t('sync_maintenance.exclusive')

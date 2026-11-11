@@ -362,7 +362,13 @@ export interface ITaskMaintenance {
   processing?: boolean
   phase?: 'SCHEMA' | 'CONFIGURATION' | 'RECOVERY' | 'INITIALIZATION' | 'DONE'
   blockedReason?: string
-  blockedCode?: 'UNSUPPORTED_TARGET'
+  blockedCode?:
+    | 'UNSUPPORTED_TARGET'
+    | 'TARGET_READ_FAILED'
+    | 'SCHEMA_MISMATCH'
+    | 'PRECISION_UNSPECIFIED'
+    | 'SOURCE_READ_FAILED'
+    | 'TASK_RUNNING'
   error?: string
   logId?: string
   configFingerprint: string
@@ -437,6 +443,7 @@ export interface ITaskMaintenanceRequest {
   deleteConfirmed?: boolean
   exclusiveTargetConfirmed?: boolean
   riskConfirmed?: boolean
+  alignTargetPrecision?: boolean
 }
 
 /**

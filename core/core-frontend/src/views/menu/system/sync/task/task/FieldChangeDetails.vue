@@ -23,6 +23,8 @@ const attributes = [
  */
 const value = (field: ITableField | undefined, key: (typeof attributes)[number][0]) => {
   if (!field) return '-'
+  if (key === 'fieldSize' && ['DECIMAL', 'DECIMALV3'].includes(field.fieldType) && !field.fieldSize)
+    return t('sync_maintenance.precision_unspecified')
   if (key === 'fieldIndex')
     return t(field.fieldIndex ? 'sync_maintenance.index_enabled' : 'sync_maintenance.index_none')
   if (key === 'fieldSize' && !['CHAR', 'VARCHAR', 'DECIMAL', 'DECIMALV3'].includes(field.fieldType))

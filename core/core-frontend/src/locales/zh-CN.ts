@@ -4356,6 +4356,14 @@ export default {
     cleanup_scope: '按所选时间范围清理数据同步和字段变更日志，执行中及仍需恢复的记录将保留'
   },
   sync_maintenance: {
+    confirm_precision_alignment: '我已确认实际字段容量满足业务需要，按实际精度更新任务配置',
+    precision_unspecified: '未指定精度',
+    saved_definition: '任务保存配置',
+    actual_definition: '数据库实际结构',
+    actual_column_missing: '未找到对应字段',
+    align_precision: '按实际精度校准配置',
+    precision_alignment_help:
+      '本次仅将任务中未指定的数值精度校准为数据库实际值，不修改目标表、不扩大字段容量，也不执行数据同步。请先确认实际容量满足业务需要',
     menu: '字段调整',
     title: '调整目标字段',
     task_name: '任务',
@@ -4617,6 +4625,10 @@ export default {
     recovery_execution_failed: '已确认相关操作结束，本次运行按失败结束'
   },
   sync_task: {
+    decimal_precision_required:
+      '字段 {0}（源类型 {1}）的目标类型 {2} 尚未指定总精度，请根据实际数据明确设置总精度和小数位，避免使用数据库默认值',
+    decimal_parameters_invalid:
+      '字段 {0} 的目标类型 {2} 参数无效：总精度必须为 1～38 的整数，小数位必须为 0～总精度的整数',
     cleanup_result: '清理结果',
     cleanup_submitted: '已提交后台清理，可以关闭窗口继续操作',
     cleanup_empty: '没有需要清理的日志',
@@ -4757,7 +4769,7 @@ export default {
     source_field_type: '源类型',
     field_mapping_blocking_title: '当前有 {0} 个字段需要处理后才能保存',
     field_mapping_unknown_detail: '目标类型尚未确认，请选择目标数据库支持的字段类型',
-    field_mapping_blocking_save_tip: '还有 {0} 个字段的目标类型未确认：{1}，请处理后再保存',
+    field_mapping_blocking_save_tip: '还有 {0} 个字段的目标类型或参数需要处理：{1}，请处理后再保存',
     field_mapping_warning_title: '当前有 {0} 个字段存在同步风险（确认后可继续保存）',
     field_mapping_warning_item: '{0}：{1}',
     field_name_separator: '、',
