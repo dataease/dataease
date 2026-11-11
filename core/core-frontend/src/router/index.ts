@@ -3,14 +3,15 @@ import type { RouteRecordRaw } from 'vue-router_2'
 import type { App } from 'vue'
 
 export const routes: AppRouteRecordRaw[] = [
+  // 临时 Demo 入口：完成正式接入后，连同 views/demo/ai-assistant 一起清理。
   ...(import.meta.env.DEV
     ? [
         {
-          path: '/ai-assistant',
-          name: 'ai-assistant',
+          path: '/demo/ai-assistant',
+          name: 'demo-ai-assistant',
           hidden: true,
           meta: { hidden: true },
-          component: () => import('@/views/ai-assistant/index.vue')
+          component: () => import('@/views/demo/ai-assistant/index.vue')
         }
       ]
     : []),

@@ -24,7 +24,7 @@ export default {
     stop: '停止產生',
     hide: '收起助手',
     expand: '展開助手',
-    title: 'AI 對話開發驗收',
+    title: 'AI 對話 Demo（開發驗收）',
     description:
       '選擇目前工作空間有讀取權限的資料來源，圍繞目前 SQL 連續提問。請勿輸入業務樣本或憑據。修改 SQL 或資料來源會開啟新上下文；回答僅作建議，不執行或儲存 SQL。',
     resource: '資料來源',

@@ -72,6 +72,7 @@ test('real page renders increments, deduplicates cursors, keeps execution while 
     return route.fulfill({ json: session })
   })
   await selectResource(page)
+  await expect(page.getByRole('heading', { name: 'AI 对话 Demo（开发验收）' })).toBeVisible()
   await send(page, 'Explain this SQL')
   await expect(page.getByText('First increment', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '收起助手' }).click()
