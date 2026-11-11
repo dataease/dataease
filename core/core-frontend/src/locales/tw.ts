@@ -26,7 +26,33 @@ export default {
     expand: '展開助手',
     title: 'AI 對話 Demo（開發驗收）',
     description:
-      '選擇目前工作空間有讀取權限的資料來源，圍繞目前 SQL 連續提問。請勿輸入業務樣本或憑據。修改 SQL 或資料來源會開啟新上下文；回答僅作建議，不執行或儲存 SQL。',
+      '用於開發驗收的 SQL 對話助手，圍繞目前資料來源和 SQL 驗證多輪對話、串流輸出與受控工具呼叫。',
+    guide_title: '能力、邊界與使用注意',
+    guide_capabilities: '能做什麼',
+    guide_dialogue: '圍繞同一 SQL 連續追問，查看逐步輸出；可收起、展開和停止目前產生。',
+    guide_metadata:
+      'list_tables 讀取授權資料表名稱和註解；get_table_fields 讀取指定資料表的欄位名稱、類型和註解。',
+    guide_validation: 'validate_sql 靜態檢查候選 SQL，模型可依真實結果修正並再次校驗。',
+    guide_boundaries: '能力邊界',
+    guide_structure_only:
+      '僅透過 DE 現有權限讀取授權結構。不讀取業務樣本，不執行候選 SQL，不自動套用建議或儲存資源。',
+    guide_sql_scope:
+      '靜態校驗僅支援 MySQL：大小寫精確匹配的單表 SELECT、明確欄位、簡單別名、WHERE 比較和 ORDER BY。不支援 *、函數/聚合、JOIN、子查詢、LIMIT、註解或其他方言；寫入語句和多語句不得通過。',
+    guide_verdict:
+      'PASS 僅表示聲明範圍內的靜態語法和引用檢查通過，不保證資料庫可執行性或類型正確。INVALID 需修正，UNSUPPORTED 不代表已驗證。',
+    guide_notices: '使用前與注意事項',
+    guide_setup:
+      '先在 AI 服務中啟用功能並設定可用模型，再選擇有讀取權限的資料來源。模型需相容串流輸出和工具呼叫。',
+    guide_data:
+      '目前 SQL、提問和工具傳回的授權結構會傳送給設定的模型。僅使用隔離測試資料來源，不輸入敏感 SQL、業務樣本、密碼或 Token。',
+    guide_evidence:
+      '以「程式工具」卡片的實際狀態、參數和結果為準；模型文字不是執行憑證。「工具成功」不等於 SQL 校驗通過。',
+    guide_budget:
+      '每輪最多 4 次工具呼叫，共用時間及輸入/輸出限制。取消、逾時、失敗或截斷的內容為「未完成」，請勿作為可套用 SQL。',
+    guide_lifecycle: '會話與上下文',
+    guide_controls: '收起助手保留會話和進行中的產生；停止只結束目前產生，並保留之前已完成的對話。',
+    guide_session:
+      '對話不持久化。修改 SQL 或資料來源、結束會話、離開或重新整理會結束目前聊天；切換身分/工作空間還會清空 SQL 和訊息草稿。',
     resource: '資料來源',
     sql: '目前 SQL',
     message: '訊息',
