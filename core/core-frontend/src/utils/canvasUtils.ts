@@ -1,3 +1,5 @@
+import { hasErrorContract } from '@/config/axios/error'
+import { saveWithConflict } from '@/utils/canvasSaveConflict'
 import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
@@ -862,6 +864,11 @@ export function checkCanvasChangePre(callBack) {
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
+      if (hasErrorContract(rsp)) {
+        // New servers check under a lock at save time. Old servers keep their original precheck.
+        callBack()
+        return
+      }
       if (rsp && rsp.data === 'Repeat') {
         ElMessageBox.confirm(tips, {
           confirmButtonType: 'danger',
@@ -911,6 +918,8 @@ export async function canvasSaveWithParams(params, callBack) {
     ...curDvInfo.value,
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
+    checkHistory: !isDesktop(),
+    expectedContentId: curDvInfo.value.contentId ?? null,
     watermarkInfo: null
   }
 
@@ -939,7 +948,14 @@ export async function canvasSaveWithParams(params, callBack) {
       id: curDvInfo.value.id
     })
   }
-  return method(canvasInfo).then(async res => {
+  return saveWithConflict(canvasInfo, method, () =>
+    ElMessageBox.confirm(
+      (curDvInfo.value.type === 'dashboard'
+        ? t('work_branch.dashboard')
+        : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips'),
+      { confirmButtonType: 'danger', type: 'warning', autofocus: false, showClose: false }
+    )
+  ).then(async res => {
     if (method === updateCanvas) {
       // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
       const status = params?.status ? params?.status : res.data?.status

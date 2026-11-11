@@ -31,6 +31,8 @@ public enum ResultCode {
 
     DV_RESOURCE_UNCHECKED(50004, "%s个仪表板或数据大屏正在使用此数据集，无法删除"),
 
+    VERSION_CONFLICT(50005, "内容版本冲突"),
+
     /* 接口错误：60001-69999 */
     INTERFACE_INNER_INVOKE_ERROR(60001, "内部系统接口调用异常"),
     INTERFACE_OUTER_INVOKE_ERROR(60002, "外部系统接口调用异常"),

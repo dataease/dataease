@@ -1,6 +1,20 @@
-<!doctype html>
-<html><head><meta charset="UTF-8"><title>HMAC error regression</title></head>
-<body><script type="module">
-import { service } from '@/config/axios/service'
-window.hmacService = service
-</script></body></html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>HMAC error regression</title>
+  </head>
+  <body>
+    <script type="module">
+      import { service } from '@/config/axios/service'
+      import { DataEaseError, hasErrorContract } from '@/config/axios/error'
+      import { presentError } from '@/config/axios/errorPresenter'
+      import { saveWithConflict } from '@/utils/canvasSaveConflict'
+      window.DataEaseError = DataEaseError
+      window.hasErrorContract = hasErrorContract
+      window.presentError = presentError
+      window.saveWithConflict = saveWithConflict
+      window.hmacService = service
+    </script>
+  </body>
+</html>

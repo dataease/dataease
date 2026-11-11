@@ -25,7 +25,8 @@
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.5.15</spring-boot.version>
-        <tomcat.version>10.1.55</tomcat.version>
+        <jackson-bom.version>2.21.7</jackson-bom.version>
+        <tomcat.version>10.1.59</tomcat.version>
         <logback.version>1.5.34</logback.version>
         <netty.version>4.1.137.Final</netty.version>
         <maven.compiler.source>21</maven.compiler.source>
@@ -34,7 +35,7 @@
         <h2.version>2.2.220</h2.version>
         <knife4j.version>4.5.0</knife4j.version>
         <springdoc.version>2.8.14</springdoc.version>
-        <calcite-core.version>1.35.39</calcite-core.version>
+        <calcite-core.version>1.35.40</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
         <antlr.version>3.5.2</antlr.version>
         <java-jwt.version>3.12.1</java-jwt.version>
@@ -45,12 +46,14 @@
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
+        <httpclient5.version>5.6.3</httpclient5.version>
+        <httpcore5.version>5.4.3</httpcore5.version>
         <fesod.version>2.1.0-incubating</fesod.version>
         <poi.version>5.5.1</poi.version>
         <commons-io.version>2.21.0</commons-io.version>
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.exec.version>3.1.0</maven.exec.version>
-        <guava.version>33.7.1-jre</guava.version>
+        <guava.version>33.7.2-jre</guava.version>
         <gson.version>2.12.1</gson.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
@@ -66,7 +69,7 @@
         <xmlsec.version>2.3.5</xmlsec.version>
         <woodstox-core.version>7.1.0</woodstox-core.version>
         <assertj.version>3.27.7</assertj.version>
-        <mariadb.version>3.3.6</mariadb.version>
+        <mariadb.version>3.3.7</mariadb.version>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +85,13 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -105,6 +115,26 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!--
+              CVE-2026-54399 / CVE-2026-54428 / CVE-2026-64607：
+              httpcore5/h2 与 httpclient5 经 avatica-core 传递引入，应用代码未使用，
+              但仍强制升级（httpcore5/h2 >= 5.4.3，httpclient5 >= 5.6.3）。
+            -->
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis</groupId>

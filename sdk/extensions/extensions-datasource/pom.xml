@@ -13,6 +13,13 @@
 
     <dependencies>
         <!--calcite核心包-->
+        <!--
+          风险说明（CVE-2026-46718）：当前为 vendor 重打包的 1.35.39-de，
+          受影响范围 < 1.42。须保留 classifier=de，升级需 vendor 提供基于上游
+          >=1.42.0 的 -de 构件，不得改用无 classifier 的官方构件。
+          当前代码不解析 Calcite model.json / schemaFactory / materialization，
+          未暴露该 CVE 的类选择输入。
+        -->
         <dependency>
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>

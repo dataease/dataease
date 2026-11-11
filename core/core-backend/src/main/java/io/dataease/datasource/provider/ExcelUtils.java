@@ -585,13 +585,25 @@ public class ExcelUtils {
     }
 
     public ExcelFileData parseRemoteExcel(RemoteExcelRequest remoteExcelRequest) throws DEException, FileNotFoundException {
-        Map<String, String> fileNames = downLoadRemoteExcel(remoteExcelRequest);
+        Map<String, String> fileNames;
+        try {
+            fileNames = downLoadRemoteExcel(remoteExcelRequest);
+        } catch (DEException e) {
+            if (e.getCategory() != null) throw e;
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
+        } catch (RuntimeException | FileNotFoundException e) {
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
+        }
         try (FileInputStream fileInputStream = new FileInputStream(path + fileNames.get("tranName"))) {
+            String remoteName = fileNames.get("tranName").toLowerCase(Locale.ROOT);
+            if (!remoteName.endsWith(".csv") && !remoteName.endsWith(".xls") && !remoteName.endsWith(".xlsx")) {
+                throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_unsupported_file_format");
+            }
             List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
             try {
                 returnSheetDataList = parseExcel(fileNames.get("tranName"), fileInputStream, true, fileNames.get("fileName")).stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
             } catch (Exception e) {
-                DEException.throwException(e);
+                throw io.dataease.exception.RemoteFileErrors.parse(e);
             }
             for (ExcelSheetData excelSheetData : returnSheetDataList) {
                 excelSheetData.setLastUpdateTime(System.currentTimeMillis());
@@ -676,13 +688,13 @@ public class ExcelUtils {
         } else if (remoteExcelRequest.getUrl().trim().startsWith("ftp")) {
             fileNames = downLoadFromFtp(remoteExcelRequest);
         } else {
-            DEException.throwException(Translator.get("i18n_unsupported_protocol"));
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_unsupported_protocol");
         }
         try {
             validateRemoteWorkbook(java.nio.file.Path.of(path, fileNames.get("tranName")));
         } catch (IOException e) {
             FileUtils.deleteFile(path + fileNames.get("tranName"));
-            DEException.throwException(e);
+            throw io.dataease.exception.RemoteFileErrors.parse(e);
         }
         return fileNames;
     }
@@ -697,7 +709,7 @@ public class ExcelUtils {
             byte[] buffer = new byte[8192];
             while (items.hasMoreElements()) {
                 var entry = items.nextElement();
-                if (++entries > 10000) throw new IOException(Translator.get("i18n_remote_zip_entries"));
+                if (++entries > 10000) throw new RemoteTransfer.LimitExceededException(Translator.get("i18n_remote_zip_entries"));
                 long entryBytes = 0;
                 try (InputStream input = zip.getInputStream(entry)) {
                     int n;
@@ -705,7 +717,7 @@ public class ExcelUtils {
                         entryBytes += n; total += n;
                         validateRemoteWorkbookSize(entryBytes, total, entry.getCompressedSize());
                         if (System.nanoTime() >= deadline || Thread.currentThread().isInterrupted()) {
-                            throw new IOException(Translator.get("i18n_remote_transfer_timeout"));
+                            throw new RemoteTransfer.LimitExceededException(Translator.get("i18n_remote_transfer_timeout"));
                         }
                     }
                 }
@@ -716,7 +728,7 @@ public class ExcelUtils {
     static void validateRemoteWorkbookSize(long entryBytes, long totalBytes, long compressedBytes) throws IOException {
         if (entryBytes > REMOTE_WORKBOOK_ENTRY_BYTES || totalBytes > REMOTE_WORKBOOK_TOTAL_BYTES
                 || (entryBytes > 1024 * 1024 && entryBytes > 100 * Math.max(1, compressedBytes))) {
-            throw new IOException(Translator.get("i18n_remote_zip_size"));
+            throw new RemoteTransfer.LimitExceededException(Translator.get("i18n_remote_zip_size"));
         }
     }
 
@@ -1241,9 +1253,9 @@ public class ExcelUtils {
             try { java.nio.file.Files.deleteIfExists(java.nio.file.Path.of(localFilePath)); }
             catch (IOException cleanup) { e.addSuppressed(cleanup); }
             if (StringUtils.containsIgnoreCase(e.getMessage(), "Invalid username/password")) {
-                DEException.throwException(Translator.get("i18n_ftp_invalid_credentials"));
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_ftp_invalid_credentials").causedBy(e);
             }
-            DEException.throwException(Translator.get("i18n_ftp_download_failed"));
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
         }
         return fileNames;
     }

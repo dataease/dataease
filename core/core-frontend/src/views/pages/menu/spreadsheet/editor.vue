@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import {
   computed,
   reactive,
@@ -592,7 +594,7 @@ const persistSpreadsheet = async (
   } catch (e) {
     if (!isCurrentSession(revision)) return undefined
     console.error(e)
-    ElMessage.error(t('spreadsheet.save_error'))
+    presentError(e, t('spreadsheet.save_error'))
     return undefined
   } finally {
     saving.value = false
@@ -632,7 +634,7 @@ const handlePublish = async () => {
     await publishSavedSpreadsheet(saved.id)
   } catch (error) {
     console.error(error)
-    ElMessage.error(t('spreadsheet.publish_error'))
+    presentError(error, t('spreadsheet.publish_error'))
   } finally {
     publishing.value = false
   }
@@ -651,7 +653,7 @@ const resourceOptFinish = async (destination: SaveDestination) => {
     await publishSavedSpreadsheet(result.id)
   } catch (error) {
     console.error(error)
-    ElMessage.error(t('spreadsheet.publish_error'))
+    presentError(error, t('spreadsheet.publish_error'))
   } finally {
     publishing.value = false
     pendingPublish.value = false
@@ -714,7 +716,7 @@ const handleRecoverPublished = async () => {
     if (!isCurrentSession(revision)) return
     console.error(error)
     loading.value = false
-    ElMessage.error(t('spreadsheet.recover_publish_error'))
+    presentError(error, t('spreadsheet.recover_publish_error'))
   } finally {
     recovering.value = false
   }
@@ -743,7 +745,7 @@ const handleCancelPublish = async () => {
     ElMessage.success(t('spreadsheet.cancel_publish_success'))
   } catch (error) {
     console.error(error)
-    ElMessage.error(t('spreadsheet.cancel_publish_error'))
+    presentError(error, t('spreadsheet.cancel_publish_error'))
   } finally {
     publishing.value = false
   }
@@ -992,7 +994,7 @@ const loadSpreadsheet = async () => {
   } catch (e) {
     if (!isCurrentSession(revision) || controller.signal.aborted) return
     console.error(e)
-    ElMessage.error(t('spreadsheet.load_error'))
+    presentError(e, t('spreadsheet.load_error'))
     loading.value = true
   }
 }

@@ -75,6 +75,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...TABLE_EDITOR_PROPERTY_INNER,
+    'tooltip-selector': [...TABLE_EDITOR_PROPERTY_INNER['tooltip-selector'], 'tableDisplayFields'],
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
       'tableHeaderSort',
@@ -437,7 +438,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const { show } = tooltip
     if (show) {
       newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
-      newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
+      newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta, chart))
+      if (tooltip.tableDisplayFields?.length) {
+        newChart.on(S2Event.MERGED_CELLS_HOVER, event => this.showTooltip(newChart, event, meta))
+      }
     }
     // header resize
     newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))

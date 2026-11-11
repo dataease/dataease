@@ -1686,7 +1686,10 @@ export class SortTooltip extends BaseTooltip {
     const container = this['getContainer']()
     // 排序菜单复用内容提示容器，在测量位置前恢复菜单布局
     Object.assign(container.style, {
-      width: 'auto', minWidth: '80px', textAlign: 'left'
+      width: 'auto',
+      minWidth: '80px',
+      textAlign: 'left',
+      padding: this.spreadsheet.options.tooltip.style?.padding
     })
     // 用 vue 手动 patch
     const vNode = createVNode(TableTooltip, {
@@ -1953,7 +1956,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
   }
 }
 
-function getTooltipPosition(event) {
+export function getTooltipPosition(event) {
   const s2Instance = event.s2Instance
   if (!s2Instance) {
     return {x: event.x + 15, y: event.y}
@@ -1971,6 +1974,35 @@ function getTooltipPosition(event) {
   const y = Number.isFinite(event.clientY)
     ? (event.clientY - canvasRect.top) / scaleY
     : event.y
+  const tableContent: HTMLElement | undefined = event.tableTooltipContent
+  if (tableContent) {
+    // 只使用当前可见的画布区域，兼容大屏缩放和移动端的窄视口。
+    const viewport = window.visualViewport
+    const viewportLeft = viewport?.offsetLeft ?? 0
+    const viewportTop = viewport?.offsetTop ?? 0
+    const left = Math.max(0, (viewportLeft - canvasRect.left) / scaleX)
+    const top = Math.max(0, (viewportTop - canvasRect.top) / scaleY)
+    const right = Math.min(
+      width,
+      (viewportLeft + (viewport?.width ?? window.innerWidth) - canvasRect.left) / scaleX
+    )
+    const bottom = Math.min(
+      height,
+      (viewportTop + (viewport?.height ?? window.innerHeight) - canvasRect.top) / scaleY
+    )
+    const container = s2Instance.tooltip.getContainer()
+    container.style.padding = '0'
+    tableContent.style.maxWidth = `${Math.max(0, Math.min(400, right - left))}px`
+    // 高度最多占可见区一半，确保提示能贴在触点上方或下方，不遮住触点。
+    tableContent.style.maxHeight = `${Math.max(0, (bottom - top) / 2 - 1)}px`
+    const { offsetWidth, offsetHeight } = container
+    const anchorY = Math.max(top, Math.min(y, bottom))
+    const tooltipY = anchorY + offsetHeight < bottom ? anchorY + 1 : anchorY - offsetHeight
+    return {
+      x: Math.max(left, Math.min(x, right - offsetWidth)),
+      y: Math.max(top, tooltipY)
+    }
+  }
   const result = {x: x + 15, y}
   const {offsetHeight, offsetWidth} = s2Instance.tooltip.getContainer()
   if (offsetWidth > width) {

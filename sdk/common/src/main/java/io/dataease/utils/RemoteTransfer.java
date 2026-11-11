@@ -54,12 +54,16 @@ public final class RemoteTransfer implements AutoCloseable {
     public void checkLength(long size) throws IOException {
         if (expired || System.nanoTime() >= deadline || Thread.currentThread().isInterrupted()) {
             abort.run();
-            throw new IOException(Translator.get("i18n_remote_transfer_timeout"));
+            throw new java.net.SocketTimeoutException(Translator.get("i18n_remote_transfer_timeout"));
         }
         if (size > limit) {
             abort.run();
-            throw new IOException(Translator.get("i18n_remote_transfer_size", limit));
+            throw new LimitExceededException(Translator.get("i18n_remote_transfer_size", limit));
         }
+    }
+
+    public static final class LimitExceededException extends IOException {
+        public LimitExceededException(String message) { super(message); }
     }
 
     public InputStream wrap(InputStream input) {
@@ -74,7 +78,13 @@ public final class RemoteTransfer implements AutoCloseable {
                 if (eof) return -1;
                 if (length == 0) return 0;
                 checkLength(count);
-                int n = in.read(bytes, offset, (int) Math.min(length, limit - count + 1));
+                int n;
+                try {
+                    n = in.read(bytes, offset, (int) Math.min(length, limit - count + 1));
+                } catch (IOException e) {
+                    checkLength(count); // If the deadline aborted this read, retain the timeout type.
+                    throw e;
+                }
                 if (n < 0) { eof = true; close(); return -1; }
                 count += n;
                 checkLength(count);
