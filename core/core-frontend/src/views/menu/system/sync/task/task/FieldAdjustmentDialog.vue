@@ -440,11 +440,12 @@ const locateIssue = () => {
   if (!pendingDelete(row)) edit(row)
 }
 /**
- * 把服务器字段复制成独立草稿，复用字段表单时只提供所需能力，避免携带或伪造数据源连接配置
+ * 读取保存配置并复制成独立草稿，概览省略字段编辑专用元数据
+ * 复用字段表单时只提供所需能力，避免携带或伪造数据源连接配置
  */
-const load = async (id: string, version: number) => {
+const load = async (id: string, version: number, overview = false) => {
   const polling = pollVersion
-  const response = await getTaskMaintenanceApi(id)
+  const response = await getTaskMaintenanceApi(id, overview)
   if (!isCurrentView(version) || polling !== pollVersion) return false
   context.value = response.data
   original.value = (response.data.fields || []).map(field => ({ ...field, id: generateID() }))
@@ -622,7 +623,8 @@ const open = async (id: string, name: string) => {
   error.value = ''
   loading.value = true
   try {
-    if (!(await load(id, version)) || !isCurrentView(version)) return
+    // 复用只读概览参数，仅跳过字段编辑元数据，不会发起全量同步
+    if (!(await load(id, version, true)) || !isCurrentView(version)) return
     if (uncertainOperation.value && context.value.operationId === uncertainOperation.value) {
       uncertainOperation.value = ''
       pendingSubmissions.delete(id)
@@ -635,6 +637,40 @@ const open = async (id: string, name: string) => {
     if (isCurrentView(version)) showError(cause)
   } finally {
     if (isCurrentView(version)) loading.value = false
+  }
+}
+/**
+ * 失败后允许重新读取完整上下文，仍须通过原编辑门禁才能进入草稿
+ * 不沿用概览的字段和指纹作为编辑基线
+ */
+const startEditing = async () => {
+  if (loading.value || !visible.value || !context.value) return
+  const version = viewVersion
+  const taskId = context.value.taskId
+  stopPolling()
+  loading.value = true
+  error.value = ''
+  try {
+    if (!(await load(taskId, version)) || !isCurrentView(version)) return
+  } catch (cause) {
+    if (isCurrentView(version)) showError(cause)
+    return
+  } finally {
+    if (isCurrentView(version)) {
+      loading.value = false
+      if (context.value?.state === 'APPLYING' || context.value?.state === 'REINIT_REQUIRED')
+        pollTimer = setTimeout(poll, 2000)
+    }
+  }
+  if (!isCurrentView(version) || !context.value) return
+  if (!locked.value) {
+    activeTab.value = 'draft'
+  } else if (
+    submitted.value ||
+    (context.value.state === 'REINIT_REQUIRED' &&
+      ['RUNNING', 'CONNECTION_LOST'].includes(context.value.initializationStatus))
+  ) {
+    activeTab.value = 'result'
   }
 }
 /**
@@ -1451,7 +1487,7 @@ defineExpose({ open })
               <el-button :disabled="loading" @click="activeTab = 'result'">{{
                 t('sync_maintenance.back_result')
               }}</el-button>
-              <el-button :disabled="locked" type="primary" @click="activeTab = 'draft'">{{
+              <el-button :disabled="loading" type="primary" @click="startEditing">{{
                 t('sync_maintenance.start_adjustment')
               }}</el-button>
             </template>
@@ -1472,7 +1508,7 @@ defineExpose({ open })
         <el-button v-else-if="activeTab === 'result'" @click="activeTab = 'current'">{{
           t('sync_maintenance.back_fields')
         }}</el-button>
-        <el-button v-else type="primary" :disabled="locked" @click="activeTab = 'draft'">{{
+        <el-button v-else type="primary" :disabled="loading" @click="startEditing">{{
           t('sync_maintenance.start_adjustment')
         }}</el-button>
       </div>
