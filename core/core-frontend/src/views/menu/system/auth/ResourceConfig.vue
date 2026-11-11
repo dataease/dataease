@@ -283,6 +283,7 @@ const selectFirstItem = () => {
         selectedResourceId.value = validNode['id']
         selectedResourceOid.value = validNode['oid']
         selectedResourceName.value = validNode['name']
+        getColumn(selectedResourceType.value)
         loadPermission(getSubjectType())
         resourceTreeRef?.value?.setCurrentKey(validNode['id'])
       })
@@ -297,6 +298,7 @@ const selectFirstItem = () => {
       selectedResourceId.value = node['id']
       selectedResourceOid.value = node['oid']
       selectedResourceName.value = node['name']
+      getColumn(selectedResourceType.value)
       loadPermission(getSubjectType())
       resourceTreeRef?.value?.setCurrentKey(node['id'])
     })
