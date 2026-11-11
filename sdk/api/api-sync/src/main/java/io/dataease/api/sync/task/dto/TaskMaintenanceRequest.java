@@ -37,4 +37,8 @@ public class TaskMaintenanceRequest {
     private boolean deleteConfirmed;
     private boolean exclusiveTargetConfirmed;
     private boolean riskConfirmed;
+    /**
+     * 仅将历史未指定的数值精度校准为已读取的实际值，不修改目标表
+     */
+    private boolean alignTargetPrecision;
 }

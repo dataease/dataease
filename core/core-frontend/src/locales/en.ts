@@ -4502,6 +4502,15 @@ export default {
       'Clear data synchronization and field change logs in the selected time range. Records in progress or needed for recovery are retained.'
   },
   sync_maintenance: {
+    confirm_precision_alignment:
+      'I confirm the actual column capacity meets business needs and agree to update the task configuration to match',
+    precision_unspecified: 'precision unspecified',
+    saved_definition: 'Saved task configuration',
+    actual_definition: 'Actual database schema',
+    actual_column_missing: 'Column not found',
+    align_precision: 'Align precision with database',
+    precision_alignment_help:
+      'Only fill unspecified numeric precision in the task configuration using actual database values. This does not alter the table, increase capacity, or synchronize data. Confirm that the current capacity meets your business needs',
     menu: 'Field adjustment',
     title: 'Adjust target fields',
     task_name: 'Task',
@@ -4801,6 +4810,10 @@ export default {
     recovery_execution_failed: 'Related operations have ended; end this run as failed'
   },
   sync_task: {
+    decimal_precision_required:
+      'Field {0} (source type {1}) has no explicit precision for target type {2}. Set precision and scale based on the actual data instead of relying on database defaults',
+    decimal_parameters_invalid:
+      'Invalid parameters for target type {2} of field {0}: precision must be an integer from 1 to 38, and scale an integer from 0 to precision',
     cleanup_result: 'Cleanup result',
     cleanup_submitted:
       'Background cleanup submitted. You can close this window and continue working.',
@@ -4953,7 +4966,7 @@ export default {
     field_mapping_unknown_detail:
       'The target type has not been confirmed. Select a field type supported by the target database',
     field_mapping_blocking_save_tip:
-      '{0} target field types are still unresolved: {1}. Resolve them before saving',
+      'Target types or parameters need attention for {0} fields: {1}. Resolve them before saving',
     field_mapping_warning_title:
       '{0} fields have synchronization risks (you can confirm and continue saving)',
     field_mapping_warning_item: '{0}: {1}',

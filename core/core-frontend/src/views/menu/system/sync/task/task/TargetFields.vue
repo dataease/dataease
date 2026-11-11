@@ -25,6 +25,7 @@ const props = withDefaults(
     compact?: boolean
     sourceType?: (row: ITableField) => string
     targetType?: (row: ITableField) => string
+    actualTargetType?: (row: ITableField) => string
     protectedHint?: (row: ITableField) => string
     deletable?: (row: ITableField) => boolean
     fieldErrors?: (row: ITableField) => string[]
@@ -92,7 +93,11 @@ const rowClassName = ({ row }: { row: ITableField }) =>
           }}</el-tag>
         </div>
         <small class="field-type"
-          >{{ targetType(row) }}{{ row.fieldIndex ? ` · ${indexLabel}` : '' }}</small
+          >{{ actualTargetType ? t('sync_maintenance.saved_definition') + '：' : ''
+          }}{{ targetType(row) }}{{ row.fieldIndex ? ` · ${indexLabel}` : '' }}</small
+        >
+        <small v-if="actualTargetType" class="field-type"
+          >{{ t('sync_maintenance.actual_definition') }}：{{ actualTargetType(row) }}</small
         >
         <small v-if="protectedHint(row)" class="field-type">{{ protectedHint(row) }}</small>
         <small v-for="message in fieldErrors?.(row)" :key="message" class="field-error">{{

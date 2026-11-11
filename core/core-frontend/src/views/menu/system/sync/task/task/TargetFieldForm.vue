@@ -7,7 +7,7 @@ import type { FormInstance } from 'element-plus-secondary'
 import { ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
 import { includes } from 'lodash-es'
-import { maintenanceFieldType, normalizeFieldType } from './fieldType'
+import { decimalParameterIssue, maintenanceFieldType, normalizeFieldType } from './fieldType'
 
 const { t } = useI18n()
 const dialogVisible = ref(false)
@@ -134,6 +134,8 @@ const sourceFieldType = computed(() => {
 })
 
 const fieldMappingMessage = computed(() => {
+  const issue = decimalParameterIssue(state.form, form.value.target.type)
+  if (issue) return t(issue, [state.form.fieldName, sourceFieldType.value, state.form.fieldType])
   if (state.form.fieldMappingMessage) {
     return state.form.fieldMappingMessage
   }
@@ -142,7 +144,10 @@ const fieldMappingMessage = computed(() => {
     : ''
 })
 const fieldMappingMessageType = computed(() =>
-  state.form.fieldType?.trim().toUpperCase() === 'UNKNOWN' ? 'error' : 'warning'
+  state.form.fieldType?.trim().toUpperCase() === 'UNKNOWN' ||
+  decimalParameterIssue(state.form, form.value.target.type)
+    ? 'error'
+    : 'warning'
 )
 
 /**
@@ -265,11 +270,15 @@ const commentMaxLength = computed(() =>
 const sizeMax = computed(() =>
   props.adjustmentMode
     ? props.maintenanceStructure?.sizeLimits?.[normalizeFieldType(state.form.fieldType)]
+    : form.value.target.type === 'doris' && normalizeFieldType(state.form.fieldType) === 'DECIMAL'
+    ? 38
     : 100000000
 )
 const precisionMax = computed(() =>
   props.adjustmentMode
     ? props.maintenanceStructure?.precisionLimits?.[normalizeFieldType(state.form.fieldType)]
+    : form.value.target.type === 'doris' && normalizeFieldType(state.form.fieldType) === 'DECIMAL'
+    ? state.form.fieldSize || 38
     : 20
 )
 
@@ -467,6 +476,10 @@ const resetForm = () => {
  */
 const saveForm = () => {
   if (props.adjustmentMode && props.readOnly) return
+  if (decimalParameterIssue(state.form, form.value.target.type)) {
+    ElMessage.warning(fieldMappingMessage.value)
+    return
+  }
   if (fieldForm.value) {
     if (props.adjustmentMode && typeDisabled(state.form.fieldType)) return
     if (

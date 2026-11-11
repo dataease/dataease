@@ -13,6 +13,28 @@ export const normalizeFieldType = (fieldType?: string) => {
 }
 
 /**
+ * Doris 数值容量必须明确指定，其他目标保留各自对无界数值类型的支持
+ */
+export const decimalParameterIssue = (
+  field: { fieldType?: string; fieldSize?: number; fieldPrecision?: number },
+  targetType?: string
+) => {
+  if (targetType?.toLowerCase() !== 'doris' || normalizeFieldType(field.fieldType) !== 'DECIMAL')
+    return ''
+  if (!field.fieldSize) return 'sync_task.decimal_precision_required'
+  if (
+    !Number.isInteger(field.fieldSize) ||
+    field.fieldSize < 1 ||
+    field.fieldSize > 38 ||
+    !Number.isInteger(field.fieldPrecision) ||
+    field.fieldPrecision < 0 ||
+    field.fieldPrecision > field.fieldSize
+  )
+    return 'sync_task.decimal_parameters_invalid'
+  return ''
+}
+
+/**
  * 未更换类型的字段沿用数据库原始名称，缺少元数据时不猜测版本
  */
 export const maintenanceFieldType = (
