@@ -4384,6 +4384,7 @@ export default {
     protected_fields: '受保护字段（{0}）',
     special: '特殊字段，不可调整',
     start_adjustment: '修改字段',
+    reload: '重新读取',
     confirm_field: '确认修改',
     draft_saved: '已更新本次编辑，确认调整后才会生效',
     added: '待新增',

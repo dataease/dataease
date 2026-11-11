@@ -4533,6 +4533,7 @@ export default {
     protected_fields: 'Protected fields ({0})',
     special: 'Protected fields cannot be adjusted',
     start_adjustment: 'Edit fields',
+    reload: 'Reload',
     confirm_field: 'Confirm changes',
     draft_saved: 'Draft updated. Changes take effect only after you confirm the adjustment.',
     added: 'To be added',
