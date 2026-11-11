@@ -888,10 +888,29 @@ const diffArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   const idMapOld = oldArr.map(ele => ele.id)
   const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
+  const retainedFields = oldArr
+    .filter(ele => idMapNew.includes(ele.id))
+    .map(ele => {
+      const newField = newArr.find(field => field.id === ele.id)
+      if (
+        ele.extField !== 0 ||
+        newField.deExtractType == null ||
+        (ele.type === newField.type && ele.deExtractType === newField.deExtractType)
+      ) {
+        return ele
+      }
+      return {
+        ...ele,
+        type: newField.type,
+        deExtractType: newField.deExtractType,
+        deType: ele.deType === ele.deExtractType ? newField.deType : ele.deType,
+        deTypeArr: undefined
+      }
+    })
   return cloneDeep([
     ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
     ...arr,
-    ...oldArr.filter(ele => idMapNew.includes(ele.id))
+    ...retainedFields
   ])
 }
 
