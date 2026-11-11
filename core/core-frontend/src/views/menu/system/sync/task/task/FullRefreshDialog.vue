@@ -54,7 +54,7 @@ const open = async (taskId: string) => {
   visible.value = true
   loading.value = true
   try {
-    const response = await getTaskMaintenanceApi(taskId)
+    const response = await getTaskMaintenanceApi(taskId, true)
     if (isCurrentView(version)) data.value = response.data
   } catch (cause) {
     if (isCurrentView(version)) showError(cause)
