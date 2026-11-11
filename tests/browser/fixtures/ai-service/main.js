@@ -9,7 +9,7 @@ import AiRecords from '@/views/pages/system/ai-records/index.vue'
 
 const query = new URLSearchParams(location.search)
 if (query.get('view') === 'conversation') {
-  const { default: Conversation } = await import('@/views/ai-assistant/index.vue')
+  const { default: Conversation } = await import('@/views/demo/ai-assistant/index.vue')
   createApp(Conversation).use(ElementPlus).mount('#app')
 } else if (query.get('view') === 'ai-menu') {
   const recordsOnly = query.get('access') === 'records'
