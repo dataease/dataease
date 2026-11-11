@@ -35,6 +35,7 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.provider.ExcelFileGuard;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.AuthResourceEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.datasource.type.H2;
@@ -1174,6 +1175,12 @@ public class DatasourceServer implements DatasourceApi {
                 throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_configuration_type_mismatch"));
             }
             originals = JsonUtil.parseList(stored.getConfiguration(), listTypeReference);
+        } else {
+            // 新建 API 数据源的测试请求：要求数据源菜单管理权限，避免任意登录用户触发 SSRF
+            if (V3UserUtil.getLink() != null || !corePermissionManage.checkAuth(
+                    new BusiPerCheckDTO(AuthResourceEnum.DATASOURCE.getMenuId(), BusiResourceEnum.MENU, AuthEnum.MANAGE))) {
+                throw new DEException(ResultCode.PERMISSION_NO_ACCESS.code(), ResultCode.PERMISSION_NO_ACCESS.message());
+            }
         }
         apiDefinition = restoreApiDefinition(apiDefinition, originals);
         apiDefinition.setType("table");
