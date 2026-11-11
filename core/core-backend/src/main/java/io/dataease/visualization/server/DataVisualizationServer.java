@@ -2,6 +2,7 @@ package io.dataease.visualization.server;
 import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -54,6 +55,7 @@ import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
@@ -149,6 +151,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private CoreUserManage coreUserManage;
+    @Resource
+    private CorePermissionManage corePermissionManage;
     @Resource
     private DatasourceServer datasourceServer;
 
@@ -1155,11 +1159,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasetTableFieldVO> datasetTableFieldVOInfo = null;
         List<AppCoreDatasourceVO> datasourceVOInfo = null;
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
+
+        // 校验仪表板/大屏管理权限
+        requireVisualizationPermission(dvId, AuthEnum.MANAGE);
+        // 校验请求数据集均具备 READ 权限
+        if (CollectionUtils.isNotEmpty(dsIds)) {
+            for (Long dsId : dsIds) {
+                if (dsId == null || !corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
+                    denyVisualizationRead();
+                }
+            }
+        }
+
         //获取所有视图信息
         if (!CollectionUtils.isEmpty(viewIds)) {
-            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream().map(item -> {
-                return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
-            }).collect(Collectors.toList());
+            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream()
+                    .filter(item -> Objects.equals(item.getSceneId(), dvId))
+                    .map(item -> {
+                        return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
+                    }).collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
             QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
@@ -1178,6 +1196,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
             datasourceVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasource)
                     .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
                     .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch(), AppCoreDatasourceVO.class);
+
+            if (CollectionUtils.isNotEmpty(datasourceVOInfo)) {
+                datasourceVOInfo.forEach(this::maskDatasourceConfiguration);
+            }
 
             datasourceTaskVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasourceTask)
                     .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
@@ -1228,6 +1250,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
 
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
+    }
+
+    private void maskDatasourceConfiguration(AppCoreDatasourceVO datasource) {
+        if (datasource == null || StringUtils.isBlank(datasource.getConfiguration())) {
+            return;
+        }
+        String type = datasource.getType();
+        if (type == null || DatasourceConfiguration.DatasourceType.Excel.name().equals(type)
+                || DatasourceConfiguration.DatasourceType.ExcelRemote.name().equals(type)
+                || DatasourceConfiguration.DatasourceType.API.name().equals(type)) {
+            return;
+        }
+        try {
+            JsonNode configNode = JsonUtil.parseObject(datasource.getConfiguration(), JsonNode.class);
+            datasource.setConfiguration(ConfigurationCredentials.mask(configNode).toString());
+        } catch (Exception e) {
+            LogUtil.error("Failed to mask datasource configuration for export2AppCheck", e);
+            datasource.setConfiguration(null);
+        }
     }
 
 
