@@ -239,23 +239,12 @@ export const getDatasetDetails = async (id): Promise<Dataset> => {
   })
 }
 
-export const tableUpdate = async (data): Promise<IResponse> => {
-  return request.post({ url: '/dataset/table/update', data }).then(res => {
-    return res?.data
-  })
-}
-
 export const getPreviewSql = async (data): Promise<IResponse> => {
   return request.post({ url: '/datasetData/previewSql', data }).then(res => {
     return res?.data
   })
 }
 
-export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
-  return request.post({ url: '/datasetTree/dsDetails', data }).then(res => {
-    return res?.data
-  })
-}
 export const getDsDetailsWithPerm = async (data): Promise<DatasetDetail[]> => {
   return request.post({ url: '/datasetTree/detailWithPerm', data }).then(res => {
     ;(res?.data || []).forEach(ele => {
@@ -274,9 +263,6 @@ export const rowPermissionList = (page: number, limit: number, datasetId: number
 
 export const columnPermissionList = (page: number, limit: number, datasetId: number) =>
   request.get({ url: '/dataset/columnPermissions/pager/' + datasetId + '/' + page + '/' + limit })
-
-export const rowPermissionTargetObjList = (datasetId: number, type: string) =>
-  request.get({ url: '/dataset/rowPermissions/authObjs/' + datasetId + '/' + type })
 
 export const listFieldByDatasetGroup = (datasetId: number) => {
   return request.post({ url: '/datasetField/listByDatasetGroup/' + datasetId }).then(res => {
@@ -406,24 +392,6 @@ export const listByDsIds = async (data): Promise<IResponse> => {
 
 export const getFieldTree = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
   return request.post({ url: 'datasetData/getFieldTree', data, queryRequest }).then(res => {
-    return res?.data
-  })
-}
-
-export const copilotChat = async (data): Promise<IResponse> => {
-  return request.post({ url: '/copilot/chat', data }).then(res => {
-    return res?.data
-  })
-}
-
-export const getListCopilot = async (): Promise<IResponse> => {
-  return request.post({ url: '/copilot/getList' }).then(res => {
-    return res?.data
-  })
-}
-
-export const clearAllCopilot = async (): Promise<IResponse> => {
-  return request.post({ url: '/copilot/clearAll' }).then(res => {
     return res?.data
   })
 }
