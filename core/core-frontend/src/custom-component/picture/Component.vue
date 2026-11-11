@@ -6,7 +6,10 @@
       :style="imageAdapter"
       :src="imgUrlTrans(propValue['url'])"
     />
-    <div v-else class="pic-upload">
+    <div
+      v-else-if="showPosition.startsWith('canvas') || showPosition === 'popEdit'"
+      class="pic-upload"
+    >
       <span
         ><el-button
           @click="uploadImg"
@@ -33,6 +36,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  showPosition: {
+    type: String,
+    default: 'preview'
+  },
   element: {
     type: Object,
     default() {
@@ -46,22 +53,22 @@ const props = defineProps({
 const { propValue, element } = toRefs(props)
 
 const imageAdapter = computed(() => {
-  const style = {
+  const style: CSSProperties = {
     position: 'relative',
     width: '100%',
     height: '100%'
   }
-  if (element.value.style.adaptation === 'original') {
+  if (element.value.style?.adaptation === 'original') {
     style.width = 'auto'
     style.height = 'auto'
-  } else if (element.value.style.adaptation === 'equiratio') {
-    style.height = 'auto'
+  } else if (element.value.style?.adaptation === 'equiratio') {
+    style.objectFit = 'contain'
   }
-  return style as CSSProperties
+  return style
 })
 const uploadImg = () => {
   nextTick(() => {
-    eventBus.emit('uploadImg')
+    eventBus.emit('uploadPicture', element.value.id)
   })
 }
 </script>
