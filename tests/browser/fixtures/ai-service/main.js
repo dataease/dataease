@@ -8,7 +8,16 @@ import AiServiceGroup from '@/views/pages/system/ai-service-group/index.vue'
 import AiRecords from '@/views/pages/system/ai-records/index.vue'
 
 const query = new URLSearchParams(location.search)
-if (query.get('view') === 'conversation') {
+if (query.get('view') === 'conversation-route') {
+  const { default: router } = await import('@/router')
+  const { pathValid, usePermissionStoreWithOut } = await import('@/store/modules/permission')
+  usePermissionStoreWithOut().clear()
+  router.beforeEach((to) => pathValid(to.path))
+  const app = createApp({ render: () => h(RouterView) })
+    .use(router)
+    .use(ElementPlus)
+  router.isReady().then(() => app.mount('#app'))
+} else if (query.get('view') === 'conversation') {
   const { default: Conversation } = await import('@/views/demo/ai-assistant/index.vue')
   createApp(Conversation).use(ElementPlus).mount('#app')
 } else if (query.get('view') === 'ai-menu') {
