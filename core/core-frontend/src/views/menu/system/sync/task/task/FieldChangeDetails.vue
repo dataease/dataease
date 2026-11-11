@@ -6,6 +6,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 const props = defineProps<{
   changes: { before?: ITableField; after?: ITableField }[]
   mappingNotes?: Record<string, string>
+  afterLabel?: string
 }>()
 const { t } = useI18n()
 const attributes = [
@@ -137,7 +138,7 @@ const changeCount = computed(() =>
             <tr>
               <th>{{ t('sync_maintenance.changed_attribute') }}</th>
               <th>{{ t('sync_maintenance.before') }}</th>
-              <th>{{ t('sync_maintenance.after') }}</th>
+              <th>{{ afterLabel || t('sync_maintenance.after') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -163,7 +164,7 @@ const changeCount = computed(() =>
               <p>{{ group.comment.before }}</p>
             </div>
             <div>
-              <span class="secondary">{{ t('sync_maintenance.after') }}</span>
+              <span class="secondary">{{ afterLabel || t('sync_maintenance.after') }}</span>
               <p>{{ group.comment.after }}</p>
             </div>
           </div>
