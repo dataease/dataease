@@ -447,6 +447,11 @@ const load = async (id: string, version: number, overview = false) => {
   const polling = pollVersion
   const response = await getTaskMaintenanceApi(id, overview)
   if (!isCurrentView(version) || polling !== pollVersion) return false
+  // 读取受阻时只更新门禁，保留同一套编辑基线和草稿
+  if (activeTab.value === 'draft' && response.data.blockedReason) {
+    context.value.blockedReason = response.data.blockedReason
+    return false
+  }
   context.value = response.data
   original.value = (response.data.fields || []).map(field => ({ ...field, id: generateID() }))
   protectedExpanded.value = ordinaryCurrent.value.length ? [] : ['protected']
@@ -652,6 +657,14 @@ const startEditing = async () => {
   error.value = ''
   try {
     if (!(await load(taskId, version)) || !isCurrentView(version)) return
+    validationIssues.value = []
+    validationBlockers.value = []
+    preview.value = undefined
+    confirmation.value = false
+    exclusive.value = false
+    deleteConfirmed.value = false
+    riskConfirmed.value = false
+    initializationConfirmed.value = false
   } catch (cause) {
     if (isCurrentView(version)) showError(cause)
     return
@@ -849,7 +862,7 @@ const resume = async () => {
   }
 }
 /**
- * 取消编辑和关闭窗口共用草稿确认，已提交或已生效的修改不参与本地撤销
+ * 取消编辑、重新读取和关闭窗口共用草稿确认，已提交或已生效的修改不参与本地撤销
  */
 const confirmDiscard = async () => {
   if (activeTab.value === 'draft' && changes.value.length && !uncertainOperation.value) {
@@ -865,6 +878,15 @@ const confirmDiscard = async () => {
     }
   }
   return true
+}
+/**
+ * 确认放弃草稿后重新读取，读取失败时保留原编辑内容
+ */
+const reloadFields = async () => {
+  const version = viewVersion
+  if (loading.value || !(await confirmDiscard())) return
+  if (!isCurrentView(version)) return
+  await startEditing()
 }
 const close = async () => {
   const version = viewVersion
@@ -1439,6 +1461,9 @@ defineExpose({ open })
         <template v-else-if="activeTab === 'draft'">
           <el-button :disabled="loading" @click="cancelEditing">{{
             t('sync_maintenance.discard_draft')
+          }}</el-button>
+          <el-button :disabled="loading" @click="reloadFields">{{
+            t('sync_maintenance.reload')
           }}</el-button>
           <el-button type="primary" :disabled="locked || !changes.length" @click="inspect">{{
             t('sync_maintenance.check_all')

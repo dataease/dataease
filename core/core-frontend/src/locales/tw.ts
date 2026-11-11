@@ -4367,6 +4367,7 @@ export default {
     protected_fields: '受保護欄位（{0}）',
     special: '特殊欄位，不可調整',
     start_adjustment: '修改欄位',
+    reload: '重新讀取',
     confirm_field: '確認修改',
     draft_saved: '已更新本次編輯，確認調整後才會生效',
     added: '待新增',
