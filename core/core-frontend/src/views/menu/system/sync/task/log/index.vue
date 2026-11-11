@@ -10,11 +10,18 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
-import { clear, getClearResult, getTaskLogListApi, removeApi } from '@/api/sync/syncTaskLog'
-import type { TaskLogClearResult } from '@/api/sync/syncTaskLog'
-import { some, find } from 'lodash-es'
+import type { PropType } from 'vue'
+import {
+  clearEventLogs,
+  getClearResult,
+  getTaskEventLogListApi,
+  removeTaskEventLogApi
+} from '@/api/sync/syncTaskLog'
+import type { TaskEventLog, TaskLogClearResult, TaskLogType } from '@/api/sync/syncTaskLog'
 import dayjs from 'dayjs'
 import LogDetails from './LogDetails.vue'
+import FieldChangeLogDetails from './FieldChangeLogDetails.vue'
+import { isTaskEventLogActive, taskLogStatusKeys } from './logStatus'
 import ClearJobLogForm from './ClearJobLogForm.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { propTypes } from '@/utils/propTypes'
@@ -41,17 +48,21 @@ const getEmptyDesc = (): string => {
 }
 const drawerMainRef = ref()
 const props = defineProps({
-  jobId: propTypes.string.def('')
+  jobId: propTypes.string.def(''),
+  initialTaskType: String as PropType<TaskLogType>
 })
+const initialConditions = props.initialTaskType
+  ? [{ field: 'taskTypes', value: [props.initialTaskType], operator: 'in' }]
+  : []
 const state = reactive({
-  taskLogList: [],
+  taskLogList: [] as TaskEventLog[],
   filterTexts: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
     total: 0
   },
-  conditions: [],
+  conditions: initialConditions,
   orders: [],
   multipleSelection: []
 })
@@ -88,7 +99,7 @@ const buildParam = () => {
 }
 const search = () => {
   tableLoading.value = true
-  getTaskLogListApi(
+  getTaskEventLogListApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
     buildParam()
@@ -96,7 +107,7 @@ const search = () => {
     .then(res => {
       tableLoading.value = false
       state.taskLogList = res.data.records
-      if (some(state.taskLogList, ['status', 'RUNNING'])) {
+      if (state.taskLogList.some(isTaskEventLogActive)) {
         startInterval()
       }
       if (state.paginationConfig.currentPage > 1 && state.taskLogList.length === 0) {
@@ -113,7 +124,7 @@ const search = () => {
 }
 const partDataUpdate = () => {
   const param = buildParam()
-  getTaskLogListApi(
+  getTaskEventLogListApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
     param
@@ -127,7 +138,9 @@ const partDataUpdate = () => {
       const resItem = resDataMap[item.id]
       if (resItem) {
         item.status = resItem.status
-        if (resItem.status === 'RUNNING') {
+        item.deletable = resItem.deletable
+        item.executorEndTime = resItem.executorEndTime
+        if (isTaskEventLogActive(resItem)) {
           isRunning = true
         }
       }
@@ -140,6 +153,7 @@ const partDataUpdate = () => {
   })
 }
 onMounted(() => {
+  fillFilterText()
   search()
   loadCleanupResult()
 })
@@ -189,27 +203,21 @@ const getLogStatusIcon = value => {
     iconObj.icon = icon_replace_outlined
     iconObj.color = '#2c5fd9'
   }
+  if (['PARTIAL', 'WAITING_INITIALIZATION', 'RECOVERY_REQUIRED'].includes(value)) {
+    iconObj.icon = icon_replace_outlined
+    iconObj.color = '#FF8800'
+  }
+  if (value === 'SUPERSEDED') {
+    iconObj.icon = icon_replace_outlined
+    iconObj.color = '#8F959E'
+  }
   return iconObj
 }
-const taskLogStatus = [
-  { label: t('sync_task.status_failed'), value: 'fail_retry' },
-  { label: t('sync_task.status_failed'), value: 'no_process' },
-  { label: t('sync_task.status_failed'), value: 'fail' },
-  { label: t('sync_task.status_running'), value: 'running' },
-  { label: t('sync_task.status_success'), value: 'success' },
-  { label: t('sync_task.status_connection_lost'), value: 'connection_lost' },
-  { label: t('sync_task.status_terminated'), value: 'termination' }
-]
 const getStatusLabel = value => {
-  if (value) {
-    const status = find(taskLogStatus, ['value', value.toLowerCase()])
-    if (status) {
-      return status.label
-    }
-  }
-  return '-'
+  const key = value && taskLogStatusKeys[value.toUpperCase()]
+  return key ? t(key) : '-'
 }
-const delHandler = row => {
+const delHandler = (row: TaskEventLog) => {
   ElMessageBox.confirm(t('sync_task.confirm_delete_msg'), {
     confirmButtonText: t('sync_task.delete'),
     cancelButtonText: t('sync_datasource.cancel'),
@@ -219,7 +227,7 @@ const delHandler = row => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    removeApi(row.id).then(() => {
+    removeTaskEventLogApi(row.taskType, row.id).then(() => {
       ElMessage.success(t('sync_task.op_success'))
       search()
     })
@@ -228,7 +236,12 @@ const delHandler = row => {
 
 const logStatus = ref()
 const jobLogDetailRef = ref()
-const showLogDetail = row => {
+const fieldLogDetailRef = ref<InstanceType<typeof FieldChangeLogDetails>>()
+const showLogDetail = (row: TaskEventLog) => {
+  if (row.taskType === 'FIELD_CHANGE') {
+    void fieldLogDetailRef.value?.openLog(row.id)
+    return
+  }
   logStatus.value = row.status
   void jobLogDetailRef.value?.openLog(row.id)
 }
@@ -295,7 +308,7 @@ const clearJobLog = (clearTypeLabel: string) => {
   }).then(() => {
     if (cleanupSubmitting.value) return
     cleanupSubmitting.value = true
-    clear(clearLogForm)
+    clearEventLogs({ ...clearLogForm, jobId: props.jobId })
       .then(({ data }) => {
         if (cleanupDisposed) return
         cleanupGeneration++
@@ -321,6 +334,16 @@ const filterOption = [
   {
     type: 'enum',
     option: [
+      { id: 'DATA_SYNC', name: t('sync_task_log.data_sync') },
+      { id: 'FIELD_CHANGE', name: t('sync_task_log.field_change') }
+    ],
+    field: 'taskTypes',
+    title: t('sync_task_log.task_type'),
+    operate: 'in'
+  },
+  {
+    type: 'enum',
+    option: [
       {
         id: 'SUCCESS',
         name: t('sync_task.status_success')
@@ -340,6 +363,22 @@ const filterOption = [
       {
         id: 'TERMINATION',
         name: t('sync_task.status_terminated')
+      },
+      {
+        id: 'PARTIAL',
+        name: t('sync_task_log.partial')
+      },
+      {
+        id: 'WAITING_INITIALIZATION',
+        name: t('sync_task_log.pending_initialization')
+      },
+      {
+        id: 'RECOVERY_REQUIRED',
+        name: t('sync_task_log.recovery_required')
+      },
+      {
+        id: 'SUPERSEDED',
+        name: t('sync_task_log.superseded')
       }
     ],
     field: 'status',
@@ -364,6 +403,7 @@ const filterOption = [
 ]
 const searchCondition = conditions => {
   state.conditions = conditions
+  state.paginationConfig.currentPage = 1
   search()
   fillFilterText()
   drawerMainClose()
@@ -473,6 +513,17 @@ const drawerMainClose = () => {
               <span>{{ scope.row.jobName }}</span>
             </template>
           </el-table-column>
+          <el-table-column prop="taskType" :label="t('sync_task_log.task_type')" min-width="120">
+            <template #default="scope">
+              <span :class="{ 'field-change-type': scope.row.taskType === 'FIELD_CHANGE' }">{{
+                t(
+                  scope.row.taskType === 'FIELD_CHANGE'
+                    ? 'sync_task_log.field_change'
+                    : 'sync_task_log.data_sync'
+                )
+              }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="executorStartTime"
             :label="t('sync_task.execute_time')"
@@ -504,7 +555,7 @@ const drawerMainClose = () => {
                     ></component
                   ></Icon>
                 </el-icon>
-                <span style="padding: 0 8px 0 8px">{{ getStatusLabel(scope.row.status) }}</span>
+                <span style="padding: 0 8px">{{ getStatusLabel(scope.row.status) }}</span>
               </div>
             </template>
           </el-table-column>
@@ -513,7 +564,13 @@ const drawerMainClose = () => {
               <div class="operate-icon-container">
                 <el-tooltip
                   effect="dark"
-                  :content="t('sync_task.view_execute_log')"
+                  :content="
+                    t(
+                      scope.row.taskType === 'FIELD_CHANGE'
+                        ? 'sync_task_log.details'
+                        : 'sync_task.view_execute_log'
+                    )
+                  "
                   placement="top"
                 >
                   <template #default>
@@ -527,7 +584,7 @@ const drawerMainClose = () => {
                   </template>
                 </el-tooltip>
                 <el-tooltip effect="dark" :content="t('common.delete')" placement="top">
-                  <el-button text @click="delHandler(scope.row)">
+                  <el-button text :disabled="!scope.row.deletable" @click="delHandler(scope.row)">
                     <template #icon>
                       <Icon name="icon_delete-trash_outlined"
                         ><icon_deleteTrash_outlined class="svg-icon"
@@ -570,6 +627,7 @@ const drawerMainClose = () => {
     @job-log-detail-visible-close="jobLogDetailVisibleClose"
     @refresh-list="search"
   />
+  <FieldChangeLogDetails ref="fieldLogDetailRef" @closed="search" />
   <clear-job-log-form
     :model-value="clearLogForm"
     ref="clearJobLogDialogRef"
@@ -578,12 +636,16 @@ const drawerMainClose = () => {
   />
   <drawer-main
     :filter-options="filterOption"
+    :initial-conditions="initialConditions"
     @trigger-filter="searchCondition"
     ref="drawerMainRef"
   ></drawer-main>
 </template>
 
 <style lang="less">
+.source-ds-table_log .field-change-type {
+  color: var(--ed-color-primary);
+}
 .cleanup-error-message {
   white-space: pre-wrap;
   overflow-wrap: anywhere;

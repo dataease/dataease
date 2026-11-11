@@ -4311,6 +4311,26 @@ export default {
     execution_results_in_the_past_7_days: '過去7天執行情形',
     sync_status_distribution: '同步狀態分佈'
   },
+  sync_task_log: {
+    view_more: '查看更多日誌',
+    task_type: '任務類型',
+    data_sync: '資料同步',
+    field_change: '欄位變更',
+    details: '欄位變更日誌',
+    operator: '操作人',
+    target_table: '目標表',
+    unknown: '未知',
+    planned_changes: '以下為本輪提交的變更計畫，是否生效以實際執行結果為準',
+    planned_after: '計畫變更後',
+    partial: '部分完成',
+    pending_initialization: '待初始化',
+    recovery_required: '待核對',
+    superseded: '由後續變更接續',
+    successor: '查看後續欄位變更',
+    initialization_result: '關聯初始化結果',
+    read_failed: '欄位變更日誌讀取失敗，請重新整理後重試',
+    cleanup_scope: '按所選時間範圍清理資料同步和欄位變更日誌，執行中及仍需復原的記錄將保留'
+  },
   sync_maintenance: {
     menu: '欄位調整',
     title: '調整目標欄位',

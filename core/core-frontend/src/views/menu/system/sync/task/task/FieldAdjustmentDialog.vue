@@ -31,9 +31,13 @@ import ExecutionRecovery from './ExecutionRecovery.vue'
 import FieldChangeDetails from './FieldChangeDetails.vue'
 import FieldExecutionResults from './FieldExecutionResults.vue'
 import { maintenanceFieldType } from './fieldType'
+import { fieldSignature as signature, getFieldChanges } from './fieldChanges'
 
 const { t } = useI18n()
-const emit = defineEmits<{ (event: 'changed'): void }>()
+const emit = defineEmits<{
+  (event: 'changed'): void
+  (event: 'openTaskLog', taskId: string): void
+}>()
 const visible = ref(false)
 const activeTab = ref('current')
 const rulesVisible = ref(false)
@@ -85,17 +89,6 @@ const stopPolling = () => {
   clearTimeout(pollTimer)
   pollVersion++
 }
-const signature = (field: ITableField) =>
-  JSON.stringify([
-    field.fieldSource,
-    field.fieldName,
-    field.fieldType,
-    Number(field.fieldSize || 0),
-    Number(field.fieldPrecision || 0),
-    field.remarks || '',
-    !!field.fieldPk,
-    !!field.fieldIndex
-  ])
 /**
  * 始终以打开时的已保存字段为基线计算最终差异，新增后删除等相互抵消的编辑不会提交
  */
@@ -151,28 +144,13 @@ const savingConfiguration = computed(() => context.value?.phase === 'CONFIGURATI
 /**
  * 按本次操作快照生成变更对比，利用改名步骤关联前后字段，区别当前配置与原始修改意图
  */
-const operationChanges = computed(() => {
-  const before = context.value?.beforeFields || []
-  const after = context.value?.afterFields || []
-  const renames = new Map(
-    (context.value?.plan?.steps || [])
-      .filter(step => step.action === 'RENAME')
-      .map(step => [step.before.fieldName, step.after.fieldName] as const)
+const operationChanges = computed(() =>
+  getFieldChanges(
+    context.value?.beforeFields || [],
+    context.value?.afterFields || [],
+    context.value?.plan?.steps || []
   )
-  const matched = new Set<string>()
-  const result: { before?: ITableField; after?: ITableField }[] = []
-  before.forEach(field => {
-    const next = after.find(
-      item => item.fieldName === (renames.get(field.fieldName) || field.fieldName)
-    )
-    if (next) matched.add(next.fieldName)
-    if (!next || signature(field) !== signature(next)) result.push({ before: field, after: next })
-  })
-  after
-    .filter(field => !matched.has(field.fieldName))
-    .forEach(field => result.push({ after: field }))
-  return result
-})
+)
 const operationFailed = computed(
   () =>
     !!context.value?.error ||
@@ -854,11 +832,16 @@ const confirmDiscard = async () => {
 }
 const close = async () => {
   const version = viewVersion
-  if (loading.value || !(await confirmDiscard())) return
-  if (!isCurrentView(version)) return
+  if (loading.value || !(await confirmDiscard())) return false
+  if (!isCurrentView(version)) return false
   viewVersion++
   stopPolling()
   visible.value = false
+  return true
+}
+const showAllLogs = async () => {
+  const taskId = context.value?.taskId
+  if (taskId && (await close())) emit('openTaskLog', taskId)
 }
 const fullSubmitted = (taskId: string) => {
   if (!visible.value || context.value?.taskId !== taskId) return
@@ -1294,9 +1277,14 @@ defineExpose({ open })
               :closable="false"
               show-icon
             />
-            <el-button link type="primary" :disabled="loading" @click="showChanges">{{
-              t('sync_maintenance.view_changes')
-            }}</el-button>
+            <div class="applied-summary-actions">
+              <el-button link type="primary" :disabled="loading" @click="showChanges">{{
+                t('sync_maintenance.view_changes')
+              }}</el-button>
+              <el-button link type="primary" :disabled="loading" @click="showAllLogs">{{
+                t('sync_task_log.view_more')
+              }}</el-button>
+            </div>
           </div>
           <p v-if="!context?.structureVerified" class="context-label">
             {{ t('sync_maintenance.unverified') }}
@@ -1925,6 +1913,16 @@ defineExpose({ open })
 }
 .end-adjustment {
   margin-right: auto;
+}
+.applied-summary-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  :deep(.ed-button + .ed-button) {
+    margin-left: 0;
+  }
 }
 .technical-details {
   :deep(.ed-collapse-item__content) {

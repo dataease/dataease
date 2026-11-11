@@ -4471,6 +4471,28 @@ export default {
     execution_results_in_the_past_7_days: 'Executions in the past 7 days',
     sync_status_distribution: 'Sync status distribution'
   },
+  sync_task_log: {
+    view_more: 'View more logs',
+    task_type: 'Task type',
+    data_sync: 'Data synchronization',
+    field_change: 'Field change',
+    details: 'Field change log',
+    operator: 'Operator',
+    target_table: 'Target table',
+    unknown: 'Unknown',
+    planned_changes:
+      'Submitted changes for this operation. Check the execution results to see what took effect.',
+    planned_after: 'Planned value',
+    partial: 'Partially completed',
+    pending_initialization: 'Awaiting initialization',
+    recovery_required: 'Verification required',
+    superseded: 'Continued by a later change',
+    successor: 'View the subsequent field change',
+    initialization_result: 'Related initialization result',
+    read_failed: 'Unable to read the field change log. Refresh to try again.',
+    cleanup_scope:
+      'Clear data synchronization and field change logs in the selected time range. Records in progress or needed for recovery are retained.'
+  },
   sync_maintenance: {
     menu: 'Field adjustment',
     title: 'Adjust target fields',

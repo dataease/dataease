@@ -19,6 +19,7 @@ import {
   stopTaskApi
 } from '@/api/sync/syncTask'
 import { terminationTaskApi } from '@/api/sync/syncTaskLog'
+import type { TaskLogType } from '@/api/sync/syncTaskLog'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import TaskForm from './TaskForm.vue'
@@ -254,9 +255,14 @@ const getMoreList = row => {
   ]
   return moreList
 }
-const emits = defineEmits(['openTaskLog'])
+const emits = defineEmits<{
+  (event: 'openTaskLog', taskId: string, taskType?: TaskLogType): void
+}>()
 const openTaskLogList = row => {
   emits('openTaskLog', row.id)
+}
+const openFieldChangeLogs = (taskId: string) => {
+  emits('openTaskLog', taskId, 'FIELD_CHANGE')
 }
 const taskIdDialogVisible = ref(false)
 const dialogTaskId = ref('')
@@ -815,7 +821,7 @@ const copyInfo = async val => {
                     </component>
                   </Icon>
                 </el-icon>
-                <span style="padding: 0 8px 0 8px">
+                <span style="padding: 0 8px">
                   {{
                     getStatusLabel(
                       scope.row.status === 'running'
@@ -855,7 +861,7 @@ const copyInfo = async val => {
                   :class="statusClass(scope.row.status)"
                   style="display: flex; align-items: center"
                 >
-                  <span style="padding: 0 8px 0 8px">{{ getStatusLabel(scope.row.status) }}</span>
+                  <span style="padding: 0 8px">{{ getStatusLabel(scope.row.status) }}</span>
                 </div>
               </div>
             </template>
@@ -988,7 +994,11 @@ const copyInfo = async val => {
     @task-add-visible-close="taskAddVisibleClose"
     @refresh-list="refreshList"
   />
-  <FieldAdjustmentDialog ref="fieldAdjustmentRef" @changed="refreshList" />
+  <FieldAdjustmentDialog
+    ref="fieldAdjustmentRef"
+    @changed="refreshList"
+    @open-task-log="openFieldChangeLogs"
+  />
   <FullRefreshDialog ref="fullRefreshRef" @submitted="refreshList" />
   <log-details
     ref="jobLogDetailRef"

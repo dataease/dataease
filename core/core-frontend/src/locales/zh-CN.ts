@@ -4328,6 +4328,26 @@ export default {
     execution_results_in_the_past_7_days: '过去7天执行情况',
     sync_status_distribution: '同步状态分布'
   },
+  sync_task_log: {
+    view_more: '查看更多日志',
+    task_type: '任务类型',
+    data_sync: '数据同步',
+    field_change: '字段变更',
+    details: '字段变更日志',
+    operator: '操作人',
+    target_table: '目标表',
+    unknown: '未知',
+    planned_changes: '以下为本轮提交的变更计划，是否生效以实际执行结果为准',
+    planned_after: '计划变更后',
+    partial: '部分完成',
+    pending_initialization: '待初始化',
+    recovery_required: '待核对',
+    superseded: '由后续变更接续',
+    successor: '查看后续字段变更',
+    initialization_result: '关联初始化结果',
+    read_failed: '字段变更日志读取失败，请刷新重试',
+    cleanup_scope: '按所选时间范围清理数据同步和字段变更日志，执行中及仍需恢复的记录将保留'
+  },
   sync_maintenance: {
     menu: '字段调整',
     title: '调整目标字段',
