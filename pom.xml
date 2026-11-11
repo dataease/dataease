@@ -46,6 +46,7 @@
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
+        <httpcore5.version>5.4.3</httpcore5.version>
         <fesod.version>2.1.0-incubating</fesod.version>
         <poi.version>5.5.1</poi.version>
         <commons-io.version>2.21.0</commons-io.version>
@@ -113,6 +114,20 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!--
+              CVE-2026-54399 / CVE-2026-54428：httpcore5/h2 经 avatica-core 传递引入，
+              应用代码未使用，但仍强制升级到 >= 5.4.3。
+            -->
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>${httpcore5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis</groupId>
