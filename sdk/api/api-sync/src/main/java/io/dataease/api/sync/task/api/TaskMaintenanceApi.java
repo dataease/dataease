@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static io.dataease.constant.AuthResourceEnum.TASK;
 
@@ -20,10 +21,12 @@ import static io.dataease.constant.AuthResourceEnum.TASK;
 public interface TaskMaintenanceApi {
     /**
      * 读取任务已保存字段、源字段和当前目标能力，读取失败时保留已保存配置及具体阻断原因
+     * 全量确认可跳过源字段和候选类型读取，不发起同步或改变执行配置
      */
     @GetMapping("/{id}")
     @DePermit("m:read")
-    TaskMaintenanceVO context(@PathVariable String id);
+    TaskMaintenanceVO context(@PathVariable String id,
+                              @RequestParam(value = "fullRefresh", defaultValue = "false") boolean fullRefresh);
 
     /**
      * 轮询轻量进度，不重新读取外部表结构或携带完整字段快照

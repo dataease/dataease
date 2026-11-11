@@ -442,10 +442,11 @@ export interface ITaskMaintenanceRequest {
 /**
  * 读取保存配置和当前能力，失败原因在弹窗本地呈现，避免统一提示遮蔽恢复入口
  */
-export const getTaskMaintenanceApi = (id: string) =>
+export const getTaskMaintenanceApi = (id: string, fullRefresh = false) =>
   request.get<Promise<{ data: ITaskMaintenance }>>({
     handleErrorLocally: true,
-    url: `/sync/task/maintenance/${id}`
+    url: `/sync/task/maintenance/${id}`,
+    ...(fullRefresh ? { params: { fullRefresh: true } } : {})
   })
 
 /**
