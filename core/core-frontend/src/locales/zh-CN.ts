@@ -17,6 +17,9 @@ export default {
     close: '关闭'
   },
   material: {
+    component_assets: '组件素材',
+    image_library: '图片素材库',
+    component_hint: '将边框、装饰、图形或图标添加到画布。',
     package_size_hint: '素材资源包不能超过 300MiB，包内素材总大小不能超过 200MiB。',
     title: '素材管理',
     description: '系统级共享素材库 · 素材库管理者可管理全部自建素材',
@@ -3457,6 +3460,10 @@ export default {
     pic_upload_tips: '请上传图片...',
     pic_group: '图片组',
     pic_upload_tips2: '支持JPG、PNG、GIF、SVG',
+    pic_group_upload_hint: '从素材库每次追加一张，本地可批量上传。',
+    pic_group_limit: '最多可添加 {limit} 张图片',
+    pic_group_carousel_hint: '预览时按图片顺序轮播，编辑时显示首图。',
+    pic_condition_images: '条件样式备选图片',
     pic_adaptor_type: '图片适应方式',
     pop_area_tips: '可点击或拖拽查询组件到此位置，点击预览可查看弹窗区',
     view: '图表',

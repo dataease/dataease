@@ -3,9 +3,9 @@
     <chart-error v-if="isError" :err-msg="errMsg" />
     <img
       draggable="false"
-      v-else-if="state.showUrl"
+      v-else-if="displayUrl"
       :style="imageAdapter"
-      :src="imgUrlTrans(state.showUrl)"
+      :src="imgUrlTrans(displayUrl)"
     />
     <template v-else>
       <chart-empty-info :view-icon="view.type"></chart-empty-info>
@@ -23,10 +23,10 @@ import {
   ref,
   PropType,
   watch,
-  onBeforeMount
+  onBeforeMount,
+  onBeforeUnmount
 } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getData } from '@/api/chart'
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
@@ -83,12 +83,14 @@ const errMsg = ref('')
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
 const dataRowFiledName = ref([])
-let carouselTimer = null
 const { element, view, showPosition } = toRefs(props)
 let innerRefreshTimer = null
 let innerSearchCount = 0
 const isEditMode = computed(
-  () => showPosition.value.includes('canvas') && !mobileInPc.value && !fullscreenFlag.value
+  () =>
+    (showPosition.value.includes('canvas') || ['edit', 'popEdit'].includes(showPosition.value)) &&
+    !mobileInPc.value &&
+    !fullscreenFlag.value
 )
 
 watch([() => props.searchCount], () => {
@@ -118,53 +120,49 @@ const buildInnerRefreshTimer = (
   }
 }
 
-watch(
-  () => isEditMode.value,
-  () => {
-    initCarousel()
-  }
+const images = computed<{ url: string }[]>(() => element.value.propValue.urlList || [])
+const hasThreshold = computed(() => Boolean(parseJson(view.value?.senior)?.threshold?.enable))
+const carouselIndex = ref(0)
+const carouselActive = computed(
+  () =>
+    !isEditMode.value &&
+    !element.value.materialPicture &&
+    !hasThreshold.value &&
+    element.value.carousel?.enable &&
+    images.value.length > 1
+)
+const displayUrl = computed(() =>
+  hasThreshold.value ? state.showUrl : images.value[carouselIndex.value]?.url
 )
 
-const initCarousel = () => {
-  carouselTimer && clearInterval(carouselTimer)
-  carouselTimer = null
-  const picLength = element.value.propValue.urlList?.length || 0
-  const { threshold } = parseJson(view.value.senior)
-  // 非编辑状态 未启用条件样式 存在图片 启用轮播
-  if (!isEditMode.value && !threshold.enable && picLength > 0 && element.value.carousel?.enable) {
-    const switchTime = (element.value.carousel.time || 5) * 1000
-    let switchCount = 1
-    // 轮播定时器
-    carouselTimer = setInterval(() => {
-      const nowIndex = switchCount % element.value.propValue.urlList.length
-      switchCount++
-      nextTick(() => {
-        state.showUrl = element.value.propValue.urlList[nowIndex].url
-      })
-    }, switchTime)
-  }
-}
+watch(
+  [() => images.value.map(image => image.url), carouselActive, () => element.value.carousel?.time],
+  ([urls, active, time], _previous, onCleanup) => {
+    carouselIndex.value = 0
+    if (!active) return
+    const seconds = Math.max(1, Math.min(3600, Number(time) || 5))
+    const timer = window.setInterval(() => {
+      carouselIndex.value = (carouselIndex.value + 1) % urls.length
+    }, seconds * 1000)
+    onCleanup(() => window.clearInterval(timer))
+  },
+  { immediate: true }
+)
 
 const imageAdapter = computed(() => {
-  const style = {
+  const style: CSSProperties = {
     position: 'relative',
     width: '100%',
     height: '100%'
   }
-  if (element.value.style.adaptation === 'original') {
+  if (element.value.style?.adaptation === 'original') {
     style.width = 'auto'
     style.height = 'auto'
-  } else if (element.value.style.adaptation === 'equiratio') {
-    style.height = 'auto'
+  } else if (element.value.style?.adaptation === 'equiratio') {
+    style.objectFit = 'contain'
   }
-  return style as CSSProperties
+  return style
 })
-
-const uploadImg = () => {
-  nextTick(() => {
-    eventBus.emit('uploadImg')
-  })
-}
 
 const initCurFields = chartDetails => {
   dataRowFiledName.value = []
@@ -236,13 +234,7 @@ const conditionAdaptor = (chart: Chart) => {
 }
 
 const withInit = () => {
-  if (element.value.propValue['urlList'] && element.value.propValue['urlList'].length > 0) {
-    state.showUrl = element.value.propValue['urlList'][0].url
-  } else {
-    state.showUrl = null
-  }
-
-  initCarousel()
+  state.showUrl = images.value[0]?.url || null
 }
 
 const chartRuntime = provideChartRuntimeCache(
@@ -286,7 +278,6 @@ const calcData = (viewCalc: Chart, callback) => {
             if (chartRuntime.publishToStore) dvMainStore.setViewDataDetails(element.value.id, res)
             initReady.value = true
             initCurFields(res)
-            initCarousel()
           }
           callback?.()
           nextTick(() => {
@@ -332,12 +323,9 @@ const renderChart = viewInfo => {
   //do renderView
 }
 
-onBeforeMount(() => {
-  if (carouselTimer) {
-    clearInterval(carouselTimer)
-    carouselTimer = null
-  }
-  buildInnerRefreshTimer()
+onBeforeMount(() => buildInnerRefreshTimer())
+onBeforeUnmount(() => {
+  if (innerRefreshTimer) clearInterval(innerRefreshTimer)
 })
 
 defineExpose({

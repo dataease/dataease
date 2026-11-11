@@ -1,232 +1,211 @@
-<script setup lang="tsx">
-import { reactive, ref } from 'vue'
-import eventBus from '@/utils/eventBus'
-import Icon from '@/components/icon-custom/src/Icon.vue'
+<script setup lang="ts">
+import { shallowRef } from 'vue'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
-import { ElScrollbar } from 'element-plus-secondary'
-import DeDecoration from '@/custom-component/de-decoration/Component.vue'
 import { iconCanvasMap } from '@/components/icon-group/canvas-icon-list'
+import DeDecoration from '@/custom-component/de-decoration/Component.vue'
+import Icon from '@/components/icon-custom/src/Icon.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import eventBus from '@/utils/eventBus'
 
-defineProps({
-  propValue: {
-    type: Array,
-    default: () => []
-  },
-  element: {
-    type: Object,
-    default() {
-      return {
-        propValue: null
-      }
-    }
-  }
-})
+const { t } = useI18n()
+const activeGroup = shallowRef(CANVAS_MATERIAL[0])
 
-const commonGroup = ref<InstanceType<typeof ElScrollbar>>()
-
-const state = reactive({
-  curCategory: 'CanvasBoard',
-  groupList: CANVAS_MATERIAL
-})
-
-const scrollTo = offsetTop => {
-  commonGroup?.value.setScrollTop(offsetTop)
+const insert = (innerType: string) => {
+  eventBus.emit('handleNew', { componentName: activeGroup.value.category, innerType })
 }
 
-const anchorPosition = anchor => {
-  const element = document.querySelector(anchor)
-  scrollTo(element.offsetTop)
-}
-
-const newComponent = ({ category, innerType }) => {
-  eventBus.emit('handleNew', { componentName: category, innerType: innerType })
-}
-
-const handleDragStart = e => {
-  e.dataTransfer.setData('id', e.target.dataset.id)
-}
-
-const groupActiveChange = category => {
-  state.curCategory = category
-  anchorPosition('#' + category)
-}
-
-const findUrl = name => {
-  return new URL(`/src/assets/dynamic-background/${name}`, import.meta.url).href
+const startDrag = (event: DragEvent, innerType: string) => {
+  event.dataTransfer?.setData('id', activeGroup.value.category + '&' + innerType)
 }
 </script>
 
 <template>
-  <el-row class="group" @dragstart="handleDragStart">
-    <div class="group-left">
-      <ul class="ul-custom">
-        <li
-          class="li-custom"
-          :class="{ 'li-custom-active': state.curCategory === groupInfo.category }"
-          v-for="groupInfo in state.groupList"
-          :key="groupInfo.category"
-          @click="groupActiveChange(groupInfo.category)"
+  <section class="component-assets">
+    <p class="component-assets-hint">{{ t('material.component_hint') }}</p>
+    <div class="component-assets-body">
+      <nav class="component-assets-categories" :aria-label="t('material.categories')">
+        <button
+          v-for="group in CANVAS_MATERIAL"
+          :key="group.category"
+          type="button"
+          :aria-pressed="activeGroup.category === group.category"
+          @click="activeGroup = group"
         >
-          {{ groupInfo.title }}
-        </li>
-      </ul>
-    </div>
-    <el-scrollbar ref="commonGroup" class="group-right" height="392px">
-      <el-row
-        style="padding: 1px"
-        :id="groupInfo.category"
-        v-for="groupInfo in state.groupList"
-        :key="groupInfo.title"
+          {{ group.title }}
+        </button>
+      </nav>
+      <div
+        class="component-assets-grid"
+        :class="{ 'component-assets-icons': activeGroup.category === 'CanvasIcon' }"
       >
-        <el-col
-          v-show="state.curCategory === groupInfo.category"
-          :class="'item' + groupInfo.span"
-          :span="groupInfo.span"
-          v-for="chartInfo in groupInfo.details"
-          :key="chartInfo.title"
+        <button
+          v-for="item in activeGroup.details"
+          :key="item.value"
+          type="button"
+          draggable="true"
+          :title="item.title || item.value"
+          class="component-asset"
+          @click="insert(item.value)"
+          @dragstart="startDrag($event, item.value)"
         >
-          <div
-            v-on:click="newComponent({ category: groupInfo.category, innerType: chartInfo.value })"
-            class="item-top"
-            draggable="true"
-            :data-id="groupInfo.category + '&' + chartInfo.value"
-            :title="chartInfo.title"
-          >
-            <Icon
-              v-if="['outer_svg', 'graphical'].includes(chartInfo.type)"
-              class-name="item-top-icon"
-              ><component class="svg-icon item-top-icon" :is="chartInfo.icon"></component
-            ></Icon>
+          <span class="component-asset-preview">
+            <Icon v-if="['outer_svg', 'graphical'].includes(item.type)">
+              <component
+                :is="item.icon"
+                class="svg-icon component-asset-icon"
+                :class="{ 'component-asset-border': item.type === 'outer_svg' }"
+              />
+            </Icon>
             <DeDecoration
-              :curStyle="{ width: 530, height: 373 }"
-              :element="{ innerType: chartInfo.value }"
-              :scale="0.15"
-              v-else-if="['de_decoration'].includes(chartInfo.type)"
-            ></DeDecoration>
+              v-else-if="item.type === 'de_decoration'"
+              :cur-style="{ width: 530, height: 373 }"
+              :element="{ innerType: item.value }"
+              :scale="0.2"
+            />
             <component
+              :is="iconCanvasMap[item.value]"
               v-else
-              class="svg-icon item-top-icon"
-              style="color: #a6a6a6"
-              :is="iconCanvasMap[chartInfo.value]"
-            ></component>
-          </div>
-          <div v-if="chartInfo.title" class="item-bottom">
-            <span>{{ chartInfo.title }}</span>
-          </div>
-        </el-col>
-      </el-row>
-    </el-scrollbar>
-  </el-row>
+              class="svg-icon component-asset-glyph"
+            />
+          </span>
+          <span v-if="item.title" class="component-asset-name">{{ item.title }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
 </template>
 
 <style lang="less" scoped>
-.group {
+.component-assets {
+  color: var(--ed-text-color-primary);
+}
+.component-assets-hint {
+  margin: 0 0 16px;
+  color: var(--ed-text-color-secondary);
+  line-height: 20px;
+}
+.component-assets-body {
   display: flex;
-  max-height: 400px;
+  gap: 20px;
+  height: min(520px, calc(100vh - 245px));
+  min-height: 240px;
+}
+.component-assets-categories {
+  flex: 0 0 168px;
+  box-sizing: border-box;
+  padding: 8px 0;
+  border: 1px solid var(--ed-border-color);
+  border-radius: 6px;
+  overflow-y: auto;
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    border-left: 3px solid transparent;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--ed-fill-color-light);
+    }
+
+    &[aria-pressed='true'] {
+      color: var(--ed-color-primary);
+      border-left-color: var(--ed-color-primary);
+      background: var(--ed-color-primary-1a, #3370ff1a);
+      font-weight: 500;
+    }
+  }
+}
+.component-assets-grid {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  align-content: start;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  overflow-y: auto;
+}
+.component-asset {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover .component-asset-preview,
+  &:focus-visible .component-asset-preview {
+    border-color: var(--ed-color-primary);
+  }
+}
+.component-asset-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  aspect-ratio: 1.72;
+  padding: 8px 12px;
+  border: 1px solid var(--ed-border-color);
+  border-radius: 6px;
+  background: var(--ed-fill-color-light);
+  overflow: hidden;
+  pointer-events: none;
+}
+.component-asset-icon {
+  width: 100%;
   height: 100%;
-  margin-top: 4px;
-  .group-left {
-    width: 100px;
-    height: 100%;
-    .ul-custom {
-      padding-inline-start: 0px;
-      color: @canvas-main-font-color;
-      .li-custom {
-        margin-top: 1px;
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 32px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        list-style-type: none;
-        list-style-position: inside;
-        border-radius: 6px;
-        padding-left: 8px;
-        &:hover {
-          background: rgba(255, 255, 255, 0.1);
-          cursor: pointer;
-        }
-      }
+}
+.component-asset-border {
+  color: #1094e5;
+}
+.component-asset-glyph {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+.component-asset-name {
+  display: block;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 20px;
+}
 
-      .li-custom a:hover {
-        background: none;
-      }
-
-      .li-a {
-        color: #1f2329;
-      }
-    }
+@media (max-width: 900px) {
+  .component-assets-categories {
+    flex-basis: 136px;
   }
-  .group-right {
-    border-left: 1px solid @side-outline-border-color;
-    flex: 1;
-    padding: 4px 0 4px 12px;
+  .component-assets-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-.li-custom-active {
-  background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-  color: var(--ed-color-primary) !important;
-  .li-a {
-    color: var(--ed-color-primary) !important;
+@media (max-width: 600px) {
+  .component-assets-categories {
+    flex-basis: 104px;
+  }
+  .component-assets-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.component-assets-grid.component-assets-icons {
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 8px;
 
-.item8 {
-  margin-bottom: 12px;
-  .item-top {
-    width: 88px;
-    height: 64px;
-    background: #1a1a1a;
-    padding: 4px;
-    border-radius: 6px;
-    cursor: pointer;
-    &:hover {
-      outline: 1px solid var(--ed-color-primary);
-    }
-    .item-top-icon {
-      width: 80px;
-      height: 56px;
-      color: @canvas-main-font-color;
-    }
-  }
-  .item-bottom {
-    height: 20px;
-    line-height: 20px;
-    color: #a6a6a6;
-    font-size: 12px;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 88px;
-  }
-}
-
-.item4 {
-  margin-bottom: 12px;
-  .item-top {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    padding: 4px;
-    cursor: pointer;
-    &:hover {
-      outline: 1px solid var(--ed-color-primary);
-    }
-    .item-top-icon {
-      width: 20px;
-      height: 20px;
-      color: @canvas-main-font-color;
-    }
-  }
-  .item-bottom {
-    height: 20px;
-    line-height: 20px;
-    color: #a6a6a6;
-    font-size: 12px;
-    text-align: center;
+  .component-asset-preview {
+    aspect-ratio: 1;
+    padding: 6px;
   }
 }
 </style>

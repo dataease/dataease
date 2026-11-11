@@ -17,6 +17,9 @@ export default {
     close: '關閉'
   },
   material: {
+    component_assets: '元件素材',
+    image_library: '圖片素材庫',
+    component_hint: '將邊框、裝飾、圖形或圖示新增至畫布。',
     package_size_hint: '素材資源包不能超過 300MiB，包內素材總大小不能超過 200MiB。',
     title: '素材管理',
     description: '系統级共用素材庫 · 素材庫管理者可管理全部自建素材',
@@ -3438,6 +3441,10 @@ export default {
     pic_upload_tips: '請上傳圖片...',
     pic_group: '圖片組',
     pic_upload_tips2: '支持JPG、PNG、GIF、SVG',
+    pic_group_upload_hint: '每次從素材庫新增一張，可從本機批次上傳。',
+    pic_group_limit: '最多可新增 {limit} 張圖片',
+    pic_group_carousel_hint: '預覽時依圖片順序輪播，編輯時顯示第一張圖片。',
+    pic_condition_images: '條件樣式備選圖片',
     pic_adaptor_type: '圖片適應方式',
     pop_area_tips: '可點擊或拖拽查詢組件到此位置，點擊預覽可查看彈窗區',
     view: '圖表',

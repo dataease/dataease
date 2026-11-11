@@ -2,15 +2,13 @@
 import { Plus } from '@element-plus/icons-vue'
 import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
+import PictureAssetCard from '@/custom-component/common/PictureAssetCard.vue'
 import { CollapseSwitchItem } from '@/components/collapse-switch-item'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch, PropType, reactive, toRefs, computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, type PropType } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { imageUploadItem } from '@/utils/resourceImages'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -28,15 +26,12 @@ const snapshotStore = snapshotStoreWithOut()
 
 const { curComponent, mobileInPc } = storeToRefs(dvMainStore)
 
-const fileList = ref([])
-const dialogImageUrl = ref('')
+const files = ref<HTMLInputElement>()
 const dialogVisible = ref(false)
-const uploadDisabled = ref(false)
-const files = ref(null)
-const maxImageSize = 15000000
-const state = reactive({})
+const uploading = ref(false)
+const pictureUrl = computed(() => curComponent.value?.propValue?.url)
 const materialPicture = computed(() =>
-  /^material:\/\/[1-9][0-9]{0,18}$/.test(curComponent.value?.propValue?.url || '')
+  /^material:\/\/[1-9][0-9]{0,18}$/.test(pictureUrl.value || '')
 )
 
 const enableThreshold = (enabled: boolean) => {
@@ -46,22 +41,36 @@ const enableThreshold = (enabled: boolean) => {
   snapshotStore.recordSnapshotCache('renderChart', component.id)
 }
 
-const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.sourceUrl || file.url
-  dialogVisible.value = true
+const setPicture = (component, url: string | null) => {
+  component.propValue.url = url
+  snapshotStore.recordSnapshotCache('renderChart', component.id)
 }
 
-const handleRemove = (_, fileList) => {
-  uploadDisabled.value = false
-  curComponent.value.propValue.url = null
-  fileList.value = []
-  snapshotStore.recordSnapshotCache('handleRemove')
+const applyMaterial = (reference: string) => {
+  setPicture(curComponent.value, reference)
 }
-async function upload(file) {
-  uploadFileResult(file.file, fileUrl => {
-    snapshotStore.recordSnapshotCache('pic-upload')
-    curComponent.value.propValue.url = fileUrl
-  })
+
+const removePicture = () => {
+  dialogVisible.value = false
+  setPicture(curComponent.value, null)
+}
+
+const upload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (uploading.value || !file || !beforeUploadCheck(file)) return
+
+  const component = curComponent.value
+  const picture = component.propValue
+  uploading.value = true
+  try {
+    await uploadFileResult(file, (url, error) => {
+      if (!error && url && component.propValue === picture) setPicture(component, url)
+    })
+  } finally {
+    uploading.value = false
+  }
 }
 
 const onStyleChange = () => {
@@ -69,69 +78,19 @@ const onStyleChange = () => {
 }
 
 const goFile = () => {
-  files.value.click()
+  if (!uploading.value) files.value?.click()
+}
+const onCanvasUpload = (componentId: string) => {
+  if (curComponent.value?.id === componentId && !mobileInPc.value) goFile()
 }
 
-const reUpload = e => {
-  const file = e.target.files[0]
-  if (file.size > maxImageSize) {
-    sizeMessage()
-    return
-  }
-  uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache('uploadFileResult')
-    curComponent.value.propValue.url = fileUrl
-    fileList.value = [imageUploadItem(curComponent.value.propValue.url)]
-  })
-}
-
-const sizeMessage = () => {
-  ElMessage.error(t('visualization.pic_size_error'))
-}
-const init = () => {
-  if (curComponent.value.propValue.url) {
-    fileList.value = [imageUploadItem(curComponent.value.propValue.url)]
-  } else {
-    fileList.value = []
-  }
-}
-
-watch(
-  () => curComponent.value.propValue.url,
-  () => {
-    init()
-  }
-)
-
-onMounted(() => {
-  init()
-  eventBus.on('uploadImg', goFile)
-})
-onBeforeUnmount(() => {
-  eventBus.off('uploadImg', goFile)
-})
-const applyMaterial = (reference: string) => {
-  curComponent.value.propValue.url = reference
-  snapshotStore.recordSnapshotCache('renderChart')
-}
+onMounted(() => eventBus.on('uploadPicture', onCanvasUpload))
+onBeforeUnmount(() => eventBus.off('uploadPicture', onCanvasUpload))
 </script>
 
 <template>
   <div class="attr-list de-collapse-style">
-    <MaterialPickerButton :themes="themes" @select="applyMaterial" />
-    <input
-      id="input"
-      ref="files"
-      type="file"
-      accept=".jpeg,.jpg,.png,.gif,.svg"
-      hidden
-      @click="
-        e => {
-          e.target.value = ''
-        }
-      "
-      @change="reUpload"
-    />
+    <input ref="files" type="file" accept=".jpeg,.jpg,.png,.gif,.svg" hidden @change="upload" />
     <CommonAttr
       :themes="themes"
       :element="curComponent"
@@ -144,46 +103,29 @@ const applyMaterial = (reference: string) => {
         name="picture"
         v-show="!mobileInPc"
       >
-        <el-row class="img-area" :class="`img-area_${themes}`">
-          <el-col style="width: 130px !important">
-            <el-upload
-              :themes="themes"
-              action=""
-              accept=".jpeg,.jpg,.png,.gif,.svg"
-              class="avatar-uploader"
-              list-type="picture-card"
-              :class="{ disabled: uploadDisabled }"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-              :before-upload="beforeUploadCheck"
-              :http-request="upload"
-              :file-list="fileList"
-            >
-              <el-icon><Plus /></el-icon>
-            </el-upload>
-            <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
-          </el-col>
-        </el-row>
-        <el-row>
-          <span
-            style="margin-top: 2px"
-            v-if="!curComponent.propValue.url"
-            class="image-hint"
-            :class="`image-hint_${themes}`"
-          >
-            {{ t('visualization.pic_upload_tips2') }}
-          </span>
-
-          <el-button
-            size="small"
-            style="margin: 8px 0 0 -4px"
-            v-if="curComponent.propValue.url"
-            text
-            @click="goFile"
-          >
+        <div class="picture-tools">
+          <MaterialPickerButton :themes="themes" :disabled="uploading" @select="applyMaterial" />
+          <el-button v-if="pictureUrl" text type="primary" :disabled="uploading" @click="goFile">
             {{ t('visualization.re_upload') }}
           </el-button>
-        </el-row>
+        </div>
+        <PictureAssetCard
+          v-if="pictureUrl"
+          :url="pictureUrl"
+          :disabled="uploading"
+          @preview="dialogVisible = true"
+          @remove="removePicture"
+        />
+        <el-button
+          v-else
+          class="picture-upload"
+          :aria-label="t('visualization.pic_upload_tips')"
+          :disabled="uploading"
+          :icon="Plus"
+          @click="goFile"
+        />
+        <img-view-dialog v-model="dialogVisible" :image-url="pictureUrl" />
+        <div class="image-hint">{{ t('visualization.pic_upload_tips2') }}</div>
         <el-row class="pic-adaptor">
           <el-form-item
             v-if="curComponent.style.adaptation"
@@ -251,85 +193,33 @@ const applyMaterial = (reference: string) => {
   }
 }
 
-.disabled :deep(.el-upload--picture-card) {
-  display: none;
-}
+.picture-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
 
-.avatar-uploader :deep(.ed-upload) {
+  :deep(.ed-button) {
+    margin-left: 0;
+    padding: 0 4px;
+  }
+
+  &:empty {
+    display: none;
+  }
+}
+.picture-upload {
   width: 80px;
   height: 80px;
-  line-height: 90px;
+  border-style: dashed;
+  background: var(--ed-fill-color-light);
 }
-
-.avatar-uploader :deep(.ed-upload-list li) {
-  width: 80px !important;
-  height: 80px !important;
-}
-
-:deep(.ed-upload--picture-card) {
-  background: #eff0f1;
-  border: 1px dashed #dee0e3;
-  border-radius: 6px;
-
-  .ed-icon {
-    color: #1f2329;
-  }
-
-  &:hover {
-    .ed-icon {
-      color: var(--ed-color-primary);
-    }
-  }
-}
-.img-area {
-  height: 80px;
-  width: 80px;
-  overflow: hidden;
-
-  &.img-area_dark {
-    :deep(.ed-upload-list__item).is-success {
-      border-color: #434343;
-    }
-    :deep(.ed-upload--picture-card) {
-      background: #373737;
-      border-color: #434343;
-      .ed-icon {
-        color: #ebebeb;
-      }
-      &:hover {
-        .ed-icon {
-          color: var(--ed-color-primary);
-        }
-      }
-    }
-  }
-
-  &.img-area_light {
-    :deep(.ed-upload-list__item).is-success {
-      border-color: #dee0e3;
-    }
-  }
-}
-
 .image-hint {
-  color: #8f959e;
-  size: 14px;
-  line-height: 22px;
-  font-weight: 400;
-  margin-top: 2px;
-  &.image-hint_dark {
-    color: #757575;
-  }
+  margin-top: 6px;
+  color: var(--ed-text-color-secondary);
+  font-size: 12px;
+  line-height: 20px;
 }
-
-.re-update-span {
-  cursor: pointer;
-  color: var(--ed-color-primary);
-  size: 14px;
-  line-height: 22px;
-  font-weight: 400;
-}
-
 .pic-adaptor {
   margin: 8px 0 16px 0;
   :deep(.ed-form-item__content) {

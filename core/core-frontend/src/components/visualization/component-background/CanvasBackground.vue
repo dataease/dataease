@@ -13,11 +13,6 @@
       "
       @change="reUpload"
     />
-    <MaterialPickerButton
-      :themes="themes"
-      :disabled="!canvasStyleData.backgroundImageEnable"
-      @select="applyMaterial"
-    />
     <el-form size="small" label-position="top" style="width: 100%; margin-bottom: 16px">
       <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showWatermarkSetting">
         <el-checkbox
@@ -92,6 +87,11 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
+            <MaterialPickerButton
+              :themes="themes"
+              :disabled="!canvasStyleData.backgroundImageEnable"
+              @select="applyMaterial"
+            />
             <el-row>
               <span
                 style="margin-top: 2px"
@@ -161,7 +161,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { imageUploadItem } from '@/utils/resourceImages'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -214,25 +214,16 @@ const sizeMessage = () => {
   ElMessage.error(t('visualization.pic_size_error'))
 }
 
-const reUpload = e => {
-  const file = e.target.files[0]
+const reUpload = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
   if (file.size > maxImageSize) {
     sizeMessage()
     return
   }
-  uploadFileResult(file, fileUrl => {
-    canvasStyleData.value.background = fileUrl
-    state.fileList = [imageUploadItem(canvasStyleData.value.background)]
-    onBackgroundChange()
+  uploadFileResult(file, (fileUrl, error) => {
+    if (!error) applyMaterial(fileUrl)
   })
-}
-
-const init = () => {
-  if (canvasStyleData.value.background) {
-    state.fileList.push(imageUploadItem(canvasStyleData.value.background))
-  } else {
-    state.fileList = []
-  }
 }
 
 const handleRemove = () => {
@@ -246,9 +237,8 @@ const handlePictureCardPreview = file => {
   state.dialogVisible = true
 }
 const upload = file => {
-  uploadFileResult(file.file, fileUrl => {
-    canvasStyleData.value.background = fileUrl
-    onBackgroundChange()
+  uploadFileResult(file.file, (fileUrl, error) => {
+    if (!error) applyMaterial(fileUrl)
   })
 }
 
@@ -260,19 +250,15 @@ const bgForm = ref()
 
 const computedBackgroundColorPickerWidth = 50
 
-onMounted(() => {
-  init()
-})
-
 watch(
   () => canvasStyleData.value.background,
-  () => {
-    init()
-  }
+  background => {
+    state.fileList = background ? [imageUploadItem(background)] : []
+  },
+  { immediate: true }
 )
 const applyMaterial = (reference: string) => {
   canvasStyleData.value.background = reference
-  state.fileList = [imageUploadItem(reference)]
   onBackgroundChange()
 }
 </script>

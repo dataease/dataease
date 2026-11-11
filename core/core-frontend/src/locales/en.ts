@@ -20,6 +20,9 @@ export default {
     close: 'Close'
   },
   material: {
+    component_assets: 'Component Assets',
+    image_library: 'Image Library',
+    component_hint: 'Add a border, decoration, shape, or icon to the canvas.',
     package_size_hint: 'Packages must be under 300MiB, with at most 200MiB of material files.',
     title: 'Material library',
     description: 'Shared system library · Library managers can manage all custom materials',
@@ -3556,6 +3559,11 @@ export default {
     pic_upload_tips: 'Please upload an image...',
     pic_group: 'Image Group',
     pic_upload_tips2: 'Supports JPG, PNG, GIF, SVG',
+    pic_group_upload_hint: 'Add one image at a time from the library, or upload multiple files.',
+    pic_group_limit: 'You can add up to {limit} images',
+    pic_group_carousel_hint:
+      'Preview cycles through images in order. Editing shows the first image.',
+    pic_condition_images: 'Images for conditional styling',
     pic_adaptor_type: 'Image Adaptation Method',
     pop_area_tips:
       'Click or drag the query component to this position, click preview to view the pop-up area',
