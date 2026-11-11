@@ -11,7 +11,6 @@
       <basic-info v-if="activeName === 'basic'" />
       <engine-info v-if="activeName === 'engine'" />
       <Email v-if="appStore.getXpackValid && activeName === 'email'" />
-      <!-- <third-party v-if="activeName === 'third_party'" /> -->
     </div>
   </div>
   <EmailHandler v-if="appStore.getXpackValid" @loaded="addTable" />
@@ -22,7 +21,6 @@ import { ref, defineAsyncComponent } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import MapSetting from '@/views/system/parameter/map/MapSetting.vue'
 import BasicInfo from '@/views/system/parameter/basic/BasicInfo.vue'
-/* import ThirdParty from '@/views/system/parameter/third-party/index.vue' */
 import EngineInfo from '@/views/system/parameter/engine/EngineInfo.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
 const EmailHandler = defineAsyncComponent(
@@ -37,10 +35,6 @@ const tabArray = ref([
   { label: t('system.basic_settings'), name: 'basic' },
   { label: t('system.map_settings'), name: 'map' },
   { label: t('system.engine_settings'), name: 'engine' }
-  /*{
-    label: t('common.third_party_embed'),
-    name: 'third_party'
-  }*/
 ])
 
 const activeName = ref('basic')
