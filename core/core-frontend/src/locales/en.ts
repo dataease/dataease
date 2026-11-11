@@ -28,7 +28,36 @@ export default {
     expand: 'Expand assistant',
     title: 'AI conversation demo (development acceptance)',
     description:
-      'Select a datasource you can read in the current workspace and ask about the current SQL. Do not enter business samples or credentials. Changing SQL or datasource starts a new context. Answers are advice; SQL is never executed or saved.',
+      'A SQL development demo for checking multiround context, streaming output and controlled tools with the current datasource and SQL.',
+    guide_title: 'Capabilities, boundaries and usage notes',
+    guide_capabilities: 'What it can do',
+    guide_dialogue:
+      'Ask follow-up questions about the same SQL and watch incremental output. Hide, expand or stop the current generation.',
+    guide_metadata:
+      'list_tables reads authorized table names and comments; get_table_fields reads a table’s column names, types and comments.',
+    guide_validation:
+      'validate_sql statically checks candidate SQL. The model can correct and revalidate it using actual tool results.',
+    guide_boundaries: 'Capability boundaries',
+    guide_structure_only:
+      'Read authorized structure through existing DE permissions only. No business samples, candidate SQL execution, automatic application of suggestions or resource saving.',
+    guide_sql_scope:
+      'Static validation supports MySQL only: one exact-case table, SELECT with explicit columns, simple aliases, WHERE comparisons and ORDER BY. No *, functions/aggregates, JOIN, subqueries, LIMIT, comments or other dialects; writes and multiple statements cannot pass.',
+    guide_verdict:
+      'PASS covers only the declared static syntax and reference checks, not database executability or type correctness. INVALID needs correction; UNSUPPORTED is not validated.',
+    guide_notices: 'Before use and important notes',
+    guide_setup:
+      'Enable AI and configure an available model in AI Service, then select a datasource you can read. The model must support streaming and tool calls.',
+    guide_data:
+      'Current SQL, questions and authorized structure returned by tools are sent to the configured model. Use isolated test datasources only; do not enter sensitive SQL, business samples, passwords or tokens.',
+    guide_evidence:
+      'Use the actual status, parameters and results in Program tool cards as evidence. Model prose is not execution evidence; tool success does not mean SQL validation passed.',
+    guide_budget:
+      'Each round allows at most four tool calls within shared time and input/output limits. Cancelled, timed-out, failed or truncated output is incomplete and must not be treated as applicable SQL.',
+    guide_lifecycle: 'Session and context',
+    guide_controls:
+      'Hiding keeps the session and ongoing generation. Stopping ends only the current generation and retains earlier completed dialogue.',
+    guide_session:
+      'Dialogue is not persisted. Changing SQL/datasource, ending the session, leaving or refreshing ends the chat. Identity/workspace changes also clear SQL and message drafts.',
     resource: 'Datasource',
     sql: 'Current SQL',
     message: 'Message',

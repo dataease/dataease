@@ -26,7 +26,33 @@ export default {
     expand: '展开助手',
     title: 'AI 对话 Demo（开发验收）',
     description:
-      '选择当前工作空间有读取权限的数据源，围绕当前 SQL 连续提问。请勿输入业务样本或凭据。修改 SQL 或数据源会开启新上下文；回答仅作建议，不执行或保存 SQL。',
+      '用于开发验收的 SQL 对话助手，围绕当前数据源和 SQL 验证多轮对话、流式输出与受控工具调用。',
+    guide_title: '能力、边界与使用注意',
+    guide_capabilities: '能做什么',
+    guide_dialogue: '围绕同一 SQL 连续追问，查看逐步输出；可收起、展开和停止当前生成。',
+    guide_metadata:
+      'list_tables 读取授权表名和注释；get_table_fields 读取指定表的字段名、类型和注释。',
+    guide_validation: 'validate_sql 静态检查候选 SQL，模型可根据真实结果修正并再次校验。',
+    guide_boundaries: '能力边界',
+    guide_structure_only:
+      '仅通过 DE 现有权限读取授权结构。不读取业务样本，不执行候选 SQL，不自动应用建议或保存资源。',
+    guide_sql_scope:
+      '静态校验仅支持 MySQL：精确大小写的单表 SELECT、显式字段、简单别名、WHERE 比较和 ORDER BY。不支持 *、函数/聚合、JOIN、子查询、LIMIT、注释或其他方言；写语句和多语句不得通过。',
+    guide_verdict:
+      'PASS 仅表示声明范围内的静态语法和引用检查通过，不保证数据库可执行性或类型正确。INVALID 需修正，UNSUPPORTED 不代表已验证。',
+    guide_notices: '使用前与注意事项',
+    guide_setup:
+      '先在 AI 服务中启用功能并配置可用模型，再选择有读取权限的数据源。模型需兼容流式输出和工具调用。',
+    guide_data:
+      '当前 SQL、提问和工具返回的授权结构会发送给配置的模型。仅使用隔离测试数据源，不输入敏感 SQL、业务样本、密码或 Token。',
+    guide_evidence:
+      '以“程序工具”卡片的实际状态、参数和结果为准；模型文字不是执行凭证。“工具成功”不等于 SQL 校验通过。',
+    guide_budget:
+      '每轮最多 4 次工具调用，共用时间及输入/输出限制。取消、超时、失败或截断的内容为“未完成”，请勿作为可应用 SQL。',
+    guide_lifecycle: '会话与上下文',
+    guide_controls: '收起助手保留会话和进行中的生成；停止只结束当前生成，并保留之前已完成的对话。',
+    guide_session:
+      '对话不持久化。修改 SQL 或数据源、结束会话、离开或刷新会结束当前聊天；切换身份/工作空间还会清空 SQL 和消息草稿。',
     resource: '数据源',
     sql: '当前 SQL',
     message: '消息',

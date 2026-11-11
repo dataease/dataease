@@ -20,6 +20,18 @@ import {
 
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
+const guideSections = [
+  { title: 'guide_capabilities', items: ['guide_dialogue', 'guide_metadata', 'guide_validation'] },
+  {
+    title: 'guide_boundaries',
+    items: ['guide_structure_only', 'guide_sql_scope', 'guide_verdict']
+  },
+  {
+    title: 'guide_notices',
+    items: ['guide_setup', 'guide_data', 'guide_evidence', 'guide_budget']
+  },
+  { title: 'guide_lifecycle', items: ['guide_controls', 'guide_session'] }
+]
 const failureMessage = (error: unknown) => {
   if (typeof error === 'string') return error
   if (isAxiosError(error)) {
@@ -295,6 +307,17 @@ onBeforeUnmount(() => {
     <p>{{ tr('description') }}</p>
     <el-button @click="hidden = !hidden">{{ hidden ? tr('expand') : tr('hide') }}</el-button>
     <div v-show="!hidden">
+      <details class="demo-guide" open>
+        <summary>{{ tr('guide_title') }}</summary>
+        <div class="guide-sections">
+          <section v-for="guide in guideSections" :key="guide.title">
+            <h2>{{ tr(guide.title) }}</h2>
+            <ul>
+              <li v-for="item in guide.items" :key="item">{{ tr(item) }}</li>
+            </ul>
+          </section>
+        </div>
+      </details>
       <el-form label-position="top">
         <el-form-item :label="tr('resource')">
           <el-select v-model="resourceId" :aria-label="tr('resource')" filterable>
@@ -384,6 +407,47 @@ onBeforeUnmount(() => {
   padding: 24px;
   margin: auto;
   color: var(--ed-text-color-primary);
+}
+
+.demo-guide {
+  padding: 16px;
+  margin: 12px 0 16px;
+  border: 1px solid var(--ed-border-color);
+  border-radius: 6px;
+}
+
+.demo-guide summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.guide-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.guide-sections h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.guide-sections ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.guide-sections li {
+  margin: 4px 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 680px) {
+  .guide-sections {
+    grid-template-columns: 1fr;
+  }
 }
 
 .context,
