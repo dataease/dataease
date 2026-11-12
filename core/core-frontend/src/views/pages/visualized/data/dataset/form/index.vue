@@ -1778,6 +1778,7 @@ const finish = res => {
     name
   }
   allfields.value = res.allFields || []
+  tabChange(tabActive.value)
 }
 
 const errorTips = ref('')
