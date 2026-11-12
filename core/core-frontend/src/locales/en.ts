@@ -4733,6 +4733,10 @@ export default {
     full_exclusive:
       'I confirm that no other task or program will write to the target table during this synchronization',
     full_submitted: 'Full synchronization submitted. Check task logs for execution results.',
+    full_submit_error_help:
+      'Check this task’s execution logs to confirm whether synchronization started and its result before retrying.',
+    full_request_id:
+      'Request ID: {0}. Provide this ID to an administrator to locate the server error.',
     full_unsupported:
       'Target connection {0} ({1}) does not currently support one-time full synchronization',
     rules_entry: 'Modification rules',
