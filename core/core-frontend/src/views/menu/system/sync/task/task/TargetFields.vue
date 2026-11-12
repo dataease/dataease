@@ -151,24 +151,30 @@ const rowClassName = ({ row }: { row: ITableField }) =>
         <el-button v-if="deleted?.(row)" link type="primary" @click="emit('undo', row)">
           {{ t('sync_maintenance.undo') }}
         </el-button>
-        <template v-else>
+        <div v-else class="operate-icon-container">
           <el-button
             text
             :disabled="!selectable(row)"
             :title="t('common.edit')"
+            :aria-label="t('common.edit')"
             @click="emit('edit', row)"
           >
-            <Icon name="icon_edit_outlined"><icon-edit class="svg-icon" /></Icon>
+            <template #icon>
+              <Icon name="icon_edit_outlined"><icon-edit class="svg-icon" /></Icon>
+            </template>
           </el-button>
           <el-button
             text
             :disabled="deletable ? !deletable(row) : !selectable(row)"
             :title="t('common.delete')"
+            :aria-label="t('common.delete')"
             @click="emit('delete', row)"
           >
-            <Icon name="icon_delete-trash_outlined"><icon-delete class="svg-icon" /></Icon>
+            <template #icon>
+              <Icon name="icon_delete-trash_outlined"><icon-delete class="svg-icon" /></Icon>
+            </template>
           </el-button>
-        </template>
+        </div>
       </template>
     </el-table-column>
   </GridTable>
