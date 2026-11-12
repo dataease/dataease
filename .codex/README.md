@@ -1,14 +1,23 @@
 # DataEase 项目 MCP
 
-[Codex 官方 MCP 文档](https://developers.openai.com/codex/mcp)支持受信任项目从 `.codex/config.toml` 加载 MCP 配置。同名项目配置覆盖个人配置，其他个人 MCP 保留。修改后重启 Codex 任务。启动脚本路径相对于仓库根，应从 DataEase 仓库根启动会话。
+开发规范见 [AGENTS.md](../AGENTS.md)。本文只维护项目 MCP 的配置、实现选择和排障；浏览器复现与回归统一见 [浏览器测试说明](../tests/browser/README.md)。
 
-每位开发者按需复制各 MCP 目录的 `.env.example` 为同目录 `.env.local`，填写个人令牌及本机 MCP 入口；原有 TAPD 配置还需填写项目 ID 和用户名，官方实现配置见下文。值使用 JSON 字符串语法（双引号，特殊字符需要转义）。`NODE_BIN` 可填写 Node 可执行文件绝对路径。Playwright 的测试 URL 和登录账号密码仅保存在本地；启动器不会自动登录，浏览器操作需在具体任务中明确指定。
+## 配置入口与完成条件
 
-浏览器测试按 `tests/browser/README.md` 使用 Playwright CLI 复现、Playwright Test 回归，不使用 Playwright MCP。项目配置已将 `[mcp_servers.playwright]` 设为 `enabled = false`；保留启动器作为历史配置，不自动启用或回退。修改配置后重启 Codex 任务，使工具列表重新加载。
+[Codex 官方 MCP 文档](https://developers.openai.com/codex/mcp)说明项目配置的加载方式。本项目配置位于 [config.toml](config.toml)，启动脚本路径相对于仓库根，应从仓库根启动会话。
 
-CLI 快照、截图和 Test 报告位于 `tests/browser/output/`，登录状态按需保存到 `tests/browser/.auth/`，均被 Git 忽略。旧 Playwright MCP 的浏览器资料和输出仍留在 `.codex/playwright_mcp/` 下的本地忽略目录中。建议用 `chmod 600` 限制凭据文件权限。
+1. 选择所需服务，按下文对应章节配置。各目录的 `.env.example` 是格式模板，`.env.local` 保存本人的配置，建议权限为 `600`；值使用 JSON 字符串语法（双引号，特殊字符需转义），不支持 shell 展开、单引号或行尾注释。
+2. 按 [Node / Python 入口](#node--python-入口) 核对服务入口与解释器。仅启用已填写有效配置的服务；重启 Codex 任务后核对实际工具列表。
+3. 修改启动器或实现选择逻辑后，执行 [离线回归](#离线回归)。离线回归不验证真实认证；连接配置完成后还需 MCP 握手和对应服务的只读查询成功，才能认为连接可用。
 
-TAPD 工具白名单见 `config.toml`。创建 Task 的调用、工具不可见时的排查及发布回读，见 [工作项路由](../docs/agents/issue-tracker.md#创建-task)。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代。成员接口若返回 403，需相应接口权限。
+| 任务 | 阅读入口 |
+| --- | --- |
+| 首次配置 TAPD、切换官方/原有实现 | [TAPD 实现选择](#tapd-实现选择) |
+| 配置只读数据库 MCP | [DBHub](#dbhub) |
+| 启动失败、解释器不匹配 | [Node / Python 入口](#node--python-入口) |
+| TAPD Task 创建、工具不可见或工作项发布 | [工作项路由](../docs/agents/issue-tracker.md#创建-task) |
+
+Playwright MCP 保留为历史配置，默认禁用；浏览器操作沿用上述 CLI/Test 工作流。历史启动器使用的测试 URL、账号和密码只保存在本机，不自动登录。
 
 ## TAPD 实现选择
 
@@ -22,7 +31,7 @@ TAPD 工具白名单见 `config.toml`。创建 Task 的调用、工具不可见�
 
 两份配置同时存在时，官方实现优先。选中后如果配置、入口或认证有误，直接报错，不自动切换实现或凭据。需要切回原实现时，移走官方 `.env.local` 并重新加载 MCP。不要仅复制空模板而不填写；暂不使用 TAPD 时可将其 `enabled` 设为 `false`。
 
-官方实现参考 SQLBot 的独立启动器，来源为 [TAPD 官方 MCP](https://cnb.cool/tapd.cn/skills/mcp-server-tapd)。参考实现使用的 `mcp-server-tapd==8.0.83` 要求 Python 3.13+；使用独立工具环境，不改变产品运行环境。未安装时可执行：
+官方实现来源为 [TAPD 官方 MCP](https://cnb.cool/tapd.cn/skills/mcp-server-tapd)。以下安装示例固定为 `mcp-server-tapd==8.0.83`，要求 Python 3.13+；使用独立工具环境，不改变产品运行环境。未安装时可执行：
 
 ```bash
 uv tool install --python 3.13 'mcp-server-tapd==8.0.83'
@@ -36,11 +45,11 @@ cp .codex/tapd_official_mcp/.env.example .codex/tapd_official_mcp/.env.local
 chmod 600 .codex/tapd_official_mcp/.env.local
 ```
 
-填写个人 `TAPD_ACCESS_TOKEN`，将 `uv tool dir` 输出目录下的 `mcp-server-tapd/bin/mcp-server-tapd` 填入 `TAPD_MCP_ENTRY`，同目录的 `python` 填入 `PYTHON_BIN`。已有独立安装可直接使用，无需重新安装。值使用 JSON 字符串语法；不支持 shell 展开、单引号或行尾注释。不要复制其他项目的凭据、项目 ID 或浏览器会话。
+填写个人 `TAPD_ACCESS_TOKEN`，将 `uv tool dir` 输出目录下的 `mcp-server-tapd/bin/mcp-server-tapd` 填入 `TAPD_MCP_ENTRY`，同目录的 `python` 填入 `PYTHON_BIN`。已有独立安装可直接使用，无需重新安装。原有实现另外按 `tapd_mcp/.env.example` 填写项目 ID 和用户名。各项目使用自己的凭据与浏览器会话。
 
-官方实现不要求预填项目 ID 或用户名。通过 `get_user_participant_projects` 查找项目并确认 DataEase 对应的 `workspace_id`，后续查询和更新须显式传入该 ID。两个实现共用工具白名单和上述写入授权规则。
+官方实现不要求预填项目 ID 或用户名。通过 `get_user_participant_projects` 查找项目并确认 DataEase 对应的 `workspace_id`，后续查询和更新须显式传入该 ID。工具白名单见 `config.toml`，写入范围遵循 [工作项路由](../docs/agents/issue-tracker.md)。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代；成员接口若返回 403，需相应接口权限。
 
-官方启动器仅加载自己的 `.env.local`，清除继承的 TAPD 身份和地址变量，设置 `PYTHON_DOTENV_DISABLED=1` 以禁用服务自动加载其他 `.env`。本地配置已被 Git 忽略；模板不含令牌。离线验证不代表认证有效，配置后需重新加载 MCP 并执行握手和只读查询。
+官方启动器仅加载自己的 `.env.local`，清除继承的 TAPD 身份和地址变量，设置 `PYTHON_DOTENV_DISABLED=1` 以禁用服务自动加载其他 `.env`。本地配置已被 Git 忽略；模板不含令牌。
 
 ## DBHub
 
@@ -66,4 +75,6 @@ Python 模式将 `TAPD_API_TOKEN` 映射到 `TAPD_ACCESS_TOKEN`，将 `TAPD_CURR
 Playwright 和 DBHub 的已验证安装包是 Node 实现，不需要改成 Python。
 TEST\_\* 字段仍由执行测试的代理按需使用，不自动登录；DBHub 的默认禁用状态保持不变。
 
-离线回归：`python3 -B .codex/tests/test_mcp_runtime.py`，覆盖实现选择、失败不回退、凭据隔离和启动参数，使用临时配置和模拟进程启动，不访问 TAPD 或数据库。
+## 离线回归
+
+从仓库根目录执行 `python3 -B .codex/tests/test_mcp_runtime.py`。覆盖实现选择、失败不回退、凭据隔离和启动参数，使用临时配置和模拟进程启动，不访问 TAPD 或数据库。以实际断言结果和退出状态记录验证结论。

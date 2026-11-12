@@ -48,128 +48,23 @@
 
 ## 3. 后端分层与接口规范
 
-典型调用方向：`sdk API → server → manage → Repository / Provider`。
-
-- `server/` 实现 SDK API，负责 HTTP 边界、参数校验和调用编排；可复用业务规则放入 `manage/` 或现有业务服务。
-- `dao/auto/`、`dao/ext/` 放持久化和查询相关代码。部分 `mapper` 目录实际使用 JPA，不得仅因目录名新增 MyBatis 实现。
-- 新增或修改接口时，同步检查 SDK 方法、请求/响应模型、实现类、前端封装、权限注解及扩展实现；保持现有路径和序列化兼容性。
-- 复用已有 `DEException`、错误码、统一响应和国际化机制，不新增平行的响应包装。不通过捕获所有异常并返回成功或空数据隐藏业务失败。
-- 数据库实体与 API 模型各司其职；避免直接暴露包含内部状态或敏感字段的实体。
-- 新增 Java 代码采用 4 空格缩进，沿用所在模块的注入与命名风格；JPA、Servlet、Validation 等使用 `jakarta.*`。不要批量替换所有 `javax.*`：JCache 当前仍使用 `javax.cache`，JDK 中的 `javax.sql` 等也不属于 Jakarta 迁移范围。
-- 对跨多次写入的业务操作明确事务边界；不要让外部数据源查询、网络调用和长时间导出无必要地占用元数据库事务。
-- JDBC 连接、结果集、文件流等资源必须可靠关闭；异步任务复用现有调度与生命周期管理机制。
-- 异步调用按需显式传递用户、组织及审计上下文，不假定请求上下文自动跨线程传播。使用 `IPUtils`、`CommunityUtils` 等 ThreadLocal 时，按现有生命周期在 `finally` 中清理，避免线程池复用串用上下文。
+修改后端或 SDK 接口前，读取 [后端分层与接口规范](docs/development/backend.md#后端分层与接口规范)。
 
 ## 4. 持久化、字段更新与迁移
 
-- 系统元数据主要使用 Spring Data JPA / QueryDSL。新逻辑沿用 JPA Repository、Specification 或 QueryDSL，不引入另一套 ORM。
-- 实体使用 `jakarta.persistence`，优先 `@Getter` / `@Setter`，避免对 JPA 实体直接使用可能引入关联递归的 `@Data`。新增表和字段补充含义、长度、可空性及必要注释。
-- 业务资源 ID 遵循现有 `Long` / `SnowflakeUtil` 约定，不擅自改为数据库自增。版本记录等特殊实体沿用自身规则。
-- 修改保存逻辑前阅读 `core/core-backend/src/main/java/io/dataease/config/JpaUpdateNonNullAspect.java`：它拦截 `save`、`saveAndFlush`、`saveAll`、`saveAllAndFlush`，对已存在实体合并非空属性。
-- 不假设向 `save()` 传 `null` 就能清空字段。需要清空时，用明确的 QueryDSL 更新或带 `@Modifying` 的 JPQL 等现有可控方式，在事务中执行，并验证持久化上下文和后续读取结果。区分“未提供字段”和“显式清空”。
-- 非空合并切面不等于并发控制或完整的 PATCH 语义；受管实体脏检查、批量更新和绕过 Repository 的路径需分别验证。`saveAll` 也会逐项尝试读取旧实体，批量操作应检查查询次数，不能直接假定只有一次批量 SQL。
-- 查询兼顾项目支持的数据库，留意大小写、保留字、布尔值、分页、日期和空值语义。数据库特有 SQL 必须进入现有方言/Provider 分支，不散落在通用业务代码中。
-- 数据库变更同时检查实体、QueryDSL 使用处和版本化 `SqlBlock`。`InitSqlListener` 会执行迁移，部分配置启用 `ddl-auto: update`；不能据此省略历史数据迁移和兼容设计。
-- 新迁移应具备安全重试能力，检查版本组、执行顺序、默认值和存量数据；不要改写已执行迁移来替代新增迁移。
-- 启动应用可能执行迁移并写入配置或业务数据。验证前确认使用隔离的开发/测试环境，不能为代码验证直接连接并改动生产或用户业务数据。
+修改实体、保存/清空字段、批量更新或数据库迁移前，读取 [持久化、字段更新与迁移](docs/development/backend.md#持久化字段更新与迁移)。
 
 ## 5. 数据查询、图表与权限
 
-核心业务链：`数据源 → 数据集 → 图表 → 仪表板/大屏`。
-
-图表取数阅读入口：
-
-1. `core/core-frontend/src/api/chart.ts` 的 `getData()`。
-2. SDK `ChartDataApi` 与后端 `ChartDataServer`。
-3. `ChartDataManage.calcData()`：字段、数据集权限、行列权限、筛选和钻取编排。
-4. `chart/charts/` 中的 Handler、`engine/` 中的 SQL 转换逻辑及数据源 Provider。
-5. 前端 `views/chart/components/js/panel/` 中的渲染实现。
-
-- 区分元数据持久化和分析数据查询；分析数据走既有 Provider / Calcite / JDBC 链路，不用元数据库 Repository 替代。
-- 图表类型专属计算优先放入对应 Handler；方言和连接相关行为放入对应 Provider；不要持续向公共编排方法堆叠类型分支。
-- 修改数据查询时保留字段编解码、计算字段、筛选、排序、聚合、钻取、行列权限和脱敏语义。导出、预览、嵌入与分享是否受影响必须检查。
-- SQL 值优先参数化；表名、字段名、排序等不能绑定的结构输入，应通过已有元数据、白名单和方言转义构造，不能直接拼接未校验输入。
-- 前端隐藏菜单或按钮不等于鉴权。后端必须检查实际资源、操作和访问身份；复用 `DePermit`、`DeLinkPermit` 及既有权限管理逻辑。
-- 权限变更同时审查 SDK 契约、核心调用、`substitute/permissions` 和 XPack 实现。保留条件 Bean 与版本差异，禁止用替补实现或默认放行掩盖权限失败。
-- 分享链接、嵌入 Token、管理员代理等访问上下文沿用现有传递与校验方式；缓存键应保留所需用户、组织、权限和筛选维度，防止跨身份复用结果。
-- 缓存复用 `DECacheService` / `CacheUtils`，检查写入后的失效路径及配置选用的实现。当前 JCache 在建缓存时设置过期策略，`expTime <= 0` 默认一分钟；Redis 按键设置过期，`expTime <= 0` 不设过期。不要假设两者 TTL 或对象引用语义相同；修改缓存对象前检查是否需要复制，缓存行为改动应覆盖实际支持的实现。
-- 资源 ID、权限编码、组件配置和图表类型属于持久化契约。修改时考虑旧仪表板、模板、复制和导入导出的兼容性。
+修改图表取数、分析 SQL、权限或缓存前，读取 [数据查询、图表与权限](docs/development/backend.md#数据查询图表与权限)；前端查询变更同样适用。
 
 ## 6. 前端开发规范
 
-- 使用 Vue 3 Composition API 和 TypeScript，沿用附近组件结构；复用现有组件、hooks、类型和工具，不为局部功能引入新的 UI 或状态管理体系。
-- 遵循前端 `.editorconfig`、`prettier.config.js` 和 ESLint 配置：2 空格缩进、单引号、不加尾分号。仅格式化本次改动范围。
-- UI 依赖沿用 `element-plus-secondary`，内部导入优先使用已有 `@/` 别名。不要无关替换路由包、UI 包或图表库。
-- HTTP 调用通过 `src/api/` 和 `src/config/axios/`，保留已有认证、HMAC、语言、分享/嵌入 Token、取消和错误处理；组件不另建绕过拦截器的 Axios 实例。
-- 跨页面共享状态放入既有 Pinia Store；局部临时状态留在组件或 composable。编辑器改动检查快照、撤销/重做、复制、组合、图层和锁定行为。
-- 编辑器区分需要重新取数的 `calcData` 和只需重绘的 `renderChart` 快照通知；沿用 `snapshot.ts` 的记录与刷新机制，避免样式变更引发无谓取数或绕过撤销/重做。
-- 新接口和复杂业务对象优先补齐类型；不要为消除报错扩大 `any` 或关闭类型检查。后端 `Long` ID 沿用既有传输和处理方式，避免未经确认转换成可能丢精度的 JavaScript 数字。
-- 新文案复用国际化机制并补充相关语言资源；不要在 i18n 尚未初始化的模块求值阶段捕获翻译函数。
-- 新增路由/菜单检查 `src/permission.ts`、权限 Store 和动态路由生成逻辑，不只修改静态路由表。
-- 修改共享页面或组件时，按影响范围核对主应用、`panel`、移动端和 `lib` 嵌入入口。
-- `config/pagesConfig.ts` 自动扫描非 `lib` 页面目录，多页面构建还需要对应 HTML 入口；新增页面时一起检查。`config/lib.ts` 将 Vue 设为外部依赖，嵌入库修改需验证宿主兼容性，不擅自打包第二份 Vue。
-- XPack 前端通过 `PluginComponent.vue` 等加载和桥接。修改组件映射、`jsname`、共享全局对象或调用方法时，同步核对扩展导出，并验证加载失败、无授权与加载完成前的方法调用；不能只验证开发模式下的一条加载路径。
-- JSON 行为以 `sdk/common` 的 `JacksonConfig` 和字段注解为准：当前默认保留空值，部分 ID 使用字段级字符串序列化。不得假设全局 Long 都转字符串，或为单个接口改动全局空值/数字规则。
-- 图表视觉改动在实际渲染层验证：尺寸、长文本、空数据、图例筛选、重复更新/缩放、事件解绑及销毁。不能仅凭配置对象正确就认定效果正确。
-- 渲染不可信富文本、URL 或 HTML 时复用现有净化机制；不得为展示效果关闭过滤。
+修改前端代码前，读取 [前端开发规范](docs/development/frontend.md)；地图依赖补丁另见 [补丁维护说明](core/core-frontend/patches/README.md)。
 
 ## 7. 构建与验证
 
-先选择最小但有意义的验证，再根据依赖影响扩大范围。纯文档或低风险样式改动不要求新增测试；查询、权限、迁移、字段更新等行为改动应尽量增加能复现问题的回归验证。
-
-### 修改后的格式化与检查
-
-- Codex 完成修改后，交付前按文件类型执行项目已有的格式化与检查，仅处理本次任务修改的文件；不能依赖 VS Code 保存操作触发格式化。
-- JS、TS、JSX、TSX、Vue、CSS、SCSS、Less、HTML、JSON、JSONC、Markdown、YAML 等 Prettier 支持的文件，使用所属模块已安装的 Prettier，遵循该模块配置及忽略规则。缺少适用配置时沿用现有风格，不跨模块套用前端配置。
-- JS、TS、JSX、TSX、Vue 文件格式化后，执行定向 ESLint 检查；样式文件按所属模块现有 Stylelint 配置执行定向检查。
-- Java、XML、SQL、Shell、Python 等文件先确认所属模块是否已有格式化工具和配置；有则沿用，没有则遵循现有风格，不自行安装工具、增加插件或引入新的格式规范。
-- 不格式化生成文件、构建产物或第三方代码，不执行全仓库格式化或带全量自动修复的 lint 命令。文件包含用户已有修改时，检查差异，避免无关格式变动。
-- 只读分析、审查任务不执行格式化。完成后检查差异和 `git diff --check`，报告实际执行的检查；工具缺失、检查失败或未覆盖的文件类型应明确说明。
-- 主前端在 `core/core-frontend` 目录使用 `./node_modules/.bin/prettier --write <本次修改的文件路径>`，随后对适用文件执行 `./node_modules/.bin/eslint <本次修改的 JS、TS、JSX、TSX、Vue 文件路径>`；占位符替换为明确的文件列表，不使用全目录通配符。
-
-### 前端
-
-以下命令在 `core/core-frontend` 执行，依赖需已安装：
-
-| 命令 | 用途与边界 |
-| --- | --- |
-| `npm run ts:check` | TypeScript 检查；若存在基线问题，区分与本次改动的关系 |
-| `./node_modules/.bin/eslint <改动文件路径>` | 定向 lint，不加 `--fix`；占位符需替换为实际文件 |
-| `npm run dev` | 开发服务；当前配置端口 7070，代理后端 8100 |
-| `npm run build:base` | base 模式构建 |
-| `npm run build:distributed` | distributed 模式构建 |
-| `npm run build:lib` | 嵌入库构建 |
-
-- `npm run lint` 和 `npm run lint:stylelint` 带自动修复，不能作为只读检查命令；避免造成无关文件改动。
-- `build:base` / `build:distributed` 会继续执行 `build:flush`，其中包含子目录依赖安装和文件生成。执行前确认副作用与任务范围一致。
-- 前端没有统一 `test` 脚本。饼图标签相关改动可按 `tests/pie-label-overflow/README.md` 使用现有 Vite 页面和 Playwright 验证；它不等于完整产品回归。
-- 浏览器问题按 `tests/browser/README.md` 使用独立 Playwright CLI 复现、Playwright Test 定向回归，不使用 Playwright MCP；按缺陷使用独立浏览器会话，CLI 快照写文件并按需读取，测试仅返回简短摘要，失败时再查看截图和 trace。工具自检不等于产品回归。CLI/Test 遇到限制时先排查工具配置和测试入口，不自动回退到 Playwright MCP；只有用户明确要求时才调整这一约定。
-- 不自动升级依赖或重建全部锁文件；新增依赖需说明必要性，并检查许可证、体积和实际跟踪的锁文件。
-
-### 后端与整包
-
-- 根目录 `mvn install` 用于当前聚合的 SDK 及父 POM；不会自动构建 `core` 和 XPack。
-- 完整核心应用可在依赖就绪后使用 `mvn -f core/pom.xml package -Pstandalone` 或任务所需的其他 Profile；这会触发前端构建及资源处理，不能用作轻量或只读检查。
-- 后端局部编译可使用 `mvn -f core/core-backend/pom.xml compile -Pstandalone`，前提是父 POM、SDK 和所需前端产物已就绪。Maven 生命周期可能复制资源、生成 Q 类和 flattened POM；它不是无副作用的语法检查。
-- `standalone` 默认启用；`desktop` 使用桌面配置；`distributed` 需要相应依赖并排除替补权限代码。以实际 POM 为准，不使用未定义的 Profile。
-- 前端 Maven 当前固定执行 `build:distributed`，不要认为后端 `-Pdesktop` 或 `-Pstandalone` 会自动切换前端模式。
-- 后端 Surefire 当前有显式 `<skip>true</skip>`。普通 `mvn test` 成功不代表测试执行；必须核对有效配置、实际日志和本次生成的测试报告。不要假定添加 `-DskipTests=false` 就能覆盖该配置。
-- 行为测试需要启用时，先确认可行的项目测试入口；若需调整构建配置，保持改动明确且符合任务范围。无法执行时说明原因，不把编译结果写成测试通过。
-- 不默认执行 `mvn clean`：前端 Maven clean 会清理依赖和锁文件，后端部分 Profile 会清理生成的静态资源。只在确实需要清理时使用。
-- 不直接修改已有 SDK 二进制或生成类来绕过编译错误；修复源码及依赖关系后重新生成。
-
-### 验证覆盖选择
-
-| 改动类型 | 优先验证 |
-| --- | --- |
-| API / DTO | 请求与响应兼容性、前端调用、核心和扩展实现编译 |
-| 权限 | 允许/拒绝、不同用户或组织、相关分享/嵌入路径、导出路径 |
-| 查询 / 图表计算 | 空值、筛选、排序、聚合、行列权限及受影响的数据源方言 |
-| JPA 更新 / 迁移 | 保留未提交字段、显式清空、事务失败、存量升级与失败重试 |
-| 编辑器 / 图表 UI | 实际渲染、重复交互、保存重开、相关移动端或嵌入入口 |
-| 部署 / Profile | 构建产物、资源位置、外置配置与目标运行模式 |
-
-只声明实际验证过的环境和行为；未覆盖的数据库、入口或 Profile 明确列为限制。
+选择构建或验证命令、完成修改后的检查前，读取 [构建与验证](docs/development/validation.md)，按改动范围执行格式化、定向检查和必要回归；只读任务保持只读。
 
 ## 8. V2/V3 修复同步
 
