@@ -15,6 +15,7 @@ const editId = ref('')
 const checkedIssues = ref<IMaintenanceFieldIssue[]>([])
 const checkedValues = ref<Partial<ITableField>>({})
 const fieldForm = ref<FormInstance>()
+const fieldFormKey = ref(0)
 const props = withDefaults(
   defineProps<{
     modelValue: ITaskInfoRes
@@ -253,7 +254,7 @@ const changeTargetType = () => {
   }
 }
 /**
- * 维护模式下已有字段只在用户明确采用推荐后覆盖类型，不能在切换源字段时静默改写目标结构
+ * 维护模式下已有字段只在用户明确采用推荐后覆盖目标类型
  */
 const useRecommendedType = () => {
   if (props.readOnly || !recommendedTargetField.value || recommendationBlockedReason.value) return
@@ -430,6 +431,8 @@ const showDialog = (row?: ITableField, issues: IMaintenanceFieldIssue[] = []) =>
       fieldSize: 0,
       fieldPrecision: 0
     }
+    // 每次新增重建校验上下文，避免复用上一字段的初始值和异步校验结果
+    fieldFormKey.value++
   }
   if (editId.value != '') {
     state.form = deepCopy(row)
@@ -437,7 +440,7 @@ const showDialog = (row?: ITableField, issues: IMaintenanceFieldIssue[] = []) =>
   if (issues.length) nextTick(() => fieldForm.value?.scrollToField(issues[0].property))
 }
 /**
- * 新增字段采用来源映射后的候选类型，维护模式下已有字段更换来源时保留原目标类型
+ * 新增字段选择来源时，采用源接口映射后的候选类型
  * @param val
  */
 const changeFieldSource = (val: string) => {
@@ -625,6 +628,7 @@ defineExpose({
     <template #default>
       <div class="target-body">
         <el-form
+          :key="fieldFormKey"
           ref="fieldForm"
           require-asterisk-position="right"
           :model="state.form"
@@ -642,6 +646,7 @@ defineExpose({
           >
             <el-select
               v-model="state.form.fieldSource"
+              :disabled="readOnly || editId !== ''"
               :filterable="true"
               :placeholder="t('sync_task.please_choose')"
               @change="changeFieldSource"
@@ -920,6 +925,11 @@ defineExpose({
   }
   .source-field-item {
     margin-bottom: 8px;
+
+    .ed-form-item__error {
+      position: static;
+      width: 100%;
+    }
   }
   .source-type-summary {
     margin: 0 0 24px;
