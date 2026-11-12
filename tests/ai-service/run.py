@@ -15,12 +15,20 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--task-progress', action='store_true', help='isolated public task private-frame timing loop')
+    parser.add_argument('--progress-case', default='all', choices=['all', 'text-plain', 'sql-plain', 'text-burst', 'sql-burst'])
+    parser.add_argument('--progress-frames', type=int, default=512)
+    parser.add_argument('--progress-delay-ms', type=int, default=2)
+    parser.add_argument('--progress-private-chars', type=int, default=4096)
+    parser.add_argument('--progress-delay-scope', default='all', choices=['all', 'state', 'other'])
     parser.add_argument('--task-contracts', action='store_true', help='fast public task contract loop, excluding cross-JVM tests')
     parser.add_argument('--only-tasks', action='store_true', help='run focused persistent task regressions')
     parser.add_argument('--xpack', action='store_true', help='also compile the two changed private extension sources')
     parser.add_argument('--ai-classpath', default=os.environ.get('AI_SERVICE_DEPENDENCY_CP_FILE'), help='Maven-resolved Spring AI dependency classpath file')
     parser.add_argument('--redis-server', help='existing local Redis binary; start only an owned temporary loopback instance')
     args = parser.parse_args()
+    if not 1 <= args.progress_frames <= 4096 or not 0 <= args.progress_private_chars <= 8192 or not 0 <= args.progress_delay_ms <= 10:
+        parser.error('Progress fixture requires 1..4096 frames, 0..8192 private characters and 0..10 ms owned JDBC delay')
     root = Path(__file__).resolve().parents[2]
     repository = Path.home() / '.m2/repository'
     application = root / 'core/core-backend/target/CoreApplication.jar'
@@ -113,7 +121,7 @@ def main():
             java.append('-Dai.test.redisPort=' + str(port))
         commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
                      '-cp', classpath, '-d', str(classes), *map(str, sources)],
-                    [*java, '-cp', classpath, 'io.dataease.ai.Regression']]
+                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.Regression'])]]
         if args.xpack:
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
         try:
@@ -123,7 +131,7 @@ def main():
                     print('\n'.join((result.stdout + result.stderr).splitlines()[-100:]))
                     return result.returncode
                 for line in (result.stdout + result.stderr).splitlines():
-                    if line.startswith('PASS '):
+                    if line.startswith(('PASS ', 'DIAG ')):
                         print(line)
         finally:
             if redis is not None:
