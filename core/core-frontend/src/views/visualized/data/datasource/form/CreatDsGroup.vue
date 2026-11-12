@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import dvFolder from '@/assets/svg/dv-folder.svg'
+import dvExpandRight from '@/assets/svg/dv-expand-right.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import { ref, reactive, computed, watch, nextTick, shallowRef, unref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -403,6 +404,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
           style="width: 100%"
           :render-after-expand="false"
           :props="props"
+          :icon="dvExpandRight"
           @node-click="nodeClick"
           :filter-method="filterMethod"
           filterable
