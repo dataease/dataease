@@ -4,6 +4,7 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 const root = fileURLToPath(new URL('.', import.meta.url))
 const frontend = path.resolve(root, '../../../../core/core-frontend')
+const port = Number(process.env.AI_BROWSER_TEST_PORT || '4198')
 const require = createRequire(path.join(frontend, 'package.json'))
 const { createServer } = await import(require.resolve('vite'))
 const { default: vue } = await import(require.resolve('@vitejs/plugin-vue'))
@@ -51,7 +52,7 @@ const server = await createServer({
       }
     ]
   },
-  server: { host: '127.0.0.1', port: 4198, strictPort: true, fs: { allow: [root, frontend] } }
+  server: { host: '127.0.0.1', port, strictPort: true, fs: { allow: [root, frontend] } }
 })
 await server.listen()
 for (const signal of ['SIGINT', 'SIGTERM'])
