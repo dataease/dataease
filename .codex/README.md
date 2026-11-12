@@ -8,7 +8,7 @@
 
 CLI 快照、截图和 Test 报告位于 `tests/browser/output/`，登录状态按需保存到 `tests/browser/.auth/`，均被 Git 忽略。旧 Playwright MCP 的浏览器资料和输出仍留在 `.codex/playwright_mcp/` 下的本地忽略目录中。建议用 `chmod 600` 限制凭据文件权限。
 
-TAPD 开放配置中的读取工具及既有的 `update_bug`、`update_story_or_task`、`create_comments`。写入仅在用户授权的任务范围内执行；更新前读取实体最新内容和适用工作流，更新后回读核对。不得将代码已提交等同于已合并、已部署或已验证。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代。成员接口若返回 403，需相应接口权限。
+TAPD 工具白名单见 `config.toml`。创建 Task 的调用、工具不可见时的排查及发布回读，见 [工作项路由](../docs/agents/issue-tracker.md#创建-task)。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代。成员接口若返回 403，需相应接口权限。
 
 ## TAPD 实现选择
 

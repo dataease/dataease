@@ -55,6 +55,46 @@ GitHub 平台下的默认仓库为 `dataease/dataease`，使用 `gh` CLI。
 - 创建、更新规格、任务、依赖、附件及交付记录：操作前读取完整的 [TAPD 发布约定](tapd-publishing.md)，
   按实际写入范围执行发布维护与回读流程。
 
+### 创建 Task
+
+官方 TAPD MCP 使用 `create_story_or_task` 创建任务。先核对当前工具 schema，再按以下顺序操作：
+
+1. 在已确认项目中用 `get_stories_or_tasks` 按标题查询，显式传入 `entity_type: "tasks"`、`limit` 和 `page`，
+   核对已有任务的 Parent，避免同一问题重复建票。
+2. 调用 `create_story_or_task`，`workspace_id` 和 `name` 是顶层参数；
+   `options.entity_type` 明确填 `tasks`，省略时官方实现默认创建需求。
+   正文可传 Markdown；按任务用途填写原生 `label`，新票保持 `open`。
+   Wayfinder 票的 Parent、`story_id` 和依赖遵循下节；实施票遵循发布约定。
+
+   ```json
+   {
+     "workspace_id": 40899682,
+     "name": "【Wayfinder 决策】具体决策标题",
+     "options": {
+       "entity_type": "tasks",
+       "description": "## Parent\n\n实际地图链接\n\n## Question\n\n待解决的问题\n\n## Blocked by\n\n无。",
+       "label": "wayfinder:grilling",
+       "status": "open",
+       "story_id": "0"
+     }
+   }
+   ```
+
+   示例中的标题和地图链接须替换为本次实际内容；未领取的新票不设置处理人。
+
+3. 从返回值提取实体 ID；官方实现的 `data` 可能是 JSON 字符串，链接可能通过 `url_template` 返回。
+   用真实 ID 回读 `id,name,description,label,status,owner,story_id`，再维护地图或规格索引。
+   多票先创建取得真实 ID，再写入依赖；超时或返回结果不明确时先查重再重试。
+
+**工具不可见时**：区分服务端能力与当前会话暴露的工具。
+先检查 `.codex/config.toml` 的 `mcp_servers.tapd.enabled_tools` 是否包含 `create_story_or_task`；
+`enabled_tools` 是工具白名单，见 [OpenAI 官方 MCP 配置](https://developers.openai.com/codex/mcp)。
+配置变更后重新加载 MCP，并核对工具列表。
+当前会话无法刷新时，可通过 MCP 客户端以 stdio 启动同一个 `.codex/launch_tapd.py`，
+先 `tools/list` 确认名称与 schema，再 `tools/call`；继续沿用项目本地配置、账号和已获授权范围。
+启动器选择及解释器配置见 [项目 MCP 说明](../../.codex/README.md#tapd-实现选择)。
+仅在该服务的工具列表也无创建入口时，才按发布约定的“连接”分支处理。
+
 ### Wayfinding operations
 
 使用 wayfinder 在 TAPD 建图或续接时，以地图链接为入口。采用 Task 承载时：
