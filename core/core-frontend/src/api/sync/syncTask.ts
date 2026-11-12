@@ -263,6 +263,19 @@ export const getSinkKeyPolicyApi = (target: ITarget) => {
   return request.post({ url: '/sync/task/target/keyPolicy', data: target })
 }
 
+export interface ISinkFieldNameRules {
+  version: string
+  pattern: string
+  maxLength: number
+  caseSensitive: boolean
+  reservedPrefixes: string[]
+  reservedPrefixCaseSensitive: boolean
+  protectedPrefixes: string[]
+  unsupportedPattern: string
+  description: string
+  documentationUrl: string
+}
+
 export const getDatasourceTableListApi = (dsId: string) => {
   return request.get({ url: `/sync/datasource/table/list/${dsId}` })
 }
@@ -303,6 +316,7 @@ export interface IMaintenanceStructure {
     applicableVersion?: string
   }[]
   fieldNameMaxLength?: number
+  fieldNameRules?: ISinkFieldNameRules
   fieldCommentMaxLength?: number
   sizeLimits?: Record<string, number>
   precisionLimits?: Record<string, number>

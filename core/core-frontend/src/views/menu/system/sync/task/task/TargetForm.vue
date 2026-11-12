@@ -9,7 +9,7 @@ import {
   ITableField,
   ITaskInfoRes
 } from '@/api/sync/syncTask'
-import type { SinkKeyPolicy } from '@/api/sync/syncTask'
+import type { ISinkFieldNameRules, SinkKeyPolicy } from '@/api/sync/syncTask'
 import { includes, map, remove } from 'lodash-es'
 import FormTitle from '../component/FormTitle.vue'
 import { getFieldListApi } from '@/api/sync/syncDatasource'
@@ -65,6 +65,8 @@ const sinkKeyPolicy = ref<SinkKeyPolicy>('OPTIONAL')
 const targetPropertyFormRef = ref()
 // 编辑目标字段表单组件
 const targetFieldFormRef = ref()
+const fieldNameRules = ref<ISinkFieldNameRules | null>()
+let fieldListRequest = 0
 
 /**
  * 字段属性
@@ -148,8 +150,13 @@ const refreshFieldList = () => {
 watch(
   () => form.value.target.datasourceId,
   () => {
+    fieldListRequest++
+    fieldNameRules.value = undefined
+    form.value.source.targetFieldTypeList = []
     form.value.source.fieldList = []
     form.value.target.fieldList = []
+    if (targetFieldFormRef.value) targetFieldFormRef.value.targetFieldFormLoading = false
+    emits('changeLoading', false)
     void refreshSinkKeyPolicy()
   }
 )
@@ -214,10 +221,16 @@ const setSourceFieldAndTargetFieldTypeList = callBack => {
     return
   }
   buildSearchSourceFieldParams.value.targetDbId = form.value.target.datasourceId
+  const requestId = ++fieldListRequest
+  const targetId = form.value.target.datasourceId
+  const isCurrent = () =>
+    requestId === fieldListRequest && targetId === form.value.target.datasourceId
+  fieldNameRules.value = undefined
+  targetFieldFormRef.value.targetFieldFormLoading = true
   getFieldListApi(buildSearchSourceFieldParams.value)
     .then(res => {
-      emits('changeLoading', false)
-      targetFieldFormRef.value.targetFieldFormLoading = false
+      if (!isCurrent()) return
+      fieldNameRules.value = res.data.targetFieldNameRules ?? null
       form.value.source.fieldList = res.data.sourceFieldList
       // 设置ID方便后面映射表格的删除修改
       form.value.source.fieldList?.forEach(item => {
@@ -231,12 +244,14 @@ const setSourceFieldAndTargetFieldTypeList = callBack => {
       if (callBack) callBack()
     })
     .catch(err => {
-      form.value.source.fieldList = []
-      form.value.target.fieldList = []
+      if (!isCurrent()) return
+      // 读取失败保留已有字段草稿，不能继续使用旧连接或上次读取的规则
+      presentError(err, err.message)
+    })
+    .finally(() => {
+      if (!isCurrent()) return
       emits('changeLoading', false)
       targetFieldFormRef.value.targetFieldFormLoading = false
-      console.log(err)
-      if (callBack) callBack()
     })
 }
 
@@ -484,7 +499,7 @@ const confirmFieldMappingWarnings = async () => {
 const edit = row => {
   targetFieldFormRef.value.editId = row.id
   const showTargetFieldFormRef = () => targetFieldFormRef.value.showDialog(row)
-  if (!form.value.source.targetFieldTypeList?.length) {
+  if (!form.value.source.targetFieldTypeList?.length || fieldNameRules.value === undefined) {
     setSourceFieldAndTargetFieldTypeList(showTargetFieldFormRef)
   } else {
     showTargetFieldFormRef()
@@ -1242,6 +1257,7 @@ defineExpose({ validate, closeLoading })
     :read-only="targetFieldsReadOnly"
     ref="targetFieldFormRef"
     :model-value="form"
+    :field-name-rules="fieldNameRules"
   ></TargetFieldForm>
 </template>
 <style scoped lang="less">

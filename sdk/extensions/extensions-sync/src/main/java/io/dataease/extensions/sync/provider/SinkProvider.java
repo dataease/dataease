@@ -1,6 +1,7 @@
 package io.dataease.extensions.sync.provider;
 
 import io.dataease.extensions.sync.model.TableFieldDTO;
+import io.dataease.extensions.sync.model.SinkFieldNameRules;
 import io.dataease.extensions.sync.model.datasource.DatasourceRequest;
 import io.dataease.extensions.sync.model.task.Source;
 import io.dataease.extensions.sync.model.task.Target;
@@ -129,6 +130,13 @@ public interface SinkProvider {
      * @param taskTargetDataSource 目标数据源
      */
     void validateTarget(Target taskTargetDataSource);
+
+    /**
+     * 按当前目标连接返回命名规则，旧插件未声明时保留原有校验
+     */
+    default SinkFieldNameRules fieldNameRules(DatasourceRequest datasourceRequest) {
+        return null;
+    }
 
     /**
      * 执行已保存任务时验证目标参数

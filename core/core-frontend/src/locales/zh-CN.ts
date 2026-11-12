@@ -4644,6 +4644,11 @@ export default {
     recovery_execution_failed: '已确认相关操作结束，本次运行按失败结束'
   },
   sync_task: {
+    field_name_rules_unavailable: '目标字段命名规则不可用，请重新读取字段信息',
+    field_name_control: '同步字段名称不能包含换行、制表符等控制字符',
+    field_name_characters: '名称包含当前目标版本不支持的字符，请检查特殊符号或 Unicode 设置（{0}）',
+    field_name_reserved: '名称使用了数据库保留前缀',
+    field_name_protected: '名称使用了 DataEase 同步系统保留前缀',
     decimal_precision_required:
       '字段 {0}（源类型 {1}）的目标类型 {2} 尚未指定总精度，请根据实际数据明确设置总精度和小数位，避免使用数据库默认值',
     decimal_parameters_invalid:
