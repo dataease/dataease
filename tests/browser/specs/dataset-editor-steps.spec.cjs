@@ -202,6 +202,48 @@ test("adding the first table enters inline field selection without a drawer", as
   ).toHaveCount(4);
 });
 
+test("node preview reloads when the same table is removed and added again", async ({
+  page,
+}) => {
+  await openRelations(page, "/?create=1");
+  const canvas = page.locator(".drag-mask_dataset");
+  const addOrders = async () => {
+    const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+    const source = page
+      .locator(".table-list .list-item_primary")
+      .filter({ hasText: /^orders$/ });
+    await source.dispatchEvent("dragstart", { dataTransfer });
+    await canvas.dispatchEvent("drop", { dataTransfer });
+    await source.dispatchEvent("dragend", { dataTransfer });
+  };
+  await addOrders();
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  const previewTab = page
+    .locator(".node-tabs")
+    .getByRole("tab", { name: "数据预览", exact: true });
+  await previewTab.click();
+  const preview = page.locator(".node-preview");
+  await expect(preview).toContainText("orders:orders_id");
+  const originalId = await page.evaluate(
+    () => window.previewRequests[0].union[0].currentDs.id
+  );
+  await canvas.locator(".node-union .hover-icon").click();
+  await page
+    .locator(".menu-more_popper:visible")
+    .getByRole("menuitem", { name: "删除", exact: true })
+    .click();
+  await expect(canvas.locator(".node-union")).toHaveCount(0);
+  await expect(preview).toHaveCount(0);
+  await addOrders();
+  await expect(previewTab).toHaveAttribute("aria-selected", "true");
+  await expect(preview).toContainText("orders:orders_id");
+  const requests = await page.evaluate(() =>
+    window.previewRequests.map((request) => request.union[0].currentDs.id)
+  );
+  expect(requests).toHaveLength(2);
+  expect(requests[1]).not.toBe(originalId);
+});
+
 test("first save retains changed and unchanged field types in batch management", async ({
   page,
 }) => {
