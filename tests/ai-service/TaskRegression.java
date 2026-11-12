@@ -22,6 +22,13 @@ public final class TaskRegression {
         }
         throw new AssertionError("task expected " + status + ": " + result);
     }
+    private static void recovery(org.springframework.test.web.servlet.MockMvc mvc, ObjectMapper json, int step, int attempt) throws Exception {
+        var current = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(mvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
+        current.put("expectedVersion", current.path("rowVersion").asLong());
+        ((com.fasterxml.jackson.databind.node.ObjectNode) current.path("taskScheduling")).put("maxRunning", 1);
+        current.set("recovery", json.valueToTree(Map.of("stepRetries", step, "attemptRetries", attempt, "initialDelayMillis", 100)));
+        if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(current))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("recovery settings accepted through public configuration HTTP");
+    }
     public static void run(EntityManager em, PlatformTransactionManager manager, AiAccess access, AiConfigurationManage configuration, io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository policies, io.dataease.ai.support.AiSecrets keys, io.dataease.ai.support.AiAdmission admission) throws Exception {
         var sceneAllowed = new java.util.concurrent.atomic.AtomicBoolean(true);
         var toolsOn = new java.util.concurrent.atomic.AtomicBoolean();
@@ -50,6 +57,9 @@ public final class TaskRegression {
         var followed = new java.util.concurrent.atomic.AtomicBoolean();
         var stateSends = new java.util.concurrent.atomic.AtomicInteger();
         var continuationFailures = new java.util.concurrent.atomic.AtomicInteger();
+        var policyFailures = new java.util.concurrent.atomic.AtomicInteger(3);
+        var policySends = new java.util.concurrent.atomic.AtomicInteger();
+        var legacyPolicySends = new java.util.concurrent.atomic.AtomicInteger();
         var failCommit = new java.util.concurrent.atomic.AtomicBoolean();
         var failingManager = new org.springframework.orm.jpa.JpaTransactionManager(em.getEntityManagerFactory()) {
             @Override protected void doCommit(org.springframework.transaction.support.DefaultTransactionStatus status) {
@@ -116,6 +126,13 @@ public final class TaskRegression {
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v1/chat/completions", exchange -> {
             var modelRequest = json.readTree(exchange.getRequestBody());
+            if (modelRequest.path("messages").toString().contains("legacy-policy")) {
+                legacyPolicySends.incrementAndGet(); exchange.sendResponseHeaders(503, -1); exchange.close(); return;
+            }
+            if (modelRequest.path("messages").toString().contains("policy-snapshot")) {
+                policySends.incrementAndGet();
+                if (policyFailures.getAndUpdate(value -> Math.max(0, value - 1)) > 0) { exchange.sendResponseHeaders(503, -1); exchange.close(); return; }
+            }
             if (modelRequest.path("messages").toString().contains("follow-background")) {
                 String messages = modelRequest.path("messages").toString();
                 long questions = java.util.stream.StreamSupport.stream(modelRequest.path("messages").spliterator(), false)
@@ -146,6 +163,28 @@ public final class TaskRegression {
             configuration.saveSettings(new io.dataease.api.ai.config.AiConfigDtos.SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 1, 1, configuration.impact("SETTINGS", saved.id() + ":true").token()));
             beans.addBean("tasks", tasks);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access));
+            var configMvc = MockMvcBuilders.standaloneSetup(new io.dataease.ai.server.AiConfigurationServer(configuration, null)).build();
+            var originalScheduling = configuration.querySettings().taskScheduling();
+            recovery(configMvc, json, 1, 1);
+            var policyTask = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "policy-snapshot").replace("explain", "policy-snapshot"))).andReturn().getResponse().getContentAsString());
+            if (!"QUEUED".equals(policyTask.path("status").asText())) throw new AssertionError("policy task remains queued before the worker starts");
+            var legacyPolicyTask = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "legacy-policy").replace("explain", "legacy-policy"))).andReturn().getResponse().getContentAsString());
+            // Historical queued rows predate recovery snapshots; seed that version boundary before starting workers.
+            new org.springframework.transaction.support.TransactionTemplate(manager).executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.recoveryJson=null where a.id=:id")
+                    .setParameter("id", Long.valueOf(legacyPolicyTask.path("attemptId").asText())).executeUpdate());
+            recovery(configMvc, json, 2, 2);
+            tasks.start();
+            var legacyPolicy = await(mvc, json, "/ai/tasks/" + legacyPolicyTask.path("taskId").asText(), "FAILED");
+            if (legacyPolicy.path("recovery").path("technicalRetries").asInt() != 0 || legacyPolicySends.get() != 1) throw new AssertionError("legacy queued attempts without an acceptance snapshot cannot gain automatic retries: " + legacyPolicy);
+            String policyPath = "/ai/tasks/" + policyTask.path("taskId").asText();
+            var originalPolicy = await(mvc, json, policyPath, "FAILED");
+            if (originalPolicy.path("recovery").path("technicalRetries").asInt() != 1 || policySends.get() != 2) throw new AssertionError("an accepted queued attempt must retain its original recovery policy after settings change: " + originalPolicy);
+            recovery(configMvc, json, 0, 0);
+            var newPolicyAttempt = json.readTree(mvc.perform(post(policyPath + "/retry").contentType("application/json").content(json.writeValueAsBytes(Map.of("retryKey", "new-policy", "expectedAttemptId", originalPolicy.path("attemptId").asText())))).andReturn().getResponse().getContentAsString());
+            var retriedPolicy = await(mvc, json, policyPath, "FAILED");
+            if (retriedPolicy.path("recovery").path("technicalRetries").asInt() != 0 || policySends.get() != 3 || newPolicyAttempt.path("attemptNumber").asInt() != 2) throw new AssertionError("only an explicitly new attempt adopts the new zero-retry policy");
+            var restoredPolicy = configuration.setting();
+            configuration.saveSettings(new io.dataease.api.ai.config.AiConfigDtos.SettingsChange(restoredPolicy.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 1, 1, null, originalScheduling, new io.dataease.api.ai.config.AiConfigDtos.Recovery(2, 3, 1000)));
             var submitted = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "background"))).andReturn().getResponse().getContentAsString());
             String backgroundPath = "/ai/tasks/" + submitted.path("taskId").asText();
             // Saturate I pool: a true detached task must use B pool and cannot require a polling lease.

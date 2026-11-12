@@ -51,6 +51,7 @@ public class AiTaskManage implements AiToolConversationFeature {
         final Set<String> invalidRequests = new HashSet<>();
         volatile String failureCode;
         volatile boolean replayUnsafe;
+        String recoverySource = "LEGACY";
         Run(Work work) { this.work = work; }
     }
     private static Thread daemon(Runnable work, String name) { var thread = new Thread(work, name); thread.setDaemon(true); return thread; }
@@ -136,7 +137,11 @@ public class AiTaskManage implements AiToolConversationFeature {
         attempt.setAttemptNumber(number); attempt.setRetryHash(retryHash); attempt.setStatus("QUEUED"); attempt.setCreatedAt(System.currentTimeMillis());
         var coordinator = em.find(CoreAiTaskSchedule.class, 1L);
         coordinator.setLastSequence(Math.addExact(coordinator.getLastSequence(), 1L)); attempt.setQueueSequence(coordinator.getLastSequence());
-        attempt.setQueueDeadline(attempt.getCreatedAt() + em.find(CoreAiSetting.class, 1L).getTaskMaxWaitSeconds() * 1000L); return attempt;
+        var settings = em.find(CoreAiSetting.class, 1L); em.refresh(settings);
+        attempt.setQueueDeadline(attempt.getCreatedAt() + settings.getTaskMaxWaitSeconds() * 1000L);
+        attempt.setRecoveryJson(encode(new RecoverySnapshot(new io.dataease.api.ai.config.AiConfigDtos.Recovery(settings.getRecoveryStepRetries(),
+                settings.getRecoveryAttemptRetries(), settings.getRecoveryInitialDelayMillis()), null, "ACCEPTED")));
+        return attempt;
     }
     public List<Task> active() {
         var owner = identity();
@@ -417,11 +422,11 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void check(Run run) {
         active(run); authorized(run.work.owner(), () -> { scene(run.work.input().scene()).authorize(run.work.context()); return null; });
     }
-    private record RecoverySnapshot(io.dataease.api.ai.config.AiConfigDtos.Recovery policy, io.dataease.api.ai.conversation.AiConversationDtos.RecoveryProgress progress) { }
+    private record RecoverySnapshot(io.dataease.api.ai.config.AiConfigDtos.Recovery policy, io.dataease.api.ai.conversation.AiConversationDtos.RecoveryProgress progress, String source) { }
     private void recoveryProgress(Run run) {
         var progress = run.stream.recovery().progress();
         String snapshot = encode(new RecoverySnapshot(run.stream.recovery().policy(), new io.dataease.api.ai.conversation.AiConversationDtos.RecoveryProgress(
-                progress.stepId(), progress.stepKind(), progress.technicalRetries(), progress.corrections(), progress.reason())));
+                progress.stepId(), progress.stepKind(), progress.technicalRetries(), progress.corrections(), progress.reason()), run.recoverySource));
         boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.recoveryJson=:progress where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
                 .setParameter("progress", snapshot).setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
         if (!saved) throw AiErrors.error("cancelled");
@@ -444,6 +449,11 @@ public class AiTaskManage implements AiToolConversationFeature {
         }
         run.stream = stream;
         var attemptIdentity = em.find(CoreAiTaskAttempt.class, work.attemptId());
+        var acceptedPolicy = attemptIdentity.getRecoveryJson() == null ? null : decode(attemptIdentity.getRecoveryJson(), RecoverySnapshot.class);
+        // Legacy records never had an acceptance snapshot. Do not infer one from current admin settings.
+        if (acceptedPolicy != null && "ACCEPTED".equals(acceptedPolicy.source())) {
+            stream.recovery().freeze(acceptedPolicy.policy()); run.recoverySource = "ACCEPTED";
+        } else stream.recovery().freeze(new io.dataease.api.ai.config.AiConfigDtos.Recovery(0, 0, 1000));
         stream.recovery().link(new io.dataease.api.ai.runtime.AiExecutionLink(work.taskId().toString(), work.attemptId().toString(), attemptIdentity.getAttemptNumber(),
                 attemptIdentity.getSourceAttemptId() == null ? null : attemptIdentity.getSourceAttemptId().toString()));
         stream.recovery().observe(ignored -> recoveryProgress(run));
