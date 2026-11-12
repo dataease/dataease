@@ -81,6 +81,7 @@ const getDatasetField = (field: Field) =>
   props.allFields.find(item => field.id && item.id === field.id) || field
 const getDatasetFieldName = (field: Field) =>
   fieldDrafts.value[field.originName]?.name ?? getDatasetField(field).name
+const needsFieldName = (field: Field) => field.checked && !getDatasetFieldName(field)?.trim()
 const getDatasetFieldType = (field: Field): FieldTypePath => {
   const draft = fieldDrafts.value[field.originName]?.typePath
   if (draft) return draft
@@ -432,9 +433,13 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                     :model-value="getDatasetFieldName(row)"
                     :disabled="applying"
                     :aria-label="`${t('dataset.dataset_field_name')} ${row.originName}`"
+                    :aria-invalid="needsFieldName(row)"
                     maxlength="100"
                     @update:model-value="value => changeFieldName(row, value)"
                   />
+                  <p v-if="needsFieldName(row)" class="field-name-error">
+                    {{ t('dataset.input_edit_name') }}
+                  </p>
                 </template>
               </el-table-column>
               <el-table-column :label="t('dataset.dataset_field_type')" min-width="160">
@@ -629,6 +634,13 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   }
   .field-remark {
     color: var(--deTextSecondary, #646a73);
+  }
+  .field-name-error {
+    margin: 0;
+    padding: 0 8px;
+    color: var(--ed-color-danger);
+    font-size: 12px;
+    line-height: 18px;
   }
   flex: 1;
   min-height: 0;
