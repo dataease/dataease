@@ -437,11 +437,19 @@ test("list SQL node supports rename and edit SQL", async ({ page }) => {
     canvasCommands
   );
   await menu.getByRole("menuitem", { name: "重命名", exact: true }).click();
-  await page.locator(".ed-dialog:visible input").fill("items_renamed");
-  await page
-    .locator(".ed-dialog:visible .ed-dialog__footer button")
-    .last()
-    .click();
+  const url = page.url();
+  const dialog = page.locator(".ed-dialog:visible");
+  const input = dialog.locator("input");
+  await input.fill("items_renamed");
+  await input.press("Enter");
+  await expect(page).toHaveURL(url);
+  await expect(input).toHaveValue("items_renamed");
+  await expect(
+    page.locator(".node-items").getByRole("button", { name: "items", exact: true })
+  ).toBeVisible();
+  await dialog.getByRole("button", { name: "确定", exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page).toHaveURL(url);
   await expect(
     page
       .locator(".node-items")

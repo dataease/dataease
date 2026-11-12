@@ -1153,6 +1153,7 @@ const emits = defineEmits([
       require-asterisk-position="right"
       :model="renameParam"
       label-position="top"
+      @submit.prevent
     >
       <el-form-item
         prop="name"
