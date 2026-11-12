@@ -202,6 +202,41 @@ test("adding the first table enters inline field selection without a drawer", as
   ).toHaveCount(4);
 });
 
+test("first save retains changed and unchanged field types in batch management", async ({
+  page,
+}) => {
+  await openRelations(page, "/?create=1");
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await page
+    .locator(".table-list .list-item_primary")
+    .filter({ hasText: /^orders$/ })
+    .dispatchEvent("dragstart", { dataTransfer });
+  await page.locator(".drag-mask_dataset").dispatchEvent("drop", { dataTransfer });
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await page.getByRole("tab", { name: "批量管理", exact: true }).click();
+  const typeInput = (field) =>
+    page
+      .locator(".batch-area .ed-table__body tr")
+      .filter({ hasText: field })
+      .locator(".ed-cascader input");
+  await typeInput("orders_id").click();
+  await page
+    .locator(".ed-cascader__dropdown:visible")
+    .getByText("数值", { exact: true })
+    .click();
+  await expect(typeInput("orders_id")).toHaveValue("数值");
+  await expect(typeInput("orders_name")).toHaveValue("文本");
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  const dialog = page.locator(".create-dialog:visible");
+  await expect(dialog).toContainText("测试文件夹");
+  await dialog.getByRole("button", { name: "确认", exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(typeInput("orders_id")).toHaveValue("数值");
+  await expect(typeInput("orders_name")).toHaveValue("文本");
+  expect(await page.evaluate(() => window.saved.allFields[0].deType)).toBe(2);
+});
+
 test("returning to relations invalidates the previous processing preview", async ({
   page,
 }) => {
