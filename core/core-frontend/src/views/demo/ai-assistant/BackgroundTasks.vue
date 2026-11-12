@@ -3,6 +3,7 @@ import { computed, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
 import { aiFailureKey } from '@/api/aiService'
+import { aiRecoveryReasonKey } from '@/api/aiConversation'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
@@ -464,6 +465,9 @@ defineExpose({
         {{ tr('current_step') }} {{ task.recovery.stepKind }} · {{ tr('technical_retries') }}
         {{ task.recovery.technicalRetries }} · {{ tr('corrections') }}
         {{ task.recovery.corrections }}
+        <span v-if="task.recovery.reason">
+          · {{ t(aiRecoveryReasonKey(task.recovery.reason)) }}</span
+        >
       </p>
       <small v-if="task.executionId">{{ task.executionId }}</small>
       <el-button v-if="task.executionId" link @click="copyExecution(task.executionId)">{{

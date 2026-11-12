@@ -108,7 +108,7 @@ public final class TaskNode {
         var transport = new AiTransport(new AiOutboundPolicy(), admission, JSON);
         var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
         beans.addBean("conversations", conversations);
-        var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, JSON);
+        var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, JSON, beans.getBeanProvider(AiConversationManage.class));
         beans.addBean("tasks", tasks);
         beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, secrets(), transport, JSON, access));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "taskLifecycle", beans.getBeanProvider(AiTaskManage.class));

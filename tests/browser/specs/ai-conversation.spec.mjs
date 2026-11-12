@@ -1359,7 +1359,7 @@ test('offline completion is toasted once after return and acknowledged without r
   await expect(page.getByText('durable answer', { exact: true })).toHaveCount(0)
 })
 
-test('background result joins only its still open original conversation and permits follow-up', async ({
+test('background result joins only its still open original conversation after busy import and permits follow-up', async ({
   page
 }) => {
   const requests = []
@@ -1407,6 +1407,11 @@ test('background result joins only its still open original conversation and perm
     if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
     if (url.pathname.endsWith('/conversation')) {
       consumed++
+      if (consumed <= 4)
+        return route.fulfill({
+          status: 409,
+          json: { code: 50005, category: 'CONFLICT', messageKey: 'i18n_ai_concurrency' }
+        })
       expect(route.request().postDataJSON()).toEqual({
         sessionId: session.sessionId,
         contextVersion: session.contextVersion
@@ -1434,8 +1439,13 @@ test('background result joins only its still open original conversation and perm
   await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
   await expect.poll(() => body?.origin?.sessionId).toBe(session.sessionId)
   complete = true
-  await expect(page.getByText('original background answer', { exact: true })).toBeVisible()
-  expect(consumed).toBe(1)
+  await expect(page.getByText('original background answer', { exact: true })).toBeVisible({
+    timeout: 10000
+  })
+  expect(consumed).toBe(5)
+  await expect(page.getByRole('button', { name: '重新读取后台进度' })).toHaveCount(0)
+  await page.waitForTimeout(1200)
+  expect(consumed).toBe(5)
   await send(page, 'follow up on that result')
   expect(requests[1].contextVersion).toBe(session.contextVersion)
 })
@@ -2240,4 +2250,143 @@ for (const language of [
     available = true
     await expect(page.getByRole('textbox', { name: language.message })).toHaveValue('')
     await expect(page.getByRole('button', { name: language.retry, exact: true })).toHaveCount(0)
+  })
+
+for (const language of [
+  {
+    code: 'zh-CN',
+    message: '消息',
+    send: '发送',
+    tasks: '后台任务',
+    copy: '复制执行 ID',
+    technical: '技术重试',
+    reasons: [
+      '模型服务暂不可用，正在重试当前步骤。',
+      '模型服务限流，正在等待重试。',
+      '连接中断，正在重试当前步骤。',
+      '正在修正模型输出。',
+      '正在重试当前步骤。'
+    ]
+  },
+  {
+    code: 'en',
+    message: 'Message',
+    send: 'Send',
+    tasks: 'Background tasks',
+    copy: 'Copy execution ID',
+    technical: 'Technical retries',
+    reasons: [
+      'The model service is temporarily unavailable. Retrying this step.',
+      'The model rate limit was reached. Waiting to retry.',
+      'The connection was interrupted. Retrying this step.',
+      'Correcting the model output.',
+      'Retrying the current step.'
+    ]
+  },
+  {
+    code: 'tw',
+    message: '訊息',
+    send: '傳送',
+    tasks: '背景任務',
+    copy: '複製執行 ID',
+    technical: '技術重試',
+    reasons: [
+      '模型服務暫不可用，正在重試目前步驟。',
+      '模型服務限流，正在等待重試。',
+      '連線中斷，正在重試目前步驟。',
+      '正在修正模型輸出。',
+      '正在重試目前步驟。'
+    ]
+  }
+])
+  test(`recovery reasons ${language.code} are safe and localized in foreground and background at 360px`, async ({
+    page
+  }, info) => {
+    await page.setViewportSize({ width: 360, height: 800 })
+    let reason = 'provider_unavailable'
+    let retryCount = 1
+    const recovery = () => ({
+      stepId: 'step-1',
+      stepKind: 'MODEL',
+      technicalRetries: retryCount,
+      corrections: 1,
+      reason
+    })
+    await page.route('**/fixture-api/ai/tasks**', (route) => {
+      if (new URL(route.request().url()).pathname.endsWith('/notices'))
+        return route.fulfill({ json: [] })
+      return route.fulfill({
+        json: [
+          {
+            taskId: '910',
+            attemptId: '911',
+            attemptNumber: 2,
+            status: 'RUNNING',
+            resourceName: 'Controlled fixture',
+            executionId: 'background-execution',
+            recovery: recovery()
+          }
+        ]
+      })
+    })
+    await page.route('**/fixture-api/ai/conversations**', (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/resources')) return route.fulfill({ json: [] })
+      if (path.endsWith('/events'))
+        return route.fulfill({
+          json: {
+            ...session,
+            executionId: 'foreground-execution',
+            status: 'RUNNING',
+            cursor: 0,
+            events: [],
+            recovery: recovery()
+          }
+        })
+      if (path.endsWith('/executions'))
+        return route.fulfill({
+          json: {
+            ...session,
+            executionId: 'foreground-execution',
+            status: 'RUNNING',
+            deadline: Date.now() + 60000
+          }
+        })
+      return route.fulfill({ json: session })
+    })
+    await page.goto('/?view=conversation&language=' + language.code)
+    await page.getByRole('textbox', { name: language.message }).fill('Controlled recovery')
+    await page.getByRole('button', { name: language.send, exact: true }).click()
+    const foreground = page.locator('.messages')
+    const background = page.getByRole('region', {
+      name: language.tasks,
+      exact: true
+    })
+    for (const [index, code] of [
+      'provider_unavailable',
+      'provider_rate_limit',
+      'connection_failed',
+      'model_correction',
+      'unknown-upstream-SECRET'
+    ].entries()) {
+      reason = code
+      retryCount = index + 1
+      await expect(foreground).toContainText(language.technical + ' ' + retryCount)
+      await expect(background).toContainText(language.technical + ' ' + retryCount)
+      expect.soft(await foreground.innerText()).toContain(language.reasons[index])
+      expect.soft(await background.innerText()).toContain(language.reasons[index])
+      expect.soft(await foreground.innerText()).not.toContain(code)
+      expect.soft(await background.innerText()).not.toContain(code)
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true
+      )
+    }
+    await expect(foreground).toContainText('foreground-execution')
+    await expect(background).toContainText('background-execution')
+    await expect(foreground.getByRole('button', { name: language.copy, exact: true })).toBeVisible()
+    await expect(background.getByRole('button', { name: language.copy, exact: true })).toBeVisible()
+    await page.screenshot({
+      path: info.outputPath('recovery-' + language.code + '-360.png'),
+      fullPage: true
+    })
   })
