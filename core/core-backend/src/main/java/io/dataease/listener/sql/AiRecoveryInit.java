@@ -18,7 +18,7 @@ public class AiRecoveryInit implements CoreSqlBlock {
     public void execute() {
         var session = factory.unwrap(SessionFactoryImplementor.class);
         String type = session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(java.sql.Types.INTEGER, session.getJdbcServices().getDialect());
-        add("core_ai_task_attempt", "retry_safe", session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(session.getJdbcServices().getDialect().getPreferredSqlTypeCodeForBoolean(), session.getJdbcServices().getDialect()),
+        add("core_ai_task_attempt", "retry_safe", session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(java.sql.Types.BOOLEAN, session.getJdbcServices().getDialect()),
                 session.getJdbcServices().getDialect().toBooleanValueString(false));
         add("core_ai_task_attempt", "execution_id", session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(java.sql.Types.VARCHAR, org.hibernate.engine.jdbc.Size.length(100)), null);
         add("core_ai_task_attempt", "recovery_json", session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(java.sql.Types.VARCHAR, org.hibernate.engine.jdbc.Size.length(2000)), null);
