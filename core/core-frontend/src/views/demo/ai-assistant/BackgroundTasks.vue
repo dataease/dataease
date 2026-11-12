@@ -23,7 +23,7 @@ const failure = ref('')
 const loadingFailed = ref(false)
 let generation = 0
 let timer: ReturnType<typeof setTimeout> | undefined
-let submission: { fingerprint: string; value: AiTaskSubmit } | undefined
+let submission: { fingerprint: string; value: AiTaskSubmit; taskId?: string } | undefined
 const retryKeys = new Map<string, string>()
 const active = (task: AiTask) => ['QUEUED', 'RUNNING'].includes(task.status)
 const finished = new Set<string>()
@@ -77,6 +77,7 @@ const notify = (task: AiTask) => {
 }
 const remember = (task: AiTask) => {
   if (!active(task)) {
+    if (submission?.taskId === task.taskId) submission = undefined
     tasks.value = tasks.value.filter(previous => previous.attemptId !== task.attemptId)
     notify(task)
     return
@@ -104,11 +105,18 @@ const submit = async () => {
   pending.value = true
   failure.value = ''
   const current = generation
+  const accepted = submission
   try {
-    const task = await submitAiTask(submission.value)
+    const task = await submitAiTask(accepted.value)
     if (current !== generation) return
+    accepted.taskId = task.taskId
+    // Retain the same operation key after admission; a second click must replay its task.
+    // A poll may already have observed terminal state before this response arrived.
+    if (finished.has(task.attemptId)) {
+      if (submission === accepted) submission = undefined
+      return
+    }
     remember(task)
-    submission = undefined
   } catch {
     if (current === generation) failure.value = tr('task_request_failed')
   } finally {
