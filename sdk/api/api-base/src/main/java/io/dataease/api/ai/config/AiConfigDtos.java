@@ -3,6 +3,7 @@ package io.dataease.api.ai.config;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
@@ -37,12 +38,29 @@ public final class AiConfigDtos {
     public record Settings(boolean enabled, @JsonSerialize(using = ToStringSerializer.class) Long defaultModelId,
             boolean allowSamples, int requestTimeoutSeconds, int maxInputChars, int maxOutputTokens,
             int interactiveConcurrency, int backgroundConcurrency, long revision, long rowVersion,
-            long persistedRevision, long appliedRevision, String runtimeState, boolean organizationPolicyAvailable) { }
+            long persistedRevision, long appliedRevision, String runtimeState, boolean organizationPolicyAvailable,
+            TaskScheduling taskScheduling) {
+        public Settings(boolean enabled, Long defaultModelId, boolean allowSamples, int requestTimeoutSeconds, int maxInputChars,
+                int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, long revision, long rowVersion,
+                long persistedRevision, long appliedRevision, String runtimeState, boolean organizationPolicyAvailable) {
+            this(enabled, defaultModelId, allowSamples, requestTimeoutSeconds, maxInputChars, maxOutputTokens, interactiveConcurrency,
+                    backgroundConcurrency, revision, rowVersion, persistedRevision, appliedRevision, runtimeState, organizationPolicyAvailable,
+                    new TaskScheduling(2, 100, 10, 300));
+        }
+    }
+    public record TaskScheduling(@Min(1) @Max(20) int maxRunning, @Min(1) @Max(10000) int maxQueued,
+            @Min(1) @Max(1000) int maxQueuedPerUser, @Min(1) @Max(86400) int maxWaitSeconds) { }
     public record SettingsChange(@NotNull Long expectedVersion, @NotNull Boolean enabled,
             @JsonSerialize(using = ToStringSerializer.class) Long defaultModelId, @NotNull Boolean allowSamples,
             @Min(5) @Max(300) int requestTimeoutSeconds, @Min(1000) @Max(200000) int maxInputChars,
             @Min(128) @Max(32768) int maxOutputTokens, @Min(1) @Max(20) int interactiveConcurrency,
-            @Min(1) @Max(20) int backgroundConcurrency, String impactToken) { }
+            @Min(1) @Max(20) int backgroundConcurrency, String impactToken, @Valid TaskScheduling taskScheduling) {
+        public SettingsChange(Long expectedVersion, Boolean enabled, Long defaultModelId, Boolean allowSamples, int requestTimeoutSeconds,
+                int maxInputChars, int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, String impactToken) {
+            this(expectedVersion, enabled, defaultModelId, allowSamples, requestTimeoutSeconds, maxInputChars, maxOutputTokens,
+                    interactiveConcurrency, backgroundConcurrency, impactToken, null);
+        }
+    }
     public record ModelAction(@NotNull Long expectedVersion, Boolean enabled, String impactToken) { }
     public record Impact(String token, boolean systemDefault, long organizationCount, List<String> organizations) { }
     public record Org(@JsonSerialize(using = ToStringSerializer.class) Long id, String name, String parentName,

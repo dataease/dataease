@@ -13,6 +13,9 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "core_ai_task")
 public class CoreAiTask {
+    @Column(name = "actor_id")
+    @Comment("Real submitting actor; shared quota across workspaces and proxy contexts")
+    private Long actorId;
     @Id
     @Column(name = "id", nullable = false)
     @Comment("id")

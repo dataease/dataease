@@ -1,6 +1,13 @@
 import request from '@/config/axios'
 
+export interface AiTaskScheduling {
+  maxRunning: number
+  maxQueued: number
+  maxQueuedPerUser: number
+  maxWaitSeconds: number
+}
 export interface AiSettings {
+  taskScheduling?: AiTaskScheduling
   enabled: boolean
   defaultModelId: string | null
   allowSamples: boolean
@@ -149,6 +156,9 @@ const safeFailureCodes = new Set([
   'tls_failed',
   'policy_blocked',
   'concurrency',
+  'task_queue_full',
+  'task_user_queue_full',
+  'queue_timeout',
   'timeout',
   'cancelled',
   'upstream_failed',

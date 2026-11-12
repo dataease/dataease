@@ -47,6 +47,7 @@ test.beforeEach(async ({ page }) => {
       persistedRevision: 1,
       appliedRevision: 1,
       runtimeState: 'ACTIVE',
+      taskScheduling: { maxRunning: 2, maxQueued: 100, maxQueuedPerUser: 10, maxWaitSeconds: 300 },
       organizationPolicyAvailable: true
     },
     models: [
@@ -426,7 +427,7 @@ for (const viewport of [
     await page.getByRole('tab', { name: '使用设置', exact: true }).click()
     await page.getByRole('button', { name: '调用限制', exact: true }).click()
     const dialog = page.getByRole('dialog')
-    await expect(dialog.getByRole('spinbutton')).toHaveCount(5)
+    await expect(dialog.getByRole('spinbutton')).toHaveCount(9)
     await expect(dialog.getByRole('button', { name: '保存', exact: true })).toBeInViewport()
     await dialog.getByRole('spinbutton').nth(4).fill('6')
     await expect(dialog.getByRole('button', { name: '保存', exact: true })).toBeDisabled()
@@ -752,4 +753,20 @@ test('能力字段缺失时显示加载失败，不把未知状态当作社区�
   await page.reload()
   await expect(page.getByText('加载失败，请重试。', { exact: true })).toBeVisible()
   expect(requests.filter((r) => r.path.startsWith('/ai/org-policies'))).toHaveLength(0)
+})
+
+test('管理员在调用限制中保存独立后台任务容量', async ({ page }) => {
+  await page.getByRole('tab', { name: '使用设置', exact: true }).click()
+  await page.getByRole('button', { name: '调用限制', exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('heading', { name: '后台任务调度', exact: true })).toBeVisible()
+  const inputs = dialog.locator('.ai-task-scheduling input')
+  await expect(inputs).toHaveCount(4)
+  for (const [index, value] of ['3', '50', '5', '120'].entries())
+    await inputs.nth(index).fill(value)
+  await dialog.getByRole('button', { name: '保存', exact: true }).click()
+  await expect(dialog).not.toBeVisible()
+  expect(
+    requests.find((r) => r.path === '/ai/settings' && r.method === 'POST').body.taskScheduling
+  ).toEqual({ maxRunning: 3, maxQueued: 50, maxQueuedPerUser: 5, maxWaitSeconds: 120 })
 })

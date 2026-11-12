@@ -30,6 +30,12 @@ const conversationDelivered = new Set<string>()
 const origins = new Map<string, { origin: AiTaskOrigin; question: string }>()
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
+const requestFailure = (error: unknown) => {
+  const key = error && typeof error === 'object' && 'messageKey' in error ? error.messageKey : null
+  if (key === 'i18n_ai_task_queue_full') return t('ai_service.failure_task_queue_full')
+  if (key === 'i18n_ai_task_user_queue_full') return t('ai_service.failure_task_user_queue_full')
+  return tr('task_request_failed')
+}
 const user = useUserStoreWithOut()
 const tasks = ref<AiTask[]>([])
 const pending = ref(false)
@@ -128,10 +134,7 @@ const remember = (task: AiTask) => {
   }
   // An in-flight poll from before cancellation cannot revive its terminal attempt.
   if (finished.has(task.attemptId)) return
-  tasks.value = [task, ...tasks.value.filter(previous => previous.taskId !== task.taskId)].slice(
-    0,
-    4
-  )
+  tasks.value = [task, ...tasks.value.filter(previous => previous.taskId !== task.taskId)]
 }
 const submit = async () => {
   if (pending.value || (!props.resourceId && !props.text.trim())) return
@@ -166,8 +169,8 @@ const submit = async () => {
       return
     }
     remember(task)
-  } catch {
-    if (current === generation) failure.value = tr('task_request_failed')
+  } catch (error) {
+    if (current === generation) failure.value = requestFailure(error)
   } finally {
     if (current === generation) pending.value = false
   }
@@ -191,8 +194,8 @@ const change = async (task: AiTask | AiTaskNotice, retry = false) => {
       remember(result)
       return true
     }
-  } catch {
-    if (current === generation) failure.value = tr('task_request_failed')
+  } catch (error) {
+    if (current === generation) failure.value = requestFailure(error)
   } finally {
     if (current === generation) pending.value = false
   }

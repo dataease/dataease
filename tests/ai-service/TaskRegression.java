@@ -60,11 +60,14 @@ public final class TaskRegression {
         var chatMvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(conversations)).build();
         var tasks = new AiTaskManage(em, failingManager, beans.getBeanProvider(AiConversationScene.class),
                 beans.getBeanProvider(AiRuntimeManage.class), access, new ObjectMapper(), beans.getBeanProvider(AiConversationManage.class));
+        var json = new ObjectMapper();
+        var transport = new io.dataease.ai.support.AiTransport(new io.dataease.ai.support.AiOutboundPolicy(), admission, json);
+        beans.addBean("tasks", tasks);
+        beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access));
         var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks)).build();
         String request = "{\"submissionKey\":\"same-submit\",\"scene\":\"sql\",\"capability\":\"sql.assist\",\"resourceId\":\"11\",\"editorId\":\"editor\",\"sql\":\"select 1\",\"text\":\"explain\"}";
         var first = mvc.perform(post("/ai/tasks").contentType("application/json").content(request)).andReturn().getResponse();
         if (first.getStatus() != 200) throw new AssertionError("task accepted");
-        var json = new ObjectMapper();
         var a = json.readTree(first.getContentAsString());
         if (!a.path("taskId").isTextual() || !a.path("attemptId").isTextual()) throw new AssertionError("Snowflake IDs preserve exact browser precision");
         var b = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request)).andReturn().getResponse().getContentAsString());
@@ -97,15 +100,15 @@ public final class TaskRegression {
         mvc.perform(post(path + "/cancel"));
         mvc.perform(post("/ai/tasks/" + changed.path("taskId").asText() + "/cancel"));
         var bounded = new ArrayList<String>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 10; i++) {
             var accepted = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "bounded-" + i))).andReturn().getResponse().getContentAsString());
             bounded.add("/ai/tasks/" + accepted.path("taskId").asText());
         }
-        if (json.readTree(mvc.perform(get("/ai/tasks")).andReturn().getResponse().getContentAsString()).size() != 4) throw new AssertionError("only current owner's bounded active tasks listed");
+        if (json.readTree(mvc.perform(get("/ai/tasks")).andReturn().getResponse().getContentAsString()).size() != 10) throw new AssertionError("only current owner's bounded active tasks listed");
         boolean boundedReject = false;
-        try { mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "bounded-fifth"))); }
+        try { mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "bounded-eleventh"))); }
         catch (jakarta.servlet.ServletException expected) { boundedReject = expected.getCause() instanceof io.dataease.ai.support.AiErrors.Failure; }
-        if (!boundedReject) throw new AssertionError("fifth active task rejected before unbounded admission");
+        if (!boundedReject) throw new AssertionError("eleventh queued task rejected before unbounded admission");
         for (String boundedPath : bounded) mvc.perform(post(boundedPath + "/cancel"));
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v1/chat/completions", exchange -> {
@@ -126,7 +129,6 @@ public final class TaskRegression {
             try { exchange.getResponseBody().write(body); } finally { exchange.close(); }
         });
         server.start();
-        var transport = new io.dataease.ai.support.AiTransport(new io.dataease.ai.support.AiOutboundPolicy(), admission, json);
         Long previous = configuration.setting().getDefaultModelId();
         try {
             var draft = configuration.draft(); var candidate = new io.dataease.api.ai.config.AiConfigDtos.Candidate();

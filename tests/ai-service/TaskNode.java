@@ -6,6 +6,8 @@ import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.dao.repository.*;
 import io.dataease.ai.manage.*;
 import io.dataease.ai.server.AiTaskServer;
+import io.dataease.ai.server.AiConversationServer;
+import io.dataease.ai.server.AiConfigurationServer;
 import io.dataease.ai.support.*;
 import io.dataease.api.ai.runtime.AiFeature;
 import io.dataease.i18n.Translator;
@@ -31,7 +33,7 @@ public final class TaskNode {
     static final ObjectMapper JSON = new ObjectMapper();
     static SessionFactory factory(String url) {
         return new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
-                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class)
+                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class)
                 .setProperty("hibernate.connection.url", url).setProperty("hibernate.connection.driver_class", "org.h2.Driver")
                 .setProperty("hibernate.connection.username", "sa").setProperty("hibernate.connection.password", "")
                 .setProperty("hibernate.hbm2ddl.auto", "none").setProperty("hibernate.show_sql", "false").buildSessionFactory();
@@ -50,8 +52,13 @@ public final class TaskNode {
             public State current() { return new State(Mode.LICENSED, "controlled-task-identity-v1"); }
         };
         var access = new AiAccess(null, mode) {
-            public Identity capture() { return new Identity(V3UserUtil.getUid(), null, null, mode()); }
+            public Identity capture() {
+                Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
+                return new Identity(V3UserUtil.getUid(), proxy, proxy, mode());
+            }
+            public java.util.List<io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization> organizations() { return List.of(); }
             public void verify(Identity identity, boolean configuration) {
+                if (configuration && (identity == null || !Objects.equals(identity.actor(), 1L))) throw AiErrors.error("forbidden");
                 if (identity == null || !Set.of(1L, 2L).contains(identity.actor()) || !identity.deployment().equals(mode())
                         || Files.exists(Path.of(args[1], "revoked-" + identity.actor()))) throw AiErrors.error("forbidden");
             }
@@ -60,25 +67,56 @@ public final class TaskNode {
             public String code() { return "sql"; }
             public List<Resource> resources() { return List.of(new Resource("11", "controlled resource")); }
             public Context resolve(String id, String input) { return new Context(id, "controlled resource", "v1", "Explain SQL: " + input); }
+            public List<AiToolProtocol.Definition> tools(Context context) {
+                return context.instruction().contains("controlled-read") ? List.of(new AiToolProtocol.Definition("inspect", "Read owned metadata fixture", Map.of())) : List.of();
+            }
+            public String execute(Context context, String name, Map<String, String> arguments, Runnable check, long deadline) {
+                if (TransactionSynchronizationManager.isActualTransactionActive()) throw new AssertionError("tool I/O must not hold metadata transaction");
+                try {
+                    Files.writeString(Path.of(args[1], "tool-started-" + V3UserUtil.getUid()), "started");
+                    while (!Files.exists(Path.of(args[1], "release-tools"))) {
+                        check.run(); if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout"); Thread.sleep(20);
+                    }
+                    check.run(); return "{\"tool-result\":\"authorized metadata\"}";
+                } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); throw AiErrors.error("cancelled"); }
+                catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
+            }
             public void authorize(Context context) {
                 if (TransactionSynchronizationManager.isActualTransactionActive()) throw new AssertionError("business authority must execute outside metadata transaction");
-                if (!Set.of(1L, 2L).contains(V3UserUtil.getUid()) || !"11".equals(context.resourceId())) throw AiErrors.error("forbidden");
+                if (context.instruction().contains("controlled-start-read") && Files.exists(Path.of(args[1], "start-read-enabled"))) {
+                    try {
+                        if (!Files.exists(Path.of(args[1], "start-read-consumed"))) {
+                            Files.createFile(Path.of(args[1], "start-read-consumed")); Thread.sleep(6000);
+                        }
+                    } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); throw AiErrors.error("cancelled"); }
+                    catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
+                }
+                if (Files.exists(Path.of(args[1], "resource-revoked-" + V3UserUtil.getUid())) || !Set.of(1L, 2L).contains(V3UserUtil.getUid()) || !"11".equals(context.resourceId())) throw AiErrors.error("forbidden");
             }
         });
         var configuration = new AiConfigurationManage(manager);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "settings", settings);
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "policies", policies);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "models", repositories.getRepository(CoreAiModelRepository.class));
         var admission = new AiAdmission("ehcache", "standalone", beans.getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class), settings, "owned-task-node", manager);
         var transport = new AiTransport(new AiOutboundPolicy(), admission, JSON);
+        var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
+        beans.addBean("conversations", conversations);
         var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, JSON);
         beans.addBean("tasks", tasks);
         beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, secrets(), transport, JSON, access));
-        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks)).build();
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "em", em);
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "access", access);
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "admission", admission);
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "secrets", secrets());
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "validator", jakarta.validation.Validation.buildDefaultValidatorFactory().getValidator());
+        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new AiConfigurationServer(configuration, null), new AiConversationServer(conversations)).build();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.setExecutor(Executors.newFixedThreadPool(4));
-        server.createContext("/ai/tasks", exchange -> {
+        server.createContext("/ai", exchange -> {
             try {
                 Long actor = Long.valueOf(Objects.toString(exchange.getRequestHeaders().getFirst("X-Test-Actor"), "1")); V3UserUtil.setUid(actor);
+                if (exchange.getRequestHeaders().getFirst("X-Test-Proxy") != null) V3UserUtil.setProxy(Long.valueOf(exchange.getRequestHeaders().getFirst("X-Test-Proxy")));
                 var request = MockMvcRequestBuilders.request(org.springframework.http.HttpMethod.valueOf(exchange.getRequestMethod()), exchange.getRequestURI())
                         .contentType("application/json").content(exchange.getRequestBody().readAllBytes());
                 var response = mvc.perform(request).andReturn().getResponse();
@@ -87,7 +125,7 @@ public final class TaskNode {
             } catch (Exception failure) {
                 Throwable cause = failure instanceof jakarta.servlet.ServletException ? failure.getCause() : failure;
                 int status = cause instanceof AiErrors.Failure known && "forbidden".equals(known.safeCode()) ? 403
-                        : cause instanceof AiErrors.Failure known && "conflict".equals(known.safeCode()) ? 409 : 500;
+                        : cause instanceof AiErrors.Failure known && Set.of("conflict", "task_queue_full", "task_user_queue_full").contains(known.safeCode()) ? 409 : 500;
                 byte[] body = "{\"error\":\"controlled-backend-failure\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8);
                 exchange.sendResponseHeaders(status, body.length); exchange.getResponseBody().write(body);
             } finally { V3UserUtil.clear(); CommunityUtils.clear(); exchange.close(); }
@@ -95,7 +133,10 @@ public final class TaskNode {
         server.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> { tasks.destroy(); transport.close(); server.stop(0); factory.close(); }));
         if (Boolean.parseBoolean(args[3])) tasks.start();
-        Files.writeString(Path.of(args[1], args[2] + ".port"), Integer.toString(server.getAddress().getPort()));
+        var ready = Path.of(args[1], args[2] + ".port");
+        var preparing = Path.of(args[1], args[2] + ".port.tmp");
+        Files.writeString(preparing, Integer.toString(server.getAddress().getPort()));
+        Files.move(preparing, ready, StandardCopyOption.ATOMIC_MOVE);
         new CountDownLatch(1).await();
     }
 }

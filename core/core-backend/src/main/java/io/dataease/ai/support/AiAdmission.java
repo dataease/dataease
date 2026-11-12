@@ -126,14 +126,29 @@ public class AiAdmission {
             if (result == null || !result.startsWith("OK:")) throw AiErrors.error("LIMIT".equals(result) ? "concurrency" : "policy_blocked");
             return () -> { try { run("release", s, task ? "3" : "2", owner, result.substring(3)); } catch (RuntimeException ignored) { /* 有界租期兜底；新请求仍失败关闭。 */ } };
         }
-        synchronized (this) {
-            if (appliedRevision < 0) appliedRevision = s.getRevision();
-            if (updating != null || appliedRevision != s.getRevision()) throw AiErrors.error("policy_blocked");
-            Map<String, Long> pool = task ? background : interactive;
-            long now = System.currentTimeMillis(); pool.values().removeIf(expiry -> expiry <= now);
-            if (pool.size() >= limit) throw AiErrors.error("concurrency");
-            pool.put(owner, deadline + 10000);
-            return () -> { synchronized (AiAdmission.this) { pool.remove(owner); } };
+        // A second standalone JVM may observe a configuration committed by another node.
+        // Verify the exact published revision/capacity under the DB row lock; never trust an old caller snapshot.
+        try {
+            return transactions.execute(tx -> {
+                CoreAiSetting current = settings.admissionPolicy().orElseThrow(() -> AiErrors.error("policy_blocked"));
+                synchronized (this) {
+                    if (updating != null || appliedRevision > current.getRevision()
+                            || !Objects.equals(s.getRevision(), current.getRevision())
+                            || !Objects.equals(s.getInteractiveConcurrency(), current.getInteractiveConcurrency())
+                            || !Objects.equals(s.getBackgroundConcurrency(), current.getBackgroundConcurrency())) throw AiErrors.error("policy_blocked");
+                    appliedRevision = current.getRevision();
+                    Map<String, Long> pool = task ? background : interactive;
+                    long now = System.currentTimeMillis(); pool.values().removeIf(expiry -> expiry <= now);
+                    int currentLimit = task ? current.getBackgroundConcurrency() : current.getInteractiveConcurrency();
+                    if (pool.size() >= currentLimit) throw AiErrors.error("concurrency");
+                    pool.put(owner, deadline + 10000);
+                    return (Permit) () -> { synchronized (AiAdmission.this) { pool.remove(owner); } };
+                }
+            });
+        } catch (AiErrors.Failure failure) { throw failure; }
+        catch (RuntimeException unavailable) {
+            synchronized (this) { interactive.remove(owner); background.remove(owner); }
+            throw AiErrors.error("policy_blocked");
         }
     }
     @Scheduled(fixedDelay = 10000)

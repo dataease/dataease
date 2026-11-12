@@ -39,7 +39,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-heartbeat"));
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-dispatch"));
     private final Map<Long, Run> running = new ConcurrentHashMap<>();
-    private record Work(Long taskId, Long attemptId, String fence, AiAccess.Identity owner, Submit input, AiConversationScene.Context context) { }
+    private record Work(Long taskId, Long attemptId, String fence, AiAccess.Identity owner, Submit input, AiConversationScene.Context context, long deadline) { }
     private static final class Run {
         final Work work;
         volatile AiRuntimeManage.StreamHandle stream;
@@ -90,17 +90,18 @@ public class AiTaskManage implements AiToolConversationFeature {
             scene.authorize(resolved); return resolved;
         });
         if (request.origin() != null) conversationManage().validateTaskOrigin(request.origin(), request, context);
+        runtime.getObject().verifyTaskAdmission(owner);
         try {
             Task accepted = tx.execute(status -> {
-                // Serialize only bounded admission against the existing singleton; no external I/O under this lock.
-                em.find(CoreAiSetting.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+                // Independent shared acceptance coordinator; no external I/O under this lock.
+                coordinate();
                 var duplicate = bySubmission(submission);
                 if (duplicate != null) {
                     if (!fingerprint.equals(duplicate.getInputHash())) throw AiErrors.error("conflict");
                     return view(duplicate);
                 }
-                admission(binding);
-                var task = new CoreAiTask(); task.setId(IDUtils.snowID()); task.setOwnerBinding(binding);
+                admission(owner.actor());
+                var task = new CoreAiTask(); task.setId(IDUtils.snowID()); task.setOwnerBinding(binding); task.setActorId(owner.actor());
                 task.setSubmissionHash(submission); task.setInputHash(fingerprint); task.setInputJson(input); task.setOwnerJson(encode(owner));
                 task.setContextJson(encode(context)); task.setCreatedAt(System.currentTimeMillis());
                 var attempt = attempt(task, 1, hash(task.getId() + ":initial"));
@@ -114,20 +115,31 @@ public class AiTaskManage implements AiToolConversationFeature {
             throw failure;
         }
     }
-    private void admission(String binding) {
-        Long total = em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status in ('QUEUED','RUNNING')", Long.class).getSingleResult();
-        Long own = em.createQuery("select count(t) from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and t.ownerBinding=:owner and a.status in ('QUEUED','RUNNING')", Long.class)
-                .setParameter("owner", binding).getSingleResult();
-        if (total >= 200 || own >= 4) throw AiErrors.error("concurrency");
+    private CoreAiTaskSchedule coordinate() {
+        var coordinator = em.find(CoreAiTaskSchedule.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+        if (coordinator == null) throw AiErrors.error("configuration_unavailable");
+        return coordinator;
+    }
+    private void admission(Long actor) {
+        expireWaiting();
+        var settings = em.find(CoreAiSetting.class, 1L);
+        Long total = em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status='QUEUED'", Long.class).getSingleResult();
+        Long own = em.createQuery("select count(t) from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and t.actorId=:actor and a.status='QUEUED'", Long.class)
+                .setParameter("actor", actor).getSingleResult();
+        if (total >= settings.getTaskMaxQueued()) throw AiErrors.error("task_queue_full");
+        if (own >= settings.getTaskMaxQueuedPerUser()) throw AiErrors.error("task_user_queue_full");
     }
     private CoreAiTaskAttempt attempt(CoreAiTask task, int number, String retryHash) {
         var attempt = new CoreAiTaskAttempt(); attempt.setId(IDUtils.snowID()); attempt.setTaskId(task.getId());
-        attempt.setAttemptNumber(number); attempt.setRetryHash(retryHash); attempt.setStatus("QUEUED"); attempt.setCreatedAt(System.currentTimeMillis()); return attempt;
+        attempt.setAttemptNumber(number); attempt.setRetryHash(retryHash); attempt.setStatus("QUEUED"); attempt.setCreatedAt(System.currentTimeMillis());
+        var coordinator = em.find(CoreAiTaskSchedule.class, 1L);
+        coordinator.setLastSequence(Math.addExact(coordinator.getLastSequence(), 1L)); attempt.setQueueSequence(coordinator.getLastSequence());
+        attempt.setQueueDeadline(attempt.getCreatedAt() + em.find(CoreAiSetting.class, 1L).getTaskMaxWaitSeconds() * 1000L); return attempt;
     }
     public List<Task> active() {
         var owner = identity();
         var rows = em.createQuery("select t from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and t.ownerBinding=:owner and a.status in ('QUEUED','RUNNING') order by t.createdAt", CoreAiTask.class)
-                .setParameter("owner", AiAccess.binding(owner)).setMaxResults(4).getResultList();
+                .setParameter("owner", AiAccess.binding(owner)).setMaxResults(10020).getResultList();
         return rows.stream().map(task -> checkedView(task, owner)).toList();
     }
     /** Pending delivery only, never a task history or inbox. Re-authorize outside metadata transactions. */
@@ -169,10 +181,12 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private void interrupted(String node) {
         tx.executeWithoutResult(status -> {
+            coordinate(); expireWaiting();
             var rows = em.createQuery("select a from CoreAiTaskAttempt a where a.status='RUNNING' and " +
                     (node == null ? "a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff)" : "a.nodeId=:node"), CoreAiTaskAttempt.class);
             if (node == null) rows.setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS); else rows.setParameter("node", node);
             for (var candidate : rows.getResultList()) {
+                em.find(CoreAiTask.class, candidate.getTaskId(), LockModeType.PESSIMISTIC_WRITE);
                 var attempt = em.find(CoreAiTaskAttempt.class, candidate.getId(), LockModeType.PESSIMISTIC_WRITE);
                 em.refresh(attempt);
                 if ("RUNNING".equals(attempt.getStatus())) ended(attempt, "INTERRUPTED", "interrupted", null);
@@ -197,6 +211,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     public Task cancel(Long id) {
         var task = owned(id);
         return tx.execute(status -> {
+            coordinate();
             var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
             var attempt = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId(), LockModeType.PESSIMISTIC_WRITE);
             if (Set.of("QUEUED", "RUNNING").contains(attempt.getStatus())) {
@@ -212,8 +227,15 @@ public class AiTaskManage implements AiToolConversationFeature {
         checkedView(task, owner);
         if (request == null || !key(request.retryKey()) || request.expectedAttemptId() == null) throw AiErrors.error("invalid");
         String retry = hash(task.getId() + ":" + request.retryKey());
+        var repeated = em.createQuery("select a from CoreAiTaskAttempt a where a.retryHash=:hash", CoreAiTaskAttempt.class)
+                .setParameter("hash", retry).setMaxResults(1).getResultList();
+        if (!repeated.isEmpty()) {
+            if (!Objects.equals(repeated.get(0).getSourceAttemptId(), request.expectedAttemptId())) throw AiErrors.error("conflict");
+            return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return view(task, repeated.get(0)); });
+        }
+        runtime.getObject().verifyTaskAdmission(owner);
         Task accepted = tx.execute(status -> {
-            em.find(CoreAiSetting.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+            coordinate();
             var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
             var duplicate = em.createQuery("select a from CoreAiTaskAttempt a where a.retryHash=:hash", CoreAiTaskAttempt.class)
                     .setParameter("hash", retry).setMaxResults(1).getResultList();
@@ -224,7 +246,7 @@ public class AiTaskManage implements AiToolConversationFeature {
             var previous = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId());
             if (!Objects.equals(previous.getId(), request.expectedAttemptId()) || !Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(previous.getStatus()))
                 throw AiErrors.error("conflict");
-            admission(locked.getOwnerBinding());
+            admission(owner.actor());
             var next = attempt(locked, previous.getAttemptNumber() + 1, retry); next.setSourceAttemptId(previous.getId()); em.persist(next);
             locked.setCurrentAttemptId(next.getId()); em.flush(); return view(locked, next);
         });
@@ -332,7 +354,7 @@ public class AiTaskManage implements AiToolConversationFeature {
                 try { active(run); }
                 catch (RuntimeException terminal) { fail(run, terminal); }
             }
-            while (!stopped && running.size() < 2) {
+            while (!stopped && running.size() < 20) {
                 Work work = claim(); if (work == null) break;
                 var run = new Run(work); running.put(work.attemptId(), run);
                 try { execute(run); } catch (RuntimeException failure) { fail(run, failure); }
@@ -341,24 +363,41 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private Work claim() {
         return tx.execute(status -> {
+            coordinate(); expireWaiting();
+            if (em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status='RUNNING'", Long.class).getSingleResult() >= em.find(CoreAiSetting.class, 1L).getTaskMaxRunning()) return null;
             var node = em.find(CoreAiTaskNode.class, nodeId);
             if (node == null || node.getHeartbeatAt() <= System.currentTimeMillis() - NODE_LEASE_MILLIS) return null;
-            var candidates = em.createQuery("select a.id from CoreAiTaskAttempt a where a.status='QUEUED' order by a.createdAt,a.id", Long.class).setMaxResults(20).getResultList();
-            for (Long id : candidates) {
-                String fence = UUID.randomUUID().toString();
-                int won = em.createQuery("update CoreAiTaskAttempt a set a.status='RUNNING', a.nodeId=:node, a.fence=:fence, a.startedAt=:now where a.id=:id and a.status='QUEUED'")
-                        .setParameter("node", nodeId).setParameter("fence", fence).setParameter("now", System.currentTimeMillis()).setParameter("id", id).executeUpdate();
-                if (won != 1) continue;
-                var attempt = em.find(CoreAiTaskAttempt.class, id); var task = em.find(CoreAiTask.class, attempt.getTaskId());
-                return new Work(task.getId(), id, fence, decode(task.getOwnerJson(), AiAccess.Identity.class), input(task), context(task));
-            }
-            return null;
+            var coordination = em.find(CoreAiTaskSchedule.class, 1L);
+            var actors = em.createQuery("select distinct t.actorId from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and a.status='QUEUED' and t.actorId is not null order by t.actorId", Long.class).getResultList();
+            if (actors.isEmpty()) return null;
+            Long previous = coordination.getLastActorId();
+            Long actor = actors.stream().filter(candidate -> previous == null || candidate > previous).findFirst().orElse(actors.get(0));
+            Long id = em.createQuery("select a.id from CoreAiTaskAttempt a, CoreAiTask t where t.currentAttemptId=a.id and t.actorId=:actor and a.status='QUEUED' order by a.queueSequence,a.id", Long.class)
+                    .setParameter("actor", actor).setMaxResults(1).getSingleResult();
+            String fence = UUID.randomUUID().toString();
+            long now = System.currentTimeMillis();
+            long deadline = now + em.find(CoreAiSetting.class, 1L).getRequestTimeoutSeconds() * 1000L;
+            int won = em.createQuery("update CoreAiTaskAttempt a set a.status='RUNNING', a.nodeId=:node, a.fence=:fence, a.startedAt=:now, a.deadline=:deadline where a.id=:id and a.status='QUEUED' and a.queueDeadline>:now")
+                    .setParameter("node", nodeId).setParameter("fence", fence).setParameter("now", now).setParameter("deadline", deadline).setParameter("id", id).executeUpdate();
+            if (won != 1) return null;
+            coordination.setLastActorId(actor);
+            var attempt = em.find(CoreAiTaskAttempt.class, id); var task = em.find(CoreAiTask.class, attempt.getTaskId());
+            return new Work(task.getId(), id, fence, decode(task.getOwnerJson(), AiAccess.Identity.class), input(task), context(task), deadline);
         });
+    }
+    private void expireWaiting() {
+        var expired = em.createQuery("select a from CoreAiTaskAttempt a, CoreAiTask t where t.currentAttemptId=a.id and a.status='QUEUED' and (a.queueDeadline is null or a.queueDeadline<=:now or t.actorId is null)", CoreAiTaskAttempt.class)
+                .setParameter("now", System.currentTimeMillis()).getResultList();
+        for (var attempt : expired) {
+            em.find(CoreAiTask.class, attempt.getTaskId(), LockModeType.PESSIMISTIC_WRITE);
+            em.lock(attempt, LockModeType.PESSIMISTIC_WRITE);
+            if ("QUEUED".equals(attempt.getStatus())) ended(attempt, "FAILED", "queue_timeout", null);
+        }
     }
     /** Parser/validator hot loops only inspect local liveness; they never deliver or commit output. */
     private void progress(Run run) {
         if (stopped || run.failureCode != null || running.get(run.work.attemptId()) != run) throw AiErrors.error("cancelled");
-        if (run.stream != null && System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
+        if (System.currentTimeMillis() >= run.work.deadline() || run.stream != null && System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
     }
     /** Fresh durable ownership check at dispatch, model/tool and result boundaries. */
     private void active(Run run) {
@@ -379,11 +418,11 @@ public class AiTaskManage implements AiToolConversationFeature {
         AiToolProtocol.Input input = null;
         if (definitions.isEmpty()) {
             var prompt = new Prompt(List.of(new SystemMessage(work.context().instruction()), new UserMessage(work.input().text())));
-            stream = runtime.getObject().streamTask(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiPromptFingerprint.of(prompt), false, null), prompt);
+            stream = runtime.getObject().streamTask(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiPromptFingerprint.of(prompt), false, null), prompt, work.deadline());
         } else {
             run.transcript.add(AiToolProtocol.Message.text("system", work.context().instruction()));
             run.transcript.add(AiToolProtocol.Message.text("user", work.input().text())); input = new AiToolProtocol.Input(run.transcript, definitions);
-            stream = runtime.getObject().streamTaskTools(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiToolProtocol.fingerprint(input), false, null), input);
+            stream = runtime.getObject().streamTaskTools(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiToolProtocol.fingerprint(input), false, null), input, work.deadline());
         }
         run.stream = stream;
         var model = stream.model();
@@ -446,6 +485,8 @@ public class AiTaskManage implements AiToolConversationFeature {
         try {
             tx.executeWithoutResult(status -> {
                 // The lock orders terminal commit against cancellation/retry. DB ownership is the final arbiter.
+                coordinate();
+                em.find(CoreAiTask.class, run.work.taskId(), LockModeType.PESSIMISTIC_WRITE);
                 var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId(), LockModeType.PESSIMISTIC_WRITE);
                 if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !nodeId.equals(attempt.getNodeId())) return;
                 live(attempt);

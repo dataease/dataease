@@ -49,6 +49,19 @@ public class CoreAiSetting extends AiConfigEntity {
     @Comment("background_concurrency")
     private Integer backgroundConcurrency = 2;
 
+    @Column(name = "task_max_running", nullable = false)
+    @Comment("Shared complete background task slots, independent of model HTTP permits")
+    private Integer taskMaxRunning = 2;
+    @Column(name = "task_max_queued", nullable = false)
+    @Comment("Shared accepted waiting task limit")
+    private Integer taskMaxQueued = 100;
+    @Column(name = "task_max_queued_per_user", nullable = false)
+    @Comment("Waiting task limit per real actor across workspaces")
+    private Integer taskMaxQueuedPerUser = 10;
+    @Column(name = "task_max_wait_seconds", nullable = false)
+    @Comment("Waiting deadline snapshotted at acceptance")
+    private Integer taskMaxWaitSeconds = 300;
+
     @Column(name = "revision", nullable = false)
     @Comment("revision")
     private Long revision = 1L;

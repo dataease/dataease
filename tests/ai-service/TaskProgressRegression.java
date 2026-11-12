@@ -118,13 +118,13 @@ public final class TaskProgressRegression {
             public Connection getConnection(String user, String password) throws SQLException { return delayed(delegate.getConnection(user, password)); }
         };
         var mapping = new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
-                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class)
+                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class)
                 .setProperty("hibernate.hbm2ddl.auto", "none").setProperty("hibernate.show_sql", "false");
         mapping.getProperties().put("hibernate.connection.datasource", dataSource);
         try (var factory = mapping.buildSessionFactory()) {
             var em = SharedEntityManagerCreator.createSharedEntityManager(factory); var manager = new JpaTransactionManager(factory);
             var jdbc = new JdbcTemplate(dataSource);
-            new AiConfigurationInit(jdbc, factory, em, manager).execute(); new AiTaskInit(jdbc, factory, em, manager).execute();
+            new AiConfigurationInit(jdbc, factory, em, manager).execute(); new AiTaskInit(jdbc, factory, em, manager).execute(); new AiTaskSchedulingInit(jdbc, factory, em, manager).execute();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 var model = new CoreAiModel(); model.setId(42L); model.setName("progress controlled"); model.setNameKey("progress-controlled");
                 model.setModelIdentifier("progress-model"); model.setBaseUrl("http://127.0.0.1:" + upstream.getAddress().getPort() + "/v1");

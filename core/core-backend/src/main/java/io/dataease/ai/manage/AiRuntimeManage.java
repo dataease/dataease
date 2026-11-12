@@ -73,15 +73,17 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 inspect(context, finalPrompt);
                 var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(),
                         model.getBaseUrl(), secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
+                CoreAiSetting admissionSettings = json.convertValue(s, CoreAiSetting.class);
                 Runnable recheck = () -> {
                     inspect(context, finalPrompt);
                     CoreAiSetting latest = configuration.setting();
                     CoreAiModel current = resolve(context, latest);
-                    if (!Objects.equals(latest.getRevision(), s.getRevision()) || !Objects.equals(current.getId(), model.getId())
+                    if (!securityPolicyEquivalent(s, latest) || !Objects.equals(current.getId(), model.getId())
                             || !Objects.equals(current.getConfigRevision(), model.getConfigRevision())
                             || !Objects.equals(current.getCredentialRevision(), model.getCredentialRevision())) throw AiErrors.error("conflict");
+                    updateAdmission(admissionSettings, latest);
                 };
-                ChatResponse response = transport.call(connection, s, finalPrompt, context.background(), deadline, recheck);
+                ChatResponse response = transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck);
                 caller(context); recheck.run();
                 if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
                 return response;
@@ -129,6 +131,14 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     public Streaming streamTask(String feature, String taskId, AiDataScope scope, Prompt input) {
         return stream((Context) task(feature, taskId, scope), input);
     }
+    public Streaming streamTask(String feature, String taskId, AiDataScope scope, Prompt input, long deadline) {
+        return stream(boundedTask(feature, taskId, scope, deadline), input);
+    }
+    private Context boundedTask(String feature, String taskId, AiDataScope scope, long deadline) {
+        Context c = (Context) task(feature, taskId, scope);
+        return new Context(c.executionId(), c.feature(), c.actorId(), c.organizationId(), c.background(), Math.min(c.deadline(), deadline),
+                c.request(), c.proxyBinding(), c.taskId(), c.taskVersion(), c.scope(), c.deployment());
+    }
     private Streaming stream(Context request, Prompt input) {
         String feature = request.feature(); AiDataScope scope = request.scope();
         caller(request);
@@ -142,21 +152,33 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         // Detached immutable authorization coordinates; never copy RequestAttributes into a worker.
         Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
                 request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment());
-        var settingRevision = original.getRevision(); var modelId = model.getId();
+        var settings = json.convertValue(original, CoreAiSetting.class);
+        var modelId = model.getId();
         var configRevision = model.getConfigRevision(); var credentialRevision = model.getCredentialRevision();
         java.util.function.Consumer<Boolean> policy = enforceDeadline -> {
             var latest = configuration.setting(); var selected = resolve(detached, latest, enforceDeadline);
-            if (!Objects.equals(settingRevision, latest.getRevision()) || !Objects.equals(modelId, selected.getId())
+            if (!securityPolicyEquivalent(original, latest) || !Objects.equals(modelId, selected.getId())
                     || !Objects.equals(configRevision, selected.getConfigRevision()) || !Objects.equals(credentialRevision, selected.getCredentialRevision()))
                 throw AiErrors.error("conflict");
+            updateAdmission(settings, latest);
         };
         Runnable verify = () -> { inspect(detached, prompt); policy.accept(true); };
         Runnable delivery = () -> { feature(feature).authorize(detached); policy.accept(false); };
         var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
                 secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
         // Only detached setting values enter admission; no JPA/request-bound entity crosses threads.
-        var settings = json.convertValue(original, CoreAiSetting.class);
         return new Streaming(detached, prompt, connection, settings, verify, delivery, new ModelSnapshot(modelId, configRevision, credentialRevision, model.getModelIdentifier()));
+    }
+    /** Capacity/recovery/retention changes are next-request policy, not revocation of a trusted attempt. */
+    private static boolean securityPolicyEquivalent(CoreAiSetting before, CoreAiSetting after) {
+        return Objects.equals(before.getEnabled(), after.getEnabled())
+                && Objects.equals(before.getDefaultModelId(), after.getDefaultModelId())
+                && Objects.equals(before.getAllowSamples(), after.getAllowSamples());
+    }
+    private static void updateAdmission(CoreAiSetting snapshot, CoreAiSetting latest) {
+        snapshot.setRevision(latest.getRevision());
+        snapshot.setInteractiveConcurrency(latest.getInteractiveConcurrency());
+        snapshot.setBackgroundConcurrency(latest.getBackgroundConcurrency());
     }
     /** Same execution/model snapshot across the entire bounded dialogue. No request or managed entity crosses threads. */
     public final class ToolStreaming implements StreamHandle {
@@ -176,9 +198,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         public long deadline() { return context.deadline(); }
         private CoreAiModel verify(boolean deadline) {
             var latest = configuration.setting(); var current = resolve(context, latest, deadline);
-            if (!Objects.equals(settingRevision, latest.getRevision()) || !Objects.equals(modelId, current.getId())
+            if (!securityPolicyEquivalent(settings, latest) || !Objects.equals(modelId, current.getId())
                     || !Objects.equals(configRevision, current.getConfigRevision()) || !Objects.equals(credentialRevision, current.getCredentialRevision())) throw AiErrors.error("conflict");
-            return current;
+            updateAdmission(settings, latest); return current;
         }
         public ModelSnapshot model() { return new ModelSnapshot(modelId, configRevision, credentialRevision, modelIdentifier); }
         public void verifyDelivery() { verify(false); }
@@ -217,6 +239,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     }
     public ToolStreaming streamTaskTools(String feature, String taskId, AiDataScope scope, AiToolProtocol.Input input) {
         return streamTools((Context) task(feature, taskId, scope), input);
+    }
+    public ToolStreaming streamTaskTools(String feature, String taskId, AiDataScope scope, AiToolProtocol.Input input, long deadline) {
+        return streamTools(boundedTask(feature, taskId, scope, deadline), input);
     }
     private ToolStreaming streamTools(Context request, AiToolProtocol.Input input) {
         String feature = request.feature(); AiDataScope scope = request.scope(); caller(request);
@@ -267,9 +292,16 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             if (c.background() || !Boolean.TRUE.equals(s.getAllowSamples())) throw AiErrors.error("samples_denied");
             feature.checkSampleConfirmation(c);
         }
+        return resolveModel(c.organizationId(), s);
+    }
+    public void verifyTaskAdmission(AiAccess.Identity owner) {
+        access.verify(owner, false); resolveModel(owner.organization(), configuration.setting());
+    }
+    private CoreAiModel resolveModel(Long organizationId, CoreAiSetting s) {
+        if (!Boolean.TRUE.equals(s.getEnabled())) throw AiErrors.error("disabled");
         Long selected = s.getDefaultModelId();
-        if (c.organizationId() != null) {
-            CoreAiOrgPolicy policy = policies.findById(c.organizationId()).orElse(null);
+        if (organizationId != null) {
+            CoreAiOrgPolicy policy = policies.findById(organizationId).orElse(null);
             if (policy != null) {
                 if ("DISABLED".equals(policy.getMode())) throw AiErrors.error("organization_disabled");
                 if ("SPECIFIED".equals(policy.getMode())) selected = policy.getModelId();

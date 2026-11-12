@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.*;
 
 public final class HttpRegression {
-    public static void run(AiAdmission admission) throws Exception {
+    public static void run(AiAdmission admission, CoreAiSetting settings) throws Exception {
         ObjectMapper json = new ObjectMapper();
         AtomicInteger requests = new AtomicInteger(), mode = new AtomicInteger();
         AtomicInteger redirected = new AtomicInteger();
@@ -44,7 +44,6 @@ public final class HttpRegression {
         var root=(ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);root.addAppender(logs);
         AiTransport transport=new AiTransport(outbound,admission,json);
         try {
-            CoreAiSetting settings=new CoreAiSetting();
             Connection connection=new Connection(1L,1,"OPENAI_COMPATIBLE","http://127.0.0.1:"+server.getAddress().getPort()+"/prefix/v1","synthetic-key","allowed");
             Prompt prompt=AiPromptPolicy.constrain(new Prompt("hello"),"allowed",4096,1000,json);
             if(!transport.discover(connection,settings,System.currentTimeMillis()+3000,()->{}).equals(java.util.List.of("allowed")))throw new AssertionError("model discovery prefix");
@@ -75,7 +74,7 @@ public final class HttpRegression {
             mode.set(2);long started=System.currentTimeMillis();
             expect("timeout",()->transport.call(connection,settings,prompt,false,started+100,()->{}));
             if(System.currentTimeMillis()-started>900)throw new AssertionError("hard deadline");
-            PoolRegression.run(admission);
+            PoolRegression.run(admission, settings);
             System.out.println("PASS AI actual HTTP discovery/generation on configured local custom port, gateway prefix, no redirects/retries, DNS/connection/TLS/authentication/timeout errors, no prompt logging and deadline");
         } finally {root.detachAppender(logs);logs.stop();transport.close();server.stop(0);workers.shutdownNow();}
     }

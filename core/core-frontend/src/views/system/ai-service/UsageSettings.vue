@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
+import TaskSchedulingSettings from './TaskSchedulingSettings.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { CaretBottom } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -62,6 +63,24 @@ const limits = [
   { key: 'interactiveConcurrency', min: 1, max: 20 },
   { key: 'backgroundConcurrency', min: 1, max: 20 }
 ] as const
+const validTaskScheduling = () => {
+  const limits = settingsDraft.value?.taskScheduling
+  return (
+    !limits ||
+    (Number.isInteger(limits.maxRunning) &&
+      limits.maxRunning >= 1 &&
+      limits.maxRunning <= 20 &&
+      Number.isInteger(limits.maxQueued) &&
+      limits.maxQueued >= 1 &&
+      limits.maxQueued <= 10000 &&
+      Number.isInteger(limits.maxQueuedPerUser) &&
+      limits.maxQueuedPerUser >= 1 &&
+      limits.maxQueuedPerUser <= 1000 &&
+      Number.isInteger(limits.maxWaitSeconds) &&
+      limits.maxWaitSeconds >= 1 &&
+      limits.maxWaitSeconds <= 86400)
+  )
+}
 const valid = computed(() => {
   if (drawer.value === 'org' || drawer.value === 'batch')
     return (
@@ -75,7 +94,8 @@ const valid = computed(() => {
   return Boolean(
     s &&
       limits.every(l => Number.isInteger(s[l.key]) && s[l.key] >= l.min && s[l.key] <= l.max) &&
-      s.backgroundConcurrency <= s.interactiveConcurrency
+      s.backgroundConcurrency <= s.interactiveConcurrency &&
+      validTaskScheduling()
   )
 })
 const load = async () => {
@@ -127,7 +147,10 @@ const openOrg = async (org?: AiOrg) => {
   drawer.value = org ? 'org' : 'batch'
 }
 const openSettings = (kind: 'data' | 'limits') => {
-  settingsDraft.value = { ...props.settings }
+  settingsDraft.value = {
+    ...props.settings,
+    taskScheduling: props.settings.taskScheduling ? { ...props.settings.taskScheduling } : undefined
+  }
   mode.value = ''
   selectedModel.value = null
   formBaseline.value = formValue()
@@ -439,8 +462,12 @@ watch(
             :precision="0"
             controls-position="right"
         /></el-form-item>
-        <p class="ai-secondary">{{ tr('background_hint') }}</p></el-form
-      >
+        <p class="ai-secondary">{{ tr('background_hint') }}</p>
+        <TaskSchedulingSettings
+          v-if="settingsDraft.taskScheduling"
+          v-model="settingsDraft.taskScheduling"
+        />
+      </el-form>
       <template #footer
         ><el-button :disabled="saving" @click="close()">{{ tr('cancel') }}</el-button
         ><el-button

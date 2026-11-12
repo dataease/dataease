@@ -11,12 +11,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class PoolRegression {
-    public static void run(AiAdmission admission) throws Exception {
-        runCase(admission, false);
-        runCase(admission, true);
+    public static void run(AiAdmission admission, CoreAiSetting settings) throws Exception {
+        runCase(admission, settings, false);
+        runCase(admission, settings, true);
         System.out.println("PASS shared AI pool TCP reuse across credentials, cookie isolation, parallel timeout/cancellation isolation and recovery");
     }
-    private static void runCase(AiAdmission admission, boolean interrupt) throws Exception {
+    private static void runCase(AiAdmission admission, CoreAiSetting settings, boolean interrupt) throws Exception {
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         var workers = Executors.newCachedThreadPool();
         var callers = Executors.newFixedThreadPool(2);
@@ -44,7 +44,6 @@ public final class PoolRegression {
         });
         server.start();
         var transport = new AiTransport(new AiOutboundPolicy(), admission, new ObjectMapper());
-        var settings = new CoreAiSetting();
         String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/v1";
         try {
             for (int i = 0; i < 2; i++) transport.discover(connection(url, "reuse" + i), settings, System.currentTimeMillis() + 3000, () -> {});
