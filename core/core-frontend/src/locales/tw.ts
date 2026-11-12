@@ -4357,6 +4357,22 @@ export default {
     database_version: '版本',
     source_table: '來源資料表',
     target_table: '目標資料表',
+    edit_source_query: '修正來源 SQL',
+    source_query_draft: '來源 SQL 草稿',
+    query_edit_help:
+      '僅在原來源連線下修正 SQL。讀取成功後仍須檢查欄位對應並確認調整；SQL 變更後將全量重新取數並替換目標資料',
+    cancel_query_edit: '取消 SQL 修改',
+    read_query_fields: '讀取查詢欄位',
+    query_read_failed_help:
+      '請恢復缺失的來源欄位，或修正來源 SQL 後重新讀取。僅刪除目標欄位無法修復失效查詢',
+    query_pending: '來源 SQL 草稿已讀取，確認調整前不會生效；本次需要全量重新初始化',
+    query_pending_count: '本次查詢修改及 {0} 個欄位修改尚未生效',
+    source_query_changed: '來源 SQL 變更',
+    source_missing_status: '來源欄位缺失',
+    source_missing_field:
+      '來源欄位 {0} 已不存在，請恢復來源欄位或透過 DE 刪除對應普通目標欄位及對應',
+    source_missing_help:
+      '部分目標欄位引用的來源欄位已不存在。請恢復來源欄位，或在下方刪除對應普通目標欄位及對應；刪除目標欄會遺失該欄歷史資料，受保護欄位須恢復有效來源',
     query_source: '來源：查詢結果',
     view_query: '查看查詢',
     hide_query: '收起查詢',

@@ -4521,6 +4521,23 @@ export default {
     database_version: 'Version',
     source_table: 'Source table',
     target_table: 'Target table',
+    edit_source_query: 'Edit source SQL',
+    source_query_draft: 'Source SQL draft',
+    query_edit_help:
+      'Edit SQL using the existing source connection. Read its fields, review mappings and confirm the adjustment. SQL changes require a full reload that replaces target data',
+    cancel_query_edit: 'Cancel SQL edit',
+    read_query_fields: 'Read query fields',
+    query_read_failed_help:
+      'Restore the missing source field, or edit the source SQL and read its fields again. Deleting a target field alone does not repair the query',
+    query_pending:
+      'The source SQL draft has been read but is not yet applied. A full reinitialization is required',
+    query_pending_count: 'The query change and {0} field changes have not been applied',
+    source_query_changed: 'Source SQL change',
+    source_missing_status: 'Source field missing',
+    source_missing_field:
+      'Source field {0} no longer exists. Restore it or use DE to delete the corresponding ordinary target field and mapping',
+    source_missing_help:
+      'Some target fields refer to missing source fields. Restore the source fields or delete the corresponding ordinary target fields and mappings below. Deleting a target column removes its historical values; protected fields require valid sources',
     query_source: 'Source: query result',
     view_query: 'View query',
     hide_query: 'Hide query',

@@ -115,6 +115,8 @@ defineExpose({ openLog })
         <p class="history-note">{{ t('sync_task_log.planned_changes') }}</p>
         <FieldChangeDetails
           :changes="changes"
+          :before-source-query="record.beforeSourceQuery"
+          :after-source-query="record.afterSourceQuery"
           :after-label="
             record.status === 'SUCCESS'
               ? t('sync_maintenance.after')

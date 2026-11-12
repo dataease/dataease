@@ -18,6 +18,8 @@ export interface TaskFieldChangeLog extends TaskEventLog {
   operationId: string
   operatorName: string | null
   targetTable: string | null
+  beforeSourceQuery?: string
+  afterSourceQuery?: string
   beforeFields: ITableField[]
   afterFields: ITableField[]
   progress: IMaintenancePlan['steps']
