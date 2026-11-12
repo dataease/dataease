@@ -14,6 +14,18 @@ export interface AiTask {
   errorCode?: string | null
   result?: AiAssistanceResult | null
 }
+export interface AiTaskOrigin {
+  sessionId: string
+  contextVersion: string
+}
+export interface AiTaskNotice {
+  taskId: string
+  attemptId: string
+  attemptNumber: number
+  status: AiTask['status']
+  errorCode?: string | null
+  expiresAt: number
+}
 export interface AiTaskSubmit {
   submissionKey: string
   capability: 'sql.assist'
@@ -22,6 +34,7 @@ export interface AiTaskSubmit {
   editorId: string
   sql: string
   text: string
+  origin?: AiTaskOrigin
 }
 const data = <T>(promise: Promise<{ data: T }>) => promise.then(result => result.data)
 export const submitAiTask = (value: AiTaskSubmit) =>
@@ -39,4 +52,13 @@ export const retryAiTask = (id: string, expectedAttemptId: string, retryKey: str
       data: { expectedAttemptId, retryKey },
       handleErrorLocally: true
     })
+  )
+
+export const pendingAiTaskNotices = () =>
+  data<AiTaskNotice[]>(request.get({ url: '/ai/tasks/notices', handleErrorLocally: true }))
+export const acknowledgeAiTaskNotice = (attemptId: string) =>
+  request.post({ url: `/ai/tasks/notices/${attemptId}/ack`, handleErrorLocally: true })
+export const deliverAiTaskConversation = (id: string, origin: AiTaskOrigin) =>
+  data<AiTask>(
+    request.post({ url: `/ai/tasks/${id}/conversation`, data: origin, handleErrorLocally: true })
   )

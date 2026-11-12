@@ -29,6 +29,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         final AiConversationScene.Context context;
         final List<Message> history = new ArrayList<>();
         final List<AiToolProtocol.Message> toolHistory = new ArrayList<>();
+        final Set<String> deliveredTasks = new HashSet<>();
         int turns;
         final boolean single;
         volatile boolean singleFinished;
@@ -117,6 +118,41 @@ public class AiConversationManage implements AiToolConversationFeature {
             return new Execution(run.sessionId(), run.executionId(), run.contextVersion(), run.status(), run.deadline(), session);
         }
         catch (RuntimeException failure) { State state = sessions.get(session.sessionId()); if (state != null) invalidate(state); throw failure; }
+    }
+    /** Only a still-open, same-owner editing activity may become a background result's origin. */
+    public void validateTaskOrigin(io.dataease.api.ai.task.AiTaskDtos.Origin origin,
+                                   io.dataease.api.ai.task.AiTaskDtos.Submit input, AiConversationScene.Context context) {
+        if (origin == null || origin.sessionId() == null) throw AiErrors.error("scope_changed");
+        State state = owned(origin.sessionId());
+        synchronized (state) {
+            authorized(state.owner, () -> { check(state); return null; });
+            var view = state.view;
+            if (state.single || !Objects.equals(view.contextVersion(), origin.contextVersion())
+                    || !Objects.equals(view.scene(), input.scene()) || !Objects.equals(view.editorId(), input.editorId())
+                    || !Objects.equals(view.resourceId(), context.resourceId()) || !Objects.equals(view.resourceVersion(), context.revision())
+                    || !Objects.equals(view.draftVersion(), AiPromptFingerprint.of(new Prompt(Objects.toString(input.sql(), ""))))) throw AiErrors.error("scope_changed");
+        }
+    }
+    /** Adds a real model turn, including validated candidate SQL, without restoring any closed session. */
+    public void appendTaskResult(io.dataease.api.ai.task.AiTaskDtos.Origin origin,
+                                 io.dataease.api.ai.task.AiTaskDtos.Submit input, AiConversationScene.Context context,
+                                 String attemptId, Result result) {
+        validateTaskOrigin(origin, input, context);
+        State state = owned(origin.sessionId());
+        synchronized (state) {
+            authorized(state.owner, () -> { check(state); return null; });
+            if (state.deliveredTasks.contains(attemptId)) return;
+            if (state.executing.get()) throw AiErrors.error("concurrency");
+            if (state.turns >= MAX_TURNS) throw AiErrors.error("input_limit");
+            String answer = result.text() + (result.sql() == null ? "" : "\nSQL:\n" + result.sql());
+            if (state.toolHistory.isEmpty()) {
+                state.history.add(new UserMessage(input.text())); state.history.add(new AssistantMessage(answer));
+            } else {
+                state.toolHistory.add(AiToolProtocol.Message.text("user", input.text()));
+                state.toolHistory.add(AiToolProtocol.Message.text("assistant", answer));
+            }
+            state.turns++; state.deliveredTasks.add(attemptId);
+        }
     }
     public Answer turn(String id, Turn request) {
         State state = owned(id);

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BackgroundTasks from './BackgroundTasks.vue'
+import { getAiTask, type AiTask, type AiTaskOrigin } from '@/api/aiTask'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router_2'
 import { ElMessageBox } from 'element-plus-secondary'
@@ -96,6 +97,8 @@ const messages = ref<
     text: string
     status: string
     executionId?: string
+    taskId?: string
+    attemptId?: string
     tools?: AiConversationTool[]
     target?: AiConversationSession
     sourceSql?: string
@@ -111,6 +114,27 @@ let generation = 0
 let resourceGeneration = 0
 let editorId = crypto.randomUUID()
 let conversationSql = ''
+const backgroundDelivered = (task: AiTask, question: string, origin: AiTaskOrigin) => {
+  const target = session.value
+  if (
+    !target ||
+    target.sessionId !== origin.sessionId ||
+    target.contextVersion !== origin.contextVersion ||
+    !task.result
+  )
+    return
+  messages.value.push({ role: 'user', text: question, status: 'COMPLETED' })
+  messages.value.push({
+    role: 'assistant',
+    text: task.result.text,
+    status: 'COMPLETED',
+    result: task.result,
+    target,
+    sourceSql: conversationSql,
+    taskId: task.taskId,
+    attemptId: task.attemptId
+  })
+}
 const applying = ref(false)
 const reset = () => {
   generation++
@@ -301,7 +325,7 @@ const applySuggestion = async (index: number) => {
     applying.value ||
     !target ||
     !result ||
-    !message.executionId ||
+    (!message.executionId && !message.taskId) ||
     result.type !== 'SQL_SUGGESTION'
   )
     return
@@ -317,12 +341,17 @@ const applySuggestion = async (index: number) => {
   }
   applying.value = true
   try {
-    const checked = await checkSqlApplication(
-      target.sessionId,
-      message.executionId,
-      target.contextVersion,
-      target.draftVersion
-    )
+    const task = message.taskId ? await getAiTask(message.taskId) : undefined
+    if (task && (task.attemptId !== message.attemptId || task.status !== 'COMPLETED'))
+      throw new Error('scope_changed')
+    const checked =
+      task?.result ??
+      (await checkSqlApplication(
+        target.sessionId,
+        message.executionId!,
+        target.contextVersion,
+        target.draftVersion
+      ))
     if (current !== generation) return
     if (
       !sameDraft() ||
@@ -477,7 +506,18 @@ onBeforeUnmount(() => {
       <el-button :disabled="busy || (!resourceId && !input.trim())" @click="send(true)">{{
         tr('single')
       }}</el-button>
-      <BackgroundTasks :resource-id="resourceId" :editor-id="editorId" :sql="sql" :text="input" />
+      <BackgroundTasks
+        :resource-id="resourceId"
+        :editor-id="editorId"
+        :sql="sql"
+        :text="input"
+        :origin="
+          session && session.resourceId === resourceId && conversationSql === sql
+            ? { sessionId: session.sessionId, contextVersion: session.contextVersion }
+            : undefined
+        "
+        @delivered="backgroundDelivered"
+      />
       <el-button @click="end">{{ tr('end') }}</el-button>
       <el-button v-if="busy" :disabled="!execution" @click="stop">{{ tr('stop') }}</el-button>
       <p role="status">{{ busy ? tr('running') : tr('ready') }}</p>

@@ -1127,6 +1127,7 @@ test('independent background task remains active after reload and exposes cancel
   )
   await page.route('**/fixture-api/ai/tasks**', (route) => {
     const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
     if (url.pathname.endsWith('/cancel')) {
       cancelled++
       task = { ...task, status: 'CANCELLED' }
@@ -1175,6 +1176,7 @@ test('online task completion is a basic toast and never becomes a terminal task 
   )
   await page.route('**/fixture-api/ai/tasks**', (route) => {
     const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
     if (route.request().method() === 'POST') {
       task = {
         taskId: '2000',
@@ -1214,6 +1216,7 @@ for (const status of ['QUEUED', 'RUNNING']) {
     )
     await page.route('**/fixture-api/ai/tasks**', (route) => {
       const url = new URL(route.request().url())
+      if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
       if (route.request().method() === 'POST') {
         const body = route.request().postDataJSON()
         requests.push(body)
@@ -1272,6 +1275,7 @@ test('unknown background admission response keeps the same operation key for ret
     route.fulfill({ json: route.request().url().endsWith('/resources') ? [] : {} })
   )
   await page.route('**/fixture-api/ai/tasks**', (route) => {
+    if (route.request().url().endsWith('/notices')) return route.fulfill({ json: [] })
     if (route.request().method() === 'POST') {
       const body = route.request().postDataJSON()
       requests.push(body)
@@ -1297,4 +1301,206 @@ test('unknown background admission response keeps the same operation key for ret
   await expect.poll(() => requests.length).toBe(2)
   expect(requests[1].submissionKey).toBe(requests[0].submissionKey)
   expect(tasks.size).toBe(1)
+})
+
+test('offline completion is toasted once after return and acknowledged without restoring chat', async ({
+  page
+}) => {
+  let acknowledged = false
+  let deliveries = 0
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/ack')) {
+      acknowledged = true
+      deliveries++
+      return route.fulfill({ json: {} })
+    }
+    if (url.pathname.endsWith('/notices'))
+      return route.fulfill({
+        json: acknowledged
+          ? []
+          : [
+              {
+                taskId: '900',
+                attemptId: '901',
+                attemptNumber: 1,
+                status: 'COMPLETED',
+                expiresAt: Date.now() + 60000
+              }
+            ]
+      })
+    return route.fulfill({ json: [] })
+  })
+  await page.goto('/?view=conversation')
+  await expect(page.getByRole('alert').filter({ hasText: '后台任务已完成' })).toBeVisible()
+  await expect.poll(() => acknowledged).toBeTruthy()
+  await page.reload()
+  await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(0)
+  await page.waitForTimeout(1100)
+  expect(deliveries).toBe(1)
+  await expect(page.getByText('durable answer', { exact: true })).toHaveCount(0)
+})
+
+test('background result joins only its still open original conversation and permits follow-up', async ({
+  page
+}) => {
+  const requests = []
+  let body
+  let complete = false
+  let consumed = 0
+  const task = {
+    taskId: '910',
+    attemptId: '911',
+    attemptNumber: 1,
+    status: 'RUNNING',
+    resourceId: '11',
+    resourceName: 'Isolated database'
+  }
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/executions')) {
+      requests.push(route.request().postDataJSON())
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'chat-' + requests.length,
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'chat-' + requests.length,
+          status: 'COMPLETED',
+          cursor: 1,
+          events: [{ sequence: 1, type: 'TEXT', text: 'initial answer' }]
+        }
+      })
+    return route.fulfill({ json: session })
+  })
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
+    if (url.pathname.endsWith('/conversation')) {
+      consumed++
+      expect(route.request().postDataJSON()).toEqual({
+        sessionId: session.sessionId,
+        contextVersion: session.contextVersion
+      })
+      return route.fulfill({
+        json: {
+          ...task,
+          status: 'COMPLETED',
+          result: { type: 'EXPLANATION', text: 'original background answer' }
+        }
+      })
+    }
+    if (route.request().method() === 'POST') {
+      body = route.request().postDataJSON()
+      return route.fulfill({ json: task })
+    }
+    if (url.pathname.endsWith('/ai/tasks'))
+      return route.fulfill({ json: complete ? [] : body ? [task] : [] })
+    return route.fulfill({ json: { ...task, status: complete ? 'COMPLETED' : 'RUNNING' } })
+  })
+  await selectResource(page)
+  await send(page, 'first question')
+  await expect(page.getByText('initial answer', { exact: true })).toBeVisible()
+  await page.getByRole('textbox', { name: '消息' }).fill('background question')
+  await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+  await expect.poll(() => body?.origin?.sessionId).toBe(session.sessionId)
+  complete = true
+  await expect(page.getByText('original background answer', { exact: true })).toBeVisible()
+  expect(consumed).toBe(1)
+  await send(page, 'follow up on that result')
+  expect(requests[1].contextVersion).toBe(session.contextVersion)
+})
+
+test('closed original conversation never receives late background result', async ({ page }) => {
+  const requests = []
+  let body
+  let complete = false
+  let consumed = 0
+  const task = {
+    taskId: '910',
+    attemptId: '911',
+    attemptNumber: 1,
+    status: 'RUNNING',
+    resourceId: '11',
+    resourceName: 'Isolated database'
+  }
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/executions')) {
+      requests.push(route.request().postDataJSON())
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'chat-' + requests.length,
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'chat-' + requests.length,
+          status: 'COMPLETED',
+          cursor: 1,
+          events: [{ sequence: 1, type: 'TEXT', text: 'initial answer' }]
+        }
+      })
+    return route.fulfill({ json: session })
+  })
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
+    if (url.pathname.endsWith('/conversation')) {
+      consumed++
+      expect(route.request().postDataJSON()).toEqual({
+        sessionId: session.sessionId,
+        contextVersion: session.contextVersion
+      })
+      return route.fulfill({
+        json: {
+          ...task,
+          status: 'COMPLETED',
+          result: { type: 'EXPLANATION', text: 'original background answer' }
+        }
+      })
+    }
+    if (route.request().method() === 'POST') {
+      body = route.request().postDataJSON()
+      return route.fulfill({ json: task })
+    }
+    if (url.pathname.endsWith('/ai/tasks'))
+      return route.fulfill({ json: complete ? [] : body ? [task] : [] })
+    return route.fulfill({ json: { ...task, status: complete ? 'COMPLETED' : 'RUNNING' } })
+  })
+  await selectResource(page)
+  await send(page, 'first question')
+  await expect(page.getByText('initial answer', { exact: true })).toBeVisible()
+  await page.getByRole('textbox', { name: '消息' }).fill('background question')
+  await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+  await expect.poll(() => body?.origin?.sessionId).toBe(session.sessionId)
+  await page.getByRole('button', { name: '结束会话', exact: true }).click()
+  complete = true
+  await page.waitForTimeout(1400)
+  expect(consumed).toBe(0)
+  await expect(page.getByText('original background answer', { exact: true })).toHaveCount(0)
+  await expect(page.getByText('first question', { exact: true })).toHaveCount(0)
 })

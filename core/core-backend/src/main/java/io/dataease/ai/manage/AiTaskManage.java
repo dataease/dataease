@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 /** Durable owner of independent background assistance. All database transactions are short. */
 @Component
 public class AiTaskManage implements AiToolConversationFeature {
+    public static final long DELIVERY_MILLIS = TimeUnit.DAYS.toMillis(7);
     private static final long NODE_LEASE_MILLIS = 15000;
     private final String nodeId = UUID.randomUUID().toString();
     private final AtomicBoolean started = new AtomicBoolean();
@@ -57,8 +58,15 @@ public class AiTaskManage implements AiToolConversationFeature {
     private final ObjectProvider<AiRuntimeManage> runtime;
     private final AiAccess access;
     private final ObjectMapper json;
+    private final ObjectProvider<AiConversationManage> conversations;
     public AiTaskManage(EntityManager em, PlatformTransactionManager manager, ObjectProvider<AiConversationScene> scenes,
                         ObjectProvider<AiRuntimeManage> runtime, AiAccess access, ObjectMapper json) {
+        this(em, manager, scenes, runtime, access, json, null);
+    }
+    @org.springframework.beans.factory.annotation.Autowired
+    public AiTaskManage(EntityManager em, PlatformTransactionManager manager, ObjectProvider<AiConversationScene> scenes,
+                        ObjectProvider<AiRuntimeManage> runtime, AiAccess access, ObjectMapper json, ObjectProvider<AiConversationManage> conversations) {
+        this.conversations = conversations;
         this.em = em; tx = new TransactionTemplate(manager); this.runtime = runtime; this.access = access; this.json = json;
         this.scenes = scenes.stream().collect(Collectors.toUnmodifiableMap(AiConversationScene::code, scene -> scene));
     }
@@ -71,14 +79,17 @@ public class AiTaskManage implements AiToolConversationFeature {
         var scene = scene(request.scene());
         if (!scene.capability().equals(request.capability())) throw AiErrors.error("unsupported");
         String binding = AiAccess.binding(owner), submission = hash(binding + ":" + request.submissionKey());
-        String input = encode(new Submit(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text()));
-        String fingerprint = hash(input);
+        // Keep the exact V1 seven-field normalization for already persisted idempotency fingerprints.
+        String legacy = encode(new LegacyInput(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text()));
+        String fingerprint = hash(request.origin() == null ? legacy : legacy + encode(request.origin()));
+        String input = encode(new Submit(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text(), request.origin()));
         var existing = bySubmission(submission);
         if (existing != null) return repeated(existing, fingerprint, owner);
         var context = authorized(owner, () -> {
             var resolved = scene.resolve(Objects.toString(request.resourceId(), ""), Objects.toString(request.sql(), ""));
             scene.authorize(resolved); return resolved;
         });
+        if (request.origin() != null) conversationManage().validateTaskOrigin(request.origin(), request, context);
         try {
             Task accepted = tx.execute(status -> {
                 // Serialize only bounded admission against the existing singleton; no external I/O under this lock.
@@ -119,6 +130,69 @@ public class AiTaskManage implements AiToolConversationFeature {
                 .setParameter("owner", AiAccess.binding(owner)).setMaxResults(4).getResultList();
         return rows.stream().map(task -> checkedView(task, owner)).toList();
     }
+    /** Pending delivery only, never a task history or inbox. Re-authorize outside metadata transactions. */
+    public List<Notice> notices() {
+        var owner = identity();
+        var result = new ArrayList<Notice>();
+        int offset = 0;
+        while (result.size() < 50) {
+            var rows = em.createQuery("select a from CoreAiTaskAttempt a, CoreAiTask t where a.taskId=t.id and t.ownerBinding=:owner and a.noticeAckAt is null and a.deliveryExpiresAt>:now order by a.finishedAt,a.id", CoreAiTaskAttempt.class)
+                    .setParameter("owner", AiAccess.binding(owner)).setParameter("now", System.currentTimeMillis()).setFirstResult(offset).setMaxResults(50).getResultList();
+            if (rows.isEmpty()) break;
+            offset += rows.size();
+            for (var attempt : rows) {
+                var task = em.find(CoreAiTask.class, attempt.getTaskId());
+                try {
+                    authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return null; });
+                    if (attempt.getDeliveryExpiresAt() > System.currentTimeMillis())
+                        result.add(new Notice(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), attempt.getErrorCode(), attempt.getDeliveryExpiresAt()));
+                } catch (AiErrors.Failure denied) { /* A revoked resource is never disclosed by its old notice. */ }
+                if (result.size() == 50) break;
+            }
+            if (rows.size() < 50) break;
+        }
+        return result;
+    }
+    public void acknowledge(Long attemptId) {
+        var owner = identity();
+        var attempt = attemptId == null ? null : em.find(CoreAiTaskAttempt.class, attemptId);
+        if (attempt == null) throw AiErrors.error("forbidden");
+        checkedView(owned(attempt.getTaskId()), owner);
+        tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.noticeAckAt=:now where a.id=:id and a.noticeAckAt is null and a.deliveryExpiresAt>:now")
+                .setParameter("now", System.currentTimeMillis()).setParameter("id", attemptId).executeUpdate());
+    }
+    void ended(CoreAiTaskAttempt attempt, String state, String code, String result) {
+        long now = System.currentTimeMillis();
+        attempt.setStatus(state); attempt.setErrorCode(code); attempt.setResultJson(result); attempt.setFinishedAt(now);
+        attempt.setDeliveryExpiresAt(now + DELIVERY_MILLIS); attempt.setNoticeAckAt(null);
+        attempt.setFence(null); attempt.setNodeId(null);
+    }
+    private void interrupted(String node) {
+        tx.executeWithoutResult(status -> {
+            var rows = em.createQuery("select a from CoreAiTaskAttempt a where a.status='RUNNING' and " +
+                    (node == null ? "a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff)" : "a.nodeId=:node"), CoreAiTaskAttempt.class);
+            if (node == null) rows.setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS); else rows.setParameter("node", node);
+            for (var candidate : rows.getResultList()) {
+                var attempt = em.find(CoreAiTaskAttempt.class, candidate.getId(), LockModeType.PESSIMISTIC_WRITE);
+                em.refresh(attempt);
+                if ("RUNNING".equals(attempt.getStatus())) ended(attempt, "INTERRUPTED", "interrupted", null);
+            }
+        });
+    }
+    private record LegacyInput(String submissionKey, String capability, String scene, String resourceId, String editorId, String sql, String text) { }
+    private AiConversationManage conversationManage() {
+        if (conversations == null || conversations.getIfAvailable() == null) throw AiErrors.error("scope_changed");
+        return conversations.getObject();
+    }
+    /** Reads its own immutable task association, never the pending-notice queue. */
+    public Task conversation(Long id, Origin origin) {
+        var task = owned(id); var input = input(task);
+        if (origin == null || !origin.equals(input.origin())) throw AiErrors.error("scope_changed");
+        var result = checkedView(task, identity());
+        if (!"COMPLETED".equals(result.status()) || result.result() == null) throw AiErrors.error("conflict");
+        conversationManage().appendTaskResult(origin, input, context(task), result.attemptId().toString(), result.result());
+        return result;
+    }
     public Task get(Long id) { return checkedView(owned(id), identity()); }
     public Task cancel(Long id) {
         var task = owned(id);
@@ -126,8 +200,7 @@ public class AiTaskManage implements AiToolConversationFeature {
             var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
             var attempt = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId(), LockModeType.PESSIMISTIC_WRITE);
             if (Set.of("QUEUED", "RUNNING").contains(attempt.getStatus())) {
-                attempt.setStatus("CANCELLED"); attempt.setFinishedAt(System.currentTimeMillis());
-                attempt.setFence(null); attempt.setNodeId(null); attempt.setErrorCode("cancelled"); em.flush();
+                ended(attempt, "CANCELLED", "cancelled", null); em.flush();
             }
             // Cancellation is a cleanup operation; it never delivers a protected resource/result.
             return new Task(locked.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), null, null, null,
@@ -171,9 +244,13 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private Task view(CoreAiTask task, CoreAiTaskAttempt attempt) {
         var input = input(task); var context = context(task);
+        if (attempt.getFinishedAt() != null && System.currentTimeMillis() >= expires(attempt)) throw AiErrors.error("scope_changed");
         return new Task(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), input.scene(), context.resourceId(), context.resourceName(),
                 task.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), attempt.getModelId(), attempt.getModelRevision(), attempt.getModelIdentifier(),
                 attempt.getResultJson() == null ? null : decode(attempt.getResultJson(), io.dataease.api.ai.conversation.AiConversationDtos.Result.class));
+    }
+    private long expires(CoreAiTaskAttempt attempt) {
+        return attempt.getDeliveryExpiresAt() == null ? attempt.getFinishedAt() + DELIVERY_MILLIS : attempt.getDeliveryExpiresAt();
     }
     private CoreAiTask owned(Long id) {
         var owner = identity(); var task = id == null ? null : em.find(CoreAiTask.class, id);
@@ -249,8 +326,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void dispatch() {
         if (stopped) return;
         try {
-            tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.status='INTERRUPTED', a.errorCode='interrupted', a.finishedAt=:now, a.fence=null, a.nodeId=null where a.status='RUNNING' and a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff)")
-                    .setParameter("now", System.currentTimeMillis()).setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS).executeUpdate());
+            interrupted(null);
             for (Run run : running.values()) {
                 if (run.failureCode != null) { fail(run, AiErrors.error(run.failureCode)); continue; }
                 try { active(run); }
@@ -373,15 +449,13 @@ public class AiTaskManage implements AiToolConversationFeature {
                 var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId(), LockModeType.PESSIMISTIC_WRITE);
                 if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !nodeId.equals(attempt.getNodeId())) return;
                 live(attempt);
-                attempt.setStatus(state); attempt.setErrorCode(error); attempt.setResultJson(result); attempt.setFinishedAt(System.currentTimeMillis());
-                attempt.setNodeId(null); attempt.setFence(null); em.flush();
+                ended(attempt, state, error, result); em.flush();
             });
         } finally { close(run); running.remove(run.work.attemptId(), run); }
     }
     private void close(Run run) { if (run.stream != null) run.stream.close(); }
     private void interruptOwn() {
-        tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.status='INTERRUPTED', a.errorCode='interrupted', a.finishedAt=:now, a.nodeId=null, a.fence=null where a.status='RUNNING' and a.nodeId=:node")
-                .setParameter("now", System.currentTimeMillis()).setParameter("node", nodeId).executeUpdate());
+        interrupted(nodeId);
     }
     @PreDestroy public void destroy() {
         stopped = true; scheduler.shutdownNow(); heartbeat.shutdownNow();

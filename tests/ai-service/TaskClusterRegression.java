@@ -90,6 +90,7 @@ public final class TaskClusterRegression {
             var em = SharedEntityManagerCreator.createSharedEntityManager(factory); var manager = new JpaTransactionManager(factory);
             var jdbc = new JdbcTemplate(new DriverManagerDataSource(url, "sa", ""));
             new AiConfigurationInit(jdbc, factory, em, manager).execute(); var migration = new AiTaskInit(jdbc, factory, em, manager); migration.execute(); migration.execute();
+            var delivery = new AiTaskDeliveryInit(jdbc, factory); delivery.execute(); delivery.execute();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 var model = new CoreAiModel(); model.setId(42L); model.setName("controlled task model"); model.setNameKey("controlled-task-model");
                 model.setModelIdentifier("cluster-model-v1"); model.setBaseUrl("http://127.0.0.1:" + provider.getAddress().getPort() + "/v1");
@@ -147,6 +148,18 @@ public final class TaskClusterRegression {
             first.destroyForcibly().waitFor(); second.destroyForcibly().waitFor(); recovered.destroyForcibly().waitFor();
             var restarted = node("restarted", true); int d = port("restarted");
             check(call(d, detachedPath, "GET", "").path("result").path("text").asText().equals("persisted slow-detached"), "completed result and model snapshot survive all backend restarts");
+            var pending = call(d, "/ai/tasks/notices", "GET", "");
+            check(java.util.stream.StreamSupport.stream(pending.spliterator(), false).anyMatch(notice -> notice.path("attemptId").equals(detached.path("attemptId"))), "offline completion notice survives all backend restarts");
+            check(java.util.stream.StreamSupport.stream(pending.spliterator(), false).anyMatch(notice -> "INTERRUPTED".equals(notice.path("status").asText())), "node loss terminal creates durable interrupted completion notice");
+            check(call(d, "/ai/tasks/notices", "GET", "", "2").body().equals("[]"), "another actor cannot receive owner's pending completion notices");
+            Files.createFile(output.resolve("revoked-1"));
+            check(call(d, "/ai/tasks/notices", "GET", "", "1").statusCode() == 403, "revoked actor cannot poll pending notices");
+            Files.delete(output.resolve("revoked-1"));
+            for (var notice : pending) call(d, "/ai/tasks/notices/" + notice.path("attemptId").asText() + "/ack", "POST", "");
+            check(call(d, "/ai/tasks/notices", "GET", "").size() == 0, "acknowledged attempts do not reappear in pending delivery");
+            var observer = node("observer", false); int e = port("observer");
+            check(call(e, "/ai/tasks/notices", "GET", "").size() == 0, "notice acknowledgement is shared across independent JVM nodes");
+            check(call(e, detachedPath, "GET", "").path("result").path("text").asText().equals("persisted slow-detached"), "notice acknowledgement never consumes own task result");
             check(call(d, "/ai/tasks", "GET", "").size() == 0, "assistant active query does not list terminal task history");
             System.out.println("PASS task cluster " + checks + " public HTTP assertions (independent JVM nodes, shared isolated H2 TCP, controlled identity/scene/model; no Redis/global model-limit or XPack claim)");
         } finally {

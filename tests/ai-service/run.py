@@ -87,6 +87,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiKeyringInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecordsMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/menu/manage/MenuManage.java',

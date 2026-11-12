@@ -69,4 +69,10 @@ public class CoreAiTaskAttempt {
     @Column(name = "model_identifier", length = 256)
     @Comment("model_identifier")
     private String modelIdentifier;
+    @Column(name = "delivery_expires_at")
+    @Comment("Business result and completion notice expiry, independent from audit retention")
+    private Long deliveryExpiresAt;
+    @Column(name = "notice_ack_at")
+    @Comment("Idempotent completion toast acknowledgement")
+    private Long noticeAckAt;
 }
