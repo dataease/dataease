@@ -11,7 +11,12 @@ export interface AiRecoverySettings {
   attemptRetries: number
   initialDelayMillis: number
 }
+export interface AiRetentionSettings {
+  auditDays: number
+  deliveryDays: number
+}
 export interface AiSettings {
+  retention?: AiRetentionSettings
   taskScheduling?: AiTaskScheduling
   recovery?: AiRecoverySettings
   enabled: boolean

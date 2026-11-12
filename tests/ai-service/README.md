@@ -240,3 +240,9 @@ AI_BROWSER_TEST_PORT=4297 npm --prefix tests/browser test -- --config=playwright
 `--task-structure-nodes` persists actual SQL/structure scene contexts and reads them in 12 independent JVMs, requiring different immutable-map iteration orders. Unchanged metadata authorizes both current contexts and legacy raw-JSON fingerprints; changed field names, types, comments, column order/count, table names, datasource revision and revoked READ remain rejected. Legacy compatibility requires the exact instruction prefix, matching original raw projection hash and strict complete JSON object parsing. The fixture uses only the DatasourceApi/identity seams and temporary context files, with no model or database access. It also runs in `--task-structure`, default and `--only-tasks` suites.
 
 These fixtures use synthetic identities and models, owned H2 and loopback ports. They do not establish real XPack licensing/workspace authorization, live database dialect compatibility, current configured-model behavior or product Redis cluster admission; record those independently. The controlled scene is resource-mutex acceptance and read-only structure explanation, not semantic generation or business delivery.
+
+## 留存配置与正式清理回归
+
+`uv run python tests/ai-service/run.py --retention --ai-classpath <既有依赖classpath文件>` 在独立 H2 样本上，通过公开设置/任务/审计 HTTP 与正式 `AiRetentionCleanup.clean()` 验证：默认值与管理员配置、旧请求兼容及 CAS、结果到期前后读取、通知确认、过期旧提交/重试/会话投递拒绝、混合尝试及运行/排队资源保护、交付分项提交失败、审计条目与父记录原子清理失败重跑、并发清理、晚到审计写入及定时缺口修复防复活。审计及清理结果只在隔离库读取观察。
+
+同一入口执行 2.55 的 MySQL/PostgreSQL/H2 方言注册表迁移及部分迁移重试；承载数据库均为隔离 H2，不代表真实 MySQL/PostgreSQL 迁移。`--task-upgrade` 另通过实际启动迁移监听器验证从 2.47/2.48/2.49/2.50/2.52/2.54 顺序升级到 2.55，并保留已有期限、配置和任务事实。已安装的真实 Vue/Playwright 配置回归中含独立留存字段及保存校验；这些隔离入口均不代替真实登录、配置模型或许可环境验收。

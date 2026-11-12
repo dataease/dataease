@@ -69,7 +69,7 @@ public class CoreAiAuditExecution {
     @Comment("Attempt end time, independent from result delivery")
     private Long finishedAt;
     @Column(name = "retention_expires_at")
-    @Comment("Audit retention expiry, independent from seven day result delivery")
+    @Comment("Audit retention expiry, independent from configurable result delivery")
     private Long retentionExpiresAt;
     @Column(name = "status", length = 24)
     @Comment("RUNNING COMPLETED FAILED CANCELLED")

@@ -87,6 +87,9 @@ public class CoreAiTaskAttempt {
     @Column(name = "delivery_expires_at")
     @Comment("Business result and completion notice expiry, independent from audit retention")
     private Long deliveryExpiresAt;
+    @Column(name = "delivery_purged_at")
+    @Comment("Expired result removed explicitly; keeps idempotency and terminal facts")
+    private Long deliveryPurgedAt;
     @Column(name = "notice_ack_at")
     @Comment("Idempotent completion toast acknowledgement")
     private Long noticeAckAt;

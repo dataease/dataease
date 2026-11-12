@@ -41,7 +41,7 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
         AiAdmission.State state = admission.state(s);
         var result = new Settings(s.getEnabled(), s.getDefaultModelId(), s.getAllowSamples(), s.getRequestTimeoutSeconds(),
                 s.getMaxInputChars(), s.getMaxOutputTokens(), s.getInteractiveConcurrency(), s.getBackgroundConcurrency(),
-                s.getRevision(), s.getRowVersion(), s.getRevision(), state.revision(), state.name(), identity.deployment().organizations(), taskScheduling(s), new Recovery(s.getRecoveryStepRetries(), s.getRecoveryAttemptRetries(), s.getRecoveryInitialDelayMillis()));
+                s.getRevision(), s.getRowVersion(), s.getRevision(), state.revision(), state.name(), identity.deployment().organizations(), taskScheduling(s), new Recovery(s.getRecoveryStepRetries(), s.getRecoveryAttemptRetries(), s.getRecoveryInitialDelayMillis()), new Retention(s.getAuditRetentionDays(), s.getDeliveryRetentionDays()));
         access.verify(identity, true);
         return result;
     }
@@ -76,6 +76,9 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
                 if (c.recovery() != null) {
                     s.setRecoveryStepRetries(c.recovery().stepRetries()); s.setRecoveryAttemptRetries(c.recovery().attemptRetries());
                     s.setRecoveryInitialDelayMillis(c.recovery().initialDelayMillis());
+                }
+                if (c.retention() != null) {
+                    s.setAuditRetentionDays(c.retention().auditDays()); s.setDeliveryRetentionDays(c.retention().deliveryDays());
                 }
                 touch(s); em.flush();
             });

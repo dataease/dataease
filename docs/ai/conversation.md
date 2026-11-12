@@ -60,7 +60,7 @@ Every typed model request conservatively counts the entire serialized JSON in Un
 
 ## 独立持久后台任务
 
-Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不使用前台轮询租期。离开、刷新、退出登录和停止页面轮询均不取消已受理任务；取消必须显式调用任务取消接口。页面重新打开只恢复本人当前身份/空间的进行中任务，终态时从列表移除。成功、失败、取消和中断均持久保存待投递完成消息，离线返回后以 toast 提示；失败、取消和中断提示提供绑定原尝试的安全重试操作。结果和待投递消息均保留 7 天，过期在后端读取边界拒绝，不等待物理清理。没有已完成任务列表、历史任务页面或待读列表。后台结果不会自动应用、保存或执行候选 SQL。
+Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不使用前台轮询租期。离开、刷新、退出登录和停止页面轮询均不取消已受理任务；取消必须显式调用任务取消接口。页面重新打开只恢复本人当前身份/空间的进行中任务，终态时从列表移除。成功、失败、取消和中断均持久保存待投递完成消息，离线返回后以 toast 提示；失败、取消和中断提示提供绑定原尝试的安全重试操作。结果和待投递消息默认保留 7 天，由既有 AI 服务设置中的留存参数调整，过期在后端读取边界拒绝，不等待物理清理。没有已完成任务列表、历史任务页面或待读列表。后台结果不会自动应用、保存或执行候选 SQL。
 
 `POST /ai/tasks` 接收 `submissionKey`、`capability`、`scene`、`resourceId`、`editorId`、`sql`、`text`，可选 `origin={sessionId,contextVersion}`。服务端验证原会话身份、场景、编辑器、资源及版本，客户端不能指定任意结果接收会话；无 origin 的旧七字段幂等指纹保持兼容。同一身份下，同次提交重发返回同一个持久任务；同键不同输入拒绝，修改输入应使用新键创建新任务。`GET /ai/tasks` 只列本人进行中任务，`GET /ai/tasks/{id}` 返回当前尝试的状态、固定模型版本及经当前资源权限复核的结果。所有 Long 任务/尝试 ID 以字符串传输。`POST /{id}/cancel` 先持久撤销执行归属，再停止本地模型工作；它只返回不含资源、模型或结果的安全状态投影。完成先胜出时仍返回已完成状态，受保护结果须单独经过 GET 的权限复核。`POST /{id}/retry` 接收 `retryKey` 和 `expectedAttemptId`，仅对 FAILED/CANCELLED/INTERRUPTED 创建下一尝试；重复相同操作只创建一次，复用键却改变原尝试拒绝。重试不会修改原任务输入。
 
@@ -114,4 +114,16 @@ Actual model sends and tool invocations produce administrator audit evidence ass
 
 `GET /ai/audit/{executionId}` is a bounded detail contract, separate from owner-only tasks, events, results and completion notices. Authorization targets the persisted execution workspace and rechecks current authority before delivery. The internal, unmapped `InteractiveAuthApi.checkAiAuditAccess(...)` returns explicit Boolean permission; false, null, missing or old extensions deny licensed audit access. Configuration-menu access does not grant audit permission. Community mode has no workspace administrator role. Deploy the matching public SDK/core and extension implementation together to enable the additional licensed capability; older extensions retain existing functions but cannot authorize it.
 
-Audit persistence uses short independent transactions with at most two writes per boundary attempt. After failure, execution continues and a bounded queue retains gap metadata, never failed request/response bodies. Recovery persists `incomplete` and the known gap count. Pending/dropped marker counts and safe gap logs make degradation observable. A process loss while storage is unavailable may lose in-memory gap metadata; no missing body is reconstructed. Closing a chat preserves audit evidence without restoring its history. Audit start/end and retention expiry are separate from the background result/notice expiry; the initial audit retention is 30 days. Task/result commit failures retain their existing failure path and never become audit-only success.
+Audit persistence uses short independent transactions with at most two writes per boundary attempt. After failure, execution continues and a bounded queue retains gap metadata, never failed request/response bodies. Recovery persists `incomplete` and the known gap count. Pending/dropped marker counts and safe gap logs make degradation observable. A process loss while storage is unavailable may lose in-memory gap metadata; no missing body is reconstructed. Closing a chat preserves audit evidence without restoring its history. Audit start/end and retention expiry are separate from the background result/notice expiry; the default audit retention is 30 days. Task/result commit failures retain their existing failure path and never become audit-only success.
+
+### 可配置留存与正式清理
+
+既有 AI 服务设置接口与调用限制抽屉提供独立的 `retention.auditDays`（默认 30）和 `retention.deliveryDays`（默认 7），均为 1–3650 的整数天数。沿用配置管理权限与 `expectedVersion` CAS；旧客户端省略 `retention` 时保留当前值，不改变模型配置、密钥或同步 SDK 契约。
+
+审计使用执行开始时的配置快照，并以结束时间计算到期日；后台结果及待投递完成通知使用尝试进入终态时的配置计算到期日。已经写入的到期时间保持不变，调长期限不能恢复过期正文，调短期限不追溯删除既有结果。读取端按到期时间立即拒绝，过期交付使用 `result_expired` / `NOT_FOUND`（契约 2 为 HTTP 404，旧消费者沿用业务码 50001 的 HTTP 409），独立于物理清理进度；不会从管理员审计重建用户交付结果。
+
+迁移 2.55 增加留存设置、尝试清理标记及仅含执行 ID 的审计退休墓碑，不重写 2.49–2.54 或现有到期时间。`AiRetentionCleanup` 在应用就绪后每分钟分批执行，单轮最多处理 100 个交付尝试与 100 个审计执行。公开 Java `clean()` 是运维/隔离验收使用的正式作业入口，没有新增普通用户 HTTP 清理接口或历史列表。
+
+交付清理仅对明确终态且到期的尝试，通过事务内显式更新清空结果正文并确认过期通知。只有同一任务的所有尝试均已结束且交付到期，才清除任务输入、上下文和持久身份 JSON；保留归属绑定、提交指纹及终态事实作为最小幂等墓碑，使旧提交键不能重新触发模型。混合的新排队/运行/未到期尝试继续保留所需输入、身份、状态和资源占用；通知确认不会提前清除结果或审计。
+
+审计按自身期限独立清理，每个执行在同一事务中先删除条目，再删除执行记录并写入无正文/身份/资源的退休 ID。审计写入与清理对同一执行加锁，退休 ID 阻止迟到条目及五秒间隔的元数据缺口修复重新插入过期审计。交付与审计每项独立提交；中途失败保留已完成项，失败项回滚并在后续作业重试，不留下孤立正文。幂等与退休墓碑不属于用户历史记录，也不用于恢复聊天。

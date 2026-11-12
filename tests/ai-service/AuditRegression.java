@@ -87,7 +87,10 @@ public final class AuditRegression {
             var migration = new io.dataease.listener.sql.AiAuditInit(jdbc, factory, em, manager); migration.execute(); migration.execute();
             var runtime = new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, keys, transport, json, access, audit);
             beans.addBean("runtime", runtime);
-            var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(conversations), new io.dataease.ai.server.AiAuditServer(audit)).build();
+            var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(conversations), new io.dataease.ai.server.AiAuditServer(audit), new io.dataease.ai.server.AiConfigurationServer(configuration,null)).build();
+            var retention = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(mvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
+            retention.put("expectedVersion",retention.path("rowVersion").asLong()); retention.putObject("retention").put("auditDays",45).put("deliveryDays",7);
+            if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(retention))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("configured audit retention through public settings API");
             var response = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType("application/json")
                     .content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"audit-editor\",\"sql\":\"select 1\",\"text\":\"audit-question\"}")).andReturn().getResponse().getContentAsString());
             String execution = response.path("executionId").asText();
@@ -99,6 +102,7 @@ public final class AuditRegression {
             var detail = mvc.perform(get("/ai/audit/" + execution)).andReturn().getResponse();
             if (detail.getStatus() != 200) throw new AssertionError("administrator can inspect persisted actual execution audit via HTTP, got " + detail.getStatus());
             var evidence = json.readTree(detail.getContentAsString());
+            if (evidence.path("retentionExpiresAt").asLong()-evidence.path("finishedAt").asLong() != java.util.concurrent.TimeUnit.DAYS.toMillis(45)) throw new AssertionError("actual model HTTP execution uses configured independent audit retention");
             if (!evidence.toString().contains("internal-process") || !evidence.toString().contains("audit-question") || !evidence.toString().contains("trusted-context:select 1"))
                 throw new AssertionError("audit keeps actual complete input and vendor output, including process");
             if (evidence.toString().contains("synthetic-audit-secret")) throw new AssertionError("system credential entered audit");

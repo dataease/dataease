@@ -202,7 +202,7 @@ public class AiTaskManage implements AiToolConversationFeature {
         var result = new ArrayList<Notice>();
         int offset = 0;
         while (result.size() < 50) {
-            var rows = em.createQuery("select a from CoreAiTaskAttempt a, CoreAiTask t where a.taskId=t.id and t.ownerBinding=:owner and a.noticeAckAt is null and a.deliveryExpiresAt>:now order by a.finishedAt,a.id", CoreAiTaskAttempt.class)
+            var rows = em.createQuery("select a from CoreAiTaskAttempt a, CoreAiTask t where a.taskId=t.id and t.ownerBinding=:owner and a.status in ('COMPLETED','FAILED','CANCELLED','INTERRUPTED') and a.finishedAt is not null and a.deliveryPurgedAt is null and a.noticeAckAt is null and a.deliveryExpiresAt>:now order by a.finishedAt,a.id", CoreAiTaskAttempt.class)
                     .setParameter("owner", AiAccess.binding(owner)).setParameter("now", System.currentTimeMillis()).setFirstResult(offset).setMaxResults(50).getResultList();
             if (rows.isEmpty()) break;
             offset += rows.size();
@@ -224,13 +224,13 @@ public class AiTaskManage implements AiToolConversationFeature {
         var attempt = attemptId == null ? null : em.find(CoreAiTaskAttempt.class, attemptId);
         if (attempt == null) throw AiErrors.error("forbidden");
         checkedView(owned(attempt.getTaskId()), owner);
-        tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.noticeAckAt=:now where a.id=:id and a.noticeAckAt is null and a.deliveryExpiresAt>:now")
+        tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.noticeAckAt=:now where a.id=:id and a.status in ('COMPLETED','FAILED','CANCELLED','INTERRUPTED') and a.finishedAt is not null and a.deliveryPurgedAt is null and a.noticeAckAt is null and a.deliveryExpiresAt>:now")
                 .setParameter("now", System.currentTimeMillis()).setParameter("id", attemptId).executeUpdate());
     }
     void ended(CoreAiTaskAttempt attempt, String state, String code, String result) {
         long now = System.currentTimeMillis();
         attempt.setStatus(state); attempt.setErrorCode(code); attempt.setResultJson(result); attempt.setFinishedAt(now);
-        attempt.setDeliveryExpiresAt(now + DELIVERY_MILLIS); attempt.setNoticeAckAt(null);
+        attempt.setDeliveryExpiresAt(now + TimeUnit.DAYS.toMillis(em.find(CoreAiSetting.class, 1L).getDeliveryRetentionDays())); attempt.setNoticeAckAt(null);
         attempt.setFence(null); attempt.setNodeId(null);
         // Persist the durable fence before releasing the exact owner, in this same terminal transaction.
         em.flush();
@@ -258,7 +258,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     /** Reads its own immutable task association, never the pending-notice queue. */
     public Task conversation(Long id, Origin origin) {
-        var task = owned(id); var input = input(task);
+        var task = owned(id); deliverable(em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId())); var input = input(task);
         if (origin == null || !origin.equals(input.origin())) throw AiErrors.error("scope_changed");
         var result = checkedView(task, identity());
         if (!"COMPLETED".equals(result.status()) || result.result() == null) throw AiErrors.error("conflict");
@@ -324,22 +324,30 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private Task checkedView(CoreAiTask task, AiAccess.Identity owner) {
         if (!AiAccess.binding(owner).equals(task.getOwnerBinding())) throw AiErrors.error("forbidden");
+        deliverable(em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId()));
         return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return view(task); });
     }
     private Task view(CoreAiTask task) {
         return view(task, em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId()));
     }
     private boolean retryEligible(CoreAiTaskAttempt attempt) {
-        return Boolean.TRUE.equals(attempt.getRetrySafe()) && Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(attempt.getStatus());
+        return Boolean.TRUE.equals(attempt.getRetrySafe()) && Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(attempt.getStatus())
+                && attempt.getFinishedAt() != null && attempt.getDeliveryPurgedAt() == null && System.currentTimeMillis() < expires(attempt);
     }
     private Task view(CoreAiTask task, CoreAiTaskAttempt attempt) {
+        deliverable(attempt);
         var input = input(task); var context = context(task);
-        if (attempt.getFinishedAt() != null && System.currentTimeMillis() >= expires(attempt)) throw AiErrors.error("scope_changed");
-        return new Task(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), input.scene(), context.resourceId(), context.resourceName(),
+        var projection = new Task(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), input.scene(), context.resourceId(), context.resourceName(),
                 task.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), attempt.getModelId(), attempt.getModelRevision(), attempt.getModelIdentifier(),
                 attempt.getResultJson() == null ? null : decode(attempt.getResultJson(), io.dataease.api.ai.conversation.AiConversationDtos.Result.class),
                 attempt.getExecutionId(), attempt.getSourceAttemptId(), retryEligible(attempt),
                 attempt.getRecoveryJson() == null ? null : decode(attempt.getRecoveryJson(), RecoverySnapshot.class).progress());
+        deliverable(attempt); return projection;
+    }
+    private void deliverable(CoreAiTaskAttempt attempt) {
+        if (attempt == null || !Set.of("QUEUED", "RUNNING").contains(attempt.getStatus())
+                && (attempt.getFinishedAt() == null || attempt.getDeliveryPurgedAt() != null || System.currentTimeMillis() >= expires(attempt)))
+            throw AiErrors.error("result_expired");
     }
     private long expires(CoreAiTaskAttempt attempt) {
         return attempt.getDeliveryExpiresAt() == null ? attempt.getFinishedAt() + DELIVERY_MILLIS : attempt.getDeliveryExpiresAt();
