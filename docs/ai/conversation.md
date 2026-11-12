@@ -112,7 +112,7 @@ Occupancy begins at acceptance and lasts through QUEUED, RUNNING, tool work and 
 
 Actual model sends and tool invocations produce administrator audit evidence associated with the existing execution, task, attempt and recovery step identifiers. Each technical resend has a separate entry and predecessor, while model correction remains a separate count. Payload capture includes server-built system/context/history/tool definitions and consumed vendor output, including process fields and partial failed/cancelled responses. Only actual provider usage is stored; absent usage remains null. Authentication headers and known connection keys, including keys echoed across response frames, are excluded.
 
-`GET /ai/audit/{executionId}` is a bounded detail contract, separate from owner-only tasks, events, results and completion notices. Authorization targets the persisted execution workspace and rechecks current authority before delivery. The internal, unmapped `InteractiveAuthApi.checkAiAuditAccess(...)` returns explicit Boolean permission; false, null, missing or old extensions deny licensed audit access. Configuration-menu access does not grant audit permission. Community mode has no workspace administrator role. Deploy the matching public SDK/core and extension implementation together to enable the additional licensed capability; older extensions retain existing functions but cannot authorize it.
+`GET /ai/audit/{executionId}` is a bounded detail contract, separate from owner-only tasks, events, results and completion notices. Authorization targets the persisted execution workspace and rechecks current authority before delivery. The internal, unmapped `InteractiveAuthApi.checkAiAuditAccess(...)` returns explicit Boolean permission; false, null, missing or old extensions deny licensed audit access. Configuration-menu access does not grant audit permission. Community mode has no workspace administrator role. Deploy the matching public SDK/core and extension implementation together to enable the additional licensed capability; older extensions paired with this core fail closed for AI usage and configuration as well as audit. The new extension adapter requires the matching SDK common scope contract; the earlier audit-only old-SDK source-compatibility evidence does not cover this adapter.
 
 Audit persistence uses short independent transactions with at most two writes per boundary attempt. After failure, execution continues and a bounded queue retains gap metadata, never failed request/response bodies. Recovery persists `incomplete` and the known gap count. Pending/dropped marker counts and safe gap logs make degradation observable. A process loss while storage is unavailable may lose in-memory gap metadata; no missing body is reconstructed. Closing a chat preserves audit evidence without restoring its history. Audit start/end and retention expiry are separate from the background result/notice expiry; the default audit retention is 30 days. Task/result commit failures retain their existing failure path and never become audit-only success.
 
@@ -127,3 +127,13 @@ Audit persistence uses short independent transactions with at most two writes pe
 交付清理仅对明确终态且到期的尝试，通过事务内显式更新清空结果正文并确认过期通知。只有同一任务的所有尝试均已结束且交付到期，才清除任务输入、上下文和持久身份 JSON；保留归属绑定、提交指纹及终态事实作为最小幂等墓碑，使旧提交键不能重新触发模型。混合的新排队/运行/未到期尝试继续保留所需输入、身份、状态和资源占用；通知确认不会提前清除结果或审计。
 
 审计按自身期限独立清理，每个执行在同一事务中先删除条目，再删除执行记录并写入无正文/身份/资源的退休 ID。审计写入与清理对同一执行加锁，退休 ID 阻止迟到条目及五秒间隔的元数据缺口修复重新插入过期审计。交付与审计每项独立提交；中途失败保留已完成项，失败项回滚并在后续作业重试，不留下孤立正文。幂等与退休墓碑不属于用户历史记录，也不用于恢复聊天。
+
+## 动态开关与可信身份
+
+关闭全局 AI 或某个适用空间的使用策略，会在配置事务中撤销受影响的排队/运行尝试 fence，按原任务和尝试释放资源；终态保留 `disabled` / `organization_disabled` 原因。后台巡检及模型、工具、提交和交付边界继续检查账号、原空间真实成员关系、资源权限及上下文。关闭期间拒绝新建、重试和普通交付，独立管理员审计及有权限的系统设置仍可访问。容量、恢复和留存配置不触发关闭，也不删除已受理队列。
+
+迁移 `2.56` 为全局和空间使用策略增加单调 `usage_epoch`，只在对应策略由开启转为关闭时递增。模型上下文与临时会话固定该版本；节点即使错过完整关闭/重开间隔，也不能继续旧尝试或恢复旧聊天。`GET /ai/availability` 仅投影当前可信身份/空间的使用状态及版本；Demo 在关闭时隐藏助手，在版本变化时清理临时聊天及未知提交状态，保留业务 SQL 草稿。重新开启只恢复入口及按原有效期投递未确认 toast，不恢复旧执行、聊天或历史任务列表。
+
+后台身份始终来自持久任务。只由已验证的服务器身份作用域安装 SDK 的 `AiOwnerContext` 原空间投影，账号严格匹配且在嵌套、异常和线程结束时恢复；HTTP 参数和请求头不能选择该投影。它不授予权限、不模拟管理员代理，也不改变普通非 AI 请求的当前空间。原账号、成员关系和资源授权仍需在操作前后复核；用户退出登录、离开页面或切换当前空间本身不取消后台。
+
+交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.56`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。

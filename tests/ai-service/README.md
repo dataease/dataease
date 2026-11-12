@@ -83,7 +83,7 @@ Redis 主从异步复制发生故障切换时，不能承诺任何故障下的�
 登录认证完全复用 DE 原有机制，不增加登录流程。AI 使用后端统一能力判定：
 
 - 有效许可：保留已有菜单使用权、组织和代理资格校验；排队后的维护请求仍检查捕获身份。
-- 社区模式：涵盖未安装 XPack 的真实替补部署，以及已安装 XPack 但许可管理源明确返回无记录、无效或过期的环境。加载 XPack 时，通过内部 `checkAiCommunityAccess` 复用原认证账号的管理员和有效状态检查，不读菜单矩阵或组织。纯替补部署必须确实存在替补认证，不能仅凭 uid=1 或缺失权限 Bean 放行。
+- 社区模式：涵盖未安装 XPack 的真实替补部署，以及已安装 XPack 但许可管理源明确返回无记录、无效或过期的环境。加载 XPack 时，通过内部 `checkAiCommunityAllowed` 复用原认证账号的管理员和有效状态检查，不读菜单矩阵或组织。纯替补部署必须确实存在替补认证，不能仅凭 uid=1 或缺失权限 Bean 放行。
 - 状态未知、许可源异常或扩展缺失：拒绝操作，不能推断为社区。模式读取来自现有 `F2CLicManage`，不把工作线程空的 `LicenseUtil` / `CommunityUtils` ThreadLocal 当作许可状态。
 
 私有权限扩展仅实现公共身份校验和最小组织目录契约，不向主仓库复制实现。新社区校验和原 AI 校验/目录方法均排除许可证拦截；旧扩展未实现新契约时拒绝，不做异常降级。
@@ -246,3 +246,13 @@ These fixtures use synthetic identities and models, owned H2 and loopback ports.
 `uv run python tests/ai-service/run.py --retention --ai-classpath <既有依赖classpath文件>` 在独立 H2 样本上，通过公开设置/任务/审计 HTTP 与正式 `AiRetentionCleanup.clean()` 验证：默认值与管理员配置、旧请求兼容及 CAS、结果到期前后读取、通知确认、过期旧提交/重试/会话投递拒绝、混合尝试及运行/排队资源保护、交付分项提交失败、审计条目与父记录原子清理失败重跑、并发清理、晚到审计写入及定时缺口修复防复活。审计及清理结果只在隔离库读取观察。
 
 同一入口执行 2.55 的 MySQL/PostgreSQL/H2 方言注册表迁移及部分迁移重试；承载数据库均为隔离 H2，不代表真实 MySQL/PostgreSQL 迁移。`--task-upgrade` 另通过实际启动迁移监听器验证从 2.47/2.48/2.49/2.50/2.52/2.54 顺序升级到 2.55，并保留已有期限、配置和任务事实。已安装的真实 Vue/Playwright 配置回归中含独立留存字段及保存校验；这些隔离入口均不代替真实登录、配置模型或许可环境验收。
+
+## Dynamic AI policy closure
+
+`--runtime` additionally verifies that a native model context cannot revive after a complete public HTTP off/on cycle and a fresh context may run.
+
+`uv run python tests/ai-service/run.py --task-policy --ai-classpath <existing-classpath-file>` exercises the public configuration/task/usage APIs across independent JVMs on owned shared H2. It covers queue/run cancellation, exact resource release, late output, full-capacity revocation, technical backoff and tool shutdown. Pausing one JVM for the complete off/on interval verifies that an old foreground session cannot revive.
+
+Migration 2.56 adds monotonic `usage_epoch` fences to global and organization AI policy. Only shutdown increments the affected epoch; capacity, recovery and retention changes preserve valid work. Model contexts and temporary sessions bind the current epoch. `/ai/availability` exposes only the current authenticated usage state and revision; the Demo hides the assistant when unavailable and discards temporary chat/pending state when its revision changes, preserving the editor draft. Re-enabling does not resume cancelled tasks or restore history; valid unacknowledged notices retain their existing delivery boundary. Administrator configuration and audit authorization remain independent of AI usage availability.
+
+The unmapped AI authorization SPI requires explicit `Boolean.TRUE` (`checkAiAllowed` / `checkAiCommunityAllowed`). Defaults, missing implementations and intercepted null results deny AI usage and configuration, not only the new audit endpoint. The adapter requires the new SDK common scope class; previous audit-only old-SDK compilation does not establish compatibility for it. Deploy the matching public SDK, extension adapter and core together; an old extension cannot silently authorize the new capability. `AiOwnerContext` is a read-only SDK projection with a package-private installer used only by the verified server-owned identity scope. It cannot be selected by an HTTP argument/header and never grants permissions. Current account, real membership and resource authorization still apply before and after work; changing the current browser space does not rewrite a background owner.

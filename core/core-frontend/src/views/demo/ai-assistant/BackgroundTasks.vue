@@ -475,3 +475,16 @@ defineExpose({
     </article>
   </section>
 </template>
+
+<style scoped>
+:deep(.ed-checkbox) {
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+}
+
+:deep([class~='ed-checkbox__label']) {
+  line-height: 1.5;
+  white-space: normal;
+}
+</style>

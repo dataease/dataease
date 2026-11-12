@@ -11,6 +11,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
   closeConversation,
+  getAiAvailability,
   retryConversationExecution,
   type AiRecoveryProgress,
   getConversationResources,
@@ -87,6 +88,10 @@ const validationDetails = (tool: AiConversationTool) => {
   }
 }
 const user = useUserStoreWithOut()
+const available = ref(false)
+const usageRevision = ref<string>()
+let availabilityTimer: ReturnType<typeof setTimeout> | undefined
+let availabilityRead: AbortController | undefined
 const resources = ref<AiConversationResource[]>([])
 const resourceId = ref('')
 const sql = ref('')
@@ -221,10 +226,44 @@ watch(
     sql.value = ''
     input.value = ''
     resources.value = []
-    void load()
+    available.value = false
+    availabilityRead?.abort()
+    void refreshAvailability()
   },
   { flush: 'sync' }
 )
+const refreshAvailability = async () => {
+  window.clearTimeout(availabilityTimer)
+  availabilityRead?.abort()
+  const reading = new AbortController()
+  availabilityRead = reading
+  const deadline = window.setTimeout(() => reading.abort(), 5000)
+  try {
+    const status = await getAiAvailability(reading.signal)
+    if (availabilityRead !== reading) return
+    const revision = status.revision ?? undefined
+    if (status.available !== available.value || revision !== usageRevision.value) {
+      usageRevision.value = revision
+      available.value = status.available
+      reset()
+      resourceGeneration++
+      resources.value = []
+      input.value = ''
+      if (status.available) void load()
+    }
+  } catch (error) {
+    if (availabilityRead !== reading) return
+    const status = isRequestError(error) ? error.response?.status : undefined
+    if (available.value && [401, 403].includes(status ?? 0)) {
+      available.value = false
+      reset()
+      resources.value = []
+    }
+  } finally {
+    window.clearTimeout(deadline)
+    if (availabilityRead === reading) availabilityTimer = setTimeout(refreshAvailability, 1000)
+  }
+}
 const waitForRead = (millis: number, signal?: AbortSignal) =>
   new Promise<void>(resolve => {
     const done = () => {
@@ -684,12 +723,18 @@ const offline = () => {
   if (busy.value) failure.value = tr('progress_recovering')
 }
 onMounted(() => {
-  void load()
+  void refreshAvailability()
+  window.addEventListener('focus', refreshAvailability)
   window.addEventListener('pagehide', reset)
   window.addEventListener('beforeunload', beforeUnload)
   window.addEventListener('offline', offline)
 })
 onBeforeUnmount(() => {
+  window.clearTimeout(availabilityTimer)
+  const previous = availabilityRead
+  availabilityRead = undefined
+  previous?.abort()
+  window.removeEventListener('focus', refreshAvailability)
   resourceGeneration++
   window.removeEventListener('pagehide', reset)
   window.removeEventListener('beforeunload', beforeUnload)
@@ -699,7 +744,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="ai-conversation">
+  <main v-if="available" :key="usageRevision" class="ai-conversation">
     <h1>{{ tr('title') }}</h1>
     <p>{{ tr('description') }}</p>
     <el-button @click="hidden = !hidden">{{ hidden ? tr('expand') : tr('hide') }}</el-button>

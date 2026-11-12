@@ -48,13 +48,14 @@ public class AiConversationManage implements AiToolConversationFeature {
         final Set<OperationKey> operations = new HashSet<>();
         Open opening;
         final boolean single;
+        final String usageRevision;
         volatile boolean singleFinished;
         volatile boolean closed;
         final Map<String, Run> runs = new LinkedHashMap<>();
         Run active;
         final AtomicBoolean executing = new AtomicBoolean();
-        State(Session view, AiAccess.Identity owner, AiConversationScene.Context context, boolean single) {
-            this.view = view; this.owner = owner; this.context = context; this.single = single;
+        State(Session view, AiAccess.Identity owner, AiConversationScene.Context context, boolean single, String usageRevision) {
+            this.view = view; this.owner = owner; this.context = context; this.single = single; this.usageRevision = usageRevision;
         }
     }
     private static final class Task {
@@ -177,7 +178,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             while (sessions.size() >= MAX_SESSIONS && evictSingle(null)) { }
             if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && occupiesActivity(state)).count() >= MAX_USER_SESSIONS)
                 throw AiErrors.error("concurrency");
-            State created = new State(view, owner, context, single); created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
+            State created = new State(view, owner, context, single, runtime.getObject().usageRevision(owner)); created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
         }
         return view;
         }
@@ -592,7 +593,9 @@ public class AiConversationManage implements AiToolConversationFeature {
         try {
             access.verify(state.owner, false);
             if (!same(access.capture(), state.owner)) throw AiErrors.error("forbidden");
-            scene(state.view.scene()).authorize(state.context);
+            if (!Objects.equals(state.usageRevision, runtime.getObject().usageRevision(state.owner))) throw AiErrors.error("scope_changed");
+            authorized(state.owner, () -> { scene(state.view.scene()).authorize(state.context); return null; });
+            if (!Objects.equals(state.usageRevision, runtime.getObject().usageRevision(state.owner))) throw AiErrors.error("scope_changed");
         } catch (RuntimeException failure) {
             invalidate(state);
             throw failure instanceof AiErrors.Failure ? failure : AiErrors.error("forbidden");
@@ -620,17 +623,27 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private AiAccess.Identity identity() {
         if (RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
-        var identity = access.capture(); access.verify(identity, false); return identity;
+        var identity = access.capture(); access.verify(identity, false); runtime.getObject().verifyUsage(identity); return identity;
     }
     private boolean same(AiAccess.Identity a, AiAccess.Identity b) { return Objects.equals(a, b); }
     private AiConversationScene scene(String code) {
         var scene = code == null ? null : scenes.get(code); if (scene == null || scene.backgroundOnly()) throw AiErrors.error("unsupported"); return scene;
+    }
+    public void policyDisabled(Long organization) {
+        sessions.values().forEach(state -> {
+            if (organization == null || organization.equals(state.owner.organization())) {
+                synchronized (state) { invalidate(state); }
+            }
+        });
     }
     private void expire() {
         long now = System.currentTimeMillis();
         operations.entrySet().removeIf(entry -> entry.getValue().expiresAt <= now);
         sessions.forEach((id, state) -> {
             synchronized (state) {
+                try { authorized(state.owner, () -> { runtime.getObject().verifyUsage(state.owner); check(state); return null; }); }
+                catch (AiErrors.Failure revoked) { invalidate(state); return; }
+                catch (RuntimeException unavailable) { return; }
                 if (state.view.expiresAt() <= now) invalidate(state);
                 else if (state.active != null) {
                     Run run = state.active;

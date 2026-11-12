@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private record Context(String executionId, String feature, Long actorId, Long organizationId, boolean background,
-            long deadline, RequestAttributes request, String proxyBinding, String taskId, String taskVersion, AiDataScope scope, AiDeploymentMode.State deployment) implements AiExecutionContext {
+            long deadline, RequestAttributes request, String proxyBinding, String taskId, String taskVersion, AiDataScope scope, AiDeploymentMode.State deployment, String usageRevision) implements AiExecutionContext {
         public Long proxyOrganizationId() { return proxyBinding != null && !proxyBinding.endsWith(":none") ? organizationId : null; }
     }
     private final Map<String, AiFeature> features;
@@ -52,7 +52,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         Long org = identity.organization();
         return new Context(UUID.randomUUID().toString(), feature, actor, org, false,
                 System.currentTimeMillis() + configuration.setting().getRequestTimeoutSeconds() * 1000L,
-                RequestContextHolder.getRequestAttributes(), binding(), null, null, scope, identity.deployment());
+                RequestContextHolder.getRequestAttributes(), binding(), null, null, scope, identity.deployment(), usageRevision(identity));
     }
     @Override public AiExecutionContext task(String feature, String taskId, AiDataScope scope) {
         Objects.requireNonNull(scope);
@@ -63,7 +63,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         access.verify(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment), false);
         return new Context(UUID.randomUUID().toString(), feature, identity.actorId(), identity.organizationId(), true,
                 System.currentTimeMillis() + configuration.setting().getRequestTimeoutSeconds() * 1000L,
-                null, identity.actorId() + ":" + (identity.proxyOrganizationId() == null ? "none" : identity.proxyOrganizationId()), taskId, identity.identityVersion(), scope, deployment);
+                null, identity.actorId() + ":" + (identity.proxyOrganizationId() == null ? "none" : identity.proxyOrganizationId()), taskId, identity.identityVersion(), scope, deployment, usageRevision(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment)));
     }
     @Override public ChatModel current(AiExecutionContext value) {
         if (!(value instanceof Context context)) throw AiErrors.error("forbidden");
@@ -158,7 +158,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private Context boundedTask(String feature, String taskId, AiDataScope scope, long deadline) {
         Context c = (Context) task(feature, taskId, scope);
         return new Context(c.executionId(), c.feature(), c.actorId(), c.organizationId(), c.background(), Math.min(c.deadline(), deadline),
-                c.request(), c.proxyBinding(), c.taskId(), c.taskVersion(), c.scope(), c.deployment());
+                c.request(), c.proxyBinding(), c.taskId(), c.taskVersion(), c.scope(), c.deployment(), c.usageRevision());
     }
     private Streaming stream(Context request, Prompt input) {
         String feature = request.feature(); AiDataScope scope = request.scope();
@@ -172,7 +172,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         inspect(request, prompt);
         // Detached immutable authorization coordinates; never copy RequestAttributes into a worker.
         Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
-                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment());
+                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision());
         var settings = json.convertValue(original, CoreAiSetting.class);
         var modelId = model.getId();
         var configRevision = model.getConfigRevision(); var credentialRevision = model.getCredentialRevision();
@@ -274,7 +274,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         if (scope.inputFingerprint() == null || !scope.inputFingerprint().equals(AiToolProtocol.fingerprint(input))) throw AiErrors.error("scope_changed");
         var original = configuration.setting(); var model = resolve(request, original); toolFeature.authorizeToolInput(request, input);
         Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
-                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment());
+                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision());
         return new ToolStreaming(detached, json.convertValue(original, CoreAiSetting.class), model);
     }
     private void inspect(Context context, Prompt prompt) {
@@ -302,6 +302,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private CoreAiModel resolve(Context c, CoreAiSetting s) { return resolve(c, s, true); }
     private CoreAiModel resolve(Context c, CoreAiSetting s, boolean enforceDeadline) {
         if (enforceDeadline && System.currentTimeMillis() >= c.deadline()) throw AiErrors.error("timeout");
+        if (!Objects.equals(c.usageRevision(), usageRevision(c.organizationId(), s))) throw AiErrors.error("scope_changed");
         AiFeature feature = feature(c.feature());
         if (c.background()) {
             AiFeature.TaskIdentity now = feature.taskIdentity(c.taskId());
@@ -318,8 +319,28 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         }
         return resolveModel(c.organizationId(), s);
     }
+    private String usageRevision(Long organization, CoreAiSetting settings) {
+        Long epoch = settings.getUsageEpoch();
+        Long organizationEpoch = organization == null ? 0L : policies.findById(organization).map(CoreAiOrgPolicy::getUsageEpoch).orElse(0L);
+        if (epoch == null || organizationEpoch == null) throw AiErrors.error("scope_changed");
+        return epoch + ":" + organizationEpoch;
+    }
+    public String usageRevision(AiAccess.Identity owner) { verifyUsage(owner); return usageRevision(owner.organization(), configuration.setting()); }
+    public void verifyUsage(AiAccess.Identity owner) {
+        access.verify(owner, false);
+        if (!Boolean.TRUE.equals(configuration.setting().getEnabled())) throw AiErrors.error("disabled");
+        if (owner.organization() != null && policies.findById(owner.organization()).map(p -> "DISABLED".equals(p.getMode())).orElse(false))
+            throw AiErrors.error("organization_disabled");
+    }
+    public void verifyTaskExecution(AiAccess.Identity owner, Long modelId, Long revision, Long credentialRevision) {
+        verifyUsage(owner);
+        if (modelId != null) {
+            var model = configuration.available(modelId);
+            if (!Objects.equals(revision, model.getConfigRevision()) || !Objects.equals(credentialRevision, model.getCredentialRevision())) throw AiErrors.error("conflict");
+        }
+    }
     public void verifyTaskAdmission(AiAccess.Identity owner) {
-        access.verify(owner, false); resolveModel(owner.organization(), configuration.setting());
+        verifyUsage(owner); resolveModel(owner.organization(), configuration.setting());
     }
     private CoreAiModel resolveModel(Long organizationId, CoreAiSetting s) {
         if (!Boolean.TRUE.equals(s.getEnabled())) throw AiErrors.error("disabled");

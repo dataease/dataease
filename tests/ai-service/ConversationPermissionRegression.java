@@ -42,6 +42,9 @@ public final class ConversationPermissionRegression {
         var identityAllowed = new AtomicBoolean(true);
         var api = (InteractiveAuthApi) Proxy.newProxyInstance(ConversationPermissionRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class}, (proxy, method, args) -> {
             switch (method.getName()) {
+                case "checkAiCommunityAllowed":
+                case "checkAiAllowed":
+                    return identityAllowed.get() && Objects.equals(args[0], 1L);
                 case "checkAiCommunityAccess":
                 case "checkAiAccess":
                     if (!identityAllowed.get() || !Objects.equals(args[0], 1L)) throw AiErrors.error("forbidden");
@@ -75,15 +78,19 @@ public final class ConversationPermissionRegression {
         var access = new AiAccess(beans.getBeanProvider(InteractiveAuthApi.class), fixture.mode);
         var scene = new AiSqlConversationScene(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, permissions);
         beans.addBean("scene", scene);
+        var usageConfiguration = new AiConfigurationManage(null) {
+            public io.dataease.ai.dao.entity.CoreAiSetting setting() { var setting = new io.dataease.ai.dao.entity.CoreAiSetting(); setting.setEnabled(true); return setting; }
+        };
+        beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), usageConfiguration, null, null, null, new com.fasterxml.jackson.databind.ObjectMapper(), access));
         var manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
-        var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+        var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).setControllerAdvice(new io.dataease.exception.GlobalExceptionHandler()).build();
         V3UserUtil.clear(); V3UserUtil.setUid(1L);
         try {
             if (open(mvc) != 200) throw new AssertionError("SQL assistant must preserve existing expired-license community operation access");
             var context = scene.resolve("11", "select 1");
             if (!scene.execute(context, "list_tables", Map.of()).contains("AI_PROBE")) throw new AssertionError("installed expired-license community metadata must match existing business permission path");
             identityAllowed.set(false);
-            if (open(mvc) < 400) throw new AssertionError("community fallback bypassed current identity denial");
+            if (open(mvc) != 403) throw new AssertionError("community identity denial must retain HTTP403 through real global error advice");
             identityAllowed.set(true);
             fixture.status.set(F2CLicResult.Status.valid);
             if (open(mvc) != 200) throw new AssertionError("licensed authorized operation denied");

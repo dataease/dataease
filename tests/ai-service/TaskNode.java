@@ -56,7 +56,7 @@ public final class TaskNode {
                 Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
                 return new Identity(V3UserUtil.getUid(), proxy, proxy, mode());
             }
-            public java.util.List<io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization> organizations() { return List.of(); }
+            public java.util.List<io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization> organizations() { return List.of(new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(777L, "Controlled scope A", null), new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(888L, "Controlled scope B", null)); }
             public void verify(Identity identity, boolean configuration) {
                 if (configuration && (identity == null || !Objects.equals(identity.actor(), 1L))) throw AiErrors.error("forbidden");
                 if (identity == null || !Set.of(1L, 2L).contains(identity.actor()) || !identity.deployment().equals(mode())
@@ -111,12 +111,14 @@ public final class TaskNode {
         var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, JSON);
         beans.addBean("tasks", tasks);
         beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, secrets(), transport, JSON, access));
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "taskLifecycle", beans.getBeanProvider(AiTaskManage.class));
+        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "conversationLifecycle", beans.getBeanProvider(AiConversationManage.class));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "em", em);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "access", access);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "admission", admission);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "secrets", secrets());
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "validator", jakarta.validation.Validation.buildDefaultValidatorFactory().getValidator());
-        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new AiConfigurationServer(configuration, null), new AiConversationServer(conversations)).build();
+        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiAvailabilityServer(access, beans.getBean(AiRuntimeManage.class)), new AiConfigurationServer(configuration, null), new AiConversationServer(conversations)).build();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.setExecutor(Executors.newFixedThreadPool(4));
         server.createContext("/ai", exchange -> {

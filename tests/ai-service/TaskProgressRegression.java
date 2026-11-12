@@ -138,6 +138,7 @@ public final class TaskProgressRegression {
             new AiConfigurationInit(jdbc, factory, em, manager).execute(); new AiTaskInit(jdbc, factory, em, manager).execute(); new AiTaskSchedulingInit(jdbc, factory, em, manager).execute(); new AiTaskResourceInit(jdbc, factory, em, manager).execute();
             new io.dataease.listener.sql.AiAuditInit(jdbc, factory, em, manager).execute();
             new io.dataease.listener.sql.AiRetentionInit(jdbc, factory, em, manager).execute();
+            new io.dataease.listener.sql.AiUsageEpochInit(jdbc, factory).execute();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 var model = new CoreAiModel(); model.setId(42L); model.setName("progress controlled"); model.setNameKey("progress-controlled");
                 model.setModelIdentifier("progress-model"); model.setBaseUrl("http://127.0.0.1:" + upstream.getAddress().getPort() + "/v1");

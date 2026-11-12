@@ -29,6 +29,10 @@ public interface InteractiveAuthApi {
         return Boolean.FALSE;
     }
 
+    /** Explicit internal AI authorization. Missing capabilities and intercepted null results deny. */
+    default Boolean checkAiCommunityAllowed(Long actorId) { return Boolean.FALSE; }
+    default Boolean checkAiAllowed(Long actorId, Long organizationId, Long proxyOrganizationId, boolean configuration) { return Boolean.FALSE; }
+
     /** 社区模式内部账号检查；复用已有认证身份，不检查企业菜单或组织。 */
     default void checkAiCommunityAccess(Long actorId) {
         throw new UnsupportedOperationException("AI community identity unavailable");

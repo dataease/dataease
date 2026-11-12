@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/fixture-api/ai/availability', (route) =>
+    route.fulfill({ json: { available: true } })
+  )
+})
+
 const session = {
   sessionId: 'session-a',
   contextVersion: 'v1',
@@ -2085,4 +2091,153 @@ for (const mine of [true, false])
       await locate.click()
       await expect(page.getByRole('button', { name: '取消后台任务', exact: true })).toBeVisible()
     } else await expect(locate).toHaveCount(0)
+  })
+
+test('AI off hides the assistant and re-enable retains only valid pending toast', async ({
+  page
+}) => {
+  let available = true
+  let revision = '0:0'
+  let acknowledged = false
+  let notificationReady = false
+  await page.route('**/fixture-api/ai/availability', (route) =>
+    route.fulfill({ json: { available, revision } })
+  )
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    if (route.request().url().endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    return route.fulfill({ json: session })
+  })
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    if (route.request().url().endsWith('/ack')) {
+      acknowledged = true
+      return route.fulfill({ json: {} })
+    }
+    if (route.request().url().endsWith('/notices'))
+      return route.fulfill({
+        json:
+          notificationReady && available && !acknowledged
+            ? [
+                {
+                  taskId: '7',
+                  attemptId: '8',
+                  attemptNumber: 1,
+                  status: 'COMPLETED',
+                  errorCode: null,
+                  expiresAt: Date.now() + 60000,
+                  retryEligible: false
+                }
+              ]
+            : []
+      })
+    return route.fulfill({ json: [] })
+  })
+  await page.goto('/?view=conversation')
+  await page.getByRole('textbox', { name: '当前 SQL' }).fill('SELECT applied_business_draft')
+  await page.getByRole('textbox', { name: '消息' }).fill('Temporary old question')
+  available = false
+  await expect(page.locator('main.ai-conversation')).toHaveCount(0)
+  notificationReady = true
+  available = true
+  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('')
+  await expect(page.getByText('Temporary old question', { exact: true })).toHaveCount(0)
+  await expect.poll(() => acknowledged).toBe(true)
+  await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
+    'SELECT applied_business_draft'
+  )
+  await page.getByRole('textbox', { name: '消息' }).fill('Missed off interval')
+  revision = '1:0'
+  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('')
+  await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
+    'SELECT applied_business_draft'
+  )
+})
+
+for (const language of [
+  {
+    code: 'en',
+    message: 'Message',
+    background: 'Background SQL assistance',
+    retry: 'Retry background task',
+    busy: 'Selected resources are occupied by a similar background task. This request was not accepted.',
+    mutex: 'Controlled read-only structure / resource mutex acceptance'
+  },
+  {
+    code: 'tw',
+    message: '訊息',
+    background: '背景 SQL 輔助',
+    retry: '重試背景任務',
+    busy: '選取資源正被同類背景任務占用，本次未受理。',
+    mutex: '受控唯讀結構 / 資源互斥驗收'
+  }
+])
+  test(`narrow ${language.code} shutdown new-task retry mutex and pending notice remain readable`, async ({
+    page
+  }, info) => {
+    await page.setViewportSize({ width: 360, height: 800 })
+    let available = true
+    let retries = 0
+    let ack = false
+    await page.route('**/fixture-api/ai/availability', (route) =>
+      route.fulfill({ json: { available } })
+    )
+    await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+      route.fulfill({ json: [] })
+    )
+    await page.route('**/fixture-api/ai/tasks**', (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname.endsWith('/ack')) {
+        ack = true
+        return route.fulfill({ json: {} })
+      }
+      if (url.pathname.endsWith('/retry')) {
+        retries++
+        return route.fulfill({
+          json: {
+            taskId: '80',
+            attemptId: '82',
+            attemptNumber: 2,
+            status: 'QUEUED',
+            resourceName: 'Controlled fixture',
+            createdAt: Date.now()
+          }
+        })
+      }
+      if (url.pathname.endsWith('/notices'))
+        return route.fulfill({
+          json: ack
+            ? []
+            : [
+                {
+                  taskId: '80',
+                  attemptId: '81',
+                  attemptNumber: 1,
+                  status: 'FAILED',
+                  errorCode: 'connection_failed',
+                  retryEligible: true,
+                  expiresAt: Date.now() + 60000
+                }
+              ]
+        })
+      if (route.request().method() === 'POST')
+        return route.fulfill({ status: 409, json: { messageKey: 'i18n_ai_task_resource_busy' } })
+      return route.fulfill({ json: [] })
+    })
+    await page.goto('/?view=conversation&language=' + language.code)
+    await expect(page.getByRole('button', { name: language.background, exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: language.retry, exact: true })).toBeVisible()
+    await page.screenshot({ path: info.outputPath('narrow-notice.png'), fullPage: true })
+    await page.getByRole('button', { name: language.retry, exact: true }).click()
+    await expect.poll(() => retries).toBe(1)
+    await page.getByRole('textbox', { name: language.message }).fill('New independent request')
+    await page.getByRole('button', { name: language.background, exact: true }).click()
+    await expect(page.locator('p[role="alert"]')).toHaveText(language.busy)
+    await expect(page.getByText(language.mutex, { exact: true })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await page.screenshot({ path: info.outputPath('narrow-policy.png'), fullPage: true })
+    available = false
+    await expect(page.locator('main.ai-conversation')).toHaveCount(0)
+    available = true
+    await expect(page.getByRole('textbox', { name: language.message })).toHaveValue('')
+    await expect(page.getByRole('button', { name: language.retry, exact: true })).toHaveCount(0)
   })
