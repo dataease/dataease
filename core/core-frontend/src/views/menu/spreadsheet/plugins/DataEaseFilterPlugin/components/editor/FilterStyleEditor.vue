@@ -62,6 +62,7 @@ const updatePaddingMode = (mode: unknown) => {
           </el-checkbox>
           <el-color-picker
             is-custom
+            effect="light"
             :model-value="baseStyle.backgroundColor"
             :disabled="!baseStyle.backgroundEnabled"
             @change="value => update('style.base.backgroundColor', value)"
@@ -174,6 +175,7 @@ const updatePaddingMode = (mode: unknown) => {
           </el-checkbox>
           <el-color-picker
             is-custom
+            effect="light"
             :model-value="conditionStyle.fillColor"
             :disabled="!conditionStyle.fillEnabled"
             @change="value => update('style.condition.fillColor', value)"
@@ -189,6 +191,7 @@ const updatePaddingMode = (mode: unknown) => {
           <div class="filter-style-editor__border-controls">
             <el-color-picker
               is-custom
+              effect="light"
               :model-value="conditionStyle.borderColor"
               :disabled="!conditionStyle.borderEnabled"
               @change="value => update('style.condition.borderColor', value)"
@@ -207,6 +210,7 @@ const updatePaddingMode = (mode: unknown) => {
             <el-color-picker
               :model-value="conditionStyle.color"
               is-custom
+              effect="light"
               @change="value => update('style.condition.color', value)"
             />
             <el-select
@@ -251,6 +255,7 @@ const updatePaddingMode = (mode: unknown) => {
             <el-color-picker
               :model-value="conditionNameStyle.color"
               is-custom
+              effect="light"
               @change="value => update('style.conditionName.color', value)"
             />
             <el-select
@@ -308,6 +313,7 @@ const updatePaddingMode = (mode: unknown) => {
           <el-color-picker
             :model-value="buttonStyle.primaryColor"
             is-custom
+            effect="light"
             @change="value => update('style.button.primaryColor', value)"
           />
         </el-form-item>
@@ -316,6 +322,7 @@ const updatePaddingMode = (mode: unknown) => {
             <el-color-picker
               :model-value="buttonStyle.textColor"
               is-custom
+              effect="light"
               @change="value => update('style.button.textColor', value)"
             />
             <el-select
