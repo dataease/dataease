@@ -51,6 +51,7 @@ const props = defineProps({
   jobId: propTypes.string.def(''),
   initialTaskType: String as PropType<TaskLogType>
 })
+const currentJobId = ref(props.jobId)
 const initialConditions = props.initialTaskType
   ? [{ field: 'taskTypes', value: [props.initialTaskType], operator: 'in' }]
   : []
@@ -92,8 +93,8 @@ const buildParam = () => {
   if (keyword.value) {
     param['keyword'] = keyword.value
   }
-  if (props.jobId !== '') {
-    param['taskId'] = props.jobId
+  if (currentJobId.value !== '') {
+    param['taskId'] = currentJobId.value
   }
   return param
 }
@@ -308,7 +309,7 @@ const clearJobLog = (clearTypeLabel: string) => {
   }).then(() => {
     if (cleanupSubmitting.value) return
     cleanupSubmitting.value = true
-    clearEventLogs({ ...clearLogForm, jobId: props.jobId })
+    clearEventLogs({ ...clearLogForm, jobId: currentJobId.value })
       .then(({ data }) => {
         if (cleanupDisposed) return
         cleanupGeneration++
@@ -403,6 +404,10 @@ const filterOption = [
 ]
 const searchCondition = conditions => {
   state.conditions = conditions
+  // 移除跳转预设的类型筛选时，同时解除入口携带的任务范围
+  if (props.initialTaskType && !conditions.some(condition => condition.field === 'taskTypes')) {
+    currentJobId.value = ''
+  }
   state.paginationConfig.currentPage = 1
   search()
   fillFilterText()
