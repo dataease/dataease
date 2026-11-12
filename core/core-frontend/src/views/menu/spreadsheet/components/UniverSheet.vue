@@ -9,6 +9,8 @@ import type { UniverInstance } from '../utils/univerConfig'
 import { ICommandService, type IWorkbookData } from '@univerjs/core'
 import { IRenderManagerService } from '@univerjs/engine-render'
 import type { SpreadsheetMode } from '../types/mode'
+import { useI18n } from '@/hooks/web/useI18n'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -16,6 +18,7 @@ const props = withDefaults(
     dataKey?: number | string
     locale?: string
     mode?: SpreadsheetMode
+    spreadsheetId?: string | number
   }>(),
   {
     mode: 'edit'
@@ -29,9 +32,12 @@ const emit = defineEmits<{
 }>()
 
 const containerRef = ref<HTMLElement | null>(null)
+const { t } = useI18n()
 let univerInstance: UniverInstance | null
-const isReady = ref(false)
 const isInitializing = ref(false)
+const initError = ref('')
+let initVersion = 0
+let disposed = false
 let rafId: number | null = null
 let commandExecutedDisposable: { dispose: () => void } | undefined
 
@@ -41,9 +47,9 @@ let workbookData: Partial<IWorkbookData> = props.modelValue || createDefaultWork
 /**
  * Initialize Univer instance
  */
-const initUniver = async () => {
+const initUniver = () => {
   // Prevent duplicate initialization
-  if (isInitializing.value || univerInstance) {
+  if (disposed || isInitializing.value || univerInstance) {
     return
   }
 
@@ -61,23 +67,32 @@ const initUniver = async () => {
   }
 
   isInitializing.value = true
+  initError.value = ''
+  const version = ++initVersion
+  const onError = (error: unknown) => {
+    if (disposed || version !== initVersion) return
+    initError.value = error instanceof Error ? error.message : t('spreadsheet.load_error')
+    isInitializing.value = false
+  }
 
   // Create Univer instance
   try {
-    univerInstance = createUniverInstance(
-      container,
-      props.locale || 'zh-CN',
-      workbookData,
-      { mode: props.mode }
-    )
-    const commandService = univerInstance.univer.__getInjector().get(ICommandService)
-    // Univer 的原生编辑、插件命令最终都会经过命令服务，由上层统一比较持久化快照。
-    commandExecutedDisposable = commandService.onCommandExecuted(() => emit('change'))
-    isReady.value = true
-    emit('ready')
+    univerInstance = createUniverInstance(container, props.locale || 'zh-CN', workbookData, {
+      mode: props.mode,
+      spreadsheetId: props.spreadsheetId,
+      // 初始化等待由插件负责，宿主仅接收结果，忽略已销毁实例的迟到通知。
+      onReady: () => {
+        if (disposed || version !== initVersion || !univerInstance) return
+        const commandService = univerInstance.univer.__getInjector().get(ICommandService)
+        // Univer 的原生编辑、插件命令最终都会经过命令服务，由上层统一比较持久化快照。
+        commandExecutedDisposable = commandService.onCommandExecuted(() => emit('change'))
+        isInitializing.value = false
+        emit('ready')
+      },
+      onError
+    })
   } catch (error) {
-  } finally {
-    isInitializing.value = false
+    onError(error)
   }
 }
 
@@ -96,8 +111,7 @@ const getSheetData = (): string => {
     if (!workbook) return serializeSheetData(createDefaultWorkbookData())
     const snapshot = workbook.save()
     return serializeSheetData(snapshot)
-  } catch (e) {
-  }
+  } catch (e) {}
 
   return serializeSheetData(createDefaultWorkbookData())
 }
@@ -111,9 +125,7 @@ const loadSheetData = (data: Partial<IWorkbookData>) => {
   workbookData = data
 
   // Dispose current instance
-  if (univerInstance) {
-    disposeInstance()
-  }
+  disposeInstance()
 
   nextTick(() => {
     initUniver()
@@ -134,6 +146,8 @@ const resize = () => {
  * Dispose instance
  */
 const disposeInstance = () => {
+  initVersion += 1
+  initError.value = ''
   commandExecutedDisposable?.dispose()
   commandExecutedDisposable = undefined
   if (rafId !== null) {
@@ -143,11 +157,9 @@ const disposeInstance = () => {
   if (univerInstance) {
     try {
       univerInstance.dispose()
-    } catch (e) {
-    }
+    } catch (e) {}
     univerInstance = null
   }
-  isReady.value = false
   isInitializing.value = false
   if (containerRef.value) {
     containerRef.value.innerHTML = ''
@@ -170,7 +182,7 @@ watch(
 watch(
   () => props.mode,
   () => {
-    if (!univerInstance) {
+    if (!univerInstance && !isInitializing.value) {
       return
     }
     disposeInstance()
@@ -187,6 +199,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  disposed = true
   document.documentElement.classList.remove(spreadsheetColorSchemeClass)
   disposeInstance()
 })
@@ -203,10 +216,12 @@ defineExpose({
 
 <template>
   <div
+    v-loading="isInitializing"
     class="univer-sheet-container"
     :class="{ 'dataease-univer-preview': props.mode === 'preview' }"
   >
-    <div ref="containerRef" class="univer-container"></div>
+    <div ref="containerRef" v-show="!initError" class="univer-container"></div>
+    <EmptyBackground v-if="initError" :description="initError" img-type="none" />
   </div>
 </template>
 
