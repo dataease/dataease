@@ -72,7 +72,7 @@ public class AiConfigurationInit implements CoreSqlBlock {
         for (Class<?> type = entity; type != Object.class; type = type.getSuperclass()) for (Field field : type.getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class); if (column == null) continue;
             int code = field.getType() == Long.class ? Types.BIGINT : field.getType() == Integer.class ? Types.INTEGER
-                    : field.getType() == Boolean.class ? dialect.getPreferredSqlTypeCodeForBoolean() : field.isAnnotationPresent(Lob.class) ? Types.CLOB : field.isAnnotationPresent(JdbcTypeCode.class) ? field.getAnnotation(JdbcTypeCode.class).value() : Types.VARCHAR;
+                    : field.getType() == Boolean.class ? Types.BOOLEAN : field.isAnnotationPresent(Lob.class) ? Types.CLOB : field.isAnnotationPresent(JdbcTypeCode.class) ? field.getAnnotation(JdbcTypeCode.class).value() : Types.VARCHAR;
             String sqlType = (code == Types.VARCHAR || code == Types.LONGVARCHAR) ? types.getTypeName(code, Size.length(column.length())) : types.getTypeName(code, dialect);
             columns.add(column.name() + " " + sqlType + (field.isAnnotationPresent(Id.class) ? " primary key" : !column.nullable() ? " not null" : ""));
         }
