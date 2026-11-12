@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        if (Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
+        if (Boolean.getBoolean("ai.test.auditOnly") || Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
         SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) { TaskProgressRegression.main(new String[0]); TaskClusterRegression.run(); } if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
@@ -92,6 +92,7 @@ public class Regression {
         String url="jdbc:h2:mem:ai_regression;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=2000";
         Configuration hibernate=new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class)
                 .addAnnotatedClass(CoreAiOrgPolicy.class).addAnnotatedClass(CoreMenu.class)
+                .addAnnotatedClass(CoreAiAuditExecution.class).addAnnotatedClass(CoreAiAuditEntry.class)
                 .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.connection.url",url).setProperty("hibernate.connection.driver_class","org.h2.Driver")
                 .setProperty("hibernate.connection.username","sa").setProperty("hibernate.connection.password","")
@@ -193,8 +194,10 @@ public class Regression {
             CoreAiSetting runtimeSetting=manage.setting();
             String runtimeImpact=manage.impact("SETTINGS",next.id()+":true").token();
             manage.saveSettings(new SettingsChange(runtimeSetting.getRowVersion(),true,next.id(),false,60,30000,4096,5,2,runtimeImpact));
+            if (Boolean.getBoolean("ai.test.auditOnly")) { AuditRegression.run(manage,policies,keys,limiter,access,em,manager,jdbc,factory); return; }
             if (Boolean.getBoolean("ai.test.recoveryToolsOnly")) { ToolConversationRegression.run(manage,policies,keys,limiter,access); return; }
             if (Boolean.getBoolean("ai.test.recoveryOnly")) { ConversationRegression.run(manage,policies,keys,limiter,access); return; }
+            new io.dataease.listener.sql.AiAuditInit(jdbc,factory,em,manager).execute();
             TaskRegression.run(em,manager,access,manage,policies,keys,limiter);
             if (Boolean.getBoolean("ai.test.onlyTasks")) return;
             RuntimeRegression.run(manage,policies,keys,new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager),access);

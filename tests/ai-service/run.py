@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--audit', action='store_true', help='public HTTP execution audit and isolated persistence')
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
     parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
     parser.add_argument('--task-structure', action='store_true', help='public controlled structure scene with authorized SQL metadata')
@@ -101,6 +102,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiKeyringInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskResourceInit.java',
@@ -116,6 +118,9 @@ def main():
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/AuthManage.java',
                 'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiMenuClassificationRegression.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/org/manage/OrgPageManage.java'])
+        private_audit = root/'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiAuditAuthorizationRegression.java'
+        if args.xpack and private_audit.is_file():
+            sources.append(private_audit)
         sources.extend((root/'tests/ai-service').glob('*.java'))
         sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasource*Semantic.java'))
         sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasourceRelation*.java'))
@@ -125,6 +130,9 @@ def main():
         java = ['java']
         if args.task_mutex:
             java.append('-Dai.test.mutexOnly=true')
+
+        if args.audit:
+            java.append('-Dai.test.auditOnly=true')
         if args.task_scheduling:
             java.append('-Dai.test.schedulingOnly=true')
         if args.recovery_tools:
@@ -155,6 +163,8 @@ def main():
                     [*java, '-cp', classpath, *(['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_scheduling or args.task_mutex else ['io.dataease.ai.Regression'])]]
         if args.xpack:
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
+        if args.xpack and private_audit.is_file():
+            commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiAuditAuthorizationRegression'])
         try:
             for command in commands:
                 result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=240)

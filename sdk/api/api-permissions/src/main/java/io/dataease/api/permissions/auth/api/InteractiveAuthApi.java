@@ -24,6 +24,11 @@ import java.util.List;
 @Hidden
 public interface InteractiveAuthApi {
 
+    /** Internal target authorization, deliberately unmapped. Old extensions and null/AOP returns deny. */
+    default Boolean checkAiAuditAccess(Long actorId, Long currentOrganizationId, Long proxyOrganizationId, Long auditOrganizationId) {
+        return Boolean.FALSE;
+    }
+
     /** 社区模式内部账号检查；复用已有认证身份，不检查企业菜单或组织。 */
     default void checkAiCommunityAccess(Long actorId) {
         throw new UnsupportedOperationException("AI community identity unavailable");

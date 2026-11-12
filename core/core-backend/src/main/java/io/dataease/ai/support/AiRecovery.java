@@ -31,6 +31,12 @@ public final class AiRecovery {
                 || policy.initialDelayMillis() < 100 || policy.initialDelayMillis() > 10000) throw AiErrors.error("configuration_unavailable");
         stepLimit = policy.stepRetries(); attemptLimit = policy.attemptRetries(); delay = policy.initialDelayMillis(); frozen = true;
     }
+    private io.dataease.ai.manage.AiAuditManage.Session audit;
+    public synchronized void audit(io.dataease.ai.manage.AiAuditManage.Session audit) { this.audit = audit; }
+    public synchronized io.dataease.ai.manage.AiAuditManage.Session audit() { return audit; }
+    public <T> T tool(String callId, String name, java.util.Map<String, String> arguments, Supplier<T> work) {
+        var capture = audit(); return capture == null ? work.get() : capture.tool(callId, name, arguments, work);
+    }
     public synchronized Progress progress() { return progress; }
     public synchronized void observe(java.util.function.Consumer<Progress> observer) { this.observer = this.observer.andThen(java.util.Objects.requireNonNull(observer)); }
     private synchronized void publish(String step, String kind, String reason) {

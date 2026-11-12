@@ -30,8 +30,15 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private final AiTransport transport;
     private final ObjectMapper json;
     private final AiAccess access;
+    private final AiAuditManage audit;
     public AiRuntimeManage(ObjectProvider<AiFeature> features, AiConfigurationManage configuration,
                            CoreAiOrgPolicyRepository policies, AiSecrets secrets, AiTransport transport, ObjectMapper json, AiAccess access) {
+        this(features, configuration, policies, secrets, transport, json, access, null);
+    }
+    @org.springframework.beans.factory.annotation.Autowired
+    public AiRuntimeManage(ObjectProvider<AiFeature> features, AiConfigurationManage configuration,
+                           CoreAiOrgPolicyRepository policies, AiSecrets secrets, AiTransport transport, ObjectMapper json, AiAccess access, AiAuditManage audit) {
+        this.audit = audit;
         this.features = features.stream().collect(Collectors.toUnmodifiableMap(AiFeature::code, f -> f));
         this.configuration = configuration; this.policies = policies; this.secrets = secrets; this.transport = transport; this.json = json; this.access = access;
     }
@@ -83,14 +90,23 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                             || !Objects.equals(current.getCredentialRevision(), model.getCredentialRevision())) throw AiErrors.error("conflict");
                     updateAdmission(admissionSettings, latest);
                 };
-                ChatResponse response = transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck);
-                caller(context); recheck.run();
-                if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
-                return response;
+                var capture = audit == null ? null : auditSession(context, new ModelSnapshot(model.getId(), model.getConfigRevision(), model.getCredentialRevision(), model.getModelIdentifier()), s.getRevision(), null);
+                try {
+                    ChatResponse response = capture == null
+                            ? transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck)
+                            : transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck, capture);
+                    caller(context); recheck.run();
+                    if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+                    if (capture != null) capture.end("COMPLETED");
+                    return response;
+                } catch (RuntimeException failure) { if (capture != null) capture.end("FAILED"); throw failure; }
             }
             @Override public Flux<ChatResponse> stream(Prompt prompt) { return Flux.error(AiErrors.error("unsupported")); }
             @Override public ChatOptions getDefaultOptions() { return ChatOptions.builder().build(); }
         };
+    }
+    private AiAuditManage.Session auditSession(Context context, ModelSnapshot model, Long settingsRevision, AiRecovery recovery) {
+        return audit.session(context, model, settingsRevision, recovery, feature(context.feature()).auditReference(context));
     }
     /** Created only in the authenticated request; the worker receives no Servlet state or request-bound model. */
     public record ModelSnapshot(Long id, Long revision, Long credentialRevision, String identifier) { }
@@ -100,6 +116,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         String executionId();
         long deadline();
         void verifyDelivery();
+        default void finishAudit(String status) { if (recovery().audit() != null) recovery().audit().end(status); }
         @Override void close();
     }
     public final class Streaming implements StreamHandle {
@@ -114,6 +131,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final AiRecovery recovery;
         private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery, ModelSnapshot model) {
             this.stream = transport.stream(context.background()); this.model = model; this.recovery = new AiRecovery(settings);
+            if (audit != null) recovery.audit(auditSession(context, model, settings.getRevision(), recovery));
             this.context = context; this.prompt = prompt; this.connection = connection; this.settings = settings; this.verify = verify; this.delivery = delivery;
         }
         public String executionId() { return context.executionId(); }
@@ -126,7 +144,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             try { stream.start(connection, settings, prompt, context.deadline(), verify, progress, delta, completed, failed, recovery); }
             finally { connection = null; prompt = null; verify = null; }
         }
-        @Override public synchronized void close() { stream.close(); connection = null; prompt = null; verify = null; }
+        @Override public synchronized void close() { stream.close(); finishAudit("CANCELLED"); connection = null; prompt = null; verify = null; }
     }
     public Streaming stream(String feature, AiDataScope scope, Prompt input) {
         return stream((Context) current(feature, scope), input);
@@ -197,6 +215,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             this.context = context; this.settings = settings; this.modelIdentifier = model.getModelIdentifier();
             modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
             budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens()); recovery = new AiRecovery(settings);
+            if (audit != null) recovery.audit(auditSession(context, model(), settingRevision, recovery));
         }
         public String executionId() { return context.executionId(); }
         public long deadline() { return context.deadline(); }
@@ -237,7 +256,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 active.start(connection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed, recovery);
             }
         }
-        public synchronized void close() { closed = true; if (active != null) active.close(); active = null; }
+        public synchronized void close() { closed = true; if (active != null) active.close(); active = null; finishAudit("CANCELLED"); }
     }
     public ToolStreaming streamTools(String feature, AiDataScope scope, AiToolProtocol.Input input) {
         return streamTools((Context) current(feature, scope), input);

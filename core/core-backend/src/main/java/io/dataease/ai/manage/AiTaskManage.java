@@ -382,6 +382,11 @@ public class AiTaskManage implements AiToolConversationFeature {
                 || !Objects.equals(owner.proxy(), execution.proxyOrganizationId())) throw AiErrors.error("forbidden");
         authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return null; });
     }
+    @Override public String auditReference(AiExecutionContext execution) {
+        var task = task(execution.scope().reference()); var resource = context(task);
+        return input(task).scene() + ":" + Objects.toString(resource.resourceId(), "") + "@" + resource.revision()
+                + (resource.selectedTables() == null ? "" : ":tables=" + resource.selectedTables());
+    }
     @Override public void authorizeInput(AiExecutionContext context, Prompt prompt) { authorize(context); }
     @Override public void authorizeToolInput(AiExecutionContext execution, AiToolProtocol.Input input) {
         authorize(execution); var task = task(execution.scope().reference());
@@ -559,7 +564,7 @@ public class AiTaskManage implements AiToolConversationFeature {
                 if (!safeSaved) throw AiErrors.error("cancelled");
             }
             String result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
-                    () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, execute);
+                    () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, () -> stream.recovery().tool(call.id(), call.name(), arguments, execute));
             active(run); stream.result(result);
             if (AiToolProtocol.invalidResult(result) && !stream.recovery().correct(call.name() + ":" + new TreeMap<>(arguments))) throw AiErrors.error("invalid");
             run.tools.add(new Tool(call.id(), call.name(), "SUCCEEDED", arguments, result));
@@ -588,15 +593,16 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private void terminal(Run run, String state, String error, String result) {
         try {
-            tx.executeWithoutResult(status -> {
+            boolean saved = Boolean.TRUE.equals(tx.execute(status -> {
                 // The lock orders terminal commit against cancellation/retry. DB ownership is the final arbiter.
                 coordinate();
                 em.find(CoreAiTask.class, run.work.taskId(), LockModeType.PESSIMISTIC_WRITE);
                 var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId(), LockModeType.PESSIMISTIC_WRITE);
-                if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !nodeId.equals(attempt.getNodeId())) return;
+                if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !nodeId.equals(attempt.getNodeId())) return false;
                 live(attempt);
-                ended(attempt, state, error, result); em.flush();
-            });
+                ended(attempt, state, error, result); em.flush(); return true;
+            }));
+            if (saved && run.stream != null) run.stream.finishAudit(state);
         } finally { close(run); running.remove(run.work.attemptId(), run); }
     }
     private void close(Run run) { if (run.stream != null) run.stream.close(); }
