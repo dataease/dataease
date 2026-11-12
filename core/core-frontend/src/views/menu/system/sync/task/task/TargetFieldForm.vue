@@ -7,6 +7,7 @@ import type { FormInstance } from 'element-plus-secondary'
 import { ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
 import { includes } from 'lodash-es'
+import { decimalParameterIssue, maintenanceFieldType, normalizeFieldType } from './fieldType'
 
 const { t } = useI18n()
 const dialogVisible = ref(false)
@@ -14,6 +15,7 @@ const editId = ref('')
 const checkedIssues = ref<IMaintenanceFieldIssue[]>([])
 const checkedValues = ref<Partial<ITableField>>({})
 const fieldForm = ref<FormInstance>()
+const fieldFormKey = ref(0)
 const props = withDefaults(
   defineProps<{
     modelValue: ITaskInfoRes
@@ -98,6 +100,19 @@ const availableTargetFieldTypeList = computed(() => {
   return typeList.filter(type => !type.endsWith('_ARRAY'))
 })
 
+/**
+ * 原生名称用于选中和展示，重新选择当前类型时保留原标准值，避免产生假变更
+ */
+const targetFieldType = computed<string>({
+  get: () =>
+    props.adjustmentMode
+      ? maintenanceFieldType(state.form, baseline.value, props.maintenanceStructure)
+      : state.form.fieldType,
+  set: value => {
+    if (value !== targetFieldType.value) state.form.fieldType = value
+  }
+})
+
 const selectedSourceField = computed(() =>
   form.value.source.fieldList?.find(item => item.fieldName === state.form.fieldSource)
 )
@@ -120,6 +135,8 @@ const sourceFieldType = computed(() => {
 })
 
 const fieldMappingMessage = computed(() => {
+  const issue = decimalParameterIssue(state.form, form.value.target.type)
+  if (issue) return t(issue, [state.form.fieldName, sourceFieldType.value, state.form.fieldType])
   if (state.form.fieldMappingMessage) {
     return state.form.fieldMappingMessage
   }
@@ -128,17 +145,12 @@ const fieldMappingMessage = computed(() => {
     : ''
 })
 const fieldMappingMessageType = computed(() =>
-  state.form.fieldType?.trim().toUpperCase() === 'UNKNOWN' ? 'error' : 'warning'
+  state.form.fieldType?.trim().toUpperCase() === 'UNKNOWN' ||
+  decimalParameterIssue(state.form, form.value.target.type)
+    ? 'error'
+    : 'warning'
 )
 
-const normalizeFieldType = (fieldType?: string) => {
-  const type = fieldType?.split('(')[0].trim().toUpperCase() || ''
-  if (['DECIMALV2', 'DECIMALV3', 'DECIMAL32', 'DECIMAL64', 'DECIMAL128'].includes(type))
-    return 'DECIMAL'
-  if (type === 'DATETIMEV2') return 'DATETIME'
-  if (type === 'DATEV2') return 'DATE'
-  return type
-}
 /**
  * 已有字段的目标类型转换使用原目标类型作为基线，不能把源类型推荐误当作原表允许变更范围
  */
@@ -177,13 +189,16 @@ const minimumSize = computed(() => {
  */
 const recommendedTargetField = computed(() => {
   const source = selectedSourceField.value
-  if (
-    !source ||
-    source.fieldType === 'UNKNOWN' ||
-    !availableTargetFieldTypeList.value.includes(source.fieldType)
-  )
-    return undefined
-  const type = normalizeFieldType(source.fieldType)
+  if (!source || source.fieldType === 'UNKNOWN') return undefined
+  const fieldType =
+    availableTargetFieldTypeList.value.find(type => type === source.fieldType) ||
+    (props.adjustmentMode
+      ? availableTargetFieldTypeList.value.find(
+          type => normalizeFieldType(type) === normalizeFieldType(source.fieldType)
+        )
+      : undefined)
+  if (!fieldType) return undefined
+  const type = normalizeFieldType(fieldType)
   // 已有字符字段只允许扩容，推荐定义不能缩小当前目标容量
   const size = ['CHAR', 'VARCHAR'].includes(type)
     ? Math.max(
@@ -195,7 +210,7 @@ const recommendedTargetField = computed(() => {
       )
     : source.fieldSize || 0
   return {
-    fieldType: source.fieldType,
+    fieldType,
     fieldSize: size,
     fieldPrecision: source.fieldPrecision || 0
   }
@@ -218,7 +233,7 @@ const recommendationDiffers = computed(() => {
   if (!field) return false
   const type = normalizeFieldType(field.fieldType)
   return (
-    state.form.fieldType !== field.fieldType ||
+    normalizeFieldType(state.form.fieldType) !== type ||
     (['CHAR', 'VARCHAR', 'DECIMAL'].includes(type) && state.form.fieldSize !== field.fieldSize) ||
     (['DECIMAL', 'DATETIME'].includes(type) && state.form.fieldPrecision !== field.fieldPrecision)
   )
@@ -239,7 +254,7 @@ const changeTargetType = () => {
   }
 }
 /**
- * 维护模式下已有字段只在用户明确采用推荐后覆盖类型，不能在切换源字段时静默改写目标结构
+ * 维护模式下已有字段只在用户明确采用推荐后覆盖目标类型
  */
 const useRecommendedType = () => {
   if (props.readOnly || !recommendedTargetField.value || recommendationBlockedReason.value) return
@@ -256,11 +271,15 @@ const commentMaxLength = computed(() =>
 const sizeMax = computed(() =>
   props.adjustmentMode
     ? props.maintenanceStructure?.sizeLimits?.[normalizeFieldType(state.form.fieldType)]
+    : form.value.target.type === 'doris' && normalizeFieldType(state.form.fieldType) === 'DECIMAL'
+    ? 38
     : 100000000
 )
 const precisionMax = computed(() =>
   props.adjustmentMode
     ? props.maintenanceStructure?.precisionLimits?.[normalizeFieldType(state.form.fieldType)]
+    : form.value.target.type === 'doris' && normalizeFieldType(state.form.fieldType) === 'DECIMAL'
+    ? state.form.fieldSize || 38
     : 20
 )
 
@@ -412,6 +431,8 @@ const showDialog = (row?: ITableField, issues: IMaintenanceFieldIssue[] = []) =>
       fieldSize: 0,
       fieldPrecision: 0
     }
+    // 每次新增重建校验上下文，避免复用上一字段的初始值和异步校验结果
+    fieldFormKey.value++
   }
   if (editId.value != '') {
     state.form = deepCopy(row)
@@ -419,7 +440,7 @@ const showDialog = (row?: ITableField, issues: IMaintenanceFieldIssue[] = []) =>
   if (issues.length) nextTick(() => fieldForm.value?.scrollToField(issues[0].property))
 }
 /**
- * 新增字段采用来源映射后的候选类型，维护模式下已有字段更换来源时保留原目标类型
+ * 新增字段选择来源时，采用源接口映射后的候选类型
  * @param val
  */
 const changeFieldSource = (val: string) => {
@@ -458,6 +479,10 @@ const resetForm = () => {
  */
 const saveForm = () => {
   if (props.adjustmentMode && props.readOnly) return
+  if (decimalParameterIssue(state.form, form.value.target.type)) {
+    ElMessage.warning(fieldMappingMessage.value)
+    return
+  }
   if (fieldForm.value) {
     if (props.adjustmentMode && typeDisabled(state.form.fieldType)) return
     if (
@@ -603,6 +628,7 @@ defineExpose({
     <template #default>
       <div class="target-body">
         <el-form
+          :key="fieldFormKey"
           ref="fieldForm"
           require-asterisk-position="right"
           :model="state.form"
@@ -620,6 +646,7 @@ defineExpose({
           >
             <el-select
               v-model="state.form.fieldSource"
+              :disabled="readOnly || editId !== ''"
               :filterable="true"
               :placeholder="t('sync_task.please_choose')"
               @change="changeFieldSource"
@@ -701,11 +728,21 @@ defineExpose({
               class="field-mapping-alert"
             />
             <el-select
-              v-model="state.form.fieldType"
+              v-model="targetFieldType"
               @change="changeTargetType"
               :filterable="true"
               :placeholder="t('sync_task.please_choose')"
             >
+              <el-option
+                v-if="
+                  adjustmentMode &&
+                  targetFieldType &&
+                  !availableTargetFieldTypeList.includes(targetFieldType)
+                "
+                :label="fieldTypeLabel(targetFieldType)"
+                :value="targetFieldType"
+                disabled
+              />
               <el-option
                 v-for="(item, index) in availableTargetFieldTypeList"
                 :key="index"
@@ -888,6 +925,11 @@ defineExpose({
   }
   .source-field-item {
     margin-bottom: 8px;
+
+    .ed-form-item__error {
+      position: static;
+      width: 100%;
+    }
   }
   .source-type-summary {
     margin: 0 0 24px;
@@ -937,7 +979,7 @@ defineExpose({
   .ed-drawer__body {
     min-height: 0;
     overflow-y: auto;
-    padding: 16px 24px !important;
+    padding: 16px 24px 80px !important;
 
     .target-body {
       padding-bottom: 8px;

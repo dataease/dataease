@@ -36,11 +36,14 @@
           >
             <template #default="{ node, data }">
               <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
-                <span
-                  class="geo-name-span"
-                  :title="data.name"
-                  v-dompurify-html="data.colorName && keyword ? data.colorName : data.name"
-                />
+                <span class="geo-name-span" :title="data.name">
+                  <span
+                    v-for="(segment, index) in getHighlightSegments(data.name, keyword)"
+                    :key="index"
+                    :class="{ 'search-key-span': segment.highlight }"
+                    >{{ segment.text }}</span
+                  >
+                </span>
                 <span v-if="data.id === '000'" class="add-icon-span" @click.stop="add()">
                   <el-icon>
                     <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
@@ -295,7 +298,7 @@ import {
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { getGeoJsonFile } from '@/views/chart/components/js/util'
 import { cloneDeep, debounce } from 'lodash-es'
-import { setColorName } from '@/utils/utils'
+import { getHighlightSegments } from '@/utils/utils'
 import GeometryEdit from './GeometryEdit.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { ElMessage, ElMessageBox, FormRules } from 'element-plus-secondary'
@@ -322,18 +325,21 @@ const selectedData = ref(null)
 const showGeoJson = ref(true)
 
 const handleNodeClick = async (data: Tree) => {
-  selectedData.value = data
+  // 详情与树节点分离，避免大体积坐标数据参与树的深度监听。
+  selectedData.value = { ...data }
+  const detail = selectedData.value
   customAreaTreeRef.value?.setCurrentKey(null)
   mapInstance?.destroy()
   mapInstance = null
   curCustomGeoArea.id = ''
   const geoJson = cloneDeep(await getGeoJsonFile(data['id']))
-  selectedData.value['geoJson'] = JSON.stringify(geoJson)
+  if (selectedData.value !== detail) return
+  detail.geoJson = JSON.stringify(geoJson)
   const pid = data['pid']
   if (pid) {
     const parent = areaTreeRef.value.getNode(pid)
     if (parent) {
-      selectedData.value.parentName = parent.data.name
+      detail.parentName = parent.data.name
     }
   }
   showGeoJson.value = true
@@ -365,9 +371,8 @@ const filterResource = val => {
   areaTreeRef.value?.filter(val)
 }
 const filterResourceNode = (value: string, data) => {
-  setColorName(data, value)
   if (!value) return true
-  return data.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  return data.name.toLowerCase().includes(value.toLowerCase())
 }
 
 const loadTreeData = (cache?: boolean) => {

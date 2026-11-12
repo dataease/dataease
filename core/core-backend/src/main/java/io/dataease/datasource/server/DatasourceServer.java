@@ -35,6 +35,7 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.provider.ExcelFileGuard;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.AuthResourceEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.datasource.type.H2;
@@ -1032,8 +1033,17 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public ExcelFileData loadRemoteFile(RemoteExcelRequest remoteExcelRequest) throws DEException, IOException {
-        remoteExcelRequest.setUserName(new String(Base64.getDecoder().decode(remoteExcelRequest.getUserName())));
-        remoteExcelRequest.setPasswd(new String(Base64.getDecoder().decode(remoteExcelRequest.getPasswd())));
+        if (remoteExcelRequest == null || StringUtils.isBlank(remoteExcelRequest.getUrl())) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        try {
+            remoteExcelRequest.setUserName(new String(Base64.getDecoder().decode(
+                    java.util.Objects.toString(remoteExcelRequest.getUserName(), "")), java.nio.charset.StandardCharsets.UTF_8));
+            remoteExcelRequest.setPasswd(new String(Base64.getDecoder().decode(
+                    java.util.Objects.toString(remoteExcelRequest.getPasswd(), "")), java.nio.charset.StandardCharsets.UTF_8));
+        } catch (IllegalArgumentException e) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter").causedBy(e);
+        }
         String restored = restorePlainConfiguration(JsonUtil.toJSONString(remoteExcelRequest).toString(),
                 remoteExcelRequest.getDatasourceId() != null && remoteExcelRequest.getDatasourceId() > 0
                         ? remoteExcelRequest.getDatasourceId() : remoteExcelRequest.getCopySourceId(), "ExcelRemote");
@@ -1165,6 +1175,12 @@ public class DatasourceServer implements DatasourceApi {
                 throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_configuration_type_mismatch"));
             }
             originals = JsonUtil.parseList(stored.getConfiguration(), listTypeReference);
+        } else {
+            // 新建 API 数据源的测试请求：要求数据源菜单管理权限，避免任意登录用户触发 SSRF
+            if (V3UserUtil.getLink() != null || !corePermissionManage.checkAuth(
+                    new BusiPerCheckDTO(AuthResourceEnum.DATASOURCE.getMenuId(), BusiResourceEnum.MENU, AuthEnum.MANAGE))) {
+                throw new DEException(ResultCode.PERMISSION_NO_ACCESS.code(), ResultCode.PERMISSION_NO_ACCESS.message());
+            }
         }
         apiDefinition = restoreApiDefinition(apiDefinition, originals);
         apiDefinition.setType("table");
@@ -1713,6 +1729,21 @@ public class DatasourceServer implements DatasourceApi {
     public List<Map<String, String>> multidimensionalTables(Map<String, String> request) throws DEException {
         List<ApiDefinition> paramsList = new ArrayList<>();
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
+        String sourceId = request.get("datasourceId");
+        List<ApiDefinition> originals = List.of();
+        if (sourceId != null && !sourceId.isBlank() && !"0".equals(sourceId)) {
+            Long id = Long.valueOf(sourceId);
+            if (V3UserUtil.getLink() != null || !corePermissionManage.checkAuth(
+                    new BusiPerCheckDTO(id, BusiResourceEnum.DATASOURCE, AuthEnum.MANAGE))) {
+                throw new DEException(ResultCode.PERMISSION_NO_ACCESS.code(), ResultCode.PERMISSION_NO_ACCESS.message());
+            }
+            DatasourceDTO stored = dataSourceManage.getDs(id);
+            if (stored == null || !Objects.equals(stored.getType(), request.get("dsType"))) {
+                throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_configuration_type_mismatch"));
+            }
+            originals = JsonUtil.parseList(stored.getConfiguration(), listTypeReference);
+        }
+        apiDefinition = restoreApiDefinition(apiDefinition, originals);
         paramsList.add(apiDefinition);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO datasource = new DatasourceDTO();

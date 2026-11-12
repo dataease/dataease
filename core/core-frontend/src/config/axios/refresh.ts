@@ -40,11 +40,11 @@ const rejectCachedRequests = (error: unknown) => {
   takeCachedRequests().forEach(request => request.reject(error))
 }
 
-const getRefreshStatus = () => {
-  return wsCache.get('de-global-refresh') || false
-}
+// The request queue belongs to this tab. A shared storage lock cannot release another tab's queue.
+let refreshing = false
+const getRefreshStatus = () => refreshing
 const setRefreshStatus = (status: boolean) => {
-  wsCache.set('de-global-refresh', status, { exp: 5 })
+  refreshing = status
 }
 
 export const configHandler = config => {

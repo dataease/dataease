@@ -1,3 +1,4 @@
+import { presentError } from '@/config/axios/errorPresenter'
 import { collectChartRuntimeCaches, getCanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
 import { withMapPictures } from './mapExport'
 import { prepareViewportChartsForExport } from '@/hooks/web/useChartViewportLoad'
@@ -149,7 +150,7 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
     else if (downloadType === 'app') FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
   } catch (e) {
     const { t } = useI18n()
-    ElMessage.error(t('material.export_failed'))
+    presentError(e, t('material.export_failed'))
     console.error(e)
   } finally {
     callBack?.()
@@ -186,7 +187,7 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
         }
       })
       .catch(error => {
-        ElMessage.error(useI18n().t('material.export_failed'))
+        presentError(error, useI18n().t('material.export_failed'))
         console.error('oops, something went wrong!', error)
         if (callBack) {
           callBack()
@@ -229,7 +230,7 @@ export function downloadCanvas2(type, canvasDom, name, callBack?) {
       }
     })
     .catch(error => {
-      ElMessage.error(useI18n().t('material.export_failed'))
+      presentError(error, useI18n().t('material.export_failed'))
       if (callBack) {
         callBack()
       }

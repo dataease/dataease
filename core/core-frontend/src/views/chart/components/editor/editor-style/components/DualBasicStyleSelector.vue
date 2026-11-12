@@ -3,6 +3,7 @@ import { onMounted, PropType, reactive, watch, ref } from 'vue'
 import {
   COLOR_PANEL,
   DEFAULT_BASIC_STYLE,
+  CHART_MIX_DEFAULT_BASIC_STYLE,
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -10,10 +11,6 @@ import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import {
-  CHART_MIX_DEFAULT_BASIC_STYLE,
-  MixChartBasicStyle
-} from '@/views/chart/components/js/panel/charts/g2plot/others/chart-mix-common'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)

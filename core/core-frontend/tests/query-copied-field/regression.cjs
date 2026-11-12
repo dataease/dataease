@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires -- Node 回归入口。 */
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -6,6 +7,7 @@ const { test } = require('node:test')
 const ts = require('typescript')
 const { parse, compileScript, compileTemplate } = require('@vue/compiler-sfc')
 const { cloneDeep } = require('lodash')
+const configBindings = require('../query-config-bindings/load.cjs')
 const root = path.resolve(__dirname, '../..')
 const configFile = 'src/custom-component/v-query/QueryConditionConfiguration.vue'
 const componentFile = 'src/custom-component/v-query/Component.vue'
@@ -34,7 +36,7 @@ const run = (file, names, context, expression) =>
     ts.transpileModule('{\n' + extract(file, names) + '\n' + expression + '\n}', {
       compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
     }).outputText,
-    context
+    { ...configBindings, ...context }
   )
 const chartA = '3103035270000000001',
   chartB = '3103035270000000002',
@@ -74,11 +76,21 @@ const load = async () => {
     queryElement: { value: {} },
     cascadeArr: [],
     cloneDeep,
-    initDataset() {},
-    handleCondition() {},
-    nextTick() {},
-    setTreeDefault() {},
-    handleCheckedFieldsChange() {},
+    initDataset() {
+      return undefined
+    },
+    handleCondition() {
+      return undefined
+    },
+    nextTick() {
+      return undefined
+    },
+    setTreeDefault() {
+      return undefined
+    },
+    handleCheckedFieldsChange() {
+      return undefined
+    },
     getDsDetailsWithPerm: async () => [
       { id: dataset, fields: { dimensionList: [original], quotaList: [] } }
     ],
@@ -160,7 +172,11 @@ test('dragging and refreshing a copied field only links its owner; public fields
       datasetFieldList: { value: charts },
       list: { value: [] },
       element: { value: {} },
-      snapshotStore: { recordSnapshotCache() {} },
+      snapshotStore: {
+        recordSnapshotCache() {
+          return undefined
+        }
+      },
       infoFormat: field => ({ field }),
       dvMainStore: { mobileInPc: false },
       isMobile: () => false

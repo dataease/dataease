@@ -2,6 +2,10 @@ package io.dataease.api.sync.task.api;
 
 import io.dataease.result.PageResult;
 import io.dataease.api.sync.task.dto.TaskLogGridRequest;
+import io.dataease.api.sync.task.dto.TaskEventLogGridRequest;
+import io.dataease.api.sync.task.dto.TaskLogType;
+import io.dataease.api.sync.task.vo.TaskEventLogVO;
+import io.dataease.api.sync.task.vo.TaskFieldChangeLogVO;
 import io.dataease.api.sync.task.vo.LogResultVO;
 import io.dataease.api.sync.task.vo.TaskLogVO;
 import io.dataease.api.sync.task.vo.TaskLogClearResultVO;
@@ -24,6 +28,23 @@ import static io.dataease.constant.AuthResourceEnum.TASK;
 @Hidden
 @DeApiPath(value = "/sync/task/log", rt = TASK)
 public interface TaskLogApi {
+    @PostMapping("/events/pager/{goPage}/{pageSize}")
+    @DePermit("m:read")
+    PageResult<TaskEventLogVO> eventPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize,
+                                        @RequestBody TaskEventLogGridRequest request);
+
+    @GetMapping("/changes/{logId}")
+    @DePermit("m:read")
+    TaskFieldChangeLogVO fieldChangeDetail(@PathVariable("logId") String logId);
+
+    @PostMapping("/events/delete/{taskType}/{logId}")
+    @DePermit("m:manage")
+    void deleteEvent(@PathVariable("taskType") TaskLogType taskType, @PathVariable("logId") String logId);
+
+    @PostMapping("/events/clear")
+    @DePermit("m:manage")
+    TaskLogClearResultVO clearEventLogs(@RequestBody TaskLogVO request);
+
     @PostMapping("/pager/{goPage}/{pageSize}")
     @DePermit("m:read")
     PageResult<TaskLogVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody TaskLogGridRequest request);

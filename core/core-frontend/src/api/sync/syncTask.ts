@@ -284,7 +284,12 @@ export interface IMaintenanceStructure {
   blockedReason?: string
   fullRefresh: boolean
   operations: string[]
-  columns: { field: ITableField; nullable: boolean; protectedReason?: string }[]
+  columns: {
+    field: ITableField
+    nativeType?: string
+    nullable: boolean
+    protectedReason?: string
+  }[]
   indexes: Record<string, string>
   indexType?: string
   indexFieldTypes: string[]
@@ -357,7 +362,13 @@ export interface ITaskMaintenance {
   processing?: boolean
   phase?: 'SCHEMA' | 'CONFIGURATION' | 'RECOVERY' | 'INITIALIZATION' | 'DONE'
   blockedReason?: string
-  blockedCode?: 'UNSUPPORTED_TARGET'
+  blockedCode?:
+    | 'UNSUPPORTED_TARGET'
+    | 'TARGET_READ_FAILED'
+    | 'SCHEMA_MISMATCH'
+    | 'PRECISION_UNSPECIFIED'
+    | 'SOURCE_READ_FAILED'
+    | 'TASK_RUNNING'
   error?: string
   logId?: string
   configFingerprint: string
@@ -432,15 +443,17 @@ export interface ITaskMaintenanceRequest {
   deleteConfirmed?: boolean
   exclusiveTargetConfirmed?: boolean
   riskConfirmed?: boolean
+  alignTargetPrecision?: boolean
 }
 
 /**
  * 读取保存配置和当前能力，失败原因在弹窗本地呈现，避免统一提示遮蔽恢复入口
  */
-export const getTaskMaintenanceApi = (id: string) =>
+export const getTaskMaintenanceApi = (id: string, fullRefresh = false) =>
   request.get<Promise<{ data: ITaskMaintenance }>>({
     handleErrorLocally: true,
-    url: `/sync/task/maintenance/${id}`
+    url: `/sync/task/maintenance/${id}`,
+    ...(fullRefresh ? { params: { fullRefresh: true } } : {})
   })
 
 /**

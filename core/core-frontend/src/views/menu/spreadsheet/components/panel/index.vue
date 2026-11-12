@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import { computed, ref, provide, inject, type Ref } from 'vue'
 import ConfigPanel from '../config-panel/index.vue'
 import DatasetPanel from '../dataset-panel/index.vue'
@@ -64,9 +66,8 @@ const queryData = async (config: PluginConfig) => {
     }
 
     await runtime.refreshData({ univerApi: api, config })
-
   } catch (error) {
-    ElMessage.error('Refresh data failed')
+    presentError(error, 'Refresh data failed')
   }
 }
 
@@ -80,7 +81,12 @@ const updateConfig = async (key: string, value: any) => {
     }
 
     const runtime = pluginRuntimeRegistry.get(config.type)
-    const validateMessage = await runtime?.validateConfigUpdate?.({ univerApi: api, config, key, value })
+    const validateMessage = await runtime?.validateConfigUpdate?.({
+      univerApi: api,
+      config,
+      key,
+      value
+    })
     if (validateMessage) {
       ElMessage.warning(validateMessage)
       return
@@ -92,20 +98,15 @@ const updateConfig = async (key: string, value: any) => {
       await runtime?.applyStyle?.({ univerApi: api, config })
     }
   } catch (error) {
-    ElMessage.error('Apply style failed')
+    presentError(error, 'Apply style failed')
   }
 }
-
 </script>
 
 <template>
   <div class="table-editor">
     <div class="table-editor-container">
-      <ConfigPanel
-        class="config-panel"
-        @queryData="queryData"
-        @updateConfig="updateConfig"
-      />
+      <ConfigPanel class="config-panel" @queryData="queryData" @updateConfig="updateConfig" />
 
       <DatasetPanel class="dataset-panel" @updateConfig="updateConfig" />
     </div>

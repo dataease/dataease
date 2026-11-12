@@ -8,6 +8,7 @@ const ts = require('typescript')
 const { parse } = require('@vue/compiler-sfc')
 const { cloneDeep, isEqual } = require('lodash')
 const { nextTick } = require('vue')
+const { loadCandidateLoader, createQueryScope } = require('../query-candidate-loader/load.cjs')
 const filename = 'src/custom-component/v-query/Select.vue'
 const descriptor = parse(fs.readFileSync(process.env.SELECT_SOURCE || filename, 'utf8')).descriptor
 const ast = ts.createSourceFile(
@@ -69,6 +70,8 @@ const setup = (extra = {}, { button = false, isConfig = false } = {}) => {
     options: { value: [] },
     cascade: { value: [[child, { datasetId: 'ds--grandchild--id' }]] },
     enumValueArr: [],
+    time: undefined,
+    clearTimeout,
     loading: { value: true },
     disabledFirstItem: { value: false },
     isFromRemote: { value: false },
@@ -79,11 +82,6 @@ const setup = (extra = {}, { button = false, isConfig = false } = {}) => {
     filterValueEquals: (a, b) => a === b,
     isEmptyCascadeValue: value =>
       Array.isArray(value) ? value.length === 0 : value == null || value === '',
-    startOptionsRequest: () => ({
-      signal: new AbortController().signal,
-      isCurrent: () => true,
-      finish: () => undefined
-    }),
     enumValueObj: async () => records,
     customSort() {
       return undefined
@@ -107,6 +105,10 @@ const setup = (extra = {}, { button = false, isConfig = false } = {}) => {
     },
     t: key => key
   }
+  context.candidateLoader = loadCandidateLoader()(
+    createQueryScope().createQuery('options'),
+    context.loading
+  )
   vm.runInNewContext(code, context)
   return {
     context,

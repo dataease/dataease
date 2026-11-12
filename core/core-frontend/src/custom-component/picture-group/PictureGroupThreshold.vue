@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, PropType, toRefs } from 'vue'
+import { nextTick, PropType, toRefs } from 'vue'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
@@ -38,7 +38,7 @@ const { view, element } = toRefs(props)
 const onThresholdChange = val => {
   // do
   view.value.senior.threshold = val
-  if (val.enable) {
+  if (val.enable && element.value.carousel) {
     element.value.carousel.enable = false
   }
   nextTick(() => {
@@ -62,11 +62,9 @@ const onRefreshChange = val => {
 const closeThreshold = () => {
   view.value.senior.threshold.enable = false
 }
-onMounted(() => {
-  useEmitt({
-    name: 'carouselValueChange',
-    callback: () => closeThreshold()
-  })
+useEmitt({
+  name: 'carouselValueChange-' + element.value.id,
+  callback: closeThreshold
 })
 </script>
 

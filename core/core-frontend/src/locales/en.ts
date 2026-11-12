@@ -332,6 +332,9 @@ export default {
     close: 'Close'
   },
   material: {
+    component_assets: 'Component Assets',
+    image_library: 'Image Library',
+    component_hint: 'Add a border, decoration, shape, or icon to the canvas.',
     package_size_hint: 'Packages must be under 300MiB, with at most 200MiB of material files.',
     title: 'Material library',
     description: 'Shared system library · Library managers can manage all custom materials',
@@ -3868,6 +3871,11 @@ export default {
     pic_upload_tips: 'Please upload an image...',
     pic_group: 'Image Group',
     pic_upload_tips2: 'Supports JPG, PNG, GIF, SVG',
+    pic_group_upload_hint: 'Add one image at a time from the library, or upload multiple files.',
+    pic_group_limit: 'You can add up to {limit} images',
+    pic_group_carousel_hint:
+      'Preview cycles through images in order. Editing shows the first image.',
+    pic_condition_images: 'Images for conditional styling',
     pic_adaptor_type: 'Image Adaptation Method',
     pop_area_tips:
       'Click or drag the query component to this position, click preview to view the pop-up area',
@@ -4783,7 +4791,38 @@ export default {
     execution_results_in_the_past_7_days: 'Executions in the past 7 days',
     sync_status_distribution: 'Sync status distribution'
   },
+  sync_task_log: {
+    view_more: 'View more logs',
+    task_type: 'Task type',
+    data_sync: 'Data synchronization',
+    field_change: 'Field change',
+    details: 'Field change log',
+    operator: 'Operator',
+    target_table: 'Target table',
+    unknown: 'Unknown',
+    planned_changes:
+      'Submitted changes for this operation. Check the execution results to see what took effect.',
+    planned_after: 'Planned value',
+    partial: 'Partially completed',
+    pending_initialization: 'Awaiting initialization',
+    recovery_required: 'Verification required',
+    superseded: 'Continued by a later change',
+    successor: 'View the subsequent field change',
+    initialization_result: 'Related initialization result',
+    read_failed: 'Unable to read the field change log. Refresh to try again.',
+    cleanup_scope:
+      'Clear data synchronization and field change logs in the selected time range. Records in progress or needed for recovery are retained.'
+  },
   sync_maintenance: {
+    confirm_precision_alignment:
+      'I confirm the actual column capacity meets business needs and agree to update the task configuration to match',
+    precision_unspecified: 'precision unspecified',
+    saved_definition: 'Saved task configuration',
+    actual_definition: 'Actual database schema',
+    actual_column_missing: 'Column not found',
+    align_precision: 'Align precision with database',
+    precision_alignment_help:
+      'Only fill unspecified numeric precision in the task configuration using actual database values. This does not alter the table, increase capacity, or synchronize data. Confirm that the current capacity meets your business needs',
     menu: 'Field adjustment',
     title: 'Adjust target fields',
     task_name: 'Task',
@@ -4815,6 +4854,7 @@ export default {
     protected_fields: 'Protected fields ({0})',
     special: 'Protected fields cannot be adjusted',
     start_adjustment: 'Edit fields',
+    reload: 'Reload',
     confirm_field: 'Confirm changes',
     draft_saved: 'Draft updated. Changes take effect only after you confirm the adjustment.',
     added: 'To be added',
@@ -5082,6 +5122,10 @@ export default {
     recovery_execution_failed: 'Related operations have ended; end this run as failed'
   },
   sync_task: {
+    decimal_precision_required:
+      'Field {0} (source type {1}) has no explicit precision for target type {2}. Set precision and scale based on the actual data instead of relying on database defaults',
+    decimal_parameters_invalid:
+      'Invalid parameters for target type {2} of field {0}: precision must be an integer from 1 to 38, and scale an integer from 0 to precision',
     cleanup_result: 'Cleanup result',
     cleanup_submitted:
       'Background cleanup submitted. You can close this window and continue working.',
@@ -5234,7 +5278,7 @@ export default {
     field_mapping_unknown_detail:
       'The target type has not been confirmed. Select a field type supported by the target database',
     field_mapping_blocking_save_tip:
-      '{0} target field types are still unresolved: {1}. Resolve them before saving',
+      'Target types or parameters need attention for {0} fields: {1}. Resolve them before saving',
     field_mapping_warning_title:
       '{0} fields have synchronization risks (you can confirm and continue saving)',
     field_mapping_warning_item: '{0}: {1}',

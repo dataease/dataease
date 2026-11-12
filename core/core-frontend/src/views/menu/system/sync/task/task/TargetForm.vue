@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { presentError } from '@/config/axios/errorPresenter'
+
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import {
@@ -20,6 +22,7 @@ import dvInfo from '@/assets/svg/dv-info.svg'
 import DorisProperty from './component/DorisProperty.vue'
 import PluginComponent from '@/components/plugin/src/PluginComponent.vue'
 import { SYNC_DATASOURCE_ROLE } from '../../ds/form/option'
+import { decimalParameterIssue } from './fieldType'
 
 const { t } = useI18n()
 
@@ -179,7 +182,7 @@ onMounted(() => {
       }
     })
     .catch(err => {
-      ElMessage.error(err.message)
+      presentError(err, err.message)
     })
   if (!props.isEdit) {
     refreshFieldList()
@@ -262,6 +265,8 @@ const targetFieldList = computed(() => {
 })
 
 const isUnknownField = (field: ITableField) => field.fieldType?.trim().toUpperCase() === 'UNKNOWN'
+const hasBlockingMappingIssue = (field: ITableField) =>
+  isUnknownField(field) || !!decimalParameterIssue(field, form.value.target.type)
 
 const targetFieldsReadOnly = computed(
   () => props.isEdit && (form.value.editable === false || form.value.sourceDatasourceMissing)
@@ -349,6 +354,13 @@ watch(
 )
 
 const resolveFieldMappingMessage = (field: ITableField) => {
+  const issue = decimalParameterIssue(field, form.value.target.type)
+  if (issue)
+    return t(issue, [
+      field.fieldName,
+      field.fieldSourceType || field.fieldSourceStandardType || '-',
+      field.fieldType
+    ])
   if (field.fieldMappingMessage) {
     return field.fieldMappingMessage
   }
@@ -382,17 +394,19 @@ const groupFieldMappingWarnings = (fields: ITableField[]) => {
 }
 
 /**
- * UNKNOWN 属于阻断项，必须选择目标数据库支持的类型后才能保存
+ * 未确认类型和无效目标参数均属于阻断项，必须明确处理后才能保存
  */
 const blockingFieldMappingWarnings = computed(() =>
-  groupFieldMappingWarnings(mappingWarningFields.value.filter(isUnknownField))
+  groupFieldMappingWarnings(mappingWarningFields.value.filter(hasBlockingMappingIssue))
 )
 
 /**
  * 其余映射提示属于非阻断风险，用户确认后仍可保存
  */
 const fieldMappingWarnings = computed(() =>
-  groupFieldMappingWarnings(mappingWarningFields.value.filter(field => !isUnknownField(field)))
+  groupFieldMappingWarnings(
+    mappingWarningFields.value.filter(field => !hasBlockingMappingIssue(field))
+  )
 )
 
 const countWarningFields = (warnings: { fieldNames: string[] }[]) =>
@@ -584,7 +598,7 @@ const changeTargetType = () => {
       }
     })
     .catch(err => {
-      ElMessage.error(err.message)
+      presentError(err, err.message)
     })
 }
 /**
@@ -668,10 +682,11 @@ const batchDelMappingField = () => {
  * 验证字段列表输入
  * 字段名称不能为空
  * 字段类型不能为UNKNOWN
+ * Doris 数值类型必须显式配置合法的总精度和小数位
  */
 const validateFieldList = () => {
   const list = form.value.target.fieldList || []
-  const unresolvedFields = list.filter(isUnknownField)
+  const unresolvedFields = list.filter(hasBlockingMappingIssue)
   if (unresolvedFields.length) {
     ElMessage.warning(
       t('sync_task.field_mapping_blocking_save_tip', [
@@ -703,7 +718,7 @@ const refreshSinkKeyPolicy = async (showError = false) => {
   } catch (error: any) {
     sinkKeyPolicy.value = 'OPTIONAL'
     if (showError) {
-      ElMessage.error(error?.message || t('sync_task.key_policy_load_failed'))
+      presentError(error, error?.message || t('sync_task.key_policy_load_failed'))
     }
     return false
   }
@@ -805,7 +820,7 @@ const validate = async () => {
     }
   } catch (error) {
     console.error(error)
-    ElMessage.error(t('sync_datasource.plugin_load_failed'))
+    presentError(error, t('sync_datasource.plugin_load_failed'))
     return false
   }
   if (!targetPropertyValid) {

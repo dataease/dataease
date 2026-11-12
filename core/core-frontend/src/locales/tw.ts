@@ -300,6 +300,9 @@ export default {
     close: '關閉'
   },
   material: {
+    component_assets: '元件素材',
+    image_library: '圖片素材庫',
+    component_hint: '將邊框、裝飾、圖形或圖示新增至畫布。',
     package_size_hint: '素材資源包不能超過 300MiB，包內素材總大小不能超過 200MiB。',
     title: '素材管理',
     description: '系統级共用素材庫 · 素材庫管理者可管理全部自建素材',
@@ -3721,6 +3724,10 @@ export default {
     pic_upload_tips: '請上傳圖片...',
     pic_group: '圖片組',
     pic_upload_tips2: '支持JPG、PNG、GIF、SVG',
+    pic_group_upload_hint: '每次從素材庫新增一張，可從本機批次上傳。',
+    pic_group_limit: '最多可新增 {limit} 張圖片',
+    pic_group_carousel_hint: '預覽時依圖片順序輪播，編輯時顯示第一張圖片。',
+    pic_condition_images: '條件樣式備選圖片',
     pic_adaptor_type: '圖片適應方式',
     pop_area_tips: '可點擊或拖拽查詢組件到此位置，點擊預覽可查看彈窗區',
     view: '圖表',
@@ -4594,7 +4601,35 @@ export default {
     execution_results_in_the_past_7_days: '過去7天執行情形',
     sync_status_distribution: '同步狀態分佈'
   },
+  sync_task_log: {
+    view_more: '查看更多日誌',
+    task_type: '任務類型',
+    data_sync: '資料同步',
+    field_change: '欄位變更',
+    details: '欄位變更日誌',
+    operator: '操作人',
+    target_table: '目標表',
+    unknown: '未知',
+    planned_changes: '以下為本輪提交的變更計畫，是否生效以實際執行結果為準',
+    planned_after: '計畫變更後',
+    partial: '部分完成',
+    pending_initialization: '待初始化',
+    recovery_required: '待核對',
+    superseded: '由後續變更接續',
+    successor: '查看後續欄位變更',
+    initialization_result: '關聯初始化結果',
+    read_failed: '欄位變更日誌讀取失敗，請重新整理後重試',
+    cleanup_scope: '按所選時間範圍清理資料同步和欄位變更日誌，執行中及仍需復原的記錄將保留'
+  },
   sync_maintenance: {
+    confirm_precision_alignment: '我已確認實際欄位容量符合業務需求，依實際精度更新任務設定',
+    precision_unspecified: '未指定精度',
+    saved_definition: '任務已儲存設定',
+    actual_definition: '資料庫實際結構',
+    actual_column_missing: '找不到對應欄位',
+    align_precision: '依實際精度校準設定',
+    precision_alignment_help:
+      '本次僅將任務中未指定的數值精度校準為資料庫實際值，不修改目標表、不擴大欄位容量，也不執行資料同步。請先確認實際容量符合業務需求',
     menu: '欄位調整',
     title: '調整目標欄位',
     task_name: '任務',
@@ -4623,6 +4658,7 @@ export default {
     protected_fields: '受保護欄位（{0}）',
     special: '特殊欄位，不可調整',
     start_adjustment: '修改欄位',
+    reload: '重新讀取',
     confirm_field: '確認修改',
     draft_saved: '已更新本次編輯，確認調整後才會生效',
     added: '待新增',
@@ -4855,6 +4891,10 @@ export default {
     recovery_execution_failed: '已確認相關操作結束，本次執行按失敗結束'
   },
   sync_task: {
+    decimal_precision_required:
+      '欄位 {0}（來源類型 {1}）的目標類型 {2} 尚未指定總精度，請依實際資料明確設定總精度和小數位，避免使用資料庫預設值',
+    decimal_parameters_invalid:
+      '欄位 {0} 的目標類型 {2} 參數無效：總精度必須為 1～38 的整數，小數位必須為 0～總精度的整數',
     cleanup_result: '清理結果',
     cleanup_submitted: '已提交背景清理，可以關閉視窗繼續操作',
     cleanup_empty: '沒有需要清理的日誌',
@@ -4995,7 +5035,7 @@ export default {
     source_field_type: '來源類型',
     field_mapping_blocking_title: '目前有 {0} 個欄位需要處理後才能儲存',
     field_mapping_unknown_detail: '目標類型尚未確認，請選擇目標資料庫支援的欄位類型',
-    field_mapping_blocking_save_tip: '還有 {0} 個欄位的目標類型未確認：{1}，請處理後再儲存',
+    field_mapping_blocking_save_tip: '還有 {0} 個欄位的目標類型或參數需要處理：{1}，請處理後再儲存',
     field_mapping_warning_title: '目前有 {0} 個欄位存在同步風險（確認後可繼續儲存）',
     field_mapping_warning_item: '{0}：{1}',
     field_name_separator: '、',

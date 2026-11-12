@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import { ref, inject, computed, onMounted, type Ref } from 'vue'
 import { Delete, InfoFilled, Filter } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus-secondary'
@@ -6,7 +8,12 @@ import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import FieldDropZone from '../common/field-drop-zone.vue'
 import FilterTree from './filter/FilterTree.vue'
-import type { FieldItemData, FilterTree as FilterTreeData, PluginConfig, TablePluginConfig } from '../../types/plugin'
+import type {
+  FieldItemData,
+  FilterTree as FilterTreeData,
+  PluginConfig,
+  TablePluginConfig
+} from '../../types/plugin'
 import { PluginAdapterManager, TablePluginAdapter } from '../../types/adapter'
 import {
   clampSpreadsheetResultLimit,
@@ -15,8 +22,8 @@ import {
 } from '../../utils/query-limit'
 
 const emit = defineEmits<{
-  'queryData': [config: PluginConfig]
-  'updateConfig': [key: string, value: any]
+  queryData: [config: PluginConfig]
+  updateConfig: [key: string, value: any]
 }>()
 
 const pluginConfig = inject<Ref<TablePluginConfig>>('pluginConfig')
@@ -31,7 +38,6 @@ const filterTree = ref<InstanceType<typeof FilterTree>>()
 const currentConfig = computed(() => pluginConfig.value)
 const resultLimitInput = ref<string | number>(currentConfig.value.data.resultLimit ?? 1000)
 const resultLimitMax = ref(DEFAULT_SPREADSHEET_QUERY_LIMIT)
-
 
 const zoneSchemas = computed(() => {
   if (!currentConfig.value?.type) {
@@ -80,14 +86,11 @@ onMounted(async () => {
   }
 })
 
-const handleZoneFieldAdd = (zoneId: string) => (field: FieldItemData) => {
-}
+const handleZoneFieldAdd = (zoneId: string) => (field: FieldItemData) => {}
 
-const handleZoneFieldRemove = (zoneId: string) => (field: FieldItemData, index: number) => {
-}
+const handleZoneFieldRemove = (zoneId: string) => (field: FieldItemData, index: number) => {}
 
-const handleZoneFieldConfig = (zoneId: string) => (field: FieldItemData, index: number) => {
-}
+const handleZoneFieldConfig = (zoneId: string) => (field: FieldItemData, index: number) => {}
 
 const handleClearFilters = () => {
   customFilter.value = {}
@@ -111,9 +114,7 @@ const countFilterItems = (items: any[] = []) => {
 }
 
 const hasFields = computed(() => {
-  return Object.values(currentConfig.value.data.zones).some(
-    fields => fields && fields.length > 0
-  )
+  return Object.values(currentConfig.value.data.zones).some(fields => fields && fields.length > 0)
 })
 
 const queryData = async () => {
@@ -148,22 +149,17 @@ const queryData = async () => {
       }
     })
   } catch (error) {
-    ElMessage.error(t('spreadsheet.query_data_error'))
+    presentError(error, t('spreadsheet.query_data_error'))
   } finally {
     loading.value = false
   }
 }
-
 </script>
 
 <template>
   <div class="data-tab">
     <div class="data-tab-content">
-      <div
-        v-for="schema in zoneSchemas"
-        :key="schema.id"
-        class="config-section"
-      >
+      <div v-for="schema in zoneSchemas" :key="schema.id" class="config-section">
         <div class="section-header">
           <div class="header-left">
             <span class="section-title">{{ schema.name }}</span>
@@ -189,7 +185,7 @@ const queryData = async () => {
           :placeholder="schema.placeholder"
           :accept-types="schema.acceptTypes"
           :validate-update="validateZoneUpdate(schema.id)"
-          @update:model-value="(val) => handleZoneUpdate(schema.id, val)"
+          @update:model-value="val => handleZoneUpdate(schema.id, val)"
           @field-add="handleZoneFieldAdd(schema.id)"
           @field-remove="handleZoneFieldRemove(schema.id)"
           @field-config="handleZoneFieldConfig(schema.id)"
@@ -199,11 +195,7 @@ const queryData = async () => {
       <div class="config-section">
         <div class="section-header">
           <span class="section-title">过滤器</span>
-          <el-icon
-            v-if="isFilterActive"
-            class="delete-icon"
-            @click="handleClearFilters"
-          >
+          <el-icon v-if="isFilterActive" class="delete-icon" @click="handleClearFilters">
             <Delete />
           </el-icon>
         </div>

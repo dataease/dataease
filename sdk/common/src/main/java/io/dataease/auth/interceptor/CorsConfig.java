@@ -37,6 +37,7 @@ public class CorsConfig implements WebMvcConfigurer {
         operateCorsRegistration = registry.addMapping("/**")
                 .allowCredentials(false)
                 .allowedHeaders("*")
+                .exposedHeaders("X-DE-Error-Contract", "X-DE-Request-ID", "X-DE-Error-Reason", "DE-GATEWAY-FLAG", "DE-FORBIDDEN-FLAG", "WWW-Authenticate")
                 .maxAge(3600)
                 .allowedMethods("GET", "POST", "DELETE");
         if (corsStrict) {

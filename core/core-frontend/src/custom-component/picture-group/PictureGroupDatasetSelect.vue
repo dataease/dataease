@@ -39,24 +39,24 @@ const props = defineProps({
 const { view } = toRefs(props)
 const state = reactive({})
 
-const onDatasetUpdate = () => {
-  nextTick(() => {
-    if (view.value.tableId && view.value.id) {
-      getFieldByDQ(view.value.tableId, view.value.id, { type: 'table-info' })
-        .then(res => {
-          view.value.xAxis = []
-          res.quotaList.pop()
-          view.value.xAxis.push(...res.dimensionList, ...res.quotaList)
-          const viewTarget = view.value
-          useEmitt().emitter.emit('calcData-' + viewTarget.id, viewTarget)
-          snapshotStore.recordSnapshotCache('calc', view.value.id)
+const onDatasetUpdate = (tableId: ChartObj['tableId']) => {
+  const target = view.value
+  nextTick(async () => {
+    if (view.value !== target || target.tableId !== tableId) return
+    target.xAxis = []
+    if (tableId && target.id) {
+      try {
+        const { dimensionList, quotaList } = await getFieldByDQ(tableId, target.id, {
+          type: 'table-info'
         })
-        .catch(() => {
-          // something do error
-        })
-    } else {
-      view.value.xAxis = []
+        if (view.value !== target || target.tableId !== tableId) return
+        target.xAxis = [...dimensionList, ...quotaList.slice(0, -1)]
+      } catch {
+        return
+      }
     }
+    useEmitt().emitter.emit('calcData-' + target.id, target)
+    snapshotStore.recordSnapshotCache('calcData', target.id)
   })
 }
 

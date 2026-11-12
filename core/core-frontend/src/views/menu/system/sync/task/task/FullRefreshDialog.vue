@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
+import { isRequestError } from '@/config/axios/error'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { fullRefreshTaskApi, getTaskMaintenanceApi } from '@/api/sync/syncTask'
@@ -24,7 +24,7 @@ const close = () => {
 const error = ref('')
 const showError = (cause: unknown) => {
   error.value =
-    isAxiosError(cause) && cause.response?.status === 404
+    isRequestError(cause) && cause.response?.status === 404
       ? t('sync_maintenance.backend_unavailable')
       : typeof cause === 'string'
       ? cause
@@ -54,7 +54,7 @@ const open = async (taskId: string) => {
   visible.value = true
   loading.value = true
   try {
-    const response = await getTaskMaintenanceApi(taskId)
+    const response = await getTaskMaintenanceApi(taskId, true)
     if (isCurrentView(version)) data.value = response.data
   } catch (cause) {
     if (isCurrentView(version)) showError(cause)

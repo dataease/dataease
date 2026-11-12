@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
+import { isRequestError } from '@/config/axios/error'
 import { computed, onBeforeUnmount, reactive, ref, watchEffect } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import {
@@ -30,9 +30,14 @@ import FullRefreshDialog from './FullRefreshDialog.vue'
 import ExecutionRecovery from './ExecutionRecovery.vue'
 import FieldChangeDetails from './FieldChangeDetails.vue'
 import FieldExecutionResults from './FieldExecutionResults.vue'
+import { maintenanceFieldType, normalizeFieldType } from './fieldType'
+import { fieldSignature as signature, getFieldChanges } from './fieldChanges'
 
 const { t } = useI18n()
-const emit = defineEmits<{ (event: 'changed'): void }>()
+const emit = defineEmits<{
+  (event: 'changed'): void
+  (event: 'openTaskLog', taskId: string): void
+}>()
 const visible = ref(false)
 const activeTab = ref('current')
 const rulesVisible = ref(false)
@@ -45,7 +50,7 @@ const loading = ref(false)
 const error = ref('')
 const showError = (cause: unknown) => {
   error.value =
-    isAxiosError(cause) && cause.response?.status === 404
+    isRequestError(cause) && cause.response?.status === 404
       ? t('sync_maintenance.backend_unavailable')
       : typeof cause === 'string'
       ? cause
@@ -59,6 +64,7 @@ const preview = ref<ITaskMaintenance>()
 const validationIssues = ref<IMaintenanceFieldIssue[]>([])
 const validationBlockers = ref<string[]>([])
 const confirmation = ref(false)
+const precisionAlignment = ref(false)
 const exclusive = ref(false)
 const deleteConfirmed = ref(false)
 const riskConfirmed = ref(false)
@@ -84,17 +90,6 @@ const stopPolling = () => {
   clearTimeout(pollTimer)
   pollVersion++
 }
-const signature = (field: ITableField) =>
-  JSON.stringify([
-    field.fieldSource,
-    field.fieldName,
-    field.fieldType,
-    Number(field.fieldSize || 0),
-    Number(field.fieldPrecision || 0),
-    field.remarks || '',
-    !!field.fieldPk,
-    !!field.fieldIndex
-  ])
 /**
  * 始终以打开时的已保存字段为基线计算最终差异，新增后删除等相互抵消的编辑不会提交
  */
@@ -150,28 +145,13 @@ const savingConfiguration = computed(() => context.value?.phase === 'CONFIGURATI
 /**
  * 按本次操作快照生成变更对比，利用改名步骤关联前后字段，区别当前配置与原始修改意图
  */
-const operationChanges = computed(() => {
-  const before = context.value?.beforeFields || []
-  const after = context.value?.afterFields || []
-  const renames = new Map(
-    (context.value?.plan?.steps || [])
-      .filter(step => step.action === 'RENAME')
-      .map(step => [step.before.fieldName, step.after.fieldName] as const)
+const operationChanges = computed(() =>
+  getFieldChanges(
+    context.value?.beforeFields || [],
+    context.value?.afterFields || [],
+    context.value?.plan?.steps || []
   )
-  const matched = new Set<string>()
-  const result: { before?: ITableField; after?: ITableField }[] = []
-  before.forEach(field => {
-    const next = after.find(
-      item => item.fieldName === (renames.get(field.fieldName) || field.fieldName)
-    )
-    if (next) matched.add(next.fieldName)
-    if (!next || signature(field) !== signature(next)) result.push({ before: field, after: next })
-  })
-  after
-    .filter(field => !matched.has(field.fieldName))
-    .forEach(field => result.push({ after: field }))
-  return result
-})
+)
 const operationFailed = computed(
   () =>
     !!context.value?.error ||
@@ -308,7 +288,8 @@ const locked = computed(
     !!uncertainOperation.value ||
     submitted.value ||
     ['RUNNING', 'CONNECTION_LOST'].includes(context.value?.initializationStatus) ||
-    !!context.value?.blockedReason
+    (!!context.value?.blockedReason &&
+      !(precisionAlignment.value && context.value.blockedCode === 'PRECISION_UNSPECIFIED'))
 )
 const processing = computed(
   () =>
@@ -344,13 +325,38 @@ const sourceType = (row: ITableField) => {
 }
 const targetType = (row: ITableField) => {
   const structure = context.value?.structure
+  if (normalizeFieldType(row.fieldType) === 'DECIMAL') {
+    const type = maintenanceFieldType(
+      row,
+      original.value.find(field => field.id === row.id),
+      structure
+    )
+    return row.fieldSize > 0
+      ? `${type}(${row.fieldSize}, ${row.fieldPrecision})`
+      : `${type}（${t('sync_maintenance.precision_unspecified')}）`
+  }
   const size = structure?.sizeLimits?.[row.fieldType] ? row.fieldSize : 0
   const precision = structure?.precisionLimits?.[row.fieldType] ? row.fieldPrecision : 0
   return (
-    row.fieldType +
-    (size ? `(${size}${precision ? `, ${precision}` : ''})` : precision ? `(${precision})` : '')
+    maintenanceFieldType(
+      row,
+      original.value.find(field => field.id === row.id),
+      structure
+    ) + (size ? `(${size}${precision ? `, ${precision}` : ''})` : precision ? `(${precision})` : '')
   )
 }
+const actualTargetType = (row: ITableField) => {
+  const column = context.value?.structure?.columns.find(
+    item => item.field.fieldName.toLowerCase() === row.fieldName.toLowerCase()
+  )
+  return column
+    ? column.nativeType?.toUpperCase() || targetType(column.field)
+    : t('sync_maintenance.actual_column_missing')
+}
+const showActualDefinition = computed(
+  () =>
+    activeTab.value === 'current' && !!context.value?.structure && !context.value.structureVerified
+)
 const pendingDelete = (row: ITableField) => removed.value.some(field => field.id === row.id)
 const protectedReason = (row: ITableField) =>
   context.value?.structure?.columns.find(
@@ -358,7 +364,8 @@ const protectedReason = (row: ITableField) =>
       column.field.fieldName ===
       (original.value.find(field => field.id === row.id)?.fieldName || row.fieldName)
   )?.protectedReason
-const editable = (row: ITableField) => !locked.value && !protectedReason(row)
+const editable = (row: ITableField) =>
+  !locked.value && !precisionAlignment.value && !protectedReason(row)
 const deletable = (row: ITableField) =>
   editable(row) && context.value.structure?.operations.includes('DELETE')
 
@@ -368,7 +375,11 @@ const ordinaryCurrent = computed(() => original.value.filter(row => !isProtected
 const ordinaryDraft = computed(() =>
   [...(form.value?.target.fieldList || []), ...removed.value].filter(row => !isProtected(row))
 )
-const protectedFields = computed(() => original.value.filter(isProtected))
+const protectedFields = computed(() =>
+  (precisionAlignment.value ? form.value?.target.fieldList || [] : original.value).filter(
+    isProtected
+  )
+)
 const currentRows = computed(() =>
   ordinaryCurrent.value.slice(
     (currentPagination.currentPage - 1) * currentPagination.pageSize,
@@ -382,6 +393,11 @@ const rows = computed(() => {
     pagination.currentPage * pagination.pageSize
   )
 })
+const sizeChange = (size: number) => {
+  const config = activeTab.value === 'draft' ? pagination : currentPagination
+  config.currentPage = Math.min(config.currentPage, Math.max(1, Math.ceil(config.total / size)))
+  config.pageSize = size
+}
 watchEffect(() => {
   pagination.total = ordinaryDraft.value.length
   currentPagination.total = ordinaryCurrent.value.length
@@ -453,12 +469,18 @@ const locateIssue = () => {
   if (!pendingDelete(row)) edit(row)
 }
 /**
- * 把服务器字段复制成独立草稿，复用字段表单时只提供所需能力，避免携带或伪造数据源连接配置
+ * 读取保存配置并复制成独立草稿，概览省略字段编辑专用元数据
+ * 复用字段表单时只提供所需能力，避免携带或伪造数据源连接配置
  */
-const load = async (id: string, version: number) => {
+const load = async (id: string, version: number, overview = false) => {
   const polling = pollVersion
-  const response = await getTaskMaintenanceApi(id)
+  const response = await getTaskMaintenanceApi(id, overview)
   if (!isCurrentView(version) || polling !== pollVersion) return false
+  // 读取受阻时只更新门禁，保留同一套编辑基线和草稿
+  if (activeTab.value === 'draft' && response.data.blockedReason) {
+    context.value.blockedReason = response.data.blockedReason
+    return false
+  }
   context.value = response.data
   original.value = (response.data.fields || []).map(field => ({ ...field, id: generateID() }))
   protectedExpanded.value = ordinaryCurrent.value.length ? [] : ['protected']
@@ -471,6 +493,7 @@ const load = async (id: string, version: number) => {
       targetFieldTypeList: response.data.fieldTypes
     },
     target: {
+      type: response.data.targetType,
       fieldList: deepCopy(original.value),
       datasourceId: 'maintenance',
       dsList: [
@@ -626,6 +649,7 @@ const open = async (id: string, name: string) => {
   changesVisible.value = false
   uncertainOperation.value = pendingSubmissions.get(id) || ''
   confirmation.value = false
+  precisionAlignment.value = false
   preview.value = undefined
   validationIssues.value = []
   validationBlockers.value = []
@@ -635,7 +659,8 @@ const open = async (id: string, name: string) => {
   error.value = ''
   loading.value = true
   try {
-    if (!(await load(id, version)) || !isCurrentView(version)) return
+    // 复用只读概览参数，仅跳过字段编辑元数据，不会发起全量同步
+    if (!(await load(id, version, true)) || !isCurrentView(version)) return
     if (uncertainOperation.value && context.value.operationId === uncertainOperation.value) {
       uncertainOperation.value = ''
       pendingSubmissions.delete(id)
@@ -649,6 +674,81 @@ const open = async (id: string, name: string) => {
   } finally {
     if (isCurrentView(version)) loading.value = false
   }
+}
+/**
+ * 失败后允许重新读取完整上下文，仍须通过原编辑门禁才能进入草稿
+ * 不沿用概览的字段和指纹作为编辑基线
+ */
+const startEditing = async () => {
+  if (loading.value || !visible.value || !context.value) return
+  precisionAlignment.value = false
+  const version = viewVersion
+  const taskId = context.value.taskId
+  stopPolling()
+  loading.value = true
+  error.value = ''
+  try {
+    if (!(await load(taskId, version)) || !isCurrentView(version)) return
+    validationIssues.value = []
+    validationBlockers.value = []
+    preview.value = undefined
+    confirmation.value = false
+    exclusive.value = false
+    deleteConfirmed.value = false
+    riskConfirmed.value = false
+    initializationConfirmed.value = false
+  } catch (cause) {
+    if (isCurrentView(version)) showError(cause)
+    return
+  } finally {
+    if (isCurrentView(version)) {
+      loading.value = false
+      if (context.value?.state === 'APPLYING' || context.value?.state === 'REINIT_REQUIRED')
+        pollTimer = setTimeout(poll, 2000)
+    }
+  }
+  if (!isCurrentView(version) || !context.value) return
+  if (!locked.value) {
+    activeTab.value = 'draft'
+  } else if (
+    submitted.value ||
+    (context.value.state === 'REINIT_REQUIRED' &&
+      ['RUNNING', 'CONNECTION_LOST'].includes(context.value.initializationStatus))
+  ) {
+    activeTab.value = 'result'
+  }
+}
+/**
+ * 历史缺失精度只生成配置校准草稿，预检查和正式提交仍由服务端核对实际结构与全部字段
+ */
+const startPrecisionAlignment = async () => {
+  if (loading.value || !context.value || context.value.blockedCode !== 'PRECISION_UNSPECIFIED')
+    return
+  const version = viewVersion
+  loading.value = true
+  error.value = ''
+  try {
+    if (!(await load(context.value.taskId, version)) || !isCurrentView(version)) return
+    if (context.value.blockedCode !== 'PRECISION_UNSPECIFIED' || !context.value.sourceFingerprint)
+      return
+    form.value.target.fieldList.forEach(field => {
+      if (normalizeFieldType(field.fieldType) !== 'DECIMAL' || field.fieldSize > 0) return
+      const actual = context.value.structure.columns.find(
+        column => column.field.fieldName.toLowerCase() === field.fieldName.toLowerCase()
+      )?.field
+      if (actual) {
+        field.fieldSize = actual.fieldSize
+        field.fieldPrecision = actual.fieldPrecision
+      }
+    })
+    precisionAlignment.value = true
+    activeTab.value = 'draft'
+  } catch (cause) {
+    if (isCurrentView(version)) showError(cause)
+  } finally {
+    if (isCurrentView(version)) loading.value = false
+  }
+  if (isCurrentView(version) && precisionAlignment.value) await inspect()
 }
 /**
  * 删除仍是本地草稿操作，清除该行旧检查结果，提交时由服务端重新校验整批
@@ -694,7 +794,8 @@ const request = (operationId: string): ITaskMaintenanceRequest => ({
   configFingerprint: context.value.configFingerprint,
   schemaFingerprint: context.value.schemaFingerprint,
   sourceFingerprint: context.value.sourceFingerprint,
-  changes: changes.value
+  changes: changes.value,
+  alignTargetPrecision: precisionAlignment.value || undefined
 })
 /**
  * 预检查失败留在编辑页保留全部草稿，通过后才进入执行确认，不在此处修改任务配置
@@ -758,6 +859,7 @@ const apply = async () => {
     ).data
     if (!isCurrentView(version)) return
     mergeStatus(result)
+    precisionAlignment.value = false
     form.value.target.fieldList = deepCopy(original.value)
     removed.value = []
     confirmation.value = false
@@ -768,7 +870,7 @@ const apply = async () => {
     emit('changed')
     pollTimer = setTimeout(poll, 1000)
   } catch (cause) {
-    const uncertain = isAxiosError(cause) && (!cause.response || cause.response.status >= 500)
+    const uncertain = isRequestError(cause) && (!cause.response || cause.response.status >= 500)
     // 提交已离开页面仍保留原任务的核对编号，不能把请求中断当作允许重新提交
     if (uncertain) pendingSubmissions.set(submittedRequest.taskId, submittedRequest.operationId)
     if (!isCurrentView(version)) return
@@ -826,7 +928,7 @@ const resume = async () => {
   }
 }
 /**
- * 取消编辑和关闭窗口共用草稿确认，已提交或已生效的修改不参与本地撤销
+ * 取消编辑、重新读取和关闭窗口共用草稿确认，已提交或已生效的修改不参与本地撤销
  */
 const confirmDiscard = async () => {
   if (activeTab.value === 'draft' && changes.value.length && !uncertainOperation.value) {
@@ -843,13 +945,27 @@ const confirmDiscard = async () => {
   }
   return true
 }
-const close = async () => {
+/**
+ * 确认放弃草稿后重新读取，读取失败时保留原编辑内容
+ */
+const reloadFields = async () => {
   const version = viewVersion
   if (loading.value || !(await confirmDiscard())) return
   if (!isCurrentView(version)) return
+  await startEditing()
+}
+const close = async () => {
+  const version = viewVersion
+  if (loading.value || !(await confirmDiscard())) return false
+  if (!isCurrentView(version)) return false
   viewVersion++
   stopPolling()
   visible.value = false
+  return true
+}
+const showAllLogs = async () => {
+  const taskId = context.value?.taskId
+  if (taskId && (await close())) emit('openTaskLog', taskId)
 }
 const fullSubmitted = (taskId: string) => {
   if (!visible.value || context.value?.taskId !== taskId) return
@@ -862,6 +978,7 @@ const fullSubmitted = (taskId: string) => {
  */
 const discardDraft = () => {
   if (!form.value || submitted.value) return
+  precisionAlignment.value = false
   form.value.target.fieldList = deepCopy(original.value)
   removed.value = []
   validationIssues.value = []
@@ -1121,6 +1238,13 @@ defineExpose({ open })
         </div>
       </div>
       <div class="adjustment-content">
+        <el-alert
+          v-if="precisionAlignment"
+          :title="t('sync_maintenance.precision_alignment_help')"
+          type="info"
+          :closable="false"
+          show-icon
+        />
         <ExecutionRecovery
           v-if="context?.executionRecovery"
           :key="context.taskId + context.executionRecovery.logId"
@@ -1285,9 +1409,14 @@ defineExpose({ open })
               :closable="false"
               show-icon
             />
-            <el-button link type="primary" :disabled="loading" @click="showChanges">{{
-              t('sync_maintenance.view_changes')
-            }}</el-button>
+            <div class="applied-summary-actions">
+              <el-button link type="primary" :disabled="loading" @click="showChanges">{{
+                t('sync_maintenance.view_changes')
+              }}</el-button>
+              <el-button link type="primary" :disabled="loading" @click="showAllLogs">{{
+                t('sync_task_log.view_more')
+              }}</el-button>
+            </div>
           </div>
           <p v-if="!context?.structureVerified" class="context-label">
             {{ t('sync_maintenance.unverified') }}
@@ -1301,7 +1430,7 @@ defineExpose({ open })
               )
             }}</span>
             <el-button
-              v-if="activeTab === 'draft'"
+              v-if="activeTab === 'draft' && !precisionAlignment"
               :disabled="locked || !context.structure?.operations.includes('ADD')"
               @click="edit()"
               >{{ t('sync_task.add_field') }}</el-button
@@ -1319,10 +1448,11 @@ defineExpose({ open })
             :deletable="deletable"
             :status="activeTab === 'draft' ? rowStatus : undefined"
             :deleted="pendingDelete"
-            :show-actions="activeTab === 'draft'"
+            :show-actions="activeTab === 'draft' && !precisionAlignment"
             :compact="true"
             :source-type="sourceType"
             :target-type="targetType"
+            :actual-target-type="showActualDefinition ? actualTargetType : undefined"
             :protected-hint="protectedReason"
             :field-errors="activeTab === 'draft' ? fieldErrors : undefined"
             @page="
@@ -1330,11 +1460,7 @@ defineExpose({ open })
                 ? (pagination.currentPage = $event)
                 : (currentPagination.currentPage = $event)
             "
-            @size="
-              activeTab === 'draft'
-                ? (pagination.pageSize = $event)
-                : (currentPagination.pageSize = $event)
-            "
+            @size="sizeChange"
             @edit="edit"
             @delete="remove"
             @undo="undo"
@@ -1360,7 +1486,15 @@ defineExpose({ open })
               <p class="context-label">{{ t('sync_maintenance.special') }}</p>
               <div v-for="field in protectedFields" :key="field.fieldName" class="protected-field">
                 <span>{{ field.fieldName }}</span
-                ><span class="context-label">{{ targetType(field) }}</span>
+                ><span class="context-label"
+                  >{{ showActualDefinition ? t('sync_maintenance.saved_definition') + '：' : ''
+                  }}{{ targetType(field) }}</span
+                >
+                <span v-if="showActualDefinition" class="context-label"
+                  >{{ t('sync_maintenance.actual_definition') }}：{{
+                    actualTargetType(field)
+                  }}</span
+                >
               </div>
             </el-collapse-item>
           </el-collapse>
@@ -1411,6 +1545,9 @@ defineExpose({ open })
           <el-button :disabled="loading" @click="cancelEditing">{{
             t('sync_maintenance.discard_draft')
           }}</el-button>
+          <el-button v-if="!precisionAlignment" :disabled="loading" @click="reloadFields">{{
+            t('sync_maintenance.reload')
+          }}</el-button>
           <el-button type="primary" :disabled="locked || !changes.length" @click="inspect">{{
             t('sync_maintenance.check_all')
           }}</el-button>
@@ -1458,7 +1595,7 @@ defineExpose({ open })
               <el-button :disabled="loading" @click="activeTab = 'result'">{{
                 t('sync_maintenance.back_result')
               }}</el-button>
-              <el-button :disabled="locked" type="primary" @click="activeTab = 'draft'">{{
+              <el-button :disabled="loading" type="primary" @click="startEditing">{{
                 t('sync_maintenance.start_adjustment')
               }}</el-button>
             </template>
@@ -1479,7 +1616,14 @@ defineExpose({ open })
         <el-button v-else-if="activeTab === 'result'" @click="activeTab = 'current'">{{
           t('sync_maintenance.back_fields')
         }}</el-button>
-        <el-button v-else type="primary" :disabled="locked" @click="activeTab = 'draft'">{{
+        <el-button
+          v-else-if="context?.blockedCode === 'PRECISION_UNSPECIFIED' && !context.executionRecovery"
+          type="primary"
+          :disabled="loading"
+          @click="startPrecisionAlignment"
+          >{{ t('sync_maintenance.align_precision') }}</el-button
+        >
+        <el-button v-else type="primary" :disabled="loading" @click="startEditing">{{
           t('sync_maintenance.start_adjustment')
         }}</el-button>
       </div>
@@ -1530,13 +1674,15 @@ defineExpose({ open })
         <div class="impact-title">
           {{
             t(
-              preview.plan.requiresReinitialization
+              precisionAlignment
+                ? 'sync_maintenance.align_precision'
+                : preview.plan.requiresReinitialization
                 ? 'sync_maintenance.confirm_init_title'
                 : 'sync_maintenance.confirm_impact_title'
             )
           }}
         </div>
-        <p>
+        <p v-if="!precisionAlignment">
           {{
             t(
               preview.plan.requiresReinitialization
@@ -1549,7 +1695,7 @@ defineExpose({ open })
             )
           }}
         </p>
-        <p>
+        <p v-if="!precisionAlignment">
           {{
             t(
               preview.plan.requiresReinitialization
@@ -1559,7 +1705,7 @@ defineExpose({ open })
           }}
         </p>
         <p v-for="warning in preview.plan.warnings" :key="warning">{{ warning }}</p>
-        <details class="impact-details">
+        <details v-if="!precisionAlignment" class="impact-details">
           <summary>{{ t('sync_maintenance.confirm_more_impact') }}</summary>
           <p v-if="affectsDownstream">{{ t('sync_maintenance.downstream_help') }}</p>
           <p>{{ t('sync_maintenance.confirm_execution_flow') }}</p>
@@ -1582,7 +1728,13 @@ defineExpose({ open })
             v-if="preview.plan.riskConfirmationRequired"
             v-model="riskConfirmed"
             class="confirmation-option"
-            >{{ t('sync_maintenance.confirm_conversion_short') }}</el-checkbox
+            >{{
+              t(
+                precisionAlignment
+                  ? 'sync_maintenance.confirm_precision_alignment'
+                  : 'sync_maintenance.confirm_conversion_short'
+              )
+            }}</el-checkbox
           >
           <el-checkbox v-model="exclusive" class="confirmation-option">{{
             t('sync_maintenance.exclusive')
@@ -1920,6 +2072,16 @@ defineExpose({ open })
 }
 .end-adjustment {
   margin-right: auto;
+}
+.applied-summary-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  :deep(.ed-button + .ed-button) {
+    margin-left: 0;
+  }
 }
 .technical-details {
   :deep(.ed-collapse-item__content) {

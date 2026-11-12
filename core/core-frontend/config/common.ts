@@ -93,6 +93,11 @@ export default {
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
     alias: [
       {
+        // xe-utils 4.2.1 的 module 指向不存在的 index.esm.js，使用实际 ESM 入口。
+        find: /^xe-utils$/,
+        replacement: 'xe-utils/es/index.js'
+      },
+      {
         find: '@',
         replacement: `${pathResolve('src')}`
       }

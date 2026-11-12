@@ -1,23 +1,21 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus-secondary'
+import { computed, ref, type PropType } from 'vue'
 import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
+import PictureAssetCard from '@/custom-component/common/PictureAssetCard.vue'
+import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useI18n } from '@/hooks/web/useI18n'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { parseJson } from '@/views/chart/components/js/util'
 
-import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch, PropType, computed, nextTick } from 'vue'
-import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { imageUploadItem } from '@/utils/resourceImages'
-import eventBus from '@/utils/eventBus'
-import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
-import { useI18n } from '@/hooks/web/useI18n'
-import { toRefs } from 'vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
-const { t } = useI18n()
-
-let uploadCount = 0
-let totalUploads = 0
+interface PictureEntry {
+  name: string
+  url: string
+}
 
 const props = defineProps({
   themes: {
@@ -26,175 +24,238 @@ const props = defineProps({
   },
   element: {
     type: Object,
-    default() {
-      return {
-        propValue: {
-          urlList: []
-        }
-      }
-    }
+    required: true
   },
   view: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   }
 })
 
+const { t } = useI18n()
+const { emitter } = useEmitt()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { element } = toRefs(props)
-
-const { curComponent } = storeToRefs(dvMainStore)
-
-const fileList = ref([])
+const limit = 10
+const files = ref<HTMLInputElement>()
+const uploading = ref(false)
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
-const uploadDisabled = ref(false)
-const files = ref(null)
-const maxImageSize = 15000000
+const materialPicture = computed(() => Boolean(props.element.materialPicture))
+const images = computed<PictureEntry[]>(() => props.element.propValue.urlList || [])
+const primary = computed(() => (materialPicture.value ? images.value[0] : undefined))
+const listedImages = computed(() => (materialPicture.value ? images.value.slice(1) : images.value))
+const canAppend = computed(() => images.value.length < limit && !uploading.value)
+const threshold = computed(() => parseJson(props.view?.senior)?.threshold)
 
-const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.sourceUrl || file.url
+const recordChange = (componentId: string) => {
+  const settings = parseJson(dvMainStore.canvasViewInfo[componentId]?.senior)?.threshold
+  if (settings?.enable) {
+    emitter.emit('calcData-' + componentId)
+    snapshotStore.recordSnapshotCache('calcData', componentId)
+  } else {
+    snapshotStore.recordSnapshotCache('renderChart', componentId)
+  }
+}
+
+const updateThresholdImages = (
+  componentId: string,
+  list: PictureEntry[],
+  previousUrl: string,
+  replacement = ''
+) => {
+  if (!previousUrl || list.some(image => image.url === previousUrl)) return
+  const settings = parseJson(dvMainStore.canvasViewInfo[componentId]?.senior)?.threshold
+  settings?.tableThreshold?.forEach(field => {
+    field.conditions?.forEach(condition => {
+      if (condition.url === previousUrl) condition.url = replacement
+    })
+  })
+}
+
+const replacePrimary = (entry?: PictureEntry, element = props.element) => {
+  const list: PictureEntry[] = (element.propValue.urlList ??= [])
+  const previousUrl = list[0]?.url
+  if (!entry && list.length <= 1) {
+    list.splice(0, 1)
+  } else {
+    // Keep the first slot for the primary image while retaining conditional images.
+    list.splice(0, 1, entry || { name: '', url: '' })
+  }
+  updateThresholdImages(element.id, list, previousUrl, entry?.url)
+  recordChange(element.id)
+}
+
+const appendMaterial = (reference: string) => {
+  if (!canAppend.value) return
+  const { element } = props
+  const list: PictureEntry[] = (element.propValue.urlList ??= [])
+  if (materialPicture.value && !list.length) list.push({ name: '', url: '' })
+  list.push({ name: reference, url: reference })
+  recordChange(element.id)
+}
+
+const removePicture = (index: number) => {
+  const [removed] = images.value.splice(index + (materialPicture.value ? 1 : 0), 1)
+  if (!removed) return
+  updateThresholdImages(props.element.id, images.value, removed.url)
+  recordChange(props.element.id)
+}
+
+const previewPicture = (url: string) => {
+  dialogImageUrl.value = url
   dialogVisible.value = true
 }
 
-const handleRemove = (file, fileListArray) => {
-  uploadDisabled.value = false
-  const index = element.value.propValue['urlList'].findIndex(item => item.url === file.sourceUrl)
-  if (index !== -1) {
-    element.value.propValue['urlList'].splice(index, 1)
-    useEmitt().emitter.emit('calcData-' + element.value.id)
-  }
-  snapshotStore.recordSnapshotCache('picture-handleRemove')
-}
-async function upload(file) {
-  if (element.value.propValue.urlList.length < 10) {
-    // 增加总任务数
-    totalUploads++
-
-    uploadFileResult(file.file, (fileUrl, error) => {
-      if (error) {
-        // 上传失败
-        console.error('上传失败:', error)
-      } else {
-        // 上传成功
-        snapshotStore.recordSnapshotCache('pic-upload')
-        element.value.propValue.urlList.unshift({ name: file.file.name, url: fileUrl })
-        useEmitt().emitter.emit('calcData-' + element.value.id)
-      }
-
-      // 无论成功失败，都增加完成计数
-      uploadCount++
-
-      // 检查是否所有上传都完成了
-      if (uploadCount === totalUploads) {
-        // 所有图片上传完成，刷新列表
-        nextTick(() => {
-          fileListInit()
-          // 重置计数器
-          uploadCount = 0
-          totalUploads = 0
-        })
-      }
-    })
-  }
-}
-
-const onStyleChange = () => {
-  snapshotStore.recordSnapshotCache('pic-onStyleChange')
-}
-
-const goFile = () => {
+const pickFiles = (replace = false) => {
+  if (!files.value || uploading.value) return
+  files.value.multiple = !replace
   files.value.click()
 }
 
-const fileListInit = () => {
-  fileList.value = []
-  if (element.value.propValue.urlList && element.value.propValue.urlList.length > 0) {
-    element.value.propValue.urlList.forEach(urlInfo => {
-      fileList.value.push(imageUploadItem(urlInfo.url, urlInfo.name))
-    })
+const upload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const selected = Array.from(input.files || [])
+  const replace = !input.multiple
+  input.value = ''
+  if (uploading.value || !selected.length) return
+
+  const { element } = props
+  const picture = element.propValue
+  const list: PictureEntry[] = (picture.urlList ??= [])
+  const reservePrimary = !replace && materialPicture.value && !list.length
+  const capacity = replace ? 1 : limit - list.length - Number(reservePrimary)
+  if (selected.length > capacity) {
+    ElMessage.warning(t('visualization.pic_group_limit', { limit }))
+    return
+  }
+
+  uploading.value = true
+  let changed = false
+  try {
+    for (const file of selected.filter(beforeUploadCheck)) {
+      await uploadFileResult(file, (url, error) => {
+        if (error || !url || element.propValue !== picture) return
+        const entry = { name: file.name, url }
+        if (replace) {
+          replacePrimary(entry, element)
+        } else if (!replace && list.length < limit) {
+          if (element.materialPicture && !list.length) list.push({ name: '', url: '' })
+          list.push(entry)
+          changed = true
+        }
+      })
+    }
+  } finally {
+    uploading.value = false
+    if (changed) recordChange(element.id)
   }
 }
-const init = () => {
-  fileListInit()
-}
 
-const toolTip = computed(() => {
-  return props.themes || 'dark'
-})
-
-watch(
-  () => element.value.propValue['urlList'],
-  () => {
-    init()
+const adaptation = computed({
+  get: () => props.element.style.adaptation,
+  set: value => {
+    const { style, id } = props.element
+    style.adaptation = value
+    snapshotStore.recordSnapshotCache('renderChart', id)
   }
-)
-
-onMounted(() => {
-  init()
-  eventBus.on('uploadImg', goFile)
 })
-onBeforeUnmount(() => {
-  eventBus.off('uploadImg', goFile)
-})
-const applyMaterial = (reference: string) => {
-  if (element.value.propValue.urlList.length >= 10) return
-  element.value.propValue.urlList.push({ name: reference, url: reference })
-  useEmitt().emitter.emit('calcData-' + element.value.id)
-  snapshotStore.recordSnapshotCache('renderChart')
-}
 </script>
 
 <template>
-  <MaterialPickerButton
-    :themes="themes"
-    :disabled="element.propValue.urlList.length >= 10"
-    @select="applyMaterial"
-  />
-  <el-collapse-item :effect="themes" :title="t('visualization.pic_group')" name="picture">
-    <el-row class="img-area" :class="`img-area_${themes}`">
-      <el-col style="width: 130px !important">
-        <el-upload
+  <el-collapse-item :effect="themes" name="picture">
+    <template #title>
+      <div class="picture-section-title">
+        <span>{{ t(materialPicture ? 'visualization.picture' : 'visualization.pic_group') }}</span>
+        <span v-if="!materialPicture" class="picture-count">{{ images.length }} / {{ limit }}</span>
+      </div>
+    </template>
+    <input
+      ref="files"
+      type="file"
+      accept=".jpeg,.jpg,.png,.gif,.svg"
+      :multiple="!materialPicture"
+      hidden
+      @change="upload"
+    />
+
+    <template v-if="materialPicture">
+      <div class="picture-tools">
+        <MaterialPickerButton
           :themes="themes"
-          :limit="10"
-          action=""
-          accept=".jpeg,.jpg,.png,.gif,.svg"
-          class="avatar-uploader"
-          list-type="picture-card"
-          :class="{ disabled: uploadDisabled || element.propValue.urlList.length >= 10 }"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :before-upload="beforeUploadCheck"
-          :http-request="upload"
-          multiple
-          :file-list="fileList"
+          :disabled="uploading"
+          @select="reference => replacePrimary({ name: reference, url: reference })"
+        />
+        <el-button
+          v-if="primary?.url"
+          type="primary"
+          text
+          :disabled="uploading"
+          @click="pickFiles(true)"
         >
-          <el-icon><Plus /></el-icon>
-        </el-upload>
-        <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
-      </el-col>
-    </el-row>
-    <el-row>
-      <span style="margin-top: 2px" class="image-hint" :class="`image-hint_${themes}`">
-        {{ t('visualization.pic_upload_tips2') }}
-      </span>
-    </el-row>
+          {{ t('visualization.re_upload') }}
+        </el-button>
+      </div>
+      <PictureAssetCard
+        v-if="primary?.url"
+        :url="primary.url"
+        :name="primary.name"
+        :disabled="uploading"
+        @preview="previewPicture(primary.url)"
+        @remove="replacePrimary()"
+      />
+      <el-button
+        v-else
+        class="picture-upload"
+        :aria-label="t('visualization.pic_upload_tips')"
+        :disabled="uploading"
+        :icon="Plus"
+        @click="pickFiles(true)"
+      />
+    </template>
+
+    <template v-if="!materialPicture || threshold?.enable || listedImages.length">
+      <div v-if="materialPicture" class="picture-condition-label">
+        {{ t('visualization.pic_condition_images') }}
+      </div>
+      <div class="picture-tools">
+        <MaterialPickerButton :themes="themes" :disabled="!canAppend" @select="appendMaterial" />
+      </div>
+      <div class="picture-grid">
+        <PictureAssetCard
+          v-for="(image, index) in listedImages"
+          :key="image.url + '-' + index"
+          :url="image.url"
+          :name="image.name"
+          :order="index + 1"
+          :disabled="uploading"
+          @preview="previewPicture(image.url)"
+          @remove="removePicture(index)"
+        />
+        <el-button
+          v-if="images.length < limit"
+          class="picture-upload"
+          :aria-label="t('visualization.pic_upload_tips')"
+          :disabled="uploading"
+          :icon="Plus"
+          @click="pickFiles()"
+        />
+      </div>
+      <div class="image-hint">{{ t('visualization.pic_group_upload_hint') }}</div>
+    </template>
+    <div v-else class="image-hint">{{ t('visualization.pic_upload_tips2') }}</div>
+    <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl" />
+
     <el-row class="pic-adaptor">
       <el-form-item
-        v-if="curComponent.style.adaptation"
+        v-if="element.style.adaptation"
         class="form-item form-item-custom"
         :class="'form-item-' + themes"
         :label="t('visualization.pic_adaptor_type')"
         size="small"
         :effect="themes"
       >
-        <el-radio-group
-          size="small"
-          v-model="curComponent.style.adaptation"
-          @change="onStyleChange"
-          :effect="themes"
-        >
+        <el-radio-group v-model="adaptation" size="small" :effect="themes">
           <el-radio value="adaptation" :effect="themes">{{
             t('visualization.pic_adaptation')
           }}</el-radio>
@@ -211,160 +272,65 @@ const applyMaterial = (reference: string) => {
 </template>
 
 <style lang="less" scoped>
-.de-collapse-style {
-  :deep(.ed-collapse-item__header) {
-    height: 36px !important;
-    line-height: 36px !important;
-    font-size: 12px !important;
-    padding: 0 !important;
-    font-weight: 500 !important;
+.picture-section-title {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  padding-right: 8px;
+}
+.picture-count,
+.image-hint {
+  color: var(--ed-text-color-secondary);
+  font-size: 12px;
+  line-height: 20px;
+}
+.picture-count {
+  align-self: center;
+}
+.image-hint {
+  margin-top: 6px;
+}
+.picture-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
 
-    .ed-collapse-item__arrow {
-      margin: 0 6px 0 8px;
-    }
+  :deep(.ed-button) {
+    margin-left: 0;
+    padding: 0 4px;
   }
 
-  :deep(.ed-collapse-item__content) {
-    padding: 16px 8px 0;
-  }
-  :deep(.ed-form-item) {
-    display: block;
-    margin-bottom: 8px;
-  }
-  :deep(.ed-form-item__label) {
-    justify-content: flex-start;
+  &:empty {
+    display: none;
   }
 }
-
-.disabled :deep(.ed-upload) {
-  display: none;
+.picture-condition-label {
+  margin-top: 12px;
+  font-weight: 500;
 }
-
-.avatar-uploader :deep(.ed-upload) {
+.picture-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 80px);
+  gap: 8px;
+}
+.picture-upload {
   width: 80px;
   height: 80px;
-  line-height: 90px;
+  margin: 0;
+  border-style: dashed;
+  background: var(--ed-fill-color-light);
 }
-
-.avatar-uploader :deep(.ed-upload-list li) {
-  width: 80px !important;
-  height: 80px !important;
-}
-
-:deep(.ed-upload--picture-card) {
-  background: #eff0f1;
-  border: 1px dashed #dee0e3;
-  border-radius: 6px;
-
-  .ed-icon {
-    color: #1f2329;
-  }
-
-  &:hover {
-    .ed-icon {
-      color: var(--ed-color-primary);
-    }
-  }
-}
-.img-area {
-  overflow: hidden;
-
-  &.img-area_dark {
-    :deep(.ed-upload-list__item).is-success {
-      border-color: #434343;
-    }
-    :deep(.ed-upload--picture-card) {
-      background: #373737;
-      border-color: #434343;
-      .ed-icon {
-        color: #ebebeb;
-      }
-      &:hover {
-        .ed-icon {
-          color: var(--ed-color-primary);
-        }
-      }
-    }
-  }
-
-  &.img-area_light {
-    :deep(.ed-upload-list__item).is-success {
-      border-color: #dee0e3;
-    }
-  }
-}
-
-.image-hint {
-  color: #8f959e;
-  size: 14px;
-  line-height: 22px;
-  font-weight: 400;
-  margin-top: 2px;
-  &.image-hint_dark {
-    color: #757575;
-  }
-}
-
-.re-update-span {
-  cursor: pointer;
-  color: var(--ed-color-primary);
-  size: 14px;
-  line-height: 22px;
-  font-weight: 400;
-}
-
 .pic-adaptor {
-  margin: 8px 0 8px 0;
+  margin: 8px 0;
+
   :deep(.ed-form-item__content) {
     margin-top: 8px !important;
   }
 }
-
 .form-item-custom {
   .ed-radio {
     margin-right: 2px !important;
-  }
-}
-
-.drag-data {
-  padding-top: 8px;
-  padding-bottom: 16px;
-
-  .tree-btn {
-    width: 100%;
-    margin-top: 8px;
-    background: #fff;
-    height: 32px;
-    border-radius: 6px;
-    border: 1px solid #dcdfe6;
-    display: flex;
-    color: #cccccc;
-    align-items: center;
-    cursor: pointer;
-    justify-content: center;
-    font-size: 12px;
-    &.tree-btn--dark {
-      background: rgba(235, 235, 235, 0.05);
-      border-color: #5f5f5f;
-    }
-
-    &.active {
-      color: var(--ed-color-primary, #3370ff);
-      border-color: var(--ed-color-primary, #3370ff);
-    }
-  }
-
-  &.no-top-border {
-    border-top: none !important;
-  }
-  &.no-top-padding {
-    padding-top: 0 !important;
-  }
-  &:nth-child(n + 2) {
-    border-top: 1px solid @side-outline-border-color;
-  }
-  &:first-child {
-    border-top: none !important;
   }
 }
 </style>

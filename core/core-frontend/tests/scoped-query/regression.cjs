@@ -7,6 +7,7 @@ const { test } = require('node:test')
 const ts = require('typescript')
 const { parse } = require('@vue/compiler-sfc')
 const axios = require('axios')
+const { loadCandidateLoader } = require('../query-candidate-loader/load.cjs')
 const root = path.resolve(__dirname, '../..')
 const compile = source =>
   ts.transpileModule(source, {
@@ -751,6 +752,7 @@ test('API debugging cancels only its own instance and ignores responses after cl
       disabledNext: { value: false },
       apiItemBasicInfo: { value: { validate: fn => fn(true) } },
       apiItem: { name: 'synthetic' },
+      credentialSourceId: 'synthetic-datasource',
       paramsList: [],
       Base64: { encode: value => value },
       JSON,
@@ -1018,15 +1020,15 @@ test('tree options invalidate immediately during debounce; stale responses canno
   const config = { treeFieldList: [{ id: 'field' }], resultMode: 0, required: false }
   const context = {
     useLatestQuery: () => owner,
-    debounce: fn => {
-      const schedule = (...args) => {
-        queued = () => fn(...args)
-      }
-      schedule.cancel = () => {
+    createCandidateLoader: loadCandidateLoader({
+      setTimeout: fn => {
+        queued = fn
+        return 1
+      },
+      clearTimeout: () => {
         queued = undefined
       }
-      return schedule
-    },
+    }),
     props: { config },
     config: { value: config },
     loading: { value: false },
@@ -1045,26 +1047,30 @@ test('tree options invalidate immediately during debounce; stale responses canno
   }
   const api = selectedMethods(
     'src/custom-component/v-query/Tree.vue',
-    ['treeQuery', 'loadTreeOptions', 'getTreeOption'],
+    ['treeQuery', 'candidateLoader', 'loadTreeOptions', 'getTreeOption'],
     context
   )
-  api.getTreeOption()
-  const old = queued()
-  api.getTreeOption()
+  const old = api.getTreeOption()
+  queued()
+  await flush()
+  config.treeFieldList = [{ id: 'new-field' }]
+  const latest = api.getTreeOption()
   assert.equal(calls[0].query.signal.aborted, true)
   calls[0].resolve(['old'])
   await old
   assert.equal(context.treeOptionList.value.length, 0)
   assert.equal(context.loading.value, true)
-  const latest = queued()
+  queued()
+  await flush()
   calls[1].resolve(['new'])
   await latest
   assert.deepEqual(context.treeOptionList.value, ['new'])
   assert.equal(context.loading.value, false)
   assert.equal(scope.pendingCount, 0)
-  api.getTreeOption()
+  const stopped = api.getTreeOption()
   owner.dispose()
-  await queued()
+  queued()
+  await stopped
   assert.equal(calls.length, 2)
   assert.equal(scope.pendingCount, 0)
   scope.dispose()

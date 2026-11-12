@@ -300,6 +300,9 @@ export default {
     close: '关闭'
   },
   material: {
+    component_assets: '组件素材',
+    image_library: '图片素材库',
+    component_hint: '将边框、装饰、图形或图标添加到画布。',
     package_size_hint: '素材资源包不能超过 300MiB，包内素材总大小不能超过 200MiB。',
     title: '素材管理',
     description: '系统级共享素材库 · 素材库管理者可管理全部自建素材',
@@ -3740,6 +3743,10 @@ export default {
     pic_upload_tips: '请上传图片...',
     pic_group: '图片组',
     pic_upload_tips2: '支持JPG、PNG、GIF、SVG',
+    pic_group_upload_hint: '从素材库每次追加一张，本地可批量上传。',
+    pic_group_limit: '最多可添加 {limit} 张图片',
+    pic_group_carousel_hint: '预览时按图片顺序轮播，编辑时显示首图。',
+    pic_condition_images: '条件样式备选图片',
     pic_adaptor_type: '图片适应方式',
     pop_area_tips: '可点击或拖拽查询组件到此位置，点击预览可查看弹窗区',
     view: '图表',
@@ -4611,7 +4618,35 @@ export default {
     execution_results_in_the_past_7_days: '过去7天执行情况',
     sync_status_distribution: '同步状态分布'
   },
+  sync_task_log: {
+    view_more: '查看更多日志',
+    task_type: '任务类型',
+    data_sync: '数据同步',
+    field_change: '字段变更',
+    details: '字段变更日志',
+    operator: '操作人',
+    target_table: '目标表',
+    unknown: '未知',
+    planned_changes: '以下为本轮提交的变更计划，是否生效以实际执行结果为准',
+    planned_after: '计划变更后',
+    partial: '部分完成',
+    pending_initialization: '待初始化',
+    recovery_required: '待核对',
+    superseded: '由后续变更接续',
+    successor: '查看后续字段变更',
+    initialization_result: '关联初始化结果',
+    read_failed: '字段变更日志读取失败，请刷新重试',
+    cleanup_scope: '按所选时间范围清理数据同步和字段变更日志，执行中及仍需恢复的记录将保留'
+  },
   sync_maintenance: {
+    confirm_precision_alignment: '我已确认实际字段容量满足业务需要，按实际精度更新任务配置',
+    precision_unspecified: '未指定精度',
+    saved_definition: '任务保存配置',
+    actual_definition: '数据库实际结构',
+    actual_column_missing: '未找到对应字段',
+    align_precision: '按实际精度校准配置',
+    precision_alignment_help:
+      '本次仅将任务中未指定的数值精度校准为数据库实际值，不修改目标表、不扩大字段容量，也不执行数据同步。请先确认实际容量满足业务需要',
     menu: '字段调整',
     title: '调整目标字段',
     task_name: '任务',
@@ -4640,6 +4675,7 @@ export default {
     protected_fields: '受保护字段（{0}）',
     special: '特殊字段，不可调整',
     start_adjustment: '修改字段',
+    reload: '重新读取',
     confirm_field: '确认修改',
     draft_saved: '已更新本次编辑，确认调整后才会生效',
     added: '待新增',
@@ -4872,6 +4908,10 @@ export default {
     recovery_execution_failed: '已确认相关操作结束，本次运行按失败结束'
   },
   sync_task: {
+    decimal_precision_required:
+      '字段 {0}（源类型 {1}）的目标类型 {2} 尚未指定总精度，请根据实际数据明确设置总精度和小数位，避免使用数据库默认值',
+    decimal_parameters_invalid:
+      '字段 {0} 的目标类型 {2} 参数无效：总精度必须为 1～38 的整数，小数位必须为 0～总精度的整数',
     cleanup_result: '清理结果',
     cleanup_submitted: '已提交后台清理，可以关闭窗口继续操作',
     cleanup_empty: '没有需要清理的日志',
@@ -5012,7 +5052,7 @@ export default {
     source_field_type: '源类型',
     field_mapping_blocking_title: '当前有 {0} 个字段需要处理后才能保存',
     field_mapping_unknown_detail: '目标类型尚未确认，请选择目标数据库支持的字段类型',
-    field_mapping_blocking_save_tip: '还有 {0} 个字段的目标类型未确认：{1}，请处理后再保存',
+    field_mapping_blocking_save_tip: '还有 {0} 个字段的目标类型或参数需要处理：{1}，请处理后再保存',
     field_mapping_warning_title: '当前有 {0} 个字段存在同步风险（确认后可继续保存）',
     field_mapping_warning_item: '{0}：{1}',
     field_name_separator: '、',

@@ -1,4 +1,57 @@
 import request from '@/config/axios'
+import type { IMaintenancePlan, ITableField } from './syncTask'
+
+export type TaskLogType = 'DATA_SYNC' | 'FIELD_CHANGE'
+
+export interface TaskEventLog {
+  id: string
+  jobId: string
+  jobName: string
+  taskType: TaskLogType
+  executorStartTime: number | null
+  executorEndTime: number | null
+  status: string
+  deletable: boolean
+}
+
+export interface TaskFieldChangeLog extends TaskEventLog {
+  operationId: string
+  operatorName: string | null
+  targetTable: string | null
+  beforeFields: ITableField[]
+  afterFields: ITableField[]
+  progress: IMaintenancePlan['steps']
+  error: string
+  initializationLogId: string
+  initializationStatus: string
+  initializationError: string
+  successorLogId: string
+}
+
+export interface TaskEventLogQuery {
+  taskId?: string
+  keyword?: string
+  taskTypes?: TaskLogType[]
+  status?: string[]
+  lastExecuteTime?: string[]
+}
+
+export const getTaskEventLogListApi = (current: number, size: number, data: TaskEventLogQuery) => {
+  return request.post<Promise<{ data: { records: TaskEventLog[]; total: number } }>>({
+    url: `/sync/task/log/events/pager/${current}/${size}`,
+    data
+  })
+}
+
+export const getTaskFieldChangeLogApi = (logId: string) => {
+  return request.get<Promise<{ data: TaskFieldChangeLog }>>({
+    url: `/sync/task/log/changes/${logId}`
+  })
+}
+
+export const removeTaskEventLogApi = (taskType: TaskLogType, logId: string) => {
+  return request.post({ url: `/sync/task/log/events/delete/${taskType}/${logId}` })
+}
 
 export const getTaskLogListApi = (current: number, size: number, data: any) => {
   return request.post({
@@ -32,6 +85,13 @@ export const clear = (clearData: { jobId: string; clearType: string }) => {
   return request.post<Promise<{ data: TaskLogClearResult }>>({
     url: '/sync/task/log/clear',
     data: clearData
+  })
+}
+
+export const clearEventLogs = (data: { jobId: string; clearType: string }) => {
+  return request.post<Promise<{ data: TaskLogClearResult }>>({
+    url: '/sync/task/log/events/clear',
+    data
   })
 }
 

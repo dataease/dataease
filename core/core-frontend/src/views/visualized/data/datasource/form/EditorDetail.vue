@@ -1817,6 +1817,23 @@ defineExpose({
     width: 100%;
   }
 
+  .schema-label :deep(.ed-form-item__label) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    &::after {
+      display: none;
+    }
+
+    .name .required::after {
+      content: '*';
+      color: #f54a45;
+      margin-left: 2px;
+    }
+  }
+
   .ed-input-number {
     width: 100%;
   }
@@ -2120,26 +2137,6 @@ defineExpose({
     text-align: right;
     width: 100%;
     margin-top: 16px;
-  }
-}
-
-.schema-label {
-  .ed-form-item__label {
-    display: flex !important;
-    justify-content: space-between;
-    padding-right: 0;
-
-    &::after {
-      display: none;
-    }
-
-    .name {
-      .required::after {
-        content: '*';
-        color: #f54a45;
-        margin-left: 2px;
-      }
-    }
   }
 }
 </style>

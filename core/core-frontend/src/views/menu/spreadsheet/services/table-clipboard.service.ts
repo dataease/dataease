@@ -1,3 +1,4 @@
+import { presentError } from '@/config/axios/errorPresenter'
 import { Disposable, Inject, Injector } from '@univerjs/core'
 import { FUniver } from '@univerjs/core/facade'
 import { ElMessage } from 'element-plus-secondary'
@@ -156,9 +157,10 @@ export class TableClipboardService extends Disposable {
 
     this.pasting = true
     try {
-      const pasted = clipboard.type === 'detail'
-        ? await this.pasteDetailTable(univerApi, unitId, targetConfig as DetailTableConfig)
-        : await this.pastePivotTable(univerApi, unitId, targetConfig as PivotTableConfig)
+      const pasted =
+        clipboard.type === 'detail'
+          ? await this.pasteDetailTable(univerApi, unitId, targetConfig as DetailTableConfig)
+          : await this.pastePivotTable(univerApi, unitId, targetConfig as PivotTableConfig)
       if (!pasted) {
         return false
       }
@@ -170,7 +172,7 @@ export class TableClipboardService extends Disposable {
       ElMessage.success(clipboard.mode === 'copy' ? '表格复制成功' : '表格移动成功')
       return true
     } catch (error) {
-      ElMessage.error(`粘贴表格失败：${error instanceof Error ? error.message : '未知错误'}`)
+      presentError(error, `粘贴表格失败：${error instanceof Error ? error.message : '未知错误'}`)
       return false
     } finally {
       this.pasting = false
@@ -197,8 +199,8 @@ export class TableClipboardService extends Disposable {
 
     await this.tableFillService.fillTable(univerApi, config)
     const state = this.detailTableDisplayStateService.get(config.id)
-    const pasted = state?.sheetId === config.placement.sheetId &&
-      state.startCell === config.placement.startCell
+    const pasted =
+      state?.sheetId === config.placement.sheetId && state.startCell === config.placement.startCell
     return pasted
   }
 
@@ -226,8 +228,8 @@ export class TableClipboardService extends Disposable {
     }
 
     const state = this.pivotTableDisplayStateService.get(config.id)
-    const pasted = state?.sheetId === config.placement.sheetId &&
-      state.startCell === config.placement.startCell
+    const pasted =
+      state?.sheetId === config.placement.sheetId && state.startCell === config.placement.startCell
     return pasted
   }
 
@@ -243,10 +245,12 @@ export class TableClipboardService extends Disposable {
 
     const sourceEndRow = clipboard.sourceStartRow + clipboard.sourceRowCount - 1
     const sourceEndColumn = clipboard.sourceStartColumn + clipboard.sourceColumnCount - 1
-    return row >= clipboard.sourceStartRow &&
+    return (
+      row >= clipboard.sourceStartRow &&
       row <= sourceEndRow &&
       column >= clipboard.sourceStartColumn &&
       column <= sourceEndColumn
+    )
   }
 
   private syncLayerFromDisplayState(type: TableClipboardItem['type']): void {
@@ -255,9 +259,10 @@ export class TableClipboardService extends Disposable {
       return
     }
 
-    const state = type === 'detail'
-      ? this.detailTableDisplayStateService.get(clipboard.config.id)
-      : this.pivotTableDisplayStateService.get(clipboard.config.id)
+    const state =
+      type === 'detail'
+        ? this.detailTableDisplayStateService.get(clipboard.config.id)
+        : this.pivotTableDisplayStateService.get(clipboard.config.id)
     if (!state) {
       // 源表格已被删除后不再保留失效的剪贴板实例和范围标识。
       this.clear()
@@ -267,7 +272,8 @@ export class TableClipboardService extends Disposable {
     const start = this.parseCell(state.startCell)
     const rowCount = state.rowCount
     const columnCount = 'colCount' in state ? state.colCount : state.columnCount
-    const rangeChanged = clipboard.sourceSheetId !== state.sheetId ||
+    const rangeChanged =
+      clipboard.sourceSheetId !== state.sheetId ||
       clipboard.sourceStartRow !== start.row ||
       clipboard.sourceStartColumn !== start.column ||
       clipboard.sourceRowCount !== rowCount ||
@@ -311,7 +317,7 @@ export class TableClipboardService extends Disposable {
     let columnName = ''
     let current = column
     do {
-      columnName = String.fromCharCode(65 + current % 26) + columnName
+      columnName = String.fromCharCode(65 + (current % 26)) + columnName
       current = Math.floor(current / 26) - 1
     } while (current >= 0)
     return `${columnName}${row + 1}`

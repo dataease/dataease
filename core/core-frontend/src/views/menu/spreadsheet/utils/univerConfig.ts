@@ -19,7 +19,7 @@ import { UniverSheetsNoteUIPlugin } from '@univerjs/sheets-note-ui'
 import { UniverSheetsNumfmtUIPlugin } from '@univerjs/sheets-numfmt-ui'
 import { UniverSheetsSortUIPlugin } from '@univerjs/sheets-sort-ui'
 import { UniverSheetsTableUIPlugin } from '@univerjs/sheets-table-ui'
-import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui'
+import { CellPopupManagerService, UniverSheetsUIPlugin } from '@univerjs/sheets-ui'
 import { UniverWatermarkPlugin } from '@univerjs/watermark'
 import { UniverVue3AdapterPlugin } from '@univerjs/ui-adapter-vue3'
 
@@ -41,6 +41,7 @@ import {
 } from '../plugins/DataEaseToolbarUIPlugin/locales'
 import { DATAEASE_PROTECTION_MENU_CONFIG } from '../plugins/DataEaseToolbarUIPlugin/config/protection-config'
 import { DataEasePreviewModePlugin } from '../plugins/DataEasePreviewModePlugin'
+import { PreviewCellPopupManagerService } from '../plugins/DataEasePreviewModePlugin/services/preview-cell-popup-manager.service'
 import { DataEaseRuntimePlugin } from '../plugins/DataEaseRuntimePlugin'
 import { PREVIEW_MENU_CONFIG } from '../plugins/DataEasePreviewModePlugin/config/preview-menu-config'
 import { RangeSelectPlugin } from '../plugins/RangeSelectPlugin'
@@ -143,6 +144,9 @@ export interface UniverInstance {
   dispose: () => void
 }
 
+// 新建工作簿的首张表与底部「+」新增的工作表使用相同的行列数。
+const DEFAULT_SHEET_SIZE = { rowCount: 1000, columnCount: 26 }
+
 // 1.x 将函数说明移到公式引擎，需与表格公式的进度文案一并加载。
 // 核心插件与 UI 插件使用独立命名空间，需分别加载官方语言包。
 // 图标集下拉分组读取核心包的 iconSet 文案，UI 包的快捷菜单文案不能替代。
@@ -241,6 +245,7 @@ export function createUniverInstance(
   options: SpreadsheetRuntimeOptions = {}
 ): UniverInstance {
   const mode = options.mode ?? 'edit'
+  const isPreview = mode === 'preview'
 
   // Map locale string to Univer LocaleType
   let localeType = LocaleType.ZH_CN
@@ -260,7 +265,7 @@ export function createUniverInstance(
 
   univer.registerPlugin(UniverUIPlugin, {
     container,
-    menu: mode === 'preview' ? PREVIEW_MENU_CONFIG : undefined
+    menu: isPreview ? PREVIEW_MENU_CONFIG : undefined
   })
 
   univer.registerPlugin(UniverDocsPlugin)
@@ -270,14 +275,17 @@ export function createUniverInstance(
   univer.registerPlugin(UniverSheetsUIPlugin, {
     menu: DATAEASE_PROTECTION_MENU_CONFIG,
     protectedRangeShadow: false,
-    disableEdit: mode === 'preview',
-    footer: mode === 'preview'
-      ? {
-          addSheetButtonConfig: {
-            show: false
-          }
-        }
-      : undefined
+    override: isPreview
+      ? [[CellPopupManagerService, { useClass: PreviewCellPopupManagerService }]]
+      : undefined,
+    disableEdit: isPreview,
+    footer: {
+      addSheetButtonConfig: {
+        show: !isPreview,
+        defaultRowCount: DEFAULT_SHEET_SIZE.rowCount,
+        defaultColumnCount: DEFAULT_SHEET_SIZE.columnCount
+      }
+    }
   })
   univer.registerPlugin(UniverSheetsFormulaUIPlugin)
   univer.registerPlugin(UniverSheetsNumfmtUIPlugin)
@@ -356,8 +364,7 @@ export function createDefaultWorkbookData(sheetName = 'Sheet1'): Partial<IWorkbo
       [sheetId]: {
         id: sheetId,
         name: sheetName,
-        rowCount: 1000,
-        columnCount: 26,
+        ...DEFAULT_SHEET_SIZE,
         zoomRatio: 1,
         scrollTop: 0,
         scrollLeft: 0,

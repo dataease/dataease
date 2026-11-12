@@ -197,40 +197,42 @@ public final class JdbcUrlSecurityPolicy {
         if (StringUtils.isEmpty(value)) {
             return;
         }
-        String key = "allowloadlocalinfile";
-        int idx = 0;
-        while (true) {
-            int start = indexOfIgnoreCase(value, key, idx);
-            if (start < 0) {
-                return;
-            }
-            if (start > 0) {
-                char prev = value.charAt(start - 1);
-                if (prev != '?' && prev != '&' && prev != ';') {
-                    idx = start + key.length();
-                    continue;
+        // MariaDB Connector/J 只识别 allowLocalInfile；旧拼写 allowLoadLocalInfile 保留校验作为纵深防御。
+        for (String key : List.of("allowlocalinfile", "allowloadlocalinfile")) {
+            int idx = 0;
+            while (true) {
+                int start = indexOfIgnoreCase(value, key, idx);
+                if (start < 0) {
+                    break;
                 }
-            }
-            int pos = start + key.length();
-            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                if (start > 0) {
+                    char prev = value.charAt(start - 1);
+                    if (prev != '?' && prev != '&' && prev != ';') {
+                        idx = start + key.length();
+                        continue;
+                    }
+                }
+                int pos = start + key.length();
+                while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                    pos++;
+                }
+                if (pos >= value.length() || value.charAt(pos) != '=') {
+                    DEException.throwException("Illegal parameter: " + key);
+                }
                 pos++;
+                while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                    pos++;
+                }
+                int end = pos;
+                while (end < value.length() && value.charAt(end) != '&' && value.charAt(end) != ';') {
+                    end++;
+                }
+                String paramValue = value.substring(pos, end).trim();
+                if (!"false".equalsIgnoreCase(paramValue)) {
+                    DEException.throwException("Illegal parameter: " + key);
+                }
+                idx = Math.max(end, start + key.length());
             }
-            if (pos >= value.length() || value.charAt(pos) != '=') {
-                DEException.throwException("Illegal parameter: " + key);
-            }
-            pos++;
-            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
-                pos++;
-            }
-            int end = pos;
-            while (end < value.length() && value.charAt(end) != '&' && value.charAt(end) != ';') {
-                end++;
-            }
-            String paramValue = value.substring(pos, end).trim();
-            if (!"false".equalsIgnoreCase(paramValue)) {
-                DEException.throwException("Illegal parameter: " + key);
-            }
-            idx = Math.max(end, start + key.length());
         }
     }
 

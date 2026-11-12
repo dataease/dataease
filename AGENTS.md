@@ -19,6 +19,7 @@
 - 版本、脚本、Profile、端口以当前 `pom.xml`、`package.json` 和配置文件为准；旧文档中的版本、完整构建说明和默认分支不作为事实依据。
 - 不读取或输出与任务无关的密码、Token、密钥、真实连接信息；日志和交付说明中的敏感信息应脱敏。
 - 普通局部开发按既有模式自行推进；涉及破坏性数据变更、范围不明的外部操作时，先说明具体影响并取得必要授权。不得擅自执行安装器、发布或部署。
+- 安全约束：当前 Spring Framework 6.2.x 受 CVE-2026-47890 影响，且 6.2.x 无修复版本。在升级到 Spring Framework 7.0.9 / Spring Boot 4.x 前，禁止引入 `SseEmitter`、`ResponseBodyEmitter`、`StreamingResponseBody`、`ServerSentEvent` 或 `text/event-stream`。需要服务端推送时优先使用现有 WebSocket，或返回 JSON 由前端渲染。CI 会执行 `scripts/check-no-sse.sh` 兜底。
 
 ## 2. 项目地图与依赖边界
 

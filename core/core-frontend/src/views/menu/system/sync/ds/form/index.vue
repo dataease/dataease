@@ -202,35 +202,21 @@ const filterNode = (value: string, data: Tree) => {
   if (!value) return true;
   return data.name.toLowerCase().includes(value);
 };
-const filterTypeByActiveName = (ele: string) => {
-  if (sourceActive.value && ele === "OLTP") {
-    currentType.value = "OLTP";
-    return true;
-  }
-  if (!sourceActive.value && ele === "OLAP") {
-    currentType.value = "OLAP";
-    return true;
-  }
-  return false;
-};
+const databaseList = ref()
 const datasourceTree = computed(() => {
-  return state.datasourceTree.filter((ele) => {
-    return filterTypeByActiveName(ele.type);
-  });
-});
-const databaseList = ref();
+  return state.datasourceTree.filter(ele => {
+    return databaseList.value[typeList.indexOf(ele.type)]?.length
+  })
+})
 const currentTypeList = computed(() => {
   return typeList
-      .map((ele, index) => {
-        const dbList = (databaseList.value[index] || []).filter((item) => {
-          return !item.isPlugin || Number(item.datasourceRole) === activeDatasourceRole.value
-        })
-        return {name: nameMap[ele], dbList};
-      })
-      .filter((ele) => {
-        return filterTypeByActiveName(ele.name);
-      });
-});
+    .map((ele, index) => {
+      return { name: nameMap[ele], dbList: databaseList.value[index] || [] }
+    })
+    .filter(ele => {
+      return ele.dbList.length > 0
+    })
+})
 
 const pluginIndex = ref('')
 const pluginDs = ref([])
@@ -550,6 +536,7 @@ const init = (dsInfo: Form, source: boolean) => {
   visible.value = true;
   sourceActive.value = source;
   rebuildDatasourceTypes();
+  currentType.value = source ? 'OLTP' : 'OLAP'
   currentDsType.value = dsInfo?.type || "";
   isPlugin.value = dsInfo?.isPlugin || false
   pluginIndex.value = isPlugin.value ? dsInfo?.staticMap?.index : null

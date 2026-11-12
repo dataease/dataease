@@ -125,20 +125,16 @@ const otherEditorShow = computed(() => {
   )
 })
 
-watch(
-  () => otherEditorShow.value,
-  val => {
-    if (val && curComponent.value) {
-      findComponentAttr(curComponent.value)
-    }
+const resolveComponentAttr = ref<typeof import('@/utils/componentsAttr').findComponentAttr>()
+watch(otherEditorShow, async visible => {
+  if (visible && !resolveComponentAttr.value) {
+    const { findComponentAttr } = await import('@/utils/componentsAttr')
+    resolveComponentAttr.value = findComponentAttr
   }
+})
+const currentAttr = computed(() =>
+  otherEditorShow.value ? resolveComponentAttr.value?.(curComponent.value) : undefined
 )
-const currentAttr = ref()
-const findComponentAttr = type => {
-  import('../../utils/componentsAttr').then(res => {
-    currentAttr.value = res.findComponentAttr(type)
-  })
-}
 
 const otherEditorTitle = computed(() => {
   return curComponent.value?.component === 'UserView'
@@ -429,7 +425,7 @@ onUnmounted(() => {
         :element="curComponent"
         class="left-sidebar"
       >
-        <component :is="currentAttr" :themes="'light'" />
+        <component :is="currentAttr" :key="curComponent.id" :themes="'light'" />
       </dv-sidebar>
       <dv-sidebar
         v-show="!curComponent && !batchOptStatus && !hiddenListStatus"

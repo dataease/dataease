@@ -2,6 +2,7 @@ package io.dataease.visualization.server;
 import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -54,6 +55,7 @@ import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
@@ -149,6 +151,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private CoreUserManage coreUserManage;
+    @Resource
+    private CorePermissionManage corePermissionManage;
     @Resource
     private DatasourceServer datasourceServer;
 
@@ -650,6 +654,22 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public DataVisualizationVO updateCanvas(DataVisualizationBaseRequest request) {
+        if (request.getId() == null) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        // Serialize saves, including legacy callers. Check and all writes share this transaction.
+        DataVisualizationInfo saved = dataVisualizationInfoRepository.lockForSave(request.getId())
+                .filter(info -> !Boolean.TRUE.equals(info.getDeleteFlag()))
+                .orElseThrow(() -> io.dataease.exception.DEException.of(
+                        io.dataease.exception.ErrorCategory.NOT_FOUND, "i18n_error_not_found"));
+        if (Boolean.TRUE.equals(request.getCheckHistory())
+                && !java.util.Objects.equals(saved.getContentId(), request.getExpectedContentId())) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.CONFLICT, "i18n_error_conflict")
+                    .setErrorData(java.util.Collections.singletonMap("currentContentId", saved.getContentId()));
+        }
+        if (request.getCanvasViewInfo() == null || request.getPid() == null) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
         for (Map.Entry<Long, ChartViewDTO> ele : request.getCanvasViewInfo().entrySet()) {
             DatasetUtils.viewDecode(ele.getValue());
         }
@@ -691,6 +711,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
+        if (request == null || request.getId() == null || StringUtils.isBlank(request.getName())
+                || request.getStatus() == null || ((request.getStatus() == 0 || request.getStatus() == 1)
+                && request.getActiveViewIds() == null)) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
         /**
          * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
          * 统一处理为1.删除主表数据，2.将镜像表数据统一copy到主表 不删除镜像数据（发布状态后镜像数据和主表数据是保持一致的）
@@ -1134,11 +1159,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasetTableFieldVO> datasetTableFieldVOInfo = null;
         List<AppCoreDatasourceVO> datasourceVOInfo = null;
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
+
+        // 校验仪表板/大屏管理权限
+        requireVisualizationPermission(dvId, AuthEnum.MANAGE);
+        // 校验请求数据集均具备 READ 权限
+        if (CollectionUtils.isNotEmpty(dsIds)) {
+            for (Long dsId : dsIds) {
+                if (dsId == null || !corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
+                    denyVisualizationRead();
+                }
+            }
+        }
+
         //获取所有视图信息
         if (!CollectionUtils.isEmpty(viewIds)) {
-            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream().map(item -> {
-                return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
-            }).collect(Collectors.toList());
+            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream()
+                    .filter(item -> Objects.equals(item.getSceneId(), dvId))
+                    .map(item -> {
+                        return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
+                    }).collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
             QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
@@ -1157,6 +1196,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
             datasourceVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasource)
                     .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
                     .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch(), AppCoreDatasourceVO.class);
+
+            if (CollectionUtils.isNotEmpty(datasourceVOInfo)) {
+                datasourceVOInfo.forEach(this::maskDatasourceConfiguration);
+            }
 
             datasourceTaskVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasourceTask)
                     .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
@@ -1207,6 +1250,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
 
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
+    }
+
+    private void maskDatasourceConfiguration(AppCoreDatasourceVO datasource) {
+        if (datasource == null || StringUtils.isBlank(datasource.getConfiguration())) {
+            return;
+        }
+        String type = datasource.getType();
+        if (type == null || DatasourceConfiguration.DatasourceType.Excel.name().equals(type)
+                || DatasourceConfiguration.DatasourceType.ExcelRemote.name().equals(type)
+                || DatasourceConfiguration.DatasourceType.API.name().equals(type)) {
+            return;
+        }
+        try {
+            JsonNode configNode = JsonUtil.parseObject(datasource.getConfiguration(), JsonNode.class);
+            datasource.setConfiguration(ConfigurationCredentials.mask(configNode).toString());
+        } catch (Exception e) {
+            LogUtil.error("Failed to mask datasource configuration for export2AppCheck", e);
+            datasource.setConfiguration(null);
+        }
     }
 
 
