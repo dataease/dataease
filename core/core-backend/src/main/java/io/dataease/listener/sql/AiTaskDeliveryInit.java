@@ -17,7 +17,7 @@ public class AiTaskDeliveryInit implements CoreSqlBlock {
     private final JdbcTemplate jdbc;
     private final EntityManagerFactory factory;
     public AiTaskDeliveryInit(JdbcTemplate jdbc, EntityManagerFactory factory) { this.jdbc = jdbc; this.factory = factory; }
-    public Version getVersion() { return new Version("2.49"); }
+    public Version getVersion() { return new Version("2.50"); }
     public void execute() {
         Set<String> columns = jdbc.execute((org.springframework.jdbc.core.ConnectionCallback<Set<String>>) connection -> {
             Set<String> names = new HashSet<>();

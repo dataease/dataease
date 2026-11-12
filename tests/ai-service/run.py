@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
     parser.add_argument('--task-progress', action='store_true', help='isolated public task private-frame timing loop')
     parser.add_argument('--progress-case', default='all', choices=['all', 'text-plain', 'sql-plain', 'text-burst', 'sql-burst'])
     parser.add_argument('--progress-frames', type=int, default=512)
@@ -100,6 +101,11 @@ def main():
                 'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiMenuClassificationRegression.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/org/manage/OrgPageManage.java'])
         sources.extend((root/'tests/ai-service').glob('*.java'))
+        sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasource*Semantic.java'))
+        sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasourceRelation*.java'))
+        sources.extend(root/path for path in [
+            'core/core-backend/src/main/java/io/dataease/listener/InitSqlListener.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceMetadataInit.java'])
         java = ['java']
         if args.only_tasks or args.task_contracts:
             java.append('-Dai.test.onlyTasks=true')
@@ -122,7 +128,7 @@ def main():
             java.append('-Dai.test.redisPort=' + str(port))
         commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
                      '-cp', classpath, '-d', str(classes), *map(str, sources)],
-                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.Regression'])]]
+                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.Regression'])]]
         if args.xpack:
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
         try:

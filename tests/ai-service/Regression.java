@@ -106,7 +106,7 @@ public class Regression {
             jdbc.execute("create table core_menu(id bigint primary key,pid bigint,type integer,name varchar(45),component varchar(45),menu_sort integer,icon varchar(45),path varchar(45),hidden boolean,in_layout boolean,auth boolean)");
             jdbc.update("insert into core_menu(id,pid,type,name,component,hidden,in_layout,auth) values(130,15,2,?,?,false,true,true)", "retained-menu", "retained/component");
             var taskMigration=new io.dataease.listener.sql.AiTaskInit(jdbc,factory,em,manager); taskMigration.execute(); taskMigration.execute();
-            // Simulate an existing 2.48 database; migration must add missing columns and retry safely.
+            // Simulate an existing 2.49 task database; migration must add missing columns and retry safely.
             jdbc.execute("alter table core_ai_task_attempt drop column delivery_expires_at");
             jdbc.execute("alter table core_ai_task_attempt drop column notice_ack_at");
             jdbc.update("insert into core_ai_task_attempt (id,task_id,attempt_number,retry_hash,status,created_at,finished_at) values (777,777,1,'legacy-delivery','COMPLETED',1000,2000)");
@@ -114,7 +114,7 @@ public class Regression {
             if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id=777", Long.class) != 2000L + io.dataease.ai.manage.AiTaskManage.DELIVERY_MILLIS
                     || jdbc.queryForObject("select notice_ack_at from core_ai_task_attempt where id=777", Long.class) != 2000L) throw new AssertionError("legacy result expiry backfill preserves original finish and creates no old pending notice");
             jdbc.update("delete from core_ai_task_attempt where id=777");
-            System.out.println("PASS AI 2.49 additive retryable delivery migration, original expiry and no manufactured legacy notices");
+            System.out.println("PASS AI 2.50 additive retryable delivery migration, original expiry and no manufactured legacy notices");
             var migration=new AiConfigurationInit(jdbc,factory,em,manager); migration.execute(); migration.execute();
             var menuMigration=new io.dataease.listener.sql.AiConfigurationMenuInit(em,manager);menuMigration.execute();menuMigration.execute();
             check(settings.count()==1,"migration singleton idempotent without ddl-auto");check(menus.count()==2,"existing menu and independent AI configuration menu");

@@ -218,3 +218,7 @@ uv run python tests/ai-service/run.py --task-progress --progress-case text-burst
 入口使用实际任务 MVC/API、JPA 迁移/存储、runtime/transport 和真实 SQL scene；模型与 DatasourceApi 身份/元数据边界受控。`--task-progress` 比较 text/sql 两种路径的普通短文本与 512 个合法 private 帧（共 4096 字符），SQL 路径实际调用 list_tables 并续轮。断言上游已结束的合法短响应在原 5 秒允许期限内持久 COMPLETED，private 内容不输出，也不靠超限制造失败。fixture 只为自己的 H2 连接增加有限 JDBC 时延；可选 `--progress-delay-scope state|other` 隔离 attempt/node SELECT 与其他 SQL 的时序，不连接产品库。此断言检验用户可见完成/超时及结果，不以私有方法次数代替行为。默认完整和 `--only-tasks` 回归包含这组时序；快速 `--task-contracts` 可排除它。
 
 后台私有解析/校验热循环只检查本地 run、停止和 deadline；调度器仍周期检查持久状态，并在模型发送、工具边界、最终结果与用户交付前复核完整授权/归属。持久取消/节点失效以数据库 fence 裁决，不能因为减少逐字符数据库往返而放宽迟到提交。
+
+## 任务迁移升级回归
+
+`uv run python tests/ai-service/run.py --task-upgrade --ai-classpath <已有依赖 classpath 文件>` 通过真实 `InitSqlListener`、JPA 版本记录仓库与隔离 H2 验证启动升级，关闭 `ddl-auto`。覆盖已完成上游数据源语义迁移 `2.48` 且尚无 AI 任务表，以及从 `2.47` 依序升级的情况：`2.49` 建任务表、`2.50` 补交付字段，保留语义数据；另覆盖 `2.49` 存量任务表缺交付列的启动补列及旧结果回填。重复启动不重复执行或破坏结果。该回归验证实际 DDL 与启动排序，不仅检查版本号；不代表已验证其他数据库上的真实升级。
