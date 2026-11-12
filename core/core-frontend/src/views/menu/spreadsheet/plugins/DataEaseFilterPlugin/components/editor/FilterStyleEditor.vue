@@ -423,15 +423,24 @@ const updatePaddingMode = (mode: unknown) => {
     }
   }
 
-  &__font-button {
+  &__font-button.is-text {
     width: 24px;
     height: 24px;
     margin-left: 0 !important;
     padding: 0;
     font-size: 16px;
     font-weight: 600;
-    &.is-italic { font-style: italic; }
-    &.is-active { background: var(--ed-fill-color); }
+    // 文字按钮默认使用强调色，这里将强调色留给选中状态。
+    color: var(--ed-text-color-primary);
+
+    &.is-italic {
+      font-style: italic;
+    }
+
+    &.is-active {
+      color: var(--ed-color-primary);
+      background-color: var(--ed-color-primary-1a, #3370ff1a);
+    }
   }
 
   &__divider {
