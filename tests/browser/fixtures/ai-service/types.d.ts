@@ -13,4 +13,6 @@ declare const request: {
 }
 export default request
 
-export const isRequestError: (error: unknown) => error is { response?: { status?: number } }
+export const isRequestError: (
+  error: unknown
+) => error is { response?: { status?: number; data?: unknown } }

@@ -34,8 +34,9 @@ export interface AiTaskNotice {
 }
 export interface AiTaskSubmit {
   submissionKey: string
-  capability: 'sql.assist'
-  scene: 'sql'
+  capability: 'sql.assist' | 'structure-mutex.assist'
+  scene: 'sql' | 'structure-mutex'
+  selectedTables?: string[]
   resourceId: string
   editorId: string
   sql: string
@@ -45,6 +46,14 @@ export interface AiTaskSubmit {
 const data = <T>(promise: Promise<{ data: T }>) => promise.then(result => result.data)
 export const submitAiTask = (value: AiTaskSubmit) =>
   data<AiTask>(request.post({ url: '/ai/tasks', data: value, handleErrorLocally: true }))
+export const aiTaskTables = (resourceId: string, signal?: AbortSignal) =>
+  data<string[]>(
+    request.get({
+      url: `/ai/tasks/resources/${resourceId}/tables`,
+      signal,
+      handleErrorLocally: true
+    })
+  )
 export const activeAiTasks = (signal?: AbortSignal) =>
   data<AiTask[]>(request.get({ url: '/ai/tasks', signal, handleErrorLocally: true }))
 export const getAiTask = (id: string, signal?: AbortSignal) =>

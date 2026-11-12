@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
 import { aiFailureKey } from '@/api/aiService'
@@ -7,6 +7,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
   activeAiTasks,
+  aiTaskTables,
   pendingAiTaskNotices,
   acknowledgeAiTaskNotice,
   deliverAiTaskConversation,
@@ -34,12 +35,53 @@ const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
 const requestFailure = (error: unknown) => {
   const key = error && typeof error === 'object' && 'messageKey' in error ? error.messageKey : null
+  if (key === 'i18n_ai_task_resource_busy') return tr('mutex_busy')
   if (key === 'i18n_ai_task_queue_full') return t('ai_service.failure_task_queue_full')
   if (key === 'i18n_ai_task_user_queue_full') return t('ai_service.failure_task_user_queue_full')
   return tr('task_request_failed')
 }
 const user = useUserStoreWithOut()
 const tasks = ref<AiTask[]>([])
+const mutexMode = ref(false)
+const tableNames = ref<string[]>([])
+const selectedTables = ref<string[]>([])
+const tablesLoading = ref(false)
+const busyTaskId = ref('')
+let tableRead: AbortController | undefined
+let tableGeneration = 0
+const locateBusy = async () => {
+  const current = generation
+  try {
+    const task = await getAiTask(busyTaskId.value)
+    if (current === generation) remember(task)
+  } catch (error) {
+    if (current === generation) failure.value = requestFailure(error)
+  }
+}
+watch(
+  () => [mutexMode.value, props.resourceId, user.uid, user.oid, user.proxyInfo?.proxyOid],
+  async () => {
+    const current = ++tableGeneration
+    tableRead?.abort()
+    tableNames.value = []
+    selectedTables.value = []
+    busyTaskId.value = ''
+    if (!mutexMode.value || !props.resourceId) {
+      tablesLoading.value = false
+      return
+    }
+    tablesLoading.value = true
+    tableRead = new AbortController()
+    try {
+      const names = await aiTaskTables(props.resourceId, tableRead.signal)
+      if (current === tableGeneration) tableNames.value = names
+    } catch (error) {
+      if (current === tableGeneration) failure.value = requestFailure(error)
+    } finally {
+      if (current === tableGeneration) tablesLoading.value = false
+    }
+  }
+)
 const pending = ref(false)
 const failure = ref('')
 const loadingFailed = ref(false)
@@ -155,21 +197,28 @@ const remember = (task: AiTask) => {
   tasks.value = [task, ...tasks.value.filter(previous => previous.taskId !== task.taskId)]
 }
 const submit = async () => {
-  if (pending.value || (!props.resourceId && !props.text.trim())) return
+  if (
+    pending.value ||
+    (!props.resourceId && !props.text.trim()) ||
+    (mutexMode.value && (!props.resourceId || !selectedTables.value.length))
+  )
+    return
   const value = {
-    capability: 'sql.assist' as const,
-    scene: 'sql' as const,
+    capability: mutexMode.value ? ('structure-mutex.assist' as const) : ('sql.assist' as const),
+    scene: mutexMode.value ? ('structure-mutex' as const) : ('sql' as const),
+    ...(mutexMode.value ? { selectedTables: [...selectedTables.value].sort() } : {}),
     resourceId: props.resourceId,
     editorId: props.editorId,
-    sql: props.sql,
-    text: props.text.trim() || tr('single_request'),
-    ...(props.origin ? { origin: { ...props.origin } } : {})
+    sql: mutexMode.value ? '' : props.sql,
+    text: props.text.trim() || tr(mutexMode.value ? 'mutex_request' : 'single_request'),
+    ...(!mutexMode.value && props.origin ? { origin: { ...props.origin } } : {})
   }
   const fingerprint = JSON.stringify(value)
   if (submission?.fingerprint !== fingerprint)
     submission = { fingerprint, value: { ...value, submissionKey: crypto.randomUUID() } }
   pending.value = true
   failure.value = ''
+  busyTaskId.value = ''
   const current = generation
   const accepted = submission
   try {
@@ -187,8 +236,23 @@ const submit = async () => {
       return
     }
     remember(task)
+    return task
   } catch (error) {
-    if (current === generation) failure.value = requestFailure(error)
+    if (current === generation) {
+      failure.value = requestFailure(error)
+      if (isRequestError(error)) {
+        const body: unknown = error.response?.data
+        const data = body && typeof body === 'object' && 'data' in body ? body.data : null
+        if (
+          data &&
+          typeof data === 'object' &&
+          'taskId' in data &&
+          typeof data.taskId === 'string' &&
+          /^\d{1,20}$/.test(data.taskId)
+        )
+          busyTaskId.value = data.taskId
+      }
+    }
   } finally {
     if (current === generation) pending.value = false
   }
@@ -341,11 +405,25 @@ watch(
 onMounted(poll)
 onBeforeUnmount(() => {
   generation++
+  tableGeneration++
+  tableRead?.abort()
   reading?.abort()
   clearTimeout(timer)
   origins.clear()
   conversationDelivered.clear()
   closeToasts()
+})
+defineExpose({
+  controlledMode: mutexMode,
+  controlledReady: computed(
+    () =>
+      mutexMode.value &&
+      !pending.value &&
+      !!props.resourceId &&
+      !!selectedTables.value.length &&
+      !!props.text.trim()
+  ),
+  submitFromMessage: () => (mutexMode.value ? submit() : Promise.resolve(undefined))
 })
 </script>
 
@@ -353,12 +431,30 @@ onBeforeUnmount(() => {
   <section :aria-label="tr('tasks')">
     <h2>{{ tr('tasks') }}</h2>
     <p>{{ tr('task_lifecycle') }}</p>
-    <el-button :disabled="pending || (!resourceId && !text.trim())" @click="submit">{{
-      tr('background')
-    }}</el-button>
+    <el-checkbox v-model="mutexMode">{{ tr('mutex_title') }}</el-checkbox>
+    <template v-if="mutexMode">
+      <p>{{ tr('mutex_scope') }}</p>
+      <el-select
+        v-model="selectedTables"
+        multiple
+        :multiple-limit="32"
+        filterable
+        :loading="tablesLoading"
+        :disabled="tablesLoading || !resourceId"
+        :aria-label="tr('mutex_tables')"
+      >
+        <el-option v-for="name in tableNames" :key="name" :value="name" :label="name" />
+      </el-select>
+    </template>
+    <el-button
+      :disabled="pending || (!resourceId && !text.trim()) || (mutexMode && !selectedTables.length)"
+      @click="submit"
+      >{{ tr(mutexMode ? 'mutex_execute' : 'background') }}</el-button
+    >
     <p v-if="loadingFailed" role="status">{{ tr('task_load_failed') }}</p>
     <el-button v-if="readPaused" @click="resumeReading">{{ tr('resume_background') }}</el-button>
     <p v-if="failure" role="alert">{{ failure }}</p>
+    <el-button v-if="busyTaskId" link @click="locateBusy">{{ tr('mutex_locate') }}</el-button>
     <article v-for="task in tasks" :key="task.taskId">
       <p>
         {{ task.resourceName }} · {{ tr(`task_status_${task.status.toLowerCase()}`) }} ·

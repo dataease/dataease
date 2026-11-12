@@ -7,7 +7,10 @@ import io.dataease.api.ai.conversation.AiConversationDtos.Result;
 public final class AiTaskDtos {
     private AiTaskDtos() { }
     public record Origin(String sessionId, String contextVersion) { }
-    public record Submit(String submissionKey, String capability, String scene, String resourceId, String editorId, String sql, String text, Origin origin) {
+    public record Submit(String submissionKey, String capability, String scene, String resourceId, String editorId, String sql, String text, Origin origin, java.util.List<String> selectedTables) {
+        public Submit(String submissionKey, String capability, String scene, String resourceId, String editorId, String sql, String text, Origin origin) {
+            this(submissionKey, capability, scene, resourceId, editorId, sql, text, origin, null);
+        }
         public Submit(String submissionKey, String capability, String scene, String resourceId, String editorId, String sql, String text) {
             this(submissionKey, capability, scene, resourceId, editorId, sql, text, null);
         }

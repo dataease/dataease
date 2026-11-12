@@ -33,7 +33,7 @@ public final class TaskNode {
     static final ObjectMapper JSON = new ObjectMapper();
     static SessionFactory factory(String url) {
         return new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
-                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class)
+                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.connection.url", url).setProperty("hibernate.connection.driver_class", "org.h2.Driver")
                 .setProperty("hibernate.connection.username", "sa").setProperty("hibernate.connection.password", "")
                 .setProperty("hibernate.hbm2ddl.auto", "none").setProperty("hibernate.show_sql", "false").buildSessionFactory();
@@ -65,6 +65,12 @@ public final class TaskNode {
         };
         beans.addBean("scene", new AiConversationScene() {
             public String code() { return "sql"; }
+            public List<ResourceClaim> resourceClaims(Context context) {
+                String prefix = context.instruction().startsWith("Explain SQL: mutex2:") ? "Explain SQL: mutex2:" : "Explain SQL: mutex:";
+                if (!context.instruction().startsWith(prefix)) return List.of();
+                return Arrays.stream(context.instruction().substring(prefix.length()).split(","))
+                        .distinct().map(table -> new ResourceClaim(context.resourceId(), table, prefix.equals("Explain SQL: mutex2:") ? "another-operation" : "controlled-structure")).toList();
+            }
             public List<Resource> resources() { return List.of(new Resource("11", "controlled resource")); }
             public Context resolve(String id, String input) { return new Context(id, "controlled resource", "v1", "Explain SQL: " + input); }
             public List<AiToolProtocol.Definition> tools(Context context) {
@@ -91,7 +97,7 @@ public final class TaskNode {
                     } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); throw AiErrors.error("cancelled"); }
                     catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
                 }
-                if (Files.exists(Path.of(args[1], "resource-revoked-" + V3UserUtil.getUid())) || !Set.of(1L, 2L).contains(V3UserUtil.getUid()) || !"11".equals(context.resourceId())) throw AiErrors.error("forbidden");
+                if (Files.exists(Path.of(args[1], "resource-revoked-" + V3UserUtil.getUid())) || !Set.of(1L, 2L).contains(V3UserUtil.getUid()) || !Set.of("11", "22").contains(context.resourceId())) throw AiErrors.error("forbidden");
             }
         });
         var configuration = new AiConfigurationManage(manager);
@@ -125,8 +131,9 @@ public final class TaskNode {
             } catch (Exception failure) {
                 Throwable cause = failure instanceof jakarta.servlet.ServletException ? failure.getCause() : failure;
                 int status = cause instanceof AiErrors.Failure known && "forbidden".equals(known.safeCode()) ? 403
-                        : cause instanceof AiErrors.Failure known && Set.of("conflict", "task_queue_full", "task_user_queue_full").contains(known.safeCode()) ? 409 : 500;
-                byte[] body = "{\"error\":\"controlled-backend-failure\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                        : cause instanceof AiErrors.Failure known && Set.of("conflict", "task_queue_full", "task_user_queue_full", "task_resource_busy").contains(known.safeCode()) ? 409 : 500;
+                byte[] body = JSON.writeValueAsBytes(cause instanceof AiErrors.Failure known && known.getErrorData() != null
+                        ? Map.of("error", known.safeCode(), "data", known.getErrorData()) : Map.of("error", cause instanceof AiErrors.Failure known ? known.safeCode() : "controlled-backend-failure"));
                 exchange.sendResponseHeaders(status, body.length); exchange.getResponseBody().write(body);
             } finally { V3UserUtil.clear(); CommunityUtils.clear(); exchange.close(); }
         });

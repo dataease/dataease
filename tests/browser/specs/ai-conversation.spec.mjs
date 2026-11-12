@@ -1984,3 +1984,105 @@ test('unknown submission capacity preserves original keys and rejects an elevent
   await expect.poll(() => posts.length).toBe(12)
   expect(new Set(posts.map((post) => post.submissionKey)).size).toBe(11)
 })
+
+for (const entry of ['message', 'button'])
+  test(`controlled resource mutex uses canonical batch names from ${entry}`, async ({ page }) => {
+    let submitted
+    await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+      route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    )
+    await page.route('**/fixture-api/ai/tasks**', (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname.endsWith('/tables')) return route.fulfill({ json: ['A', 'B'] })
+      if (route.request().method() === 'POST' && url.pathname.endsWith('/tasks')) {
+        submitted = route.request().postDataJSON()
+        return route.fulfill({
+          json: {
+            taskId: '71',
+            attemptId: '72',
+            attemptNumber: 1,
+            status: 'QUEUED',
+            scene: 'structure-mutex',
+            resourceId: '11',
+            resourceName: 'Isolated database',
+            createdAt: Date.now()
+          }
+        })
+      }
+      return route.fulfill({ json: [] })
+    })
+    await selectResource(page)
+    await page.getByText('受控只读结构 / 资源互斥验收', { exact: true }).click()
+    await expect(
+      page.getByText('仅解释选中表结构；不生成语义、不执行 SQL、不保存业务资源。')
+    ).toBeVisible()
+    await page.getByRole('combobox', { name: '互斥批次表' }).focus()
+    await page.getByRole('combobox', { name: '互斥批次表' }).press('ArrowDown')
+    await page.getByRole('option', { name: 'A', exact: true }).click()
+    await page.getByRole('option', { name: 'B', exact: true }).click()
+    await page.keyboard.press('Escape')
+    if (entry === 'message')
+      await page.getByRole('textbox', { name: '消息' }).fill('Explain this batch')
+    await page
+      .getByRole('button', {
+        name: entry === 'message' ? '从消息发起受控后台' : '受控后台结构说明',
+        exact: true
+      })
+      .click()
+    await expect.poll(() => submitted?.scene).toBe('structure-mutex')
+    expect(submitted.capability).toBe('structure-mutex.assist')
+    expect(submitted.selectedTables).toEqual(['A', 'B'])
+    expect(submitted.text).toBe(entry === 'message' ? 'Explain this batch' : '解释选中表的结构')
+    expect(submitted.origin).toBeUndefined()
+    if (entry === 'message') {
+      await expect(page.getByRole('region', { name: '对话', exact: true })).toContainText(
+        'Explain this batch'
+      )
+      await expect(page.getByRole('region', { name: '对话', exact: true })).toContainText(
+        '受控后台任务 71 已受理'
+      )
+    } else await expect(page.getByRole('region', { name: '对话', exact: true })).toBeEmpty()
+  })
+
+for (const mine of [true, false])
+  test(`resource busy is a clear refusal with ${
+    mine ? 'own task location' : 'no other-owner link'
+  }`, async ({ page }) => {
+    await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+      route.fulfill({ json: [] })
+    )
+    await page.route('**/fixture-api/ai/tasks**', (route) => {
+      const url = new URL(route.request().url())
+      if (route.request().method() === 'POST' && url.pathname.endsWith('/tasks'))
+        return route.fulfill({
+          status: 409,
+          json: {
+            messageKey: 'i18n_ai_task_resource_busy',
+            ...(mine ? { data: { taskId: '71' } } : {})
+          }
+        })
+      if (url.pathname.endsWith('/71'))
+        return route.fulfill({
+          json: {
+            taskId: '71',
+            attemptId: '72',
+            attemptNumber: 1,
+            status: 'RUNNING',
+            scene: 'structure-mutex',
+            resourceId: '11',
+            resourceName: 'My current batch',
+            createdAt: Date.now()
+          }
+        })
+      return route.fulfill({ json: [] })
+    })
+    await page.goto('/?view=conversation')
+    await page.getByRole('textbox', { name: '消息' }).fill('Current request')
+    await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+    await expect(page.getByRole('alert')).toHaveText('所选资源正被同类后台任务占用，本次未受理。')
+    const locate = page.getByRole('button', { name: '查看本人当前任务' })
+    if (mine) {
+      await locate.click()
+      await expect(page.getByRole('button', { name: '取消后台任务', exact: true })).toBeVisible()
+    } else await expect(locate).toHaveCount(0)
+  })

@@ -8,6 +8,7 @@ import java.util.List;
 public interface AiTaskApi {
     @PostMapping Task submit(@RequestBody Submit request);
     @GetMapping List<Task> active();
+    @GetMapping("/resources/{resourceId}/tables") List<String> tables(@PathVariable String resourceId);
     @GetMapping("/notices") List<Notice> notices();
     @PostMapping("/notices/{attemptId}/ack") void acknowledge(@PathVariable Long attemptId);
     @PostMapping("/{id}/conversation") Task conversation(@PathVariable Long id, @RequestBody Origin origin);
