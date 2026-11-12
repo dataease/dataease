@@ -11,10 +11,7 @@ const { t } = useI18n()
 
 <template>
   <div class="panel-fullscreen">
-    <el-tooltip
-      :content="fullscreen ? t('visualization.ext_fullscreen') : label"
-      placement="bottom"
-    >
+    <el-tooltip :content="fullscreen ? t('visualization.ext_fullscreen') : label" placement="top">
       <button
         type="button"
         class="hover-icon"

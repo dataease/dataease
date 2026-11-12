@@ -501,6 +501,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 .node-tabs-row {
   position: relative;
   flex-shrink: 0;
+  margin-top: -4px;
   margin-bottom: 16px;
 }
 .node-tabs {
@@ -571,7 +572,6 @@ defineExpose({ commit, selectNode, hasPendingChanges })
     white-space: nowrap;
     .node-icon {
       flex-shrink: 0;
-      color: #646a73;
     }
     .label {
       flex: 1;
