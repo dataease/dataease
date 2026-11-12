@@ -1202,3 +1202,99 @@ test('online task completion is a basic toast and never becomes a terminal task 
     page.getByRole('alert').filter({ hasText: '后台任务已完成，结果已保存。' })
   ).toBeVisible()
 })
+
+for (const status of ['QUEUED', 'RUNNING']) {
+  test(`accepted ${status} background submission keeps its key until terminal observation`, async ({
+    page
+  }) => {
+    const requests = []
+    const tasks = new Map()
+    await page.route('**/fixture-api/ai/conversations**', (route) =>
+      route.fulfill({ json: route.request().url().endsWith('/resources') ? [] : {} })
+    )
+    await page.route('**/fixture-api/ai/tasks**', (route) => {
+      const url = new URL(route.request().url())
+      if (route.request().method() === 'POST') {
+        const body = route.request().postDataJSON()
+        requests.push(body)
+        if (!tasks.has(body.submissionKey))
+          tasks.set(body.submissionKey, {
+            taskId: String(3000 + tasks.size),
+            attemptId: String(4000 + tasks.size),
+            attemptNumber: 1,
+            status,
+            modelIdentifier: 'accepted-model'
+          })
+        return route.fulfill({ json: tasks.get(body.submissionKey) })
+      }
+      if (url.pathname.endsWith('/ai/tasks'))
+        return route.fulfill({
+          json: [...tasks.values()].filter((task) => ['QUEUED', 'RUNNING'].includes(task.status))
+        })
+      return route.fulfill({
+        json: [...tasks.values()].find((task) => url.pathname.endsWith('/' + task.taskId))
+      })
+    })
+    await page.goto('/?view=conversation')
+    const input = page.getByRole('textbox', { name: '消息' })
+    const submit = page.getByRole('button', { name: '后台 SQL 辅助', exact: true })
+    await input.fill('One accepted operation')
+    await submit.click()
+    await expect(submit).toBeEnabled()
+    await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(1)
+    await submit.click()
+    await expect.poll(() => requests.length).toBe(2)
+    expect(requests[1].submissionKey).toBe(requests[0].submissionKey)
+    expect(tasks.size).toBe(1)
+    await expect(submit).toBeEnabled()
+    await input.fill('Explicitly changed input')
+    await submit.click()
+    await expect.poll(() => requests.length).toBe(3)
+    expect(requests[2].submissionKey).not.toBe(requests[0].submissionKey)
+    expect(tasks.size).toBe(2)
+    tasks.get(requests[2].submissionKey).status = 'COMPLETED'
+    await expect(
+      page.getByRole('alert').filter({ hasText: '后台任务已完成，结果已保存。' })
+    ).toBeVisible()
+    await submit.click()
+    await expect.poll(() => requests.length).toBe(4)
+    expect(requests[3].submissionKey).not.toBe(requests[2].submissionKey)
+    expect(tasks.size).toBe(3)
+  })
+}
+
+test('unknown background admission response keeps the same operation key for retry', async ({
+  page
+}) => {
+  const requests = []
+  const tasks = new Map()
+  await page.route('**/fixture-api/ai/conversations**', (route) =>
+    route.fulfill({ json: route.request().url().endsWith('/resources') ? [] : {} })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    if (route.request().method() === 'POST') {
+      const body = route.request().postDataJSON()
+      requests.push(body)
+      if (!tasks.has(body.submissionKey))
+        tasks.set(body.submissionKey, {
+          taskId: '5000',
+          attemptId: '5001',
+          attemptNumber: 1,
+          status: 'QUEUED'
+        })
+      if (requests.length === 1) return route.fulfill({ status: 503, json: {} })
+      return route.fulfill({ json: tasks.get(body.submissionKey) })
+    }
+    return route.fulfill({ json: [...tasks.values()] })
+  })
+  await page.goto('/?view=conversation')
+  await page.getByRole('textbox', { name: '消息' }).fill('Admission response was lost')
+  const submit = page.getByRole('button', { name: '后台 SQL 辅助', exact: true })
+  await submit.click()
+  await expect(page.getByRole('alert')).toContainText('后台任务操作未确认')
+  await expect(submit).toBeEnabled()
+  await submit.click()
+  await expect.poll(() => requests.length).toBe(2)
+  expect(requests[1].submissionKey).toBe(requests[0].submissionKey)
+  expect(tasks.size).toBe(1)
+})
