@@ -43,6 +43,13 @@ public interface TaskMaintenanceApi {
     TaskMaintenanceVO details(@PathVariable String id);
 
     /**
+     * 按原任务来源连接读取 SQL 草稿字段，不保存查询或修改目标表
+     */
+    @PostMapping("/source")
+    @DePermit("m:manage")
+    TaskMaintenanceVO source(@Valid @RequestBody TaskMaintenanceRequest request);
+
+    /**
      * 整批检查字段差异并生成计划，未通过时返回字段定位信息，不提交 DDL
      */
     @PostMapping("/preview")

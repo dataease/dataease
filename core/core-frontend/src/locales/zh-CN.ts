@@ -4375,6 +4375,21 @@ export default {
     database_version: '版本',
     source_table: '来源表',
     target_table: '目标表',
+    edit_source_query: '修正来源 SQL',
+    source_query_draft: '来源 SQL 草稿',
+    query_edit_help:
+      '仅在原来源连接下修正 SQL。读取成功后仍需检查字段映射并确认调整；SQL 变更后将全量重新取数并替换目标数据',
+    cancel_query_edit: '取消 SQL 修改',
+    read_query_fields: '读取查询字段',
+    query_read_failed_help:
+      '请恢复缺失的源字段，或修正来源 SQL 后重新读取。仅删除目标字段无法修复失效查询',
+    query_pending: '来源 SQL 草稿已读取，确认调整前不会生效；本次需要全量重新初始化',
+    query_pending_count: '本次查询修改及 {0} 个字段修改尚未生效',
+    source_query_changed: '来源 SQL 变更',
+    source_missing_status: '源字段缺失',
+    source_missing_field: '源字段 {0} 已不存在，请恢复源字段或通过 DE 删除对应普通目标字段及映射',
+    source_missing_help:
+      '部分目标字段引用的源字段已不存在。请恢复源字段，或在下方删除对应普通目标字段及映射；删除目标列会丢失该列历史数据，受保护字段须恢复有效来源',
     query_source: '来源：查询结果',
     view_query: '查看查询',
     hide_query: '收起查询',
