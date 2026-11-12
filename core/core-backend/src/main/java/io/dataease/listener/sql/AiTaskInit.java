@@ -15,7 +15,7 @@ public class AiTaskInit implements CoreSqlBlock {
     public AiTaskInit(JdbcTemplate jdbc, EntityManagerFactory factory, EntityManager em, PlatformTransactionManager manager) {
         schema = new AiConfigurationInit(jdbc, factory, em, manager);
     }
-    public Version getVersion() { return new Version("2.48"); }
+    public Version getVersion() { return new Version("2.49"); }
     public void execute() {
         schema.create(CoreAiTask.class); schema.create(CoreAiTaskAttempt.class); schema.create(CoreAiTaskNode.class);
         schema.index("core_ai_task", "uk_ai_task_submission", "submission_hash", true);
