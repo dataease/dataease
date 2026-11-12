@@ -64,6 +64,17 @@ export interface AiRecoveryProgress {
   corrections: number
   reason: string | null
 }
+export const aiRecoveryReasonKey = (reason: string) => {
+  switch (reason) {
+    case 'connection_failed':
+    case 'provider_rate_limit':
+    case 'provider_unavailable':
+    case 'model_correction':
+      return `ai_conversation.recovery_reason_${reason}`
+    default:
+      return 'ai_conversation.recovery_reason_retry'
+  }
+}
 export interface AiConversationTool {
   callId: string
   name: string

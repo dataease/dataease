@@ -23,6 +23,7 @@ public final class TaskClusterRegression {
     private static final HttpClient HTTP = HttpClient.newHttpClient();
     private static final Map<String, CountDownLatch> release = new ConcurrentHashMap<>();
     private static final Map<String, Integer> sends = new ConcurrentHashMap<>();
+    private static final Map<String, JsonNode> modelRequests = new ConcurrentHashMap<>();
     private static final List<Process> processes = new ArrayList<>();
     private static Path output;
     private static String url;
@@ -77,7 +78,7 @@ public final class TaskClusterRegression {
     }
     private static Process node(String name, boolean schedule) throws Exception {
         var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(), "-cp", System.getProperty("java.class.path"),
-                "io.dataease.ai.TaskNode", url, output.toString(), name, Boolean.toString(schedule), Boolean.toString(Boolean.getBoolean("ai.test.disabledErrorsOnly")))
+                "io.dataease.ai.TaskNode", url, output.toString(), name, Boolean.toString(schedule), Boolean.toString(Boolean.getBoolean("ai.test.disabledErrorsOnly") || Boolean.getBoolean("ai.test.conflictErrorsOnly")))
                 .redirectErrorStream(true).redirectOutput(output.resolve(name + ".log").toFile()).start();
         processes.add(process);
         long deadline = System.currentTimeMillis() + 20000;
@@ -141,6 +142,68 @@ public final class TaskClusterRegression {
         check(sends.isEmpty(), "shutdown refusals and old sessions never reach the model transport");
         if (!failures.isEmpty()) throw new AssertionError("shutdown policy error contract failures: " + failures);
         System.out.println("PASS disabled error contracts " + checks + " assertions (actual MVC advice, contract2/legacy, global/organization)");
+    }
+    private static void conflictResponse(int port, String path, String body, String actor, String reason, List<String> failures) throws Exception {
+        for (boolean modern : List.of(true, false)) {
+            var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path)).timeout(java.time.Duration.ofSeconds(10))
+                    .header("Content-Type", "application/json").header("X-Test-Actor", actor).POST(HttpRequest.BodyPublishers.ofString(body));
+            if (modern) request.header("X-DE-Error-Contract", "2");
+            var response = HTTP.send(request.build(), HttpResponse.BodyHandlers.ofString());
+            var error = TaskNode.JSON.readTree(response.body());
+            boolean expected = response.statusCode() == 409 && error.path("code").asInt() == 50005
+                    && (modern ? "CONFLICT".equals(error.path("category").asText()) && ("i18n_ai_" + reason).equals(error.path("messageKey").asText())
+                    : !error.has("category") && !error.has("messageKey"));
+            String evidence = reason + " " + (modern ? "contract2" : "legacy") + " HTTP" + response.statusCode() + " code=" + error.path("code")
+                    + " category=" + error.path("category") + " messageKey=" + error.path("messageKey");
+            System.out.println("DIAG " + evidence);
+            if (!expected) failures.add(evidence); else checks++;
+        }
+    }
+    private static void conflictErrors(int port) throws Exception {
+        var failures = new ArrayList<String>();
+        var task = call(port, "/ai/tasks", "POST", body("conflict-seed"));
+        String path = "/ai/tasks/" + task.path("taskId").asText();
+        conflictResponse(port, "/ai/tasks", body("conflict-seed").replace("select 1", "select 2"), "1", "conflict", failures);
+        conflictResponse(port, path + "/retry", TaskNode.JSON.writeValueAsString(Map.of("retryKey", "still-running", "expectedAttemptId", task.path("attemptId").asText())), "1", "conflict", failures);
+        call(port, path + "/cancel", "POST", "");
+        var retried = call(port, path + "/retry", "POST", TaskNode.JSON.writeValueAsString(Map.of("retryKey", "same-retry", "expectedAttemptId", task.path("attemptId").asText())));
+        conflictResponse(port, path + "/retry", TaskNode.JSON.writeValueAsString(Map.of("retryKey", "same-retry", "expectedAttemptId", retried.path("attemptId").asText())), "1", "conflict", failures);
+        call(port, path + "/cancel", "POST", "");
+        settings(port, 2, 1, 1, 120);
+        var queued = call(port, "/ai/tasks", "POST", body("queue-conflict"));
+        conflictResponse(port, "/ai/tasks", body("queue-overflow"), "2", "task_queue_full", failures);
+        call(port, "/ai/tasks/" + queued.path("taskId").asText() + "/cancel", "POST", "");
+        settings(port, 2, 10, 1, 120);
+        queued = call(port, "/ai/tasks", "POST", body("user-queue-conflict"));
+        conflictResponse(port, "/ai/tasks", body("user-queue-overflow"), "1", "task_user_queue_full", failures);
+        call(port, "/ai/tasks/" + queued.path("taskId").asText() + "/cancel", "POST", "");
+        settings(port, 2, 100, 10, 120);
+        queued = call(port, "/ai/tasks", "POST", mutexBody("resource-owner", "A"));
+        conflictResponse(port, "/ai/tasks", mutexBody("resource-conflict", "A"), "1", "task_resource_busy", failures);
+        call(port, "/ai/tasks/" + queued.path("taskId").asText() + "/cancel", "POST", "");
+        node("import-worker", true);
+        var session = call(port, "/ai/conversations", "POST", "{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"cluster\",\"sql\":\"select 1\"}");
+        var origin = Map.of("sessionId", session.path("sessionId").asText(), "contextVersion", session.path("contextVersion").asText());
+        var input = (com.fasterxml.jackson.databind.node.ObjectNode) TaskNode.JSON.readTree(body("import-result")); input.set("origin", TaskNode.JSON.valueToTree(origin));
+        var linked = call(port, "/ai/tasks", "POST", TaskNode.JSON.writeValueAsString(input));
+        String linkedPath = "/ai/tasks/" + linked.path("taskId").asText(); await(port, linkedPath, "COMPLETED");
+        var busy = call(port, "/ai/conversations/" + session.path("sessionId").asText() + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", origin.get("contextVersion"), "text", "slow-import-busy")));
+        long deadline = System.currentTimeMillis() + 10000;
+        while (!sends.containsKey("slow-import-busy") && System.currentTimeMillis() < deadline) Thread.sleep(20);
+        check(sends.containsKey("slow-import-busy"), "original conversation really has an active turn before import");
+        conflictResponse(port, linkedPath + "/conversation", TaskNode.JSON.writeValueAsString(origin), "1", "concurrency", failures);
+        release.get("slow-import-busy").countDown();
+        String sessionPath = "/ai/conversations/" + session.path("sessionId").asText();
+        await(port, sessionPath + "/executions/" + busy.path("executionId").asText() + "/events", "COMPLETED");
+        check(call(port, linkedPath + "/conversation", "POST", TaskNode.JSON.writeValueAsString(origin)).path("result").path("text").asText().equals("persisted import-result"), "busy import does not consume completed task delivery");
+        call(port, linkedPath + "/conversation", "POST", TaskNode.JSON.writeValueAsString(origin));
+        var follow = call(port, sessionPath + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", origin.get("contextVersion"), "text", "follow-after-import")));
+        await(port, sessionPath + "/executions/" + follow.path("executionId").asText() + "/events", "COMPLETED");
+        long copies = 0;
+        for (var message : modelRequests.get("follow-after-import").path("messages")) if ("assistant".equals(message.path("role").asText()) && message.path("content").asText().contains("persisted import-result")) copies++;
+        check(copies == 1 && sends.get("import-result") == 1, "repeated imports append one background answer without another task model send");
+        if (!failures.isEmpty()) throw new AssertionError("conflict error contract failures: " + failures);
+        System.out.println("PASS conflict error contracts " + checks + " assertions (actual MVC advice, contract2/legacy, busy import idempotency)");
     }
     private static void policy(int accepting) throws Exception {
         settings(accepting, 1, 20, 20, 120);
@@ -362,7 +425,9 @@ public final class TaskClusterRegression {
         provider.createContext("/v1/chat/completions", exchange -> {
             String key = "";
             try {
-                var request = TaskNode.JSON.readTree(exchange.getRequestBody()); key = request.path("messages").get(1).path("content").asText();
+                var request = TaskNode.JSON.readTree(exchange.getRequestBody());
+                key = request.path("messages").get(Boolean.getBoolean("ai.test.conflictErrorsOnly") ? request.path("messages").size() - 1 : 1).path("content").asText();
+                if (Boolean.getBoolean("ai.test.conflictErrorsOnly")) modelRequests.put(key, request);
                 sends.merge(key, 1, Integer::sum);
                 if (key.startsWith("retry-slot-") && sends.get(key) == 1) {
                     byte[] temporary = "{\"error\":{\"message\":\"controlled transient provider failure\"}}".getBytes(StandardCharsets.UTF_8);
@@ -399,6 +464,7 @@ public final class TaskClusterRegression {
             // A queued request survives the accepting process without ever having an execution owner.
             var accepting = node("accepting", false); int acceptingPort = port("accepting");
             if (Boolean.getBoolean("ai.test.disabledErrorsOnly")) { disabledErrors(acceptingPort); return; }
+            if (Boolean.getBoolean("ai.test.conflictErrorsOnly")) { conflictErrors(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.policyOnly")) { policy(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.mutexOnly")) { mutex(acceptingPort); return; }
             var originalSettings = call(acceptingPort, "/ai/settings", "GET", "");

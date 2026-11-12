@@ -10,6 +10,7 @@ import { aiFailureKey } from '@/api/aiService'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
+  aiRecoveryReasonKey,
   closeConversation,
   getAiAvailability,
   retryConversationExecution,
@@ -880,7 +881,9 @@ onBeforeUnmount(() => {
             {{ tr('current_step') }}: {{ message.recovery.stepKind }} ·
             {{ tr('technical_retries') }} {{ message.recovery.technicalRetries }} ·
             {{ tr('corrections') }} {{ message.recovery.corrections
-            }}<span v-if="message.recovery.reason"> · {{ message.recovery.reason }}</span>
+            }}<span v-if="message.recovery.reason">
+              · {{ t(aiRecoveryReasonKey(message.recovery.reason)) }}</span
+            >
           </p>
           <small v-if="message.executionId">{{ message.executionId }}</small>
           <el-button v-if="message.executionId" link @click="copyExecution(message.executionId)">{{

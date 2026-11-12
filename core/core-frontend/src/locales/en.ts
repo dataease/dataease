@@ -29,6 +29,12 @@ export default {
     retry_unknown: 'Retry acceptance is unconfirmed. Click again to reuse the same retry key.',
     current_step: 'Current step',
     technical_retries: 'Technical retries',
+    recovery_reason_provider_unavailable:
+      'The model service is temporarily unavailable. Retrying this step.',
+    recovery_reason_provider_rate_limit: 'The model rate limit was reached. Waiting to retry.',
+    recovery_reason_connection_failed: 'The connection was interrupted. Retrying this step.',
+    recovery_reason_model_correction: 'Correcting the model output.',
+    recovery_reason_retry: 'Retrying the current step.',
     corrections: 'Model corrections',
     copy_execution: 'Copy execution ID',
     copy_failed: 'Copy failed. Select the execution ID manually.',
