@@ -108,13 +108,17 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     }
     const visibleColumns = sheet.facet.getColLeafNodes()
     const names = [...new Set([...fields, meta.valueField])]
+    const showFieldNames = names.length > 1
     const content = document.createElement('div')
     Object.assign(content.style, {
       boxSizing: 'border-box',
+      display: 'grid',
+      // 窄提示框内为字段值预留宽度，避免长字段名挤占整行。
+      gridTemplateColumns: showFieldNames ? 'minmax(0, 2fr) minmax(0, 3fr)' : 'minmax(0, 1fr)',
+      gap: '8px 16px',
       overflow: 'auto',
       overflowWrap: 'anywhere',
       overscrollBehavior: 'contain',
-      padding: '4px 12px',
       textAlign: 'left',
       touchAction: 'pan-y',
       whiteSpace: 'pre-wrap'
@@ -124,15 +128,20 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
       const value = row[name]
       const formatter = metaConfig.find(item => item.field === name)?.formatter
       const formatted = value == null || value === '' ? '—' : formatter?.(value) ?? value
-      const line = document.createElement('div')
-      const field = tooltipFields.find(field => field.dataeaseName === name)
-      const label =
-        visibleColumns.find(column => column.field === name)?.value ??
-        field?.chartShowName ??
-        field?.name ??
-        name
-      line.textContent = names.length === 1 ? String(formatted) : `${label}：${formatted}`
-      content.appendChild(line)
+      if (showFieldNames) {
+        const field = tooltipFields.find(field => field.dataeaseName === name)
+        const label = document.createElement('span')
+        label.textContent =
+          visibleColumns.find(column => column.field === name)?.value ??
+          field?.chartShowName ??
+          field?.name ??
+          name
+        content.appendChild(label)
+      }
+      const valueElement = document.createElement('span')
+      valueElement.style.textAlign = 'right'
+      valueElement.textContent = String(formatted)
+      content.appendChild(valueElement)
     }
     content.addEventListener('pointerleave', event => {
       if (event.pointerType === 'mouse' && sheet.tooltip.options?.content === content) {

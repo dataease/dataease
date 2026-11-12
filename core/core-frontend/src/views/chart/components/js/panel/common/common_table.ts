@@ -1833,7 +1833,7 @@ export function configTooltip(chart: Chart, option: S2Options) {
       color: tooltip.color,
       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
       borderRadius: '3px',
-      padding: '4px 12px',
+      padding: '12px',
       // 先按内容确定宽度再校正位置，避免靠近右边界时被剩余空间挤压换行
       width: 'max-content',
       minWidth: '0',
@@ -1991,7 +1991,6 @@ export function getTooltipPosition(event) {
       (viewportTop + (viewport?.height ?? window.innerHeight) - canvasRect.top) / scaleY
     )
     const container = s2Instance.tooltip.getContainer()
-    container.style.padding = '0'
     tableContent.style.maxWidth = `${Math.max(0, Math.min(400, right - left))}px`
     // 高度最多占可见区一半，确保提示能贴在触点上方或下方，不遮住触点。
     tableContent.style.maxHeight = `${Math.max(0, (bottom - top) / 2 - 1)}px`
