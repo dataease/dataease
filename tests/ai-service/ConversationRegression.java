@@ -400,6 +400,7 @@ public final class ConversationRegression {
             if (sent.size() != beforeRetiredTurn) throw new AssertionError("legacy retired context is rejected before any model HTTP request");
             for (var active : occupied) mvc.perform(delete("/ai/conversations/" + active.path("sessionId").asText()));
             mvc.perform(delete("/ai/conversations/" + retiredSource.path("sessionId").asText()));
+            streamRelease.set(streamFinish);
             protocol.set("framed");
             String lastEditedSession = null;
             for (int edit = 0; edit < 6; edit++) {
@@ -411,7 +412,7 @@ public final class ConversationRegression {
             }
             mvc.perform(delete("/ai/conversations/" + lastEditedSession));
             sent.clear(); protocol.set("normal");
-            System.out.println("PASS public foreground Open/submit idempotency, frozen manual retry and temporary model recovery");
+            System.out.println("PASS public foreground Open/submit idempotency, frozen manual retry, atomic activity quota and temporary model recovery");
             if (Boolean.getBoolean("ai.test.recoveryOnly")) { manage.destroy(); return; }
             var open = mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"editor-a\",\"sql\":\"select 1\"}"))
