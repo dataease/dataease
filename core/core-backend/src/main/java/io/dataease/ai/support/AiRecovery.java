@@ -10,7 +10,8 @@ import java.util.function.Supplier;
 /** Attempt-scoped recovery: counters/deadline never reset between model or tool steps. */
 public final class AiRecovery {
     public record Progress(String stepId, String stepKind, int technicalRetries, int corrections, String reason) { }
-    private final int stepLimit, attemptLimit, delay;
+    private int stepLimit, attemptLimit, delay;
+    private boolean frozen;
     private int retries, corrections, modelSends, toolSends;
     private io.dataease.api.ai.runtime.AiExecutionLink link;
     public synchronized void link(io.dataease.api.ai.runtime.AiExecutionLink link) {
@@ -22,6 +23,13 @@ public final class AiRecovery {
     private java.util.function.Consumer<Progress> observer = ignored -> { };
     public AiRecovery(CoreAiSetting settings) {
         stepLimit = settings.getRecoveryStepRetries(); attemptLimit = settings.getRecoveryAttemptRetries(); delay = settings.getRecoveryInitialDelayMillis();
+    }
+    /** A trusted lifecycle may install the policy captured at acceptance, before any step is published. */
+    public synchronized void freeze(io.dataease.api.ai.config.AiConfigDtos.Recovery policy) {
+        if (frozen || progress.stepId() != null) throw AiErrors.error("conflict");
+        if (policy == null || policy.stepRetries() < 0 || policy.stepRetries() > 5 || policy.attemptRetries() < 0 || policy.attemptRetries() > 5
+                || policy.initialDelayMillis() < 100 || policy.initialDelayMillis() > 10000) throw AiErrors.error("configuration_unavailable");
+        stepLimit = policy.stepRetries(); attemptLimit = policy.attemptRetries(); delay = policy.initialDelayMillis(); frozen = true;
     }
     public synchronized Progress progress() { return progress; }
     public synchronized void observe(java.util.function.Consumer<Progress> observer) { this.observer = this.observer.andThen(java.util.Objects.requireNonNull(observer)); }
