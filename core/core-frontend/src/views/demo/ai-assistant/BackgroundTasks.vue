@@ -5,6 +5,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
   activeAiTasks,
+  pendingAiTaskNotices,
+  acknowledgeAiTaskNotice,
+  deliverAiTaskConversation,
+  type AiTaskNotice,
+  type AiTaskOrigin,
   cancelAiTask,
   getAiTask,
   retryAiTask,
@@ -13,7 +18,16 @@ import {
   type AiTaskSubmit
 } from '@/api/aiTask'
 
-const props = defineProps<{ resourceId: string; editorId: string; sql: string; text: string }>()
+const props = defineProps<{
+  resourceId: string
+  editorId: string
+  sql: string
+  text: string
+  origin?: AiTaskOrigin
+}>()
+const emit = defineEmits<{ delivered: [task: AiTask, question: string, origin: AiTaskOrigin] }>()
+const conversationDelivered = new Set<string>()
+const origins = new Map<string, { origin: AiTaskOrigin; question: string }>()
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
 const user = useUserStoreWithOut()
@@ -33,7 +47,7 @@ const closeToasts = () => {
   toasts.clear()
   finished.clear()
 }
-const notify = (task: AiTask) => {
+const notify = (task: AiTask | AiTaskNotice) => {
   if (finished.has(task.attemptId)) return
   finished.add(task.attemptId)
   if (finished.size > 50) finished.delete(finished.values().next().value!)
@@ -63,7 +77,7 @@ const notify = (task: AiTask) => {
           tr('task_retry')
         )
       ])
-    : message
+    : message + ' ' + tr('task_expiry')
   toasts.set(
     task.attemptId,
     ElMessage({
@@ -97,7 +111,8 @@ const submit = async () => {
     resourceId: props.resourceId,
     editorId: props.editorId,
     sql: props.sql,
-    text: props.text.trim() || tr('single_request')
+    text: props.text.trim() || tr('single_request'),
+    ...(props.origin ? { origin: { ...props.origin } } : {})
   }
   const fingerprint = JSON.stringify(value)
   if (submission?.fingerprint !== fingerprint)
@@ -110,6 +125,10 @@ const submit = async () => {
     const task = await submitAiTask(accepted.value)
     if (current !== generation) return
     accepted.taskId = task.taskId
+    if (accepted.value.origin && accepted.value.origin.sessionId === props.origin?.sessionId) {
+      if (origins.size >= 50) origins.delete(origins.keys().next().value!)
+      origins.set(task.taskId, { origin: accepted.value.origin, question: accepted.value.text })
+    }
     // Retain the same operation key after admission; a second click must replay its task.
     // A poll may already have observed terminal state before this response arrived.
     if (finished.has(task.attemptId)) {
@@ -123,7 +142,7 @@ const submit = async () => {
     if (current === generation) pending.value = false
   }
 }
-const change = async (task: AiTask, retry = false) => {
+const change = async (task: AiTask | AiTaskNotice, retry = false) => {
   if (pending.value) return
   pending.value = true
   failure.value = ''
@@ -161,6 +180,37 @@ const poll = async () => {
     if (current !== generation) return
     activeTasks.forEach(remember)
     completed.forEach(remember)
+    // A notice acknowledged by another tab cannot consume the original conversation's task association.
+    for (const [id, linked] of origins) {
+      if (linked.origin.sessionId !== props.origin?.sessionId) {
+        origins.delete(id)
+        continue
+      }
+      try {
+        const task = await getAiTask(id)
+        if (current !== generation) return
+        if (active(task)) continue
+        if (task.status === 'COMPLETED' && !conversationDelivered.has(task.attemptId)) {
+          const delivered = await deliverAiTaskConversation(id, linked.origin)
+          if (current !== generation || linked.origin.sessionId !== props.origin?.sessionId) return
+          conversationDelivered.add(delivered.attemptId)
+          if (conversationDelivered.size > 50)
+            conversationDelivered.delete(conversationDelivered.values().next().value!)
+          emit('delivered', delivered, linked.question, linked.origin)
+        }
+        origins.delete(id)
+      } catch {
+        /* Keep this bounded live association for transient reads or an active foreground turn. */
+      }
+    }
+    const notices = await pendingAiTaskNotices()
+    if (current !== generation) return
+    for (const notice of notices) {
+      if (notice.expiresAt <= Date.now()) continue
+      notify(notice)
+      await acknowledgeAiTaskNotice(notice.attemptId)
+      if (current !== generation) return
+    }
     loadingFailed.value = false
   } catch {
     if (current !== generation) return
@@ -179,6 +229,8 @@ watch(
     tasks.value = []
     submission = undefined
     retryKeys.clear()
+    origins.clear()
+    conversationDelivered.clear()
     closeToasts()
     pending.value = false
     failure.value = ''
@@ -190,6 +242,8 @@ onMounted(poll)
 onBeforeUnmount(() => {
   generation++
   clearTimeout(timer)
+  origins.clear()
+  conversationDelivered.clear()
   closeToasts()
 })
 </script>

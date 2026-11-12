@@ -3,7 +3,8 @@ export default {
     tasks: 'Background tasks',
     background: 'Background SQL assistance',
     task_lifecycle:
-      'Independent tasks continue after leaving, refreshing or signing out. Only your active tasks are restored here. Results are never applied or saved to a business resource automatically.',
+      'Background work continues after leaving, refreshing or signing out. Only your active tasks are listed. Results and pending completion notices remain available for 7 days. Completion uses a toast, without reopening closed chats or applying results.',
+    task_expiry: 'Results and completion notices remain available for 7 days.',
     task_load_failed: 'Background tasks are temporarily unavailable',
     task_request_failed: 'Task operation was not confirmed. Retry the same operation safely.',
     task_attempt: 'Attempt',

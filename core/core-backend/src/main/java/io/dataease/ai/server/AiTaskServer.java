@@ -12,6 +12,9 @@ public class AiTaskServer implements AiTaskApi {
     public AiTaskServer(AiTaskManage manage) { this.manage = manage; }
     public Task submit(Submit request) { return manage.submit(request); }
     public List<Task> active() { return manage.active(); }
+    public List<Notice> notices() { return manage.notices(); }
+    public void acknowledge(Long attemptId) { manage.acknowledge(attemptId); }
+    public Task conversation(Long id, Origin origin) { return manage.conversation(id, origin); }
     public Task get(Long id) { return manage.get(id); }
     public Task cancel(Long id) { return manage.cancel(id); }
     public Task retry(Long id, Retry request) { return manage.retry(id, request); }

@@ -3,6 +3,7 @@ package io.dataease.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.manage.*;
 import io.dataease.ai.server.AiTaskServer;
+import io.dataease.ai.server.AiConversationServer;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,6 +34,9 @@ public final class TaskRegression {
             public void authorize(Context context) {
                 if (!sceneAllowed.get() || !Objects.equals(io.dataease.permission.util.V3UserUtil.getUid(), 1L)) throw io.dataease.ai.support.AiErrors.error("forbidden");
             }
+            public io.dataease.api.ai.conversation.AiConversationDtos.Result result(Context context, String text, List<io.dataease.api.ai.conversation.AiConversationDtos.Tool> tools, String editor, String draft) {
+                return new io.dataease.api.ai.conversation.AiConversationDtos.Result("SQL_SUGGESTION", text, "select 1", context.resourceId(), context.resourceName(), context.revision(), editor, draft);
+            }
             public List<io.dataease.ai.support.AiToolProtocol.Definition> tools(Context context) {
                 return toolsOn.get() ? List.of(new io.dataease.ai.support.AiToolProtocol.Definition("inspect", "inspect authorized metadata", Map.of())) : List.of();
             }
@@ -41,6 +45,7 @@ public final class TaskRegression {
                 authorize(context); executed.incrementAndGet(); return "{\"tables\":[\"authorized_table\"]}";
             }
         });
+        var followed = new java.util.concurrent.atomic.AtomicBoolean();
         var stateSends = new java.util.concurrent.atomic.AtomicInteger();
         var failCommit = new java.util.concurrent.atomic.AtomicBoolean();
         var failingManager = new org.springframework.orm.jpa.JpaTransactionManager(em.getEntityManagerFactory()) {
@@ -50,8 +55,11 @@ public final class TaskRegression {
             }
         };
         failingManager.setRollbackOnCommitFailure(true);
+        var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
+        beans.addBean("conversations", conversations);
+        var chatMvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(conversations)).build();
         var tasks = new AiTaskManage(em, failingManager, beans.getBeanProvider(AiConversationScene.class),
-                beans.getBeanProvider(AiRuntimeManage.class), access, new ObjectMapper());
+                beans.getBeanProvider(AiRuntimeManage.class), access, new ObjectMapper(), beans.getBeanProvider(AiConversationManage.class));
         var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks)).build();
         String request = "{\"submissionKey\":\"same-submit\",\"scene\":\"sql\",\"capability\":\"sql.assist\",\"resourceId\":\"11\",\"editorId\":\"editor\",\"sql\":\"select 1\",\"text\":\"explain\"}";
         var first = mvc.perform(post("/ai/tasks").contentType("application/json").content(request)).andReturn().getResponse();
@@ -66,6 +74,11 @@ public final class TaskRegression {
         String path = "/ai/tasks/" + a.path("taskId").asText();
         var cancelled = json.readTree(mvc.perform(post(path + "/cancel")).andReturn().getResponse().getContentAsString());
         if (!"CANCELLED".equals(cancelled.path("status").asText())) throw new AssertionError("queued cancellation is durable");
+        var notices = json.readTree(mvc.perform(get("/ai/tasks/notices")).andReturn().getResponse().getContentAsString());
+        if (notices.size() != 1 || !"CANCELLED".equals(notices.get(0).path("status").asText())) throw new AssertionError("offline cancelled task has durable completion notice");
+        mvc.perform(post("/ai/tasks/notices/" + a.path("attemptId").asText() + "/ack"));
+        mvc.perform(post("/ai/tasks/notices/" + a.path("attemptId").asText() + "/ack"));
+        if (json.readTree(mvc.perform(get("/ai/tasks/notices")).andReturn().getResponse().getContentAsString()).size() != 0) throw new AssertionError("acknowledged notice is not redelivered");
         String retry = json.writeValueAsString(Map.of("retryKey", "retry-once", "expectedAttemptId", a.path("attemptId").asText()));
         var retried = json.readTree(mvc.perform(post(path + "/retry").contentType("application/json").content(retry)).andReturn().getResponse().getContentAsString());
         var repeatedRetry = json.readTree(mvc.perform(post(path + "/retry").contentType("application/json").content(retry)).andReturn().getResponse().getContentAsString());
@@ -97,6 +110,14 @@ public final class TaskRegression {
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v1/chat/completions", exchange -> {
             var modelRequest = json.readTree(exchange.getRequestBody());
+            if (modelRequest.path("messages").toString().contains("follow-background")) {
+                String messages = modelRequest.path("messages").toString();
+                long questions = java.util.stream.StreamSupport.stream(modelRequest.path("messages").spliterator(), false)
+                        .filter(message -> "user".equals(message.path("role").asText()) && "background-question".equals(message.path("content").asText())).count();
+                boolean candidate = java.util.stream.StreamSupport.stream(modelRequest.path("messages").spliterator(), false)
+                        .anyMatch(message -> "assistant".equals(message.path("role").asText()) && message.path("content").asText().contains("SQL:\nselect 1"));
+                followed.set(questions == 1 && messages.contains("durable answer") && candidate);
+            }
             if (modelRequest.path("messages").toString().contains("state-save-failure")) { stateSends.incrementAndGet(); failCommit.set(true); }
             boolean needsTool = modelRequest.has("tools") && !modelRequest.path("messages").toString().contains("authorized_table");
             String toolFrame = "data: {\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"inspect-1\",\"type\":\"function\",\"function\":{\"name\":\"inspect\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n";
@@ -132,11 +153,33 @@ public final class TaskRegression {
                 if (!"COMPLETED".equals(done.path("status").asText()) || !"durable answer".equals(done.path("result").path("text").asText())
                         || !"task-model-v1".equals(done.path("modelIdentifier").asText())) throw new AssertionError("detached durable completion with pinned model through B pool: " + done);
             }
+            var origin = json.readTree(chatMvc.perform(post("/ai/conversations").contentType("application/json").content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"editor\",\"sql\":\"select 1\"}")).andReturn().getResponse().getContentAsString());
+            String originRequest = request.replace("same-submit", "origin-task").replace("\"text\":\"explain\"", "\"text\":\"background-question\",\"origin\":{\"sessionId\":\"" + origin.path("sessionId").asText() + "\",\"contextVersion\":\"" + origin.path("contextVersion").asText() + "\"}");
+            var linked = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(originRequest)).andReturn().getResponse().getContentAsString());
+            String linkedPath = "/ai/tasks/" + linked.path("taskId").asText();
+            await(mvc, json, linkedPath, "COMPLETED");
+            mvc.perform(post("/ai/tasks/notices/" + linked.path("attemptId").asText() + "/ack"));
+            var received = mvc.perform(post(linkedPath + "/conversation").contentType("application/json").content("{\"sessionId\":\"" + origin.path("sessionId").asText() + "\",\"contextVersion\":\"" + origin.path("contextVersion").asText() + "\"}")).andReturn().getResponse();
+            if (received.getStatus() != 200) throw new AssertionError("still open original conversation accepts background result independently of notice acknowledgement");
+            mvc.perform(post(linkedPath + "/conversation").contentType("application/json").content("{\"sessionId\":\"" + origin.path("sessionId").asText() + "\",\"contextVersion\":\"" + origin.path("contextVersion").asText() + "\"}"));
+            boolean originDenied = false;
+            try { mvc.perform(post(linkedPath + "/conversation").contentType("application/json").content("{\"sessionId\":\"other-session\",\"contextVersion\":\"other-version\"}")); }
+            catch (jakarta.servlet.ServletException expected) { originDenied = expected.getCause() instanceof io.dataease.ai.support.AiErrors.Failure; }
+            if (!originDenied) throw new AssertionError("client cannot redirect a completed result into another conversation");
+            var follow = json.readTree(chatMvc.perform(post("/ai/conversations/" + origin.path("sessionId").asText() + "/executions").contentType("application/json").content("{\"contextVersion\":\"" + origin.path("contextVersion").asText() + "\",\"text\":\"follow-background\"}")).andReturn().getResponse().getContentAsString());
+            await(chatMvc, json, "/ai/conversations/" + origin.path("sessionId").asText() + "/executions/" + follow.path("executionId").asText() + "/events", "COMPLETED");
+            if (!followed.get()) throw new AssertionError("follow-up model prompt contains original background request and legal result");
+            chatMvc.perform(delete("/ai/conversations/" + origin.path("sessionId").asText()));
+            boolean closedDenied = false;
+            try { mvc.perform(post(linkedPath + "/conversation").contentType("application/json").content("{\"sessionId\":\"" + origin.path("sessionId").asText() + "\",\"contextVersion\":\"" + origin.path("contextVersion").asText() + "\"}")); }
+            catch (jakarta.servlet.ServletException expected) { closedDenied = expected.getCause() instanceof io.dataease.ai.support.AiErrors.Failure; }
+            if (!closedDenied) throw new AssertionError("closed conversation is never recreated from persisted task");
             toolsOn.set(true);
             var withTools = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "with-tools"))).andReturn().getResponse().getContentAsString());
             var toolResult = await(mvc, json, "/ai/tasks/" + withTools.path("taskId").asText(), "COMPLETED");
             if (executed.get() != 1 || !"durable answer".equals(toolResult.path("result").path("text").asText())) throw new AssertionError("trusted task executes actual authorized tool and correlated continuation");
             sceneAllowed.set(false);
+            if (json.readTree(mvc.perform(get("/ai/tasks/notices")).andReturn().getResponse().getContentAsString()).size() != 0) throw new AssertionError("revoked resource notices are withheld");
             boolean deniedResult = false;
             try { mvc.perform(get("/ai/tasks/" + withTools.path("taskId").asText())); }
             catch (jakarta.servlet.ServletException expected) { deniedResult = expected.getCause() instanceof io.dataease.ai.support.AiErrors.Failure; }
@@ -144,6 +187,18 @@ public final class TaskRegression {
             var cancelledCompleted = json.readTree(mvc.perform(post("/ai/tasks/" + withTools.path("taskId").asText() + "/cancel")).andReturn().getResponse().getContentAsString());
             if (!cancelledCompleted.path("result").isNull() || !cancelledCompleted.path("resourceName").isNull()) throw new AssertionError("cancellation cannot disclose a completed result or resource after READ revocation");
             sceneAllowed.set(true);
+            // Explicit isolated expired sample: ordinary result/notice APIs must reject before cleanup runs.
+            new org.springframework.transaction.support.TransactionTemplate(manager).executeWithoutResult(status ->
+                    em.createQuery("update CoreAiTaskAttempt a set a.deliveryExpiresAt=:expired where a.id=:id")
+                            .setParameter("expired", System.currentTimeMillis() - 1).setParameter("id", toolResult.path("attemptId").asLong()).executeUpdate());
+            boolean expiredDenied = false;
+            try { mvc.perform(get("/ai/tasks/" + withTools.path("taskId").asText())); }
+            catch (jakarta.servlet.ServletException expected) { expiredDenied = expected.getCause() instanceof io.dataease.ai.support.AiErrors.Failure; }
+            if (!expiredDenied) throw new AssertionError("expired business result rejected at read boundary before physical cleanup");
+            var pendingNotices = json.readTree(mvc.perform(get("/ai/tasks/notices")).andReturn().getResponse().getContentAsString());
+            for (var notice : pendingNotices) if (notice.path("attemptId").equals(toolResult.path("attemptId"))) throw new AssertionError("expired notice cannot be delivered");
+            String safe = pendingNotices.toString();
+            if (safe.contains("ownerJson") || safe.contains("fence") || safe.contains("explain") || safe.contains("durable answer")) throw new AssertionError("ordinary notices expose only safe delivery projection");
             var stateFailure = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "state-save-failure").replace("explain", "state-save-failure"))).andReturn().getResponse().getContentAsString());
             String statePath = "/ai/tasks/" + stateFailure.path("taskId").asText();
             for (int i = 0; i < 200 && !failCommit.get(); i++) Thread.sleep(25);
@@ -158,7 +213,7 @@ public final class TaskRegression {
             if (stateSends.get() != sentBeforeRecovery) throw new AssertionError("terminal persistence recovery cannot rerun model work");
         } finally {
             failCommit.set(false);
-            tasks.destroy(); transport.close(); server.stop(0);
+            conversations.destroy(); tasks.destroy(); transport.close(); server.stop(0);
             var setting = configuration.setting();
             configuration.saveSettings(new io.dataease.api.ai.config.AiConfigDtos.SettingsChange(setting.getRowVersion(), true, previous, false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", previous + ":true").token()));
         }
