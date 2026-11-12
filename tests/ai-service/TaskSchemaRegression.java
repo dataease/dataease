@@ -13,7 +13,7 @@ public final class TaskSchemaRegression {
             var registry = new StandardServiceRegistryBuilder().applySetting("hibernate.dialect", "org.hibernate.dialect." + dialect)
                     .applySetting("hibernate.boot.allow_jdbc_metadata_access", "false").build();
             try {
-                var metadata = new MetadataSources(registry).addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiAuditEntry.class).addAnnotatedClass(CoreAiAuditExecution.class).buildMetadata();
+                var metadata = new MetadataSources(registry).addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiAuditEntry.class).addAnnotatedClass(CoreAiAuditRetired.class).addAnnotatedClass(CoreAiAuditExecution.class).buildMetadata();
                 for (String field : List.of("inputJson", "contextJson", "resultJson", "requestBody", "responseBody")) {
                     var entity = metadata.getEntityBinding((field.endsWith("Body") ? CoreAiAuditEntry.class : field.equals("resultJson") ? CoreAiTaskAttempt.class : CoreAiTask.class).getName());
                     var property = entity.getProperty(field); var type = (BasicType<?>) property.getType();

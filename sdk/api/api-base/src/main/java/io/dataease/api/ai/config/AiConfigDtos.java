@@ -39,11 +39,19 @@ public final class AiConfigDtos {
                            @Min(100) @Max(10000) int initialDelayMillis) { }
     public record TaskScheduling(@Min(1) @Max(20) int maxRunning, @Min(1) @Max(10000) int maxQueued,
             @Min(1) @Max(1000) int maxQueuedPerUser, @Min(1) @Max(86400) int maxWaitSeconds) { }
+    public record Retention(@Min(1) @Max(3650) int auditDays, @Min(1) @Max(3650) int deliveryDays) { }
     public record Settings(boolean enabled, @JsonSerialize(using = ToStringSerializer.class) Long defaultModelId,
             boolean allowSamples, int requestTimeoutSeconds, int maxInputChars, int maxOutputTokens,
             int interactiveConcurrency, int backgroundConcurrency, long revision, long rowVersion,
             long persistedRevision, long appliedRevision, String runtimeState, boolean organizationPolicyAvailable,
-            TaskScheduling taskScheduling, Recovery recovery) {
+            TaskScheduling taskScheduling, Recovery recovery, Retention retention) {
+        public Settings(boolean enabled, Long defaultModelId, boolean allowSamples, int requestTimeoutSeconds, int maxInputChars,
+                int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, long revision, long rowVersion,
+                long persistedRevision, long appliedRevision, String runtimeState, boolean organizationPolicyAvailable, TaskScheduling taskScheduling, Recovery recovery) {
+            this(enabled, defaultModelId, allowSamples, requestTimeoutSeconds, maxInputChars, maxOutputTokens, interactiveConcurrency,
+                    backgroundConcurrency, revision, rowVersion, persistedRevision, appliedRevision, runtimeState, organizationPolicyAvailable,
+                    taskScheduling, recovery, new Retention(30, 7));
+        }
         public Settings(boolean enabled, Long defaultModelId, boolean allowSamples, int requestTimeoutSeconds, int maxInputChars,
                 int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, long revision, long rowVersion,
                 long persistedRevision, long appliedRevision, String runtimeState, boolean organizationPolicyAvailable) {
@@ -63,7 +71,12 @@ public final class AiConfigDtos {
             @JsonSerialize(using = ToStringSerializer.class) Long defaultModelId, @NotNull Boolean allowSamples,
             @Min(5) @Max(300) int requestTimeoutSeconds, @Min(1000) @Max(200000) int maxInputChars,
             @Min(128) @Max(32768) int maxOutputTokens, @Min(1) @Max(20) int interactiveConcurrency,
-            @Min(1) @Max(20) int backgroundConcurrency, String impactToken, @Valid TaskScheduling taskScheduling, @Valid Recovery recovery) {
+            @Min(1) @Max(20) int backgroundConcurrency, String impactToken, @Valid TaskScheduling taskScheduling, @Valid Recovery recovery, @Valid Retention retention) {
+        public SettingsChange(Long expectedVersion, Boolean enabled, Long defaultModelId, Boolean allowSamples, int requestTimeoutSeconds,
+                int maxInputChars, int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, String impactToken, TaskScheduling taskScheduling, Recovery recovery) {
+            this(expectedVersion, enabled, defaultModelId, allowSamples, requestTimeoutSeconds, maxInputChars, maxOutputTokens,
+                    interactiveConcurrency, backgroundConcurrency, impactToken, taskScheduling, recovery, null);
+        }
         public SettingsChange(Long expectedVersion, Boolean enabled, Long defaultModelId, Boolean allowSamples, int requestTimeoutSeconds,
                 int maxInputChars, int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, String impactToken) {
             this(expectedVersion, enabled, defaultModelId, allowSamples, requestTimeoutSeconds, maxInputChars, maxOutputTokens,

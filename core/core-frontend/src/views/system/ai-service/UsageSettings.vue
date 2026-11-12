@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import TaskSchedulingSettings from './TaskSchedulingSettings.vue'
 import RecoverySettings from './RecoverySettings.vue'
+import RetentionSettings from './RetentionSettings.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { CaretBottom } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -97,6 +98,10 @@ const valid = computed(() => {
       limits.every(l => Number.isInteger(s[l.key]) && s[l.key] >= l.min && s[l.key] <= l.max) &&
       s.backgroundConcurrency <= s.interactiveConcurrency &&
       validTaskScheduling() &&
+      s.retention &&
+      [s.retention.auditDays, s.retention.deliveryDays].every(
+        days => Number.isInteger(days) && days >= 1 && days <= 3650
+      ) &&
       s.recovery &&
       Number.isInteger(s.recovery.stepRetries) &&
       s.recovery.stepRetries >= 0 &&
@@ -163,6 +168,7 @@ const openSettings = (kind: 'data' | 'limits') => {
     taskScheduling: props.settings.taskScheduling
       ? { ...props.settings.taskScheduling }
       : undefined,
+    retention: { ...(props.settings.retention ?? { auditDays: 30, deliveryDays: 7 }) },
     recovery: {
       ...(props.settings.recovery ?? {
         stepRetries: 2,
@@ -488,6 +494,7 @@ watch(
           v-model="settingsDraft.taskScheduling"
         />
         <RecoverySettings v-if="settingsDraft.recovery" v-model="settingsDraft.recovery" />
+        <RetentionSettings v-if="settingsDraft.retention" v-model="settingsDraft.retention" />
       </el-form>
       <template #footer
         ><el-button :disabled="saving" @click="close()">{{ tr('cancel') }}</el-button

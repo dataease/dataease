@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--retention', action='store_true', help='public settings and production retention cleanup on isolated H2')
     parser.add_argument('--audit', action='store_true', help='public HTTP execution audit and isolated persistence')
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
     parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
@@ -89,6 +90,10 @@ def main():
             'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
             'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
+            'sdk/common/src/main/java/io/dataease/exception/ErrorResponses.java',
+            'sdk/common/src/main/java/io/dataease/exception/GlobalExceptionHandler.java',
+            'sdk/common/src/main/java/io/dataease/result/ResultMessage.java',
+            'sdk/common/src/main/java/io/dataease/utils/ServletUtils.java',
             'sdk/common/src/main/java/io/dataease/constant/AuthResourceEnum.java',
             'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
@@ -104,6 +109,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiKeyringInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiRetentionInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskResourceInit.java',
@@ -132,6 +138,8 @@ def main():
         if args.task_mutex:
             java.append('-Dai.test.mutexOnly=true')
 
+        if args.retention:
+            java.append('-Dai.test.retentionOnly=true')
         if args.audit:
             java.append('-Dai.test.auditOnly=true')
         if args.task_scheduling:

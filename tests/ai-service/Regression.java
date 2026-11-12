@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        if (Boolean.getBoolean("ai.test.auditOnly") || Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
+        if (Boolean.getBoolean("ai.test.retentionOnly") || Boolean.getBoolean("ai.test.auditOnly") || Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
         SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) { TaskProgressRegression.main(new String[0]); TaskStructureNodeRegression.main(new String[0]); TaskClusterRegression.run(); } if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
@@ -92,7 +92,7 @@ public class Regression {
         String url="jdbc:h2:mem:ai_regression;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=2000";
         Configuration hibernate=new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class)
                 .addAnnotatedClass(CoreAiOrgPolicy.class).addAnnotatedClass(CoreMenu.class)
-                .addAnnotatedClass(CoreAiAuditExecution.class).addAnnotatedClass(CoreAiAuditEntry.class)
+                .addAnnotatedClass(CoreAiAuditRetired.class).addAnnotatedClass(CoreAiAuditExecution.class).addAnnotatedClass(CoreAiAuditEntry.class)
                 .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.connection.url",url).setProperty("hibernate.connection.driver_class","org.h2.Driver")
                 .setProperty("hibernate.connection.username","sa").setProperty("hibernate.connection.password","")
@@ -154,6 +154,10 @@ public class Regression {
             var manage=new AiConfigurationManage(manager);
             inject(manage,"settings",settings);inject(manage,"models",models);inject(manage,"policies",policies);inject(manage,"em",em);inject(manage,"validator",validators.getValidator());
             inject(manage,"access",access);inject(manage,"secrets",keys);inject(manage,"admission",limiter);inject(manage,"outbound",outbound);
+
+            new io.dataease.listener.sql.AiAuditInit(jdbc,factory,em,manager).execute();
+            new io.dataease.listener.sql.AiRetentionInit(jdbc,factory,em,manager).execute();
+            if (Boolean.getBoolean("ai.test.retentionOnly")) { RetentionRegression.run(manage, access, permitted, em, manager, jdbc); return; }
 
             rejects(() -> tx.executeWithoutResult(status -> manage.saveSettings(new SettingsChange(0L,false,null,false,60,30000,4096,5,2,null))),"configuration cannot publish before an outer transaction commits");
             Draft draft=manage.draft(); Candidate c=new Candidate();c.setId(draft.id());c.setDraftHandle(draft.draftHandle());c.setName("Model");c.setProvider("OPENAI_COMPATIBLE");c.setBaseUrl("https://mock.invalid/v1");c.setApiKey("synthetic-key");c.setModelIdentifier("general-chat");

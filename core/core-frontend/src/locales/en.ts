@@ -159,6 +159,12 @@ export default {
     failure_outcome_unknown:
       'The tool outcome is unknown. Verify it before any new action; this task cannot be replayed.',
 
+    retention_title: 'Data retention',
+    retention_hint:
+      'Audit retention uses settings at execution start; results and pending notices use settings at task completion. Existing expiry times stay fixed; expired content cannot be restored. Cleanup runs in batches every minute; notice acknowledgement does not remove audit early.',
+    retention_auditDays: 'Audit retention days',
+    retention_deliveryDays: 'Result and pending notice retention days',
+
     recovery_title: 'Controlled recovery',
     recovery_hint:
       'Applies to new attempts. Set either retry count to 0 to disable automatic technical retries. Tool safety, total steps and original deadlines still apply.',

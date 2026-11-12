@@ -141,6 +141,12 @@ export default {
     failure_provider_unavailable: '模型服務暫時不可用，有限重試後仍未恢復。',
     failure_outcome_unknown: '工具結果尚未確認，必須先核實，不能重放原任務。',
 
+    retention_title: '資料保留',
+    retention_hint:
+      '審計期限使用新執行開始時的設定；結果及待投遞通知使用任務結束時的設定。已有到期時間保持不變，過期內容不會恢復。系統每分鐘分批清理，通知確認不提前清理審計。',
+    retention_auditDays: '審計保留天數',
+    retention_deliveryDays: '結果及待投遞通知保留天數',
+
     recovery_title: '受控恢復',
     recovery_hint:
       '僅對新嘗試生效；任一次數設為 0 可關閉技術自動重試。工具安全資格、總步驟及執行期限始終生效。',

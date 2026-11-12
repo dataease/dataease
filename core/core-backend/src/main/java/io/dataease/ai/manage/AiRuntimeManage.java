@@ -90,7 +90,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                             || !Objects.equals(current.getCredentialRevision(), model.getCredentialRevision())) throw AiErrors.error("conflict");
                     updateAdmission(admissionSettings, latest);
                 };
-                var capture = audit == null ? null : auditSession(context, new ModelSnapshot(model.getId(), model.getConfigRevision(), model.getCredentialRevision(), model.getModelIdentifier()), s.getRevision(), null);
+                var capture = audit == null ? null : auditSession(context, new ModelSnapshot(model.getId(), model.getConfigRevision(), model.getCredentialRevision(), model.getModelIdentifier()), s.getRevision(), null, s.getAuditRetentionDays());
                 try {
                     ChatResponse response = capture == null
                             ? transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck)
@@ -105,8 +105,8 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             @Override public ChatOptions getDefaultOptions() { return ChatOptions.builder().build(); }
         };
     }
-    private AiAuditManage.Session auditSession(Context context, ModelSnapshot model, Long settingsRevision, AiRecovery recovery) {
-        return audit.session(context, model, settingsRevision, recovery, feature(context.feature()).auditReference(context));
+    private AiAuditManage.Session auditSession(Context context, ModelSnapshot model, Long settingsRevision, AiRecovery recovery, int retentionDays) {
+        return audit.session(context, model, settingsRevision, recovery, feature(context.feature()).auditReference(context), retentionDays);
     }
     /** Created only in the authenticated request; the worker receives no Servlet state or request-bound model. */
     public record ModelSnapshot(Long id, Long revision, Long credentialRevision, String identifier) { }
@@ -131,7 +131,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final AiRecovery recovery;
         private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery, ModelSnapshot model) {
             this.stream = transport.stream(context.background()); this.model = model; this.recovery = new AiRecovery(settings);
-            if (audit != null) recovery.audit(auditSession(context, model, settings.getRevision(), recovery));
+            if (audit != null) recovery.audit(auditSession(context, model, settings.getRevision(), recovery, settings.getAuditRetentionDays()));
             this.context = context; this.prompt = prompt; this.connection = connection; this.settings = settings; this.verify = verify; this.delivery = delivery;
         }
         public String executionId() { return context.executionId(); }
@@ -215,7 +215,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             this.context = context; this.settings = settings; this.modelIdentifier = model.getModelIdentifier();
             modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
             budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens()); recovery = new AiRecovery(settings);
-            if (audit != null) recovery.audit(auditSession(context, model(), settingRevision, recovery));
+            if (audit != null) recovery.audit(auditSession(context, model(), settingRevision, recovery, settings.getAuditRetentionDays()));
         }
         public String executionId() { return context.executionId(); }
         public long deadline() { return context.deadline(); }

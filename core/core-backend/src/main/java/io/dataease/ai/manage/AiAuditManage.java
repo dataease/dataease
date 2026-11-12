@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 @Component
 public class AiAuditManage {
     public static final int MAX_BODY = 4 * 1024 * 1024;
-    private static final long RETENTION_MILLIS = TimeUnit.DAYS.toMillis(30);
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AiAuditManage.class);
     private final EntityManager em;
     private final TransactionTemplate tx;
@@ -39,6 +38,9 @@ public class AiAuditManage {
         repair.scheduleWithFixedDelay(this::repairGaps, 5, 5, TimeUnit.SECONDS);
     }
     public Session session(AiExecutionContext context, AiRuntimeManage.ModelSnapshot model, Long settingsRevision, AiRecovery recovery, String resourceReference) {
+        return session(context, model, settingsRevision, recovery, resourceReference, 30);
+    }
+    public Session session(AiExecutionContext context, AiRuntimeManage.ModelSnapshot model, Long settingsRevision, AiRecovery recovery, String resourceReference, int retentionDays) {
         var row = new CoreAiAuditExecution(); row.setId(context.executionId()); row.setFeature(context.feature());
         row.setActorId(context.actorId()); row.setOrganizationId(context.organizationId()); row.setProxyOrganizationId(context.proxyOrganizationId());
         row.setResourceReference(resourceReference); row.setModelId(model.id()); row.setModelRevision(model.revision());
@@ -46,7 +48,7 @@ public class AiAuditManage {
         row.setDeploymentMode(access.mode().mode().name()); row.setStatus("RUNNING"); row.setIncomplete(false); row.setGapCount(0L); row.setLastSequence(0);
         row.setFeature(bounded(row, row.getFeature(), 100)); row.setModelIdentifier(bounded(row, row.getModelIdentifier(), 256));
         row.setResourceReference(bounded(row, row.getResourceReference(), 1000));
-        return new Session(row, recovery);
+        return new Session(row, recovery, retentionDays);
     }
     private String bounded(CoreAiAuditExecution row, String value, int limit) {
         if (value == null || value.length() <= limit) return value;
@@ -57,7 +59,10 @@ public class AiAuditManage {
         private final AiRecovery recovery;
         private final Map<String, Long> previous = new HashMap<>();
         private String knownSecret;
-        private Session(CoreAiAuditExecution row, AiRecovery recovery) { this.row = row; this.recovery = recovery; }
+        private final long retentionMillis;
+        private Session(CoreAiAuditExecution row, AiRecovery recovery, int retentionDays) {
+            this.row = row; this.recovery = recovery; retentionMillis = TimeUnit.DAYS.toMillis(retentionDays);
+        }
         public Exchange begin(String kind, String request, String secret) {
             synchronized (this) {
                 var link = recovery == null ? null : recovery.link();
@@ -89,7 +94,7 @@ public class AiAuditManage {
         public synchronized void end(String status) {
             if (row.getFinishedAt() != null) return;
             knownSecret = null;
-            row.setStatus(status); row.setFinishedAt(System.currentTimeMillis()); row.setRetentionExpiresAt(row.getFinishedAt() + RETENTION_MILLIS);
+            row.setStatus(status); row.setFinishedAt(System.currentTimeMillis()); row.setRetentionExpiresAt(row.getFinishedAt() + retentionMillis);
             if (!"COMPLETED".equals(status)) row.setIncomplete(true);
             save(this, null);
         }
@@ -244,6 +249,7 @@ public class AiAuditManage {
             for (int attempt = 0; attempt < 2; attempt++) try {
                 tx.executeWithoutResult(status -> {
                     var current = em.find(CoreAiAuditExecution.class, snapshot.getId(), jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+                    if (em.find(CoreAiAuditRetired.class, snapshot.getId()) != null || expired(current) || expired(snapshot)) return;
                     var row = copy(snapshot);
                     if (entry != null) {
                         var existing = em.find(CoreAiAuditEntry.class, entry.getId());
@@ -267,6 +273,9 @@ public class AiAuditManage {
             return false;
         } finally { if (interrupted) Thread.currentThread().interrupt(); }
     }
+    private boolean expired(CoreAiAuditExecution row) {
+        return row != null && row.getFinishedAt() != null && row.getRetentionExpiresAt() != null && row.getRetentionExpiresAt() <= System.currentTimeMillis();
+    }
     public int pendingGapCount() { synchronized (gaps) { return gaps.size(); } }
     public long droppedGapMarkerCount() { return droppedGapMarkers.get(); }
     private void repairGaps() {
@@ -280,12 +289,13 @@ public class AiAuditManage {
             var row = em.find(CoreAiAuditExecution.class, executionId);
             // The authorization target is always persisted execution scope, never a frontend parameter.
             access.audit(identity, row == null ? null : row.getOrganizationId());
-            if (row == null) throw AiErrors.error("forbidden");
+            if (row == null || expired(row)) throw AiErrors.error("forbidden");
             var entries = em.createQuery("select e from CoreAiAuditEntry e where e.executionId=:execution order by e.sequence", CoreAiAuditEntry.class)
                     .setParameter("execution", executionId).setMaxResults(100).getResultList().stream()
                     .map(e -> new Entry(e.getId(), e.getSequence(), e.getStepId(), e.getPreviousEntryId(), e.getKind(), e.getTechnicalRetries(), e.getCorrections(),
                             e.getRequestBody(), e.getResponseBody(), e.getUsageJson(), e.getStartedAt(), e.getFinishedAt(), e.getStatus(), e.getErrorCode(), e.getIncomplete(), e.getModelId(), e.getModelRevision(), e.getCredentialRevision(), e.getSettingRevision(), e.getModelIdentifier())).toList();
             access.audit(identity, row.getOrganizationId());
+            if (expired(row)) throw AiErrors.error("forbidden");
             return new Detail(row.getId(), row.getTaskId(), row.getAttemptId(), row.getSourceAttemptId(), row.getAttemptNumber(), row.getActorId(), row.getOrganizationId(),
                     row.getProxyOrganizationId(), row.getFeature(), row.getResourceReference(), row.getDeploymentMode(), row.getModelId(), row.getModelRevision(), row.getCredentialRevision(),
                     row.getSettingRevision(), row.getModelIdentifier(), row.getStartedAt(), row.getFinishedAt(), row.getRetentionExpiresAt(), row.getStatus(), row.getIncomplete(), row.getGapCount(), row.getLastSequence(), entries.size() < row.getLastSequence(), entries);

@@ -73,6 +73,14 @@ public class CoreAiSetting extends AiConfigEntity {
     @Comment("Initial technical retry wait, milliseconds")
     private Integer recoveryInitialDelayMillis = 1000;
 
+    @Column(name = "audit_retention_days", nullable = false)
+    @Comment("Audit retention days, snapshotted when execution starts")
+    private Integer auditRetentionDays = 30;
+
+    @Column(name = "delivery_retention_days", nullable = false)
+    @Comment("Result and pending notice retention days, snapshotted when attempt ends")
+    private Integer deliveryRetentionDays = 7;
+
     @Column(name = "revision", nullable = false)
     @Comment("revision")
     private Long revision = 1L;

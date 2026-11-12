@@ -141,6 +141,12 @@ export default {
     failure_provider_unavailable: '模型服务暂时不可用，有限重试后仍未恢复。',
     failure_outcome_unknown: '工具结果尚未确认，必须先核实，不能重放原任务。',
 
+    retention_title: '数据留存',
+    retention_hint:
+      '审计期限使用新执行开始时的设置；结果及待投递通知使用任务结束时的设置。已有到期时间保持不变，过期内容不会恢复。系统每分钟分批清理，通知确认不提前清理审计。',
+    retention_auditDays: '审计保留天数',
+    retention_deliveryDays: '结果及待投递通知保留天数',
+
     recovery_title: '受控恢复',
     recovery_hint:
       '仅对新尝试生效；任一次数设为 0 可关闭技术自动重试。工具安全资格、总步骤及执行期限始终生效。',

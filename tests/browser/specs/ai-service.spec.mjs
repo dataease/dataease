@@ -796,3 +796,32 @@ test('administrator saves bounded recovery policy with existing settings CAS', a
   })
   expect(saved.body.expectedVersion).toBe(0)
 })
+
+test('administrator saves independent retention with fixed-expiry explanation', async ({
+  page
+}) => {
+  await page.goto('/')
+  await page.getByRole('tab', { name: '使用设置', exact: true }).click()
+  await page.getByRole('button', { name: '调用限制', exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('spinbutton', { name: '审计保留天数' })).toHaveValue('30')
+  await expect(dialog.getByRole('spinbutton', { name: '结果及待投递通知保留天数' })).toHaveValue(
+    '7'
+  )
+  await expect(
+    dialog.getByText('已有到期时间保持不变，过期内容不会恢复。', {
+      exact: false
+    })
+  ).toBeVisible()
+  await dialog.getByRole('spinbutton', { name: '审计保留天数' }).fill('')
+  await expect(dialog.getByRole('button', { name: '保存', exact: true })).toBeDisabled()
+  await dialog.getByRole('spinbutton', { name: '审计保留天数' }).fill('45')
+  await dialog.getByRole('spinbutton', { name: '结果及待投递通知保留天数' }).fill('3')
+  await dialog.getByRole('button', { name: '保存', exact: true }).click()
+  await expect(dialog).not.toBeVisible()
+  const saved = requests.find(
+    request => request.path === '/ai/settings' && request.method === 'POST'
+  )
+  expect(saved.body.retention).toEqual({ auditDays: 45, deliveryDays: 3 })
+  expect(saved.body.expectedVersion).toBe(0)
+})
