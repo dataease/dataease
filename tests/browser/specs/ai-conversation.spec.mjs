@@ -18,6 +18,336 @@ const send = async (page, text) => {
   await page.getByRole('button', { name: '发送', exact: true }).click()
 }
 
+test('ordinary SQL explanations can start without selecting a datasource', async ({ page }) => {
+  let opened
+  const general = {
+    ...session,
+    resourceId: '',
+    resourceName: '',
+    resourceVersion: 'unbound',
+    draftVersion: 'empty'
+  }
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/executions'))
+      return route.fulfill({
+        json: {
+          ...general,
+          executionId: 'general-run',
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...general,
+          executionId: 'general-run',
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            { sequence: 1, type: 'TEXT', text: 'SELECT is a query statement' },
+            { sequence: 2, type: 'COMPLETED' }
+          ],
+          result: {
+            ...general,
+            type: 'EXPLANATION',
+            text: 'SELECT is a query statement',
+            sql: null
+          }
+        }
+      })
+    opened = route.request().postDataJSON()
+    return route.fulfill({ json: general })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Explain SELECT')
+  await expect(page.getByText('SELECT is a query statement', { exact: true })).toBeVisible()
+  expect(opened.resourceId).toBe('')
+  await expect(page.getByRole('button', { name: '应用到当前草稿' })).toHaveCount(0)
+})
+
+test('a failed one-shot request preserves the existing independent conversation', async ({
+  page
+}) => {
+  let opens = 0
+  let closes = 0
+  let starts = 0
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (route.request().method() === 'DELETE') {
+      closes++
+      return route.fulfill({ json: {} })
+    }
+    if (url.pathname.endsWith('/capabilities/sql.assist'))
+      return route.fulfill({ status: 503, json: {} })
+    if (url.pathname.endsWith('/executions')) {
+      starts++
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'chat-' + starts,
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'chat-' + starts,
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            {
+              sequence: 1,
+              type: 'TEXT',
+              text: 'Independent chat answer ' + starts
+            },
+            { sequence: 2, type: 'COMPLETED' }
+          ]
+        }
+      })
+    opens++
+    return route.fulfill({ json: session })
+  })
+  await selectResource(page)
+  await send(page, 'First chat question')
+  await expect(page.getByText('Independent chat answer 1', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '单次 SQL 辅助' }).click()
+  await expect(page.getByRole('alert')).toBeVisible()
+  expect(closes).toBe(0)
+  await send(page, 'Follow up in original chat')
+  await expect(page.getByText('Independent chat answer 2', { exact: true })).toBeVisible()
+  expect(opens).toBe(1)
+})
+
+test('single SQL assistance uses the shared capability without opening a chat', async ({
+  page
+}) => {
+  let chatOpens = 0
+  let invocation
+  const context = {
+    ...session,
+    resourceVersion: 'resource-v1',
+    draftVersion: 'draft-v1'
+  }
+  const result = {
+    type: 'EXPLANATION',
+    text: 'Shared SQL explanation',
+    ...context
+  }
+  await page.route('**/fixture-api/ai/conversations**', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/capabilities/sql.assist')) {
+      invocation = route.request().postDataJSON()
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'single-run',
+          status: 'RUNNING',
+          deadline: Date.now() + 60000,
+          context
+        }
+      })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'single-run',
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            { sequence: 1, type: 'TEXT', text: result.text },
+            { sequence: 2, type: 'COMPLETED' }
+          ],
+          result
+        }
+      })
+    chatOpens++
+    return route.fulfill({ json: context })
+  })
+  await selectResource(page)
+  await page.getByRole('textbox', { name: '当前 SQL' }).fill('SELECT ID FROM AI_PROBE')
+  await page.getByRole('button', { name: '单次 SQL 辅助' }).click()
+  await expect(page.getByText('Shared SQL explanation', { exact: true })).toBeVisible()
+  expect(chatOpens).toBe(0)
+  expect(invocation.resourceId).toBe('11')
+  expect(invocation.sql).toBe('SELECT ID FROM AI_PROBE')
+})
+
+test('selection changes retain the original target and applying a suggestion cannot overwrite a newer draft', async ({
+  page
+}) => {
+  let complete = false
+  let closes = 0
+  let checks = 0
+  let releaseCheck
+  let checkStarted
+  const checking = new Promise((resolve) => {
+    checkStarted = resolve
+  })
+  const checkDelay = new Promise((resolve) => {
+    releaseCheck = resolve
+  })
+  const context = {
+    ...session,
+    resourceVersion: 'resource-v1',
+    draftVersion: 'draft-v1'
+  }
+  const result = {
+    type: 'SQL_SUGGESTION',
+    text: 'Original target suggestion',
+    sql: 'SELECT ID FROM AI_PROBE',
+    resourceId: '11',
+    resourceName: 'Isolated database',
+    resourceVersion: 'resource-v1',
+    draftVersion: 'draft-v1',
+    editorId: 'editor'
+  }
+  await page.route('**/fixture-api/ai/conversations**', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({
+        json: [
+          { id: '11', name: 'Isolated database' },
+          { id: '22', name: 'Other database' }
+        ]
+      })
+    if (route.request().method() === 'DELETE') {
+      closes++
+      return route.fulfill({ json: {} })
+    }
+    if (url.pathname.endsWith('/executions'))
+      return route.fulfill({
+        json: {
+          ...context,
+          executionId: 'target-run',
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    if (url.pathname.endsWith('/check-application')) {
+      checks++
+      checkStarted()
+      await checkDelay
+      return route.fulfill({ json: result })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...context,
+          executionId: 'target-run',
+          status: complete ? 'COMPLETED' : 'RUNNING',
+          cursor: complete ? 2 : 1,
+          events: [
+            { sequence: 1, type: 'TEXT', text: result.text },
+            ...(complete ? [{ sequence: 2, type: 'COMPLETED' }] : [])
+          ],
+          result: complete ? result : null
+        }
+      })
+    return route.fulfill({ json: context })
+  })
+  await selectResource(page)
+  await page.getByRole('textbox', { name: '当前 SQL' }).fill('original draft')
+  await send(page, 'Suggest SQL')
+  await expect(page.getByText(result.text, { exact: true })).toBeVisible()
+  await page.getByRole('combobox', { name: '数据源' }).click()
+  await page.getByRole('option', { name: 'Other database' }).click()
+  await expect(page.getByText(result.text, { exact: true })).toBeVisible()
+  expect(closes).toBe(0)
+  complete = true
+  await expect(page.getByRole('button', { name: '应用到当前草稿' })).toBeVisible()
+  await page.getByRole('button', { name: '应用到当前草稿' }).click()
+  await expect(page.getByRole('alert')).toContainText('目标或草稿已变化')
+  expect(checks).toBe(0)
+  await page.getByRole('combobox', { name: '数据源' }).click()
+  await page.getByRole('option', { name: 'Isolated database' }).click()
+  await page.getByRole('button', { name: '应用到当前草稿' }).click()
+  await checking
+  await page.getByRole('textbox', { name: '当前 SQL' }).fill('newer draft while checking')
+  releaseCheck()
+  await expect(page.getByRole('alert')).toContainText('目标或草稿已变化')
+  await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
+    'newer draft while checking'
+  )
+})
+
+test('cancelling interruption confirmation preserves the execution and its context', async ({
+  page
+}) => {
+  let stops = 0
+  let closes = 0
+  await page.route('**/fixture-api/ai/conversations**', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources'))
+      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+    if (route.request().method() === 'DELETE') {
+      closes++
+      return route.fulfill({ json: {} })
+    }
+    if (url.pathname.endsWith('/stop')) {
+      stops++
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'confirm-run',
+          status: 'CANCELLED',
+          cursor: 2,
+          events: [{ sequence: 2, type: 'CANCELLED' }]
+        }
+      })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'confirm-run',
+          status: 'RUNNING',
+          cursor: 1,
+          events: [{ sequence: 1, type: 'TEXT', text: 'Keep original execution' }]
+        }
+      })
+    if (url.pathname.endsWith('/executions'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'confirm-run',
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    return route.fulfill({ json: session })
+  })
+  await selectResource(page)
+  await send(page, 'Original question')
+  await expect(page.getByText('Keep original execution', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '停止生成', exact: true }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  await expect(page.getByRole('status')).toContainText('正在生成')
+  expect(stops).toBe(0)
+  expect(closes).toBe(0)
+  await expect(page.getByText('Original question', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '结束会话', exact: true }).click()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  expect(closes).toBe(0)
+  await page.getByRole('button', { name: '停止生成', exact: true }).click()
+  await page.getByRole('button', { name: '确认中断', exact: true }).click()
+  await expect(page.getByText('· 未完成')).toBeVisible()
+  expect(stops).toBe(1)
+})
+
 test('registered Demo route passes the application permission path check', async ({ page }) => {
   await page.route('**/route-check', (route) =>
     route.fulfill({ contentType: 'text/html', body: '<div id="app"></div>' })
@@ -107,6 +437,7 @@ test('real page renders increments, deduplicates cursors, keeps execution while 
   await page.getByRole('button', { name: '展开助手' }).click()
   await expect(page.getByText('First increment', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '停止生成' }).click()
+  await page.getByRole('button', { name: '确认中断', exact: true }).click()
   await expect(page.getByText('· 未完成')).toBeVisible()
   await expect(page.getByText('First incrementFirst increment', { exact: true })).toHaveCount(0)
   await send(page, 'What next?')
@@ -119,7 +450,7 @@ test('real page renders increments, deduplicates cursors, keeps execution while 
   await expect(page.getByText('First increment', { exact: true })).toHaveCount(0)
 })
 
-test('SQL and identity changes discard late increments and failed output remains incomplete', async ({
+test('SQL changes retain the original output and identity changes clear it while failed output stays incomplete', async ({
   page
 }) => {
   let release
@@ -172,8 +503,8 @@ test('SQL and identity changes discard late increments and failed output remains
   await started
   await page.getByRole('textbox', { name: '当前 SQL' }).fill('select 2')
   release()
-  await expect(page.getByText('Original question', { exact: true })).toHaveCount(0)
-  await expect(page.getByText('Late old answer', { exact: true })).toHaveCount(0)
+  await expect(page.getByText('Original question', { exact: true })).toBeVisible()
+  await expect(page.getByText('Late old answer', { exact: true })).toBeVisible()
   await send(page, 'Try new context')
   await expect(page.getByRole('alert')).toBeVisible()
   await expect(page.getByText('· 未完成')).toBeVisible()
@@ -223,7 +554,11 @@ test('stop aborts an in-flight poll without closing the context and late complet
           status: starts === 1 ? 'RUNNING' : 'COMPLETED',
           cursor: 2,
           events: [
-            { sequence: 1, type: 'TEXT', text: starts === 1 ? 'Partial answer' : 'New answer' },
+            {
+              sequence: 1,
+              type: 'TEXT',
+              text: starts === 1 ? 'Partial answer' : 'New answer'
+            },
             ...(starts > 1 ? [{ sequence: 2, type: 'COMPLETED' }] : [])
           ]
         }
@@ -247,6 +582,7 @@ test('stop aborts an in-flight poll without closing the context and late complet
   await send(page, 'Partial question')
   await pending
   await page.getByRole('button', { name: '停止生成' }).click()
+  await page.getByRole('button', { name: '确认中断', exact: true }).click()
   await expect(page.getByText('· 未完成')).toBeVisible()
   await send(page, 'Continue please')
   release()
@@ -269,7 +605,11 @@ test('offline and refresh end the temporary session and a new activity opens a n
       closed.push(url.pathname)
       return route.fulfill({ json: {} })
     }
-    const current = { ...session, sessionId: 'session-' + opens, executionId: 'run-' + opens }
+    const current = {
+      ...session,
+      sessionId: 'session-' + opens,
+      executionId: 'run-' + opens
+    }
     if (url.pathname.endsWith('/executions'))
       return route.fulfill({
         json: { ...current, status: 'RUNNING', deadline: Date.now() + 60000 }
@@ -284,7 +624,9 @@ test('offline and refresh end the temporary session and a new activity opens a n
         }
       })
     opens++
-    return route.fulfill({ json: { ...session, sessionId: 'session-' + opens } })
+    return route.fulfill({
+      json: { ...session, sessionId: 'session-' + opens }
+    })
   })
   await selectResource(page)
   await send(page, 'Before disconnect')
@@ -325,7 +667,9 @@ test('stop racing with completed server execution drains missing text before dis
       return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
     if (request.method() === 'DELETE') return route.fulfill({ json: {} })
     if (url.pathname.endsWith('/executions'))
-      return route.fulfill({ json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 } })
+      return route.fulfill({
+        json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
+      })
     if (url.pathname.endsWith('/stop')) {
       stopped = true
       release()
@@ -369,6 +713,7 @@ test('stop racing with completed server execution drains missing text before dis
   await send(page, 'Complete race')
   await pending
   await page.getByRole('button', { name: '停止生成' }).click()
+  await page.getByRole('button', { name: '确认中断', exact: true }).click()
   await expect(page.getByText('First part and final text', { exact: true })).toBeVisible()
   await expect(page.getByText('· 未完成')).toHaveCount(0)
 })
@@ -382,7 +727,9 @@ test('safe timeout failure is explained and partial text remains incomplete', as
       return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
     if (request.method() === 'DELETE') return route.fulfill({ json: {} })
     if (url.pathname.endsWith('/executions'))
-      return route.fulfill({ json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 } })
+      return route.fulfill({
+        json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
+      })
     if (url.pathname.endsWith('/events'))
       return route.fulfill({
         json: {
@@ -456,9 +803,14 @@ test('an old identity resource response cannot overwrite the new identity list',
     if (loads === 1) {
       requested()
       await delayed
-      await route.fulfill({ json: [{ id: '11', name: 'Previous identity database' }] })
+      await route.fulfill({
+        json: [{ id: '11', name: 'Previous identity database' }]
+      })
       oldFinished()
-    } else await route.fulfill({ json: [{ id: '22', name: 'Current identity database' }] })
+    } else
+      await route.fulfill({
+        json: [{ id: '22', name: 'Current identity database' }]
+      })
   })
   await page.goto('/?view=conversation')
   await started
@@ -536,7 +888,9 @@ test('program tool states expose safe parameters/results, deduplicate replay and
   await expect(toolPanel).toContainText('BIGINT')
   await expect(toolPanel.locator('script')).toHaveCount(0)
   await expect(
-    page.getByText('I will read the fields.The actual field is ID.', { exact: true })
+    page.getByText('I will read the fields.The actual field is ID.', {
+      exact: true
+    })
   ).toBeVisible()
 })
 
@@ -603,7 +957,11 @@ for (const locale of [
         },
         result: JSON.stringify({
           status,
-          code: { PASS: 'verified', INVALID: 'reference', UNSUPPORTED: 'subset' }[status],
+          code: {
+            PASS: 'verified',
+            INVALID: 'reference',
+            UNSUPPORTED: 'subset'
+          }[status],
           message: '<script>unsafe</script>',
           scope: 'SQL was not executed; no database executability guarantee.'
         })
@@ -630,7 +988,9 @@ for (const locale of [
     await page.route('**/fixture-api/ai/conversations**', async (route) => {
       const url = new URL(route.request().url())
       if (url.pathname.endsWith('/resources'))
-        return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+        return route.fulfill({
+          json: [{ id: '11', name: 'Isolated database' }]
+        })
       if (url.pathname.endsWith('/executions'))
         return route.fulfill({
           json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
@@ -704,11 +1064,15 @@ for (const context of ['user', 'workspace', 'proxy']) {
       const request = route.request(),
         url = new URL(request.url())
       if (url.pathname.endsWith('/resources'))
-        return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+        return route.fulfill({
+          json: [{ id: '11', name: 'Isolated database' }]
+        })
       if (request.method() === 'DELETE') return route.fulfill({ json: {} })
       if (url.pathname.endsWith('/executions')) {
         turns.push(request.postDataJSON())
-        return route.fulfill({ json: { ...session, executionId: 'new-run', status: 'RUNNING' } })
+        return route.fulfill({
+          json: { ...session, executionId: 'new-run', status: 'RUNNING' }
+        })
       }
       if (url.pathname.endsWith('/events'))
         return route.fulfill({

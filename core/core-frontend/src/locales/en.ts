@@ -1,5 +1,24 @@
 export default {
   ai_conversation: {
+    select_target:
+      'Select a datasource before generating SQL or reading schema. General SQL questions need no selection.',
+    interrupt_title: 'Interrupt current generation?',
+    interrupt_message:
+      'Incomplete output cannot be applied. Cancel to keep the original execution and context.',
+    interrupt: 'Confirm interruption',
+    keep_running: 'Keep generating',
+
+    stale_draft:
+      'The target or draft has changed. Return to the original target and generate a new suggestion.',
+    original_target: 'Original target',
+    no_resource: 'No datasource selected',
+    suggestion: 'SQL suggestion (not saved)',
+    explanation: 'Explanation',
+    apply: 'Apply to current draft',
+
+    single: 'One-time SQL assistance',
+    single_request:
+      'Suggest SQL using the current SQL and authorized schema. Use propose_sql for the complete candidate.',
     tool: 'Program tool',
     tool_started: 'Started',
     tool_running: 'Running',
@@ -57,7 +76,7 @@ export default {
     guide_controls:
       'Hiding keeps the session and ongoing generation. Stopping ends only the current generation and retains earlier completed dialogue.',
     guide_session:
-      'Dialogue is not persisted. Changing SQL/datasource, ending the session, leaving or refreshing ends the chat. Identity/workspace changes also clear SQL and message drafts.',
+      'Conversations are temporary. Changing SQL or datasource affects later requests; earlier results retain their original target. Apply suggestions explicitly after permission and version checks. Stopping or ending an active execution requires confirmation. Leaving or refreshing ends the foreground activity. Identity/workspace changes clear SQL and message drafts.',
     resource: 'Datasource',
     sql: 'Current SQL',
     message: 'Message',
