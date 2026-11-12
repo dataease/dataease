@@ -92,12 +92,13 @@ public final class ToolConversationRegression {
                     content = call("validate-" + sent.size(), "validate_sql", JSON.writeValueAsString(Map.of("sql", sent.size() == 1 ? "SELECT TYPO FROM AI_PROBE" : "SELECT ID FROM AI_PROBE")));
                 } else if (Set.of("chain", "chain-retry").contains(mode.get()) && sent.size() <= 4) {
                     content = call("chain-" + sent.size(), "get_table_fields", "{\"table\":\"AI_PROBE" + (sent.size() == 1 ? "" : sent.size()) + "\"}");
-                } else if ((sent.size() == 1 || Set.of("extra", "duplicate", "trailing").contains(mode.get())) && Set.of("unknown", "extra", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation").contains(mode.get())) {
+                } else if ((sent.size() == 1 || Set.of("extra", "extra-order", "duplicate", "trailing").contains(mode.get())) && Set.of("unknown", "extra", "extra-order", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation").contains(mode.get())) {
                     content = switch (mode.get()) {
                         case "private-limit" -> frame(Map.of("reasoning", "private-budget-sentinel".repeat(1000)), "stop");
                         case "usage-allocation" -> call("usage-allocation", "list_tables", "{}") + "data: {\"choices\":[],\"usage\":{\"completion_tokens\":820}}\n\n";
                         case "missing-id" -> frame(Map.of("content", "Malformed call cannot become a final answer", "tool_calls", List.of(Map.of("index", 0, "type", "function", "function", Map.of("name", "list_tables", "arguments", "{}")))), "stop");
                         case "unknown" -> call("unknown", "execute_sql", "{}");
+                        case "extra-order" -> call("extra-order-" + sent.size(), "list_tables", sent.size() == 1 ? "{\"datasourceId\":\"22\",\"extra\":\"x\"}" : "{\"extra\":\"x\",\"datasourceId\":\"22\"}");
                         case "extra" -> call("extra", "list_tables", "{\"datasourceId\":\"22\"}");
                         case "duplicate" -> call("duplicate", "get_table_fields", "{\"table\":\"AI_PROBE\",\"table\":\"OTHER\"}");
                         case "trailing" -> call("trailing", "list_tables", "{} {}");
@@ -306,12 +307,12 @@ public final class ToolConversationRegression {
                 throw new AssertionError("static validation must return INVALID to model then revalidate corrected SQL as PASS: " + result);
             if (!reads.equals(List.of("tables", "fields", "tables", "fields"))) throw new AssertionError("validator must read authorized metadata only");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
-            for (String invalid : List.of("unknown", "extra", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation")) {
+            for (String invalid : List.of("unknown", "extra", "extra-order", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation")) {
                 sent.clear(); reads.clear(); mode.set(invalid); session = open(mvc);
                 String run = start(mvc, session, "Invalid tool");
                 try { result = terminal(mvc, run); }
                 catch (jakarta.servlet.ServletException failure) { if (!invalid.equals("outside")) throw failure; denied(mvc, run); continue; }
-                if (!result.path("status").asText().equals("FAILED") || sent.size() != (Set.of("extra", "duplicate", "trailing").contains(invalid) ? 2 : 1) || result.toString().contains("connection-secret") || result.toString().contains("private-budget-sentinel")) throw new AssertionError("invalid tool did not safely fail " + invalid + ": " + result);
+                if (!result.path("status").asText().equals("FAILED") || sent.size() != (Set.of("extra", "extra-order", "duplicate", "trailing").contains(invalid) ? 2 : 1) || result.toString().contains("connection-secret") || result.toString().contains("private-budget-sentinel")) throw new AssertionError("invalid tool did not safely fail " + invalid + ": " + result);
                 if (!Set.of("outside", "tool-failure").contains(invalid) && !reads.isEmpty()) throw new AssertionError("invalid tool executed metadata " + invalid);
                 mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             }
