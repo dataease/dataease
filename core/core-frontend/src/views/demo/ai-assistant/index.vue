@@ -499,10 +499,13 @@ const resumeProgress = async (index: number) => {
     finishReading(current)
   }
 }
-const copyExecution = (id: string) =>
-  navigator.clipboard.writeText(id).catch(() => {
+const copyExecution = async (id: string) => {
+  try {
+    await navigator.clipboard.writeText(id)
+  } catch {
     failure.value = tr('copy_failed')
-  })
+  }
+}
 const applyEvents = (events: AiConversationEvents, index: number, cursor: number) => {
   const message = messages.value[index]
   if (!message || !['RUNNING', 'UNREACHABLE'].includes(message.status)) return

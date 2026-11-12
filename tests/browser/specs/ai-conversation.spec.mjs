@@ -6,7 +6,7 @@ const session = {
   resourceId: '11',
   resourceName: 'Isolated database',
   editorId: 'editor',
-  expiresAt: Date.now() + 60000
+  expiresAt: Date.now() + 30 * 60 * 1000
 }
 const selectResource = async (page) => {
   await page.goto('/?view=conversation')
@@ -1928,4 +1928,59 @@ test('changed input is a distinct task while the older unknown submission keeps 
   expect(posts[1].submissionKey).not.toBe(posts[0].submissionKey)
   expect(posts[2].submissionKey).toBe(posts[0].submissionKey)
   expect(modelOperations.size).toBe(2)
+})
+
+test('unknown submission capacity preserves original keys and rejects an eleventh operation', async ({
+  page
+}) => {
+  const posts = []
+  const accepted = new Map()
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'reconciled-first',
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            { sequence: 1, type: 'TEXT', text: 'Reconciled first operation' },
+            { sequence: 2, type: 'COMPLETED' }
+          ]
+        }
+      })
+    if (url.pathname.endsWith('/executions')) {
+      const body = route.request().postDataJSON()
+      posts.push(body)
+      if (accepted.has(body.submissionKey))
+        return route.fulfill({
+          json: {
+            ...session,
+            executionId: 'reconciled-first',
+            status: 'RUNNING',
+            deadline: Date.now() + 60000
+          }
+        })
+      accepted.set(body.submissionKey, body.text)
+      return route.fulfill({ status: 503, json: {} })
+    }
+    return route.fulfill({ json: session })
+  })
+  await page.goto('/?view=conversation')
+  for (let index = 0; index < 10; index++) {
+    await send(page, `unknown-${index}`)
+    await expect.poll(() => posts.length).toBe(index + 1)
+  }
+  await send(page, 'unknown-overflow')
+  await expect(page.getByRole('alert')).toContainText('未知受理操作已达上限')
+  expect(posts).toHaveLength(10)
+  await page.getByRole('button', { name: '核对同次提交' }).click()
+  await expect(page.getByText('Reconciled first operation', { exact: true })).toBeVisible()
+  expect(posts[10].submissionKey).toBe(posts[0].submissionKey)
+  await send(page, 'unknown-overflow')
+  await expect.poll(() => posts.length).toBe(12)
+  expect(new Set(posts.map((post) => post.submissionKey)).size).toBe(11)
 })

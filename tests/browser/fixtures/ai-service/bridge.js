@@ -29,7 +29,9 @@ const send = async (method, option) => {
   if (!response.ok) {
     const body = await response.json().catch(() => ({}))
     throw Object.assign(new Error(body.msg || 'Synthetic API error'), {
-      messageKey: body.messageKey, httpStatus: response.status, response: { status: response.status }
+      messageKey: body.messageKey,
+      httpStatus: response.status,
+      response: { status: response.status }
     })
   }
   return { data: await response.json() }

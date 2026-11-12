@@ -114,7 +114,8 @@ const notify = (task: AiTask | AiTaskNotice) => {
   const message =
     task.status === 'COMPLETED'
       ? tr('task_completed')
-      : tr(`task_status_${task.status.toLowerCase()}`)
+      : tr(`task_status_${task.status.toLowerCase()}`) +
+        (task.errorCode ? ' · ' + t('ai_service.' + aiFailureKey(task.errorCode)) : '')
   const content = retry
     ? h('span', [
         message + ' ',
@@ -130,9 +131,7 @@ const notify = (task: AiTask | AiTaskNotice) => {
           tr('task_retry')
         )
       ])
-    : message +
-      ' ' +
-      (task.errorCode ? t('ai_service.' + aiFailureKey(task.errorCode)) : tr('task_expiry'))
+    : message + ' ' + tr('task_expiry')
   toasts.set(
     task.attemptId,
     ElMessage({
@@ -303,10 +302,13 @@ const poll = async () => {
       timer = setTimeout(poll, readFailures ? readFailures * 1000 : 1000)
   }
 }
-const copyExecution = (id: string) =>
-  navigator.clipboard.writeText(id).catch(() => {
+const copyExecution = async (id: string) => {
+  try {
+    await navigator.clipboard.writeText(id)
+  } catch {
     failure.value = tr('copy_failed')
-  })
+  }
+}
 const resumeReading = () => {
   if (readPaused.value) {
     readPaused.value = false
