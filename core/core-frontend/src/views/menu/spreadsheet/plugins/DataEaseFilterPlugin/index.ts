@@ -4,6 +4,7 @@ import { DataEaseFilterController } from './controllers/filter.controller'
 import { FilterInstanceService } from './services/filter-instance.service'
 import { SpreadsheetFilterRuntimeService } from './services/filter-runtime.service'
 import { FilterDatasetReplacementAdapter } from './services/filter-dataset-replacement.adapter'
+import { FilterConfigContextService } from './services/filter-config-context.service'
 import './adapter'
 import './styles/query-control.less'
 
@@ -22,6 +23,7 @@ export class DataEaseFilterPlugin extends Plugin {
       [DataEaseFilterController],
       [FilterInstanceService],
       [SpreadsheetFilterRuntimeService],
+      [FilterConfigContextService],
       [FilterDatasetReplacementAdapter]
     ]
 

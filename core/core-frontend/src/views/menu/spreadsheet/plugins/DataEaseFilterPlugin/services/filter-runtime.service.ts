@@ -5,7 +5,10 @@ import type {
 } from '../../../types/plugin'
 import { FilterInstanceService } from './filter-instance.service'
 import { Inject } from '@univerjs/core'
-import { buildSpreadsheetTextSearchFilter, buildSpreadsheetTreeFilter } from '../utils/filter-tree-builder'
+import {
+  buildSpreadsheetTextSearchFilter,
+  buildSpreadsheetTreeFilter
+} from '../utils/filter-tree-builder'
 import { normalizeTimeQueryValue } from '../utils/time-filter'
 
 type QueryValueMap = Record<string, unknown>
@@ -28,11 +31,10 @@ export class SpreadsheetFilterRuntimeService {
   }
 
   setValuesReady(unitId: string, ready: Promise<unknown>): void {
-    this._valuesReadyByUnitId.set(unitId, ready.then(
-      () => undefined,
-      error => {
-      }
-    ))
+    const valuesReady = ready.then(() => undefined)
+    // 参数转换失败必须阻止取数，同时为未产生数据区域请求的工作簿处理拒绝。
+    void valuesReady.catch(() => undefined)
+    this._valuesReadyByUnitId.set(unitId, valuesReady)
   }
 
   waitForValues(unitId: string): Promise<void> {
@@ -50,9 +52,7 @@ export class SpreadsheetFilterRuntimeService {
     if (!currentValues || !conditionIdSet.size) return
 
     const nextValues = Object.fromEntries(
-      Object.entries(currentValues).filter(
-        ([conditionId]) => !conditionIdSet.has(conditionId)
-      )
+      Object.entries(currentValues).filter(([conditionId]) => !conditionIdSet.has(conditionId))
     )
     this._valuesByUnitId.set(unitId, nextValues)
   }
@@ -60,10 +60,7 @@ export class SpreadsheetFilterRuntimeService {
   pruneValuesForConfig(unitId: string, config: SpreadsheetFilterConfig): QueryValueMap {
     const currentValues = this._valuesByUnitId.get(unitId) || {}
     const availableIds = new Set(
-      config.visible
-        ? config.conditions
-          .map(condition => condition.id)
-        : []
+      config.visible ? config.conditions.map(condition => condition.id) : []
     )
     const nextValues = Object.fromEntries(
       Object.entries(currentValues).filter(([conditionId]) => availableIds.has(conditionId))
@@ -95,11 +92,10 @@ export class SpreadsheetFilterRuntimeService {
     )
   }
 
-  applyQueryFilterToConfig<T extends { data?: { queryFilter?: SpreadsheetQueryFilterItem[] } }>(
-    unitId: string,
-    config: T
-  ): T {
-    const queryFilter = this.buildQueryFilter(unitId, (config as any).id)
+  applyQueryFilterToConfig<
+    T extends { id: string; data?: { queryFilter?: SpreadsheetQueryFilterItem[] } }
+  >(unitId: string, config: T): T {
+    const queryFilter = this.buildQueryFilter(unitId, config.id)
 
     return {
       ...config,
@@ -122,19 +118,25 @@ export class SpreadsheetFilterRuntimeService {
     if (condition.displayType === 'treeSelect') {
       const customFilter = buildSpreadsheetTreeFilter(condition, pluginId, rawValue)
       if (!customFilter) return []
-      return [{
-        filterId: condition.id,
-        fieldId: '',
-        operator: '',
-        value: [],
-        parameters: [],
-        isTree: true,
-        customFilter
-      }]
+      return [
+        {
+          filterId: condition.id,
+          fieldId: '',
+          operator: '',
+          value: [],
+          parameters: [],
+          isTree: true,
+          customFilter
+        }
+      ]
     }
 
-    const linkedFields = condition.linkedFields.filter(field =>
-      field.pluginId === pluginId && field.fieldId !== undefined && field.fieldId !== null && field.fieldId !== ''
+    const linkedFields = condition.linkedFields.filter(
+      field =>
+        field.pluginId === pluginId &&
+        field.fieldId !== undefined &&
+        field.fieldId !== null &&
+        field.fieldId !== ''
     )
     if (!linkedFields.length) {
       return []
@@ -144,15 +146,17 @@ export class SpreadsheetFilterRuntimeService {
       return linkedFields.flatMap(field => {
         const customFilter = buildSpreadsheetTextSearchFilter(condition, field, rawValue)
         if (!customFilter) return []
-        return [{
-          filterId: condition.id,
-          fieldId: String(field.fieldId),
-          operator: '',
-          value: [],
-          parameters: [],
-          isTree: false,
-          customFilter
-        }]
+        return [
+          {
+            filterId: condition.id,
+            fieldId: String(field.fieldId),
+            operator: '',
+            value: [],
+            parameters: [],
+            isTree: false,
+            customFilter
+          }
+        ]
       })
     }
 

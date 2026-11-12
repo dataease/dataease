@@ -2,10 +2,12 @@
 import { ref, computed, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_sheet_datareference_outlined from '@/assets/svg/icon_sheet-datareference_outlined.svg'
 import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
+import icon_params_setting from '@/assets/svg/icon_params_setting.svg?component'
 import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { SpreadsheetPublishStatus } from '../api'
@@ -31,6 +33,7 @@ const emit = defineEmits<{
   (e: 'recover-published'): void
   (e: 'cancel-publish'): void
   (e: 'replace-dataset'): void
+  (e: 'outer-params'): void
   (e: 'rename', value: string): void
 }>()
 
@@ -109,6 +112,11 @@ const handleReplaceDataset = () => {
 const mutating = computed(
   () => props.disabled || props.saving || props.publishing || props.recovering
 )
+
+const handleOuterParams = () => {
+  if (mutating.value) return
+  emit('outer-params')
+}
 </script>
 
 <template>
@@ -133,6 +141,19 @@ const mutating = computed(
 
       <!-- Right area - action buttons -->
       <div class="right-area">
+        <el-tooltip effect="dark" :content="t('spreadsheet.outer_params_title')" placement="bottom">
+          <ComponentButton
+            class="outer-params-trigger"
+            :icon-name="icon_params_setting"
+            role="button"
+            :tabindex="mutating ? -1 : 0"
+            :aria-label="t('spreadsheet.outer_params_title')"
+            :aria-disabled="mutating"
+            @custom-click="handleOuterParams"
+            @keydown.enter.prevent="handleOuterParams"
+            @keydown.space.prevent="handleOuterParams"
+          />
+        </el-tooltip>
         <el-tooltip
           effect="dark"
           :content="t('spreadsheet.dataset_replacement.title')"
@@ -354,6 +375,19 @@ const mutating = computed(
       display: block;
       width: 20px;
       height: 20px;
+    }
+  }
+
+  .outer-params-trigger {
+    &:focus-visible {
+      outline: 2px solid var(--ed-color-primary);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    &[aria-disabled='true'] {
+      opacity: 0.5;
+      pointer-events: none;
     }
   }
 

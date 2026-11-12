@@ -691,11 +691,10 @@ export class DataEasePivotTableController extends Disposable {
       .filter(plugin => affectedIdSet.has(plugin.id))
 
     for (const plugin of pivotPlugins) {
-      const queryConfig = this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, plugin)
       try {
-        await this.pivotTableFillService.fillByConfig(this.univerApi, queryConfig)
+        await this.pivotTableFillService.fillByConfig(this.univerApi, plugin)
       } catch (error) {
-        this.markRestoreError(unitId, queryConfig, error)
+        this.markRestoreError(unitId, plugin, error)
       }
     }
   }

@@ -56,6 +56,7 @@ onBeforeMount(async () => {
       <UniverSheet
         ref="spreadsheetRef"
         :model-value="workbookData"
+        :spreadsheet-id="resourceId"
         :locale="currentLang"
         mode="preview"
         @ready="onInitReady({ resourceId })"

@@ -8,6 +8,7 @@ import {
   getSpreadsheetFilterEnumValue
 } from '../../../../api/filter-option'
 import { sortSpreadsheetFilterDatasetRows } from '../../utils/filter-values'
+import { matchesSpreadsheetOuterParamOption } from '../../utils/outer-param-options'
 
 interface SelectOption {
   label: string
@@ -33,7 +34,7 @@ const emit = defineEmits<{
 const loading = ref(false)
 const options = ref<SelectOption[]>([])
 
-const resultMode = computed(() => props.condition.optionCountMode === 'all' ? 1 : 0)
+const resultMode = computed(() => (props.condition.optionCountMode === 'all' ? 1 : 0))
 const selectedValues = computed(() =>
   (Array.isArray(props.modelValue) ? props.modelValue : [props.modelValue])
     .filter(value => value !== undefined && value !== null && value !== '')
@@ -48,11 +49,9 @@ const getAutoFieldIds = () =>
     .map(field => field.fieldId)
     .filter(fieldId => fieldId !== undefined && fieldId !== null && fieldId !== '')
 
-const getDatasetQueryFieldId = () =>
-  props.condition.queryFieldId
+const getDatasetQueryFieldId = () => props.condition.queryFieldId
 
-const getDatasetDisplayFieldId = () =>
-  props.condition.displayFieldId
+const getDatasetDisplayFieldId = () => props.condition.displayFieldId
 
 const loadAutoOptions = async (): Promise<SelectOption[]> => {
   const fieldIds = getAutoFieldIds()
@@ -113,7 +112,7 @@ const loadDatasetOptions = async (): Promise<SelectOption[]> => {
 const optionRequestKey = computed(() => {
   const condition = props.condition
   if (condition.optionSource === 'manual') {
-    return JSON.stringify(['manual', condition.manualOptions])
+    return JSON.stringify(['manual', condition.manualOptions, condition.optionFilter])
   }
   if (condition.optionSource === 'dataset') {
     return JSON.stringify([
@@ -123,21 +122,15 @@ const optionRequestKey = computed(() => {
       condition.sortFieldId,
       condition.sortType === 'customSort' ? 'asc' : condition.sortType || 'asc',
       condition.sortList || [],
-      resultMode.value
+      resultMode.value,
+      condition.optionFilter
     ])
   }
-  return JSON.stringify([
-    'auto',
-    getAutoFieldIds(),
-    resultMode.value
-  ])
+  return JSON.stringify(['auto', getAutoFieldIds(), resultMode.value, condition.optionFilter])
 })
 
 const syncDefaultFirstItem = () => {
-  if (
-    !props.condition.defaultValueEnabled ||
-    !props.condition.defaultValueFirstItem
-  ) {
+  if (!props.condition.defaultValueEnabled || !props.condition.defaultValueFirstItem) {
     return
   }
 
@@ -173,7 +166,9 @@ const loadOptions = async () => {
     if (sequence !== loadSequence || requestKey !== optionRequestKey.value) {
       return
     }
-    options.value = nextOptions
+    options.value = nextOptions.filter(option =>
+      matchesSpreadsheetOuterParamOption(option.label, props.condition.optionFilter)
+    )
     // 默认首项属于初始化结果，父组件会等待所有候选项就绪后再放行实例首次查询。
     syncDefaultFirstItem()
   } catch (error) {
@@ -203,10 +198,7 @@ onBeforeUnmount(() => {
   loadSequence += 1
 })
 
-watch(
-  optionRequestKey,
-  () => debounceLoadOptions()
-)
+watch(optionRequestKey, () => debounceLoadOptions())
 
 watch(
   [
@@ -278,10 +270,7 @@ const handleTileWheel = (event: WheelEvent) => {
     class="spreadsheet-filter-tile-scrollbar"
     @wheel="handleTileWheel"
   >
-    <div
-      class="spreadsheet-filter-tile"
-      :class="{ 'is-disabled': disabled }"
-    >
+    <div class="spreadsheet-filter-tile" :class="{ 'is-disabled': disabled }">
       <button
         v-for="option in options"
         :key="option.value"

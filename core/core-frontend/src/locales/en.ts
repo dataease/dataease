@@ -5745,6 +5745,23 @@ export default {
   },
   spreadsheet: {
     title: 'Spreadsheet',
+    outer_params_title: 'External parameter settings',
+    outer_params_enable: 'Enable external parameters',
+    outer_params_select_data_areas: 'Select linked data regions',
+    outer_params_filter_tips:
+      'Filtering is supported only for text dropdown, number dropdown, and tree query conditions',
+    outer_params_invalid_target: 'The binding target is no longer valid. Select it again.',
+    outer_params_duplicate_target:
+      'Each target and binding mode can only be bound to one external parameter',
+    outer_params_ambiguous_targets:
+      'The workbook contains duplicate query condition or data region IDs. External parameters cannot be configured.',
+    outer_params_invalid_name: 'Parameter names must be nonempty and unique',
+    outer_params_invalid_default: 'The default value must be a JSON array',
+    outer_params_default_tips:
+      'Use a JSON array, for example ["name1"] for one value or ["name1","name2"] for multiple values',
+    outer_params_load_error: 'Failed to load external parameter settings',
+    outer_params_save_error: 'Failed to save external parameters',
+    outer_params_fix_errors: 'Correct the parameter settings before saving',
     new_folder: 'New Folder',
     root_folder: 'Root folder',
     new_sheet: 'New Spreadsheet',
