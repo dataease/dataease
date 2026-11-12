@@ -15,6 +15,10 @@ type SourceField = Field & { description?: string; dataeaseName?: string }
 const { t } = useI18n()
 const visible = ref(false)
 const table = ref<Table>()
+const tableComment = computed(() => {
+  const comment = table.value?.name?.trim()
+  return comment && comment !== table.value?.tableName ? comment : ''
+})
 const activeTab = ref('preview')
 const search = ref('')
 const fields = ref<SourceField[]>([])
@@ -108,6 +112,13 @@ defineExpose({ open })
     append-to-body
     class="dataset-table-details"
   >
+    <template #header="{ titleId, titleClass }">
+      <div :id="titleId" :class="titleClass">{{ table?.tableName }}</div>
+      <p v-if="tableComment" class="table-details-comment">
+        <span>{{ t('datasource.table_description') }}</span>
+        <span>{{ tableComment }}</span>
+      </p>
+    </template>
     <div class="table-details-toolbar">
       <el-tabs v-model="activeTab">
         <el-tab-pane :label="t('chart.data_preview')" name="preview" />
@@ -161,6 +172,26 @@ defineExpose({ open })
 </template>
 
 <style scoped lang="less">
+.table-details-comment {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 0;
+  max-height: 96px;
+  overflow-y: auto;
+  color: var(--ed-text-color-secondary);
+  font-size: 14px;
+  line-height: 22px;
+
+  span:first-child {
+    flex-shrink: 0;
+  }
+
+  span:last-child {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+}
+
 .table-details-toolbar {
   display: flex;
   align-items: center;
