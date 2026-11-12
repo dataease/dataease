@@ -1,5 +1,20 @@
 export default {
   ai_conversation: {
+    select_target: '生成 SQL 或读取结构前请先选择数据源；普通 SQL 解释可直接提问。',
+    interrupt_title: '中断当前生成？',
+    interrupt_message: '中断后本次未完成内容不能应用。取消将继续原执行并保留上下文。',
+    interrupt: '确认中断',
+    keep_running: '继续生成',
+
+    stale_draft: '目标或草稿已变化，请回到原目标并重新生成建议。',
+    original_target: '原目标',
+    no_resource: '未选择数据源',
+    suggestion: 'SQL 建议（未保存）',
+    explanation: '解释',
+    apply: '应用到当前草稿',
+
+    single: '单次 SQL 辅助',
+    single_request: '请依据当前 SQL 和授权结构给出 SQL 建议，并使用 propose_sql 提交完整候选。',
     tool: '程序工具',
     tool_started: '开始',
     tool_running: '执行中',
@@ -52,7 +67,7 @@ export default {
     guide_lifecycle: '会话与上下文',
     guide_controls: '收起助手保留会话和进行中的生成；停止只结束当前生成，并保留之前已完成的对话。',
     guide_session:
-      '对话不持久化。修改 SQL 或数据源、结束会话、离开或刷新会结束当前聊天；切换身份/工作空间还会清空 SQL 和消息草稿。',
+      '对话不持久化。修改 SQL 或数据源只影响后续请求，旧结果保留原目标；生成和应用分开，应用前复核权限与版本。停止或结束进行中的会话需要确认。离开或刷新结束前台活动；切换身份/工作空间清空 SQL 和消息草稿。',
     resource: '数据源',
     sql: '当前 SQL',
     message: '消息',

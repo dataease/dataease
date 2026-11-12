@@ -70,6 +70,7 @@ public final class ToolConversationRegression {
         var reads = new CopyOnWriteArrayList<String>();
         var mode = new AtomicReference<String>("tables");
         var operationAllowed = new AtomicBoolean(true);
+        var sourceRevision = new AtomicLong(1);
         var toolEntered = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var toolRelease = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -78,7 +79,11 @@ public final class ToolConversationRegression {
             try {
                 var body = JSON.readTree(exchange.getRequestBody()); sent.add(body);
                 String content;
-                if (Set.of("validate-stop", "validate-revoke").contains(mode.get()) && sent.size() == 1) {
+                if (mode.get().equals("general")) {
+                    content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
+                } else if (mode.get().equals("suggest") && sent.size() == 1) {
+                    content = call("proposal", "propose_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
+                } else if (Set.of("validate-stop", "validate-revoke").contains(mode.get()) && sent.size() == 1) {
                     content = call("validation-boundary", "validate_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
                 } else if (mode.get().equals("correction") && sent.size() <= 2) {
                     content = call("validate-" + sent.size(), "validate_sql", JSON.writeValueAsString(Map.of("sql", sent.size() == 1 ? "SELECT TYPO FROM AI_PROBE" : "SELECT ID FROM AI_PROBE")));
@@ -127,7 +132,7 @@ public final class ToolConversationRegression {
             if (!Objects.equals(V3UserUtil.getUid(), 1L)) throw new AssertionError("metadata lost trusted actor");
             return switch (method.getName()) {
                 case "tree" -> { var node = new BusiNodeVO(); node.setId(11L); node.setLeaf(true); node.setName("Probe"); yield List.of(node); }
-                case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId(11L); ds.setName("Probe"); ds.setType("MySQL"); ds.setUpdateTime(1L); yield ds; }
+                case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId(11L); ds.setName("Probe"); ds.setType("MySQL"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
                 case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Objects.equals(request.getDatasourceId(), 11L) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables");
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
                     if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
@@ -179,6 +184,84 @@ public final class ToolConversationRegression {
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            mode.set("suggest");
+            var suggestionSession = open(mvc);
+            var suggestionRun = start(mvc, suggestionSession, "Suggest SQL");
+            var suggestion = terminal(mvc, suggestionRun);
+            if (!suggestion.path("result").path("type").asText().equals("SQL_SUGGESTION")
+                    || !suggestion.path("result").path("sql").asText().equals("SELECT ID FROM AI_PROBE")
+                    || suggestion.path("result").path("resourceVersion").asText().isBlank())
+                throw new AssertionError("SQL suggestion must be a typed, statically checked result bound to the original resource revision: " + suggestion);
+            var applicable = JSON.readTree(mvc.perform(post(suggestionRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", suggestionSession.path("contextVersion").asText(),
+                            "draftVersion", suggestionSession.path("draftVersion").asText())))).andReturn().getResponse().getContentAsString());
+            if (!applicable.path("sql").asText().equals("SELECT ID FROM AI_PROBE")) throw new AssertionError("explicit application check must return the original suggestion");
+            operationAllowed.set(false);
+            boolean applicationDenied = false;
+            try { applicationDenied = mvc.perform(post(suggestionRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", suggestionSession.path("contextVersion").asText(), "draftVersion", suggestionSession.path("draftVersion").asText())))).andReturn().getResponse().getStatus() >= 400; }
+            catch (jakarta.servlet.ServletException failure) { applicationDenied = failure.getCause() instanceof AiErrors.Failure; }
+            if (!applicationDenied) throw new AssertionError("application must freshly reject revoked READ");
+            operationAllowed.set(true); sent.clear(); reads.clear(); mode.set("suggest");
+            var versionSession = open(mvc);
+            var versionRun = start(mvc, versionSession, "Suggest for current revision");
+            terminal(mvc, versionRun);
+            sourceRevision.incrementAndGet();
+            boolean versionDenied = false;
+            try { versionDenied = mvc.perform(post(versionRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", versionSession.path("contextVersion").asText(), "draftVersion", versionSession.path("draftVersion").asText())))).andReturn().getResponse().getStatus() >= 400; }
+            catch (jakarta.servlet.ServletException failure) { versionDenied = failure.getCause() instanceof AiErrors.Failure; }
+            if (!versionDenied) throw new AssertionError("application cannot overwrite a changed resource revision");
+            sourceRevision.set(1); sent.clear(); reads.clear(); mode.set("general");
+            // General explanations have no mandatory datasource and cannot acquire resource tools.
+            var unboundResponse = mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"scene\":\"sql\",\"resourceId\":\"\",\"editorId\":\"general\",\"sql\":\"\"}"))
+                    .andReturn().getResponse();
+            if (unboundResponse.getStatus() != 200) throw new AssertionError("ordinary SQL explanation must not require a target: " + unboundResponse.getStatus());
+            var unbound = JSON.readTree(unboundResponse.getContentAsString());
+            var unboundResult = terminal(mvc, start(mvc, unbound, "Explain SELECT"));
+            if (!unboundResult.path("status").asText().equals("COMPLETED") || !unboundResult.path("result").path("type").asText().equals("EXPLANATION") || !reads.isEmpty())
+                throw new AssertionError("general explanation must complete without reading a resource: " + unboundResult);
+            sent.clear(); mode.set("tables");
+            unboundResult = terminal(mvc, start(mvc, unbound, "Try reading a resource without selection"));
+            if (!unboundResult.path("status").asText().equals("FAILED") || !reads.isEmpty())
+                throw new AssertionError("unbound scope must reject model attempts to acquire resource tools: " + unboundResult);
+            mvc.perform(delete("/ai/conversations/" + unbound.path("sessionId").asText()));
+            sent.clear(); reads.clear();
+            // One-shot callers provide no conversation: actual registered tools/model still run.
+            var accepted = mvc.perform(post("/ai/conversations/capabilities/sql.assist")
+                    .contentType(MediaType.APPLICATION_JSON).content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"button\",\"sql\":\"SELECT ID FROM AI_PROBE\",\"text\":\"Read tables\"}"))
+                    .andReturn().getResponse();
+            if (accepted.getStatus() != 200) throw new AssertionError("registered SQL capability must accept a button without a conversation: " + accepted.getStatus());
+            var oneShot = JSON.readTree(accepted.getContentAsString());
+            var oneShotResult = terminal(mvc, "/ai/conversations/" + oneShot.path("sessionId").asText() + "/executions/" + oneShot.path("executionId").asText());
+            if (!oneShotResult.path("status").asText().equals("COMPLETED") || !oneShotResult.toString().contains("AI_PROBE metadata received"))
+                throw new AssertionError("button must execute real shared SQL capability: " + oneShotResult);
+            boolean followupDenied = false;
+            try { followupDenied = mvc.perform(post("/ai/conversations/" + oneShot.path("sessionId").asText() + "/executions")
+                    .contentType(MediaType.APPLICATION_JSON).content(JSON.writeValueAsBytes(Map.of("contextVersion", oneShot.path("contextVersion").asText(), "text", "Continue button chat"))))
+                    .andReturn().getResponse().getStatus() >= 400; }
+            catch (jakarta.servlet.ServletException failure) { followupDenied = failure.getCause() instanceof AiErrors.Failure; }
+            if (!followupDenied) throw new AssertionError("one-shot activity must not become a resumable chat history");
+            mvc.perform(delete("/ai/conversations/" + oneShot.path("sessionId").asText()));
+            var completedButtons = new ArrayList<String>();
+            var completedRuns = new ArrayList<String>();
+            for (int index = 0; index < 12; index++) {
+                sent.clear(); reads.clear();
+                var button = JSON.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"repeated-button\",\"sql\":\"SELECT ID FROM AI_PROBE\",\"text\":\"Read tables\"}"))
+                        .andReturn().getResponse().getContentAsString());
+                var done = terminal(mvc, "/ai/conversations/" + button.path("sessionId").asText() + "/executions/" + button.path("executionId").asText());
+                if (!done.path("status").asText().equals("COMPLETED")) throw new AssertionError("completed buttons must release interactive capacity");
+                completedButtons.add(button.path("sessionId").asText());
+                completedRuns.add("/ai/conversations/" + button.path("sessionId").asText() + "/executions/" + button.path("executionId").asText());
+            }
+            denied(mvc, completedRuns.get(0));
+            if (!terminal(mvc, completedRuns.get(11)).path("status").asText().equals("COMPLETED")) throw new AssertionError("recent one-shot results must remain available within the bounded retention");
+            var independentChat = open(mvc);
+            mvc.perform(delete("/ai/conversations/" + independentChat.path("sessionId").asText()));
+            for (String id : completedButtons.subList(2, completedButtons.size())) mvc.perform(delete("/ai/conversations/" + id));
+            sent.clear(); reads.clear();
             var session = open(mvc); var result = terminal(mvc, start(mvc, session, "Read tables"));
             if (!result.path("status").asText().equals("COMPLETED") || !result.toString().contains("AI_PROBE metadata received")) throw new AssertionError("real program tool result must return to model and complete: " + result);
             if (!reads.equals(List.of("tables")) || sent.size() != 2) throw new AssertionError("actual registered metadata operation must run");

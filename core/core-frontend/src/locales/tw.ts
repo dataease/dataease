@@ -1,5 +1,20 @@
 export default {
   ai_conversation: {
+    select_target: '產生 SQL 或讀取結構前請先選取資料來源；一般 SQL 解釋可直接提問。',
+    interrupt_title: '中斷目前產生？',
+    interrupt_message: '中斷後本次未完成內容無法套用。取消將繼續原執行並保留上下文。',
+    interrupt: '確認中斷',
+    keep_running: '繼續產生',
+
+    stale_draft: '目標或草稿已變更，請回到原目標並重新產生建議。',
+    original_target: '原目標',
+    no_resource: '未選取資料來源',
+    suggestion: 'SQL 建議（未儲存）',
+    explanation: '解釋',
+    apply: '套用至目前草稿',
+
+    single: '單次 SQL 輔助',
+    single_request: '請依據目前 SQL 和授權結構給出 SQL 建議，並使用 propose_sql 提交完整候選。',
     tool: '程式工具',
     tool_started: '開始',
     tool_running: '執行中',
@@ -52,7 +67,7 @@ export default {
     guide_lifecycle: '會話與上下文',
     guide_controls: '收起助手保留會話和進行中的產生；停止只結束目前產生，並保留之前已完成的對話。',
     guide_session:
-      '對話不持久化。修改 SQL 或資料來源、結束會話、離開或重新整理會結束目前聊天；切換身分/工作空間還會清空 SQL 和訊息草稿。',
+      '對話不持久化。修改 SQL 或資料來源僅影響後續請求，舊結果保留原目標；產生與套用分開，套用前重新檢查權限與版本。停止或結束進行中的對話需要確認。離開或重新整理結束前台活動；切換身分/工作空間清空 SQL 和訊息草稿。',
     resource: '資料來源',
     sql: '目前 SQL',
     message: '訊息',

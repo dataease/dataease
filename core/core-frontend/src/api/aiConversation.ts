@@ -12,6 +12,8 @@ export interface AiConversationSession {
   resourceName: string
   editorId: string
   expiresAt: number
+  resourceVersion: string
+  draftVersion: string
 }
 export interface AiConversationAnswer {
   sessionId: string
@@ -42,6 +44,7 @@ export interface AiConversationExecution {
   contextVersion: string
   status: 'RUNNING' | 'COMPLETED' | 'CANCELLED' | 'FAILED'
   deadline: number
+  context?: AiConversationSession
 }
 export interface AiConversationTool {
   callId: string
@@ -50,12 +53,23 @@ export interface AiConversationTool {
   parameters: Record<string, string>
   result?: string
 }
+export interface AiAssistanceResult {
+  type: 'EXPLANATION' | 'SQL_SUGGESTION'
+  text: string
+  sql: string | null
+  resourceId: string
+  resourceName: string
+  resourceVersion: string
+  editorId: string
+  draftVersion: string
+}
 export interface AiConversationEvents {
   sessionId: string
   executionId: string
   contextVersion: string
   status: AiConversationExecution['status']
   cursor: number
+  result?: AiAssistanceResult
   events: {
     sequence: number
     type: string
@@ -69,6 +83,20 @@ export const startConversationExecution = (id: string, contextVersion: string, t
     request.post({
       url: `/ai/conversations/${id}/executions`,
       data: { contextVersion, text },
+      handleErrorLocally: true
+    })
+  )
+export const invokeSqlAssistance = (value: {
+  scene: 'sql'
+  resourceId: string
+  editorId: string
+  sql: string
+  text: string
+}) =>
+  data<AiConversationExecution>(
+    request.post({
+      url: '/ai/conversations/capabilities/sql.assist',
+      data: value,
       handleErrorLocally: true
     })
   )
@@ -90,6 +118,19 @@ export const stopConversationExecution = (id: string, execution: string) =>
   data<AiConversationEvents>(
     request.post({
       url: `/ai/conversations/${id}/executions/${execution}/stop`,
+      handleErrorLocally: true
+    })
+  )
+export const checkSqlApplication = (
+  id: string,
+  execution: string,
+  contextVersion: string,
+  draftVersion: string
+) =>
+  data<AiAssistanceResult>(
+    request.post({
+      url: `/ai/conversations/${id}/executions/${execution}/check-application`,
+      data: { contextVersion, draftVersion },
       handleErrorLocally: true
     })
   )
