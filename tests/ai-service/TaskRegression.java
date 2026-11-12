@@ -75,9 +75,24 @@ public final class TaskRegression {
                 beans.getBeanProvider(AiRuntimeManage.class), access, new ObjectMapper(), beans.getBeanProvider(AiConversationManage.class));
         var json = new ObjectMapper();
         var transport = new io.dataease.ai.support.AiTransport(new io.dataease.ai.support.AiOutboundPolicy(), admission, json);
+        var failAudit = new java.util.concurrent.atomic.AtomicBoolean();
+        var auditManager = new org.springframework.orm.jpa.JpaTransactionManager(em.getEntityManagerFactory()) {
+            @Override protected void doCommit(org.springframework.transaction.support.DefaultTransactionStatus status) {
+                if (failAudit.get()) throw new org.springframework.transaction.TransactionSystemException("controlled audit-only failure");
+                super.doCommit(status);
+            }
+        };
+        auditManager.setRollbackOnCommitFailure(true);
+        var auditAccess = new AiAccess(null, null) {
+            public Identity capture() { return access.capture(); }
+            public AiDeploymentMode.State mode() { return access.mode(); }
+            public void verify(Identity identity, boolean configurationAccess) { access.verify(identity, configurationAccess); }
+            public void audit(Identity identity, Long organization) { access.verify(identity, false); }
+        };
+        var audit = new AiAuditManage(em, auditManager, auditAccess, json);
         beans.addBean("tasks", tasks);
-        beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access));
-        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks)).build();
+        beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access, audit));
+        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiAuditServer(audit)).build();
         String request = "{\"submissionKey\":\"same-submit\",\"scene\":\"sql\",\"capability\":\"sql.assist\",\"resourceId\":\"11\",\"editorId\":\"editor\",\"sql\":\"select 1\",\"text\":\"explain\"}";
         var first = mvc.perform(post("/ai/tasks").contentType("application/json").content(request)).andReturn().getResponse();
         if (first.getStatus() != 200) throw new AssertionError("task accepted");
@@ -147,7 +162,7 @@ public final class TaskRegression {
             }
             boolean needsTool = modelRequest.has("tools") && !modelRequest.path("messages").toString().contains("authorized_table");
             String toolFrame = "data: {\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"inspect-1\",\"type\":\"function\",\"function\":{\"name\":\"inspect\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n";
-            byte[] body = (needsTool ? toolFrame : ("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"durable answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n")).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] body = (needsTool ? toolFrame : ("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"durable answer\",\"reasoning\":\"administrator-process-only\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n")).getBytes(java.nio.charset.StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "text/event-stream"); exchange.sendResponseHeaders(200, body.length);
             try { exchange.getResponseBody().write(body); } finally { exchange.close(); }
         });
@@ -162,7 +177,7 @@ public final class TaskRegression {
             var setting = configuration.setting();
             configuration.saveSettings(new io.dataease.api.ai.config.AiConfigDtos.SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 1, 1, configuration.impact("SETTINGS", saved.id() + ":true").token()));
             beans.addBean("tasks", tasks);
-            beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access));
+            beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access, audit));
             var configMvc = MockMvcBuilders.standaloneSetup(new io.dataease.ai.server.AiConfigurationServer(configuration, null)).build();
             var originalScheduling = configuration.querySettings().taskScheduling();
             recovery(configMvc, json, 1, 1);
@@ -265,6 +280,15 @@ public final class TaskRegression {
             for (var notice : pendingNotices) if (notice.path("attemptId").equals(toolResult.path("attemptId"))) throw new AssertionError("expired notice cannot be delivered");
             String safe = pendingNotices.toString();
             if (safe.contains("ownerJson") || safe.contains("fence") || safe.contains("explain") || safe.contains("durable answer")) throw new AssertionError("ordinary notices expose only safe delivery projection");
+            var evidence = json.readTree(mvc.perform(get("/ai/audit/" + toolResult.path("executionId").asText())).andReturn().getResponse().getContentAsString());
+            if (!evidence.toString().contains("administrator-process-only") || !evidence.toString().contains("authorized_table")) throw new AssertionError("background actual model and tool outputs are audited");
+            long auditedTools = java.util.stream.StreamSupport.stream(evidence.path("entries").spliterator(), false).filter(entry -> "TOOL".equals(entry.path("kind").asText())).count();
+            if (auditedTools < 1 || !evidence.path("taskId").asText().equals(toolResult.path("taskId").asText()) || toolResult.toString().contains("administrator-process-only") || toolResult.toString().contains("requestBody")) throw new AssertionError("task correlation and ordinary task/audit isolation");
+            failAudit.set(true);
+            var auditFailure = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "audit-save-failure").replace("explain", "audit-save-failure"))).andReturn().getResponse().getContentAsString());
+            var auditSuccess = await(mvc, json, "/ai/tasks/" + auditFailure.path("taskId").asText(), "COMPLETED");
+            if (!"durable answer".equals(auditSuccess.path("result").path("text").asText())) throw new AssertionError("pure audit transaction failure cannot roll back task/result success");
+            failAudit.set(false);
             var stateFailure = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "state-save-failure").replace("explain", "state-save-failure"))).andReturn().getResponse().getContentAsString());
             String statePath = "/ai/tasks/" + stateFailure.path("taskId").asText();
             for (int i = 0; i < 200 && !failCommit.get(); i++) Thread.sleep(25);
@@ -279,7 +303,7 @@ public final class TaskRegression {
             if (stateSends.get() != sentBeforeRecovery) throw new AssertionError("terminal persistence recovery cannot rerun model work");
         } finally {
             failCommit.set(false);
-            conversations.destroy(); tasks.destroy(); transport.close(); server.stop(0);
+            conversations.destroy(); tasks.destroy(); transport.close(); audit.close(); server.stop(0);
             var setting = configuration.setting();
             configuration.saveSettings(new io.dataease.api.ai.config.AiConfigDtos.SettingsChange(setting.getRowVersion(), true, previous, false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", previous + ":true").token()));
         }

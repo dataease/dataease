@@ -40,6 +40,20 @@ public class AiAccess {
         }
         throw AiErrors.error("forbidden");
     }
+    public void audit(Identity identity, Long targetOrganization) {
+        verify(identity, false);
+        if (!identity.deployment().organizations()) {
+            if (!Objects.equals(identity.actor(), 1L) || identity.organization() != null || identity.proxy() != null || targetOrganization != null)
+                throw AiErrors.error("forbidden");
+            return;
+        }
+        InteractiveAuthApi api = authorization.getIfAvailable();
+        try {
+            if (api == null || !Boolean.TRUE.equals(api.checkAiAuditAccess(identity.actor(), identity.organization(), identity.proxy(), targetOrganization)))
+                throw AiErrors.error("forbidden");
+        } catch (RuntimeException unavailable) { throw AiErrors.error("forbidden"); }
+        verify(identity, false);
+    }
     public String identity() { return binding(configurationIdentity()); }
     public Identity configurationIdentity() { Identity identity = capture(); verify(identity, true); return identity; }
     public java.util.List<InteractiveAuthApi.AiOrganization> organizations() {

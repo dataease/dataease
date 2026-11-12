@@ -128,6 +128,7 @@ public final class TaskProgressRegression {
             public Connection getConnection(String user, String password) throws SQLException { return delayed(delegate.getConnection(user, password)); }
         };
         var mapping = new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
+                .addAnnotatedClass(CoreAiAuditExecution.class).addAnnotatedClass(CoreAiAuditEntry.class)
                 .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.hbm2ddl.auto", "none").setProperty("hibernate.show_sql", "false");
         mapping.getProperties().put("hibernate.connection.datasource", dataSource);
@@ -135,6 +136,7 @@ public final class TaskProgressRegression {
             var em = SharedEntityManagerCreator.createSharedEntityManager(factory); var manager = new JpaTransactionManager(factory);
             var jdbc = new JdbcTemplate(dataSource);
             new AiConfigurationInit(jdbc, factory, em, manager).execute(); new AiTaskInit(jdbc, factory, em, manager).execute(); new AiTaskSchedulingInit(jdbc, factory, em, manager).execute(); new AiTaskResourceInit(jdbc, factory, em, manager).execute();
+            new io.dataease.listener.sql.AiAuditInit(jdbc, factory, em, manager).execute();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 var model = new CoreAiModel(); model.setId(42L); model.setName("progress controlled"); model.setNameKey("progress-controlled");
                 model.setModelIdentifier("progress-model"); model.setBaseUrl("http://127.0.0.1:" + upstream.getAddress().getPort() + "/v1");
@@ -177,7 +179,8 @@ public final class TaskProgressRegression {
             var transport = new AiTransport(new AiOutboundPolicy(), admission, TaskNode.JSON);
             var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access); beans.addBean("conversations", conversations);
             var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, TaskNode.JSON); beans.addBean("tasks", tasks);
-            beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, repositories.getRepository(CoreAiOrgPolicyRepository.class), TaskNode.secrets(), transport, TaskNode.JSON, access));
+            var audit = new AiAuditManage(em, manager, access, TaskNode.JSON);
+            beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, repositories.getRepository(CoreAiOrgPolicyRepository.class), TaskNode.secrets(), transport, TaskNode.JSON, access, audit));
             var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiConversationServer(conversations)).build();
             var api = api(mvc); int port = api.getAddress().getPort();
             List<String> failures = new ArrayList<>();
@@ -236,7 +239,7 @@ public final class TaskProgressRegression {
                     if (!"COMPLETED".equals(terminal.path("status").asText()) || afterUpstream < 0 || !terminal.path("result").path("text").asText().equals("Short complete answer")) failures.add(summary);
                     System.out.println("DIAG task progress " + summary);
                 }
-            } finally { DELAY.set(0); tasks.destroy(); conversations.destroy(); transport.close(); scene.destroy(); api.stop(0); }
+            } finally { DELAY.set(0); tasks.destroy(); conversations.destroy(); transport.close(); audit.close(); scene.destroy(); api.stop(0); }
             if (!failures.isEmpty()) throw new AssertionError("already-finished legal model output must complete promptly without consuming the 5-second deadline: " + failures);
             System.out.println("PASS task legal private-frame burst completes through public task HTTP/SQL scene/runtime/JPA within five-second policy");
         } finally { upstream.stop(0); providerWorkers.shutdownNow(); V3UserUtil.clear(); CommunityUtils.clear(); }

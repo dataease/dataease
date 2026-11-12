@@ -50,6 +50,10 @@ public class AiTransport {
         org.springframework.boot.logging.LoggingSystem.get(getClass().getClassLoader()).setLogLevel(
                 "org.springframework.ai.openai.OpenAiChatModel", org.springframework.boot.logging.LogLevel.OFF); }
     public ChatResponse call(Connection connection, CoreAiSetting settings, Prompt prompt, boolean background, long deadline, Runnable recheck) {
+        return call(connection, settings, prompt, background, deadline, recheck, null);
+    }
+    public ChatResponse call(Connection connection, CoreAiSetting settings, Prompt prompt, boolean background, long deadline, Runnable recheck,
+                             io.dataease.ai.manage.AiAuditManage.Session audit) {
         return execute(connection, settings, background, deadline, recheck, client -> {
             OpenAiApi api = OpenAiApi.builder().baseUrl(connection.url()).apiKey(connection.key())
                     .completionsPath(outbound.completionPath(connection.url())).restClientBuilder(client).responseErrorHandler(new org.springframework.web.client.DefaultResponseErrorHandler() {
@@ -62,7 +66,7 @@ public class AiTransport {
                     || response.getResult().getOutput().getText().isBlank()) throw AiErrors.error("response_invalid");
             for (var result : response.getResults()) if (result.getOutput().hasToolCalls() || "length".equalsIgnoreCase(result.getMetadata().getFinishReason())) throw AiErrors.error("response_invalid");
             return response;
-        });
+        }, audit);
     }
     public List<String> discover(Connection connection, CoreAiSetting settings, long deadline, Runnable recheck) {
         return execute(connection, settings, false, deadline, recheck, builder -> {
@@ -79,6 +83,10 @@ public class AiTransport {
     }
     private interface Work<T> { T run(RestClient.Builder builder); }
     private <T> T execute(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck, Work<T> work) {
+        return execute(c, s, background, deadline, recheck, work, null);
+    }
+    private <T> T execute(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck, Work<T> work,
+                          io.dataease.ai.manage.AiAuditManage.Session audit) {
         long remaining = deadline - System.currentTimeMillis();
         if (remaining <= 0) throw AiErrors.error("timeout");
         Future<T> future;
@@ -86,7 +94,7 @@ public class AiTransport {
         try {
             future = executor.submit(() -> {
                 try {
-                    return perform(c, s, background, deadline, recheck, cancellation, work);
+                    return perform(c, s, background, deadline, recheck, cancellation, work, audit);
                 } finally {
                     clearWorker();
                 }
@@ -109,6 +117,10 @@ public class AiTransport {
     }
     private <T> T perform(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck,
                           RequestCancellation cancellation, Work<T> work) {
+        return perform(c, s, background, deadline, recheck, cancellation, work, null);
+    }
+    private <T> T perform(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck,
+                          RequestCancellation cancellation, Work<T> work, io.dataease.ai.manage.AiAuditManage.Session audit) {
         recheck.run();
         outbound.normalize(c.url());
         long budget = deadline - System.currentTimeMillis();
@@ -124,6 +136,8 @@ public class AiTransport {
         };
         ScheduledFuture<?> abort = deadlines.schedule(cancellation::cancel,
                 Math.max(1, deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+        final io.dataease.ai.manage.AiAuditManage.Exchange[] capture = new io.dataease.ai.manage.AiAuditManage.Exchange[1];
+        boolean succeeded = false; String error = null;
         try {
             RestClient.Builder builder = RestClient.builder().requestFactory(factory)
                     .defaultStatusHandler(status -> status.value() >= 300, (request, response) -> { throw providerError(response); })
@@ -132,15 +146,25 @@ public class AiTransport {
                 recheck.run();
                 if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
                 AiAdmission.Permit permit = admission.acquire(s, background, deadline);
-                try { recheck.run(); return bounded(execution.execute(request, bytes), permit, deadline); }
-                catch (Throwable e) { permit.close(); throw e; }
+                try {
+                    recheck.run();
+                    if (audit != null) capture[0] = audit.begin("MODEL", new String(bytes, java.nio.charset.StandardCharsets.UTF_8), c.key());
+                    var response = bounded(execution.execute(request, bytes), permit, deadline);
+                    if (capture[0] == null) return response;
+                    return captured(response, capture[0]);
+                } catch (Throwable e) { permit.close(); throw e; }
             });
             T result = work.run(builder);
             // 在无请求持久化上下文的传输线程复核，避免请求级实体缓存延续旧配置/资源授权。
             recheck.run();
             if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
-            return result;
-        } finally { abort.cancel(false); }
+            succeeded = true; return result;
+        } catch (RuntimeException failure) {
+            error = failure instanceof AiErrors.Failure known ? known.safeCode() : connectionFailure(failure); throw failure;
+        } finally {
+            abort.cancel(false);
+            if (capture[0] != null) capture[0].finish(succeeded, succeeded ? null : cancellation.cancelled() ? "cancelled" : error == null ? "upstream_failed" : error);
+        }
     }
     /** One controlled interactive upstream stream. No default WebClient, retry or model-side tool execution. */
     public final class Stream implements AutoCloseable {
@@ -189,7 +213,7 @@ public class AiTransport {
                                         readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens(), guard, text -> { delivered.set(true); delta.accept(text); }, budget);
                                         return Boolean.TRUE;
                                     });
-                        }));
+                        }, recovery.audit()));
                         if (!cancellation.cancelled()) completed.run();
                     } catch (Throwable failure) {
                         if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline));
@@ -235,7 +259,7 @@ public class AiTransport {
                                     var type = response.getHeaders().getContentType();
                                     if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
                                     return readToolEvents(response.getBody(), currentAllocation.get(), budget, guard, text -> { delivered.set(true); delta.accept(text); });
-                                })));
+                                }), recovery.audit()));
                         guard.run(); if (!cancellation.cancelled()) completed.accept(result);
                     } catch (Throwable failure) { if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline)); }
                     finally { clearWorker(); }
@@ -481,6 +505,20 @@ public class AiTransport {
             case 500, 502, 503, 504 -> "provider_unavailable";
             default -> "upstream_failed";
         }, retryAfter);
+    }
+    private ClientHttpResponse captured(ClientHttpResponse response, io.dataease.ai.manage.AiAuditManage.Exchange capture) {
+        return new ClientHttpResponse() {
+            private InputStream body;
+            public HttpStatusCode getStatusCode() throws IOException { return response.getStatusCode(); }
+            public String getStatusText() throws IOException { return response.getStatusText(); }
+            public HttpHeaders getHeaders() { return response.getHeaders(); }
+            public InputStream getBody() throws IOException { if (body == null) body = capture.capture(response.getBody()); return body; }
+            public void close() {
+                try { if (body == null || response.getStatusCode().value() >= 300) getBody().transferTo(OutputStream.nullOutputStream()); }
+                catch (IOException | RuntimeException ignored) { /* Failed/oversized error bodies remain explicitly incomplete. */ }
+                finally { response.close(); }
+            }
+        };
     }
     private ClientHttpResponse bounded(ClientHttpResponse response, AiAdmission.Permit permit, long deadline) throws IOException {
         return new ClientHttpResponse() {

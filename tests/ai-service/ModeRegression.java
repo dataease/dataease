@@ -57,6 +57,9 @@ public final class ModeRegression {
         f.status.set(F2CLicResult.Status.valid);denied(f.mode::current,"missing record with valid result is inconsistent");
         f.nullRecord.set(false);f.status.set(F2CLicResult.Status.no_record);
         var identity = f.access.capture();f.access.verify(identity,true);
+        f.access.audit(identity, null);
+        denied(() -> f.access.audit(identity, 9001L), "community does not invent workspace audit authority");
+        f.enabled.set(false); denied(() -> f.access.audit(identity, null), "disabled community administrator cannot read audit"); f.enabled.set(true);
         require(!identity.deployment().organizations()&&identity.organization()==null&&f.menus.get()==0,"unlicensed configuration does not check matrix");
         require(f.access.organizations()==null&&f.directories.get()==0,"unlicensed does not load organizations");
         AtomicReference<Throwable> workerFailure = new AtomicReference<>();
@@ -66,7 +69,15 @@ public final class ModeRegression {
         denied(()->f.access.verify(new AiAccess.Identity(1L,9001L,null,f.mode.current()),false),"community task org rejected");
         V3UserUtil.setUid(2L);denied(()->f.access.configuration(),"community does not grant ordinary enterprise actor");V3UserUtil.setUid(1L);
         f.status.set(F2CLicResult.Status.valid);denied(()->f.access.verify(identity,true),"mode change rejects captured operation");
-        var freshLicensed=f.access.capture();f.access.verify(freshLicensed,true);require(f.menus.get()>0,"licensed matrix retained");
+        var freshLicensed=f.access.capture();
+        denied(() -> f.access.audit(freshLicensed, null), "configuration privilege and missing audit extension cannot authorize audit");
+        var checker = InteractiveAuthApi.class.getMethod("checkAiAuditAccess", Long.class, Long.class, Long.class, Long.class);
+        require(org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation(checker, org.springframework.web.bind.annotation.RequestMapping.class) == null,
+                "audit SPI has no HTTP route");
+        var oldExtension = (InteractiveAuthApi) Proxy.newProxyInstance(ModeRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class},
+                (proxy, method, arguments) -> method.isDefault() ? java.lang.reflect.InvocationHandler.invokeDefault(proxy, method, arguments) : null);
+        require(Boolean.FALSE.equals(oldExtension.checkAiAuditAccess(1L, null, null, null)), "old extension default explicitly denies rather than signaling success with void/null");
+f.access.verify(freshLicensed,true);require(f.menus.get()>0,"licensed matrix retained");
         var licensed=freshLicensed;f.record.setUpdateTime(2L);denied(()->f.access.verify(licensed,true),"same-mode license record renewal rejects old context");
         f.failure.set(true);denied(f.mode::current,"source error is not community");f.failure.set(false);
         f.status.set(null);denied(f.mode::current,"unknown result rejected");

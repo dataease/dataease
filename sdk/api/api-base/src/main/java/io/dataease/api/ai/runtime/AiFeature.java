@@ -7,6 +7,9 @@ public interface AiFeature {
     /** finalPrompt 已完成模板及 Advisor 增补；必须用 scope 检查资源/权限版本及实际输入。 */
     void authorizeInput(AiExecutionContext context, org.springframework.ai.chat.prompt.Prompt finalPrompt);
 
+    /** Trusted resource/version reference for administrator evidence, independent of an internal scope lookup key. */
+    default String auditReference(AiExecutionContext context) { return context.scope().reference(); }
+
     default boolean supportsStreaming() { return false; }
 
     default void checkSampleConfirmation(AiExecutionContext context) {

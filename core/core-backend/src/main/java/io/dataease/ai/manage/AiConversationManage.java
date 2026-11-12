@@ -527,7 +527,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                     progress(run); check(run.state); stream.verifyStep(); return value;
                 });
                 result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
-                        () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, execute);
+                        () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, () -> stream.recovery().tool(call.id(), call.name(), arguments, execute));
                 progress(run); stream.result(result);
                 if (AiToolProtocol.invalidResult(result) && !stream.recovery().correct(canonical)) throw AiErrors.error("invalid");
             } catch (RuntimeException failure) {
@@ -558,7 +558,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }
         run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear();
-        run.stream.close();
+        run.stream.finishAudit(status); run.stream.close();
     }
     private void invalidate(State state) {
         synchronized (state) {
@@ -579,6 +579,12 @@ public class AiConversationManage implements AiToolConversationFeature {
                 || !Objects.equals(context.proxyOrganizationId(), state.owner.proxy())) throw AiErrors.error("forbidden");
         try { authorized(state.owner, () -> { check(state); return null; }); }
         catch (RuntimeException failure) { invalidate(state); throw failure; }
+    }
+    @Override public String auditReference(AiExecutionContext context) {
+        var state = sessions.get(context.scope().reference());
+        if (state == null) throw AiErrors.error("scope_changed");
+        return state.view.scene() + ":" + Objects.toString(state.context.resourceId(), "") + "@" + state.context.revision()
+                + (state.context.selectedTables() == null ? "" : ":tables=" + state.context.selectedTables());
     }
     @Override public void authorizeInput(AiExecutionContext context, Prompt prompt) { authorize(context); }
     private void check(State state) {
