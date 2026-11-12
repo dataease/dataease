@@ -47,10 +47,40 @@ const closeToasts = () => {
   toasts.clear()
   finished.clear()
 }
+// Delivery IDs only: no result bodies, questions, chat state or user-facing message list.
+const firstToast = (task: AiTask | AiTaskNotice) => {
+  const key = 'de-ai-toasts:' + JSON.stringify([user.uid, user.oid, user.proxyInfo?.proxyOid])
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(key) || '[]')
+    const now = Date.now()
+    const entries: [string, number][] = Array.isArray(stored)
+      ? stored.filter(
+          (entry): entry is [string, number] =>
+            Array.isArray(entry) &&
+            typeof entry[0] === 'string' &&
+            /^\d{1,20}$/.test(entry[0]) &&
+            typeof entry[1] === 'number' &&
+            entry[1] > now
+        )
+      : []
+    const seen = entries.some(([id]) => id === task.attemptId)
+    if (!seen)
+      entries.push([
+        task.attemptId,
+        'expiresAt' in task ? task.expiresAt : (task.finishedAt || now) + 7 * 86400000
+      ])
+    localStorage.setItem(key, JSON.stringify(entries.slice(-1000)))
+    return !seen
+  } catch {
+    // Browsers that block storage still have the durable server ack and mounted-page deduplication.
+    return true
+  }
+}
 const notify = (task: AiTask | AiTaskNotice) => {
   if (finished.has(task.attemptId)) return
   finished.add(task.attemptId)
   if (finished.size > 50) finished.delete(finished.values().next().value!)
+  if (!firstToast(task)) return
   if (toasts.size >= 10) {
     const oldest = toasts.keys().next().value!
     toasts.get(oldest)?.close()
