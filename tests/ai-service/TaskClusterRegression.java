@@ -132,6 +132,11 @@ public final class TaskClusterRegression {
             try {
                 var request = TaskNode.JSON.readTree(exchange.getRequestBody()); key = request.path("messages").get(1).path("content").asText();
                 sends.merge(key, 1, Integer::sum);
+                if (key.startsWith("retry-slot-") && sends.get(key) == 1) {
+                    byte[] temporary = "{\"error\":{\"message\":\"controlled transient provider failure\"}}".getBytes(StandardCharsets.UTF_8);
+                    exchange.getResponseHeaders().set("Content-Type", "application/json"); exchange.sendResponseHeaders(503, temporary.length);
+                    exchange.getResponseBody().write(temporary); return;
+                }
                 if ("execution-after-wait".equals(key)) Thread.sleep(2500);
                 if (key.startsWith("slow-")) release.computeIfAbsent(key, ignored -> new CountDownLatch(1)).await(40, TimeUnit.SECONDS);
                 String content = "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"persisted " + key + "\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
@@ -308,6 +313,42 @@ public final class TaskClusterRegression {
             do { readingResult = TaskNode.JSON.readTree(call(b, "/ai/tasks/" + readingTwo.path("taskId").asText(), "GET", "", "2").body()); if ("COMPLETED".equals(readingResult.path("status").asText())) break; Thread.sleep(25); } while (System.currentTimeMillis() < readingDeadline);
             check("COMPLETED".equals(readingResult.path("status").asText()), "second actor read task completes after controlled data source release");
             await(b, "/ai/tasks/" + duringRead.path("taskId").asText(), "COMPLETED");
+            settings(a, 1, 100, 10, 300);
+            var retryPolicy = (com.fasterxml.jackson.databind.node.ObjectNode) call(a, "/ai/settings", "GET", "");
+            var previousRecovery = retryPolicy.path("recovery").deepCopy();
+            retryPolicy.put("expectedVersion", retryPolicy.path("rowVersion").asLong());
+            var delayedRecovery = retryPolicy.putObject("recovery"); delayedRecovery.put("stepRetries", 1); delayedRecovery.put("attemptRetries", 1); delayedRecovery.put("initialDelayMillis", 3000);
+            call(a, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(retryPolicy));
+            var retryWait = call(a, "/ai/tasks", "POST", body("retry-slot-resume"));
+            String retryWaitPath = "/ai/tasks/" + retryWait.path("taskId").asText();
+            JsonNode waiting = null; long retryDeadline = System.currentTimeMillis() + 10000;
+            do { waiting = call(b, retryWaitPath, "GET", ""); if (waiting.path("recovery").path("technicalRetries").asInt() == 1) break; Thread.sleep(25); } while (System.currentTimeMillis() < retryDeadline);
+            check("RUNNING".equals(waiting.path("status").asText()) && waiting.path("recovery").path("technicalRetries").asInt() == 1,
+                    "automatic retry backoff remains the same running task");
+            var queuedDuringRetry = call(b, "/ai/tasks", "POST", body("queued-during-auto-retry"));
+            Thread.sleep(500);
+            check("QUEUED".equals(call(a, "/ai/tasks/" + queuedDuringRetry.path("taskId").asText(), "GET", "").path("status").asText())
+                    && !sends.containsKey("queued-during-auto-retry") && sends.getOrDefault("retry-slot-resume", 0) == 1,
+                    "retry backoff retains its complete task slot while no model HTTP request is in flight");
+            var retried = await(b, retryWaitPath, "COMPLETED");
+            check(retried.path("attemptId").equals(retryWait.path("attemptId")) && retried.path("startedAt").equals(waiting.path("startedAt"))
+                    && sends.getOrDefault("retry-slot-resume", 0) == 2, "controlled technical retry reuses the original task attempt and start time");
+            await(a, "/ai/tasks/" + queuedDuringRetry.path("taskId").asText(), "COMPLETED");
+            var cancelledWait = call(a, "/ai/tasks", "POST", body("retry-slot-cancel"));
+            String cancelledWaitPath = "/ai/tasks/" + cancelledWait.path("taskId").asText();
+            retryDeadline = System.currentTimeMillis() + 10000;
+            do { waiting = call(b, cancelledWaitPath, "GET", ""); if (waiting.path("recovery").path("technicalRetries").asInt() == 1) break; Thread.sleep(25); } while (System.currentTimeMillis() < retryDeadline);
+            check(waiting.path("recovery").path("technicalRetries").asInt() == 1, "second task entered an observable automatic retry wait");
+            var queuedAfterCancel = call(b, "/ai/tasks", "POST", body("queued-after-retry-cancel"));
+            call(b, cancelledWaitPath + "/cancel", "POST", "");
+            await(a, "/ai/tasks/" + queuedAfterCancel.path("taskId").asText(), "COMPLETED");
+            Thread.sleep(3300);
+            check("CANCELLED".equals(call(a, cancelledWaitPath, "GET", "").path("status").asText()) && sends.getOrDefault("retry-slot-cancel", 0) == 1,
+                    "cross-node cancel releases the waiting task slot and prevents its delayed model retry");
+            var restoredRecovery = (com.fasterxml.jackson.databind.node.ObjectNode) call(a, "/ai/settings", "GET", "");
+            restoredRecovery.put("expectedVersion", restoredRecovery.path("rowVersion").asLong()); restoredRecovery.set("recovery", previousRecovery);
+            call(a, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(restoredRecovery));
+            settings(a, 2, 100, 10, 300);
             var lowerOne = call(a, "/ai/tasks", "POST", body("slow-lower-one"));
             var lowerTwo = call(b, "/ai/tasks", "POST", body("slow-lower-two"));
             await(a, "/ai/tasks/" + lowerOne.path("taskId").asText(), "RUNNING");
