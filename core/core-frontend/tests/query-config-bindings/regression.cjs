@@ -340,6 +340,7 @@ test('save, serialize and reopen retain untouched legacy fields and commit exact
       conditions: { value: [draft] },
       queryElement: { value: element },
       validate: () => false,
+      isCustomClockDefault: () => false,
       defaultConfigurationRef: { value: undefined },
       handleDialogClick: () => undefined,
       dialogVisible: { value: true },
