@@ -32,6 +32,7 @@ const server = await createServer({
   cacheDir: path.join(root, '../../output/ai-vite-cache'),
   resolve: {
     alias: [
+      { find: '@/config/axios/error', replacement: path.join(root, 'bridge.js') },
       ...['@/config/axios', '@/hooks/web/useI18n', '@/store/modules/user'].map((find) => ({
         find,
         replacement: path.join(root, 'bridge.js')

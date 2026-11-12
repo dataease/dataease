@@ -63,6 +63,15 @@ public class CoreAiTaskAttempt {
     @Column(name = "result_json", length = 1048576)
     @Comment("result_json")
     private String resultJson;
+    @Column(name = "retry_safe", nullable = false)
+    @Comment("False before entering a tool without trusted replay safety")
+    private Boolean retrySafe = true;
+    @Column(name = "execution_id", length = 100)
+    @Comment("Runtime execution correlation, without audit bodies")
+    private String executionId;
+    @Column(name = "recovery_json", length = 2000)
+    @Comment("Attempt retry policy snapshot and safe progress")
+    private String recoveryJson;
     @Column(name = "model_id")
     @Comment("model_id")
     private Long modelId;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import TaskSchedulingSettings from './TaskSchedulingSettings.vue'
+import RecoverySettings from './RecoverySettings.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { CaretBottom } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -95,7 +96,17 @@ const valid = computed(() => {
     s &&
       limits.every(l => Number.isInteger(s[l.key]) && s[l.key] >= l.min && s[l.key] <= l.max) &&
       s.backgroundConcurrency <= s.interactiveConcurrency &&
-      validTaskScheduling()
+      validTaskScheduling() &&
+      s.recovery &&
+      Number.isInteger(s.recovery.stepRetries) &&
+      s.recovery.stepRetries >= 0 &&
+      s.recovery.stepRetries <= 5 &&
+      Number.isInteger(s.recovery.attemptRetries) &&
+      s.recovery.attemptRetries >= 0 &&
+      s.recovery.attemptRetries <= 5 &&
+      Number.isInteger(s.recovery.initialDelayMillis) &&
+      s.recovery.initialDelayMillis >= 100 &&
+      s.recovery.initialDelayMillis <= 10000
   )
 })
 const load = async () => {
@@ -149,7 +160,14 @@ const openOrg = async (org?: AiOrg) => {
 const openSettings = (kind: 'data' | 'limits') => {
   settingsDraft.value = {
     ...props.settings,
-    taskScheduling: props.settings.taskScheduling ? { ...props.settings.taskScheduling } : undefined
+    taskScheduling: props.settings.taskScheduling ? { ...props.settings.taskScheduling } : undefined,
+    recovery: {
+      ...(props.settings.recovery ?? {
+        stepRetries: 2,
+        attemptRetries: 3,
+        initialDelayMillis: 1000
+      })
+    }
   }
   mode.value = ''
   selectedModel.value = null
@@ -463,10 +481,8 @@ watch(
             controls-position="right"
         /></el-form-item>
         <p class="ai-secondary">{{ tr('background_hint') }}</p>
-        <TaskSchedulingSettings
-          v-if="settingsDraft.taskScheduling"
-          v-model="settingsDraft.taskScheduling"
-        />
+        <TaskSchedulingSettings v-if="settingsDraft.taskScheduling" v-model="settingsDraft.taskScheduling" />
+        <RecoverySettings v-if="settingsDraft.recovery" v-model="settingsDraft.recovery" />
       </el-form>
       <template #footer
         ><el-button :disabled="saving" @click="close()">{{ tr('cancel') }}</el-button

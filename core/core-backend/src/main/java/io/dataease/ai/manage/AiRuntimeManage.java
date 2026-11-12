@@ -96,6 +96,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     public record ModelSnapshot(Long id, Long revision, Long credentialRevision, String identifier) { }
     public interface StreamHandle extends AutoCloseable {
         ModelSnapshot model();
+        AiRecovery recovery();
         String executionId();
         long deadline();
         void verifyDelivery();
@@ -110,17 +111,19 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final Runnable delivery;
         private final AiTransport.Stream stream;
         private final ModelSnapshot model;
+        private final AiRecovery recovery;
         private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery, ModelSnapshot model) {
-            this.stream = transport.stream(context.background()); this.model = model;
+            this.stream = transport.stream(context.background()); this.model = model; this.recovery = new AiRecovery(settings);
             this.context = context; this.prompt = prompt; this.connection = connection; this.settings = settings; this.verify = verify; this.delivery = delivery;
         }
         public String executionId() { return context.executionId(); }
         public ModelSnapshot model() { return model; }
+        public AiRecovery recovery() { return recovery; }
         public long deadline() { return context.deadline(); }
         public void verifyDelivery() { delivery.run(); }
         public synchronized void start(Runnable progress, java.util.function.Consumer<String> delta, Runnable completed, java.util.function.Consumer<Throwable> failed) {
             if (connection == null) throw AiErrors.error("cancelled");
-            try { stream.start(connection, settings, prompt, context.deadline(), verify, progress, delta, completed, failed); }
+            try { stream.start(connection, settings, prompt, context.deadline(), verify, progress, delta, completed, failed, recovery); }
             finally { connection = null; prompt = null; verify = null; }
         }
         @Override public synchronized void close() { stream.close(); connection = null; prompt = null; verify = null; }
@@ -186,13 +189,14 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final CoreAiSetting settings;
         private final Long modelId, configRevision, credentialRevision, settingRevision;
         private final AiToolProtocol.Budget budget;
+        private final AiRecovery recovery;
         private final String modelIdentifier;
         private AiTransport.ToolStream active;
         private volatile boolean closed;
         private ToolStreaming(Context context, CoreAiSetting settings, CoreAiModel model) {
             this.context = context; this.settings = settings; this.modelIdentifier = model.getModelIdentifier();
             modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
-            budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens());
+            budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens()); recovery = new AiRecovery(settings);
         }
         public String executionId() { return context.executionId(); }
         public long deadline() { return context.deadline(); }
@@ -202,6 +206,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                     || !Objects.equals(configRevision, current.getConfigRevision()) || !Objects.equals(credentialRevision, current.getCredentialRevision())) throw AiErrors.error("conflict");
             updateAdmission(settings, latest); return current;
         }
+        public AiRecovery recovery() { return recovery; }
         public ModelSnapshot model() { return new ModelSnapshot(modelId, configRevision, credentialRevision, modelIdentifier); }
         public void verifyDelivery() { verify(false); }
         public void verifyStep() { verify(true); }
@@ -229,7 +234,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             synchronized (this) {
                 if (closed) throw AiErrors.error("cancelled"); progress.run();
                 active = transport.toolStream(context.background());
-                active.start(connection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed);
+                active.start(connection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed, recovery);
             }
         }
         public synchronized void close() { closed = true; if (active != null) active.close(); active = null; }

@@ -73,13 +73,16 @@ public final class ToolConversationRegression {
         var sourceRevision = new AtomicLong(1);
         var toolEntered = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var toolRelease = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
+        var transientMetadata = new AtomicInteger();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         var providerWorkers = Executors.newFixedThreadPool(4); server.setExecutor(providerWorkers);
         server.createContext("/v1/chat/completions", exchange -> {
             try {
                 var body = JSON.readTree(exchange.getRequestBody()); sent.add(body);
                 String content;
-                if (mode.get().equals("general")) {
+                if (mode.get().equals("arguments-correction") && sent.size() <= 2) {
+                    content = call("args-" + sent.size(), "get_table_fields", sent.size() == 1 ? "{\"table\":\"\"}" : "{\"table\":\"AI_PROBE\"}");
+                } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
                 } else if (mode.get().equals("suggest") && sent.size() == 1) {
                     content = call("proposal", "propose_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
@@ -87,9 +90,9 @@ public final class ToolConversationRegression {
                     content = call("validation-boundary", "validate_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
                 } else if (mode.get().equals("correction") && sent.size() <= 2) {
                     content = call("validate-" + sent.size(), "validate_sql", JSON.writeValueAsString(Map.of("sql", sent.size() == 1 ? "SELECT TYPO FROM AI_PROBE" : "SELECT ID FROM AI_PROBE")));
-                } else if (mode.get().equals("chain") && sent.size() <= 4) {
+                } else if (Set.of("chain", "chain-retry").contains(mode.get()) && sent.size() <= 4) {
                     content = call("chain-" + sent.size(), "get_table_fields", "{\"table\":\"AI_PROBE" + (sent.size() == 1 ? "" : sent.size()) + "\"}");
-                } else if (sent.size() == 1 && Set.of("unknown", "extra", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation").contains(mode.get())) {
+                } else if ((sent.size() == 1 || Set.of("extra", "duplicate", "trailing").contains(mode.get())) && Set.of("unknown", "extra", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation").contains(mode.get())) {
                     content = switch (mode.get()) {
                         case "private-limit" -> frame(Map.of("reasoning", "private-budget-sentinel".repeat(1000)), "stop");
                         case "usage-allocation" -> call("usage-allocation", "list_tables", "{}") + "data: {\"choices\":[],\"usage\":{\"completion_tokens\":820}}\n\n";
@@ -134,11 +137,12 @@ public final class ToolConversationRegression {
                 case "tree" -> { var node = new BusiNodeVO(); node.setId(11L); node.setLeaf(true); node.setName("Probe"); yield List.of(node); }
                 case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId(11L); ds.setName("Probe"); ds.setType("MySQL"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
                 case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Objects.equals(request.getDatasourceId(), 11L) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables");
+                    if (mode.get().equals("chain-retry") && transientMetadata.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw AiErrors.error("connection_failed");
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
                     if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
-                    for (String tableName : mode.get().equals("chain") ? List.of("AI_PROBE", "AI_PROBE2", "AI_PROBE3", "AI_PROBE4") : List.of("AI_PROBE")) {
+                    for (String tableName : Set.of("chain", "chain-retry").contains(mode.get()) ? List.of("AI_PROBE", "AI_PROBE2", "AI_PROBE3", "AI_PROBE4") : List.of("AI_PROBE")) {
                         var table = new DatasetTableDTO(); table.setTableName(tableName); table.setName("Probe table"); table.setInfo("connection-secret"); tables.add(table);
                     }
                     yield tables; }
@@ -184,6 +188,13 @@ public final class ToolConversationRegression {
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            mode.set("arguments-correction");
+            var correctionSession = open(mvc);
+            var correctionResult = terminal(mvc, start(mvc, correctionSession, "Fix invalid tool arguments"));
+            if (!correctionResult.path("status").asText().equals("COMPLETED") || sent.size() != 3
+                    || !sent.get(1).toString().contains("INVALID") || !reads.equals(List.of("tables", "fields"))) throw new AssertionError("invalid registered arguments are corrected once without executing malformed input: " + correctionResult);
+            mvc.perform(delete("/ai/conversations/" + correctionSession.path("sessionId").asText()));
+            sent.clear(); reads.clear();
             mode.set("suggest");
             var suggestionSession = open(mvc);
             var suggestionRun = start(mvc, suggestionSession, "Suggest SQL");
@@ -196,6 +207,10 @@ public final class ToolConversationRegression {
                     .content(JSON.writeValueAsBytes(Map.of("contextVersion", suggestionSession.path("contextVersion").asText(),
                             "draftVersion", suggestionSession.path("draftVersion").asText())))).andReturn().getResponse().getContentAsString());
             if (!applicable.path("sql").asText().equals("SELECT ID FROM AI_PROBE")) throw new AssertionError("explicit application check must return the original suggestion");
+            terminal(mvc, start(mvc, suggestionSession, "Explain the suggestion without changing the draft"));
+            var stillApplicable = JSON.readTree(mvc.perform(post(suggestionRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", suggestionSession.path("contextVersion").asText(), "draftVersion", suggestionSession.path("draftVersion").asText())))).andReturn().getResponse().getContentAsString());
+            if (!stillApplicable.path("sql").asText().equals("SELECT ID FROM AI_PROBE")) throw new AssertionError("same-context follow-up must preserve the older applicable SQL suggestion");
             operationAllowed.set(false);
             boolean applicationDenied = false;
             try { applicationDenied = mvc.perform(post(suggestionRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
@@ -296,13 +311,18 @@ public final class ToolConversationRegression {
                 String run = start(mvc, session, "Invalid tool");
                 try { result = terminal(mvc, run); }
                 catch (jakarta.servlet.ServletException failure) { if (!invalid.equals("outside")) throw failure; denied(mvc, run); continue; }
-                if (!result.path("status").asText().equals("FAILED") || sent.size() != 1 || result.toString().contains("connection-secret") || result.toString().contains("private-budget-sentinel")) throw new AssertionError("invalid tool did not safely fail " + invalid + ": " + result);
+                if (!result.path("status").asText().equals("FAILED") || sent.size() != (Set.of("extra", "duplicate", "trailing").contains(invalid) ? 2 : 1) || result.toString().contains("connection-secret") || result.toString().contains("private-budget-sentinel")) throw new AssertionError("invalid tool did not safely fail " + invalid + ": " + result);
                 if (!Set.of("outside", "tool-failure").contains(invalid) && !reads.isEmpty()) throw new AssertionError("invalid tool executed metadata " + invalid);
                 mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             }
             sent.clear(); reads.clear(); mode.set("chain"); session = open(mvc); result = terminal(mvc, start(mvc, session, "Four distinct tools"));
             int allocations = sent.stream().mapToInt(body -> body.path("max_tokens").asInt()).sum();
             if (!result.path("status").asText().equals("COMPLETED") || sent.size() != 5 || allocations != 4096) throw new AssertionError("whole round must share configured allocation without usage refunds: " + allocations + " / " + result);
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            sent.clear(); reads.clear(); mode.set("chain-retry"); transientMetadata.set(2); session = open(mvc);
+            result = terminal(mvc, start(mvc, session, "Technical retries consume the four actual tool calls"));
+            if (!result.path("status").asText().equals("FAILED") || sent.size() != 3 || Collections.frequency(reads, "fields") != 2)
+                throw new AssertionError("technical retries cannot exceed four actual tool executions: " + result + ": " + reads);
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             sent.clear(); reads.clear(); mode.set("repeat"); session = open(mvc); result = terminal(mvc, start(mvc, session, "Repeat tools"));
             if (!result.path("status").asText().equals("FAILED") || sent.size() != 2 || reads.size() != 1) throw new AssertionError("repeated requests must terminate without executing again");

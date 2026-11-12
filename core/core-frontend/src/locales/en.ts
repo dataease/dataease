@@ -1,5 +1,25 @@
 export default {
   ai_conversation: {
+    submission_expired:
+      'The original operation is outside its temporary reconciliation window. Explicitly start a new task.',
+    submission_limit:
+      'Too many unconfirmed submissions. Reconcile the existing operations with their original keys first.',
+    resume_background: 'Read background progress again',
+    retry_configuration_confirm:
+      'Verify and repair model authentication, balance or configuration first. Confirm the repair to create a new attempt for the original task with current settings.',
+    progress_unreachable: 'Progress is temporarily unreachable; execution status is unconfirmed.',
+    progress_recovering: 'Reconnecting to the same execution',
+    submission_unknown: 'Acceptance is unconfirmed. Check the same submission.',
+    resume_submission: 'Check same submission',
+    resume_progress: 'Read original execution',
+    retry_attempt: 'Safely retry original task',
+    retry_unknown: 'Retry acceptance is unconfirmed. Click again to reuse the same retry key.',
+    current_step: 'Current step',
+    technical_retries: 'Technical retries',
+    corrections: 'Model corrections',
+    copy_execution: 'Copy execution ID',
+    copy_failed: 'Copy failed. Select the execution ID manually.',
+
     tasks: 'Background tasks',
     background: 'Background SQL assistance',
     task_lifecycle:
@@ -121,6 +141,18 @@ export default {
     task_maxQueued: 'System queued task limit',
     task_maxQueuedPerUser: 'Queued task limit per user',
     task_maxWaitSeconds: 'Maximum wait (seconds)',
+    failure_provider_unavailable:
+      'The model service is temporarily unavailable after bounded recovery.',
+    failure_outcome_unknown:
+      'The tool outcome is unknown. Verify it before any new action; this task cannot be replayed.',
+
+    recovery_title: 'Controlled recovery',
+    recovery_hint:
+      'Applies to new attempts. Set either retry count to 0 to disable automatic technical retries. Tool safety, total steps and original deadlines still apply.',
+    recovery_stepRetries: 'Technical retries per step',
+    recovery_attemptRetries: 'Technical retries per attempt',
+    recovery_initialDelayMillis: 'Initial wait (milliseconds)',
+
     records: 'Call records',
     records_pending: 'Call records are coming soon',
     records_description:

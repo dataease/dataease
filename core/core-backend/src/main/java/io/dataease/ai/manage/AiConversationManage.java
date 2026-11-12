@@ -23,6 +23,16 @@ import java.util.stream.Collectors;
 public class AiConversationManage implements AiToolConversationFeature {
     private static final long SESSION_MILLIS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSIONS = 200, MAX_USER_SESSIONS = 4, MAX_TURNS = 50, MAX_SINGLE_RESULTS = 10;
+    private record OperationKey(AiAccess.Identity owner, String kind, String key) { }
+    private static final class OperationBinding {
+        final String fingerprint;
+        final long expiresAt;
+        volatile State state;
+        volatile Task task;
+        OperationBinding(String fingerprint, State state, Task task) {
+            this.fingerprint = fingerprint; this.state = state; this.task = task; expiresAt = state.view.expiresAt();
+        }
+    }
     private static final class State {
         final Session view;
         final AiAccess.Identity owner;
@@ -31,6 +41,12 @@ public class AiConversationManage implements AiToolConversationFeature {
         final List<AiToolProtocol.Message> toolHistory = new ArrayList<>();
         final Set<String> deliveredTasks = new HashSet<>();
         int turns;
+        long historyVersion;
+        volatile boolean retired;
+        Invoke invocation;
+        final Map<String, Task> tasks = new LinkedHashMap<>();
+        final Set<OperationKey> operations = new HashSet<>();
+        Open opening;
         final boolean single;
         volatile boolean singleFinished;
         volatile boolean closed;
@@ -41,23 +57,73 @@ public class AiConversationManage implements AiToolConversationFeature {
             this.view = view; this.owner = owner; this.context = context; this.single = single;
         }
     }
+    private static final class Task {
+        final String id = UUID.randomUUID().toString();
+        final State state;
+        final Turn request;
+        final Prompt prompt;
+        final AiToolProtocol.Input input;
+        final long historyVersion;
+        final Map<String, Run> retries = new HashMap<>();
+        Run first, latest;
+        Task(State state, Turn request, Prompt prompt, AiToolProtocol.Input input, long historyVersion) {
+            this.state = state; this.request = request; this.prompt = prompt; this.input = input; this.historyVersion = historyVersion;
+        }
+    }
     private static final long LEASE_MILLIS = 15000;
     private static final class Run {
         final State state;
+        final Task task;
+        final String attemptId = UUID.randomUUID().toString();
+        final String sourceAttemptId;
+        final int attemptNumber;
+        boolean replayUnsafe;
         String question;
         final AiRuntimeManage.StreamHandle stream;
         List<AiToolProtocol.Message> transcript = new ArrayList<>();
         final Set<String> toolIds = new HashSet<>(), toolRequests = new HashSet<>();
         int toolSteps;
+        final Set<String> invalidRequests = new HashSet<>();
         List<Event> events = new ArrayList<>();
         StringBuilder text = new StringBuilder();
         Result result;
         long sequence;
         volatile long lease = System.currentTimeMillis() + LEASE_MILLIS;
         volatile String status = "RUNNING";
-        Run(State state, String question, AiRuntimeManage.StreamHandle stream) { this.state = state; this.question = question; this.stream = stream; }
+        Run(State state, Task task, AiRuntimeManage.StreamHandle stream) {
+            this.state = state; this.task = task; this.question = task.request.text(); this.stream = stream;
+            sourceAttemptId = task.latest == null ? null : task.latest.attemptId;
+            attemptNumber = task.latest == null ? 1 : task.latest.attemptNumber + 1;
+        }
     }
     private final Map<String, State> sessions = new ConcurrentHashMap<>();
+    // Closed operations keep only owner/key/hash/expiry; never a prompt, history or result.
+    private final Map<OperationKey, OperationBinding> operations = new ConcurrentHashMap<>();
+    private String fingerprint(Object... values) {
+        var input = new StringBuilder();
+        for (Object value : values) { String text = value == null ? null : value.toString(); input.append(text == null ? -1 : text.length()).append(':'); if (text != null) input.append(text); }
+        return AiPromptFingerprint.of(new Prompt(input.toString()));
+    }
+    private String invocation(Invoke request) { return fingerprint("invoke", request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text()); }
+    private OperationBinding operation(AiAccess.Identity owner, String kind, String key, String fingerprint) {
+        if (key == null) return null;
+        var binding = operations.get(new OperationKey(owner, kind, key));
+        if (binding != null) {
+            if (!binding.fingerprint.equals(fingerprint)) throw AiErrors.error("conflict");
+            if (binding.state == null || System.currentTimeMillis() >= binding.expiresAt) throw AiErrors.error("scope_changed");
+        }
+        return binding;
+    }
+    private OperationBinding bind(State state, String kind, String key, String fingerprint, Task task) {
+        if (key == null) return null;
+        synchronized (operations) {
+            var existing = operation(state.owner, kind, key, fingerprint);
+            if (existing != null) return existing;
+            if (operations.size() >= MAX_SESSIONS * (MAX_TURNS + 1)) throw AiErrors.error("concurrency");
+            var operationKey = new OperationKey(state.owner, kind, key);
+            var binding = new OperationBinding(fingerprint, state, task); operations.put(operationKey, binding); state.operations.add(operationKey); return binding;
+        }
+    }
     private final Map<String, AiConversationScene> scenes;
     private final ObjectProvider<AiRuntimeManage> runtime;
     private final AiAccess access;
@@ -80,9 +146,14 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private Session open(Open request, boolean single) {
         AiAccess.Identity owner = identity();
+        synchronized (sessions) {
         if (request == null || request.editorId() == null || request.editorId().isBlank() || request.editorId().length() > 100
                 || request.resourceId() != null && !request.resourceId().matches("[0-9]{1,20}|")
                 || request.sql() != null && request.sql().length() > 30000) throw AiErrors.error("invalid");
+        key(request.openKey());
+        String opening = fingerprint("open", single, request.scene(), request.resourceId(), request.editorId(), request.sql());
+        var priorOpening = operation(owner, "open", request.openKey(), opening);
+        if (priorOpening != null) { State previous = priorOpening.state; if (previous == null) throw AiErrors.error("scope_changed"); check(previous); return previous.view; }
         var scene = scene(request.scene());
         var context = authorized(owner, () -> {
             var resolved = scene.resolve(Objects.toString(request.resourceId(), ""), Objects.toString(request.sql(), ""));
@@ -93,18 +164,26 @@ public class AiConversationManage implements AiToolConversationFeature {
                 System.currentTimeMillis() + SESSION_MILLIS, context.revision(), AiPromptFingerprint.of(new Prompt(Objects.toString(request.sql(), ""))));
         synchronized (sessions) {
             expire();
-            // Results are temporary and bounded, but finished buttons no longer consume chat/run capacity.
-            if (single) while (sessions.values().stream().filter(state -> state.singleFinished && same(state.owner, owner)).count() >= MAX_SINGLE_RESULTS)
+            // Replaced idle editors keep only bounded result/task records; no history or interaction quota.
+            if (!single) for (State previous : sessions.values()) synchronized (previous) {
+                if (!previous.single && !previous.retired && same(previous.owner, owner)
+                        && previous.view.editorId().equals(request.editorId()) && !previous.executing.get()) {
+                    previous.retired = true; previous.history.clear(); previous.toolHistory.clear();
+                    for (Run old : previous.runs.values()) { old.text = new StringBuilder(); old.events = new ArrayList<>(); }
+                }
+            }
+            while (sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && same(state.owner, owner)).count() >= MAX_SINGLE_RESULTS)
                 evictSingle(owner);
             while (sessions.size() >= MAX_SESSIONS && evictSingle(null)) { }
-            if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && !state.singleFinished).count() >= MAX_USER_SESSIONS)
+            if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && !state.singleFinished && !state.retired).count() >= MAX_USER_SESSIONS)
                 throw AiErrors.error("concurrency");
-            sessions.put(id, new State(view, owner, context, single));
+            State created = new State(view, owner, context, single); created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
         }
         return view;
+        }
     }
     private boolean evictSingle(AiAccess.Identity owner) {
-        var oldest = sessions.values().stream().filter(state -> state.singleFinished && (owner == null || same(state.owner, owner)))
+        var oldest = sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && (owner == null || same(state.owner, owner)))
                 .min(Comparator.comparingLong(state -> state.view.expiresAt()));
         oldest.ifPresent(this::invalidate);
         return oldest.isPresent();
@@ -112,12 +191,32 @@ public class AiConversationManage implements AiToolConversationFeature {
     /** A button owns an isolated editing activity, without requiring or reusing chat history. */
     public Execution invoke(String capability, Invoke request) {
         if (request == null || !Objects.equals(capability, scene(request.scene()).capability())) throw AiErrors.error("unsupported");
-        Session session = open(new Open(request.scene(), request.resourceId(), request.editorId(), request.sql()), true);
-        try {
-            Execution run = start(session.sessionId(), new Turn(session.contextVersion(), request.text()));
-            return new Execution(run.sessionId(), run.executionId(), run.contextVersion(), run.status(), run.deadline(), session);
+        key(request.submissionKey());
+        var owner = identity();
+        synchronized (sessions) {
+            var prior = operation(owner, "task", request.submissionKey(), invocation(request));
+            if (prior != null) {
+                Task task = prior.task; if (task == null) throw AiErrors.error("scope_changed");
+                synchronized (task.state) { check(task.state); return execution(task.first, true); }
+            }
+            Session session = open(new Open(request.scene(), request.resourceId(), request.editorId(), request.sql()), true);
+            try {
+                State state = sessions.get(session.sessionId()); state.invocation = request;
+                start(session.sessionId(), new Turn(session.contextVersion(), request.text(), request.submissionKey()));
+                return execution(state.tasks.values().iterator().next().first, true);
+            } catch (RuntimeException failure) { State state = sessions.get(session.sessionId()); if (state != null) invalidate(state); throw failure; }
         }
-        catch (RuntimeException failure) { State state = sessions.get(session.sessionId()); if (state != null) invalidate(state); throw failure; }
+    }
+    private void key(String key) { if (key != null && (key.isBlank() || key.length() > 100)) throw AiErrors.error("invalid"); }
+    private boolean retryEligible(Run run) { return !run.replayUnsafe && Set.of("FAILED", "CANCELLED").contains(run.status); }
+    private RecoveryProgress recoveryProgress(Run run) {
+        var progress = run.stream.recovery().progress();
+        return new RecoveryProgress(progress.stepId(), progress.stepKind(), progress.technicalRetries(), progress.corrections(), progress.reason());
+    }
+    private Execution execution(Run run, boolean context) {
+        var state = run.state;
+        return new Execution(state.view.sessionId(), run.stream.executionId(), state.view.contextVersion(), run.status, run.stream.deadline(),
+                context ? state.view : null, run.task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId, retryEligible(run), recoveryProgress(run));
     }
     /** Only a still-open, same-owner editing activity may become a background result's origin. */
     public void validateTaskOrigin(io.dataease.api.ai.task.AiTaskDtos.Origin origin,
@@ -127,7 +226,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         synchronized (state) {
             authorized(state.owner, () -> { check(state); return null; });
             var view = state.view;
-            if (state.single || !Objects.equals(view.contextVersion(), origin.contextVersion())
+            if (state.single || state.retired || !Objects.equals(view.contextVersion(), origin.contextVersion())
                     || !Objects.equals(view.scene(), input.scene()) || !Objects.equals(view.editorId(), input.editorId())
                     || !Objects.equals(view.resourceId(), context.resourceId()) || !Objects.equals(view.resourceVersion(), context.revision())
                     || !Objects.equals(view.draftVersion(), AiPromptFingerprint.of(new Prompt(Objects.toString(input.sql(), ""))))) throw AiErrors.error("scope_changed");
@@ -151,7 +250,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                 state.toolHistory.add(AiToolProtocol.Message.text("user", input.text()));
                 state.toolHistory.add(AiToolProtocol.Message.text("assistant", answer));
             }
-            state.turns++; state.deliveredTasks.add(attemptId);
+            state.turns++; state.historyVersion++; state.deliveredTasks.add(attemptId);
         }
     }
     public Answer turn(String id, Turn request) {
@@ -177,7 +276,8 @@ public class AiConversationManage implements AiToolConversationFeature {
             if (System.currentTimeMillis() >= execution.deadline()) throw AiErrors.error("timeout");
             String text = response.getResult().getOutput().getText();
             if (text == null || text.isBlank()) throw AiErrors.error("response_invalid");
-            state.history.add(new UserMessage(request.text())); state.history.add(new AssistantMessage(text)); state.turns++;
+            if (state.retired) throw AiErrors.error("scope_changed");
+            state.history.add(new UserMessage(request.text())); state.history.add(new AssistantMessage(text)); state.turns++; state.historyVersion++;
             return new Answer(id, execution.executionId(), state.view.contextVersion(), "COMPLETED", text);
         } finally { state.executing.set(false); }
     }
@@ -185,37 +285,76 @@ public class AiConversationManage implements AiToolConversationFeature {
         State state = owned(id);
         if (request == null || request.text() == null || request.text().isBlank() || request.text().length() > 30000
                 || !Objects.equals(request.contextVersion(), state.view.contextVersion())) throw AiErrors.error("scope_changed");
+        key(request.submissionKey());
         synchronized (state) {
-            if (state.single && !state.runs.isEmpty()) throw AiErrors.error("unsupported");
-            if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
-            try {
-                authorized(state.owner, () -> { check(state); return null; });
-                if (state.turns >= MAX_TURNS) throw AiErrors.error("input_limit");
-                var messages = new ArrayList<Message>(); messages.add(new SystemMessage(state.context.instruction()));
-                messages.addAll(state.history); messages.add(new UserMessage(request.text()));
-                Prompt prompt = new Prompt(messages);
-                var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(prompt), false, null);
-                var definitions = scene(state.view.scene()).tools(state.context);
-                var input = toolInput(state, request.text(), definitions);
-                AiRuntimeManage.StreamHandle stream = definitions.isEmpty() ? runtime.getObject().stream(code(), scope, prompt)
-                        : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(input), false, null), input);
-                var run = new Run(state, request.text(), stream);
-                if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(input.messages());
-                // Terminal logs are bounded independently of the completed-history turn limit.
-                for (Run old : state.runs.values()) {
-                    old.question = null; old.text = new StringBuilder(); old.result = null;
-                    old.events = new ArrayList<>(old.events.stream().filter(event -> !"TEXT".equals(event.type()) && event.tool() == null).toList());
+            authorized(state.owner, () -> { check(state); return null; });
+            String accepted = state.invocation == null ? fingerprint("chat", id, request.contextVersion(), request.text())
+                    : invocation(new Invoke(state.invocation.scene(), state.invocation.resourceId(), state.invocation.editorId(), state.invocation.sql(), request.text(), request.submissionKey()));
+            var prior = operation(state.owner, "task", request.submissionKey(), accepted);
+            if (prior != null) {
+                if (prior.state != state || prior.task == null) throw AiErrors.error("conflict");
+                return execution(prior.task.first, false);
+            }
+            if (state.retired || state.single && !state.runs.isEmpty()) throw AiErrors.error("unsupported");
+            if (state.turns >= MAX_TURNS || state.tasks.size() >= 50) throw AiErrors.error("input_limit");
+            var messages = new ArrayList<Message>(); messages.add(new SystemMessage(state.context.instruction()));
+            messages.addAll(state.history); messages.add(new UserMessage(request.text()));
+            var definitions = scene(state.view.scene()).tools(state.context);
+            var task = new Task(state, request, new Prompt(List.copyOf(messages)), toolInput(state, request.text(), definitions), state.historyVersion);
+            var binding = bind(state, "task", request.submissionKey(), accepted, task);
+            if (binding != null && binding.task != task) throw AiErrors.error("conflict");
+            state.tasks.put(task.id, task);
+            try { return launch(state, task); }
+            catch (RuntimeException failure) {
+                if (task.first == null) {
+                    state.tasks.remove(task.id);
+                    if (binding != null) { var operationKey = new OperationKey(state.owner, "task", request.submissionKey()); operations.remove(operationKey, binding); state.operations.remove(operationKey); }
                 }
-                while (state.runs.size() >= 50) state.runs.remove(state.runs.keySet().iterator().next());
-                state.runs.put(stream.executionId(), run); state.active = run;
-                try {
-                    if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), text -> append(run, text), step -> toolStep(run, step), failure -> fail(run, failure));
-                    else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), text -> append(run, text), () -> complete(run), failure -> fail(run, failure));
-                }
-                catch (RuntimeException failure) { fail(run, failure); throw failure; }
-                return new Execution(id, stream.executionId(), state.view.contextVersion(), run.status, stream.deadline());
-            } catch (RuntimeException failure) { state.executing.set(false); throw failure; }
+                throw failure;
+            }
         }
+    }
+    public Execution retry(String id, String executionId, Retry request) {
+        State state = owned(id);
+        synchronized (state) {
+            authorized(state.owner, () -> { check(state); return null; });
+            if (request == null || request.retryKey() == null || request.expectedAttemptId() == null) throw AiErrors.error("invalid");
+            key(request.retryKey());
+            Run source = run(state, executionId); Task task = source.task;
+            Run replay = task.retries.get(request.retryKey());
+            if (replay != null) {
+                if (!Objects.equals(replay.sourceAttemptId, request.expectedAttemptId())) throw AiErrors.error("conflict");
+                return execution(replay, state.single);
+            }
+            if (!Objects.equals(source.attemptId, request.expectedAttemptId()) || task.latest != source) throw AiErrors.error("conflict");
+            if (!retryEligible(source)) throw AiErrors.error("unsupported");
+            var result = launch(state, task); task.retries.put(request.retryKey(), task.latest); return result;
+        }
+    }
+    private Execution launch(State state, Task task) {
+        if (state.runs.size() >= 50) throw AiErrors.error("input_limit");
+        if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
+        try {
+            authorized(state.owner, () -> { check(state); return null; });
+            String id = state.view.sessionId();
+            var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(task.prompt), false, null);
+            AiRuntimeManage.StreamHandle stream = task.input.tools().isEmpty() ? runtime.getObject().stream(code(), scope, task.prompt)
+                    : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input);
+            var run = new Run(state, task, stream);
+            stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
+            if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(task.input.messages());
+            for (Run old : state.runs.values()) {
+                old.question = null; old.text = new StringBuilder();
+                old.events = new ArrayList<>(old.events.stream().filter(event -> !"TEXT".equals(event.type()) && event.tool() == null).toList());
+            }
+            state.runs.put(stream.executionId(), run); state.active = run; state.singleFinished = false;
+            task.latest = run; if (task.first == null) task.first = run;
+            try {
+                if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(task.input, () -> progress(run), text -> append(run, text), step -> toolStep(run, step), failure -> fail(run, failure));
+                else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), text -> append(run, text), () -> complete(run), failure -> fail(run, failure));
+            } catch (RuntimeException failure) { fail(run, failure); throw failure; }
+            return execution(run, state.single);
+        } catch (RuntimeException failure) { state.executing.set(false); throw failure; }
     }
     public Events events(String id, String execution, long after) {
         State state = owned(id);
@@ -223,9 +362,18 @@ public class AiConversationManage implements AiToolConversationFeature {
             Run run = run(state, execution);
             if (after < 0 || after > run.sequence) throw AiErrors.error("invalid");
             try {
-                authorized(state.owner, () -> { check(state); run.stream.verifyDelivery(); return null; });
+                authorized(state.owner, () -> {
+                    check(state);
+                    // Failed/cancelled attempts retain their safe task identity for explicit new attempts.
+                    if (Set.of("RUNNING", "COMPLETED").contains(run.status)) run.stream.verifyDelivery();
+                    return null;
+                });
             } catch (RuntimeException failure) {
-                invalidate(state); throw failure;
+                if (failure instanceof AiErrors.Failure known && Set.of("conflict", "disabled", "organization_disabled", "model_unavailable", "configuration_unavailable").contains(known.safeCode())) {
+                    if (!"RUNNING".equals(run.status)) throw failure;
+                    run.text = new StringBuilder(); run.events.clear(); run.result = null;
+                    terminate(run, "FAILED", known.safeCode());
+                } else { invalidate(state); throw failure; }
             }
             if (System.currentTimeMillis() >= run.stream.deadline()) terminate(run, "FAILED", "timeout");
             run.lease = System.currentTimeMillis() + LEASE_MILLIS;
@@ -249,7 +397,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     private Events view(Run run, long after) {
         var session = run.state.view;
         return new Events(session.sessionId(), run.stream.executionId(), session.contextVersion(), run.status, run.sequence,
-                run.events.stream().filter(event -> event.sequence() > after).toList(), run.result);
+                run.events.stream().filter(event -> event.sequence() > after).toList(), run.result, run.task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId, retryEligible(run), recoveryProgress(run));
     }
     /** Checks authority and the immutable source revision; the editor still performs its own draft CAS. */
     public Result checkApplication(String id, String execution, Application request) {
@@ -289,12 +437,13 @@ public class AiConversationManage implements AiToolConversationFeature {
                 if (run.state.single) {
                     // One-shot callers retain only their result/lease, never a conversational transcript.
                     run.state.history.clear(); run.state.toolHistory.clear();
-                } else if (run.stream instanceof AiRuntimeManage.ToolStreaming) {
+                } else if (!run.state.retired && run.task.historyVersion == run.state.historyVersion && run.stream instanceof AiRuntimeManage.ToolStreaming) {
                     run.state.history.clear(); run.state.toolHistory.clear(); run.state.toolHistory.addAll(run.transcript.subList(1, run.transcript.size()));
-                } else {
+                } else if (!run.state.retired && run.task.historyVersion == run.state.historyVersion) {
                     run.state.history.add(new UserMessage(run.question)); run.state.history.add(new AssistantMessage(run.text.toString()));
                 }
                 run.state.turns++;
+                if (!run.state.single && !run.state.retired && run.task.historyVersion == run.state.historyVersion) run.state.historyVersion++;
                 var target = run.state.view;
                 run.result = scene(target.scene()).result(run.state.context, run.text.toString(),
                         run.events.stream().map(Event::tool).filter(Objects::nonNull).toList(), target.editorId(), target.draftVersion());
@@ -336,7 +485,17 @@ public class AiConversationManage implements AiToolConversationFeature {
             if (step.calls().size() != 1 || run.toolSteps >= AiToolProtocol.MAX_MODEL_STEPS - 1) throw AiErrors.error("output_limit");
             var call = step.calls().get(0); var scene = scene(run.state.view.scene());
             var definition = scene.tools(run.state.context).stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
-            var arguments = AiToolProtocol.arguments(definition, call);
+            Map<String, String> arguments;
+            try { arguments = AiToolProtocol.arguments(definition, call); }
+            catch (AiErrors.Failure malformed) {
+                if (!"invalid".equals(malformed.safeCode())) throw malformed;
+                String feedback = AiToolProtocol.correction(call, stream.recovery(), run.invalidRequests); stream.result(feedback);
+                synchronized (run.state) {
+                    progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, feedback));
+                }
+                stream.send(new AiToolProtocol.Input(run.transcript, run.task.input.tools()), () -> progress(run), text -> append(run, text), next -> toolStep(run, next), failure -> fail(run, failure));
+                return;
+            }
             String canonical = call.name() + ":" + new TreeMap<>(arguments);
             synchronized (run.state) {
                 progress(run);
@@ -346,16 +505,21 @@ public class AiConversationManage implements AiToolConversationFeature {
             toolEvent(run, call, "STARTED", arguments, null);
             String result;
             try {
-                result = authorized(run.state.owner, () -> {
+                if (definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN) run.replayUnsafe = true;
+                java.util.function.Supplier<String> execute = () -> authorized(run.state.owner, () -> {
                     progress(run); check(run.state); stream.verifyStep();
                     toolEvent(run, call, "RUNNING", arguments, null);
                     String value = scene.execute(run.state.context, call.name(), arguments, () -> progress(run), run.stream.deadline());
                     progress(run); check(run.state); stream.verifyStep(); return value;
                 });
+                result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
+                        () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, execute);
                 progress(run); stream.result(result);
+                if (AiToolProtocol.invalidResult(result) && !stream.recovery().correct(canonical)) throw AiErrors.error("invalid");
             } catch (RuntimeException failure) {
                 if (!(failure instanceof AiErrors.Failure known) || !Set.of("forbidden", "scope_changed", "conflict").contains(known.safeCode()))
                     toolEvent(run, call, "FAILED", arguments, null);
+                if (run.replayUnsafe) throw AiErrors.error("outcome_unknown");
                 throw failure;
             }
             synchronized (run.state) {
@@ -370,7 +534,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     private void fail(Run run, Throwable failure) {
         synchronized (run.state) {
             String error = failure instanceof AiErrors.Failure known ? known.safeCode() : "upstream_failed";
-            if (Set.of("forbidden", "scope_changed", "conflict").contains(error)) invalidate(run.state);
+            if (Set.of("forbidden", "scope_changed").contains(error)) invalidate(run.state);
             else terminate(run, "FAILED", error);
         }
     }
@@ -386,10 +550,14 @@ public class AiConversationManage implements AiToolConversationFeature {
         synchronized (state) {
             state.closed = true;
             if (state.active != null) terminate(state.active, "CANCELLED", "scope_changed");
-            state.history.clear(); state.toolHistory.clear(); state.runs.clear(); sessions.remove(state.view.sessionId(), state);
+            synchronized (operations) {
+                for (OperationKey key : state.operations) { var binding = operations.get(key); if (binding != null && binding.state == state) { binding.state = null; binding.task = null; } }
+                state.operations.clear();
+            }
+            state.history.clear(); state.toolHistory.clear(); state.runs.clear(); state.tasks.clear(); sessions.remove(state.view.sessionId(), state);
         }
     }
-    public void close(String id) { invalidate(owned(id)); }
+    public void close(String id) { if (sessions.containsKey(id)) invalidate(owned(id)); else identity(); }
     @Override public void authorize(AiExecutionContext context) {
         State state = sessions.get(context.scope().reference());
         if (state == null || !Objects.equals(context.scope().permissionVersion(), state.view.contextVersion())
@@ -440,6 +608,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private void expire() {
         long now = System.currentTimeMillis();
+        operations.entrySet().removeIf(entry -> entry.getValue().expiresAt <= now);
         sessions.forEach((id, state) -> {
             synchronized (state) {
                 if (state.view.expiresAt() <= now) invalidate(state);
@@ -451,5 +620,5 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
         });
     }
-    @PreDestroy public void destroy() { expiry.shutdownNow(); sessions.values().forEach(this::invalidate); sessions.clear(); }
+    @PreDestroy public void destroy() { expiry.shutdownNow(); sessions.values().forEach(this::invalidate); sessions.clear(); operations.clear(); }
 }

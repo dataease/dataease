@@ -13,6 +13,7 @@ public interface AiConversationApi {
     @PostMapping("/capabilities/{capability}") Execution invoke(@PathVariable String capability, @Valid @RequestBody Invoke request);
     @PostMapping("/{id}/turns") Answer turn(@PathVariable String id, @Valid @RequestBody Turn request);
     @PostMapping("/{id}/executions") Execution start(@PathVariable String id, @Valid @RequestBody Turn request);
+    @PostMapping("/{id}/executions/{execution}/retry") Execution retry(@PathVariable String id, @PathVariable String execution, @Valid @RequestBody Retry request);
     @GetMapping("/{id}/executions/{execution}/events") Events events(@PathVariable String id, @PathVariable String execution, @RequestParam(defaultValue = "0") long after);
     @PostMapping("/{id}/executions/{execution}/stop") Events stop(@PathVariable String id, @PathVariable String execution);
     @PostMapping("/{id}/executions/{execution}/check-application") Result checkApplication(@PathVariable String id, @PathVariable String execution, @Valid @RequestBody Application request);

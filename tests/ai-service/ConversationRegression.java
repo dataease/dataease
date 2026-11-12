@@ -72,6 +72,13 @@ public final class ConversationRegression {
         }
         throw new AssertionError("expected stream " + status + " containing " + content + ", got " + result);
     }
+    private static void recovery(MockMvc mvc, ObjectMapper json, int step, int attempt) throws Exception {
+        var current = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(mvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
+        current.put("expectedVersion", current.path("rowVersion").asLong());
+        current.set("recovery", json.valueToTree(Map.of("stepRetries", step, "attemptRetries", attempt, "initialDelayMillis", 1000)));
+        if (mvc.perform(post("/ai/settings").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(current))).andReturn().getResponse().getStatus() != 200)
+            throw new AssertionError("authorized recovery policy save");
+    }
     private static String pathFor(com.fasterxml.jackson.databind.JsonNode session) {
         return "/ai/conversations/" + session.path("sessionId").asText() + "/turns";
     }
@@ -90,6 +97,9 @@ public final class ConversationRegression {
         var reasoning = new AtomicBoolean();
         var beforeFirst = new AtomicBoolean();
         var protocol = new AtomicReference<String>("normal");
+        var temporaryFailures = new AtomicInteger();
+        var unknownTool = new AtomicBoolean();
+        var uncertainWrites = new AtomicInteger();
         var firstChunk = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         var providerWorkers = Executors.newFixedThreadPool(4, task -> { Thread thread = new Thread(task, "synthetic-provider"); thread.setDaemon(true); return thread; });
@@ -97,6 +107,9 @@ public final class ConversationRegression {
         server.createContext("/v1/chat/completions", exchange -> {
             var body = json.readTree(exchange.getRequestBody());
             synchronized (sent) { sent.add(body); }
+            if (temporaryFailures.getAndUpdate(value -> Math.max(0, value - 1)) > 0) {
+                exchange.sendResponseHeaders(503, -1); exchange.close(); return;
+            }
             if (body.path("stream").asBoolean() && "private-unattended".equals(protocol.get())) {
                 exchange.getResponseHeaders().set("Content-Type", "text/event-stream");
                 exchange.sendResponseHeaders(200, 0);
@@ -120,6 +133,8 @@ public final class ConversationRegression {
                             + chunk("可见结果", "stop") + "data: [DONE]\n\n";
                     case "reasoning-invalid" -> "data: {\"choices\":[{\"index\":0,\"delta\":{\"reasoning\":{\"text\":\"private-alias-thought\"}}}]}\n\n"
                             + chunk("可见结果", "stop") + "data: [DONE]\n\n";
+                    case "unknown-write" -> "data: {\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"uncertain\",\"type\":\"function\",\"function\":{\"name\":\"controlled_write\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n";
+                    case "balance-rate" -> "{\"error\":{\"code\":\"insufficient_quota\"}}";
                     case "json" -> "{\"choices\":[]}";
                     case "eof" -> chunk("partial", null);
                     case "done-only" -> "data: [DONE]\n\n";
@@ -139,7 +154,7 @@ public final class ConversationRegression {
                     default -> "provider-secret-key";
                 };
                 exchange.getResponseHeaders().set("Content-Type", "json".equals(kind) ? "application/json" : "text/event-stream");
-                exchange.sendResponseHeaders("auth".equals(kind) ? 401 : "rate".equals(kind) ? 429 : 200, 0);
+                exchange.sendResponseHeaders("auth".equals(kind) ? 401 : Set.of("rate", "balance-rate").contains(kind) ? 429 : 200, 0);
                 try {
                     byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
                     if ("framed".equals(kind)) for (byte value : bytes) { exchange.getResponseBody().write(value); exchange.getResponseBody().flush(); }
@@ -180,6 +195,8 @@ public final class ConversationRegression {
             configuration.saveSettings(new SettingsChange(s.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", saved.id() + ":true").token()));
             AiConversationScene scene = new AiConversationScene() {
                 public String code() { return "sql"; }
+                public List<AiToolProtocol.Definition> tools() { return unknownTool.get() ? List.of(new AiToolProtocol.Definition("controlled_write", "Synthetic uncertain side effect, never business SQL", Map.of())) : List.of(); }
+                public String execute(Context context, String name, Map<String, String> arguments) { uncertainWrites.incrementAndGet(); throw AiErrors.error("connection_failed"); }
                 public List<Resource> resources() { return List.of(new Resource("11", "Synthetic database")); }
                 public Context resolve(String id, String sql) { return new Context(id, "Synthetic database", "v1", "SQL input: " + sql); }
                 public void authorize(Context c) { java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get())); if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !"11".equals(c.resourceId())) throw AiErrors.error("forbidden"); }
@@ -198,6 +215,118 @@ public final class ConversationRegression {
             var runtime = new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, keys, transport, json, dialogueAccess);
             beans.addBean("runtime", runtime);
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            var configMvc = MockMvcBuilders.standaloneSetup(new io.dataease.ai.server.AiConfigurationServer(configuration, null)).build();
+            var recoverySettings = json.readTree(configMvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
+            if (recoverySettings.path("recovery").path("stepRetries").asInt(-1) != 2 || recoverySettings.path("recovery").path("attemptRetries").asInt(-1) != 3) throw new AssertionError("AI administrator exposes bounded recovery defaults");
+
+            byte[] openOnce = json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "idempotent-editor", "sql", "select 1", "openKey", "open-once"));
+            var openedOnce = json.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(openOnce)).andReturn().getResponse().getContentAsString());
+            var reopened = json.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(openOnce)).andReturn().getResponse().getContentAsString());
+            if (!openedOnce.path("sessionId").equals(reopened.path("sessionId"))) throw new AssertionError("lost Open response must reuse the same session and quota");
+            byte[] submittedOnce = json.writeValueAsBytes(Map.of("contextVersion", openedOnce.path("contextVersion").asText(), "text", "Frozen question", "submissionKey", "submission-once"));
+            String executionsOnce = "/ai/conversations/" + openedOnce.path("sessionId").asText() + "/executions";
+            var runOnce = json.readTree(mvc.perform(post(executionsOnce).contentType(MediaType.APPLICATION_JSON).content(submittedOnce)).andReturn().getResponse().getContentAsString());
+            var replayOnce = json.readTree(mvc.perform(post(executionsOnce).contentType(MediaType.APPLICATION_JSON).content(submittedOnce)).andReturn().getResponse().getContentAsString());
+            if (!runOnce.path("executionId").equals(replayOnce.path("executionId")) || runOnce.path("taskId").asText().isBlank()) throw new AssertionError("lost accepted response must reuse the same task/attempt/execution");
+            mvc.perform(delete("/ai/conversations/" + openedOnce.path("sessionId").asText()));
+            boolean closedOpeningDenied = false;
+            try { mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(openOnce)); }
+            catch (jakarta.servlet.ServletException expected) { closedOpeningDenied = expected.getCause() instanceof AiErrors.Failure known && "scope_changed".equals(known.safeCode()); }
+            if (!closedOpeningDenied) throw new AssertionError("closed Open keys cannot recreate a context or consume new quota");
+
+            protocol.set("framed");
+            byte[] invokeOnce = json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "button-key", "sql", "select 1", "text", "One button task", "submissionKey", "button-once"));
+            var invoked = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType(MediaType.APPLICATION_JSON).content(invokeOnce)).andReturn().getResponse().getContentAsString());
+            var invokedAgain = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType(MediaType.APPLICATION_JSON).content(invokeOnce)).andReturn().getResponse().getContentAsString());
+            if (!invoked.path("executionId").equals(invokedAgain.path("executionId"))) throw new AssertionError("unknown Invoke response replays the accepted task before opening a new session");
+            mvc.perform(delete("/ai/conversations/" + invoked.path("sessionId").asText()));
+            boolean closedInvokeDenied = false;
+            try { mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType(MediaType.APPLICATION_JSON).content(invokeOnce)); }
+            catch (jakarta.servlet.ServletException expected) { closedInvokeDenied = expected.getCause() instanceof AiErrors.Failure known && "scope_changed".equals(known.safeCode()); }
+            if (!closedInvokeDenied) throw new AssertionError("closed button task keys cannot replay model work");
+            var otherKeyScope = open(mvc, json, "other-key-context");
+            boolean changedScopeDenied = false;
+            try { mvc.perform(post("/ai/conversations/" + otherKeyScope.path("sessionId").asText() + "/executions").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(Map.of("contextVersion", otherKeyScope.path("contextVersion").asText(), "text", "Frozen question", "submissionKey", "submission-once")))); }
+            catch (jakarta.servlet.ServletException expected) { changedScopeDenied = expected.getCause() instanceof AiErrors.Failure known && "conflict".equals(known.safeCode()); }
+            if (!changedScopeDenied) throw new AssertionError("a submission key cannot be rebound to another session/context");
+            mvc.perform(delete("/ai/conversations/" + otherKeyScope.path("sessionId").asText()));
+            protocol.set("eof");
+            var retrySession = open(mvc, json, "retry-editor");
+            String retryExecutions = "/ai/conversations/" + retrySession.path("sessionId").asText() + "/executions";
+            String failedPath = start(mvc, json, retryExecutions, retrySession, "Original frozen task");
+            var failedAttempt = await(mvc, json, failedPath + "/events", "FAILED", "partial");
+            var alternateDraft = configuration.draft(); var alternate = new Candidate();
+            alternate.setId(alternateDraft.id()); alternate.setDraftHandle(alternateDraft.draftHandle()); alternate.setName("New attempt model");
+            alternate.setProvider("OPENAI_COMPATIBLE"); alternate.setBaseUrl("http://127.0.0.1:" + server.getAddress().getPort() + "/v1"); alternate.setModelIdentifier("new-attempt-model"); alternate.setApiKey("synthetic-new-key");
+            alternate.setTestProof(configuration.testProof(configuration.candidate(alternate, true))); var alternateModel = configuration.save(alternate, true);
+            var beforeNewModel = configuration.setting();
+            configuration.saveSettings(new SettingsChange(beforeNewModel.getRowVersion(), true, alternateModel.id(), false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", alternateModel.id() + ":true").token()));
+            await(mvc, json, failedPath + "/events", "FAILED", "partial");
+            protocol.set("framed");
+            String laterPath = start(mvc, json, retryExecutions, retrySession, "Later successful turn");
+            await(mvc, json, laterPath + "/events", "COMPLETED", "多字节");
+            byte[] retryBody = json.writeValueAsBytes(Map.of("retryKey", "retry-once", "expectedAttemptId", failedAttempt.path("attemptId").asText()));
+            var retried = json.readTree(mvc.perform(post(failedPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(retryBody)).andReturn().getResponse().getContentAsString());
+            String retriedPath = retryExecutions + "/" + retried.path("executionId").asText();
+            var recovered = await(mvc, json, retriedPath + "/events", "COMPLETED", "多字节");
+            if (!failedAttempt.path("taskId").equals(recovered.path("taskId")) || recovered.path("attemptNumber").asInt() != 2
+                    || !failedAttempt.path("attemptId").equals(recovered.path("sourceAttemptId"))) throw new AssertionError("manual retry preserves task and links an independent attempt");
+            var frozen = sent.get(sent.size() - 1).path("messages");
+            if (frozen.size() != 2 || !frozen.get(1).path("content").asText().equals("Original frozen task") || !sent.get(sent.size() - 1).path("model").asText().equals("new-attempt-model")) throw new AssertionError("retry must use first complete input snapshot, never later history");
+            var replayRetry = json.readTree(mvc.perform(post(failedPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(retryBody)).andReturn().getResponse().getContentAsString());
+            if (!replayRetry.path("executionId").equals(retried.path("executionId"))) throw new AssertionError("retry response loss must not create another attempt");
+            String followingPath = start(mvc, json, retryExecutions, retrySession, "After old retry");
+            await(mvc, json, followingPath + "/events", "COMPLETED", "多字节");
+            var following = sent.get(sent.size() - 1).path("messages");
+            if (following.size() != 4 || !following.get(1).path("content").asText().equals("Later successful turn")) throw new AssertionError("old retry must not overwrite later successful history");
+            var afterNewModel = configuration.setting();
+            configuration.saveSettings(new SettingsChange(afterNewModel.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", saved.id() + ":true").token()));
+            mvc.perform(delete("/ai/conversations/" + retrySession.path("sessionId").asText()));
+            protocol.set("framed"); temporaryFailures.set(1); sent.clear();
+            var transientSession = open(mvc, json, "transient-editor");
+            long retryStarted = System.currentTimeMillis();
+            String transientPath = start(mvc, json, "/ai/conversations/" + transientSession.path("sessionId").asText() + "/executions", transientSession, "Retry temporary service failure");
+            await(mvc, json, transientPath + "/events", "COMPLETED", "多字节");
+            if (sent.size() != 2 || !sent.get(0).equals(sent.get(1)) || System.currentTimeMillis() - retryStarted < 1000) throw new AssertionError("temporary model failure retries original model/input after bounded wait");
+
+            recovery(configMvc, json, 0, 0); sent.clear(); temporaryFailures.set(1);
+            String disabledPath = start(mvc, json, "/ai/conversations/" + transientSession.path("sessionId").asText() + "/executions", transientSession, "Recovery disabled");
+            await(mvc, json, disabledPath + "/events", "FAILED", "provider_unavailable");
+            Thread.sleep(1150);
+            if (sent.size() != 1) throw new AssertionError("zero policy disables technical model retries");
+            recovery(configMvc, json, 2, 3); sent.clear(); temporaryFailures.set(10);
+            String cancelWaitPath = start(mvc, json, "/ai/conversations/" + transientSession.path("sessionId").asText() + "/executions", transientSession, "Stop retry wait");
+            for (int wait = 0; wait < 100 && sent.isEmpty(); wait++) Thread.sleep(10);
+            mvc.perform(post(cancelWaitPath + "/stop")); Thread.sleep(1300);
+            if (sent.size() != 1) throw new AssertionError("cancelled wait cannot send another model request");
+            temporaryFailures.set(0);
+            mvc.perform(delete("/ai/conversations/" + transientSession.path("sessionId").asText()));
+            sent.clear(); protocol.set("unknown-write"); unknownTool.set(true);
+            var unknownSession = open(mvc, json, "unknown-editor");
+            String unknownPath = start(mvc, json, "/ai/conversations/" + unknownSession.path("sessionId").asText() + "/executions", unknownSession, "Controlled unknown result");
+            var unknownResult = await(mvc, json, unknownPath + "/events", "FAILED", "outcome_unknown");
+            if (unknownResult.path("retryEligible").asBoolean() || uncertainWrites.get() != 1) throw new AssertionError("unknown side effect must not be automatically or manually replayable");
+            mvc.perform(delete("/ai/conversations/" + unknownSession.path("sessionId").asText()));
+            unknownTool.set(false); protocol.set("balance-rate"); sent.clear();
+            var balanceSession = open(mvc, json, "balance-editor");
+            String balanceRun = start(mvc, json, "/ai/conversations/" + balanceSession.path("sessionId").asText() + "/executions", balanceSession, "Balance failures require human action");
+            await(mvc, json, balanceRun + "/events", "FAILED", "provider_balance");
+            if (sent.size() != 1) throw new AssertionError("429 insufficient balance must not be automatically retried as rate limiting");
+            mvc.perform(delete("/ai/conversations/" + balanceSession.path("sessionId").asText()));
+            protocol.set("framed");
+            String lastEditedSession = null;
+            for (int edit = 0; edit < 6; edit++) {
+                var edited = json.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "continuously-edited", "sql", "select " + edit)))).andReturn().getResponse().getContentAsString());
+                lastEditedSession = edited.path("sessionId").asText();
+                String editedRun = start(mvc, json, "/ai/conversations/" + edited.path("sessionId").asText() + "/executions", edited, "Explain edited SQL");
+                await(mvc, json, editedRun + "/events", "COMPLETED", "多字节");
+            }
+            mvc.perform(delete("/ai/conversations/" + lastEditedSession));
+            sent.clear(); protocol.set("normal");
+            System.out.println("PASS public foreground Open/submit idempotency, frozen manual retry and temporary model recovery");
+            if (Boolean.getBoolean("ai.test.recoveryOnly")) { manage.destroy(); return; }
             var open = mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"editor-a\",\"sql\":\"select 1\"}"))
                     .andReturn().getResponse();
@@ -395,8 +524,9 @@ public final class ConversationRegression {
             var revised = configuration.setting();
             configuration.saveSettings(new SettingsChange(revised.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 1, 1,
                     configuration.impact("SETTINGS", saved.id() + ":true").token()));
-            denyGet(mvc, configRun + "/events"); streamRelease.get().countDown();
-            deny(mvc, configPath, configChanged.path("contextVersion").asText(), "Old configuration context retired");
+            streamRelease.get().countDown();
+            await(mvc, json, configRun + "/events", "COMPLETED", "继续");
+            mvc.perform(delete("/ai/conversations/" + configChanged.path("sessionId").asText()));
             // Closing an active context cancels its stream; the released slot is usable by a fresh editor.
             var activeClose = open(mvc, json, "close-active");
             String closePath = "/ai/conversations/" + activeClose.path("sessionId").asText() + "/executions";

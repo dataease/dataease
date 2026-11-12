@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import BackgroundTasks from './BackgroundTasks.vue'
 import { getAiTask, type AiTask, type AiTaskOrigin } from '@/api/aiTask'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router_2'
 import { ElMessageBox } from 'element-plus-secondary'
 import { isAxiosError } from 'axios'
+import { isRequestError } from '@/config/axios/error'
 import { aiFailureKey } from '@/api/aiService'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
   closeConversation,
+  retryConversationExecution,
+  type AiRecoveryProgress,
   getConversationResources,
   openConversation,
   invokeSqlAssistance,
@@ -103,6 +106,11 @@ const messages = ref<
     target?: AiConversationSession
     sourceSql?: string
     result?: AiAssistanceResult
+    run?: AiConversationExecution
+    retryKey?: string
+    recovery?: AiRecoveryProgress
+    cursor?: number
+    errorCode?: string
   }[]
 >([])
 const busy = ref(false)
@@ -112,7 +120,7 @@ const execution = ref<AiConversationExecution>()
 let polling: AbortController | undefined
 let generation = 0
 let resourceGeneration = 0
-let editorId = crypto.randomUUID()
+const editorId = crypto.randomUUID()
 let conversationSql = ''
 const backgroundDelivered = (task: AiTask, question: string, origin: AiTaskOrigin) => {
   const target = session.value
@@ -135,9 +143,34 @@ const backgroundDelivered = (task: AiTask, question: string, origin: AiTaskOrigi
     attemptId: task.attemptId
   })
 }
+type Submission = {
+  single: boolean
+  text: string
+  resourceId: string
+  sql: string
+  editorId: string
+  openKey: string
+  submissionKey: string
+  expiresAt: number
+  target?: AiConversationSession
+  userIndex?: number
+}
+const pendingSubmissions = ref<Submission[]>([])
+const pendingSubmission = computed(() => pendingSubmissions.value[0])
+const matchingSubmission = (single: boolean) =>
+  pendingSubmissions.value.find(
+    item =>
+      item.single === single &&
+      item.text === (input.value.trim() || tr('single_request')) &&
+      item.resourceId === resourceId.value &&
+      item.sql === sql.value &&
+      item.editorId === editorId
+  )
+
 const applying = ref(false)
 const reset = () => {
   generation++
+  pendingSubmissions.value = []
   polling?.abort()
   polling = undefined
   execution.value = undefined
@@ -148,7 +181,6 @@ const reset = () => {
   messages.value = []
   busy.value = false
   failure.value = ''
-  editorId = crypto.randomUUID()
   for (const id of previous) void closeConversation(id).catch(() => undefined)
 }
 const load = async () => {
@@ -172,131 +204,308 @@ watch(
   },
   { flush: 'sync' }
 )
-const send = async (single = false) => {
+const waitForRead = (millis: number, signal?: AbortSignal) =>
+  new Promise<void>(resolve => {
+    const done = () => {
+      window.clearTimeout(timer)
+      signal?.removeEventListener('abort', done)
+      resolve()
+    }
+    const timer = window.setTimeout(done, millis)
+    signal?.addEventListener('abort', done, { once: true })
+    if (signal?.aborted) done()
+  })
+const pollRun = async (
+  run: AiConversationExecution,
+  active: AiConversationSession,
+  index: number,
+  current: number
+) => {
+  let cursor = messages.value[index].cursor ?? 0
+  let recoveries = 0
+  let recoveryStarted = 0
+  polling = new AbortController()
+  while (current === generation && busy.value) {
+    let events: AiConversationEvents
+    try {
+      const request = new AbortController()
+      const parent = polling.signal
+      const abort = () => request.abort()
+      parent.addEventListener('abort', abort, { once: true })
+      const timer = recoveryStarted
+        ? window.setTimeout(abort, Math.max(1, 10000 - (Date.now() - recoveryStarted)))
+        : undefined
+      try {
+        events = await getConversationEvents(
+          active.sessionId,
+          run.executionId,
+          cursor,
+          request.signal
+        )
+      } finally {
+        window.clearTimeout(timer)
+        parent.removeEventListener('abort', abort)
+      }
+    } catch (error) {
+      if (current !== generation || polling.signal.aborted) return
+      const status = isRequestError(error) ? error.response?.status : undefined
+      if (status && status < 500) throw error
+      recoveryStarted ||= Date.now()
+      if (recoveries >= 3 || Date.now() - recoveryStarted >= 10000) {
+        messages.value[index].status = 'UNREACHABLE'
+        failure.value = tr('progress_unreachable')
+        return
+      }
+      recoveries++
+      failure.value = tr('progress_recovering') + ` (${recoveries}/3)`
+      await waitForRead(
+        Math.min(recoveries * 1000, Math.max(0, 10000 - (Date.now() - recoveryStarted))),
+        polling.signal
+      )
+      continue
+    }
+    if (current !== generation || execution.value?.executionId !== run.executionId) return
+    if (
+      events.sessionId !== active.sessionId ||
+      events.executionId !== run.executionId ||
+      events.contextVersion !== active.contextVersion
+    )
+      throw new Error('scope_changed')
+    failure.value = ''
+    applyEvents(events, index, cursor)
+    cursor = Math.max(cursor, events.cursor)
+    messages.value[index].cursor = cursor
+    if (events.status !== 'RUNNING') break
+    await waitForRead(250, polling.signal)
+  }
+}
+const observe = async (
+  run: AiConversationExecution,
+  active: AiConversationSession,
+  sourceSql: string,
+  current: number
+) => {
+  execution.value = run
+  activity.value = active
+  messages.value.push({
+    role: 'assistant',
+    text: '',
+    status: 'RUNNING',
+    executionId: run.executionId,
+    target: active,
+    sourceSql,
+    tools: [],
+    run
+  })
+  await pollRun(run, active, messages.value.length - 1, current)
+}
+const finishReading = (current: number) => {
+  if (current !== generation) return
+  busy.value = false
+  if (messages.value[messages.value.length - 1]?.status !== 'UNREACHABLE')
+    execution.value = undefined
+  polling?.abort()
+  polling = undefined
+}
+const send = async (single = false, resume = false) => {
+  if (execution.value && !busy.value) return
   if (
     busy.value ||
-    (!single && !input.value.trim()) ||
-    (single && !resourceId.value && !input.value.trim())
+    (!resume &&
+      ((!single && !input.value.trim()) || (single && !resourceId.value && !input.value.trim())))
   )
     return
+  const matched = resume ? pendingSubmission.value : matchingSubmission(single)
+  const reconciling = Boolean(matched)
+  const submission: Submission | undefined = matched ?? {
+    single,
+    text: input.value.trim() || tr('single_request'),
+    resourceId: resourceId.value,
+    sql: sql.value,
+    editorId,
+    openKey: crypto.randomUUID(),
+    submissionKey: crypto.randomUUID(),
+    expiresAt: Date.now() + 30 * 60 * 1000
+  }
+  if (!submission) return
+  if (Date.now() >= submission.expiresAt) {
+    pendingSubmissions.value = pendingSubmissions.value.filter(
+      item => item.submissionKey !== submission.submissionKey
+    )
+    failure.value = tr('submission_expired')
+    return
+  }
+  if (!matched) {
+    if (pendingSubmissions.value.length >= 10) {
+      failure.value = tr('submission_limit')
+      return
+    }
+    pendingSubmissions.value.push(submission)
+  }
   busy.value = true
   failure.value = ''
   const current = ++generation
-  const text = input.value.trim() || tr('single_request')
-  const selectedResource = resourceId.value,
-    selectedSql = sql.value
-  const message = { role: 'user' as const, text, status: 'RUNNING' }
-  messages.value.push(message)
-  const index = messages.value.length - 1
-  input.value = ''
-  let active: AiConversationSession | undefined
+  if (!reconciling || submission.userIndex == null) {
+    messages.value.push({ role: 'user', text: submission.text, status: 'RUNNING' })
+    submission.userIndex = messages.value.length - 1
+  }
+  const index = submission.userIndex
+  messages.value[index].status = 'RUNNING'
+  if (!reconciling) input.value = ''
+  let active = submission.target ?? (submission.single ? undefined : session.value)
+  if (active && (active.resourceId !== submission.resourceId || conversationSql !== submission.sql))
+    active = undefined
   try {
-    active = single ? undefined : session.value
-    if (active && (active.resourceId !== selectedResource || conversationSql !== selectedSql))
-      active = undefined
     let run: AiConversationExecution
-    if (single) {
+    if (submission.single) {
       run = await invokeSqlAssistance({
         scene: 'sql',
-        resourceId: selectedResource,
-        editorId,
-        sql: selectedSql,
-        text
+        resourceId: submission.resourceId,
+        editorId: submission.editorId,
+        sql: submission.sql,
+        text: submission.text,
+        submissionKey: submission.submissionKey
       })
       active = run.context
       if (!active) throw new Error('response_invalid')
       contexts.add(active.sessionId)
-    } else if (!active) {
-      active = await openConversation({
-        scene: 'sql',
-        resourceId: selectedResource,
-        editorId,
-        sql: selectedSql
-      })
-      if (current !== generation) {
-        void closeConversation(active.sessionId).catch(() => undefined)
-        return
+    } else {
+      if (!active) {
+        active = await openConversation({
+          scene: 'sql',
+          resourceId: submission.resourceId,
+          editorId: submission.editorId,
+          sql: submission.sql,
+          openKey: submission.openKey
+        })
+        if (current !== generation) {
+          void closeConversation(active.sessionId).catch(() => undefined)
+          return
+        }
+        session.value = active
+        conversationSql = submission.sql
+        contexts.add(active.sessionId)
       }
-      session.value = active
-      conversationSql = selectedSql
-      contexts.add(active.sessionId)
+      submission.expiresAt = Math.min(submission.expiresAt, active.expiresAt)
+      submission.target = active
+      run = await startConversationExecution(
+        active.sessionId,
+        active.contextVersion,
+        submission.text,
+        submission.submissionKey
+      )
     }
-    if (!single)
-      run = await startConversationExecution(active.sessionId, active.contextVersion, text)
     if (current !== generation) {
       void closeConversation(active.sessionId).catch(() => undefined)
       return
     }
     if (run.sessionId !== active.sessionId || run.contextVersion !== active.contextVersion)
       throw new Error('scope_changed')
-    execution.value = run
-    activity.value = active
+    pendingSubmissions.value = pendingSubmissions.value.filter(
+      item => item.submissionKey !== submission.submissionKey
+    )
     messages.value[index].status = 'COMPLETED'
-    messages.value.push({
-      role: 'assistant',
-      text: '',
-      status: 'RUNNING',
-      executionId: run.executionId,
-      target: active,
-      sourceSql: selectedSql,
-      tools: []
-    })
-    const answerIndex = messages.value.length - 1
-    let cursor = 0
-    polling = new AbortController()
-    while (current === generation && busy.value) {
-      const events = await getConversationEvents(
-        active.sessionId,
-        run.executionId,
-        cursor,
-        polling.signal
-      )
-      if (current !== generation || execution.value?.executionId !== run.executionId) return
-      if (
-        events.sessionId !== active.sessionId ||
-        events.executionId !== run.executionId ||
-        events.contextVersion !== active.contextVersion
-      )
-        throw new Error('scope_changed')
-      applyEvents(events, answerIndex, cursor)
-      cursor = Math.max(cursor, events.cursor)
-      if (events.status !== 'RUNNING') break
-      await new Promise<void>(resolve => {
-        const signal = polling?.signal
-        const done = () => {
-          window.clearTimeout(timer)
-          signal?.removeEventListener('abort', done)
-          resolve()
-        }
-        const timer = window.setTimeout(done, 250)
-        signal?.addEventListener('abort', done, { once: true })
-        if (signal?.aborted) done()
-      })
-    }
+    await observe(run, active, submission.sql, current)
   } catch (error) {
     if (current !== generation || !busy.value) return
     const last = messages.value[messages.value.length - 1]
-    if (last?.status === 'RUNNING') last.status = 'FAILED'
-    if (last?.role !== 'assistant') messages.value[index].status = 'FAILED'
-    if (active && session.value?.sessionId === active.sessionId) session.value = undefined
-    execution.value = undefined
-    if (active) {
-      contexts.delete(active.sessionId)
-      void closeConversation(active.sessionId).catch(() => undefined)
+    // A failed read or lost acceptance response is not an authoritative server execution failure.
+    if (last?.status === 'RUNNING') last.status = 'UNREACHABLE'
+    const status = isRequestError(error) ? error.response?.status : undefined
+    if (status && status < 500) {
+      pendingSubmissions.value = pendingSubmissions.value.filter(
+        item => item.submissionKey !== submission.submissionKey
+      )
+      messages.value[index].status = 'REJECTED'
+      if (!reconciling && !input.value) input.value = submission.text
     }
-    failure.value = failureMessage(error)
+    failure.value = pendingSubmissions.value.some(
+      item => item.submissionKey === submission.submissionKey
+    )
+      ? tr('submission_unknown')
+      : failureMessage(error)
   } finally {
-    if (current === generation) {
-      busy.value = false
-      execution.value = undefined
-      polling?.abort()
-      polling = undefined
-    }
+    finishReading(current)
   }
 }
+const retry = async (index: number) => {
+  const source = messages.value[index],
+    target = source?.target,
+    original = source?.run
+  if (
+    busy.value ||
+    !target ||
+    !original?.attemptId ||
+    !original.retryEligible ||
+    !source.executionId
+  )
+    return
+  if (
+    [
+      'provider_authentication',
+      'provider_balance',
+      'configuration_unavailable',
+      'model_unavailable',
+      'disabled',
+      'organization_disabled',
+      'conflict'
+    ].includes(source.errorCode ?? '')
+  ) {
+    try {
+      await ElMessageBox.confirm(tr('retry_configuration_confirm'), tr('retry_attempt'), {
+        type: 'warning',
+        closeOnClickModal: false
+      })
+    } catch {
+      return
+    }
+  }
+  source.retryKey ||= crypto.randomUUID()
+  busy.value = true
+  failure.value = ''
+  const current = ++generation
+  try {
+    const run = await retryConversationExecution(
+      target.sessionId,
+      source.executionId,
+      original.attemptId,
+      source.retryKey
+    )
+    if (current !== generation) return
+    original.retryEligible = false
+    await observe(run, target, source.sourceSql ?? '', current)
+  } catch {
+    if (current === generation) failure.value = tr('retry_unknown')
+  } finally {
+    finishReading(current)
+  }
+}
+const resumeProgress = async (index: number) => {
+  const message = messages.value[index]
+  if (busy.value || !message?.run || !message.target) return
+  busy.value = true
+  failure.value = ''
+  message.status = 'RUNNING'
+  const current = ++generation
+  execution.value = message.run
+  try {
+    await pollRun(message.run, message.target, index, current)
+  } catch (error) {
+    if (current === generation) {
+      message.status = 'UNREACHABLE'
+      failure.value = failureMessage(error)
+    }
+  } finally {
+    finishReading(current)
+  }
+}
+const copyExecution = (id: string) =>
+  navigator.clipboard.writeText(id).catch(() => {
+    failure.value = tr('copy_failed')
+  })
 const applyEvents = (events: AiConversationEvents, index: number, cursor: number) => {
   const message = messages.value[index]
-  if (!message || message.status !== 'RUNNING') return
+  if (!message || !['RUNNING', 'UNREACHABLE'].includes(message.status)) return
   for (const event of events.events) {
     if (event.sequence <= cursor) continue
     cursor = event.sequence
@@ -309,12 +518,21 @@ const applyEvents = (events: AiConversationEvents, index: number, cursor: number
       if (existing >= 0) tools[existing] = tool
       else tools.push(tool)
     } else if (event.type === 'FAILED') {
+      message.errorCode = event.error
       const key = aiFailureKey(event.error ?? null)
       failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
     }
   }
   message.status = events.status
-  if (events.status === 'COMPLETED' && events.result) message.result = events.result
+  if (message.run) {
+    message.run.retryEligible = events.retryEligible
+    message.run.attemptId = events.attemptId ?? message.run.attemptId
+  }
+  message.recovery = events.recovery
+  if (events.status === 'COMPLETED' && events.result) {
+    message.result = events.result
+    if (typeof events.result.text === 'string') message.text = events.result.text
+  }
 }
 const applySuggestion = async (index: number) => {
   const message = messages.value[index],
@@ -413,50 +631,45 @@ const stop = async () => {
     )
       throw new Error('scope_changed')
     // Already completed: the normal cursor poll must drain any text missed before stop.
-    if (events.status === 'COMPLETED') return
+    if (events.status === 'COMPLETED') {
+      if (!busy.value) void resumeProgress(messages.value.length - 1)
+      return
+    }
     if (events.status === 'RUNNING') throw new Error('response_invalid')
-    if (events.status === 'FAILED') applyEvents(events, messages.value.length - 1, 0)
+    applyEvents(
+      events,
+      messages.value.length - 1,
+      messages.value[messages.value.length - 1]?.cursor ?? 0
+    )
     const message = messages.value[messages.value.length - 1]
     if (message?.status === 'RUNNING') message.status = events.status
     busy.value = false
     polling?.abort()
+    execution.value = undefined
   } catch (error) {
     if (current !== generation) return
     const message = messages.value[messages.value.length - 1]
-    if (message?.status === 'RUNNING') message.status = 'FAILED'
-    failure.value = failureMessage(error)
+    if (message?.status === 'RUNNING') message.status = 'UNREACHABLE'
+    failure.value = tr('progress_unreachable')
     busy.value = false
     polling?.abort()
-    if (session.value?.sessionId === active.sessionId) session.value = undefined
-    execution.value = undefined
-    void closeConversation(active.sessionId).catch(() => undefined)
+    // An unknown stop response can be reconciled by reading this same execution.
   }
 }
-const disconnect = () => {
-  const previous = [...contexts]
-  contexts.clear()
-  generation++
-  polling?.abort()
-  polling = undefined
-  execution.value = undefined
-  session.value = undefined
-  activity.value = undefined
-  busy.value = false
-  for (const message of messages.value) if (message.status === 'RUNNING') message.status = 'FAILED'
-  failure.value = tr('failed')
-  for (const id of previous) void closeConversation(id).catch(() => undefined)
+const offline = () => {
+  if (busy.value) failure.value = tr('progress_recovering')
 }
 onMounted(() => {
   void load()
   window.addEventListener('pagehide', reset)
   window.addEventListener('beforeunload', beforeUnload)
-  window.addEventListener('offline', disconnect)
+  window.addEventListener('offline', offline)
 })
 onBeforeUnmount(() => {
   resourceGeneration++
   window.removeEventListener('pagehide', reset)
   window.removeEventListener('beforeunload', beforeUnload)
-  window.removeEventListener('offline', disconnect)
+  window.removeEventListener('offline', offline)
   reset()
 })
 </script>
@@ -503,9 +716,13 @@ onBeforeUnmount(() => {
       <p v-if="activity" class="context">
         {{ activity.resourceName }} · {{ activity.editorId }} · {{ activity.resourceVersion }}
       </p>
-      <el-button :disabled="busy || (!resourceId && !input.trim())" @click="send(true)">{{
-        tr('single')
-      }}</el-button>
+      <el-button
+        :disabled="
+          busy || !!execution || !!matchingSubmission(true) || (!resourceId && !input.trim())
+        "
+        @click="send(true)"
+        >{{ tr('single') }}</el-button
+      >
       <BackgroundTasks
         :resource-id="resourceId"
         :editor-id="editorId"
@@ -519,9 +736,17 @@ onBeforeUnmount(() => {
         @delivered="backgroundDelivered"
       />
       <el-button @click="end">{{ tr('end') }}</el-button>
-      <el-button v-if="busy" :disabled="!execution" @click="stop">{{ tr('stop') }}</el-button>
+      <el-button v-if="busy || execution" :disabled="!execution" @click="stop">{{
+        tr('stop')
+      }}</el-button>
       <p role="status">{{ busy ? tr('running') : tr('ready') }}</p>
       <p v-if="failure" role="alert">{{ failure }}</p>
+      <el-button
+        v-if="pendingSubmission"
+        :disabled="busy"
+        @click="send(pendingSubmission.single, true)"
+        >{{ tr('resume_submission') }}</el-button
+      >
       <section class="messages" :aria-label="tr('conversation')" aria-live="polite">
         <article v-for="(message, index) in messages" :key="index">
           <strong>{{ tr(message.role) }}</strong>
@@ -569,7 +794,28 @@ onBeforeUnmount(() => {
               <pre>{{ tool.result }}</pre>
             </template>
           </details>
+          <p v-if="message.role === 'assistant' && message.status === 'UNREACHABLE'">
+            {{ tr('progress_unreachable') }}
+          </p>
+          <el-button
+            v-if="message.status === 'UNREACHABLE' && message.run"
+            :disabled="busy"
+            @click="resumeProgress(index)"
+            >{{ tr('resume_progress') }}</el-button
+          >
+          <el-button v-if="message.run?.retryEligible" :disabled="busy" @click="retry(index)">{{
+            tr('retry_attempt')
+          }}</el-button>
+          <p v-if="message.recovery">
+            {{ tr('current_step') }}: {{ message.recovery.stepKind }} ·
+            {{ tr('technical_retries') }} {{ message.recovery.technicalRetries }} ·
+            {{ tr('corrections') }} {{ message.recovery.corrections
+            }}<span v-if="message.recovery.reason"> · {{ message.recovery.reason }}</span>
+          </p>
           <small v-if="message.executionId">{{ message.executionId }}</small>
+          <el-button v-if="message.executionId" link @click="copyExecution(message.executionId)">{{
+            tr('copy_execution')
+          }}</el-button>
         </article>
       </section>
       <el-form @submit.prevent="send()">
@@ -582,9 +828,12 @@ onBeforeUnmount(() => {
             :aria-label="tr('message')"
           />
         </el-form-item>
-        <el-button type="primary" native-type="submit" :disabled="busy || !input.trim()">{{
-          tr('send')
-        }}</el-button>
+        <el-button
+          type="primary"
+          native-type="submit"
+          :disabled="busy || !!execution || !!matchingSubmission(false) || !input.trim()"
+          >{{ tr('send') }}</el-button
+        >
       </el-form>
     </div>
   </main>
