@@ -4832,6 +4832,14 @@ export default {
     recovery_execution_failed: 'Related operations have ended; end this run as failed'
   },
   sync_task: {
+    field_name_rules_unavailable:
+      'Target column naming rules are unavailable. Reload the field information.',
+    field_name_control:
+      'Sync column names cannot contain control characters such as line breaks or tabs.',
+    field_name_characters:
+      'The name contains characters unsupported by the target version. Check special characters or Unicode settings ({0}).',
+    field_name_reserved: 'The name uses a database-reserved prefix.',
+    field_name_protected: 'The name uses a DataEase sync-reserved prefix.',
     decimal_precision_required:
       'Field {0} (source type {1}) has no explicit precision for target type {2}. Set precision and scale based on the actual data instead of relying on database defaults',
     decimal_parameters_invalid:

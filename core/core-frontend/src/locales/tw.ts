@@ -4628,6 +4628,11 @@ export default {
     recovery_execution_failed: '已確認相關操作結束，本次執行按失敗結束'
   },
   sync_task: {
+    field_name_rules_unavailable: '目標欄位命名規則不可用，請重新讀取欄位資訊',
+    field_name_control: '同步欄位名稱不能包含換行、定位字元等控制字元',
+    field_name_characters: '名稱包含目前目標版本不支援的字元，請檢查特殊符號或 Unicode 設定（{0}）',
+    field_name_reserved: '名稱使用了資料庫保留前綴',
+    field_name_protected: '名稱使用了 DataEase 同步系統保留前綴',
     decimal_precision_required:
       '欄位 {0}（來源類型 {1}）的目標類型 {2} 尚未指定總精度，請依實際資料明確設定總精度和小數位，避免使用資料庫預設值',
     decimal_parameters_invalid:

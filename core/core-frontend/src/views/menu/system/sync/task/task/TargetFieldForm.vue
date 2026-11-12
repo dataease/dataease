@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { computed, nextTick, reactive, ref } from 'vue'
 import { ITableField, ITaskInfoRes, IMaintenanceStructure } from '@/api/sync/syncTask'
 import type { IMaintenanceFieldIssue } from '@/api/sync/syncTask'
+import type { ISinkFieldNameRules } from '@/api/sync/syncTask'
 import type { FormInstance } from 'element-plus-secondary'
 import { ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
@@ -23,6 +24,7 @@ const props = withDefaults(
     adjustmentMode?: boolean
     maintenanceStructure?: IMaintenanceStructure
     maintenanceFields?: ITableField[]
+    fieldNameRules?: ISinkFieldNameRules | null
   }>(),
   {
     readOnly: false,
@@ -262,9 +264,61 @@ const useRecommendedType = () => {
   changeTargetType()
   fieldForm.value?.clearValidate(['fieldType', 'fieldSize', 'fieldPrecision'])
 }
-const nameMaxLength = computed(() =>
-  props.adjustmentMode ? props.maintenanceStructure?.fieldNameMaxLength : 32
+/**
+ * 规则随字段信息或维护结构传入，null 表示旧插件未声明能力，undefined 表示尚未取得字段信息
+ */
+const nameRules = computed(() =>
+  props.adjustmentMode ? props.maintenanceStructure?.fieldNameRules ?? null : props.fieldNameRules
 )
+const nameRulesError = computed(() => {
+  if (nameRules.value === undefined) return t('sync_task.field_name_rules_unavailable')
+  if (!nameRules.value) return ''
+  try {
+    new RegExp(nameRules.value.pattern, 'u')
+    new RegExp(nameRules.value.unsupportedPattern, 'u')
+    return ''
+  } catch {
+    return t('sync_task.field_name_rules_unavailable')
+  }
+})
+
+const nameMaxLength = computed(
+  () =>
+    nameRules.value?.maxLength ??
+    (props.adjustmentMode ? props.maintenanceStructure?.fieldNameMaxLength : 32)
+)
+/**
+ * 字符、长度和保留前缀均消费插件规则，未声明此能力的其他插件沿用原校验
+ */
+const validateFieldName = (_rule, value: string, callback: (error?: Error) => void) => {
+  let message = ''
+  const policy = nameRules.value
+  if (nameRulesError.value) message = nameRulesError.value
+  else if (!value?.trim()) message = t('common.required')
+  else if (policy) {
+    if (Array.from(value).length > policy.maxLength)
+      message = t('sync_task.input_limit', [policy.maxLength])
+    else if (new RegExp(policy.unsupportedPattern, 'u').test(value))
+      message = t('sync_task.field_name_control')
+    else if (!new RegExp(policy.pattern, 'u').test(value))
+      message = t('sync_task.field_name_characters', [policy.version])
+    else if (
+      policy.reservedPrefixes.some(prefix =>
+        policy.reservedPrefixCaseSensitive
+          ? value.startsWith(prefix)
+          : value.toLowerCase().startsWith(prefix.toLowerCase())
+      )
+    )
+      message = t('sync_task.field_name_reserved')
+    else if (
+      policy.protectedPrefixes.some(prefix => value.toLowerCase().startsWith(prefix.toLowerCase()))
+    )
+      message = t('sync_task.field_name_protected')
+  } else if (nameMaxLength.value && value.length > nameMaxLength.value)
+    message = t('sync_task.input_limit', [nameMaxLength.value])
+  else if (/^[0-9]/.test(value)) message = t('sync_task.cannot_begin_with_number')
+  callback(message ? new Error(message) : undefined)
+}
 const commentMaxLength = computed(() =>
   props.adjustmentMode ? props.maintenanceStructure?.fieldCommentMaxLength : 255
 )
@@ -367,8 +421,7 @@ const rules = computed(() => ({
       trigger: 'change'
     },
     {
-      max: nameMaxLength.value,
-      message: t('sync_task.input_limit', [nameMaxLength.value]),
+      validator: validateFieldName,
       trigger: 'change'
     }
   ],
@@ -497,15 +550,15 @@ const saveForm = () => {
       .filter(item => {
         // 新增时不校验 ID
         if (editId.value === '') {
-          return props.adjustmentMode
-            ? item.fieldName.toLowerCase() === state.form.fieldName.toLowerCase()
-            : item.fieldName === state.form.fieldName
+          return nameRules.value?.caseSensitive ?? !props.adjustmentMode
+            ? item.fieldName === state.form.fieldName
+            : item.fieldName.toLowerCase() === state.form.fieldName.toLowerCase()
         } else {
           return (
             item.id != editId.value &&
-            (props.adjustmentMode
-              ? item.fieldName.toLowerCase() === state.form.fieldName.toLowerCase()
-              : item.fieldName === state.form.fieldName)
+            (nameRules.value?.caseSensitive ?? !props.adjustmentMode
+              ? item.fieldName === state.form.fieldName
+              : item.fieldName.toLowerCase() === state.form.fieldName.toLowerCase())
           )
         }
       })
@@ -520,10 +573,6 @@ const saveForm = () => {
         }
       })
       .map(item => item)[0]
-    if (/^[0-9]/.test(state.form.fieldName)) {
-      ElMessage.warning(t('sync_task.cannot_begin_with_number'))
-      return
-    }
     if (repeatSourceField) {
       ElMessage.warning(t('sync_task.duplicate_field_tip', [state.form.fieldSource]))
       return
@@ -693,7 +742,7 @@ defineExpose({
             <div class="target-name-input">
               <el-input
                 v-model="state.form.fieldName"
-                :maxlength="nameMaxLength"
+                :maxlength="nameRules || nameRulesError ? undefined : nameMaxLength"
                 :placeholder="t('sync_task.please_enter')"
               ></el-input>
               <el-button
@@ -706,6 +755,10 @@ defineExpose({
                 >{{ t('sync_maintenance.use_source_name') }}</el-button
               >
             </div>
+            <p v-if="nameRulesError" class="field-server-error">
+              {{ nameRulesError }}
+            </p>
+            <p v-else-if="nameRules" class="field-help">{{ nameRules.description }}</p>
             <p v-if="adjustmentMode && nameMaxLength" class="field-help">
               {{ t('sync_maintenance.name_help', [nameMaxLength]) }}
             </p>
@@ -900,7 +953,12 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="resetForm"> {{ t('sync_datasource.cancel') }}</el-button>
-        <el-button type="primary" @click="saveForm">
+        <el-button
+          type="primary"
+          :loading="targetFieldFormLoading"
+          :disabled="!!nameRulesError"
+          @click="saveForm"
+        >
           {{ t(adjustmentMode ? 'sync_maintenance.confirm_field' : 'sync_datasource.save') }}
         </el-button>
       </span>
