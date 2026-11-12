@@ -1157,9 +1157,48 @@ test('independent background task remains active after reload and exposes cancel
   await expect(page.getByRole('region', { name: '后台任务' })).toContainText('fixed-model')
   expect(cancelled).toBe(0)
   await page.getByRole('button', { name: '取消后台任务' }).click()
+  await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(0)
   await expect(page.getByRole('button', { name: '重试后台任务' })).toBeVisible()
   await page.getByRole('button', { name: '重试后台任务' }).click()
   expect(cancelled).toBe(1)
   expect(retried).toBe(1)
   await expect(page.getByRole('region', { name: '后台任务' })).toContainText('2')
+})
+
+test('online task completion is a basic toast and never becomes a terminal task list', async ({
+  page
+}) => {
+  let task
+  let completed = false
+  await page.route('**/fixture-api/ai/conversations**', (route) =>
+    route.fulfill({ json: route.request().url().endsWith('/resources') ? [] : {} })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const url = new URL(route.request().url())
+    if (route.request().method() === 'POST') {
+      task = {
+        taskId: '2000',
+        attemptId: '2001',
+        attemptNumber: 1,
+        status: 'RUNNING',
+        modelIdentifier: 'online-model'
+      }
+    } else if (url.pathname.endsWith('/ai/tasks'))
+      return route.fulfill({ json: task && !completed ? [task] : [] })
+    return route.fulfill({
+      json: completed
+        ? { ...task, status: 'COMPLETED', result: { type: 'EXPLANATION', text: 'stored result' } }
+        : task
+    })
+  })
+  await page.goto('/?view=conversation')
+  await page.getByRole('textbox', { name: '消息' }).fill('Explain independently')
+  await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+  const currentTasks = page.getByRole('region', { name: '后台任务' })
+  await expect(currentTasks).toContainText('online-model')
+  completed = true
+  await expect(currentTasks.locator('article')).toHaveCount(0)
+  await expect(
+    page.getByRole('alert').filter({ hasText: '后台任务已完成，结果已保存。' })
+  ).toBeVisible()
 })

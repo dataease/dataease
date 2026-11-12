@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
@@ -25,10 +26,66 @@ let timer: ReturnType<typeof setTimeout> | undefined
 let submission: { fingerprint: string; value: AiTaskSubmit } | undefined
 const retryKeys = new Map<string, string>()
 const active = (task: AiTask) => ['QUEUED', 'RUNNING'].includes(task.status)
+const finished = new Set<string>()
+const toasts = new Map<string, ReturnType<typeof ElMessage>>()
+const closeToasts = () => {
+  toasts.forEach(toast => toast.close())
+  toasts.clear()
+  finished.clear()
+}
+const notify = (task: AiTask) => {
+  if (finished.has(task.attemptId)) return
+  finished.add(task.attemptId)
+  if (finished.size > 50) finished.delete(finished.values().next().value!)
+  if (toasts.size >= 10) {
+    const oldest = toasts.keys().next().value!
+    toasts.get(oldest)?.close()
+    toasts.delete(oldest)
+  }
+  const current = generation
+  const retry = ['FAILED', 'CANCELLED', 'INTERRUPTED'].includes(task.status)
+  const message =
+    task.status === 'COMPLETED'
+      ? tr('task_completed')
+      : tr(`task_status_${task.status.toLowerCase()}`)
+  const content = retry
+    ? h('span', [
+        message + ' ',
+        h(
+          'button',
+          {
+            type: 'button',
+            onClick: async () => {
+              if (current !== generation) return
+              if (await change(task, true)) toasts.get(task.attemptId)?.close()
+            }
+          },
+          tr('task_retry')
+        )
+      ])
+    : message
+  toasts.set(
+    task.attemptId,
+    ElMessage({
+      message: content,
+      type: task.status === 'COMPLETED' ? 'success' : 'info',
+      duration: retry ? 0 : 6000,
+      showClose: true,
+      onClose: () => toasts.delete(task.attemptId)
+    })
+  )
+}
 const remember = (task: AiTask) => {
+  if (!active(task)) {
+    tasks.value = tasks.value.filter(previous => previous.attemptId !== task.attemptId)
+    notify(task)
+    return
+  }
+  // An in-flight poll from before cancellation cannot revive its terminal attempt.
+  if (finished.has(task.attemptId)) return
   tasks.value = [task, ...tasks.value.filter(previous => previous.taskId !== task.taskId)].slice(
     0,
-    10
+    4
   )
 }
 const submit = async () => {
@@ -67,10 +124,16 @@ const change = async (task: AiTask, retry = false) => {
     let result: AiTask
     if (retry) {
       const key = `${task.taskId}:${task.attemptId}`
-      if (!retryKeys.has(key)) retryKeys.set(key, crypto.randomUUID())
+      if (!retryKeys.has(key)) {
+        if (retryKeys.size >= 50) retryKeys.delete(retryKeys.keys().next().value!)
+        retryKeys.set(key, crypto.randomUUID())
+      }
       result = await retryAiTask(task.taskId, task.attemptId, retryKeys.get(key)!)
     } else result = await cancelAiTask(task.taskId)
-    if (current === generation) remember(result)
+    if (current === generation) {
+      remember(result)
+      return true
+    }
   } catch {
     if (current === generation) failure.value = tr('task_request_failed')
   } finally {
@@ -108,6 +171,7 @@ watch(
     tasks.value = []
     submission = undefined
     retryKeys.clear()
+    closeToasts()
     pending.value = false
     failure.value = ''
     void poll()
@@ -118,6 +182,7 @@ onMounted(poll)
 onBeforeUnmount(() => {
   generation++
   clearTimeout(timer)
+  closeToasts()
 })
 </script>
 
@@ -138,15 +203,6 @@ onBeforeUnmount(() => {
       <el-button v-if="active(task)" :disabled="pending" @click="change(task)">{{
         tr('task_cancel')
       }}</el-button>
-      <el-button
-        v-if="['FAILED', 'CANCELLED', 'INTERRUPTED'].includes(task.status)"
-        :disabled="pending"
-        @click="change(task, true)"
-        >{{ tr('task_retry') }}</el-button
-      >
-      <p v-if="task.status === 'COMPLETED'" role="status">{{ tr('task_completed') }}</p>
-      <pre v-if="task.result">{{ task.result.text }}</pre>
-      <pre v-if="task.result?.type === 'SQL_SUGGESTION'">{{ task.result.sql }}</pre>
     </article>
   </section>
 </template>
