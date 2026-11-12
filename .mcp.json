@@ -9,6 +9,10 @@
         "./dbhub.toml"
       ],
       "env": {}
+    },
+    "tapd": {
+      "command": "python3",
+      "args": [".codex/launch_tapd.py"]
     }
   }
 }
