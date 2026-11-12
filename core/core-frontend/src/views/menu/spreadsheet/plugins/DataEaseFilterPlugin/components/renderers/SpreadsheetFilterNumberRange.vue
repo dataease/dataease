@@ -66,7 +66,8 @@ const updateValue = (index: 0 | 1, value: number | undefined) => {
   :deep(.ed-input-number__increase),
   :deep(.ed-input-number__decrease) {
     background-color: transparent !important;
-    border-color: var(--dataease-filter-border-color) !important;
+    // 配置弹窗未设置查询栏的自定义边框色，沿用输入框的主题边框色。
+    border-color: var(--dataease-filter-border-color, var(--ed-border-color)) !important;
 
     [class*='ed-icon'] {
       color: var(--dataease-filter-control-color) !important;
