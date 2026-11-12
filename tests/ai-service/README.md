@@ -228,6 +228,7 @@ uv run python tests/ai-service/run.py --task-progress --progress-case text-burst
 ```sh
 uv run python tests/ai-service/run.py --task-mutex --ai-classpath /path/to/existing-classpath.txt
 uv run python tests/ai-service/run.py --task-structure --ai-classpath /path/to/existing-classpath.txt
+uv run python tests/ai-service/run.py --task-structure-nodes --ai-classpath /path/to/existing-classpath.txt
 uv run python tests/ai-service/run.py --task-upgrade --ai-classpath /path/to/existing-classpath.txt
 AI_BROWSER_TEST_PORT=4297 npm --prefix tests/browser test -- --config=playwright.ai-conversation.config.mjs
 ```
@@ -235,5 +236,7 @@ AI_BROWSER_TEST_PORT=4297 npm --prefix tests/browser test -- --config=playwright
 `--task-mutex` uses independent real HTTP/MVC/runtime/JPA JVMs sharing an owned H2 TCP database and controlled scene, identity and loopback-model boundaries. It covers overlapping batches and races, queue rejection without residue, task/retry replay, own-task location and cross-owner privacy, different datasources/operations, undeclared SQL, accepted queue expiry, complete/cancel/execute-timeout release, held automatic-backoff claims and cancellation, node lease fencing and late old results against a replacement owner. It observes public responses rather than treating local executor state as the lock.
 
 `--task-structure` uses the actual controlled structure scene and SQL scene with an approved external DatasourceApi/permission fixture. It verifies authoritative canonical names, metadata reads outside metadata transactions, a changed field snapshot refused before model send, and an explanation-only result. No candidate SQL, data row read or source business write is allowed by the datasource fixture. `--task-upgrade` exercises the real startup/version boundary through ordered resource migration `2.53` and repeat startup. The Vue suite loads the actual Demo component/API and covers explicit batch selection, shared current-message submission, safe busy refusal and same-owner location.
+
+`--task-structure-nodes` persists actual SQL/structure scene contexts and reads them in 12 independent JVMs, requiring different immutable-map iteration orders. Unchanged metadata authorizes both current contexts and legacy raw-JSON fingerprints; changed field names, types, comments, column order/count, table names, datasource revision and revoked READ remain rejected. Legacy compatibility requires the exact instruction prefix, matching original raw projection hash and strict complete JSON object parsing. The fixture uses only the DatasourceApi/identity seams and temporary context files, with no model or database access. It also runs in `--task-structure`, default and `--only-tasks` suites.
 
 These fixtures use synthetic identities and models, owned H2 and loopback ports. They do not establish real XPack licensing/workspace authorization, live database dialect compatibility, current configured-model behavior or product Redis cluster admission; record those independently. The controlled scene is resource-mutex acceptance and read-only structure explanation, not semantic generation or business delivery.
