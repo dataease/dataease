@@ -450,7 +450,7 @@ watch(searchTable, val => {
     ele.tableName.toLowerCase().includes(val.toLowerCase())
   )
 })
-const editeSave = () => {
+const editeSave = (returnAfterSave: boolean) => {
   const union = []
   loading.value = true
   dfsNodeList(union, datasetDrag.value.getNodeList())
@@ -465,7 +465,7 @@ const editeSave = () => {
     .then(() => {
       isUpdate = false
       ElMessage.success(t('data_set.saved_successfully'))
-      if (willBack) {
+      if (returnAfterSave) {
         pushDataset()
       }
     })
@@ -1434,12 +1434,6 @@ const handleResize = debounce(() => {
   quotaTableHeight.value =
     (editorStep.value === 'process' ? clientHeight - 56 : sqlResultHeight.value) - 242
 }, 60)
-let willBack = false
-const saveAndBack = () => {
-  if (!willBack) return
-  pushDataset()
-}
-
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
@@ -1521,9 +1515,9 @@ const resetAllfieldsUnionId = (arr, idMap) => {
   return JSON.parse(strUnion)
 }
 
-const datasetSave = () => {
+const datasetSave = (returnAfterSave = false) => {
   if (nodeInfo.id) {
-    editeSave()
+    editeSave(returnAfterSave)
     return
   }
   let union = []
@@ -1541,12 +1535,9 @@ const datasetSave = () => {
     'dataset',
     { id: pid || '0', union, allfields: allfields.value, isCross: isCross.value },
     '',
-    datasetName.value
+    datasetName.value,
+    returnAfterSave ? pushDataset : undefined
   )
-}
-const datasetSaveAndBack = () => {
-  willBack = true
-  datasetSave()
 }
 
 const datasetPreviewLoading = ref(false)
@@ -1903,14 +1894,14 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           v-if="editorStep === 'process'"
           :disabled="showInput"
           type="primary"
-          @click="datasetSaveAndBack"
+          @click="datasetSave(true)"
           >{{ t('data_set.save_and_return') }}</el-button
         >
         <el-button
           v-if="editorStep === 'process'"
           :disabled="showInput"
           type="primary"
-          @click="datasetSave"
+          @click="datasetSave()"
           >{{ t('data_set.save') }}</el-button
         >
       </span>
@@ -2777,11 +2768,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       </template>
     </el-drawer>
   </div>
-  <creat-ds-group
-    @finish="finish"
-    @onDatasetSave="saveAndBack"
-    ref="creatDsFolder"
-  ></creat-ds-group>
+  <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
   <el-dialog
     modal-class="calc-field-edit-dialog"
     v-model="editCalcField"

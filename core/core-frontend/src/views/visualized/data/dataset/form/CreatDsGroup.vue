@@ -50,6 +50,7 @@ const filterText = ref('')
 let union = []
 let allfields = []
 let isCross = false
+let afterDatasetSave: (() => void) | undefined
 const datasetForm = reactive({
   pid: '',
   name: ''
@@ -118,6 +119,7 @@ const loading = ref(false)
 const createDataset = ref(false)
 const filterMethod = (value, data) => data.name.includes(value)
 const resetForm = () => {
+  afterDatasetSave = undefined
   createDataset.value = false
 }
 
@@ -152,7 +154,8 @@ const findNodeById = (nodes: Tree[], id: string): Tree | null => {
 }
 const originResourceTree = ref([])
 const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
-const createInit = (type, data: Tree, exec, name: string) => {
+const createInit = (type, data: Tree, exec, name?: string, onSaved?: () => void) => {
+  afterDatasetSave = onSaved
   pid.value = ''
   id.value = ''
   cmd.value = ''
@@ -256,6 +259,7 @@ const checkPid = pid => {
   return true
 }
 const saveDataset = () => {
+  const onSaved = afterDatasetSave
   dataset.value.validate(result => {
     if (result) {
       const params: DatasetOrFolder = {
@@ -291,7 +295,7 @@ const saveDataset = () => {
       req(params)
         .then(res => {
           dataset.value.resetFields()
-          createDataset.value = false
+          resetForm()
           emits('finish', res)
           switch (cmd.value) {
             case 'move':
@@ -301,7 +305,7 @@ const saveDataset = () => {
               ElMessage.success(t('data_set.rename_successful'))
               break
             default:
-              emits('onDatasetSave')
+              onSaved?.()
               ElMessage.success(t('common.save_success'))
               break
           }
@@ -318,7 +322,7 @@ defineExpose({
   editeInit
 })
 
-const emits = defineEmits(['finish', 'onDatasetSave'])
+const emits = defineEmits(['finish'])
 </script>
 
 <template>
