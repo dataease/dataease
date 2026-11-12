@@ -34,6 +34,12 @@ public final class RecoverySchemaRegression {
                     || jdbc.queryForObject("select recovery_attempt_retries from core_ai_setting where id=1", Integer.class) != 3
                     || jdbc.queryForObject("select recovery_initial_delay_millis from core_ai_setting where id=1", Integer.class) != 1000
                     || !jdbc.queryForObject("select enabled from core_ai_setting where id=1", Boolean.class)) throw new AssertionError("additive recovery defaults and existing AI data: " + dialect);
+            // The same Boolean entity is also used by the fresh task-table creation path.
+            jdbc.execute("drop table core_ai_task_attempt");
+            var em = org.springframework.orm.jpa.SharedEntityManagerCreator.createSharedEntityManager(factory);
+            var tasks = new io.dataease.listener.sql.AiTaskInit(jdbc, factory, em, new org.springframework.orm.jpa.JpaTransactionManager(factory));
+            tasks.execute(); tasks.execute();
+            jdbc.queryForObject("select count(retry_safe) from core_ai_task_attempt", Long.class);
         }
     }
 }
