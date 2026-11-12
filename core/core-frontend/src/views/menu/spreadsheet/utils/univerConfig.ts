@@ -144,6 +144,9 @@ export interface UniverInstance {
   dispose: () => void
 }
 
+// 新建工作簿的首张表与底部「+」新增的工作表使用相同的行列数。
+const DEFAULT_SHEET_SIZE = { rowCount: 1000, columnCount: 26 }
+
 // 1.x 将函数说明移到公式引擎，需与表格公式的进度文案一并加载。
 // 核心插件与 UI 插件使用独立命名空间，需分别加载官方语言包。
 // 图标集下拉分组读取核心包的 iconSet 文案，UI 包的快捷菜单文案不能替代。
@@ -276,7 +279,13 @@ export function createUniverInstance(
       ? [[CellPopupManagerService, { useClass: PreviewCellPopupManagerService }]]
       : undefined,
     disableEdit: isPreview,
-    footer: isPreview ? { addSheetButtonConfig: { show: false } } : undefined
+    footer: {
+      addSheetButtonConfig: {
+        show: !isPreview,
+        defaultRowCount: DEFAULT_SHEET_SIZE.rowCount,
+        defaultColumnCount: DEFAULT_SHEET_SIZE.columnCount
+      }
+    }
   })
   univer.registerPlugin(UniverSheetsFormulaUIPlugin)
   univer.registerPlugin(UniverSheetsNumfmtUIPlugin)
@@ -355,8 +364,7 @@ export function createDefaultWorkbookData(sheetName = 'Sheet1'): Partial<IWorkbo
       [sheetId]: {
         id: sheetId,
         name: sheetName,
-        rowCount: 1000,
-        columnCount: 26,
+        ...DEFAULT_SHEET_SIZE,
         zoomRatio: 1,
         scrollTop: 0,
         scrollLeft: 0,
