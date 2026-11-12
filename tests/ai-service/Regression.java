@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) TaskClusterRegression.run(); if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
+        SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) { TaskProgressRegression.main(new String[0]); TaskClusterRegression.run(); } if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
     private static void crypto() {

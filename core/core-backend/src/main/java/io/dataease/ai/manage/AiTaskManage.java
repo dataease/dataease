@@ -279,11 +279,16 @@ public class AiTaskManage implements AiToolConversationFeature {
             return null;
         });
     }
+    /** Parser/validator hot loops only inspect local liveness; they never deliver or commit output. */
+    private void progress(Run run) {
+        if (stopped || run.failureCode != null || running.get(run.work.attemptId()) != run) throw AiErrors.error("cancelled");
+        if (run.stream != null && System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
+    }
+    /** Fresh durable ownership check at dispatch, model/tool and result boundaries. */
     private void active(Run run) {
-        if (stopped || running.get(run.work.attemptId()) != run) throw AiErrors.error("cancelled");
+        progress(run);
         var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId()); live(attempt);
         if (!Objects.equals(run.work.fence(), attempt.getFence()) || !nodeId.equals(attempt.getNodeId())) throw AiErrors.error("cancelled");
-        if (run.stream != null && System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
     }
     private void check(Run run) {
         active(run); authorized(run.work.owner(), () -> { scene(run.work.input().scene()).authorize(run.work.context()); return null; });
@@ -311,12 +316,12 @@ public class AiTaskManage implements AiToolConversationFeature {
                 .setParameter("model", model.id()).setParameter("revision", model.revision()).setParameter("credential", model.credentialRevision()).setParameter("identifier", model.identifier())
                 .setParameter("deadline", stream.deadline()).setParameter("id", work.attemptId()).setParameter("fence", work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
         if (!saved) throw AiErrors.error("cancelled");
-        if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> active(run), value -> append(run, value), step -> step(run, step), failure -> fail(run, failure));
-        else ((AiRuntimeManage.Streaming) stream).start(() -> active(run), value -> append(run, value), () -> complete(run, draft), failure -> fail(run, failure));
+        if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), value -> append(run, value), step -> step(run, step), failure -> fail(run, failure));
+        else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), value -> append(run, value), () -> complete(run, draft), failure -> fail(run, failure));
     }
     private void append(Run run, String value) {
         synchronized (run) {
-            active(run); if (run.text.length() + value.length() > 262144) throw AiErrors.error("output_limit"); run.text.append(value);
+            progress(run); if (run.text.length() + value.length() > 262144) throw AiErrors.error("output_limit"); run.text.append(value);
         }
     }
     private void step(Run run, AiToolProtocol.Step step) {
@@ -333,13 +338,13 @@ public class AiTaskManage implements AiToolConversationFeature {
             run.toolSteps++;
             String result = authorized(run.work.owner(), () -> {
                 check(run); stream.verifyStep();
-                String value = scene.execute(run.work.context(), call.name(), arguments, () -> active(run), stream.deadline());
+                String value = scene.execute(run.work.context(), call.name(), arguments, () -> progress(run), stream.deadline());
                 check(run); stream.verifyStep(); return value;
             });
             active(run); stream.result(result);
             run.tools.add(new Tool(call.id(), call.name(), "SUCCEEDED", arguments, result));
             run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, result));
-            stream.send(new AiToolProtocol.Input(run.transcript, scene.tools(run.work.context())), () -> active(run), value -> append(run, value), next -> step(run, next), failure -> fail(run, failure));
+            stream.send(new AiToolProtocol.Input(run.transcript, scene.tools(run.work.context())), () -> progress(run), value -> append(run, value), next -> step(run, next), failure -> fail(run, failure));
         } catch (RuntimeException failure) { fail(run, failure); }
     }
     private void complete(Run run, String draft) {

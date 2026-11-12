@@ -206,3 +206,15 @@ uv run python tests/ai-service/run.py --only-tasks
 沿同一 runner 的既有依赖前提，`--task-contracts` 是公开 MVC/JSON 的快速红绿入口：幂等受理、改输入拒绝、重试键绑定原尝试、字符串 ID、有界准入、真实后台模型池/工具、撤权读取与安全取消、连续终态提交失败恢复。测试身份和业务场景受控，传输调用真实本机合成模型 HTTP，元数据库为隔离 H2。离线 Hibernate 检查 PostgreSQL/MySQL/H2 的字符字段 DDL/JDBC 映射，不等于这些数据库全部实测。
 
 `--only-tasks` 还运行 TaskClusterRegression：拥有随机 loopback 端口的 H2 TCP 与独立 JVM 后端节点，通过真实 HTTP 访问实际 MVC/API/runtime/JPA。覆盖同时受理/只领取一次、跨节点取消、超过前台租期无轮询完成、QUEUED 跨进程恢复、进程 STOP/CONT 与过期归属 fencing、禁止自动续跑、全部节点重启后的持久结果，以及本人/撤权拒绝与仅进行中列表。进程、数据库和临时目录均由夹具创建并清理，不启动完整 DataEase，不使用产品登录凭据或业务数据库；不冒称 XPack 多空间权限、真实模型或 Redis 模型全局限额验收。完整默认回归包含本组测试并保留原前台/SDK 回归。
+
+### 后台解析进度时序
+
+```sh
+uv run python tests/ai-service/run.py --task-progress
+# 最小合法响应：真实loopback任务HTTP、一个1KiB private帧、短回答、5秒期限、隔离JDBC每执行2ms延迟
+uv run python tests/ai-service/run.py --task-progress --progress-case text-burst --progress-frames 1 --progress-private-chars 1024 --progress-delay-ms 2
+```
+
+入口使用实际任务 MVC/API、JPA 迁移/存储、runtime/transport 和真实 SQL scene；模型与 DatasourceApi 身份/元数据边界受控。`--task-progress` 比较 text/sql 两种路径的普通短文本与 512 个合法 private 帧（共 4096 字符），SQL 路径实际调用 list_tables 并续轮。断言上游已结束的合法短响应在原 5 秒允许期限内持久 COMPLETED，private 内容不输出，也不靠超限制造失败。fixture 只为自己的 H2 连接增加有限 JDBC 时延；可选 `--progress-delay-scope state|other` 隔离 attempt/node SELECT 与其他 SQL 的时序，不连接产品库。此断言检验用户可见完成/超时及结果，不以私有方法次数代替行为。默认完整和 `--only-tasks` 回归包含这组时序；快速 `--task-contracts` 可排除它。
+
+后台私有解析/校验热循环只检查本地 run、停止和 deadline；调度器仍周期检查持久状态，并在模型发送、工具边界、最终结果与用户交付前复核完整授权/归属。持久取消/节点失效以数据库 fence 裁决，不能因为减少逐字符数据库往返而放宽迟到提交。
