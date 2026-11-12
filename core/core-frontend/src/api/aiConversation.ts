@@ -23,6 +23,10 @@ export interface AiConversationAnswer {
   text: string
 }
 const data = <T>(promise: Promise<{ data: T }>) => promise.then(result => result.data)
+export const getAiAvailability = (signal?: AbortSignal) =>
+  data<{ available: boolean; revision?: string | null }>(
+    request.get({ url: '/ai/availability', signal, handleErrorLocally: true })
+  )
 export const getConversationResources = () =>
   data<AiConversationResource[]>(request.get({ url: '/ai/conversations/resources' }))
 export const openConversation = (value: {

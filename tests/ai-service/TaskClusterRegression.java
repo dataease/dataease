@@ -91,6 +91,80 @@ public final class TaskClusterRegression {
     private static void signal(Process process, String signal) throws Exception {
         check(new ProcessBuilder("/bin/kill", "-" + signal, Long.toString(process.pid())).start().waitFor() == 0, "process signal " + signal);
     }
+    private static void enabled(int port, boolean enabled) throws Exception {
+        var value = (com.fasterxml.jackson.databind.node.ObjectNode) call(port, "/ai/settings", "GET", "");
+        value.put("expectedVersion", value.path("rowVersion").asLong()); value.put("enabled", enabled);
+        if (!enabled) value.put("impactToken", call(port, "/ai/settings/impact?defaultModelId=42&enabled=false", "GET", "").path("token").asText());
+        call(port, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(value));
+    }
+    private static void policy(int accepting) throws Exception {
+        settings(accepting, 1, 20, 20, 120);
+        var policyA = node("policy-a", true); int a = port("policy-a"); node("policy-b", true); int b = port("policy-b");
+        var oldSession = call(a, "/ai/conversations", "POST", "{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"old-policy-editor\",\"sql\":\"select 1\"}");
+        var running = call(a, "/ai/tasks", "POST", mutexBody("slow-policy-running", "POLICY"));
+        String runningPath = "/ai/tasks/" + running.path("taskId").asText(); awaitSend(b, runningPath, "slow-policy-running");
+        var queued = call(b, "/ai/tasks", "POST", mutexBody("policy-queued", "QUEUED"));
+        String queuedPath = "/ai/tasks/" + queued.path("taskId").asText();
+        signal(policyA, "STOP");
+        enabled(accepting, false);
+        check(!call(b, "/ai/availability", "GET", "").path("available").asBoolean(), "public usage visibility is disabled independently of configuration access");
+        check(call(b, runningPath, "GET", "", "1").statusCode() != 200, "disabled AI never delivers old task output");
+        enabled(accepting, true); signal(policyA, "CONT");
+        var oldStart = call(a, "/ai/conversations/" + oldSession.path("sessionId").asText() + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", oldSession.path("contextVersion").asText(), "text", "old-policy-session")), "1");
+        check(oldStart.statusCode() != 200 && !sends.containsKey("old-policy-session"), "node missing the entire off/on interval cannot revive old foreground session");
+        var cancelledQueue = call(a, queuedPath, "GET", "");
+        check("CANCELLED".equals(cancelledQueue.path("status").asText()) && "disabled".equals(cancelledQueue.path("errorCode").asText()), "off synchronously fences queued work even when immediately re-enabled");
+        check("CANCELLED".equals(call(b, runningPath, "GET", "").path("status").asText()), "off fences remote running attempt before reopening admission");
+        var replacement = call(b, "/ai/tasks", "POST", mutexBody("slow-policy-replacement", "POLICY"));
+        String replacementPath = "/ai/tasks/" + replacement.path("taskId").asText(); awaitSend(a, replacementPath, "slow-policy-replacement");
+        release.get("slow-policy-running").countDown(); Thread.sleep(600);
+        check(call(a, runningPath, "GET", "").path("result").isNull() && "RUNNING".equals(call(a, replacementPath, "GET", "").path("status").asText()), "late remote output cannot commit or release replacement ownership");
+        check(!sends.containsKey("policy-queued"), "re-enable never restarts cancelled queued work");
+        call(a, replacementPath + "/cancel", "POST", ""); release.get("slow-policy-replacement").countDown();
+        // Revocation is inspected even while another actor occupies every running slot.
+        var blocker = call(a, "/ai/tasks", "POST", body("slow-policy-blocker"));
+        String blockerPath = "/ai/tasks/" + blocker.path("taskId").asText(); awaitSend(b, blockerPath, "slow-policy-blocker");
+        var revokedQueue = TaskNode.JSON.readTree(call(b, "/ai/tasks", "POST", body("policy-revoked-queue"), "2").body());
+        Files.createFile(output.resolve("revoked-2")); Thread.sleep(1000); Files.delete(output.resolve("revoked-2"));
+        var revokedView = TaskNode.JSON.readTree(call(a, "/ai/tasks/" + revokedQueue.path("taskId").asText(), "GET", "", "2").body());
+        check("CANCELLED".equals(revokedView.path("status").asText()) && "forbidden".equals(revokedView.path("errorCode").asText()), "disabled account is fenced in queue even when running capacity is full");
+        var resourceQueue = call(b, "/ai/tasks", "POST", body("policy-resource-queue"));
+        Files.createFile(output.resolve("resource-revoked-1")); Thread.sleep(1000); Files.delete(output.resolve("resource-revoked-1"));
+        check("CANCELLED".equals(call(a, blockerPath, "GET", "").path("status").asText()) && "CANCELLED".equals(call(b, "/ai/tasks/" + resourceQueue.path("taskId").asText(), "GET", "").path("status").asText()), "resource authorization loss fences both queued and running owner attempts");
+        release.get("slow-policy-blocker").countDown();
+        var policySettings = (com.fasterxml.jackson.databind.node.ObjectNode) call(a, "/ai/settings", "GET", "");
+        policySettings.put("expectedVersion", policySettings.path("rowVersion").asLong());
+        policySettings.putObject("recovery").put("stepRetries", 1).put("attemptRetries", 1).put("initialDelayMillis", 1000);
+        call(a, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(policySettings));
+        var backoff = call(b, "/ai/tasks", "POST", body("retry-slot-policy")); String backoffPath = "/ai/tasks/" + backoff.path("taskId").asText();
+        awaitSend(a, backoffPath, "retry-slot-policy"); enabled(a, false); enabled(a, true); Thread.sleep(1300);
+        check(sends.get("retry-slot-policy") == 1 && "CANCELLED".equals(call(b, backoffPath, "GET", "").path("status").asText()), "off during technical backoff forbids every later resend after re-enable");
+        var tool = call(a, "/ai/tasks", "POST", body("read-slot-policy").replace("select 1", "controlled-read"));
+        String toolPath = "/ai/tasks/" + tool.path("taskId").asText();
+        for (int i=0; i<300 && !Files.exists(output.resolve("tool-started-1")); i++) Thread.sleep(20);
+        check(Files.exists(output.resolve("tool-started-1")), "actual controlled tool is running before shutdown");
+        enabled(b, false); enabled(b, true); Files.createFile(output.resolve("release-tools")); Thread.sleep(500);
+        check(sends.get("read-slot-policy") == 1 && "CANCELLED".equals(call(a, toolPath, "GET", "").path("status").asText()), "off during tool prevents next model and final result commit");
+        var scopeA = TaskNode.JSON.readTree(call(a, "/ai/conversations", "POST", "{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"scope-a\",\"sql\":\"select 1\"}", "1", "777").body());
+        var scopeB = TaskNode.JSON.readTree(call(b, "/ai/conversations", "POST", "{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"scope-b\",\"sql\":\"select 1\"}", "1", "888").body());
+        var scopedTask = TaskNode.JSON.readTree(call(b, "/ai/tasks", "POST", mutexBody("slow-policy-org", "ORG"), "1", "777").body());
+        String scopedPath = "/ai/tasks/" + scopedTask.path("taskId").asText();
+        for (int i=0; i<300 && !sends.containsKey("slow-policy-org"); i++) Thread.sleep(20);
+        check(sends.containsKey("slow-policy-org"), "controlled original organization background task actually runs");
+        signal(policyA, "STOP");
+        call(accepting, "/ai/org-policies/batch", "POST", "{\"organizations\":[{\"id\":\"777\",\"expectedVersion\":null}],\"mode\":\"DISABLED\",\"modelId\":null}");
+        JsonNode policyRow = null;
+        for (var row : call(accepting, "/ai/org-policies", "GET", "").path("items")) if (row.path("id").asText().equals("777")) policyRow = row;
+        call(accepting, "/ai/org-policies/batch", "POST", TaskNode.JSON.writeValueAsString(Map.of("organizations", List.of(Map.of("id", "777", "expectedVersion", policyRow.path("rowVersion").asLong())), "mode", "INHERIT")));
+        signal(policyA, "CONT");
+        var rejectedScope = call(a, "/ai/conversations/" + scopeA.path("sessionId").asText() + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", scopeA.path("contextVersion").asText(), "text", "old-org-policy-session")), "1", "777");
+        var retainedScope = call(b, "/ai/conversations/" + scopeB.path("sessionId").asText() + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", scopeB.path("contextVersion").asText(), "text", "unaffected-org-policy-session")), "1", "888");
+        check(rejectedScope.statusCode() != 200 && retainedScope.statusCode() == 200, "organization off/on fences only the affected foreground scope on a node missing the entire interval");
+        var scopedEnd = TaskNode.JSON.readTree(call(a, scopedPath, "GET", "", "1", "777").body());
+        check("CANCELLED".equals(scopedEnd.path("status").asText()) && "organization_disabled".equals(scopedEnd.path("errorCode").asText()), "organization shutdown records its distinct terminal reason and does not resume background work");
+        release.get("slow-policy-org").countDown();
+        System.out.println("PASS dynamic policy shutdown across independent JVMs " + checks + " assertions");
+    }
     private static void legacyUpgrade(JdbcTemplate jdbc, jakarta.persistence.EntityManagerFactory factory,
                                       jakarta.persistence.EntityManager em, org.springframework.transaction.PlatformTransactionManager manager) {
         // Owned historical-schema fixture. Migration facts may be observed in this isolated metadata database.
@@ -265,6 +339,9 @@ public final class TaskClusterRegression {
             var em = SharedEntityManagerCreator.createSharedEntityManager(factory); var manager = new JpaTransactionManager(factory);
             var jdbc = new JdbcTemplate(new DriverManagerDataSource(url, "sa", ""));
             new AiConfigurationInit(jdbc, factory, em, manager).execute(); var migration = new AiTaskInit(jdbc, factory, em, manager); migration.execute(); migration.execute();
+            for (String table : List.of("core_ai_setting", "core_ai_org_policy")) jdbc.execute("alter table " + table + " drop column usage_epoch");
+            var epochMigration = new AiUsageEpochInit(jdbc, factory); epochMigration.execute(); epochMigration.execute();
+            check(jdbc.queryForObject("select usage_epoch from core_ai_setting where id=1", Long.class) == 0L, "2.56 adds a conservative durable epoch and is retryable on old settings");
             var delivery = new AiTaskDeliveryInit(jdbc, factory); delivery.execute(); delivery.execute();
             legacyUpgrade(jdbc, factory, em, manager);
             new AiTaskResourceInit(jdbc, factory, em, manager).execute();
@@ -276,6 +353,7 @@ public final class TaskClusterRegression {
             });
             // A queued request survives the accepting process without ever having an execution owner.
             var accepting = node("accepting", false); int acceptingPort = port("accepting");
+            if (Boolean.getBoolean("ai.test.policyOnly")) { policy(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.mutexOnly")) { mutex(acceptingPort); return; }
             var originalSettings = call(acceptingPort, "/ai/settings", "GET", "");
             check(originalSettings.path("taskScheduling").path("maxRunning").asInt() == 2
@@ -340,7 +418,7 @@ public final class TaskClusterRegression {
                     "accepted queue deadline stays fixed after configuration change and expired work never sends model request");
             Files.delete(output.resolve("resource-revoked-2"));
             var revokedResult = TaskNode.JSON.readTree(call(b, "/ai/tasks/" + revokedBeforeStart.path("taskId").asText(), "GET", "", "2").body());
-            check("FAILED".equals(revokedResult.path("status").asText()) && !sends.containsKey("resource-revoked-before-start"),
+            check("CANCELLED".equals(revokedResult.path("status").asText()) && !sends.containsKey("resource-revoked-before-start"),
                     "resource permission is rechecked before claimed queued work can execute");
             var budgetResult = await(a, "/ai/tasks/" + budgetTask.path("taskId").asText(), "COMPLETED");
             check(budgetResult.path("finishedAt").asLong() - budgetResult.path("createdAt").asLong() > 5000

@@ -23,10 +23,12 @@ public final class AiIdentityScope {
         CommunityUtils.setCommunityMode(!owner.deployment().organizations());
         try {
             access.verify(owner, false);
-            if (!Objects.equals(access.capture(), owner)) throw AiErrors.error("forbidden");
-            T result = operation.get();
-            access.verify(owner, false);
-            return result;
+            return AiOwnerContext.call(owner.actor(), owner.organization(), () -> {
+                if (!Objects.equals(access.capture(), owner)) throw AiErrors.error("forbidden");
+                T result = operation.get();
+                access.verify(owner, false);
+                return result;
+            });
         }
         finally {
             V3UserUtil.clear(); CommunityUtils.clear();

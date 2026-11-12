@@ -132,10 +132,10 @@ public class AiTaskManage implements AiToolConversationFeature {
         return failure;
     }
     public List<String> tables(String resourceId) {
-        identity();
+        var owner = identity();
         var scene = scene("structure-mutex");
         if (!(scene instanceof AiStructureMutexScene structure)) throw AiErrors.error("unsupported");
-        return structure.tables(resourceId);
+        return authorized(owner, () -> structure.tables(resourceId));
     }
     private List<String> resourceKeys(AiConversationScene scene, AiConversationScene.Context context) {
         var declarations = scene.resourceClaims(context);
@@ -217,6 +217,7 @@ public class AiTaskManage implements AiToolConversationFeature {
             }
             if (rows.size() < 50) break;
         }
+        runtime.getObject().verifyUsage(owner);
         return result;
     }
     public void acknowledge(Long attemptId) {
@@ -325,7 +326,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private Task checkedView(CoreAiTask task, AiAccess.Identity owner) {
         if (!AiAccess.binding(owner).equals(task.getOwnerBinding())) throw AiErrors.error("forbidden");
         deliverable(em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId()));
-        return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return view(task); });
+        return authorized(owner, () -> { runtime.getObject().verifyUsage(owner); scene(input(task).scene()).authorize(context(task)); var result = view(task); runtime.getObject().verifyUsage(owner); return result; });
     }
     private Task view(CoreAiTask task) {
         return view(task, em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId()));
@@ -361,7 +362,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private AiAccess.Identity identity() {
         if (RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
-        var owner = access.capture(); access.verify(owner, false); return owner;
+        var owner = access.capture(); runtime.getObject().verifyUsage(owner); return owner;
     }
     private <T> T authorized(AiAccess.Identity owner, java.util.function.Supplier<T> operation) { return new AiIdentityScope(access).call(owner, operation); }
     private Submit input(CoreAiTask task) { return decode(task.getInputJson(), Submit.class); }
@@ -431,10 +432,11 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void dispatch() {
         if (stopped) return;
         try {
+            invalidateUnauthorized();
             interrupted(null);
             for (Run run : running.values()) {
                 if (run.failureCode != null) { fail(run, AiErrors.error(run.failureCode)); continue; }
-                try { active(run); }
+                try { check(run); if (run.stream != null) run.stream.verifyDelivery(); }
                 catch (RuntimeException terminal) { fail(run, terminal); }
             }
             while (!stopped && running.size() < 20) {
@@ -443,6 +445,52 @@ public class AiTaskManage implements AiToolConversationFeature {
                 try { execute(run); } catch (RuntimeException failure) { fail(run, failure); }
             }
         } catch (RuntimeException unavailable) { /* Durable queue survives; no model submission until database recovery. */ }
+    }
+    /** Called under the configuration transaction/coordinator: fence first, release exact resources second. */
+    public void policyDisabled(Long organization, String reason) {
+        if (!org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()) throw new IllegalStateException("AI policy invalidation requires transaction");
+        coordinate();
+        var revoked = new HashSet<Long>();
+        for (var attempt : em.createQuery("select a from CoreAiTaskAttempt a, CoreAiTask t where t.currentAttemptId=a.id and a.status in ('QUEUED','RUNNING')", CoreAiTaskAttempt.class).getResultList()) {
+            var task = em.find(CoreAiTask.class, attempt.getTaskId(), LockModeType.PESSIMISTIC_WRITE);
+            if (organization != null && !organization.equals(decode(task.getOwnerJson(), AiAccess.Identity.class).organization())) continue;
+            em.lock(attempt, LockModeType.PESSIMISTIC_WRITE);
+            ended(attempt, "CANCELLED", reason, null); revoked.add(attempt.getId());
+        }
+        org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
+            @Override public void afterCommit() {
+                for (Long id : revoked) {
+                    Run run = running.remove(id);
+                    if (run != null) { if (run.stream != null) run.stream.finishAudit("CANCELLED"); close(run); }
+                }
+            }
+        });
+    }
+    /** No business authorization or external metadata read holds a task/database lock. Capacity does not skip revocation. */
+    private void invalidateUnauthorized() {
+        boolean capacityFull = em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status='RUNNING'", Long.class).getSingleResult()
+                >= em.find(CoreAiSetting.class, 1L).getTaskMaxRunning();
+        var candidates = em.createQuery("select t from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and a.status in ('QUEUED','RUNNING') order by t.createdAt", CoreAiTask.class).setMaxResults(10020).getResultList();
+        for (var task : candidates) {
+            var attempt = em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId());
+            try {
+                var owner = decode(task.getOwnerJson(), AiAccess.Identity.class);
+                if ("QUEUED".equals(attempt.getStatus())) runtime.getObject().verifyTaskAdmission(owner);
+                else runtime.getObject().verifyTaskExecution(owner, attempt.getModelId(), attempt.getModelRevision(), attempt.getCredentialRevision());
+                // Runnable work performs its initial resource read only after claim fixes the execution deadline.
+                if ("QUEUED".equals(attempt.getStatus()) ? capacityFull : attempt.getModelId() != null)
+                    authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return null; });
+            } catch (AiErrors.Failure invalid) {
+                if (!Set.of("disabled", "organization_disabled", "forbidden", "scope_changed", "conflict", "model_unavailable").contains(invalid.safeCode())) continue;
+                Long expected = attempt.getId();
+                tx.executeWithoutResult(status -> {
+                    coordinate(); var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
+                    var current = em.find(CoreAiTaskAttempt.class, expected, LockModeType.PESSIMISTIC_WRITE); em.refresh(current);
+                    if (Objects.equals(locked.getCurrentAttemptId(), expected) && Set.of("QUEUED", "RUNNING").contains(current.getStatus()))
+                        ended(current, "CANCELLED", invalid.safeCode(), null);
+                });
+            }
+        }
     }
     private Work claim() {
         return tx.execute(status -> {
@@ -592,7 +640,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private void fail(Run run, Throwable failure) {
         String code = run.replayUnsafe ? "outcome_unknown" : failure instanceof AiErrors.Failure known ? known.safeCode() : "upstream_failed";
-        try { terminal(run, "FAILED", code, null); }
+        try { terminal(run, Set.of("disabled", "organization_disabled", "forbidden", "scope_changed", "conflict", "model_unavailable").contains(code) ? "CANCELLED" : "FAILED", code, null); }
         catch (RuntimeException unavailable) {
             // Keep a bounded slot until a failure terminal can commit; never strand RUNNING under a healthy node.
             close(run); run.failureCode = code;

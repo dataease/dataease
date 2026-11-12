@@ -12,6 +12,10 @@ import org.hibernate.annotations.Comment;
 @Table(name = "core_ai_setting")
 @Comment("AI 服务配置")
 public class CoreAiSetting extends AiConfigEntity {
+    @Column(name = "usage_epoch", nullable = false)
+    @Comment("Monotonic AI shutdown fence; capacity/recovery/retention do not change it")
+    private Long usageEpoch = 0L;
+
     @Id
     @Column(name = "id", nullable = false)
     @Comment("id")

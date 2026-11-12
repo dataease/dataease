@@ -28,13 +28,13 @@ public class AiAccess {
         if (!identity.deployment().organizations()) {
             if (identity.organization() != null || identity.proxy() != null) throw AiErrors.error("forbidden");
             if (api != null) {
-                try { api.checkAiCommunityAccess(identity.actor()); }
+                try { if (!Boolean.TRUE.equals(api.checkAiCommunityAllowed(identity.actor()))) throw AiErrors.error("forbidden"); }
                 catch (RuntimeException failure) { throw AiErrors.error("forbidden"); }
             } else if (!deployment.substitute() || !Objects.equals(identity.actor(), 1L)) throw AiErrors.error("forbidden");
             return;
         }
         if (api != null) {
-            try { api.checkAiAccess(identity.actor(), identity.organization(), identity.proxy(), configuration); }
+            try { if (!Boolean.TRUE.equals(api.checkAiAllowed(identity.actor(), identity.organization(), identity.proxy(), configuration))) throw AiErrors.error("forbidden"); }
             catch (RuntimeException e) { throw AiErrors.error("forbidden"); }
             return;
         }

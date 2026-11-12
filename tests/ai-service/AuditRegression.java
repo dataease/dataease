@@ -111,6 +111,15 @@ public final class AuditRegression {
                     || evidence.path("entries").size() != 1 || !evidence.path("entries").get(0).path("usageJson").isNull()) throw new AssertionError("trusted attempt coordinates and unknown provider usage");
             mvc.perform(delete("/ai/conversations/" + response.path("sessionId").asText()));
             if (mvc.perform(get("/ai/audit/" + execution)).andReturn().getResponse().getStatus() != 200) throw new AssertionError("closing a chat preserves audit without recovering chat");
+            var off = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(mvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
+            off.put("expectedVersion", off.path("rowVersion").asLong()); off.put("enabled", false);
+            off.put("impactToken", json.readTree(mvc.perform(get("/ai/settings/impact").param("defaultModelId", off.path("defaultModelId").asText()).param("enabled", "false")).andReturn().getResponse().getContentAsString()).path("token").asText());
+            if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(off))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("public AI shutdown accepted");
+            if (mvc.perform(get("/ai/audit/" + execution)).andReturn().getResponse().getStatus() != 200) throw new AssertionError("AI shutdown must preserve independent authorized administrator audit detail");
+            var on = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(mvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
+            on.put("expectedVersion", on.path("rowVersion").asLong()); on.put("enabled", true);
+            if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(on))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("public AI reopen accepted");
+
             mode.set("partial");
             var partial = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType("application/json")
                     .content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"audit-partial\",\"sql\":\"select 1\",\"text\":\"partial-question\"}")).andReturn().getResponse().getContentAsString());

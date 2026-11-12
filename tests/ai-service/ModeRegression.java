@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 public final class ModeRegression {
     static final class Fixture {
         final AtomicReference<F2CLicResult.Status> status = new AtomicReference<>(F2CLicResult.Status.no_record);
-        final AtomicBoolean enabled = new AtomicBoolean(true), failure = new AtomicBoolean(), race = new AtomicBoolean(), nullRecord = new AtomicBoolean();
+        final AtomicBoolean enabled = new AtomicBoolean(true), failure = new AtomicBoolean(), race = new AtomicBoolean(), nullRecord = new AtomicBoolean(), authorizationNull = new AtomicBoolean();
         final AtomicInteger menus = new AtomicInteger(), communities = new AtomicInteger(), directories = new AtomicInteger();
         final LicensePO record = new LicensePO();
         final AiDeploymentMode mode;
@@ -35,6 +35,10 @@ public final class ModeRegression {
             });
             var api = (InteractiveAuthApi) Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{InteractiveAuthApi.class},(p,m,a)-> {
                 switch(m.getName()) {
+                    case "checkAiCommunityAllowed":
+                        return !authorizationNull.get() && enabled.get() && Objects.equals(a[0],1L);
+                    case "checkAiAllowed":
+                        menus.incrementAndGet(); return authorizationNull.get() ? null : enabled.get();
                     case "checkAiCommunityAccess":
                         communities.incrementAndGet(); if(!enabled.get()||!Objects.equals(a[0],1L)) throw new IllegalStateException("identity rejected"); return null;
                     case "checkAiAccess":
@@ -57,6 +61,7 @@ public final class ModeRegression {
         f.status.set(F2CLicResult.Status.valid);denied(f.mode::current,"missing record with valid result is inconsistent");
         f.nullRecord.set(false);f.status.set(F2CLicResult.Status.no_record);
         var identity = f.access.capture();f.access.verify(identity,true);
+        f.authorizationNull.set(true); denied(() -> f.access.verify(identity, false), "null authorization result must not signal successful community authorization"); f.authorizationNull.set(false);
         f.access.audit(identity, null);
         denied(() -> f.access.audit(identity, 9001L), "community does not invent workspace audit authority");
         f.enabled.set(false); denied(() -> f.access.audit(identity, null), "disabled community administrator cannot read audit"); f.enabled.set(true);
@@ -70,12 +75,14 @@ public final class ModeRegression {
         V3UserUtil.setUid(2L);denied(()->f.access.configuration(),"community does not grant ordinary enterprise actor");V3UserUtil.setUid(1L);
         f.status.set(F2CLicResult.Status.valid);denied(()->f.access.verify(identity,true),"mode change rejects captured operation");
         var freshLicensed=f.access.capture();
+        f.authorizationNull.set(true); denied(() -> f.access.verify(freshLicensed, true), "null licensed authorization result cannot signal success"); f.authorizationNull.set(false);
         denied(() -> f.access.audit(freshLicensed, null), "configuration privilege and missing audit extension cannot authorize audit");
         var checker = InteractiveAuthApi.class.getMethod("checkAiAuditAccess", Long.class, Long.class, Long.class, Long.class);
         require(org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation(checker, org.springframework.web.bind.annotation.RequestMapping.class) == null,
                 "audit SPI has no HTTP route");
         var oldExtension = (InteractiveAuthApi) Proxy.newProxyInstance(ModeRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class},
                 (proxy, method, arguments) -> method.isDefault() ? java.lang.reflect.InvocationHandler.invokeDefault(proxy, method, arguments) : null);
+        require(Boolean.FALSE.equals(oldExtension.checkAiAllowed(1L, null, null, false)) && Boolean.FALSE.equals(oldExtension.checkAiCommunityAllowed(1L)), "old extension cannot authorize new explicit AI capabilities");
         require(Boolean.FALSE.equals(oldExtension.checkAiAuditAccess(1L, null, null, null)), "old extension default explicitly denies rather than signaling success with void/null");
 f.access.verify(freshLicensed,true);require(f.menus.get()>0,"licensed matrix retained");
         var licensed=freshLicensed;f.record.setUpdateTime(2L);denied(()->f.access.verify(licensed,true),"same-mode license record renewal rejects old context");

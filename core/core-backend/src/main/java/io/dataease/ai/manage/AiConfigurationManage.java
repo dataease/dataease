@@ -31,6 +31,16 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
     @Resource private AiSecrets secrets;
     @Resource private AiOutboundPolicy outbound;
     @Resource private AiAdmission admission;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.beans.factory.ObjectProvider<AiTaskManage> taskLifecycle;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.beans.factory.ObjectProvider<AiConversationManage> conversationLifecycle;
+    private void disabled(Long organization, String reason) {
+        if (taskLifecycle != null) taskLifecycle.getObject().policyDisabled(organization, reason);
+        if (conversationLifecycle != null) org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
+            @Override public void afterCommit() { conversationLifecycle.getObject().policyDisabled(organization); }
+        });
+    }
 
     public CoreAiSetting setting() {
         return settings.findById(1L).orElseThrow(() -> AiErrors.error("configuration_unavailable"));
@@ -69,6 +79,7 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
                     s.setTaskMaxRunning(c.taskScheduling().maxRunning()); s.setTaskMaxQueued(c.taskScheduling().maxQueued());
                     s.setTaskMaxQueuedPerUser(c.taskScheduling().maxQueuedPerUser()); s.setTaskMaxWaitSeconds(c.taskScheduling().maxWaitSeconds());
                 }
+                if (Boolean.TRUE.equals(s.getEnabled()) && !c.enabled()) s.setUsageEpoch(Math.addExact(s.getUsageEpoch(), 1L));
                 s.setEnabled(c.enabled()); s.setDefaultModelId(c.defaultModelId()); s.setAllowSamples(c.allowSamples());
                 s.setRequestTimeoutSeconds(c.requestTimeoutSeconds()); s.setMaxInputChars(c.maxInputChars());
                 s.setMaxOutputTokens(c.maxOutputTokens()); s.setInteractiveConcurrency(c.interactiveConcurrency());
@@ -81,6 +92,7 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
                     s.setAuditRetentionDays(c.retention().auditDays()); s.setDeliveryRetentionDays(c.retention().deliveryDays());
                 }
                 touch(s); em.flush();
+                if (!c.enabled()) disabled(null, "disabled");
             });
         } catch (RuntimeException failure) {
             try { admission.finishUpdate(owner, setting(), false); }
@@ -367,6 +379,7 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
 
         if (batch.organizations().stream().map(ExpectedOrg::id).distinct().count() != batch.organizations().size()) throw AiErrors.error("invalid");
         write(tx -> {
+            if (em.find(CoreAiTaskSchedule.class, 1L, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE) == null) throw AiErrors.error("configuration_unavailable");
             coordinate();
             Map<Long, Org> allowed = new HashMap<>(); organizations("").items().forEach(o -> allowed.put(o.id(), o));
             if ("SPECIFIED".equals(batch.mode())) available(batch.modelId());
@@ -377,8 +390,10 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
                 if ((p == null) != (expected.expectedVersion() == null) || (p != null && !Objects.equals(p.getRowVersion(), expected.expectedVersion()))) throw AiErrors.error("conflict");
                 boolean create = p == null;
                 if (create) { p = new CoreAiOrgPolicy(); p.setOrgId(expected.id()); p.setCreateBy(V3UserUtil.getUid()); }
+                if ("DISABLED".equals(batch.mode()) && !"DISABLED".equals(p.getMode())) p.setUsageEpoch(Math.addExact(p.getUsageEpoch(), 1L));
                 p.setMode(batch.mode()); p.setModelId("SPECIFIED".equals(batch.mode()) ? batch.modelId() : null); touch(p);
                 if (create) em.persist(p);
+                if ("DISABLED".equals(batch.mode())) disabled(expected.id(), "organization_disabled");
             }
             em.flush();
         });

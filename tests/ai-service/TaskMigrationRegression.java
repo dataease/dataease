@@ -32,7 +32,8 @@ public final class TaskMigrationRegression {
         upgrade("2.50");
         upgrade("2.52");
         upgrade("2.54");
-        System.out.println("PASS startup upgrade from semantic 2.48, pre-semantic 2.47, task 2.49 delivery 2.50 and scheduling 2.52 preserves configuration/semantic/history and applies recovery 2.51 plus scheduling 2.52 plus resource occupancy 2.53 and audit 2.54 plus retention 2.55 in order, including legacy queue deadlines and replay safety");
+        upgrade("2.55");
+        System.out.println("PASS startup upgrade from semantic 2.48, pre-semantic 2.47, task 2.49 delivery 2.50 and scheduling 2.52 preserves configuration/semantic/history and applies recovery 2.51 plus scheduling 2.52 plus resource occupancy 2.53 and audit 2.54 plus retention 2.55 and usage epoch 2.56 in order, including legacy queue deadlines and replay safety");
     }
 
     private static void upgrade(String installedVersion) {
@@ -57,7 +58,7 @@ public final class TaskMigrationRegression {
             // Simulate the already-installed AI 2.44 settings in every supported starting version.
             new AiConfigurationInit(jdbc, factory, em, manager).execute();
             jdbc.update("update core_ai_setting set enabled=true,revision=42,max_input_chars=12345 where id=1");
-            if (!List.of("2.52", "2.54").contains(installedVersion)) for (String column : List.of("task_max_running", "task_max_queued", "task_max_queued_per_user", "task_max_wait_seconds",
+            if (!List.of("2.52", "2.54", "2.55").contains(installedVersion)) for (String column : List.of("task_max_running", "task_max_queued", "task_max_queued_per_user", "task_max_wait_seconds",
                     "recovery_step_retries", "recovery_attempt_retries", "recovery_initial_delay_millis")) jdbc.execute("alter table core_ai_setting drop column " + column);
             var metadata = new DatasourceMetadataInit(factory, jdbc);
             if (!"2.47".equals(installedVersion)) {
@@ -76,15 +77,17 @@ public final class TaskMigrationRegression {
                 jdbc.update("insert into core_ai_task (id,current_attempt_id,owner_binding,submission_hash,input_hash,owner_json,input_json,context_json,created_at) values (778,778,'legacy-owner','legacy-submission','unchanged','{\"actor\":1}','{}','{}',2000)");
                 jdbc.update("insert into core_ai_task_attempt (id,task_id,attempt_number,retry_hash,status,created_at) values (778,778,1,'legacy-queued','QUEUED',2000)");
             }
-            if (List.of("2.52", "2.54").contains(installedVersion)) {
+            if (List.of("2.52", "2.54", "2.55").contains(installedVersion)) {
                 new AiTaskInit(jdbc, factory, em, manager).execute();
                 new AiTaskDeliveryInit(jdbc, factory).execute();
                 new AiRecoveryInit(jdbc, factory).execute();
                 new AiTaskSchedulingInit(jdbc, factory, em, manager).execute();
             }
-            if ("2.54".equals(installedVersion)) new io.dataease.listener.sql.AiTaskResourceInit(jdbc, factory, em, manager).execute();
+            if (List.of("2.54", "2.55").contains(installedVersion)) new io.dataease.listener.sql.AiTaskResourceInit(jdbc, factory, em, manager).execute();
             new io.dataease.listener.sql.AiAuditInit(jdbc, factory, em, manager).execute();
-            for (String column : List.of("audit_retention_days", "delivery_retention_days")) jdbc.execute("alter table core_ai_setting drop column " + column);
+            if ("2.55".equals(installedVersion)) new io.dataease.listener.sql.AiRetentionInit(jdbc, factory, em, manager).execute();
+            for (String table : List.of("core_ai_setting", "core_ai_org_policy")) jdbc.execute("alter table " + table + " drop column usage_epoch");
+            if (!"2.55".equals(installedVersion)) for (String column : List.of("audit_retention_days", "delivery_retention_days")) jdbc.execute("alter table core_ai_setting drop column " + column);
             if (List.of("2.49", "2.50", "2.52", "2.54").contains(installedVersion)) jdbc.execute("alter table core_ai_task_attempt drop column delivery_purged_at");
             var beans = context.getBeanFactory();
             beans.registerSingleton("transactionManager", manager);
@@ -96,6 +99,7 @@ public final class TaskMigrationRegression {
             repository.afterPropertiesSet();
             beans.registerSingleton("versions", repository.getObject());
             // Register out of order so production startup must sort by migration version.
+            beans.registerSingleton("usageEpoch", new io.dataease.listener.sql.AiUsageEpochInit(jdbc, factory));
             beans.registerSingleton("retention", new io.dataease.listener.sql.AiRetentionInit(jdbc, factory, em, manager));
             beans.registerSingleton("audit", new io.dataease.listener.sql.AiAuditInit(jdbc, factory, em, manager));
             beans.registerSingleton("recovery", new AiRecoveryInit(jdbc, factory));
@@ -117,12 +121,13 @@ public final class TaskMigrationRegression {
             if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id = 1", Long.class) != 3000L) throw new AssertionError("delivery facts unavailable after startup");
             var versions = jdbc.queryForList("select version from de_standalone_version where success = true order by installed_rank", String.class);
             var expected = switch (installedVersion) {
-                case "2.47" -> List.of("2.47", "2.48", "2.49", "2.50", "2.51", "2.52", "2.53", "2.54", "2.55");
-                case "2.48" -> List.of("2.48", "2.49", "2.50", "2.51", "2.52", "2.53", "2.54", "2.55");
-                case "2.49" -> List.of("2.49", "2.50", "2.51", "2.52", "2.53", "2.54", "2.55");
-                case "2.52" -> List.of("2.52", "2.53", "2.54", "2.55");
-                case "2.54" -> List.of("2.54", "2.55");
-                default -> List.of("2.50", "2.51", "2.52", "2.53", "2.54", "2.55");
+                case "2.47" -> List.of("2.47", "2.48", "2.49", "2.50", "2.51", "2.52", "2.53", "2.54", "2.55", "2.56");
+                case "2.48" -> List.of("2.48", "2.49", "2.50", "2.51", "2.52", "2.53", "2.54", "2.55", "2.56");
+                case "2.49" -> List.of("2.49", "2.50", "2.51", "2.52", "2.53", "2.54", "2.55", "2.56");
+                case "2.52" -> List.of("2.52", "2.53", "2.54", "2.55", "2.56");
+                case "2.54" -> List.of("2.54", "2.55", "2.56");
+                case "2.55" -> List.of("2.55", "2.56");
+                default -> List.of("2.50", "2.51", "2.52", "2.53", "2.54", "2.55", "2.56");
             };
             if (!"2.47".equals(installedVersion) && jdbc.queryForObject("select count(*) from core_datasource_table_semantic where id = 81 and table_name = 'orders'", Integer.class) != 1) throw new AssertionError("semantic content lost during task upgrade");
             if (List.of("2.49", "2.50").contains(installedVersion) && (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id = 777", Long.class) != 604802000L
@@ -145,7 +150,10 @@ public final class TaskMigrationRegression {
             jdbc.queryForObject("select count(*) from core_ai_audit_retired", Long.class);
             jdbc.queryForObject("select count(delivery_purged_at) from core_ai_task_attempt", Long.class);
             if (!versions.equals(expected)) throw new AssertionError("startup skipped or reordered a migration: " + versions);
+            if (jdbc.queryForObject("select usage_epoch from core_ai_setting where id=1", Long.class) != 0L) throw new AssertionError("legacy usage epoch default missing");
+            jdbc.update("update core_ai_setting set usage_epoch=7 where id=1");
             listener.run(null);
+            if (jdbc.queryForObject("select usage_epoch from core_ai_setting where id=1", Long.class) != 7L) throw new AssertionError("repeat startup rewrote durable shutdown epoch");
             if (jdbc.queryForObject("select count(*) from de_standalone_version", Integer.class) != expected.size()
                     || jdbc.queryForObject("select count(*) from core_ai_task_attempt where id = 1", Integer.class) != 1) throw new AssertionError("repeat startup must preserve task and migration records");
         }

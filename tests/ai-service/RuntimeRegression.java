@@ -77,6 +77,19 @@ public final class RuntimeRegression {
             try{sample.call("sample");throw new AssertionError("sample master switch");}catch(AiErrors.Failure expected){}
             var task=provider.current(provider.task("synthetic-sql","task-1",sampleScope));
             try{task.call("sample");throw new AssertionError("background samples");}catch(AiErrors.Failure expected){}
+            var configMvc = org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(new io.dataease.ai.server.AiConfigurationServer(configuration, null)).build();
+            var mapper = new ObjectMapper();
+            var off = (com.fasterxml.jackson.databind.node.ObjectNode) mapper.readTree(configMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/ai/settings")).andReturn().getResponse().getContentAsString());
+            off.put("expectedVersion", off.path("rowVersion").asLong()); off.put("enabled", false);
+            off.put("impactToken", mapper.readTree(configMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/ai/settings/impact").param("defaultModelId", off.path("defaultModelId").asText()).param("enabled", "false")).andReturn().getResponse().getContentAsString()).path("token").asText());
+            if (configMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/ai/settings").contentType("application/json").content(mapper.writeValueAsBytes(off))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("native epoch off accepted");
+            var on = (com.fasterxml.jackson.databind.node.ObjectNode) mapper.readTree(configMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/ai/settings")).andReturn().getResponse().getContentAsString());
+            on.put("expectedVersion", on.path("rowVersion").asLong()); on.put("enabled", true);
+            if (configMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/ai/settings").contentType("application/json").content(mapper.writeValueAsBytes(on))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("native epoch on accepted");
+            int beforeOldContext = calls.get();
+            try { model.call("old native context"); throw new AssertionError("native context revived after missed shutdown"); } catch (AiErrors.Failure expected) { }
+            if (calls.get() != beforeOldContext) throw new AssertionError("revoked native epoch reached transport");
+            if (!"OK".equals(provider.current(provider.current("synthetic-sql", scope)).call("fresh native attempt"))) throw new AssertionError("fresh native context may bind current epoch");
             System.out.println("PASS AI native call and ChatClient, final input budget, stream rejection, revocation, context isolation and scope binding");
         }finally{RequestContextHolder.resetRequestAttributes();transport.close();}
     }

@@ -9,11 +9,12 @@ public final class AiErrors {
         private final String safeCode;
         private long retryAfterMillis;
         private Failure(String code) {
-            super("result_expired".equals(code) ? 50001 : "forbidden".equals(code) ? 403 : ("task_resource_busy".equals(code) || "conflict".equals(code) || "task_queue_full".equals(code) || "task_user_queue_full".equals(code)) ? 409 : 500, Translator.get("i18n_ai_" + code));
+            super("result_expired".equals(code) ? 50001 : "forbidden".equals(code) ? 70001 : ("task_resource_busy".equals(code) || "conflict".equals(code) || "task_queue_full".equals(code) || "task_user_queue_full".equals(code)) ? 409 : 500, Translator.get("i18n_ai_" + code));
             safeCode = code;
             if ("result_expired".equals(code)) {
                 setCategory(io.dataease.exception.ErrorCategory.NOT_FOUND); setMessageKey("i18n_ai_result_expired");
             }
+            if ("forbidden".equals(code)) { setCategory(io.dataease.exception.ErrorCategory.FORBIDDEN); setMessageKey("i18n_ai_forbidden"); }
             if ("task_resource_busy".equals(code) || "task_queue_full".equals(code) || "task_user_queue_full".equals(code)) {
                 setCategory(io.dataease.exception.ErrorCategory.CONFLICT); setMessageKey("i18n_ai_" + code);
             }

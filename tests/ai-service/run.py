@@ -15,7 +15,9 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--runtime', action='store_true', help='native Java model policy and off/on epoch boundary')
     parser.add_argument('--retention', action='store_true', help='public settings and production retention cleanup on isolated H2')
+    parser.add_argument('--task-policy', action='store_true', help='dynamic shutdown and authorization across independent JVMs')
     parser.add_argument('--audit', action='store_true', help='public HTTP execution audit and isolated persistence')
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
     parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
@@ -99,6 +101,7 @@ def main():
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
             'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
             'sdk/common/src/main/java/io/dataease/auth/ConfigurationSecurity.java',
+            'sdk/common/src/main/java/io/dataease/ai/manage/AiOwnerContext.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceRelationApi.java',
             'core/core-backend/src/main/java/io/dataease/menu/dao/auto/entity/CoreMenu.java',
@@ -114,6 +117,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskResourceInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecoveryInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiUsageEpochInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecordsMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/menu/manage/MenuManage.java',
@@ -121,6 +125,12 @@ def main():
         if args.xpack:
             sources.extend(root/path for path in [
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/server/InteractiveAuthServer.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/V3AuthTemplateImp.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/AiAuthCache.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/RoleAuthManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/UserAuthManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/InteractiveAuthManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/user/manage/RoleManage.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/MenuPermissionManage.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/AuthManage.java',
                 'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiMenuClassificationRegression.java',
@@ -135,9 +145,13 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/InitSqlListener.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceMetadataInit.java'])
         java = ['java']
+        if args.task_policy:
+            java.append('-Dai.test.policyOnly=true')
         if args.task_mutex:
             java.append('-Dai.test.mutexOnly=true')
 
+        if args.runtime:
+            java.append('-Dai.test.runtimeOnly=true')
         if args.retention:
             java.append('-Dai.test.retentionOnly=true')
         if args.audit:
@@ -169,7 +183,7 @@ def main():
             java.append('-Dai.test.redisPort=' + str(port))
         commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
                      '-cp', classpath, '-d', str(classes), *map(str, sources)],
-                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_scheduling or args.task_mutex else ['io.dataease.ai.Regression'])]]
+                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_policy or args.task_scheduling or args.task_mutex else ['io.dataease.ai.Regression'])]]
         if args.task_structure:
             commands.append([*java, '-cp', classpath, 'io.dataease.ai.TaskStructureNodeRegression'])
         if args.xpack:

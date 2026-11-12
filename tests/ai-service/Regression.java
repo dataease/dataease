@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        if (Boolean.getBoolean("ai.test.retentionOnly") || Boolean.getBoolean("ai.test.auditOnly") || Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
+        if (Boolean.getBoolean("ai.test.runtimeOnly") || Boolean.getBoolean("ai.test.retentionOnly") || Boolean.getBoolean("ai.test.auditOnly") || Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
         SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) { TaskProgressRegression.main(new String[0]); TaskStructureNodeRegression.main(new String[0]); TaskClusterRegression.run(); } if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
@@ -198,6 +198,7 @@ public class Regression {
             CoreAiSetting runtimeSetting=manage.setting();
             String runtimeImpact=manage.impact("SETTINGS",next.id()+":true").token();
             manage.saveSettings(new SettingsChange(runtimeSetting.getRowVersion(),true,next.id(),false,60,30000,4096,5,2,runtimeImpact));
+            if (Boolean.getBoolean("ai.test.runtimeOnly")) { RuntimeRegression.run(manage, policies, keys, limiter, access); return; }
             if (Boolean.getBoolean("ai.test.auditOnly")) { AuditRegression.run(manage,policies,keys,limiter,access,em,manager,jdbc,factory); return; }
             if (Boolean.getBoolean("ai.test.recoveryToolsOnly")) { ToolConversationRegression.run(manage,policies,keys,limiter,access); return; }
             if (Boolean.getBoolean("ai.test.recoveryOnly")) { ConversationRegression.run(manage,policies,keys,limiter,access); return; }
