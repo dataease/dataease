@@ -55,7 +55,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { recoverToPublished } from '@/api/visualization/dataVisualization'
+import { findCopyResource, recoverToPublished } from '@/api/visualization/dataVisualization'
 import ComponentToolBarV3 from '@/components/data-visualization/ComponentToolBarV3.vue'
 import DeRulerV3 from '@/custom-component/common/DeRulerV3.vue'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -70,15 +70,15 @@ const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const dvPreviewRef = ref(null)
 const { t } = useI18n()
-const eventCheck = e => {
+const eventCheck = async e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-    if (!(opt && opt === 'create')) {
-      check(
-        wsCache.get('screen-weight'),
-        embeddedStore.dvId || (router.currentRoute.value.query.dvId as string),
-        4
-      )
+    const { resourceId, opt } = state
+    if (resourceId) {
+      const allowed =
+        opt === 'copy'
+          ? await checkPer(resourceId, opt)
+          : check(wsCache.get('screen-weight') || {}, resourceId, 7)
+      if (!allowed) revokeEditorAccess()
     }
   }
 }
@@ -139,7 +139,7 @@ const state = reactive({
 })
 
 const tabSort = () => {
-  if (curComponent.value) {
+  if (loadFinish.value && curComponent.value) {
     customTabsSortRef.value.sortInit(curComponent.value)
   }
 }
@@ -195,6 +195,7 @@ const contentStyle = computed(() => {
 
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
+  if (!loadFinish.value) return
   state.countTime++
   const { componentName, innerType, staticMap } = newComponentInfo
   if (componentName) {
@@ -297,7 +298,13 @@ const initDataset = () => {
 const scrollOffset = computed(() => (canvasStyleData.value.tScale < 1.5 ? 1.5 : 2.1))
 
 // 全局监听按键事件
+const previousKeydown = window.onkeydown
 listenGlobalKeyDown()
+const editorKeydown = window.onkeydown
+const guardedEditorKeydown = (event: KeyboardEvent) => {
+  if (loadFinish.value) editorKeydown?.call(window, event)
+}
+window.onkeydown = guardedEditorKeydown
 
 const initScroll = () => {
   nextTick(() => {
@@ -313,6 +320,7 @@ const initScroll = () => {
   })
 }
 const doUseCache = flag => {
+  if (!loadFinish.value) return
   const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
   if (flag && canvasCache) {
     const canvasCacheSeries = deepCopy(canvasCache)
@@ -335,35 +343,52 @@ const doUseCache = flag => {
 }
 
 const initLocalCanvasData = async callback => {
+  if (!loadFinish.value) return
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
-  await initCanvasData(
-    resourceId,
-    { busiFlag, resourceTable: 'snapshot', source: 'main-edit', queryRequest: canvasQuery.start() },
-    function () {
-      state.canvasInitStatus = true
-      // afterInit
-      nextTick(() => {
-        dvMainStore.setDataPrepareState(true)
-        snapshotStore.recordSnapshotCache('renderChart')
+  const queryRequest = canvasQuery.start()
+  try {
+    await initCanvasData(
+      resourceId,
+      {
+        busiFlag,
+        resourceTable: 'snapshot',
+        source: 'main-edit',
+        awaitLoad: true,
+        queryRequest
+      },
+      function () {
+        state.canvasInitStatus = true
         if (dvInfo.value && opt === 'copy') {
           dvInfo.value.dataState = 'prepare'
           dvInfo.value.optType = 'copy'
           dvInfo.value.pid = sourcePid
-          setTimeout(() => {
-            snapshotStore.recordSnapshotCache('renderChart')
-          }, 1500)
         }
-        onInitReady({ resourceId: resourceId })
-        callback && callback()
-      })
-    }
-  )
+        // afterInit
+        nextTick(() => {
+          dvMainStore.setDataPrepareState(true)
+          snapshotStore.recordSnapshotCache('renderChart')
+          if (dvInfo.value && opt === 'copy') {
+            setTimeout(() => {
+              snapshotStore.recordSnapshotCache('renderChart')
+            }, 1500)
+          }
+          onInitReady({ resourceId: resourceId })
+          callback && callback()
+        })
+      }
+    )
+  } catch (error) {
+    if (!queryRequest.isCurrent()) return
+    revokeEditorAccess()
+    console.error(error)
+  }
 }
 
 const previewScaleChange = () => {
   state.scaleHistory = canvasStyleData.value.scale
   nextTick(() => {
+    if (!loadFinish.value || !dvLayout.value) return
     let canvasWidth = dvLayout.value.clientWidth
     const previewScale = (canvasWidth * 100) / canvasStyleData.value.width
     canvasStyleData.value.scale = previewScale
@@ -383,13 +408,23 @@ watch(
     }
   }
 )
-const checkPer = async resourceId => {
-  if (!window.DataEaseBi || !resourceId) {
-    return true
+const checkPer = async (resourceId, opt) => {
+  if (!resourceId) {
+    return opt === 'create'
   }
-  const request = { busiFlag: 'dataV', resourceTable: 'core' }
-  await interactiveStore.setInteractive(request)
-  return check(wsCache.get('screen-weight'), resourceId, 4)
+  try {
+    if (opt === 'copy') {
+      // 临时副本不在资源树中，由后端校验创建者后才允许恢复本地草稿。
+      const response = await findCopyResource(resourceId, 'dataV')
+      return !!response.data
+    }
+    const request = { busiFlag: 'dataV', resourceTable: 'core' }
+    await interactiveStore.setInteractive(request, undefined, () => !editorAccessRevoked)
+    return check(wsCache.get('screen-weight') || {}, resourceId, 7)
+  } catch (error) {
+    console.error(error)
+    return false
+  }
 }
 // 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
@@ -413,8 +448,24 @@ const afterSave = () => {
 }
 
 const loadFinish = ref(false)
+let editorAccessRevoked = false
+const revokeEditorAccess = () => {
+  editorAccessRevoked = true
+  loadFinish.value = false
+  canvasQuery.invalidate()
+}
+watch(
+  () => [dvInfo.value.id, dvInfo.value.optType],
+  () => {
+    if (loadFinish.value && dvInfo.value.id && dvInfo.value.optType !== 'copy') {
+      state.resourceId = dvInfo.value.id
+      state.opt = null
+    }
+  }
+)
 const newWindowFromDiv = ref(false)
 let p = null
+const xpackReadyPromise = new Promise(r => (p = r))
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   dvMainStore.setCurComponent({ component: null, index: null })
@@ -423,28 +474,28 @@ onMounted(async () => {
     newWindowFromDiv.value = true
   }
   if (appStore.getXpackValid) {
-    await new Promise(r => (p = r))
+    await xpackReadyPromise
   }
-  loadFinish.value = true
   window.addEventListener('blur', releaseAttachKey)
   window.addEventListener('message', winMsgHandle)
-  if (editMode.value === 'edit') {
-    window.addEventListener('storage', eventCheck)
-  }
+  window.addEventListener('storage', eventCheck)
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
   const templateParams =
     embeddedStore.templateParams || router.currentRoute.value.query.templateParams
   createType = embeddedStore.createType || router.currentRoute.value.query.createType
   const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-  const checkResult = await checkPer(dvId)
-  if (!checkResult) {
-    return
-  }
-  initDataset()
   state.resourceId = dvId
   state.sourcePid = pid
   state.opt = opt
+  const checkResult = await checkPer(dvId, opt)
+  if (!checkResult || editorAccessRevoked) {
+    return
+  }
+  loadFinish.value = true
+  await nextTick()
+  if (editorAccessRevoked) return
+  initDataset()
   if (dvId) {
     state.canvasInitStatus = false
     const canvasCache = wsCache.get('DE-DV-CATCH-' + dvId)
@@ -507,6 +558,7 @@ onMounted(async () => {
     let url = '#/screen/index'
     window.open(url, '_self')
   }
+  if (editorAccessRevoked) return
   initScroll()
   useEmitt({
     name: 'initScroll',
@@ -517,6 +569,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  revokeEditorAccess()
+  if (window.onkeydown === guardedEditorKeydown) window.onkeydown = previousKeydown
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('blur', releaseAttachKey)
   eventBus.off('handleNew', handleNew)
@@ -586,7 +640,7 @@ eventBus.on('tabSort', tabSort)
   <!-- 全屏期间移出编辑器布局树，只保留全屏预览画布 -->
   <div
     v-show="!fullscreenFlag"
-    v-if="!templateLoadError"
+    v-if="loadFinish && !templateLoadError"
     ref="dvLayout"
     v-loading="pageLoading"
     element-loading-background="rgba(0, 0, 0, 0)"
@@ -736,10 +790,14 @@ eventBus.on('tabSort', tabSort)
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   ></NewWindowHandler>
-  <ThresholdDialog v-if="appStore.getXpackValid"></ThresholdDialog>
-  <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
+  <ThresholdDialog v-if="loadFinish && appStore.getXpackValid"></ThresholdDialog>
+  <canvas-cache-dialog
+    v-if="loadFinish"
+    ref="canvasCacheOutRef"
+    @doUseCache="doUseCache"
+  ></canvas-cache-dialog>
   <dv-preview
-    v-if="fullscreenFlag && !templateLoadError"
+    v-if="loadFinish && fullscreenFlag && !templateLoadError"
     style="z-index: 10"
     ref="dvPreviewRef"
     show-position="edit-preview"
@@ -748,7 +806,7 @@ eventBus.on('tabSort', tabSort)
     :canvas-view-info-preview="canvasViewInfo"
     :dv-info="{ ...dvInfo, status: 1 }"
   ></dv-preview>
-  <custom-tabs-sort ref="customTabsSortRef"></custom-tabs-sort>
+  <custom-tabs-sort v-if="loadFinish" ref="customTabsSortRef"></custom-tabs-sort>
 </template>
 
 <style lang="less">
