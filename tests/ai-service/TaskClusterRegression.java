@@ -77,7 +77,7 @@ public final class TaskClusterRegression {
     }
     private static Process node(String name, boolean schedule) throws Exception {
         var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(), "-cp", System.getProperty("java.class.path"),
-                "io.dataease.ai.TaskNode", url, output.toString(), name, Boolean.toString(schedule))
+                "io.dataease.ai.TaskNode", url, output.toString(), name, Boolean.toString(schedule), Boolean.toString(Boolean.getBoolean("ai.test.disabledErrorsOnly")))
                 .redirectErrorStream(true).redirectOutput(output.resolve(name + ".log").toFile()).start();
         processes.add(process);
         long deadline = System.currentTimeMillis() + 20000;
@@ -96,6 +96,51 @@ public final class TaskClusterRegression {
         value.put("expectedVersion", value.path("rowVersion").asLong()); value.put("enabled", enabled);
         if (!enabled) value.put("impactToken", call(port, "/ai/settings/impact?defaultModelId=42&enabled=false", "GET", "").path("token").asText());
         call(port, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(value));
+    }
+    private static void disabledErrors(int port) throws Exception {
+        var failures = new ArrayList<String>();
+        for (String reason : List.of("disabled", "organization_disabled")) {
+            boolean organization = "organization_disabled".equals(reason);
+            String proxy = organization ? "777" : null;
+            var session = TaskNode.JSON.readTree(call(port, "/ai/conversations", "POST", "{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"disabled-errors\",\"sql\":\"select 1\"}", "1", proxy).body());
+            var task = TaskNode.JSON.readTree(call(port, "/ai/tasks", "POST", body(reason + "-existing"), "1", proxy).body());
+            String taskPath = "/ai/tasks/" + task.path("taskId").asText();
+            if (organization) call(port, "/ai/org-policies/batch", "POST", "{\"organizations\":[{\"id\":\"777\",\"expectedVersion\":null}],\"mode\":\"DISABLED\"}");
+            else enabled(port, false);
+            check(call(port, "/ai/settings", "GET", "", "1").statusCode() == 200, "administrator settings remain readable during " + reason);
+            if (organization) check(TaskNode.JSON.readTree(call(port, "/ai/availability", "GET", "", "1", "888").body()).path("available").asBoolean(), "organization shutdown leaves another scope available");
+            var paths = List.of("/ai/tasks", taskPath + "/retry", taskPath);
+            var methods = List.of("POST", "POST", "GET");
+            var bodies = List.of(body(reason + "-new"), TaskNode.JSON.writeValueAsString(Map.of("retryKey", reason + "-retry", "expectedAttemptId", task.path("attemptId").asText())), "");
+            for (boolean modern : List.of(true, false)) for (int i = 0; i < paths.size(); i++) {
+                var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + paths.get(i)))
+                        .timeout(java.time.Duration.ofSeconds(10)).header("Content-Type", "application/json").header("X-Test-Actor", "1")
+                        .method(methods.get(i), HttpRequest.BodyPublishers.ofString(bodies.get(i)));
+                if (proxy != null) request.header("X-Test-Proxy", proxy);
+                if (modern) request.header("X-DE-Error-Contract", "2");
+                var response = HTTP.send(request.build(), HttpResponse.BodyHandlers.ofString());
+                var error = TaskNode.JSON.readTree(response.body());
+                boolean expected = response.statusCode() == 403 && error.path("code").asInt() == 70001
+                        && (modern ? "FORBIDDEN".equals(error.path("category").asText()) && ("i18n_ai_" + reason).equals(error.path("messageKey").asText()) && !error.path("retryable").asBoolean(true)
+                        : !error.has("category") && !error.has("messageKey"));
+                String evidence = reason + " " + (modern ? "contract2" : "legacy") + " " + methods.get(i) + " " + (i == 0 ? "newTask" : i == 1 ? "retry" : "oldResult")
+                        + " HTTP" + response.statusCode() + " code=" + error.path("code") + " category=" + error.path("category") + " messageKey=" + error.path("messageKey");
+                System.out.println("DIAG " + evidence);
+                if (!expected) failures.add(evidence); else checks++;
+            }
+            if (organization) {
+                JsonNode row = null;
+                for (var item : call(port, "/ai/org-policies", "GET", "").path("items")) if ("777".equals(item.path("id").asText())) row = item;
+                call(port, "/ai/org-policies/batch", "POST", TaskNode.JSON.writeValueAsString(Map.of("organizations", List.of(Map.of("id", "777", "expectedVersion", row.path("rowVersion").asLong())), "mode", "INHERIT")));
+            } else enabled(port, true);
+            var terminal = TaskNode.JSON.readTree(call(port, taskPath, "GET", "", "1", proxy).body());
+            check("CANCELLED".equals(terminal.path("status").asText()) && reason.equals(terminal.path("errorCode").asText()), "re-enable preserves cancellation safeCode " + reason);
+            var oldStart = call(port, "/ai/conversations/" + session.path("sessionId").asText() + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", session.path("contextVersion").asText(), "text", "must-not-revive")), "1", proxy);
+            check(oldStart.statusCode() >= 400, "re-enable cannot revive old session after " + reason);
+        }
+        check(sends.isEmpty(), "shutdown refusals and old sessions never reach the model transport");
+        if (!failures.isEmpty()) throw new AssertionError("shutdown policy error contract failures: " + failures);
+        System.out.println("PASS disabled error contracts " + checks + " assertions (actual MVC advice, contract2/legacy, global/organization)");
     }
     private static void policy(int accepting) throws Exception {
         settings(accepting, 1, 20, 20, 120);
@@ -353,6 +398,7 @@ public final class TaskClusterRegression {
             });
             // A queued request survives the accepting process without ever having an execution owner.
             var accepting = node("accepting", false); int acceptingPort = port("accepting");
+            if (Boolean.getBoolean("ai.test.disabledErrorsOnly")) { disabledErrors(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.policyOnly")) { policy(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.mutexOnly")) { mutex(acceptingPort); return; }
             var originalSettings = call(acceptingPort, "/ai/settings", "GET", "");

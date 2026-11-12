@@ -118,7 +118,9 @@ public final class TaskNode {
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "admission", admission);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "secrets", secrets());
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "validator", jakarta.validation.Validation.buildDefaultValidatorFactory().getValidator());
-        var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiAvailabilityServer(access, beans.getBean(AiRuntimeManage.class)), new AiConfigurationServer(configuration, null), new AiConversationServer(conversations)).build();
+        var mvcBuilder = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiAvailabilityServer(access, beans.getBean(AiRuntimeManage.class)), new AiConfigurationServer(configuration, null), new AiConversationServer(conversations));
+        if (args.length > 4 && Boolean.parseBoolean(args[4])) mvcBuilder.setControllerAdvice(new io.dataease.exception.GlobalExceptionHandler());
+        var mvc = mvcBuilder.build();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.setExecutor(Executors.newFixedThreadPool(4));
         server.createContext("/ai", exchange -> {
@@ -127,6 +129,8 @@ public final class TaskNode {
                 if (exchange.getRequestHeaders().getFirst("X-Test-Proxy") != null) V3UserUtil.setProxy(Long.valueOf(exchange.getRequestHeaders().getFirst("X-Test-Proxy")));
                 var request = MockMvcRequestBuilders.request(org.springframework.http.HttpMethod.valueOf(exchange.getRequestMethod()), exchange.getRequestURI())
                         .contentType("application/json").content(exchange.getRequestBody().readAllBytes());
+                String contract = exchange.getRequestHeaders().getFirst("X-DE-Error-Contract");
+                if (contract != null) request.header("X-DE-Error-Contract", contract);
                 var response = mvc.perform(request).andReturn().getResponse();
                 byte[] body = response.getContentAsByteArray(); exchange.sendResponseHeaders(response.getStatus(), body.length);
                 exchange.getResponseBody().write(body);
