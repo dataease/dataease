@@ -172,18 +172,19 @@ public class AiConversationManage implements AiToolConversationFeature {
                     for (Run old : previous.runs.values()) { old.text = new StringBuilder(); old.events = new ArrayList<>(); }
                 }
             }
-            while (sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && same(state.owner, owner)).count() >= MAX_SINGLE_RESULTS)
+            while (sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && !state.executing.get() && same(state.owner, owner)).count() >= MAX_SINGLE_RESULTS)
                 evictSingle(owner);
             while (sessions.size() >= MAX_SESSIONS && evictSingle(null)) { }
-            if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && !state.singleFinished && !state.retired).count() >= MAX_USER_SESSIONS)
+            if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && occupiesActivity(state)).count() >= MAX_USER_SESSIONS)
                 throw AiErrors.error("concurrency");
             State created = new State(view, owner, context, single); created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
         }
         return view;
         }
     }
+    private boolean occupiesActivity(State state) { return state.executing.get() || !state.singleFinished && !state.retired; }
     private boolean evictSingle(AiAccess.Identity owner) {
-        var oldest = sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && (owner == null || same(state.owner, owner)))
+        var oldest = sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && !state.executing.get() && (owner == null || same(state.owner, owner)))
                 .min(Comparator.comparingLong(state -> state.view.expiresAt()));
         oldest.ifPresent(this::invalidate);
         return oldest.isPresent();
@@ -258,7 +259,12 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (state.single) throw AiErrors.error("unsupported");
         if (request == null || request.text() == null || request.text().isBlank() || request.text().length() > 30000
                 || !Objects.equals(request.contextVersion(), state.view.contextVersion())) throw AiErrors.error("scope_changed");
-        if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
+        synchronized (sessions) {
+            synchronized (state) {
+                if (state.retired) throw AiErrors.error("scope_changed");
+                if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
+            }
+        }
         try {
             authorized(state.owner, () -> { check(state); return null; });
             if (state.turns >= MAX_TURNS) throw AiErrors.error("input_limit");
@@ -286,6 +292,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (request == null || request.text() == null || request.text().isBlank() || request.text().length() > 30000
                 || !Objects.equals(request.contextVersion(), state.view.contextVersion())) throw AiErrors.error("scope_changed");
         key(request.submissionKey());
+        synchronized (sessions) {
         synchronized (state) {
             authorized(state.owner, () -> { check(state); return null; });
             String accepted = state.invocation == null ? fingerprint("chat", id, request.contextVersion(), request.text())
@@ -313,9 +320,11 @@ public class AiConversationManage implements AiToolConversationFeature {
                 throw failure;
             }
         }
+        }
     }
     public Execution retry(String id, String executionId, Retry request) {
         State state = owned(id);
+        synchronized (sessions) {
         synchronized (state) {
             authorized(state.owner, () -> { check(state); return null; });
             if (request == null || request.retryKey() == null || request.expectedAttemptId() == null) throw AiErrors.error("invalid");
@@ -330,8 +339,13 @@ public class AiConversationManage implements AiToolConversationFeature {
             if (!retryEligible(source)) throw AiErrors.error("unsupported");
             var result = launch(state, task); task.retries.put(request.retryKey(), task.latest); return result;
         }
+        }
     }
+    /** Caller holds sessions then state: releasing and reacquiring an activity slot cannot race Open. */
     private Execution launch(State state, Task task) {
+        if ((state.singleFinished || state.retired) && sessions.values().stream()
+                .filter(current -> same(current.owner, state.owner) && occupiesActivity(current)).count() >= MAX_USER_SESSIONS)
+            throw AiErrors.error("concurrency");
         if (state.runs.size() >= 50) throw AiErrors.error("input_limit");
         if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
         try {

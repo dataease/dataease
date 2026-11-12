@@ -163,13 +163,14 @@ public final class ConversationRegression {
                 return;
             }
             if (body.path("stream").asBoolean()) {
+                var release = streamRelease.get();
                 exchange.getResponseHeaders().set("Content-Type", "text/event-stream");
                 exchange.sendResponseHeaders(200, 0);
                 try {
-                    if (beforeFirst.get()) { firstChunk.get().countDown(); streamRelease.get().await(20, TimeUnit.SECONDS); }
+                    if (beforeFirst.get()) { firstChunk.get().countDown(); release.await(20, TimeUnit.SECONDS); }
                     exchange.getResponseBody().write(("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"星河\"" + (reasoning.get() ? ",\"reasoning_content\":\"private-thought\"" : "") + "},\"finish_reason\":null}]}\n\n").getBytes(StandardCharsets.UTF_8));
                     exchange.getResponseBody().flush(); streamFirst.countDown(); firstChunk.get().countDown();
-                    streamRelease.get().await(20, TimeUnit.SECONDS);
+                    release.await(20, TimeUnit.SECONDS);
                     exchange.getResponseBody().write("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"继续\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n".getBytes(StandardCharsets.UTF_8));
                 } catch (InterruptedException failure) { Thread.currentThread().interrupt(); }
                 finally { exchange.close(); }
@@ -314,6 +315,91 @@ public final class ConversationRegression {
             await(mvc, json, balanceRun + "/events", "FAILED", "provider_balance");
             if (sent.size() != 1) throw new AssertionError("429 insufficient balance must not be automatically retried as rate limiting");
             mvc.perform(delete("/ai/conversations/" + balanceSession.path("sessionId").asText()));
+            // A finished one-shot result releases its slot, but a retry must atomically reacquire it.
+            protocol.set("eof");
+            var quotaButton = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "quota-button", "sql", "select 1", "text", "Safe failed one-shot"))))
+                    .andReturn().getResponse().getContentAsString());
+            String quotaButtonPath = "/ai/conversations/" + quotaButton.path("sessionId").asText() + "/executions/" + quotaButton.path("executionId").asText();
+            var failedButton = await(mvc, json, quotaButtonPath + "/events", "FAILED", "partial");
+            var occupied = new ArrayList<com.fasterxml.jackson.databind.JsonNode>();
+            for (int slot = 0; slot < 4; slot++) occupied.add(open(mvc, json, "quota-active-" + slot));
+            byte[] buttonRetry = json.writeValueAsBytes(Map.of("retryKey", "quota-retry", "expectedAttemptId", failedButton.path("attemptId").asText()));
+            boolean quotaDenied = false;
+            try { mvc.perform(post(quotaButtonPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(buttonRetry)); }
+            catch (jakarta.servlet.ServletException expected) { quotaDenied = expected.getCause() instanceof AiErrors.Failure known && "concurrency".equals(known.safeCode()); }
+            if (!quotaDenied) throw new AssertionError("finished one-shot retry cannot launch a fifth active conversation");
+            mvc.perform(delete("/ai/conversations/" + occupied.remove(0).path("sessionId").asText()));
+            protocol.set("normal"); streamRelease.set(new CountDownLatch(1));
+            var admittedButton = json.readTree(mvc.perform(post(quotaButtonPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(buttonRetry)).andReturn().getResponse().getContentAsString());
+            String admittedButtonPath = "/ai/conversations/" + admittedButton.path("sessionId").asText() + "/executions/" + admittedButton.path("executionId").asText();
+            await(mvc, json, admittedButtonPath + "/events", "RUNNING", "星河");
+            quotaDenied = false;
+            try { open(mvc, json, "quota-overflow"); }
+            catch (jakarta.servlet.ServletException expected) { quotaDenied = expected.getCause() instanceof AiErrors.Failure known && "concurrency".equals(known.safeCode()); }
+            if (!quotaDenied) throw new AssertionError("running one-shot retry occupies a conversation slot");
+            mvc.perform(post(admittedButtonPath + "/stop")); streamRelease.get().countDown();
+            occupied.add(open(mvc, json, "quota-after-cancel"));
+            for (var active : occupied) mvc.perform(delete("/ai/conversations/" + active.path("sessionId").asText()));
+            mvc.perform(delete("/ai/conversations/" + quotaButton.path("sessionId").asText()));
+            // A retired chat keeps its Task snapshot, while each running retry still occupies a slot.
+            var retiredSource = open(mvc, json, "retired-quota");
+            streamRelease.set(new CountDownLatch(1));
+            String retiredRun = start(mvc, json, "/ai/conversations/" + retiredSource.path("sessionId").asText() + "/executions", retiredSource, "Frozen retired task");
+            await(mvc, json, retiredRun + "/events", "RUNNING", "星河");
+            var cancelledRetired = json.readTree(mvc.perform(post(retiredRun + "/stop")).andReturn().getResponse().getContentAsString());
+            streamRelease.get().countDown();
+            occupied.clear(); occupied.add(open(mvc, json, "retired-quota"));
+            for (int slot = 1; slot < 4; slot++) occupied.add(open(mvc, json, "retired-active-" + slot));
+            byte[] retiredRetry = json.writeValueAsBytes(Map.of("retryKey", "retired-retry", "expectedAttemptId", cancelledRetired.path("attemptId").asText()));
+            quotaDenied = false;
+            try { mvc.perform(post(retiredRun + "/retry").contentType(MediaType.APPLICATION_JSON).content(retiredRetry)); }
+            catch (jakarta.servlet.ServletException expected) { quotaDenied = expected.getCause() instanceof AiErrors.Failure known && "concurrency".equals(known.safeCode()); }
+            if (!quotaDenied) throw new AssertionError("retired task retry must reacquire the four-activity quota");
+            mvc.perform(delete("/ai/conversations/" + occupied.remove(occupied.size() - 1).path("sessionId").asText()));
+            streamRelease.set(new CountDownLatch(1));
+            var admittedRetired = json.readTree(mvc.perform(post(retiredRun + "/retry").contentType(MediaType.APPLICATION_JSON).content(retiredRetry)).andReturn().getResponse().getContentAsString());
+            String admittedRetiredPath = "/ai/conversations/" + admittedRetired.path("sessionId").asText() + "/executions/" + admittedRetired.path("executionId").asText();
+            await(mvc, json, admittedRetiredPath + "/events", "RUNNING", "星河");
+            quotaDenied = false;
+            try { open(mvc, json, "retired-overflow"); }
+            catch (jakarta.servlet.ServletException expected) { quotaDenied = expected.getCause() instanceof AiErrors.Failure known && "concurrency".equals(known.safeCode()); }
+            if (!quotaDenied) throw new AssertionError("running retired task retry occupies the fourth activity slot");
+            var stoppedRetired = json.readTree(mvc.perform(post(admittedRetiredPath + "/stop")).andReturn().getResponse().getContentAsString());
+            streamRelease.get().countDown();
+            // Open and a released Task retry compete for the final slot under the same atomic boundary.
+            streamRelease.set(new CountDownLatch(1));
+            var quotaRace = Executors.newFixedThreadPool(2);
+            var readyQuotaRace = new CountDownLatch(2); var beginQuotaRace = new CountDownLatch(1);
+            try {
+                var requests = List.of(
+                        post(admittedRetiredPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(Map.of("retryKey", "retired-race", "expectedAttemptId", stoppedRetired.path("attemptId").asText()))),
+                        post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "competing-open", "sql", "select 1"))));
+                var outcomes = new ArrayList<Future<com.fasterxml.jackson.databind.JsonNode>>();
+                for (var request : requests) outcomes.add(quotaRace.submit(() -> {
+                    V3UserUtil.setUid(1L); readyQuotaRace.countDown();
+                    try {
+                        if (!beginQuotaRace.await(5, TimeUnit.SECONDS)) throw new AssertionError("quota race starts together");
+                        return json.readTree(mvc.perform(request).andReturn().getResponse().getContentAsString());
+                    } catch (jakarta.servlet.ServletException expected) {
+                        if (expected.getCause() instanceof AiErrors.Failure known && "concurrency".equals(known.safeCode())) return null;
+                        throw expected;
+                    } finally { V3UserUtil.clear(); }
+                }));
+                if (!readyQuotaRace.await(5, TimeUnit.SECONDS)) throw new AssertionError("quota contenders ready");
+                beginQuotaRace.countDown();
+                var retryOutcome = outcomes.get(0).get(10, TimeUnit.SECONDS);
+                var openOutcome = outcomes.get(1).get(10, TimeUnit.SECONDS);
+                if ((retryOutcome == null) == (openOutcome == null)) throw new AssertionError("exactly one concurrent Open/retry acquires the fourth activity slot");
+                if (retryOutcome != null) mvc.perform(post("/ai/conversations/" + retryOutcome.path("sessionId").asText() + "/executions/" + retryOutcome.path("executionId").asText() + "/stop"));
+                if (openOutcome != null) mvc.perform(delete("/ai/conversations/" + openOutcome.path("sessionId").asText()));
+            } finally { beginQuotaRace.countDown(); streamRelease.get().countDown(); quotaRace.shutdownNow(); }
+            occupied.add(open(mvc, json, "retired-after-cancel"));
+            int beforeRetiredTurn = sent.size();
+            deny(mvc, pathFor(retiredSource), retiredSource.path("contextVersion").asText(), "Legacy retired context must not call model");
+            if (sent.size() != beforeRetiredTurn) throw new AssertionError("legacy retired context is rejected before any model HTTP request");
+            for (var active : occupied) mvc.perform(delete("/ai/conversations/" + active.path("sessionId").asText()));
+            mvc.perform(delete("/ai/conversations/" + retiredSource.path("sessionId").asText()));
             protocol.set("framed");
             String lastEditedSession = null;
             for (int edit = 0; edit < 6; edit++) {
