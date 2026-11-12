@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
     parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
     parser.add_argument('--task-structure', action='store_true', help='public controlled structure scene with authorized SQL metadata')
+    parser.add_argument('--task-structure-nodes', action='store_true', help='actual SQL/structure scenes across independent JVM map iteration seeds')
     parser.add_argument('--task-mutex', action='store_true', help='public resource occupancy across independent JVMs')
     parser.add_argument('--task-scheduling', action='store_true', help='public HTTP task scheduling across independent JVMs')
     parser.add_argument('--recovery-tools', action='store_true', help='public tool correction recovery loop')
@@ -160,7 +161,9 @@ def main():
             java.append('-Dai.test.redisPort=' + str(port))
         commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
                      '-cp', classpath, '-d', str(classes), *map(str, sources)],
-                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_scheduling or args.task_mutex else ['io.dataease.ai.Regression'])]]
+                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_scheduling or args.task_mutex else ['io.dataease.ai.Regression'])]]
+        if args.task_structure:
+            commands.append([*java, '-cp', classpath, 'io.dataease.ai.TaskStructureNodeRegression'])
         if args.xpack:
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
         if args.xpack and private_audit.is_file():
