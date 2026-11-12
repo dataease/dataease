@@ -79,7 +79,7 @@ public final class AiToolProtocol {
     /** Only malformed arguments of a known tool can request model correction; never expose the exception. */
     public static String correction(Call call, AiRecovery recovery, Set<String> invalid) {
         String canonical = call.name() + ":" + Objects.toString(call.arguments(), "").strip();
-        try { canonical = call.name() + ":" + JSON.writeValueAsString(JSON.readTree(call.arguments())); }
+        try { canonical = call.name() + ":" + JSON.writer().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(JSON.convertValue(JSON.readTree(call.arguments()), Object.class)); }
         catch (Exception ignored) { }
         if (!invalid.add(canonical) || !recovery.correct(canonical)) throw AiErrors.error("invalid");
         return result(Map.of("status", "INVALID", "code", "arguments", "message", "Use exactly the registered argument names with nonempty string values. No tool was executed."));
