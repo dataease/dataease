@@ -160,7 +160,9 @@ const openOrg = async (org?: AiOrg) => {
 const openSettings = (kind: 'data' | 'limits') => {
   settingsDraft.value = {
     ...props.settings,
-    taskScheduling: props.settings.taskScheduling ? { ...props.settings.taskScheduling } : undefined,
+    taskScheduling: props.settings.taskScheduling
+      ? { ...props.settings.taskScheduling }
+      : undefined,
     recovery: {
       ...(props.settings.recovery ?? {
         stepRetries: 2,
@@ -481,7 +483,10 @@ watch(
             controls-position="right"
         /></el-form-item>
         <p class="ai-secondary">{{ tr('background_hint') }}</p>
-        <TaskSchedulingSettings v-if="settingsDraft.taskScheduling" v-model="settingsDraft.taskScheduling" />
+        <TaskSchedulingSettings
+          v-if="settingsDraft.taskScheduling"
+          v-model="settingsDraft.taskScheduling"
+        />
         <RecoverySettings v-if="settingsDraft.recovery" v-model="settingsDraft.recovery" />
       </el-form>
       <template #footer
