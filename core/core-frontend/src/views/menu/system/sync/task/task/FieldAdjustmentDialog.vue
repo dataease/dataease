@@ -25,6 +25,8 @@ import type {
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
 import { useI18n } from '@/hooks/web/useI18n'
+import { Icon } from '@/components/icon-custom'
+import iconDatabase from '@/assets/svg/icon_database_outlined.svg'
 import TargetFields from './TargetFields.vue'
 import TargetFieldForm from './TargetFieldForm.vue'
 import FullRefreshDialog from './FullRefreshDialog.vue'
@@ -2000,17 +2002,24 @@ defineExpose({ open })
     <template #header>
       <div class="rules-heading">{{ t('sync_maintenance.rules_entry') }}</div>
       <div class="rule-provider">
-        <div class="connection-line">
+        <div class="rule-provider-icon" aria-hidden="true">
+          <Icon name="icon_database_outlined"><icon-database class="svg-icon" /></Icon>
+        </div>
+        <div class="rule-provider-name">
           <span class="context-label">{{ t('sync_maintenance.target_datasource') }}</span>
           <span class="ellipsis" :title="context?.targetName">{{
             context?.targetName || '-'
           }}</span>
         </div>
-        <div class="connection-line">
-          <span class="context-label">{{ t('sync_maintenance.database_type') }}</span>
-          <span>{{ context?.targetType || '-' }}</span>
-          <span class="context-label">{{ t('sync_maintenance.database_version') }}</span>
-          <span :title="context?.structure?.version">{{ databaseVersion || '-' }}</span>
+        <div class="rule-provider-version">
+          <span :title="t('sync_maintenance.database_type')">{{ context?.targetType || '-' }}</span>
+          <span
+            class="ellipsis"
+            :title="`${t('sync_maintenance.database_version')}：${
+              context?.structure?.version || '-'
+            }`"
+            >{{ databaseVersion || '-' }}</span
+          >
         </div>
       </div>
       <p v-if="context?.structure?.rules?.length" class="rules-intro context-label">
@@ -2026,7 +2035,7 @@ defineExpose({ open })
         >
           <template #title>
             <span class="rule-title">
-              <span>{{ rule.item }}</span>
+              <span class="rule-name">{{ rule.item }}</span>
               <el-tag size="small" type="info">{{
                 t(
                   rule.source === 'DATABASE'
@@ -2038,18 +2047,18 @@ defineExpose({ open })
               }}</el-tag>
             </span>
           </template>
-          <template v-if="rule.officialText">
-            <p class="context-label">{{ t('sync_maintenance.official_excerpt') }}</p>
+          <div v-if="rule.supported" class="rule-section rule-supported">
+            <div class="rule-section-label">{{ t('sync_maintenance.rule_supported') }}</div>
+            <p>{{ rule.supported }}</p>
+          </div>
+          <div v-if="rule.restricted" class="rule-section rule-restricted">
+            <div class="rule-section-label">{{ t('sync_maintenance.rule_restricted') }}</div>
+            <p>{{ rule.restricted }}</p>
+          </div>
+          <details v-if="rule.officialText" class="rule-official">
+            <summary>{{ t('sync_maintenance.official_excerpt') }}</summary>
             <blockquote class="official-excerpt">{{ rule.officialText }}</blockquote>
-          </template>
-          <p v-if="rule.supported">
-            <span class="context-label">{{ t('sync_maintenance.rule_supported') }}：</span
-            >{{ rule.supported }}
-          </p>
-          <p v-if="rule.restricted">
-            <span class="context-label">{{ t('sync_maintenance.rule_restricted') }}：</span
-            >{{ rule.restricted }}
-          </p>
+          </details>
           <p v-if="rule.documentationUrl?.startsWith('https://')" class="rule-documentation">
             <span v-if="rule.applicableVersion" class="context-label">{{
               rule.applicableVersion
@@ -2314,25 +2323,89 @@ defineExpose({ open })
   line-height: 24px;
 }
 .rule-provider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-top: 12px;
   font-size: 14px;
   font-weight: normal;
-  .context-label:first-child {
-    min-width: 60px;
+}
+.rule-provider-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--ed-color-primary-light-9);
+  color: var(--ed-color-primary);
+  .svg-icon {
+    width: 20px;
+    height: 20px;
   }
-  .context-label:not(:first-child) {
-    margin-left: 12px;
+}
+.rule-provider-name {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: 22px;
+  .context-label {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+.rule-provider-version {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 45%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--ed-fill-color-light);
+  color: var(--ed-text-color-secondary);
+  font-size: 12px;
+  line-height: 20px;
+  > :first-child {
+    flex-shrink: 0;
   }
 }
 .rules-intro {
-  margin: 8px 0 0;
+  margin: 12px 0 0;
+  font-size: 12px;
   font-weight: normal;
+  line-height: 20px;
 }
 .plugin-rules {
   margin-top: 0;
+  border: 0;
+  :deep(.ed-collapse-item__header) {
+    height: auto;
+    min-height: 48px;
+    padding: 10px 0;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: left;
+    background: var(--ed-bg-color);
+    &.is-active {
+      color: var(--ed-color-primary);
+    }
+  }
+  :deep(.ed-collapse-item__arrow) {
+    order: -1;
+    flex-shrink: 0;
+    margin: 0 10px 0 0;
+  }
+  :deep(.ed-collapse-item:last-child) {
+    .ed-collapse-item__header,
+    .ed-collapse-item__wrap {
+      border-bottom: 0;
+    }
+  }
 }
 .plugin-rules :deep(.ed-collapse-item__content) {
-  padding: 12px 16px 16px;
+  padding: 0 0 16px 22px;
 }
 .rules-effect {
   flex: 1;
@@ -2352,7 +2425,7 @@ defineExpose({ open })
   }
 }
 .plugin-rules p {
-  margin: 8px 0;
+  margin: 4px 0 0;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
@@ -2363,9 +2436,48 @@ defineExpose({ open })
   flex-wrap: wrap;
   gap: 8px 12px;
 }
+.rule-title {
+  flex: 1;
+  min-width: 0;
+  justify-content: space-between;
+  .rule-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  :deep(.ed-tag) {
+    flex-shrink: 0;
+  }
+}
+.rule-section {
+  margin-bottom: 12px;
+}
+.rule-section-label {
+  font-weight: 500;
+  line-height: 22px;
+}
+.rule-supported .rule-section-label {
+  color: var(--ed-color-success);
+}
+.rule-restricted .rule-section-label {
+  color: var(--ed-color-warning);
+}
+.rule-official {
+  margin-top: 12px;
+  color: var(--ed-text-color-secondary);
+  summary {
+    cursor: pointer;
+    line-height: 22px;
+  }
+}
+.plugin-rules .rule-documentation {
+  margin-top: 12px;
+  font-size: 12px;
+}
 .official-excerpt {
-  margin: 8px 0 16px;
+  margin: 8px 0 0;
   padding: 8px 12px;
+  background: var(--ed-fill-color-light);
   border-left: 3px solid var(--ed-border-color);
   line-height: 1.6;
   white-space: pre-line;
@@ -2437,6 +2549,17 @@ defineExpose({ open })
   flex-grow: 1;
 }
 @media (max-width: 600px) {
+  .rule-provider {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .rule-provider-name {
+    flex-basis: calc(100% - 44px);
+  }
+  .rule-provider-version {
+    max-width: 100%;
+    margin-left: 44px;
+  }
   .confirmation-actions .confirmation-hint {
     flex-basis: 100%;
   }
@@ -2504,13 +2627,14 @@ defineExpose({ open })
 // 规则列表独占正文滚动区，头部连接信息和底部说明通过插槽固定，不跟随规则展开而移出视野
 .maintenance-rules-dialog {
   .ed-dialog__header {
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--ed-border-color);
+    padding-bottom: 8px;
   }
   .ed-dialog__body {
-    padding-top: 16px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .ed-dialog__footer {
+    padding-top: 12px;
     border-top: 1px solid var(--ed-border-color);
   }
 }
