@@ -91,7 +91,7 @@ public class Regression {
         String url="jdbc:h2:mem:ai_regression;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=2000";
         Configuration hibernate=new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class)
                 .addAnnotatedClass(CoreAiOrgPolicy.class).addAnnotatedClass(CoreMenu.class)
-                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class)
+                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class)
                 .setProperty("hibernate.connection.url",url).setProperty("hibernate.connection.driver_class","org.h2.Driver")
                 .setProperty("hibernate.connection.username","sa").setProperty("hibernate.connection.password","")
                 .setProperty("hibernate.dialect","org.hibernate.dialect.H2Dialect").setProperty("hibernate.hbm2ddl.auto","none")
@@ -116,6 +116,7 @@ public class Regression {
             jdbc.update("delete from core_ai_task_attempt where id=777");
             System.out.println("PASS AI 2.50 additive retryable delivery migration, original expiry and no manufactured legacy notices");
             var migration=new AiConfigurationInit(jdbc,factory,em,manager); migration.execute(); migration.execute();
+            new io.dataease.listener.sql.AiTaskSchedulingInit(jdbc,factory,em,manager).execute();
             var menuMigration=new io.dataease.listener.sql.AiConfigurationMenuInit(em,manager);menuMigration.execute();menuMigration.execute();
             check(settings.count()==1,"migration singleton idempotent without ddl-auto");check(menus.count()==2,"existing menu and independent AI configuration menu");
             check(menus.findById(140L).isPresent() && "retained-menu".equals(menus.findById(130L).orElseThrow().getName()),"2.44 then 2.45 preserve a non-AI menu 130");
@@ -157,12 +158,15 @@ public class Regression {
             rejects(() -> manage.save(edit,false),"stale row version rejects repeat edit");
             CoreAiSetting limits=manage.setting();
             var permit1=limiter.acquire(limits,false,System.currentTimeMillis()+10000);var permit2=limiter.acquire(limits,false,System.currentTimeMillis()+10000);
-            limits.setInteractiveConcurrency(1);rejects(() -> limiter.acquire(limits,false,System.currentTimeMillis()+10000),"lower limit preserves active count");permit1.close();rejects(() -> limiter.acquire(limits,false,System.currentTimeMillis()+10000),"at new limit rejects");permit2.close();limiter.acquire(limits,false,System.currentTimeMillis()+10000).close();
+            manage.saveSettings(new SettingsChange(limits.getRowVersion(),limits.getEnabled(),limits.getDefaultModelId(),limits.getAllowSamples(),limits.getRequestTimeoutSeconds(),limits.getMaxInputChars(),limits.getMaxOutputTokens(),1,1,null));CoreAiSetting lowered=manage.setting();rejects(() -> limiter.acquire(lowered,false,System.currentTimeMillis()+10000),"lower limit preserves active count");permit1.close();rejects(() -> limiter.acquire(lowered,false,System.currentTimeMillis()+10000),"at new limit rejects");permit2.close();limiter.acquire(lowered,false,System.currentTimeMillis()+10000).close();
             check(!manage.organizations("").available(),"community does not invent organizations");
             CoreAiSetting s=manage.setting();long expected=s.getRowVersion();
             String impact=manage.impact("SETTINGS",saved.id()+":true").token();
             manage.saveSettings(new SettingsChange(expected,true,saved.id(),false,60,30000,4096,5,2,impact));
             rejects(() -> manage.action(saved.id(),new ModelAction(renamed.rowVersion(),null,null),true),"referenced model cannot delete");
+            CoreAiSetting forgedCapacity = JSON.convertValue(manage.setting(), CoreAiSetting.class);
+            forgedCapacity.setInteractiveConcurrency(20);
+            rejects(() -> limiter.acquire(forgedCapacity,false,System.currentTimeMillis()+10000), "matching revision cannot spoof a larger current model-request capacity");
             CoreAiSetting stalePolicy = manage.setting();
             var waiting = new java.util.concurrent.CountDownLatch(1);
             var resume = new java.util.concurrent.CountDownLatch(1);
@@ -187,7 +191,7 @@ public class Regression {
             RuntimeRegression.run(manage,policies,keys,new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager),access);
             ConversationRegression.run(manage,policies,keys,limiter,access);
             ToolConversationRegression.run(manage,policies,keys,limiter,access);
-            HttpRegression.run(new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager));
+            HttpRegression.run(new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager), manage.setting());
             TokenCapabilityRegression.run(manage,policies,access,keys,limiter,permitted);
             directory.set(List.of(new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(88L,"Sales",0L),
                     new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(89L,"Finance",0L),

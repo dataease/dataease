@@ -100,6 +100,16 @@ export default {
     assistant: '助手'
   },
   ai_service: {
+    failure_task_queue_full: '后台任务队列已满，请稍后重试。',
+    failure_task_user_queue_full: '您的后台等待任务已达上限，请在任务开始或取消后重试。',
+    failure_queue_timeout: '后台任务等待超时，未开始执行。',
+    task_scheduling: '后台任务调度',
+    task_scheduling_hint:
+      '后台任务运行槽与模型请求并发独立。调低容量保留已受理任务；已有等待期限保持不变。',
+    task_maxRunning: '同时运行任务上限',
+    task_maxQueued: '系统等待任务上限',
+    task_maxQueuedPerUser: '每用户等待任务上限',
+    task_maxWaitSeconds: '最长等待时间（秒）',
     records: '调用记录',
     records_pending: '调用记录功能待完善',
     records_description: '后续将在此展示 AI 服务的调用记录及执行详情。',
@@ -308,9 +318,9 @@ export default {
     requestTimeoutSeconds: '请求超时（秒）',
     maxInputChars: '最大输入长度（字符）',
     maxOutputTokens: '最大输出长度（Token）',
-    interactiveConcurrency: '交互并发上限（个）',
-    backgroundConcurrency: '后台任务并发上限（个）',
-    background_hint: '后台并发不超过交互并发。',
+    interactiveConcurrency: '交互模型请求并发上限（个）',
+    backgroundConcurrency: '后台模型请求并发上限（个）',
+    background_hint: '后台模型请求并发不超过交互模型请求并发。',
     runtime_pending: '设置已保存，运行策略尚未生效。请稍后刷新。',
     select_all: '全选当前搜索结果',
     select_org: '选择{name}'

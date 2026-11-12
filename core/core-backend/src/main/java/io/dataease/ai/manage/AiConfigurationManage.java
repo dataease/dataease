@@ -41,9 +41,12 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
         AiAdmission.State state = admission.state(s);
         var result = new Settings(s.getEnabled(), s.getDefaultModelId(), s.getAllowSamples(), s.getRequestTimeoutSeconds(),
                 s.getMaxInputChars(), s.getMaxOutputTokens(), s.getInteractiveConcurrency(), s.getBackgroundConcurrency(),
-                s.getRevision(), s.getRowVersion(), s.getRevision(), state.revision(), state.name(), identity.deployment().organizations());
+                s.getRevision(), s.getRowVersion(), s.getRevision(), state.revision(), state.name(), identity.deployment().organizations(), taskScheduling(s));
         access.verify(identity, true);
         return result;
+    }
+    private TaskScheduling taskScheduling(CoreAiSetting s) {
+        return new TaskScheduling(s.getTaskMaxRunning(), s.getTaskMaxQueued(), s.getTaskMaxQueuedPerUser(), s.getTaskMaxWaitSeconds());
     }
     public Settings saveSettings(SettingsChange c) {
         access.configuration(); validate(c);
@@ -52,6 +55,8 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
         String owner = admission.beginUpdate(setting());
         try {
             write(tx -> {
+                // Capacity changes serialize with the independent task acceptance/claim coordinator.
+                if (em.find(CoreAiTaskSchedule.class, 1L, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE) == null) throw AiErrors.error("configuration_unavailable");
                 CoreAiSetting s = coordinate();
                 admission.assertUpdateOwner(owner, s);
                 // coordinate 已递增行版本；客户端对照的是递增前版本。
@@ -60,6 +65,10 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
                     verifyImpact(c.impactToken(), "SETTINGS", "" + c.defaultModelId() + ":" + c.enabled(), s.getRowVersion() - 1);
                 }
                 if (c.defaultModelId() != null && !Objects.equals(c.defaultModelId(), s.getDefaultModelId())) available(c.defaultModelId());
+                if (c.taskScheduling() != null && !c.taskScheduling().equals(taskScheduling(s))) {
+                    s.setTaskMaxRunning(c.taskScheduling().maxRunning()); s.setTaskMaxQueued(c.taskScheduling().maxQueued());
+                    s.setTaskMaxQueuedPerUser(c.taskScheduling().maxQueuedPerUser()); s.setTaskMaxWaitSeconds(c.taskScheduling().maxWaitSeconds());
+                }
                 s.setEnabled(c.enabled()); s.setDefaultModelId(c.defaultModelId()); s.setAllowSamples(c.allowSamples());
                 s.setRequestTimeoutSeconds(c.requestTimeoutSeconds()); s.setMaxInputChars(c.maxInputChars());
                 s.setMaxOutputTokens(c.maxOutputTokens()); s.setInteractiveConcurrency(c.interactiveConcurrency());

@@ -1548,3 +1548,60 @@ test('a lost notice acknowledgement is retried after refresh without repeating i
   await expect(page.getByRole('alert').filter({ hasText: '后台任务已完成' })).toHaveCount(0)
   await expect(page.getByText('durable answer', { exact: true })).toHaveCount(0)
 })
+
+test('all accepted queued tasks stay visible beyond the old four-task page cap and can be cancelled', async ({
+  page
+}) => {
+  const tasks = Array.from({ length: 10 }, (_, index) => ({
+    taskId: String(2000 + index),
+    attemptId: String(3000 + index),
+    attemptNumber: 1,
+    status: 'QUEUED',
+    resourceName: `queued-${index}`,
+    modelIdentifier: null
+  }))
+  let cancelled
+  await page.route('**/fixture-api/ai/conversations**', (route) => route.fulfill({ json: [] }))
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('/notices')) return route.fulfill({ json: [] })
+    if (path.endsWith('/cancel')) {
+      const task = tasks.find((value) => path.includes(`/${value.taskId}/`))
+      task.status = 'CANCELLED'
+      cancelled = task.taskId
+      return route.fulfill({ json: task })
+    }
+    return route.fulfill({ json: tasks.filter((task) => task.status === 'QUEUED') })
+  })
+  await page.goto('/?view=conversation')
+  const region = page.getByRole('region', { name: '后台任务' })
+  await expect(region.locator('article')).toHaveCount(10)
+  await region
+    .locator('article')
+    .filter({ hasText: 'queued-5' })
+    .getByRole('button', { name: '取消后台任务' })
+    .click()
+  await expect(region.locator('article')).toHaveCount(9)
+  expect(cancelled).toBe('2005')
+})
+
+test('full background queue promptly shows explicit busy refusal without an accepted task', async ({
+  page
+}) => {
+  await page.route('**/fixture-api/ai/conversations**', (route) => route.fulfill({ json: [] }))
+  await page.route('**/fixture-api/ai/tasks**', (route) =>
+    route.fulfill(
+      route.request().method() === 'POST'
+        ? {
+            status: 409,
+            json: { messageKey: 'i18n_ai_task_queue_full', msg: 'controlled full queue' }
+          }
+        : { json: [] }
+    )
+  )
+  await page.goto('/?view=conversation')
+  await page.getByRole('textbox', { name: '消息' }).fill('Queue refusal')
+  await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+  await expect(page.getByRole('alert')).toContainText('后台任务队列已满，请稍后重试。')
+  await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(0)
+})

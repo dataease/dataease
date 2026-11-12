@@ -100,6 +100,16 @@ export default {
     assistant: '助手'
   },
   ai_service: {
+    failure_task_queue_full: '後台任務佇列已滿，請稍後重試。',
+    failure_task_user_queue_full: '您的後台等待任務已達上限，請在任務開始或取消後重試。',
+    failure_queue_timeout: '後台任務等待逾時，未開始執行。',
+    task_scheduling: '後台任務調度',
+    task_scheduling_hint:
+      '後台任務運行槽與模型請求併發獨立。調低容量保留已受理任務；既有等待期限保持不變。',
+    task_maxRunning: '同時運行任務上限',
+    task_maxQueued: '系統等待任務上限',
+    task_maxQueuedPerUser: '每用戶等待任務上限',
+    task_maxWaitSeconds: '最長等待時間（秒）',
     records: '呼叫記錄',
     records_pending: '呼叫記錄功能待完善',
     records_description: '後續將在此顯示 AI 服務的呼叫記錄及執行詳情。',
@@ -308,9 +318,9 @@ export default {
     requestTimeoutSeconds: '請求超時（秒）',
     maxInputChars: '最大輸入長度（字符）',
     maxOutputTokens: '最大輸出長度（Token）',
-    interactiveConcurrency: '交互併發上限（個）',
-    backgroundConcurrency: '後台任務併發上限（個）',
-    background_hint: '後台併發不超過交互併發。',
+    interactiveConcurrency: '交互模型請求併發上限（個）',
+    backgroundConcurrency: '後台模型請求併發上限（個）',
+    background_hint: '後台模型請求併發不超過交互模型請求併發。',
     runtime_pending: '設置已保存，運行策略尚未生效。請稍後刷新。',
     select_all: '全選當前搜索結果',
     select_org: '選擇{name}'

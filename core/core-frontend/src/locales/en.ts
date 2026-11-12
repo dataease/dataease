@@ -109,6 +109,18 @@ export default {
     assistant: 'Assistant'
   },
   ai_service: {
+    failure_task_queue_full: 'The background task queue is full. Try again later.',
+    failure_task_user_queue_full:
+      'Your background task queue is full. Try again after a waiting task starts or is cancelled.',
+    failure_queue_timeout:
+      'The background task exceeded its maximum queue wait and was not started.',
+    task_scheduling: 'Background task scheduling',
+    task_scheduling_hint:
+      'Task slots are independent of model request limits. Lower limits preserve accepted work and its existing wait deadlines.',
+    task_maxRunning: 'Running task limit',
+    task_maxQueued: 'System queued task limit',
+    task_maxQueuedPerUser: 'Queued task limit per user',
+    task_maxWaitSeconds: 'Maximum wait (seconds)',
     records: 'Call records',
     records_pending: 'Call records are coming soon',
     records_description:
@@ -341,9 +353,10 @@ export default {
     requestTimeoutSeconds: 'Request timeout (seconds)',
     maxInputChars: 'Maximum input (characters)',
     maxOutputTokens: 'Maximum output (tokens)',
-    interactiveConcurrency: 'Interactive concurrency',
-    backgroundConcurrency: 'Background concurrency',
-    background_hint: 'Background concurrency must not exceed interactive concurrency.',
+    interactiveConcurrency: 'Interactive model request concurrency',
+    backgroundConcurrency: 'Background model request concurrency',
+    background_hint:
+      'Background model request concurrency must not exceed interactive model request concurrency.',
     runtime_pending: 'Settings are saved but not yet active. Refresh shortly.',
     select_all: 'Select all current search results',
     select_org: 'Select {name}'

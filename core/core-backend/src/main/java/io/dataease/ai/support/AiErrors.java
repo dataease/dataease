@@ -8,8 +8,11 @@ public final class AiErrors {
     public static final class Failure extends DEException {
         private final String safeCode;
         private Failure(String code) {
-            super("forbidden".equals(code) ? 403 : "conflict".equals(code) ? 409 : 500, Translator.get("i18n_ai_" + code));
+            super("forbidden".equals(code) ? 403 : ("conflict".equals(code) || "task_queue_full".equals(code) || "task_user_queue_full".equals(code)) ? 409 : 500, Translator.get("i18n_ai_" + code));
             safeCode = code;
+            if ("task_queue_full".equals(code) || "task_user_queue_full".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.CONFLICT); setMessageKey("i18n_ai_" + code);
+            }
         }
         public String safeCode() { return safeCode; }
     }

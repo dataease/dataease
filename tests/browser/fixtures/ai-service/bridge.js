@@ -26,7 +26,13 @@ const send = async (method, option) => {
     headers: { 'Content-Type': 'application/json' },
     signal: option.signal
   })
-  if (!response.ok) throw new Error('Synthetic API error')
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    throw Object.assign(new Error(body.msg || 'Synthetic API error'), {
+      messageKey: body.messageKey,
+      httpStatus: response.status
+    })
+  }
   return { data: await response.json() }
 }
 export default Object.fromEntries(

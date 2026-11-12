@@ -41,6 +41,12 @@ public class CoreAiTaskAttempt {
     @Column(name = "created_at", nullable = false)
     @Comment("created_at")
     private Long createdAt;
+    @Column(name = "queue_sequence")
+    @Comment("Shared monotonic acceptance order for per-user FIFO")
+    private Long queueSequence;
+    @Column(name = "queue_deadline")
+    @Comment("Fixed acceptance wait deadline; independent of execution deadline")
+    private Long queueDeadline;
     @Column(name = "started_at")
     @Comment("started_at")
     private Long startedAt;
