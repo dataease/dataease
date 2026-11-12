@@ -328,8 +328,8 @@ watch(
     if (fieldsLoaded.value && !applying.value) resetFields()
   }
 )
-watch(activeTab, tab => {
-  if (tab === 'preview') void preview()
+watch([activeTab, fieldsLoaded], ([tab, loaded]) => {
+  if (tab === 'preview' && loaded) void preview()
 })
 onBeforeUnmount(() => {
   ++fieldRequest
@@ -478,7 +478,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
         </div>
         <div v-show="activeTab === 'preview'" v-loading="previewLoading" class="node-preview">
           <el-button
-            :disabled="!selectedNode.currentDsFields.length"
+            :disabled="!fieldsLoaded || !selectedNode.currentDsFields.length"
             :loading="previewLoading"
             secondary
             @click="preview"
