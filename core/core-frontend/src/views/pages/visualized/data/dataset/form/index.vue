@@ -150,7 +150,16 @@ const changeNodeFieldType = (id: string, value: (number | string)[]) => {
   changeUpdate()
 }
 const changeEditorStep = async (step: 'relation' | 'process') => {
-  if (step === 'process' && !(await nodeDetails.value?.commit())) return
+  if (step === 'process') {
+    if (!(await nodeDetails.value?.commit())) return
+    const unnamedField = allfields.value.find(field => field.extField === 0 && !field.name?.trim())
+    if (unnamedField) {
+      expandedPanel.value = null
+      await selectCanvasNode(unnamedField.datasetTableId)
+      ElMessage.warning(t('dataset.input_edit_name'))
+      return
+    }
+  }
   if (step === 'relation') {
     ++datasetPreviewRequest
     previewQuery.invalidate()
