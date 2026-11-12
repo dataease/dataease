@@ -1477,13 +1477,12 @@ defineExpose({
     background: #fff;
 
     .filter-input {
-      margin: 16px 8px;
-      // width: 200px;
-      width: calc(100% - 16px);
+      margin: 16px;
+      width: calc(100% - 32px);
     }
     .tabs-mr {
-      .border-bottom-tab(30px);
-      margin: 0 30px;
+      .border-bottom-tab(16px);
+      margin: 0 16px;
     }
   }
   .role-tree-container {
@@ -1492,12 +1491,12 @@ defineExpose({
   .org-tree-container {
     height: calc(100% - 109px);
     width: 100%;
-    padding: 0px 8px;
+    padding: 0 16px;
   }
   .subject-tree-container {
     height: calc(100% - 109px);
     width: 100%;
-    padding: 0px 8px;
+    padding: 0 16px;
 
     .subject-tree-node.is-active {
       background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
@@ -1573,8 +1572,8 @@ defineExpose({
       // width: 190px;
     }
     .tabs-mr {
-      .border-bottom-tab(30px);
-      margin: 0 30px;
+      .border-bottom-tab(16px);
+      margin: 0 16px;
     }
   }
 
@@ -1588,7 +1587,7 @@ defineExpose({
       padding-top: 12px;
       font-size: 14px;
       div {
-        margin: 0 8px;
+        margin: 0 16px;
         display: flex;
         align-items: center;
         span {
