@@ -12,6 +12,7 @@ export interface AiTask {
   modelRevision?: number | null
   modelIdentifier?: string | null
   errorCode?: string | null
+  finishedAt?: number | null
   result?: AiAssistanceResult | null
 }
 export interface AiTaskOrigin {

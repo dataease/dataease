@@ -1504,3 +1504,47 @@ test('closed original conversation never receives late background result', async
   await expect(page.getByText('original background answer', { exact: true })).toHaveCount(0)
   await expect(page.getByText('first question', { exact: true })).toHaveCount(0)
 })
+
+test('a lost notice acknowledgement is retried after refresh without repeating its toast', async ({
+  page
+}) => {
+  let acknowledged = false
+  let deliveries = 0
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/ack')) {
+      deliveries++
+      if (deliveries === 1) return route.fulfill({ status: 503, json: {} })
+      acknowledged = true
+      return route.fulfill({ json: {} })
+    }
+    if (url.pathname.endsWith('/notices'))
+      return route.fulfill({
+        json: acknowledged
+          ? []
+          : [
+              {
+                taskId: '900',
+                attemptId: '901',
+                attemptNumber: 1,
+                status: 'COMPLETED',
+                expiresAt: Date.now() + 60000
+              }
+            ]
+      })
+    return route.fulfill({ json: [] })
+  })
+  await page.goto('/?view=conversation')
+  await expect(page.getByRole('alert').filter({ hasText: '后台任务已完成' })).toBeVisible()
+  await expect.poll(() => deliveries).toBe(1)
+  await page.reload()
+  await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(0)
+  await page.waitForTimeout(1100)
+  await expect.poll(() => acknowledged).toBeTruthy()
+  expect(deliveries).toBe(2)
+  await expect(page.getByRole('alert').filter({ hasText: '后台任务已完成' })).toHaveCount(0)
+  await expect(page.getByText('durable answer', { exact: true })).toHaveCount(0)
+})
