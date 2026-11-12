@@ -91,7 +91,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         };
     }
     /** Created only in the authenticated request; the worker receives no Servlet state or request-bound model. */
+    public record ModelSnapshot(Long id, Long revision, Long credentialRevision, String identifier) { }
     public interface StreamHandle extends AutoCloseable {
+        ModelSnapshot model();
         String executionId();
         long deadline();
         void verifyDelivery();
@@ -104,11 +106,14 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final CoreAiSetting settings;
         private Runnable verify;
         private final Runnable delivery;
-        private final AiTransport.Stream stream = transport.stream();
-        private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery) {
+        private final AiTransport.Stream stream;
+        private final ModelSnapshot model;
+        private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery, ModelSnapshot model) {
+            this.stream = transport.stream(context.background()); this.model = model;
             this.context = context; this.prompt = prompt; this.connection = connection; this.settings = settings; this.verify = verify; this.delivery = delivery;
         }
         public String executionId() { return context.executionId(); }
+        public ModelSnapshot model() { return model; }
         public long deadline() { return context.deadline(); }
         public void verifyDelivery() { delivery.run(); }
         public synchronized void start(Runnable progress, java.util.function.Consumer<String> delta, Runnable completed, java.util.function.Consumer<Throwable> failed) {
@@ -119,7 +124,13 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         @Override public synchronized void close() { stream.close(); connection = null; prompt = null; verify = null; }
     }
     public Streaming stream(String feature, AiDataScope scope, Prompt input) {
-        Context request = (Context) current(feature, scope);
+        return stream((Context) current(feature, scope), input);
+    }
+    public Streaming streamTask(String feature, String taskId, AiDataScope scope, Prompt input) {
+        return stream((Context) task(feature, taskId, scope), input);
+    }
+    private Streaming stream(Context request, Prompt input) {
+        String feature = request.feature(); AiDataScope scope = request.scope();
         caller(request);
         if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
         if (!feature(feature).supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
@@ -129,8 +140,8 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         if (scope.inputFingerprint() != null && !AiPromptFingerprint.of(prompt).equals(scope.inputFingerprint())) throw AiErrors.error("scope_changed");
         inspect(request, prompt);
         // Detached immutable authorization coordinates; never copy RequestAttributes into a worker.
-        Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), false,
-                request.deadline(), null, request.proxyBinding(), null, null, request.scope(), request.deployment());
+        Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
+                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment());
         var settingRevision = original.getRevision(); var modelId = model.getId();
         var configRevision = model.getConfigRevision(); var credentialRevision = model.getCredentialRevision();
         java.util.function.Consumer<Boolean> policy = enforceDeadline -> {
@@ -145,7 +156,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
         // Only detached setting values enter admission; no JPA/request-bound entity crosses threads.
         var settings = json.convertValue(original, CoreAiSetting.class);
-        return new Streaming(detached, prompt, connection, settings, verify, delivery);
+        return new Streaming(detached, prompt, connection, settings, verify, delivery, new ModelSnapshot(modelId, configRevision, credentialRevision, model.getModelIdentifier()));
     }
     /** Same execution/model snapshot across the entire bounded dialogue. No request or managed entity crosses threads. */
     public final class ToolStreaming implements StreamHandle {
@@ -153,10 +164,11 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final CoreAiSetting settings;
         private final Long modelId, configRevision, credentialRevision, settingRevision;
         private final AiToolProtocol.Budget budget;
+        private final String modelIdentifier;
         private AiTransport.ToolStream active;
         private volatile boolean closed;
         private ToolStreaming(Context context, CoreAiSetting settings, CoreAiModel model) {
-            this.context = context; this.settings = settings;
+            this.context = context; this.settings = settings; this.modelIdentifier = model.getModelIdentifier();
             modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
             budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens());
         }
@@ -168,6 +180,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                     || !Objects.equals(configRevision, current.getConfigRevision()) || !Objects.equals(credentialRevision, current.getCredentialRevision())) throw AiErrors.error("conflict");
             return current;
         }
+        public ModelSnapshot model() { return new ModelSnapshot(modelId, configRevision, credentialRevision, modelIdentifier); }
         public void verifyDelivery() { verify(false); }
         public void verifyStep() { verify(true); }
         public void result(String result) { budget.result(result); }
@@ -193,20 +206,26 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                     secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
             synchronized (this) {
                 if (closed) throw AiErrors.error("cancelled"); progress.run();
-                active = transport.toolStream();
+                active = transport.toolStream(context.background());
                 active.start(connection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed);
             }
         }
         public synchronized void close() { closed = true; if (active != null) active.close(); active = null; }
     }
     public ToolStreaming streamTools(String feature, AiDataScope scope, AiToolProtocol.Input input) {
-        Context request = (Context) current(feature, scope); caller(request);
+        return streamTools((Context) current(feature, scope), input);
+    }
+    public ToolStreaming streamTaskTools(String feature, String taskId, AiDataScope scope, AiToolProtocol.Input input) {
+        return streamTools((Context) task(feature, taskId, scope), input);
+    }
+    private ToolStreaming streamTools(Context request, AiToolProtocol.Input input) {
+        String feature = request.feature(); AiDataScope scope = request.scope(); caller(request);
         if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
         if (!(feature(feature) instanceof AiToolConversationFeature toolFeature) || !toolFeature.supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
         if (scope.inputFingerprint() == null || !scope.inputFingerprint().equals(AiToolProtocol.fingerprint(input))) throw AiErrors.error("scope_changed");
         var original = configuration.setting(); var model = resolve(request, original); toolFeature.authorizeToolInput(request, input);
-        Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), false,
-                request.deadline(), null, request.proxyBinding(), null, null, request.scope(), request.deployment());
+        Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
+                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment());
         return new ToolStreaming(detached, json.convertValue(original, CoreAiSetting.class), model);
     }
     private void inspect(Context context, Prompt prompt) {

@@ -1,0 +1,385 @@
+package io.dataease.ai.manage;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.ai.dao.entity.*;
+import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiToolProtocol;
+import io.dataease.api.ai.runtime.*;
+import io.dataease.api.ai.conversation.AiConversationDtos.Tool;
+import io.dataease.api.ai.conversation.AiConversationDtos.Result;
+import jakarta.annotation.PreDestroy;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import io.dataease.api.ai.task.AiTaskDtos.*;
+import io.dataease.utils.IDUtils;
+import jakarta.persistence.*;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/** Durable owner of independent background assistance. All database transactions are short. */
+@Component
+public class AiTaskManage implements AiToolConversationFeature {
+    private static final long NODE_LEASE_MILLIS = 15000;
+    private final String nodeId = UUID.randomUUID().toString();
+    private final AtomicBoolean started = new AtomicBoolean();
+    private volatile boolean stopped;
+    private final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-heartbeat"));
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-dispatch"));
+    private final Map<Long, Run> running = new ConcurrentHashMap<>();
+    private record Work(Long taskId, Long attemptId, String fence, AiAccess.Identity owner, Submit input, AiConversationScene.Context context) { }
+    private static final class Run {
+        final Work work;
+        volatile AiRuntimeManage.StreamHandle stream;
+        final StringBuilder text = new StringBuilder();
+        final List<AiToolProtocol.Message> transcript = new ArrayList<>();
+        final List<Tool> tools = new ArrayList<>();
+        final Set<String> ids = new HashSet<>(), requests = new HashSet<>();
+        int toolSteps;
+        volatile String failureCode;
+        Run(Work work) { this.work = work; }
+    }
+    private static Thread daemon(Runnable work, String name) { var thread = new Thread(work, name); thread.setDaemon(true); return thread; }
+    private final EntityManager em;
+    private final TransactionTemplate tx;
+    private final Map<String, AiConversationScene> scenes;
+    private final ObjectProvider<AiRuntimeManage> runtime;
+    private final AiAccess access;
+    private final ObjectMapper json;
+    public AiTaskManage(EntityManager em, PlatformTransactionManager manager, ObjectProvider<AiConversationScene> scenes,
+                        ObjectProvider<AiRuntimeManage> runtime, AiAccess access, ObjectMapper json) {
+        this.em = em; tx = new TransactionTemplate(manager); this.runtime = runtime; this.access = access; this.json = json;
+        this.scenes = scenes.stream().collect(Collectors.toUnmodifiableMap(AiConversationScene::code, scene -> scene));
+    }
+    public Task submit(Submit request) {
+        var owner = identity();
+        if (request == null || !key(request.submissionKey()) || request.editorId() == null || request.editorId().isBlank() || request.editorId().length() > 100
+                || request.text() == null || request.text().isBlank() || request.text().length() > 30000
+                || request.sql() != null && request.sql().length() > 30000
+                || request.resourceId() != null && !request.resourceId().matches("[0-9]{1,20}|")) throw AiErrors.error("invalid");
+        var scene = scene(request.scene());
+        if (!scene.capability().equals(request.capability())) throw AiErrors.error("unsupported");
+        String binding = AiAccess.binding(owner), submission = hash(binding + ":" + request.submissionKey());
+        String input = encode(new Submit(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text()));
+        String fingerprint = hash(input);
+        var existing = bySubmission(submission);
+        if (existing != null) return repeated(existing, fingerprint, owner);
+        var context = authorized(owner, () -> {
+            var resolved = scene.resolve(Objects.toString(request.resourceId(), ""), Objects.toString(request.sql(), ""));
+            scene.authorize(resolved); return resolved;
+        });
+        try {
+            Task accepted = tx.execute(status -> {
+                // Serialize only bounded admission against the existing singleton; no external I/O under this lock.
+                em.find(CoreAiSetting.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+                var duplicate = bySubmission(submission);
+                if (duplicate != null) {
+                    if (!fingerprint.equals(duplicate.getInputHash())) throw AiErrors.error("conflict");
+                    return view(duplicate);
+                }
+                admission(binding);
+                var task = new CoreAiTask(); task.setId(IDUtils.snowID()); task.setOwnerBinding(binding);
+                task.setSubmissionHash(submission); task.setInputHash(fingerprint); task.setInputJson(input); task.setOwnerJson(encode(owner));
+                task.setContextJson(encode(context)); task.setCreatedAt(System.currentTimeMillis());
+                var attempt = attempt(task, 1, hash(task.getId() + ":initial"));
+                task.setCurrentAttemptId(attempt.getId()); em.persist(task); em.persist(attempt); em.flush(); return view(task);
+            });
+            return checkedView(em.find(CoreAiTask.class, accepted.taskId()), owner);
+        } catch (RuntimeException failure) {
+            // A unique constraint settles duplicate requests even across independent nodes.
+            existing = bySubmission(submission);
+            if (existing != null) return repeated(existing, fingerprint, owner);
+            throw failure;
+        }
+    }
+    private void admission(String binding) {
+        Long total = em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status in ('QUEUED','RUNNING')", Long.class).getSingleResult();
+        Long own = em.createQuery("select count(t) from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and t.ownerBinding=:owner and a.status in ('QUEUED','RUNNING')", Long.class)
+                .setParameter("owner", binding).getSingleResult();
+        if (total >= 200 || own >= 4) throw AiErrors.error("concurrency");
+    }
+    private CoreAiTaskAttempt attempt(CoreAiTask task, int number, String retryHash) {
+        var attempt = new CoreAiTaskAttempt(); attempt.setId(IDUtils.snowID()); attempt.setTaskId(task.getId());
+        attempt.setAttemptNumber(number); attempt.setRetryHash(retryHash); attempt.setStatus("QUEUED"); attempt.setCreatedAt(System.currentTimeMillis()); return attempt;
+    }
+    public List<Task> active() {
+        var owner = identity();
+        var rows = em.createQuery("select t from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and t.ownerBinding=:owner and a.status in ('QUEUED','RUNNING') order by t.createdAt", CoreAiTask.class)
+                .setParameter("owner", AiAccess.binding(owner)).setMaxResults(4).getResultList();
+        return rows.stream().map(task -> checkedView(task, owner)).toList();
+    }
+    public Task get(Long id) { return checkedView(owned(id), identity()); }
+    public Task cancel(Long id) {
+        var task = owned(id);
+        return tx.execute(status -> {
+            var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
+            var attempt = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId(), LockModeType.PESSIMISTIC_WRITE);
+            if (Set.of("QUEUED", "RUNNING").contains(attempt.getStatus())) {
+                attempt.setStatus("CANCELLED"); attempt.setFinishedAt(System.currentTimeMillis());
+                attempt.setFence(null); attempt.setNodeId(null); attempt.setErrorCode("cancelled"); em.flush();
+            }
+            // Cancellation is a cleanup operation; it never delivers a protected resource/result.
+            return new Task(locked.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), null, null, null,
+                    locked.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), null, null, null, null);
+        });
+    }
+    public Task retry(Long id, Retry request) {
+        var task = owned(id); var owner = identity();
+        checkedView(task, owner);
+        if (request == null || !key(request.retryKey()) || request.expectedAttemptId() == null) throw AiErrors.error("invalid");
+        String retry = hash(task.getId() + ":" + request.retryKey());
+        Task accepted = tx.execute(status -> {
+            em.find(CoreAiSetting.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+            var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
+            var duplicate = em.createQuery("select a from CoreAiTaskAttempt a where a.retryHash=:hash", CoreAiTaskAttempt.class)
+                    .setParameter("hash", retry).setMaxResults(1).getResultList();
+            if (!duplicate.isEmpty()) {
+                if (!Objects.equals(duplicate.get(0).getSourceAttemptId(), request.expectedAttemptId())) throw AiErrors.error("conflict");
+                return view(locked, duplicate.get(0));
+            }
+            var previous = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId());
+            if (!Objects.equals(previous.getId(), request.expectedAttemptId()) || !Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(previous.getStatus()))
+                throw AiErrors.error("conflict");
+            admission(locked.getOwnerBinding());
+            var next = attempt(locked, previous.getAttemptNumber() + 1, retry); next.setSourceAttemptId(previous.getId()); em.persist(next);
+            locked.setCurrentAttemptId(next.getId()); em.flush(); return view(locked, next);
+        });
+        // A repeated retry may already have a result; recheck delivery after releasing all database locks.
+        return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return accepted; });
+    }
+    private Task repeated(CoreAiTask task, String fingerprint, AiAccess.Identity owner) {
+        if (!fingerprint.equals(task.getInputHash())) throw AiErrors.error("conflict");
+        return checkedView(task, owner);
+    }
+    private Task checkedView(CoreAiTask task, AiAccess.Identity owner) {
+        if (!AiAccess.binding(owner).equals(task.getOwnerBinding())) throw AiErrors.error("forbidden");
+        return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return view(task); });
+    }
+    private Task view(CoreAiTask task) {
+        return view(task, em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId()));
+    }
+    private Task view(CoreAiTask task, CoreAiTaskAttempt attempt) {
+        var input = input(task); var context = context(task);
+        return new Task(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), input.scene(), context.resourceId(), context.resourceName(),
+                task.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), attempt.getModelId(), attempt.getModelRevision(), attempt.getModelIdentifier(),
+                attempt.getResultJson() == null ? null : decode(attempt.getResultJson(), io.dataease.api.ai.conversation.AiConversationDtos.Result.class));
+    }
+    private CoreAiTask owned(Long id) {
+        var owner = identity(); var task = id == null ? null : em.find(CoreAiTask.class, id);
+        if (task == null || !task.getOwnerBinding().equals(AiAccess.binding(owner))) throw AiErrors.error("forbidden"); return task;
+    }
+    private CoreAiTask bySubmission(String hash) {
+        return em.createQuery("select t from CoreAiTask t where t.submissionHash=:hash", CoreAiTask.class).setParameter("hash", hash).setMaxResults(1).getResultList().stream().findFirst().orElse(null);
+    }
+    private AiAccess.Identity identity() {
+        if (RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
+        var owner = access.capture(); access.verify(owner, false); return owner;
+    }
+    private <T> T authorized(AiAccess.Identity owner, java.util.function.Supplier<T> operation) { return new AiIdentityScope(access).call(owner, operation); }
+    private Submit input(CoreAiTask task) { return decode(task.getInputJson(), Submit.class); }
+    private AiConversationScene.Context context(CoreAiTask task) { return decode(task.getContextJson(), AiConversationScene.Context.class); }
+    private AiConversationScene scene(String code) { var scene = scenes.get(code); if (scene == null) throw AiErrors.error("unsupported"); return scene; }
+    private boolean key(String value) { return value != null && value.matches("[A-Za-z0-9_-]{1,100}"); }
+    private String encode(Object value) { try { return json.writeValueAsString(value); } catch (Exception failure) { throw AiErrors.error("invalid"); } }
+    private <T> T decode(String value, Class<T> type) { try { return json.readValue(value, type); } catch (Exception failure) { throw AiErrors.error("scope_changed"); } }
+    private String hash(String value) { try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8))); } catch (Exception failure) { throw new IllegalStateException(failure); } }
+    @Override public String code() { return "background-assistance"; }
+    @Override public boolean supportsStreaming() { return true; }
+    @Override public TaskIdentity taskIdentity(String taskId) {
+        var task = task(taskId); var attempt = em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId());
+        live(attempt);
+        var owner = decode(task.getOwnerJson(), AiAccess.Identity.class);
+        access.verify(owner, false);
+        return new TaskIdentity(owner.actor(), owner.organization(), owner.proxy(), attempt.getId() + ":" + attempt.getFence());
+    }
+    @Override public void authorize(AiExecutionContext execution) {
+        if (!execution.background()) throw AiErrors.error("forbidden");
+        var task = task(execution.scope().reference()); var attempt = em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId());
+        live(attempt);
+        var owner = decode(task.getOwnerJson(), AiAccess.Identity.class);
+        if (!Objects.equals(execution.scope().permissionVersion(), attempt.getId() + ":" + attempt.getFence())
+                || !Objects.equals(owner.actor(), execution.actorId()) || !Objects.equals(owner.organization(), execution.organizationId())
+                || !Objects.equals(owner.proxy(), execution.proxyOrganizationId())) throw AiErrors.error("forbidden");
+        authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return null; });
+    }
+    @Override public void authorizeInput(AiExecutionContext context, Prompt prompt) { authorize(context); }
+    @Override public void authorizeToolInput(AiExecutionContext execution, AiToolProtocol.Input input) {
+        authorize(execution); var task = task(execution.scope().reference());
+        if (!scene(input(task).scene()).tools(context(task)).equals(input.tools())) throw AiErrors.error("scope_changed");
+    }
+    private CoreAiTask task(String id) {
+        try { var task = em.find(CoreAiTask.class, Long.valueOf(id)); if (task != null) return task; }
+        catch (NumberFormatException ignored) { }
+        throw AiErrors.error("forbidden");
+    }
+    private void live(CoreAiTaskAttempt attempt) {
+        if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || attempt.getFence() == null || attempt.getNodeId() == null) throw AiErrors.error("cancelled");
+        var node = em.find(CoreAiTaskNode.class, attempt.getNodeId());
+        if (node == null || node.getHeartbeatAt() <= System.currentTimeMillis() - NODE_LEASE_MILLIS) throw AiErrors.error("cancelled");
+    }
+    /** Starts only after versioned migrations and all application runners have completed. */
+    @EventListener(ApplicationReadyEvent.class)
+    public void start() {
+        if (!started.compareAndSet(false, true)) return;
+        tx.executeWithoutResult(status -> {
+            var node = new CoreAiTaskNode(); node.setId(nodeId); node.setHeartbeatAt(System.currentTimeMillis()); em.persist(node);
+        });
+        heartbeat.scheduleWithFixedDelay(this::pulse, 1000, 1000, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(this::dispatch, 0, 250, TimeUnit.MILLISECONDS);
+    }
+    private void pulse() {
+        if (stopped) return;
+        try {
+            boolean alive = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskNode n set n.heartbeatAt=:now where n.id=:id and n.heartbeatAt>:cutoff")
+                    .setParameter("now", System.currentTimeMillis()).setParameter("id", nodeId).setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS).executeUpdate() == 1));
+            if (!alive) { stopped = true; interruptOwn(); running.values().forEach(this::close); running.clear(); }
+        } catch (RuntimeException unavailable) { /* Lease expires closed; every execution boundary checks durable ownership. */ }
+    }
+    private void dispatch() {
+        if (stopped) return;
+        try {
+            tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.status='INTERRUPTED', a.errorCode='interrupted', a.finishedAt=:now, a.fence=null, a.nodeId=null where a.status='RUNNING' and a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff)")
+                    .setParameter("now", System.currentTimeMillis()).setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS).executeUpdate());
+            for (Run run : running.values()) {
+                if (run.failureCode != null) { fail(run, AiErrors.error(run.failureCode)); continue; }
+                try { active(run); }
+                catch (RuntimeException terminal) { fail(run, terminal); }
+            }
+            while (!stopped && running.size() < 2) {
+                Work work = claim(); if (work == null) break;
+                var run = new Run(work); running.put(work.attemptId(), run);
+                try { execute(run); } catch (RuntimeException failure) { fail(run, failure); }
+            }
+        } catch (RuntimeException unavailable) { /* Durable queue survives; no model submission until database recovery. */ }
+    }
+    private Work claim() {
+        return tx.execute(status -> {
+            var node = em.find(CoreAiTaskNode.class, nodeId);
+            if (node == null || node.getHeartbeatAt() <= System.currentTimeMillis() - NODE_LEASE_MILLIS) return null;
+            var candidates = em.createQuery("select a.id from CoreAiTaskAttempt a where a.status='QUEUED' order by a.createdAt,a.id", Long.class).setMaxResults(20).getResultList();
+            for (Long id : candidates) {
+                String fence = UUID.randomUUID().toString();
+                int won = em.createQuery("update CoreAiTaskAttempt a set a.status='RUNNING', a.nodeId=:node, a.fence=:fence, a.startedAt=:now where a.id=:id and a.status='QUEUED'")
+                        .setParameter("node", nodeId).setParameter("fence", fence).setParameter("now", System.currentTimeMillis()).setParameter("id", id).executeUpdate();
+                if (won != 1) continue;
+                var attempt = em.find(CoreAiTaskAttempt.class, id); var task = em.find(CoreAiTask.class, attempt.getTaskId());
+                return new Work(task.getId(), id, fence, decode(task.getOwnerJson(), AiAccess.Identity.class), input(task), context(task));
+            }
+            return null;
+        });
+    }
+    private void active(Run run) {
+        if (stopped || running.get(run.work.attemptId()) != run) throw AiErrors.error("cancelled");
+        var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId()); live(attempt);
+        if (!Objects.equals(run.work.fence(), attempt.getFence()) || !nodeId.equals(attempt.getNodeId())) throw AiErrors.error("cancelled");
+        if (run.stream != null && System.currentTimeMillis() >= run.stream.deadline()) throw AiErrors.error("timeout");
+    }
+    private void check(Run run) {
+        active(run); authorized(run.work.owner(), () -> { scene(run.work.input().scene()).authorize(run.work.context()); return null; });
+    }
+    private void execute(Run run) {
+        check(run);
+        var work = run.work; var scene = scene(work.input().scene());
+        var definitions = scene.tools(work.context());
+        String draft = AiPromptFingerprint.of(new Prompt(Objects.toString(work.input().sql(), "")));
+        String version = work.attemptId() + ":" + work.fence();
+        AiRuntimeManage.StreamHandle stream;
+        AiToolProtocol.Input input = null;
+        if (definitions.isEmpty()) {
+            var prompt = new Prompt(List.of(new SystemMessage(work.context().instruction()), new UserMessage(work.input().text())));
+            stream = runtime.getObject().streamTask(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiPromptFingerprint.of(prompt), false, null), prompt);
+        } else {
+            run.transcript.add(AiToolProtocol.Message.text("system", work.context().instruction()));
+            run.transcript.add(AiToolProtocol.Message.text("user", work.input().text())); input = new AiToolProtocol.Input(run.transcript, definitions);
+            stream = runtime.getObject().streamTaskTools(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiToolProtocol.fingerprint(input), false, null), input);
+        }
+        run.stream = stream;
+        var model = stream.model();
+        // Pin actual selected model before any network send; a failed state commit cannot submit a request.
+        boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.modelId=:model, a.modelRevision=:revision, a.credentialRevision=:credential, a.modelIdentifier=:identifier, a.deadline=:deadline where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
+                .setParameter("model", model.id()).setParameter("revision", model.revision()).setParameter("credential", model.credentialRevision()).setParameter("identifier", model.identifier())
+                .setParameter("deadline", stream.deadline()).setParameter("id", work.attemptId()).setParameter("fence", work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+        if (!saved) throw AiErrors.error("cancelled");
+        if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> active(run), value -> append(run, value), step -> step(run, step), failure -> fail(run, failure));
+        else ((AiRuntimeManage.Streaming) stream).start(() -> active(run), value -> append(run, value), () -> complete(run, draft), failure -> fail(run, failure));
+    }
+    private void append(Run run, String value) {
+        synchronized (run) {
+            active(run); if (run.text.length() + value.length() > 262144) throw AiErrors.error("output_limit"); run.text.append(value);
+        }
+    }
+    private void step(Run run, AiToolProtocol.Step step) {
+        try {
+            check(run); var stream = (AiRuntimeManage.ToolStreaming) run.stream; stream.verifyStep();
+            if (step.calls().isEmpty()) {
+                complete(run, AiPromptFingerprint.of(new Prompt(Objects.toString(run.work.input().sql(), "")))); return;
+            }
+            if (step.calls().size() != 1 || run.toolSteps >= AiToolProtocol.MAX_MODEL_STEPS - 1) throw AiErrors.error("output_limit");
+            var call = step.calls().get(0); var scene = scene(run.work.input().scene());
+            var definition = scene.tools(run.work.context()).stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
+            var arguments = AiToolProtocol.arguments(definition, call);
+            if (!run.ids.add(call.id()) || !run.requests.add(call.name() + ":" + new TreeMap<>(arguments))) throw AiErrors.error("output_limit");
+            run.toolSteps++;
+            String result = authorized(run.work.owner(), () -> {
+                check(run); stream.verifyStep();
+                String value = scene.execute(run.work.context(), call.name(), arguments, () -> active(run), stream.deadline());
+                check(run); stream.verifyStep(); return value;
+            });
+            active(run); stream.result(result);
+            run.tools.add(new Tool(call.id(), call.name(), "SUCCEEDED", arguments, result));
+            run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, result));
+            stream.send(new AiToolProtocol.Input(run.transcript, scene.tools(run.work.context())), () -> active(run), value -> append(run, value), next -> step(run, next), failure -> fail(run, failure));
+        } catch (RuntimeException failure) { fail(run, failure); }
+    }
+    private void complete(Run run, String draft) {
+        try {
+            check(run); run.stream.verifyDelivery();
+            if (run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
+            Result result = scene(run.work.input().scene()).result(run.work.context(), run.text.toString(), run.tools, run.work.input().editorId(), draft);
+            String encoded = encode(result);
+            if (encoded.getBytes(StandardCharsets.UTF_8).length > 1048576) throw AiErrors.error("output_limit");
+            terminal(run, "COMPLETED", null, encoded);
+        } catch (RuntimeException failure) { fail(run, failure); }
+    }
+    private void fail(Run run, Throwable failure) {
+        String code = failure instanceof AiErrors.Failure known ? known.safeCode() : "upstream_failed";
+        try { terminal(run, "FAILED", code, null); }
+        catch (RuntimeException unavailable) {
+            // Keep a bounded slot until a failure terminal can commit; never strand RUNNING under a healthy node.
+            close(run); run.failureCode = code;
+            if (!stopped) running.putIfAbsent(run.work.attemptId(), run);
+        }
+    }
+    private void terminal(Run run, String state, String error, String result) {
+        try {
+            tx.executeWithoutResult(status -> {
+                // The lock orders terminal commit against cancellation/retry. DB ownership is the final arbiter.
+                var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId(), LockModeType.PESSIMISTIC_WRITE);
+                if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !nodeId.equals(attempt.getNodeId())) return;
+                live(attempt);
+                attempt.setStatus(state); attempt.setErrorCode(error); attempt.setResultJson(result); attempt.setFinishedAt(System.currentTimeMillis());
+                attempt.setNodeId(null); attempt.setFence(null); em.flush();
+            });
+        } finally { close(run); running.remove(run.work.attemptId(), run); }
+    }
+    private void close(Run run) { if (run.stream != null) run.stream.close(); }
+    private void interruptOwn() {
+        tx.executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.status='INTERRUPTED', a.errorCode='interrupted', a.finishedAt=:now, a.nodeId=null, a.fence=null where a.status='RUNNING' and a.nodeId=:node")
+                .setParameter("now", System.currentTimeMillis()).setParameter("node", nodeId).executeUpdate());
+    }
+    @PreDestroy public void destroy() {
+        stopped = true; scheduler.shutdownNow(); heartbeat.shutdownNow();
+        if (started.get()) { try { interruptOwn(); } finally { running.values().forEach(this::close); running.clear(); } }
+    }
+}

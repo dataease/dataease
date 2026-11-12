@@ -15,6 +15,8 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--task-contracts', action='store_true', help='fast public task contract loop, excluding cross-JVM tests')
+    parser.add_argument('--only-tasks', action='store_true', help='run focused persistent task regressions')
     parser.add_argument('--xpack', action='store_true', help='also compile the two changed private extension sources')
     parser.add_argument('--ai-classpath', default=os.environ.get('AI_SERVICE_DEPENDENCY_CP_FILE'), help='Maven-resolved Spring AI dependency classpath file')
     parser.add_argument('--redis-server', help='existing local Redis binary; start only an owned temporary loopback instance')
@@ -76,6 +78,7 @@ def main():
             'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/org/api/AiOrganizationLifecycle.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiKeyringInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecordsMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/menu/manage/MenuManage.java',
@@ -89,6 +92,10 @@ def main():
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/org/manage/OrgPageManage.java'])
         sources.extend((root/'tests/ai-service').glob('*.java'))
         java = ['java']
+        if args.only_tasks or args.task_contracts:
+            java.append('-Dai.test.onlyTasks=true')
+        if args.task_contracts:
+            java.append('-Dai.test.taskContractsOnly=true')
         redis = None
         if args.redis_server:
             with socket.socket() as reserved:
@@ -111,7 +118,7 @@ def main():
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
         try:
             for command in commands:
-                result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=120)
+                result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=240)
                 if result.returncode:
                     print('\n'.join((result.stdout + result.stderr).splitlines()[-100:]))
                     return result.returncode

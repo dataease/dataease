@@ -5,6 +5,7 @@ import io.dataease.initSql.Version;
 import jakarta.persistence.*;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.jdbc.Size;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -62,7 +63,7 @@ public class AiConfigurationInit implements CoreSqlBlock {
             return false;
         }));
     }
-    private void create(Class<?> entity) {
+    void create(Class<?> entity) {
         String table = entity.getAnnotation(Table.class).name(); if (tableExists(table)) return;
         var session = factory.unwrap(SessionFactoryImplementor.class);
         var dialect = session.getJdbcServices().getDialect();
@@ -71,13 +72,13 @@ public class AiConfigurationInit implements CoreSqlBlock {
         for (Class<?> type = entity; type != Object.class; type = type.getSuperclass()) for (Field field : type.getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class); if (column == null) continue;
             int code = field.getType() == Long.class ? Types.BIGINT : field.getType() == Integer.class ? Types.INTEGER
-                    : field.getType() == Boolean.class ? dialect.getPreferredSqlTypeCodeForBoolean() : field.isAnnotationPresent(Lob.class) ? Types.CLOB : Types.VARCHAR;
-            String sqlType = code == Types.VARCHAR ? types.getTypeName(code, Size.length(column.length())) : types.getTypeName(code, dialect);
+                    : field.getType() == Boolean.class ? dialect.getPreferredSqlTypeCodeForBoolean() : field.isAnnotationPresent(Lob.class) ? Types.CLOB : field.isAnnotationPresent(JdbcTypeCode.class) ? field.getAnnotation(JdbcTypeCode.class).value() : Types.VARCHAR;
+            String sqlType = (code == Types.VARCHAR || code == Types.LONGVARCHAR) ? types.getTypeName(code, Size.length(column.length())) : types.getTypeName(code, dialect);
             columns.add(column.name() + " " + sqlType + (field.isAnnotationPresent(Id.class) ? " primary key" : !column.nullable() ? " not null" : ""));
         }
         jdbc.execute("create table " + table + " (" + String.join(",", columns) + ")");
     }
-    private void index(String table, String name, String column, boolean unique) {
+    void index(String table, String name, String column, boolean unique) {
         boolean exists = Boolean.TRUE.equals(jdbc.execute((org.springframework.jdbc.core.ConnectionCallback<Boolean>) c -> {
             for (String spelling : List.of(table, table.toUpperCase(Locale.ROOT))) {
                 try (ResultSet indexes = c.getMetaData().getIndexInfo(c.getCatalog(), c.getSchema(), spelling, false, false)) {
