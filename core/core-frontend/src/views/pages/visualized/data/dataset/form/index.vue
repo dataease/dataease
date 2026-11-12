@@ -1932,7 +1932,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       >
         <div class="table-list-top">
           <el-switch
-            style="margin-bottom: 8px"
+            style="margin-bottom: 16px"
             v-model="isCross"
             v-if="!singleValData"
             @change="sourceChange"
