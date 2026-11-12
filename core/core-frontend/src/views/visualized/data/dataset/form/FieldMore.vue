@@ -245,6 +245,11 @@ const handleChange = () => {
         right: 11px;
         transform: translateY(-50%);
       }
+      // 组件默认把滚动容器固定为 204px，菜单项不足 6 项时多出的高度全部堆在底部
+      .ed-cascader-menu__wrap.ed-scrollbar__wrap {
+        height: auto;
+        max-height: 204px;
+      }
     }
   }
 }
