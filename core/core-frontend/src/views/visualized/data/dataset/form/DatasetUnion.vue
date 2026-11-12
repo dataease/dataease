@@ -463,51 +463,44 @@ const handleCommand = (ele, command) => {
 
   if (command === 'del') {
     delNodeFake(ele.id, state.nodeList)
-    if (!!fakeDelId.length) {
-      const idArr = allfields.value.reduce((pre, next) => {
-        if (next.extField === 2) {
-          const idMap = next.originName.match(/\[(.+?)\]/g) || []
-          const result = idMap.map(itm => {
-            return itm.slice(1, -1)
-          })
-          result.forEach(ele => {
-            if (fakeDelId.includes(ele)) {
-              pre.push(ele)
-            }
-          })
-        }
-        return pre
-      }, [])
-      fakeDelId = []
-      if (!!idArr.length) {
-        ElMessageBox.confirm(t('data_set.confirm_to_delete', { a: ele.tableName }), {
-          confirmButtonText: t('dataset.confirm'),
-          cancelButtonText: t('common.cancel'),
-          showCancelButton: true,
-          tip: t('data_set.also_be_deleted'),
-          confirmButtonType: 'danger',
-          type: 'warning',
-          autofocus: false,
-          showClose: false,
-          callback: (action: Action) => {
-            if (action === 'confirm') {
-              delNode(ele.id, state.nodeList)
-              nextTick(() => {
-                emits('addComplete')
-                emits('updateAllfields')
-              })
-            }
-          }
-        })
-        return
-      }
+    const removedFieldIds = new Set(fakeDelId)
+    fakeDelId = []
+    const hasCalculatedFields = allfields.value.some(
+      field =>
+        field.extField === 2 &&
+        field.originName.match(/\[(.+?)\]/g)?.some(id => removedFieldIds.has(id.slice(1, -1)))
+    )
+    const hasJoin =
+      !state.nodeList.some(node => node.id === ele.id) || ele.children?.some(node => !node.isShadow)
+    const remove = () => {
+      delNode(ele.id, state.nodeList)
+      nextTick(() => {
+        emits('addComplete')
+        emits('updateAllfields')
+      })
     }
 
-    delNode(ele.id, state.nodeList)
-    nextTick(() => {
-      emits('addComplete')
-      emits('updateAllfields')
-    })
+    if (hasJoin || hasCalculatedFields) {
+      const tips = []
+      if (hasJoin) tips.push(t('data_set.delete_node_join_tip'))
+      if (hasCalculatedFields) tips.push(t('data_set.also_be_deleted'))
+      ElMessageBox.confirm(t('data_set.confirm_to_delete', { a: ele.tableName }), {
+        confirmButtonText: t('dataset.confirm'),
+        cancelButtonText: t('common.cancel'),
+        showCancelButton: true,
+        tip: tips.join(' '),
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false,
+        callback: (action: Action) => {
+          if (action === 'confirm') remove()
+        }
+      })
+      return
+    }
+
+    remove()
   }
 }
 

@@ -304,8 +304,9 @@ export default {
     confirm_the_deletion:
       'Not checked, the associated calculated fields will be deleted, confirm the deletion? ',
     confirm_to_delete: 'Are you sure you want to delete {a}?',
-    also_be_deleted:
-      'After deletion, the associated table or sql fragment will be deleted, and the associated calculated fields will also be deleted. ',
+    delete_node_join_tip:
+      'This node’s joins will be removed. Any downstream nodes will also be deleted.',
+    also_be_deleted: 'Calculated fields that depend on the deleted nodes will also be deleted.',
     deleted_confirm_deletion:
       'If the field is deleted, the associated calculated fields will be deleted, confirm the deletion? ',
     delete_field_a: 'Are you sure you want to delete field {a}?',
