@@ -222,3 +222,18 @@ uv run python tests/ai-service/run.py --task-progress --progress-case text-burst
 ## 任务迁移升级回归
 
 `uv run python tests/ai-service/run.py --task-upgrade --ai-classpath <已有依赖 classpath 文件>` 通过真实 `InitSqlListener`、JPA 版本记录仓库与隔离 H2 验证启动升级，关闭 `ddl-auto`。覆盖已完成上游数据源语义迁移 `2.48` 且尚无 AI 任务表，以及从 `2.47` 依序升级的情况：`2.49` 建任务表、`2.50` 补交付字段，保留语义数据；另覆盖 `2.49` 存量任务表缺交付列的启动补列及旧结果回填。重复启动不重复执行或破坏结果。该回归验证实际 DDL 与启动排序，不仅检查版本号；不代表已验证其他数据库上的真实升级。
+
+## Declared resource mutex regressions
+
+```sh
+uv run python tests/ai-service/run.py --task-mutex --ai-classpath /path/to/existing-classpath.txt
+uv run python tests/ai-service/run.py --task-structure --ai-classpath /path/to/existing-classpath.txt
+uv run python tests/ai-service/run.py --task-upgrade --ai-classpath /path/to/existing-classpath.txt
+AI_BROWSER_TEST_PORT=4297 npm --prefix tests/browser test -- --config=playwright.ai-conversation.config.mjs
+```
+
+`--task-mutex` uses independent real HTTP/MVC/runtime/JPA JVMs sharing an owned H2 TCP database and controlled scene, identity and loopback-model boundaries. It covers overlapping batches and races, queue rejection without residue, task/retry replay, own-task location and cross-owner privacy, different datasources/operations, undeclared SQL, accepted queue expiry, complete/cancel/execute-timeout release, held automatic-backoff claims and cancellation, node lease fencing and late old results against a replacement owner. It observes public responses rather than treating local executor state as the lock.
+
+`--task-structure` uses the actual controlled structure scene and SQL scene with an approved external DatasourceApi/permission fixture. It verifies authoritative canonical names, metadata reads outside metadata transactions, a changed field snapshot refused before model send, and an explanation-only result. No candidate SQL, data row read or source business write is allowed by the datasource fixture. `--task-upgrade` exercises the real startup/version boundary through ordered resource migration `2.53` and repeat startup. The Vue suite loads the actual Demo component/API and covers explicit batch selection, shared current-message submission, safe busy refusal and same-owner location.
+
+These fixtures use synthetic identities and models, owned H2 and loopback ports. They do not establish real XPack licensing/workspace authorization, live database dialect compatibility, current configured-model behavior or product Redis cluster admission; record those independently. The controlled scene is resource-mutex acceptance and read-only structure explanation, not semantic generation or business delivery.

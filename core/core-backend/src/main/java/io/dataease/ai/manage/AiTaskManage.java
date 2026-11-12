@@ -84,15 +84,17 @@ public class AiTaskManage implements AiToolConversationFeature {
         String binding = AiAccess.binding(owner), submission = hash(binding + ":" + request.submissionKey());
         // Keep the exact V1 seven-field normalization for already persisted idempotency fingerprints.
         String legacy = encode(new LegacyInput(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text()));
-        String fingerprint = hash(request.origin() == null ? legacy : legacy + encode(request.origin()));
-        String input = encode(new Submit(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text(), request.origin()));
+        String normalized = request.origin() == null ? legacy : legacy + encode(request.origin());
+        String fingerprint = hash(request.selectedTables() == null || request.selectedTables().isEmpty() ? normalized : normalized + encode(request.selectedTables()));
+        String input = encode(new Submit(null, request.capability(), request.scene(), request.resourceId(), request.editorId(), request.sql(), request.text(), request.origin(), request.selectedTables()));
         var existing = bySubmission(submission);
         if (existing != null) return repeated(existing, fingerprint, owner);
         var context = authorized(owner, () -> {
-            var resolved = scene.resolve(Objects.toString(request.resourceId(), ""), Objects.toString(request.sql(), ""));
+            var resolved = scene.resolveTask(Objects.toString(request.resourceId(), ""), Objects.toString(request.sql(), ""), request.selectedTables());
             scene.authorize(resolved); return resolved;
         });
         if (request.origin() != null) conversationManage().validateTaskOrigin(request.origin(), request, context);
+        var claims = authorized(owner, () -> resourceKeys(scene, context));
         runtime.getObject().verifyTaskAdmission(owner);
         try {
             Task accepted = tx.execute(status -> {
@@ -103,19 +105,64 @@ public class AiTaskManage implements AiToolConversationFeature {
                     if (!fingerprint.equals(duplicate.getInputHash())) throw AiErrors.error("conflict");
                     return view(duplicate);
                 }
+                resourceConflict(claims, binding);
                 admission(owner.actor());
                 var task = new CoreAiTask(); task.setId(IDUtils.snowID()); task.setOwnerBinding(binding); task.setActorId(owner.actor());
                 task.setSubmissionHash(submission); task.setInputHash(fingerprint); task.setInputJson(input); task.setOwnerJson(encode(owner));
                 task.setContextJson(encode(context)); task.setCreatedAt(System.currentTimeMillis());
                 var attempt = attempt(task, 1, hash(task.getId() + ":initial"));
-                task.setCurrentAttemptId(attempt.getId()); em.persist(task); em.persist(attempt); em.flush(); return view(task);
+                task.setCurrentAttemptId(attempt.getId()); em.persist(task); em.persist(attempt); claimResources(claims, task.getId(), attempt.getId()); em.flush(); return view(task);
             });
             return checkedView(em.find(CoreAiTask.class, accepted.taskId()), owner);
         } catch (RuntimeException failure) {
             // A unique constraint settles duplicate requests even across independent nodes.
             existing = bySubmission(submission);
             if (existing != null) return repeated(existing, fingerprint, owner);
+            throw safeResourceFailure(failure, owner);
+        }
+    }
+    private RuntimeException safeResourceFailure(RuntimeException failure, AiAccess.Identity owner) {
+        if (failure instanceof AiErrors.Failure busy && "task_resource_busy".equals(busy.safeCode())
+                && busy.getErrorData() instanceof Map<?, ?> details && details.get("taskId") instanceof String id) {
+            try {
+                var current = checkedView(em.find(CoreAiTask.class, Long.valueOf(id)), owner);
+                if (!Set.of("QUEUED", "RUNNING").contains(current.status())) busy.setErrorData(null);
+            } catch (RuntimeException unavailable) { busy.setErrorData(null); }
+        }
+        return failure;
+    }
+    public List<String> tables(String resourceId) {
+        identity();
+        var scene = scene("structure-mutex");
+        if (!(scene instanceof AiStructureMutexScene structure)) throw AiErrors.error("unsupported");
+        return structure.tables(resourceId);
+    }
+    private List<String> resourceKeys(AiConversationScene scene, AiConversationScene.Context context) {
+        var declarations = scene.resourceClaims(context);
+        if (declarations == null || declarations.size() > 32) throw AiErrors.error("invalid");
+        var keys = new TreeSet<String>();
+        for (var declaration : declarations) {
+            if (declaration == null || declaration.datasourceId() == null || declaration.table() == null || declaration.operation() == null
+                    || declaration.table().isBlank() || declaration.operation().isBlank()) throw AiErrors.error("invalid");
+            keys.add(hash(encode(declaration)));
+        }
+        return List.copyOf(keys);
+    }
+    private void resourceConflict(List<String> keys, String ownerBinding) {
+        if (!keys.isEmpty()) expireWaiting();
+        for (var key : keys) {
+            var claim = em.find(CoreAiTaskResource.class, key, LockModeType.PESSIMISTIC_WRITE);
+            if (claim == null) continue;
+            var failure = AiErrors.error("task_resource_busy");
+            var owner = em.find(CoreAiTask.class, claim.getTaskId());
+            if (owner != null && ownerBinding.equals(owner.getOwnerBinding()) && Objects.equals(owner.getCurrentAttemptId(), claim.getAttemptId()))
+                ((io.dataease.exception.DEException) failure).setErrorData(Map.of("taskId", owner.getId().toString()));
             throw failure;
+        }
+    }
+    private void claimResources(List<String> keys, Long task, Long attempt) {
+        for (var key : keys) {
+            var claim = new CoreAiTaskResource(); claim.setResourceKey(key); claim.setTaskId(task); claim.setAttemptId(attempt); em.persist(claim);
         }
     }
     private CoreAiTaskSchedule coordinate() {
@@ -185,6 +232,10 @@ public class AiTaskManage implements AiToolConversationFeature {
         attempt.setStatus(state); attempt.setErrorCode(code); attempt.setResultJson(result); attempt.setFinishedAt(now);
         attempt.setDeliveryExpiresAt(now + DELIVERY_MILLIS); attempt.setNoticeAckAt(null);
         attempt.setFence(null); attempt.setNodeId(null);
+        // Persist the durable fence before releasing the exact owner, in this same terminal transaction.
+        em.flush();
+        em.createQuery("delete from CoreAiTaskResource r where r.taskId=:task and r.attemptId=:attempt")
+                .setParameter("task", attempt.getTaskId()).setParameter("attempt", attempt.getId()).executeUpdate();
     }
     private void interrupted(String node) {
         tx.executeWithoutResult(status -> {
@@ -241,24 +292,29 @@ public class AiTaskManage implements AiToolConversationFeature {
             if (!Objects.equals(repeated.get(0).getSourceAttemptId(), request.expectedAttemptId())) throw AiErrors.error("conflict");
             return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return view(task, repeated.get(0)); });
         }
+        var claims = authorized(owner, () -> resourceKeys(scene(input(task).scene()), context(task)));
         runtime.getObject().verifyTaskAdmission(owner);
-        Task accepted = tx.execute(status -> {
-            coordinate();
-            var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
-            var duplicate = em.createQuery("select a from CoreAiTaskAttempt a where a.retryHash=:hash", CoreAiTaskAttempt.class)
-                    .setParameter("hash", retry).setMaxResults(1).getResultList();
-            if (!duplicate.isEmpty()) {
-                if (!Objects.equals(duplicate.get(0).getSourceAttemptId(), request.expectedAttemptId())) throw AiErrors.error("conflict");
-                return view(locked, duplicate.get(0));
-            }
-            var previous = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId());
-            if (!Objects.equals(previous.getId(), request.expectedAttemptId()) || !Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(previous.getStatus()))
-                throw AiErrors.error("conflict");
-            if (!Boolean.TRUE.equals(previous.getRetrySafe())) throw AiErrors.error("outcome_unknown");
-            admission(owner.actor());
-            var next = attempt(locked, previous.getAttemptNumber() + 1, retry); next.setSourceAttemptId(previous.getId()); em.persist(next);
-            locked.setCurrentAttemptId(next.getId()); em.flush(); return view(locked, next);
-        });
+        Task accepted;
+        try {
+            accepted = tx.execute(status -> {
+                coordinate();
+                var locked = em.find(CoreAiTask.class, task.getId(), LockModeType.PESSIMISTIC_WRITE);
+                var duplicate = em.createQuery("select a from CoreAiTaskAttempt a where a.retryHash=:hash", CoreAiTaskAttempt.class)
+                        .setParameter("hash", retry).setMaxResults(1).getResultList();
+                if (!duplicate.isEmpty()) {
+                    if (!Objects.equals(duplicate.get(0).getSourceAttemptId(), request.expectedAttemptId())) throw AiErrors.error("conflict");
+                    return view(locked, duplicate.get(0));
+                }
+                var previous = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId());
+                if (!Objects.equals(previous.getId(), request.expectedAttemptId()) || !Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(previous.getStatus()))
+                    throw AiErrors.error("conflict");
+                if (!Boolean.TRUE.equals(previous.getRetrySafe())) throw AiErrors.error("outcome_unknown");
+                resourceConflict(claims, AiAccess.binding(owner));
+                admission(owner.actor());
+                var next = attempt(locked, previous.getAttemptNumber() + 1, retry); next.setSourceAttemptId(previous.getId()); em.persist(next);
+                locked.setCurrentAttemptId(next.getId()); claimResources(claims, locked.getId(), next.getId()); em.flush(); return view(locked, next);
+            });
+        } catch (RuntimeException failure) { throw safeResourceFailure(failure, owner); }
         // A repeated retry may already have a result; recheck delivery after releasing all database locks.
         return authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return accepted; });
     }

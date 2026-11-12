@@ -1,5 +1,18 @@
 export default {
   ai_conversation: {
+    mutex_accepted:
+      'Controlled background task {id} accepted. See background tasks for the result.',
+    mutex_execute: 'Controlled background structure explanation',
+    mutex_request: 'Explain the selected table structures',
+    mutex_title: 'Controlled read-only structure / resource mutex acceptance',
+    mutex_scope:
+      'Explain selected table structures only; no semantic generation, SQL execution or business saving.',
+    mutex_tables: 'Mutex batch tables',
+    mutex_message: 'Start controlled background from message',
+    mutex_busy:
+      'Selected resources are occupied by a similar background task. This request was not accepted.',
+    mutex_locate: 'Locate my current task',
+
     submission_expired:
       'The original operation is outside its temporary reconciliation window. Explicitly start a new task.',
     submission_limit:

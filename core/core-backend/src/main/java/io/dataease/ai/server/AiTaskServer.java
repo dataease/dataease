@@ -11,6 +11,7 @@ public class AiTaskServer implements AiTaskApi {
     private final AiTaskManage manage;
     public AiTaskServer(AiTaskManage manage) { this.manage = manage; }
     public Task submit(Submit request) { return manage.submit(request); }
+    public List<String> tables(String resourceId) { return manage.tables(resourceId); }
     public List<Task> active() { return manage.active(); }
     public List<Notice> notices() { return manage.notices(); }
     public void acknowledge(Long attemptId) { manage.acknowledge(attemptId); }

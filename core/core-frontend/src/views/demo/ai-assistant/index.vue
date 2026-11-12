@@ -121,6 +121,27 @@ let polling: AbortController | undefined
 let generation = 0
 let resourceGeneration = 0
 const editorId = crypto.randomUUID()
+const backgroundTasks = ref<InstanceType<typeof BackgroundTasks>>()
+const controlledSending = ref(false)
+const sendControlled = async () => {
+  if (controlledSending.value || !backgroundTasks.value?.controlledReady) return
+  const current = generation
+  const question = input.value.trim()
+  controlledSending.value = true
+  try {
+    const task = await backgroundTasks.value.submitFromMessage()
+    if (!task || current !== generation) return
+    messages.value.push({ role: 'user', text: question, status: 'COMPLETED' })
+    messages.value.push({
+      role: 'assistant',
+      text: t('ai_conversation.mutex_accepted', { id: task.taskId }),
+      status: 'COMPLETED'
+    })
+    if (input.value.trim() === question) input.value = ''
+  } finally {
+    controlledSending.value = false
+  }
+}
 let conversationSql = ''
 const backgroundDelivered = (task: AiTask, question: string, origin: AiTaskOrigin) => {
   const target = session.value
@@ -727,6 +748,7 @@ onBeforeUnmount(() => {
         >{{ tr('single') }}</el-button
       >
       <BackgroundTasks
+        ref="backgroundTasks"
         :resource-id="resourceId"
         :editor-id="editorId"
         :sql="sql"
@@ -836,6 +858,12 @@ onBeforeUnmount(() => {
           native-type="submit"
           :disabled="busy || !!execution || !!matchingSubmission(false) || !input.trim()"
           >{{ tr('send') }}</el-button
+        >
+        <el-button
+          v-if="backgroundTasks?.controlledMode"
+          :disabled="controlledSending || !backgroundTasks.controlledReady"
+          @click="sendControlled"
+          >{{ tr('mutex_message') }}</el-button
         >
       </el-form>
     </div>

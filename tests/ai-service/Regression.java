@@ -92,7 +92,7 @@ public class Regression {
         String url="jdbc:h2:mem:ai_regression;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=2000";
         Configuration hibernate=new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class)
                 .addAnnotatedClass(CoreAiOrgPolicy.class).addAnnotatedClass(CoreMenu.class)
-                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class)
+                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.connection.url",url).setProperty("hibernate.connection.driver_class","org.h2.Driver")
                 .setProperty("hibernate.connection.username","sa").setProperty("hibernate.connection.password","")
                 .setProperty("hibernate.dialect","org.hibernate.dialect.H2Dialect").setProperty("hibernate.hbm2ddl.auto","none")
@@ -123,6 +123,7 @@ public class Regression {
             check(!jdbc.queryForObject("select retry_safe from core_ai_task_attempt where id=777", Boolean.class), "legacy attempts without trusted tool safety cannot be blindly replayed");
             jdbc.update("delete from core_ai_task_attempt where id=777");
             new io.dataease.listener.sql.AiTaskSchedulingInit(jdbc,factory,em,manager).execute();
+            new io.dataease.listener.sql.AiTaskResourceInit(jdbc,factory,em,manager).execute();
             var menuMigration=new io.dataease.listener.sql.AiConfigurationMenuInit(em,manager);menuMigration.execute();menuMigration.execute();
             check(settings.count()==1,"migration singleton idempotent without ddl-auto");check(menus.count()==2,"existing menu and independent AI configuration menu");
             check(menus.findById(140L).isPresent() && "retained-menu".equals(menus.findById(130L).orElseThrow().getName()),"2.44 then 2.45 preserve a non-AI menu 130");

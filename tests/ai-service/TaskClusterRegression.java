@@ -120,6 +120,119 @@ public final class TaskClusterRegression {
                 "terminal history and input/submission compatibility are not rewritten by queue migration");
         jdbc.update("delete from core_ai_task_attempt where id in (902,904)"); jdbc.update("delete from core_ai_task where id in (901,903)");
     }
+    private static String mutexBody(String key, String tables) throws Exception { return body(key).replace("select 1", "mutex:" + tables); }
+    private static void mutex(int a) throws Exception {
+        node("mutex-peer", false); int b = port("mutex-peer");
+        var ab = call(a, "/ai/tasks", "POST", mutexBody("mutex-ab", "A,B"));
+        check(call(b, "/ai/tasks", "POST", mutexBody("mutex-bc", "B,C"), "1").statusCode() == 409,
+                "overlapping batch is rejected immediately across nodes rather than queued");
+        var own = call(b, "/ai/tasks", "POST", mutexBody("mutex-own", "B"), "1");
+        check(TaskNode.JSON.readTree(own.body()).path("data").path("taskId").asText().equals(ab.path("taskId").asText()),
+                "same full owner can locate their current task from a safe conflict");
+        var other = call(b, "/ai/tasks", "POST", mutexBody("mutex-other", "A"), "2");
+        check(other.statusCode() == 409 && !other.body().contains(ab.path("taskId").asText()) && !other.body().contains("mutex-ab"),
+                "another actor sees busy without task identity or request content");
+        var proxy = call(b, "/ai/tasks", "POST", mutexBody("mutex-proxy", "A"), "1", "777");
+        check(proxy.statusCode() == 409 && !proxy.body().contains(ab.path("taskId").asText()), "another workspace/proxy binding cannot locate task");
+        check(call(b, "/ai/tasks", "POST", mutexBody("mutex-ab", "A,B")).path("taskId").equals(ab.path("taskId")), "same submission replay wins over its own busy claim");
+        var anotherDatasource = call(b, "/ai/tasks", "POST", mutexBody("mutex-other-datasource", "A").replace("\"11\"", "\"22\""));
+        var anotherOperation = call(b, "/ai/tasks", "POST", mutexBody("mutex-other-operation", "A").replace("mutex:A", "mutex2:A"));
+        var ordinary = call(b, "/ai/tasks", "POST", body("mutex-ordinary"));
+        check(anotherDatasource.path("status").asText().equals("QUEUED") && anotherOperation.path("status").asText().equals("QUEUED") && ordinary.path("status").asText().equals("QUEUED"),
+                "different DE datasource or trusted operation is independent and ordinary SQL declares no lock");
+        for (var task : List.of(anotherDatasource, anotherOperation, ordinary)) call(a, "/ai/tasks/" + task.path("taskId").asText() + "/cancel", "POST", "");
+        var c = call(b, "/ai/tasks", "POST", mutexBody("mutex-c", "C"));
+        check(c.path("status").asText().equals("QUEUED"), "rejected BC leaves no residual C claim");
+        call(a, "/ai/tasks/" + c.path("taskId").asText() + "/cancel", "POST", "");
+        call(b, "/ai/tasks/" + ab.path("taskId").asText() + "/cancel", "POST", "");
+        var bc = call(a, "/ai/tasks", "POST", mutexBody("mutex-bc-after-cancel", "B,C"));
+        check(bc.path("status").asText().equals("QUEUED"), "queued cancellation releases all batch claims across nodes");
+        call(a, "/ai/tasks/" + bc.path("taskId").asText() + "/cancel", "POST", "");
+        settings(a, 2, 1, 1, 1);
+        var expiring = call(a, "/ai/tasks", "POST", mutexBody("mutex-expiring", "E"));
+        check(call(b, "/ai/tasks", "POST", mutexBody("mutex-capacity", "F,G"), "2").statusCode() == 409,
+                "capacity refusal is atomic after checking distinct resource batch");
+        Thread.sleep(1150);
+        var replacement = call(b, "/ai/tasks", "POST", mutexBody("mutex-expired-replacement", "E"));
+        check(replacement.path("status").asText().equals("QUEUED"), "expired waiting batch releases before new conflict check even without dispatcher");
+        call(a, "/ai/tasks/" + replacement.path("taskId").asText() + "/cancel", "POST", "");
+        var fg = call(b, "/ai/tasks", "POST", mutexBody("mutex-capacity-recovered", "F,G"));
+        check(fg.path("status").asText().equals("QUEUED"), "queue failure leaves neither F nor G claimed");
+        call(a, "/ai/tasks/" + fg.path("taskId").asText() + "/cancel", "POST", "");
+        settings(a, 2, 100, 10, 300);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            var go = new CountDownLatch(1);
+            var one = pool.submit(() -> { go.await(); return call(a, "/ai/tasks", "POST", mutexBody("mutex-race-one", "R,S"), "1"); });
+            var two = pool.submit(() -> { go.await(); return call(b, "/ai/tasks", "POST", mutexBody("mutex-race-two", "S,T"), "2"); });
+            go.countDown(); var first = one.get(); var second = two.get();
+            check((first.statusCode() == 200 && second.statusCode() == 409) || (first.statusCode() == 409 && second.statusCode() == 200), "cross-JVM overlapping submission race has exactly one winner");
+            var winner = TaskNode.JSON.readTree(first.statusCode() == 200 ? first.body() : second.body());
+            call(a, "/ai/tasks/" + winner.path("taskId").asText() + "/cancel", "POST", "", first.statusCode() == 200 ? "1" : "2");
+        } finally { pool.shutdownNow(); }
+        var workerOne = node("mutex-worker-one", true); var workerTwo = node("mutex-worker-two", true);
+        int runPort = port("mutex-worker-one"), peerPort = port("mutex-worker-two");
+        var complete = call(a, "/ai/tasks", "POST", mutexBody("mutex-completes", "U"));
+        String completePath = "/ai/tasks/" + complete.path("taskId").asText();
+        await(runPort, completePath, "COMPLETED");
+        var unapplied = call(b, "/ai/tasks", "POST", mutexBody("slow-mutex-unapplied", "U"));
+        String unappliedPath = "/ai/tasks/" + unapplied.path("taskId").asText(); awaitSend(peerPort, unappliedPath, "slow-mutex-unapplied");
+        check(call(a, completePath, "GET", "").path("status").asText().equals("COMPLETED"), "completed result remains available while a new owner holds its resource; application is not occupancy");
+        call(b, unappliedPath + "/cancel", "POST", "");
+        var replacementRun = call(a, "/ai/tasks", "POST", mutexBody("slow-mutex-new-owner", "U"));
+        String replacementPath = "/ai/tasks/" + replacementRun.path("taskId").asText(); awaitSend(peerPort, replacementPath, "slow-mutex-new-owner");
+        release.get("slow-mutex-unapplied").countDown(); Thread.sleep(400);
+        check(call(b, "/ai/tasks", "POST", mutexBody("mutex-after-late-old", "U"), "2").statusCode() == 409
+                && call(a, unappliedPath, "GET", "").path("result").isNull()
+                && call(a, replacementPath, "GET", "").path("status").asText().equals("RUNNING"), "late cancelled execution cannot write a result or release the newer owner");
+        check(call(a, unappliedPath + "/retry", "POST", TaskNode.JSON.writeValueAsString(Map.of("retryKey", "mutex-busy-retry", "expectedAttemptId", unapplied.path("attemptId").asText())), "1").statusCode() == 409,
+                "manual retry must reacquire the original resource batch and rejects while a new task owns it");
+        call(a, replacementPath + "/cancel", "POST", ""); release.get("slow-mutex-new-owner").countDown();
+        String retryBody = TaskNode.JSON.writeValueAsString(Map.of("retryKey", "mutex-safe-retry", "expectedAttemptId", unapplied.path("attemptId").asText()));
+        var retry = call(b, unappliedPath + "/retry", "POST", retryBody);
+        check(retry.path("taskId").equals(unapplied.path("taskId")) && retry.path("attemptNumber").asInt() == 2,
+                "manual retry creates next attempt only after original batch is available");
+        check(call(a, unappliedPath + "/retry", "POST", retryBody).path("attemptId").equals(retry.path("attemptId")), "retry replay returns its original attempt before resource conflict checks");
+        await(a, unappliedPath, "COMPLETED");
+        var retryPolicy = (com.fasterxml.jackson.databind.node.ObjectNode) call(a, "/ai/settings", "GET", "");
+        retryPolicy.put("expectedVersion", retryPolicy.path("rowVersion").asLong());
+        var delayed = retryPolicy.putObject("recovery"); delayed.put("stepRetries", 1); delayed.put("attemptRetries", 1); delayed.put("initialDelayMillis", 3000);
+        call(a, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(retryPolicy));
+        var waiting = call(a, "/ai/tasks", "POST", mutexBody("retry-slot-mutex", "WAIT"));
+        String waitPath = "/ai/tasks/" + waiting.path("taskId").asText(); awaitSend(a, waitPath, "retry-slot-mutex");
+        check(call(b, "/ai/tasks", "POST", mutexBody("mutex-during-backoff", "WAIT"), "2").statusCode() == 409
+                && call(a, waitPath, "GET", "").path("status").asText().equals("RUNNING"), "automatic backoff retains the same resource owner");
+        call(b, waitPath + "/cancel", "POST", "");
+        var afterWait = call(a, "/ai/tasks", "POST", mutexBody("slow-mutex-after-backoff", "WAIT"));
+        String afterWaitPath = "/ai/tasks/" + afterWait.path("taskId").asText(); awaitSend(b, afterWaitPath, "slow-mutex-after-backoff");
+        Thread.sleep(3300);
+        check(sends.getOrDefault("retry-slot-mutex", 0) == 1 && call(b, "/ai/tasks", "POST", mutexBody("mutex-after-backoff-cancel", "WAIT"), "2").statusCode() == 409,
+                "cancelled backoff never makes a late request or releases the new resource owner");
+        call(a, afterWaitPath + "/cancel", "POST", ""); release.get("slow-mutex-after-backoff").countDown();
+        var stale = call(a, "/ai/tasks", "POST", mutexBody("slow-mutex-stale", "V"));
+        String stalePath = "/ai/tasks/" + stale.path("taskId").asText(); awaitSend(runPort, stalePath, "slow-mutex-stale");
+        signal(workerOne, "STOP"); signal(workerTwo, "STOP");
+        try {
+            node("mutex-recovery", true); int recoveryPort = port("mutex-recovery");
+            await(recoveryPort, stalePath, "INTERRUPTED");
+            var newOwner = call(a, "/ai/tasks", "POST", mutexBody("slow-mutex-after-lease", "V"));
+            String newPath = "/ai/tasks/" + newOwner.path("taskId").asText(); awaitSend(recoveryPort, newPath, "slow-mutex-after-lease");
+            release.get("slow-mutex-stale").countDown(); signal(workerOne, "CONT"); signal(workerTwo, "CONT"); Thread.sleep(500);
+            check(call(a, stalePath, "GET", "").path("status").asText().equals("INTERRUPTED") && call(b, "/ai/tasks", "POST", mutexBody("mutex-after-stale", "V"), "2").statusCode() == 409,
+                    "lease failure fences original attempt before release; resumed old node cannot drop replacement claim");
+            call(a, newPath + "/cancel", "POST", ""); release.get("slow-mutex-after-lease").countDown();
+        } finally { signal(workerOne, "CONT"); signal(workerTwo, "CONT"); }
+        var timeoutPolicy = (com.fasterxml.jackson.databind.node.ObjectNode) call(a, "/ai/settings", "GET", "");
+        timeoutPolicy.put("expectedVersion", timeoutPolicy.path("rowVersion").asLong()); timeoutPolicy.put("requestTimeoutSeconds", 5);
+        call(a, "/ai/settings", "POST", TaskNode.JSON.writeValueAsString(timeoutPolicy));
+        var timeout = call(a, "/ai/tasks", "POST", mutexBody("slow-mutex-timeout", "TIMEOUT"));
+        String timeoutPath = "/ai/tasks/" + timeout.path("taskId").asText(); awaitSend(a, timeoutPath, "slow-mutex-timeout");
+        check(await(b, timeoutPath, "FAILED").path("errorCode").asText().equals("timeout"), "execution deadline fences running resource owner");
+        var afterTimeout = call(b, "/ai/tasks", "POST", mutexBody("mutex-after-timeout", "TIMEOUT"));
+        check(afterTimeout.path("taskId").isTextual(), "execution timeout releases resource before a new submission"); release.get("slow-mutex-timeout").countDown();
+        await(a, "/ai/tasks/" + afterTimeout.path("taskId").asText(), "COMPLETED");
+        System.out.println("PASS resource mutex " + checks + " assertions");
+    }
     public static void main(String[] args) throws Exception { run(); }
     public static void run() throws Exception {
         output = Files.createTempDirectory("ai-task-cluster-");
@@ -154,6 +267,7 @@ public final class TaskClusterRegression {
             new AiConfigurationInit(jdbc, factory, em, manager).execute(); var migration = new AiTaskInit(jdbc, factory, em, manager); migration.execute(); migration.execute();
             var delivery = new AiTaskDeliveryInit(jdbc, factory); delivery.execute(); delivery.execute();
             legacyUpgrade(jdbc, factory, em, manager);
+            new AiTaskResourceInit(jdbc, factory, em, manager).execute();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 var model = new CoreAiModel(); model.setId(42L); model.setName("controlled task model"); model.setNameKey("controlled-task-model");
                 model.setModelIdentifier("cluster-model-v1"); model.setBaseUrl("http://127.0.0.1:" + provider.getAddress().getPort() + "/v1");
@@ -162,6 +276,7 @@ public final class TaskClusterRegression {
             });
             // A queued request survives the accepting process without ever having an execution owner.
             var accepting = node("accepting", false); int acceptingPort = port("accepting");
+            if (Boolean.getBoolean("ai.test.mutexOnly")) { mutex(acceptingPort); return; }
             var originalSettings = call(acceptingPort, "/ai/settings", "GET", "");
             check(originalSettings.path("taskScheduling").path("maxRunning").asInt() == 2
                     && originalSettings.path("taskScheduling").path("maxQueued").asInt() == 100

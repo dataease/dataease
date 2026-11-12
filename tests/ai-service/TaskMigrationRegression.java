@@ -30,7 +30,8 @@ public final class TaskMigrationRegression {
         upgrade("2.47");
         upgrade("2.49");
         upgrade("2.50");
-        System.out.println("PASS startup upgrade from semantic 2.48, pre-semantic 2.47, task 2.49 and delivery 2.50 preserves configuration/semantic/history and applies recovery 2.51 plus scheduling 2.52 in order, including legacy queue deadlines and replay safety");
+        upgrade("2.52");
+        System.out.println("PASS startup upgrade from semantic 2.48, pre-semantic 2.47, task 2.49 delivery 2.50 and scheduling 2.52 preserves configuration/semantic/history and applies recovery 2.51 plus scheduling 2.52 plus resource occupancy 2.53 in order, including legacy queue deadlines and replay safety");
     }
 
     private static void upgrade(String installedVersion) {
@@ -40,7 +41,7 @@ public final class TaskMigrationRegression {
                 .addAnnotatedClass(CoreAiTask.class)
                 .addAnnotatedClass(CoreAiTaskAttempt.class)
                 .addAnnotatedClass(CoreAiTaskNode.class)
-                .addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
+                .addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class).addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
                 .setProperty("hibernate.connection.url", url)
                 .setProperty("hibernate.connection.driver_class", "org.h2.Driver")
                 .setProperty("hibernate.connection.username", "sa")
@@ -55,7 +56,7 @@ public final class TaskMigrationRegression {
             // Simulate the already-installed AI 2.44 settings in every supported starting version.
             new AiConfigurationInit(jdbc, factory, em, manager).execute();
             jdbc.update("update core_ai_setting set enabled=true,revision=42,max_input_chars=12345 where id=1");
-            for (String column : List.of("task_max_running", "task_max_queued", "task_max_queued_per_user", "task_max_wait_seconds",
+            if (!"2.52".equals(installedVersion)) for (String column : List.of("task_max_running", "task_max_queued", "task_max_queued_per_user", "task_max_wait_seconds",
                     "recovery_step_retries", "recovery_attempt_retries", "recovery_initial_delay_millis")) jdbc.execute("alter table core_ai_setting drop column " + column);
             var metadata = new DatasourceMetadataInit(factory, jdbc);
             if (!"2.47".equals(installedVersion)) {
@@ -74,6 +75,12 @@ public final class TaskMigrationRegression {
                 jdbc.update("insert into core_ai_task (id,current_attempt_id,owner_binding,submission_hash,input_hash,owner_json,input_json,context_json,created_at) values (778,778,'legacy-owner','legacy-submission','unchanged','{\"actor\":1}','{}','{}',2000)");
                 jdbc.update("insert into core_ai_task_attempt (id,task_id,attempt_number,retry_hash,status,created_at) values (778,778,1,'legacy-queued','QUEUED',2000)");
             }
+            if ("2.52".equals(installedVersion)) {
+                new AiTaskInit(jdbc, factory, em, manager).execute();
+                new AiTaskDeliveryInit(jdbc, factory).execute();
+                new AiRecoveryInit(jdbc, factory).execute();
+                new AiTaskSchedulingInit(jdbc, factory, em, manager).execute();
+            }
             var beans = context.getBeanFactory();
             beans.registerSingleton("transactionManager", manager);
             var repository = new JpaRepositoryFactoryBean<DeStandaloneVersionRepository, DeStandaloneVersion, Long>(DeStandaloneVersionRepository.class);
@@ -86,6 +93,7 @@ public final class TaskMigrationRegression {
             // Register out of order so production startup must sort by migration version.
             beans.registerSingleton("recovery", new AiRecoveryInit(jdbc, factory));
             beans.registerSingleton("taskSchedule", new AiTaskSchedulingInit(jdbc, factory, em, manager));
+            beans.registerSingleton("taskResource", new io.dataease.listener.sql.AiTaskResourceInit(jdbc, factory, em, manager));
             beans.registerSingleton("taskDelivery", new AiTaskDeliveryInit(jdbc, factory));
             beans.registerSingleton("task", new AiTaskInit(jdbc, factory, em, manager));
             beans.registerSingleton("metadata", metadata);
@@ -95,17 +103,18 @@ public final class TaskMigrationRegression {
             injection.setBeanFactory(beans);
             injection.processInjection(listener);
             listener.run(null);
-            for (String table : List.of("core_ai_task", "core_ai_task_attempt", "core_ai_task_node", "core_ai_task_schedule", "core_datasource_table_semantic", "core_datasource_field_semantic", "core_datasource_relation", "core_datasource_relation_condition")) {
+            for (String table : List.of("core_ai_task", "core_ai_task_attempt", "core_ai_task_node", "core_ai_task_schedule", "core_ai_task_resource", "core_datasource_table_semantic", "core_datasource_field_semantic", "core_datasource_relation", "core_datasource_relation_condition")) {
                 jdbc.queryForObject("select count(*) from " + table, Long.class);
             }
             jdbc.update("insert into core_ai_task_attempt (id, task_id, attempt_number, retry_hash, status, created_at, finished_at, delivery_expires_at, notice_ack_at, retry_safe) values (1, 1, 1, 'migration-result', 'COMPLETED', 1000, 2000, 3000, 2000, true)");
             if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id = 1", Long.class) != 3000L) throw new AssertionError("delivery facts unavailable after startup");
             var versions = jdbc.queryForList("select version from de_standalone_version where success = true order by installed_rank", String.class);
             var expected = switch (installedVersion) {
-                case "2.47" -> List.of("2.47", "2.48", "2.49", "2.50", "2.51", "2.52");
-                case "2.48" -> List.of("2.48", "2.49", "2.50", "2.51", "2.52");
-                case "2.49" -> List.of("2.49", "2.50", "2.51", "2.52");
-                default -> List.of("2.50", "2.51", "2.52");
+                case "2.47" -> List.of("2.47", "2.48", "2.49", "2.50", "2.51", "2.52", "2.53");
+                case "2.48" -> List.of("2.48", "2.49", "2.50", "2.51", "2.52", "2.53");
+                case "2.49" -> List.of("2.49", "2.50", "2.51", "2.52", "2.53");
+                case "2.52" -> List.of("2.52", "2.53");
+                default -> List.of("2.50", "2.51", "2.52", "2.53");
             };
             if (!"2.47".equals(installedVersion) && jdbc.queryForObject("select count(*) from core_datasource_table_semantic where id = 81 and table_name = 'orders'", Integer.class) != 1) throw new AssertionError("semantic content lost during task upgrade");
             if (List.of("2.49", "2.50").contains(installedVersion) && (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id = 777", Long.class) != 604802000L

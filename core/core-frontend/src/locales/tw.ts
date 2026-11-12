@@ -1,5 +1,15 @@
 export default {
   ai_conversation: {
+    mutex_accepted: '受控背景任務 {id} 已受理，請在背景任務清單查看結果。',
+    mutex_execute: '受控背景結構說明',
+    mutex_request: '解釋選取表的結構',
+    mutex_title: '受控唯讀結構 / 資源互斥驗收',
+    mutex_scope: '僅解釋選取表結構；不產生語意、不執行 SQL、不儲存業務資源。',
+    mutex_tables: '互斥批次表',
+    mutex_message: '從訊息發起受控背景',
+    mutex_busy: '選取資源正被同類背景任務占用，本次未受理。',
+    mutex_locate: '查看本人目前任務',
+
     submission_expired: '原操作已超出暫存對話核對期限，請明確發起新任務。',
     submission_limit: '未知受理操作已達上限，請先按原提交鍵核對既有操作。',
     resume_background: '重新讀取背景進度',

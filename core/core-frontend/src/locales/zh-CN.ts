@@ -1,5 +1,15 @@
 export default {
   ai_conversation: {
+    mutex_accepted: '受控后台任务 {id} 已受理，请在后台任务列表查看结果。',
+    mutex_execute: '受控后台结构说明',
+    mutex_request: '解释选中表的结构',
+    mutex_title: '受控只读结构 / 资源互斥验收',
+    mutex_scope: '仅解释选中表结构；不生成语义、不执行 SQL、不保存业务资源。',
+    mutex_tables: '互斥批次表',
+    mutex_message: '从消息发起受控后台',
+    mutex_busy: '所选资源正被同类后台任务占用，本次未受理。',
+    mutex_locate: '查看本人当前任务',
+
     submission_expired: '原操作已超出临时会话核对期限，请明确发起新任务。',
     submission_limit: '未知受理操作已达上限，请先按原提交键核对已有操作。',
     resume_background: '重新读取后台进度',

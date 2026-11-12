@@ -618,7 +618,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private boolean same(AiAccess.Identity a, AiAccess.Identity b) { return Objects.equals(a, b); }
     private AiConversationScene scene(String code) {
-        var scene = code == null ? null : scenes.get(code); if (scene == null) throw AiErrors.error("unsupported"); return scene;
+        var scene = code == null ? null : scenes.get(code); if (scene == null || scene.backgroundOnly()) throw AiErrors.error("unsupported"); return scene;
     }
     private void expire() {
         long now = System.currentTimeMillis();
