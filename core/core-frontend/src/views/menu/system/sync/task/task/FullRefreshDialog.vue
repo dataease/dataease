@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isRequestError } from '@/config/axios/error'
+import { isRequestError, toDataEaseError } from '@/config/axios/error'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { fullRefreshTaskApi, getTaskMaintenanceApi } from '@/api/sync/syncTask'
@@ -12,6 +12,7 @@ const { t } = useI18n()
 const emit = defineEmits<{ (event: 'submitted', taskId: string): void }>()
 const visible = ref(false)
 const loading = ref(false)
+const error = ref<{ message: string; requestId?: string; isSubmission: boolean }>()
 let viewVersion = 0
 /**
  * 每次打开和关闭都更新会话编号，迟到的读取或提交结果不能操作另一任务的弹窗
@@ -20,17 +21,21 @@ const isCurrentView = (version: number) => visible.value && version === viewVers
 const close = () => {
   viewVersion++
   visible.value = false
+  error.value = undefined
 }
-const error = ref('')
-const showError = (cause: unknown) => {
-  error.value =
-    isRequestError(cause) && cause.response?.status === 404
-      ? t('sync_maintenance.backend_unavailable')
-      : typeof cause === 'string'
-      ? cause
-      : cause instanceof Error
-      ? cause.message
-      : t('sync_maintenance.read_failed')
+const showError = (cause: unknown, isSubmission = false) => {
+  error.value = {
+    message:
+      isRequestError(cause) && cause.response?.status === 404
+        ? t('sync_maintenance.backend_unavailable')
+        : typeof cause === 'string'
+        ? cause
+        : cause instanceof Error
+        ? cause.message
+        : t('sync_maintenance.read_failed'),
+    requestId: isRequestError(cause) ? toDataEaseError(cause).requestId : undefined,
+    isSubmission
+  }
 }
 const exclusive = ref(false)
 const data = ref<ITaskMaintenance>()
@@ -48,7 +53,7 @@ const blockedReason = computed(() =>
 const open = async (taskId: string) => {
   const version = ++viewVersion
   data.value = undefined
-  error.value = ''
+  error.value = undefined
   exclusive.value = false
   requestId.value = generateID()
   visible.value = true
@@ -69,6 +74,7 @@ const submit = async () => {
   if (!data.value || !exclusive.value || !supported.value || loading.value) return
   const version = viewVersion
   const taskId = data.value.taskId
+  error.value = undefined
   loading.value = true
   try {
     await fullRefreshTaskApi({
@@ -85,7 +91,7 @@ const submit = async () => {
     ElMessage.success(t('sync_maintenance.full_submitted'))
     close()
   } catch (cause) {
-    if (isCurrentView(version)) showError(cause)
+    if (isCurrentView(version)) showError(cause, true)
   } finally {
     if (isCurrentView(version)) loading.value = false
   }
@@ -125,10 +131,19 @@ defineExpose({ open })
       <p v-if="!data?.executionRecovery">{{ t('sync_maintenance.full_mode') }}</p>
       <el-alert
         v-if="error || (blockedReason && !data?.executionRecovery)"
-        :title="error || blockedReason"
+        :title="error?.message || blockedReason"
         type="error"
         :closable="false"
-      />
+      >
+        <template v-if="error" #default>
+          <p v-if="error.isSubmission" class="full-refresh-error-help">
+            {{ t('sync_maintenance.full_submit_error_help') }}
+          </p>
+          <p v-if="error.requestId" class="full-refresh-error-help">
+            {{ t('sync_maintenance.full_request_id', [error.requestId]) }}
+          </p>
+        </template>
+      </el-alert>
       <el-checkbox v-if="!data?.executionRecovery" v-model="exclusive" :disabled="!supported">{{
         t('sync_maintenance.full_exclusive')
       }}</el-checkbox>
@@ -170,6 +185,11 @@ defineExpose({ open })
     line-height: 22px;
   }
   .ed-alert__title {
+    overflow-wrap: anywhere;
+    line-height: 22px;
+  }
+  .full-refresh-error-help {
+    margin: 4px 0 0;
     overflow-wrap: anywhere;
     line-height: 22px;
   }
