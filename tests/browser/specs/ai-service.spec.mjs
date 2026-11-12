@@ -427,7 +427,7 @@ for (const viewport of [
     await page.getByRole('tab', { name: '使用设置', exact: true }).click()
     await page.getByRole('button', { name: '调用限制', exact: true }).click()
     const dialog = page.getByRole('dialog')
-    await expect(dialog.getByRole('spinbutton')).toHaveCount(9)
+    await expect(dialog.getByRole('spinbutton')).toHaveCount(12)
     await expect(dialog.getByRole('button', { name: '保存', exact: true })).toBeInViewport()
     await dialog.getByRole('spinbutton').nth(4).fill('6')
     await expect(dialog.getByRole('button', { name: '保存', exact: true })).toBeDisabled()
@@ -446,7 +446,7 @@ test('保存结果未知时按稳定ID核对并保留候选，禁止自动另建
     if (route.request().method() !== 'POST') return route.fallback()
     const body = route.request().postDataJSON()
     state.models.push(makeModel(body.id, body.name, { ...body }))
-    await route.fulfill({ status: 503, json: {} })
+    await route.abort('connectionfailed')
   })
   await dialog.getByRole('button', { name: '保存', exact: true }).click()
   await expect
@@ -769,4 +769,30 @@ test('管理员在调用限制中保存独立后台任务容量', async ({ page 
   expect(
     requests.find((r) => r.path === '/ai/settings' && r.method === 'POST').body.taskScheduling
   ).toEqual({ maxRunning: 3, maxQueued: 50, maxQueuedPerUser: 5, maxWaitSeconds: 120 })
+})
+
+test('administrator saves bounded recovery policy with existing settings CAS', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('tab', { name: '使用设置', exact: true }).click()
+  await page.getByRole('button', { name: '调用限制', exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('spinbutton', { name: '每步骤技术重试上限' })).toHaveValue('2')
+  await dialog.getByRole('spinbutton', { name: '每步骤技术重试上限' }).fill('0')
+  await dialog.getByRole('button', { name: '保存', exact: true }).click()
+  await expect
+    .poll(
+      () =>
+        requests.filter((request) => request.path === '/ai/settings' && request.method === 'POST')
+          .length
+    )
+    .toBe(1)
+  const saved = requests.find(
+    (request) => request.path === '/ai/settings' && request.method === 'POST'
+  )
+  expect(saved.body.recovery).toEqual({
+    stepRetries: 0,
+    attemptRetries: 3,
+    initialDelayMillis: 1000
+  })
+  expect(saved.body.expectedVersion).toBe(0)
 })

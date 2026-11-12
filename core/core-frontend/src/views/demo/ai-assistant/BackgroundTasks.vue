@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { isRequestError } from '@/config/axios/error'
+import { aiFailureKey } from '@/api/aiService'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import {
@@ -43,6 +45,20 @@ const failure = ref('')
 const loadingFailed = ref(false)
 let generation = 0
 let timer: ReturnType<typeof setTimeout> | undefined
+let reading: AbortController | undefined
+let readFailures = 0
+let readStarted = 0
+const readPaused = ref(false)
+const requiresConfiguration = (code?: string | null) =>
+  [
+    'provider_authentication',
+    'provider_balance',
+    'configuration_unavailable',
+    'model_unavailable',
+    'disabled',
+    'organization_disabled',
+    'conflict'
+  ].includes(code ?? '')
 let submission: { fingerprint: string; value: AiTaskSubmit; taskId?: string } | undefined
 const retryKeys = new Map<string, string>()
 const active = (task: AiTask) => ['QUEUED', 'RUNNING'].includes(task.status)
@@ -93,7 +109,8 @@ const notify = (task: AiTask | AiTaskNotice) => {
     toasts.delete(oldest)
   }
   const current = generation
-  const retry = ['FAILED', 'CANCELLED', 'INTERRUPTED'].includes(task.status)
+  const retry =
+    task.retryEligible === true && ['FAILED', 'CANCELLED', 'INTERRUPTED'].includes(task.status)
   const message =
     task.status === 'COMPLETED'
       ? tr('task_completed')
@@ -113,7 +130,9 @@ const notify = (task: AiTask | AiTaskNotice) => {
           tr('task_retry')
         )
       ])
-    : message + ' ' + tr('task_expiry')
+    : message +
+      ' ' +
+      (task.errorCode ? t('ai_service.' + aiFailureKey(task.errorCode)) : tr('task_expiry'))
   toasts.set(
     task.attemptId,
     ElMessage({
@@ -176,7 +195,17 @@ const submit = async () => {
   }
 }
 const change = async (task: AiTask | AiTaskNotice, retry = false) => {
-  if (pending.value) return
+  if (pending.value || (retry && task.retryEligible !== true)) return
+  if (retry && requiresConfiguration(task.errorCode)) {
+    try {
+      await ElMessageBox.confirm(tr('retry_configuration_confirm'), tr('retry_attempt'), {
+        type: 'warning',
+        closeOnClickModal: false
+      })
+    } catch {
+      return
+    }
+  }
   pending.value = true
   failure.value = ''
   const current = generation
@@ -201,14 +230,21 @@ const change = async (task: AiTask | AiTaskNotice, retry = false) => {
   }
 }
 const poll = async () => {
+  if (readPaused.value) return
   const current = generation
+  reading?.abort()
+  reading = new AbortController()
+  const signal = reading.signal
+  const deadline = readStarted
+    ? window.setTimeout(() => reading?.abort(), Math.max(1, 10000 - (Date.now() - readStarted)))
+    : undefined
   try {
-    const activeTasks = await activeAiTasks()
+    const activeTasks = await activeAiTasks(signal)
     const activeIds = new Set(activeTasks.map(task => task.taskId))
     const completed = await Promise.all(
       tasks.value
         .filter(task => active(task) && !activeIds.has(task.taskId))
-        .map(task => getAiTask(task.taskId))
+        .map(task => getAiTask(task.taskId, signal))
     )
     if (current !== generation) return
     activeTasks.forEach(remember)
@@ -220,7 +256,7 @@ const poll = async () => {
         continue
       }
       try {
-        const task = await getAiTask(id)
+        const task = await getAiTask(id, signal)
         if (current !== generation) return
         if (active(task)) continue
         if (task.status === 'COMPLETED' && !conversationDelivered.has(task.attemptId)) {
@@ -232,11 +268,14 @@ const poll = async () => {
           emit('delivered', delivered, linked.question, linked.origin)
         }
         origins.delete(id)
-      } catch {
-        /* Keep this bounded live association for transient reads or an active foreground turn. */
+      } catch (error) {
+        const status = isRequestError(error) ? error.response?.status : undefined
+        if (!status || status >= 500) throw error
+        // An active turn can delay this idempotent conversation import, never model execution.
+        if (status !== 409) origins.delete(id)
       }
     }
-    const notices = await pendingAiTaskNotices()
+    const notices = await pendingAiTaskNotices(signal)
     if (current !== generation) return
     for (const notice of notices) {
       if (notice.expiresAt <= Date.now()) continue
@@ -245,19 +284,45 @@ const poll = async () => {
       if (current !== generation) return
     }
     loadingFailed.value = false
-  } catch {
+    readFailures = 0
+    readStarted = 0
+  } catch (error) {
     if (current !== generation) return
-    // A denied or unreachable read never leaves a stale protected result visible.
-    tasks.value = []
+    const status = isRequestError(error) ? error.response?.status : undefined
+    readStarted ||= Date.now()
+    readFailures++
+    if (status && status < 500) {
+      tasks.value = []
+      readPaused.value = true
+    }
+    if (readFailures > 3 || Date.now() - readStarted >= 10000) readPaused.value = true
     loadingFailed.value = true
   } finally {
-    if (current === generation) timer = setTimeout(poll, 1000)
+    window.clearTimeout(deadline)
+    if (current === generation && !readPaused.value)
+      timer = setTimeout(poll, readFailures ? readFailures * 1000 : 1000)
+  }
+}
+const copyExecution = (id: string) =>
+  navigator.clipboard.writeText(id).catch(() => {
+    failure.value = tr('copy_failed')
+  })
+const resumeReading = () => {
+  if (readPaused.value) {
+    readPaused.value = false
+    readFailures = 0
+    readStarted = 0
+    void poll()
   }
 }
 watch(
   () => [user.uid, user.oid, user.proxyInfo?.proxyOid],
   () => {
     generation++
+    reading?.abort()
+    readFailures = 0
+    readStarted = 0
+    readPaused.value = false
     clearTimeout(timer)
     tasks.value = []
     submission = undefined
@@ -274,6 +339,7 @@ watch(
 onMounted(poll)
 onBeforeUnmount(() => {
   generation++
+  reading?.abort()
   clearTimeout(timer)
   origins.clear()
   conversationDelivered.clear()
@@ -289,12 +355,22 @@ onBeforeUnmount(() => {
       tr('background')
     }}</el-button>
     <p v-if="loadingFailed" role="status">{{ tr('task_load_failed') }}</p>
+    <el-button v-if="readPaused" @click="resumeReading">{{ tr('resume_background') }}</el-button>
     <p v-if="failure" role="alert">{{ failure }}</p>
     <article v-for="task in tasks" :key="task.taskId">
       <p>
         {{ task.resourceName }} · {{ tr(`task_status_${task.status.toLowerCase()}`) }} ·
         {{ tr('task_attempt') }} {{ task.attemptNumber }} · {{ task.modelIdentifier }}
       </p>
+      <p v-if="task.recovery">
+        {{ tr('current_step') }} {{ task.recovery.stepKind }} · {{ tr('technical_retries') }}
+        {{ task.recovery.technicalRetries }} · {{ tr('corrections') }}
+        {{ task.recovery.corrections }}
+      </p>
+      <small v-if="task.executionId">{{ task.executionId }}</small>
+      <el-button v-if="task.executionId" link @click="copyExecution(task.executionId)">{{
+        tr('copy_execution')
+      }}</el-button>
       <el-button v-if="active(task)" :disabled="pending" @click="change(task)">{{
         tr('task_cancel')
       }}</el-button>

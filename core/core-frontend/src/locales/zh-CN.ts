@@ -1,5 +1,23 @@
 export default {
   ai_conversation: {
+    submission_expired: '原操作已超出临时会话核对期限，请明确发起新任务。',
+    submission_limit: '未知受理操作已达上限，请先按原提交键核对已有操作。',
+    resume_background: '重新读取后台进度',
+    retry_configuration_confirm:
+      '请先核实并修复模型认证、余额或配置。确认已修复后，将以当前配置为原任务创建新尝试。',
+    progress_unreachable: '暂时无法读取进度；原执行状态尚未确认。',
+    progress_recovering: '正在恢复原执行进度',
+    submission_unknown: '受理结果尚未确认，请核对同次提交。',
+    resume_submission: '核对同次提交',
+    resume_progress: '继续读取原执行',
+    retry_attempt: '安全重试原任务',
+    retry_unknown: '重试受理结果尚未确认，再次点击沿用原重试键。',
+    current_step: '当前步骤',
+    technical_retries: '技术重试',
+    corrections: '模型纠错',
+    copy_execution: '复制执行 ID',
+    copy_failed: '复制失败，请手动选择执行 ID。',
+
     tasks: '后台任务',
     background: '后台 SQL 辅助',
     task_lifecycle:
@@ -110,6 +128,16 @@ export default {
     task_maxQueued: '系统等待任务上限',
     task_maxQueuedPerUser: '每用户等待任务上限',
     task_maxWaitSeconds: '最长等待时间（秒）',
+    failure_provider_unavailable: '模型服务暂时不可用，有限重试后仍未恢复。',
+    failure_outcome_unknown: '工具结果尚未确认，必须先核实，不能重放原任务。',
+
+    recovery_title: '受控恢复',
+    recovery_hint:
+      '仅对新尝试生效；任一次数设为 0 可关闭技术自动重试。工具安全资格、总步骤及执行期限始终生效。',
+    recovery_stepRetries: '每步骤技术重试上限',
+    recovery_attemptRetries: '每尝试累计技术重试上限',
+    recovery_initialDelayMillis: '初始等待（毫秒）',
+
     records: '调用记录',
     records_pending: '调用记录功能待完善',
     records_description: '后续将在此展示 AI 服务的调用记录及执行详情。',

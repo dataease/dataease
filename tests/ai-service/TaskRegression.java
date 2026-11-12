@@ -26,6 +26,8 @@ public final class TaskRegression {
         var sceneAllowed = new java.util.concurrent.atomic.AtomicBoolean(true);
         var toolsOn = new java.util.concurrent.atomic.AtomicBoolean();
         var executed = new java.util.concurrent.atomic.AtomicInteger();
+        var uncertain = new java.util.concurrent.atomic.AtomicBoolean();
+        var toolFailures = new java.util.concurrent.atomic.AtomicInteger();
         var beans = new StaticListableBeanFactory();
         beans.addBean("scene", new AiConversationScene() {
             public String code() { return "sql"; }
@@ -38,15 +40,16 @@ public final class TaskRegression {
                 return new io.dataease.api.ai.conversation.AiConversationDtos.Result("SQL_SUGGESTION", text, "select 1", context.resourceId(), context.resourceName(), context.revision(), editor, draft);
             }
             public List<io.dataease.ai.support.AiToolProtocol.Definition> tools(Context context) {
-                return toolsOn.get() ? List.of(new io.dataease.ai.support.AiToolProtocol.Definition("inspect", "inspect authorized metadata", Map.of())) : List.of();
+                return toolsOn.get() ? List.of(new io.dataease.ai.support.AiToolProtocol.Definition("inspect", "inspect authorized metadata", Map.of(), uncertain.get() ? io.dataease.ai.support.AiToolProtocol.RetrySafety.UNKNOWN : io.dataease.ai.support.AiToolProtocol.RetrySafety.READ_ONLY)) : List.of();
             }
             public String execute(Context context, String name, Map<String, String> arguments) {
                 if (org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()) throw new AssertionError("tool I/O must not hold metadata transaction");
-                authorize(context); executed.incrementAndGet(); return "{\"tables\":[\"authorized_table\"]}";
+                authorize(context); executed.incrementAndGet(); if (uncertain.get() || toolFailures.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw io.dataease.ai.support.AiErrors.error("connection_failed"); return "{\"tables\":[\"authorized_table\"]}";
             }
         });
         var followed = new java.util.concurrent.atomic.AtomicBoolean();
         var stateSends = new java.util.concurrent.atomic.AtomicInteger();
+        var continuationFailures = new java.util.concurrent.atomic.AtomicInteger();
         var failCommit = new java.util.concurrent.atomic.AtomicBoolean();
         var failingManager = new org.springframework.orm.jpa.JpaTransactionManager(em.getEntityManagerFactory()) {
             @Override protected void doCommit(org.springframework.transaction.support.DefaultTransactionStatus status) {
@@ -122,6 +125,9 @@ public final class TaskRegression {
                 followed.set(questions == 1 && messages.contains("durable answer") && candidate);
             }
             if (modelRequest.path("messages").toString().contains("state-save-failure")) { stateSends.incrementAndGet(); failCommit.set(true); }
+            if (modelRequest.path("messages").toString().contains("authorized_table") && continuationFailures.getAndUpdate(value -> Math.max(0, value - 1)) > 0) {
+                exchange.sendResponseHeaders(503, -1); exchange.close(); return;
+            }
             boolean needsTool = modelRequest.has("tools") && !modelRequest.path("messages").toString().contains("authorized_table");
             String toolFrame = "data: {\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"inspect-1\",\"type\":\"function\",\"function\":{\"name\":\"inspect\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n";
             byte[] body = (needsTool ? toolFrame : ("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"durable answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n")).getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -180,6 +186,25 @@ public final class TaskRegression {
             var withTools = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "with-tools"))).andReturn().getResponse().getContentAsString());
             var toolResult = await(mvc, json, "/ai/tasks/" + withTools.path("taskId").asText(), "COMPLETED");
             if (executed.get() != 1 || !"durable answer".equals(toolResult.path("result").path("text").asText())) throw new AssertionError("trusted task executes actual authorized tool and correlated continuation");
+            toolFailures.set(1);
+            var safeToolRetry = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "safe-tool-retry"))).andReturn().getResponse().getContentAsString());
+            var safeToolResult = await(mvc, json, "/ai/tasks/" + safeToolRetry.path("taskId").asText(), "COMPLETED");
+            if (safeToolResult.path("recovery").path("technicalRetries").asInt() != 1 || safeToolResult.path("executionId").asText().isBlank()) throw new AssertionError("trusted readonly tool retry shares attempt count and safe execution projection");
+            int beforeSharedRetries = executed.get();
+            toolFailures.set(2); continuationFailures.set(2);
+            var sharedRetry = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "shared-attempt-retries"))).andReturn().getResponse().getContentAsString());
+            var sharedRetryResult = await(mvc, json, "/ai/tasks/" + sharedRetry.path("taskId").asText(), "FAILED");
+            if (sharedRetryResult.path("recovery").path("technicalRetries").asInt() != 3 || executed.get() - beforeSharedRetries != 3)
+                throw new AssertionError("technical model/tool retries share attempt limit three and never replay completed tool work: " + sharedRetryResult);
+            uncertain.set(true);
+            var unsafe = json.readTree(mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "uncertain-write"))).andReturn().getResponse().getContentAsString());
+            String unsafePath = "/ai/tasks/" + unsafe.path("taskId").asText();
+            var unsafeResult = await(mvc, json, unsafePath, "FAILED");
+            boolean unsafeDenied = false;
+            try { mvc.perform(post(unsafePath + "/retry").contentType("application/json").content(json.writeValueAsBytes(Map.of("retryKey", "do-not-replay", "expectedAttemptId", unsafeResult.path("attemptId").asText())))); }
+            catch (jakarta.servlet.ServletException expected) { unsafeDenied = expected.getCause() instanceof io.dataease.ai.support.AiErrors.Failure; }
+            if (!unsafeDenied) throw new AssertionError("an unknown tool side effect must deny manual blind replay");
+            uncertain.set(false);
             sceneAllowed.set(false);
             if (json.readTree(mvc.perform(get("/ai/tasks/notices")).andReturn().getResponse().getContentAsString()).size() != 0) throw new AssertionError("revoked resource notices are withheld");
             boolean deniedResult = false;

@@ -16,7 +16,9 @@ public final class AiToolProtocol {
         JSON.getFactory().setStreamReadConstraints(com.fasterxml.jackson.core.StreamReadConstraints.builder()
                 .maxNestingDepth(12).maxStringLength(65536).maxNumberLength(20).build());
     }
-    public record Definition(String name, String description, Map<String, String> parameters) {
+    public enum RetrySafety { READ_ONLY, IDEMPOTENT, UNKNOWN }
+    public record Definition(String name, String description, Map<String, String> parameters, RetrySafety retrySafety) {
+        public Definition(String name, String description, Map<String, String> parameters) { this(name, description, parameters, RetrySafety.UNKNOWN); }
         public Definition { parameters = Map.copyOf(parameters); }
     }
     public record Call(String id, String name, String arguments) { }
@@ -73,6 +75,18 @@ public final class AiToolProtocol {
             }
             return Map.copyOf(result);
         } catch (java.io.IOException invalid) { throw AiErrors.error("invalid"); }
+    }
+    /** Only malformed arguments of a known tool can request model correction; never expose the exception. */
+    public static String correction(Call call, AiRecovery recovery, Set<String> invalid) {
+        String canonical = call.name() + ":" + Objects.toString(call.arguments(), "").strip();
+        try { canonical = call.name() + ":" + JSON.writeValueAsString(JSON.readTree(call.arguments())); }
+        catch (Exception ignored) { }
+        if (!invalid.add(canonical) || !recovery.correct(canonical)) throw AiErrors.error("invalid");
+        return result(Map.of("status", "INVALID", "code", "arguments", "message", "Use exactly the registered argument names with nonempty string values. No tool was executed."));
+    }
+    public static boolean invalidResult(String result) {
+        try { return "INVALID".equals(JSON.readTree(result).path("status").asText()); }
+        catch (Exception ignored) { return false; }
     }
     public static String result(Object value) {
         try {

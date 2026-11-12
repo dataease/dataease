@@ -41,7 +41,7 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
         AiAdmission.State state = admission.state(s);
         var result = new Settings(s.getEnabled(), s.getDefaultModelId(), s.getAllowSamples(), s.getRequestTimeoutSeconds(),
                 s.getMaxInputChars(), s.getMaxOutputTokens(), s.getInteractiveConcurrency(), s.getBackgroundConcurrency(),
-                s.getRevision(), s.getRowVersion(), s.getRevision(), state.revision(), state.name(), identity.deployment().organizations(), taskScheduling(s));
+                s.getRevision(), s.getRowVersion(), s.getRevision(), state.revision(), state.name(), identity.deployment().organizations(), taskScheduling(s), new Recovery(s.getRecoveryStepRetries(), s.getRecoveryAttemptRetries(), s.getRecoveryInitialDelayMillis()));
         access.verify(identity, true);
         return result;
     }
@@ -73,6 +73,10 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
                 s.setRequestTimeoutSeconds(c.requestTimeoutSeconds()); s.setMaxInputChars(c.maxInputChars());
                 s.setMaxOutputTokens(c.maxOutputTokens()); s.setInteractiveConcurrency(c.interactiveConcurrency());
                 s.setBackgroundConcurrency(c.backgroundConcurrency()); s.setRevision(s.getRevision() + 1);
+                if (c.recovery() != null) {
+                    s.setRecoveryStepRetries(c.recovery().stepRetries()); s.setRecoveryAttemptRetries(c.recovery().attemptRetries());
+                    s.setRecoveryInitialDelayMillis(c.recovery().initialDelayMillis());
+                }
                 touch(s); em.flush();
             });
         } catch (RuntimeException failure) {

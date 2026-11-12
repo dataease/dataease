@@ -30,6 +30,7 @@ export const openConversation = (value: {
   resourceId: string
   editorId: string
   sql: string
+  openKey?: string
 }) => data<AiConversationSession>(request.post({ url: '/ai/conversations', data: value }))
 export const sendConversationTurn = (id: string, contextVersion: string, text: string) =>
   data<AiConversationAnswer>(
@@ -45,6 +46,19 @@ export interface AiConversationExecution {
   status: 'RUNNING' | 'COMPLETED' | 'CANCELLED' | 'FAILED'
   deadline: number
   context?: AiConversationSession
+  taskId?: string
+  attemptId?: string
+  attemptNumber?: number
+  sourceAttemptId?: string
+  retryEligible?: boolean
+  recovery?: AiRecoveryProgress
+}
+export interface AiRecoveryProgress {
+  stepId: string | null
+  stepKind: string | null
+  technicalRetries: number
+  corrections: number
+  reason: string | null
 }
 export interface AiConversationTool {
   callId: string
@@ -70,6 +84,12 @@ export interface AiConversationEvents {
   status: AiConversationExecution['status']
   cursor: number
   result?: AiAssistanceResult
+  taskId?: string
+  attemptId?: string
+  attemptNumber?: number
+  sourceAttemptId?: string
+  retryEligible?: boolean
+  recovery?: AiRecoveryProgress
   events: {
     sequence: number
     type: string
@@ -78,11 +98,16 @@ export interface AiConversationEvents {
     tool?: AiConversationTool
   }[]
 }
-export const startConversationExecution = (id: string, contextVersion: string, text: string) =>
+export const startConversationExecution = (
+  id: string,
+  contextVersion: string,
+  text: string,
+  submissionKey?: string
+) =>
   data<AiConversationExecution>(
     request.post({
       url: `/ai/conversations/${id}/executions`,
-      data: { contextVersion, text },
+      data: { contextVersion, text, submissionKey },
       handleErrorLocally: true
     })
   )
@@ -92,6 +117,7 @@ export const invokeSqlAssistance = (value: {
   editorId: string
   sql: string
   text: string
+  submissionKey?: string
 }) =>
   data<AiConversationExecution>(
     request.post({
@@ -131,6 +157,20 @@ export const checkSqlApplication = (
     request.post({
       url: `/ai/conversations/${id}/executions/${execution}/check-application`,
       data: { contextVersion, draftVersion },
+      handleErrorLocally: true
+    })
+  )
+
+export const retryConversationExecution = (
+  id: string,
+  execution: string,
+  expectedAttemptId: string,
+  retryKey: string
+) =>
+  data<AiConversationExecution>(
+    request.post({
+      url: `/ai/conversations/${id}/executions/${execution}/retry`,
+      data: { expectedAttemptId, retryKey },
       handleErrorLocally: true
     })
   )

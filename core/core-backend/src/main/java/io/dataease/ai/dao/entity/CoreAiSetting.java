@@ -61,6 +61,17 @@ public class CoreAiSetting extends AiConfigEntity {
     @Column(name = "task_max_wait_seconds", nullable = false)
     @Comment("Waiting deadline snapshotted at acceptance")
     private Integer taskMaxWaitSeconds = 300;
+    @Column(name = "recovery_step_retries", nullable = false)
+    @Comment("Maximum technical retries per failed step")
+    private Integer recoveryStepRetries = 2;
+
+    @Column(name = "recovery_attempt_retries", nullable = false)
+    @Comment("Maximum technical retries in one attempt")
+    private Integer recoveryAttemptRetries = 3;
+
+    @Column(name = "recovery_initial_delay_millis", nullable = false)
+    @Comment("Initial technical retry wait, milliseconds")
+    private Integer recoveryInitialDelayMillis = 1000;
 
     @Column(name = "revision", nullable = false)
     @Comment("revision")

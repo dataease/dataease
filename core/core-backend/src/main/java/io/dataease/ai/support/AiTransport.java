@@ -151,7 +151,7 @@ public class AiTransport {
         private boolean started, closed;
         public synchronized void start(Connection c, CoreAiSetting s, Prompt prompt, long deadline, Runnable recheck, Runnable progress,
                                        java.util.function.Consumer<String> delta, Runnable completed,
-                                       java.util.function.Consumer<Throwable> failed) {
+                                       java.util.function.Consumer<Throwable> failed, AiRecovery recovery) {
             if (started || closed) throw AiErrors.error("cancelled");
             started = true;
             Runnable guard = () -> {
@@ -162,7 +162,9 @@ public class AiTransport {
             try {
                 future = executor.submit(() -> {
                     try {
-                        perform(c, s, background, deadline, recheck, cancellation, builder -> {
+                        var delivered = new java.util.concurrent.atomic.AtomicBoolean();
+                        var budget = new AiToolProtocol.Budget(s.getMaxOutputTokens());
+                        recovery.execute("MODEL", deadline, guard, delivered::get, () -> { }, () -> perform(c, s, background, deadline, recheck, cancellation, builder -> {
                             var options = (org.springframework.ai.openai.OpenAiChatOptions) prompt.getOptions();
                             var payload = json.createObjectNode();
                             payload.put("model", options.getModel()); payload.put("stream", true); payload.put("n", 1);
@@ -184,10 +186,10 @@ public class AiTransport {
                                         if (response.getStatusCode().value() >= 300) throw providerError(response);
                                         MediaType type = response.getHeaders().getContentType();
                                         if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
-                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens(), guard, delta);
+                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens(), guard, text -> { delivered.set(true); delta.accept(text); }, budget);
                                         return Boolean.TRUE;
                                     });
-                        });
+                        }));
                         if (!cancellation.cancelled()) completed.run();
                     } catch (Throwable failure) {
                         if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline));
@@ -210,7 +212,7 @@ public class AiTransport {
         public synchronized void start(Connection connection, CoreAiSetting settings, com.fasterxml.jackson.databind.node.ObjectNode payload,
                                        long deadline, int allocation, AiToolProtocol.Budget budget, Runnable recheck, Runnable progress,
                                        java.util.function.Consumer<String> delta, java.util.function.Consumer<AiToolProtocol.Step> completed,
-                                       java.util.function.Consumer<Throwable> failed) {
+                                       java.util.function.Consumer<Throwable> failed, AiRecovery recovery) {
             if (closed || future != null) throw AiErrors.error("cancelled");
             Runnable guard = () -> {
                 if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
@@ -220,15 +222,20 @@ public class AiTransport {
             try {
                 future = executor.submit(() -> {
                     try {
-                        var result = perform(connection, settings, background, deadline, recheck, cancellation, builder ->
+                        var delivered = new java.util.concurrent.atomic.AtomicBoolean();
+                        var currentAllocation = new java.util.concurrent.atomic.AtomicInteger(allocation);
+                        var result = recovery.execute("MODEL", deadline, guard, delivered::get, () -> {
+                            int next = budget.allocate(); currentAllocation.set(next);
+                            payload.put(payload.has("max_completion_tokens") ? "max_completion_tokens" : "max_tokens", next);
+                        }, () -> perform(connection, settings, background, deadline, recheck, cancellation, builder ->
                             builder.baseUrl(connection.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + connection.key()).build()
                                 .post().uri(outbound.completionPath(connection.url())).contentType(MediaType.APPLICATION_JSON).body(payload)
                                 .exchange((request, response) -> {
                                     if (response.getStatusCode().value() >= 300) throw providerError(response);
                                     var type = response.getHeaders().getContentType();
                                     if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
-                                    return readToolEvents(response.getBody(), allocation, budget, guard, delta);
-                                }));
+                                    return readToolEvents(response.getBody(), currentAllocation.get(), budget, guard, text -> { delivered.set(true); delta.accept(text); });
+                                })));
                         guard.run(); if (!cancellation.cancelled()) completed.accept(result);
                     } catch (Throwable failure) { if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline)); }
                     finally { clearWorker(); }
@@ -373,12 +380,16 @@ public class AiTransport {
         }
     }
     /** Bounded SSE framing, incrementally decoded UTF-8 including split multibyte characters. */
-    private void readEvents(InputStream input, int maxTokens, Runnable guard, java.util.function.Consumer<String> delta) throws IOException {
-        var frames = new SseFrames(input, guard);
+    private void readEvents(InputStream input, int maxTokens, Runnable guard, java.util.function.Consumer<String> delta, AiToolProtocol.Budget budget) throws IOException {
+        var bounded = new FilterInputStream(input) {
+            @Override public int read() throws IOException { int value = super.read(); if (value != -1) budget.raw(1); return value; }
+            @Override public int read(byte[] bytes, int offset, int length) throws IOException { int count = in.read(bytes, offset, length); if (count > 0) budget.raw(count); return count; }
+        };
+        var frames = new SseFrames(bounded, guard);
         boolean finished = false, text = false;
         long characters = 0;
         while (true) {
-            String event = frames.next(); guard.run();
+            String event = frames.next(); budget.frame(); guard.run();
             if ("[DONE]".equals(event)) {
                 if (!finished || !text) throw AiErrors.error("response_invalid");
                 return;
@@ -406,7 +417,7 @@ public class AiTransport {
                 if (!chunk.path("content").isTextual()) throw AiErrors.error("response_invalid");
                 String content = chunk.path("content").asText();
                 if (!content.isEmpty()) {
-                    characters += content.length();
+                    characters += content.length(); budget.generated(content.length());
                     if (characters > Math.min(262144L, maxTokens * 16L)) throw AiErrors.error("output_limit");
                     guard.run(); delta.accept(content); text |= !content.isBlank();
                 }
@@ -431,7 +442,7 @@ public class AiTransport {
         }
         synchronized boolean cancelled() { return cancelled; }
     }
-    private static String connectionFailure(Throwable failure) {
+    static String connectionFailure(Throwable failure) {
         var causes = new java.util.ArrayList<Throwable>();
         var seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Throwable, Boolean>());
         for (Throwable cause = failure; cause != null && seen.add(cause); cause = cause.getCause()) causes.add(cause);
@@ -445,23 +456,31 @@ public class AiTransport {
     }
     private static RuntimeException providerError(ClientHttpResponse response) throws IOException {
         int status = response.getStatusCode().value();
-        if (status == 400 || status == 422) {
+        if (status == 400 || status == 422 || status == 429) {
             byte[] body = response.getBody().readNBytes(65537);
             if (body.length <= 65536) {
                 try {
                     var root = new ObjectMapper().readTree(body);
                     var error = root == null ? com.fasterxml.jackson.databind.node.NullNode.getInstance() : root.path("error");
+                    if (status == 429 && java.util.Set.of("insufficient_quota", "billing_hard_limit_reached", "billing_not_active").contains(error.path("code").asText())) return AiErrors.error("provider_balance");
                     if ("unsupported_parameter".equals(error.path("code").asText()) && "max_tokens".equals(error.path("param").asText())) return AiErrors.error("max_tokens_unsupported");
                 } catch (com.fasterxml.jackson.core.JsonProcessingException ignored) { /* 未识别的正文不进入日志或异常。 */ }
             }
         }
-        return AiErrors.error(switch (status) {
+        long retryAfter = 0;
+        String wait = response.getHeaders().getFirst("Retry-After");
+        if (wait != null) try {
+            retryAfter = wait.matches("[0-9]{1,8}") ? Long.parseLong(wait) * 1000L
+                    : Math.max(0, java.time.ZonedDateTime.parse(wait, java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME).toInstant().toEpochMilli() - System.currentTimeMillis());
+        } catch (RuntimeException ignored) { }
+        return AiErrors.retryAfter(switch (status) {
             case 401, 403 -> "provider_authentication";
             case 402 -> "provider_balance";
             case 429 -> "provider_rate_limit";
             case 400, 404, 405, 422 -> "provider_rejected";
+            case 500, 502, 503, 504 -> "provider_unavailable";
             default -> "upstream_failed";
-        });
+        }, retryAfter);
     }
     private ClientHttpResponse bounded(ClientHttpResponse response, AiAdmission.Permit permit, long deadline) throws IOException {
         return new ClientHttpResponse() {

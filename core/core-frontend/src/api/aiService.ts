@@ -6,8 +6,14 @@ export interface AiTaskScheduling {
   maxQueuedPerUser: number
   maxWaitSeconds: number
 }
+export interface AiRecoverySettings {
+  stepRetries: number
+  attemptRetries: number
+  initialDelayMillis: number
+}
 export interface AiSettings {
   taskScheduling?: AiTaskScheduling
+  recovery?: AiRecoverySettings
   enabled: boolean
   defaultModelId: string | null
   allowSamples: boolean
@@ -142,6 +148,8 @@ const safeFailureCodes = new Set([
   'provider_authentication',
   'provider_balance',
   'provider_rate_limit',
+  'provider_unavailable',
+  'outcome_unknown',
   'provider_rejected',
   'forbidden',
   'conflict',

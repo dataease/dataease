@@ -102,8 +102,8 @@ public final class TaskClusterRegression {
         for (long id : List.of(901L, 903L)) {
             jdbc.update("insert into core_ai_task(id,current_attempt_id,owner_binding,submission_hash,input_hash,owner_json,input_json,context_json,created_at) values(?,?,?,?,?,?,?,?,?)",
                     id, id + 1, "old-binding-" + id, "legacy-submission-" + id, "legacy-input-digest", "{\"actor\":1}", "{}", "{}", created);
-            jdbc.update("insert into core_ai_task_attempt(id,task_id,attempt_number,retry_hash,status,created_at,result_json) values(?,?,?,?,?,?,?)",
-                    id + 1, id, 1, "legacy-retry-" + id, id == 901L ? "QUEUED" : "COMPLETED", created, id == 901L ? null : "historical-result");
+            jdbc.update("insert into core_ai_task_attempt(id,task_id,attempt_number,retry_hash,status,created_at,result_json,retry_safe) values(?,?,?,?,?,?,?,?)",
+                    id + 1, id, 1, "legacy-retry-" + id, id == 901L ? "QUEUED" : "COMPLETED", created, id == 901L ? null : "historical-result", false);
         }
         var upgrade = new AiTaskSchedulingInit(jdbc, factory, em, manager); upgrade.execute();
         check(jdbc.queryForObject("select queue_deadline from core_ai_task_attempt where id=902", Long.class) == created + 300000,

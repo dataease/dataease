@@ -44,6 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
+        if (Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
         SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) { TaskProgressRegression.main(new String[0]); TaskClusterRegression.run(); } if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
@@ -109,13 +110,18 @@ public class Regression {
             // Simulate an existing 2.49 task database; migration must add missing columns and retry safely.
             jdbc.execute("alter table core_ai_task_attempt drop column delivery_expires_at");
             jdbc.execute("alter table core_ai_task_attempt drop column notice_ack_at");
+            jdbc.execute("alter table core_ai_task_attempt drop column retry_safe");
+            jdbc.execute("alter table core_ai_task_attempt drop column execution_id");
+            jdbc.execute("alter table core_ai_task_attempt drop column recovery_json");
             jdbc.update("insert into core_ai_task_attempt (id,task_id,attempt_number,retry_hash,status,created_at,finished_at) values (777,777,1,'legacy-delivery','COMPLETED',1000,2000)");
             var deliveryMigration=new io.dataease.listener.sql.AiTaskDeliveryInit(jdbc,factory); deliveryMigration.execute(); deliveryMigration.execute();
             if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id=777", Long.class) != 2000L + io.dataease.ai.manage.AiTaskManage.DELIVERY_MILLIS
                     || jdbc.queryForObject("select notice_ack_at from core_ai_task_attempt where id=777", Long.class) != 2000L) throw new AssertionError("legacy result expiry backfill preserves original finish and creates no old pending notice");
-            jdbc.update("delete from core_ai_task_attempt where id=777");
             System.out.println("PASS AI 2.50 additive retryable delivery migration, original expiry and no manufactured legacy notices");
             var migration=new AiConfigurationInit(jdbc,factory,em,manager); migration.execute(); migration.execute();
+            var recoveryMigration=new io.dataease.listener.sql.AiRecoveryInit(jdbc,factory); recoveryMigration.execute(); recoveryMigration.execute();
+            check(!jdbc.queryForObject("select retry_safe from core_ai_task_attempt where id=777", Boolean.class), "legacy attempts without trusted tool safety cannot be blindly replayed");
+            jdbc.update("delete from core_ai_task_attempt where id=777");
             new io.dataease.listener.sql.AiTaskSchedulingInit(jdbc,factory,em,manager).execute();
             var menuMigration=new io.dataease.listener.sql.AiConfigurationMenuInit(em,manager);menuMigration.execute();menuMigration.execute();
             check(settings.count()==1,"migration singleton idempotent without ddl-auto");check(menus.count()==2,"existing menu and independent AI configuration menu");
@@ -186,6 +192,8 @@ public class Regression {
             CoreAiSetting runtimeSetting=manage.setting();
             String runtimeImpact=manage.impact("SETTINGS",next.id()+":true").token();
             manage.saveSettings(new SettingsChange(runtimeSetting.getRowVersion(),true,next.id(),false,60,30000,4096,5,2,runtimeImpact));
+            if (Boolean.getBoolean("ai.test.recoveryToolsOnly")) { ToolConversationRegression.run(manage,policies,keys,limiter,access); return; }
+            if (Boolean.getBoolean("ai.test.recoveryOnly")) { ConversationRegression.run(manage,policies,keys,limiter,access); return; }
             TaskRegression.run(em,manager,access,manage,policies,keys,limiter);
             if (Boolean.getBoolean("ai.test.onlyTasks")) return;
             RuntimeRegression.run(manage,policies,keys,new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager),access);

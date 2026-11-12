@@ -84,7 +84,7 @@ test('a failed one-shot request preserves the existing independent conversation'
       return route.fulfill({ json: {} })
     }
     if (url.pathname.endsWith('/capabilities/sql.assist'))
-      return route.fulfill({ status: 503, json: {} })
+      return route.fulfill({ status: 400, json: {} })
     if (url.pathname.endsWith('/executions')) {
       starts++
       return route.fulfill({
@@ -443,8 +443,8 @@ test('real page renders increments, deduplicates cursors, keeps execution while 
   await send(page, 'What next?')
   await expect(page.getByText('Follow-up answer', { exact: true })).toBeVisible()
   expect(turns).toEqual([
-    { contextVersion: 'v1', text: 'Explain this SQL' },
-    { contextVersion: 'v1', text: 'What next?' }
+    { contextVersion: 'v1', text: 'Explain this SQL', submissionKey: expect.any(String) },
+    { contextVersion: 'v1', text: 'What next?', submissionKey: expect.any(String) }
   ])
   await page.getByRole('button', { name: '结束会话' }).click()
   await expect(page.getByText('First increment', { exact: true })).toHaveCount(0)
@@ -507,7 +507,8 @@ test('SQL changes retain the original output and identity changes clear it while
   await expect(page.getByText('Late old answer', { exact: true })).toBeVisible()
   await send(page, 'Try new context')
   await expect(page.getByRole('alert')).toBeVisible()
-  await expect(page.getByText('· 未完成')).toBeVisible()
+  await expect(page.getByRole('button', { name: '核对同次提交' })).toBeVisible()
+  await expect(page.getByText('· 未完成')).toHaveCount(0)
   await page.evaluate(() => window.aiSwitchUser())
   await expect(page.getByText('Try new context', { exact: true })).toHaveCount(0)
 })
@@ -591,7 +592,7 @@ test('stop aborts an in-flight poll without closing the context and late complet
   await expect(page.getByRole('alert')).toHaveCount(0)
 })
 
-test('offline and refresh end the temporary session and a new activity opens a new context', async ({
+test('brief offline retains the execution while refresh ends the temporary session', async ({
   page
 }) => {
   let opens = 0
@@ -632,18 +633,18 @@ test('offline and refresh end the temporary session and a new activity opens a n
   await send(page, 'Before disconnect')
   await expect(page.getByText('Visible partial', { exact: true })).toBeVisible()
   await page.evaluate(() => window.dispatchEvent(new Event('offline')))
-  await expect(page.getByText('· 未完成')).toBeVisible()
-  await expect.poll(() => closed.length).toBe(1)
-  await send(page, 'New activity')
-  await expect.poll(() => opens).toBe(2)
+  await expect(page.getByText('Visible partial', { exact: true })).toBeVisible()
+  await expect(page.getByText('· 未完成')).toHaveCount(0)
+  expect(closed).toHaveLength(0)
+  expect(opens).toBe(1)
   await page.evaluate(() => window.dispatchEvent(new Event('pagehide')))
-  await expect(page.getByText('New activity', { exact: true })).toHaveCount(0)
-  await expect.poll(() => closed.length).toBe(2)
+  await expect(page.getByText('Before disconnect', { exact: true })).toHaveCount(0)
+  await expect.poll(() => closed.length).toBe(1)
   await page.reload()
   await page.getByRole('combobox', { name: '数据源' }).click()
   await page.getByRole('option', { name: 'Isolated database' }).click()
   await send(page, 'After refresh')
-  await expect.poll(() => opens).toBe(3)
+  await expect.poll(() => opens).toBe(2)
 })
 
 test('stop racing with completed server execution drains missing text before displaying complete', async ({
@@ -1108,9 +1109,17 @@ for (const context of ['user', 'workspace', 'proxy']) {
     await send(page, 'New context question')
     await expect.poll(() => turns.length).toBe(1)
     expect(opens).toEqual([
-      { scene: 'sql', resourceId: '11', editorId: expect.any(String), sql: '' }
+      {
+        scene: 'sql',
+        resourceId: '11',
+        editorId: expect.any(String),
+        sql: '',
+        openKey: expect.any(String)
+      }
     ])
-    expect(turns).toEqual([{ contextVersion: 'v1', text: 'New context question' }])
+    expect(turns).toEqual([
+      { contextVersion: 'v1', text: 'New context question', submissionKey: expect.any(String) }
+    ])
   })
 }
 
@@ -1130,7 +1139,7 @@ test('independent background task remains active after reload and exposes cancel
     if (url.pathname.endsWith('/notices')) return route.fulfill({ json: [] })
     if (url.pathname.endsWith('/cancel')) {
       cancelled++
-      task = { ...task, status: 'CANCELLED' }
+      task = { ...task, status: 'CANCELLED', retryEligible: true }
     } else if (url.pathname.endsWith('/retry')) {
       retried++
       task = { ...task, attemptId: '1002', attemptNumber: 2, status: 'QUEUED' }
@@ -1604,4 +1613,319 @@ test('full background queue promptly shows explicit busy refusal without an acce
   await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('后台任务队列已满，请稍后重试。')
   await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(0)
+})
+
+test('progress reconnect reuses execution and cursor without generating again', async ({
+  page
+}) => {
+  let starts = 0
+  let polls = 0
+  const cursors = []
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    const run = { ...session, executionId: 'reconnect-run' }
+    if (url.pathname.endsWith('/executions')) {
+      starts++
+      return route.fulfill({ json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 } })
+    }
+    if (url.pathname.endsWith('/events')) {
+      polls++
+      cursors.push(url.searchParams.get('after'))
+      if (polls === 2 || polls === 3) return route.abort('connectionfailed')
+      return route.fulfill({
+        json: {
+          ...run,
+          status: polls === 1 ? 'RUNNING' : 'COMPLETED',
+          cursor: polls === 1 ? 1 : 3,
+          events: [
+            { sequence: 1, type: 'TEXT', text: 'Retained ' },
+            ...(polls === 1
+              ? []
+              : [
+                  { sequence: 2, type: 'TEXT', text: 'answer' },
+                  { sequence: 3, type: 'COMPLETED' }
+                ])
+          ]
+        }
+      })
+    }
+    return route.fulfill({ json: session })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Recover the same progress')
+  await expect(page.getByText('Retained answer', { exact: true })).toBeVisible({ timeout: 10000 })
+  expect(starts).toBe(1)
+  expect(cursors).toEqual(['0', '1', '1', '1'])
+  await expect(page.getByText('· 未完成')).toHaveCount(0)
+})
+
+test('background read recovery is bounded and never submits model work', async ({ page }) => {
+  let reads = 0
+  let submissions = 0
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    if (route.request().method() === 'POST') submissions++
+    reads++
+    return route.fulfill({ status: 503, json: {} })
+  })
+  await page.goto('/?view=conversation')
+  await expect(page.getByRole('button', { name: '重新读取后台进度' })).toBeVisible({
+    timeout: 12000
+  })
+  expect(reads).toBe(4)
+  await page.waitForTimeout(1200)
+  expect(reads).toBe(4)
+  expect(submissions).toBe(0)
+})
+
+test('lost Open acceptance reuses its key and the same submission after explicit reconciliation', async ({
+  page
+}) => {
+  const opens = []
+  const starts = []
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'once',
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            { sequence: 1, type: 'TEXT', text: 'One accepted answer' },
+            { sequence: 2, type: 'COMPLETED' }
+          ]
+        }
+      })
+    if (url.pathname.endsWith('/executions')) {
+      starts.push(route.request().postDataJSON())
+      return route.fulfill({
+        json: { ...session, executionId: 'once', status: 'RUNNING', deadline: Date.now() + 60000 }
+      })
+    }
+    opens.push(route.request().postDataJSON())
+    return route.fulfill(opens.length === 1 ? { status: 503, json: {} } : { json: session })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Uncertain acceptance')
+  await expect(page.getByRole('button', { name: '核对同次提交' })).toBeVisible()
+  await page.getByRole('textbox', { name: '消息' }).fill('Uncertain acceptance')
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeDisabled()
+  await page.getByRole('button', { name: '核对同次提交' }).click()
+  await expect(page.getByText('One accepted answer', { exact: true })).toBeVisible()
+  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('Uncertain acceptance')
+  expect(opens).toHaveLength(2)
+  expect(opens[0].openKey).toBeTruthy()
+  expect(opens[1].openKey).toBe(opens[0].openKey)
+  expect(starts).toHaveLength(1)
+  expect(starts[0].submissionKey).toBeTruthy()
+  await expect(page.getByText('Uncertain acceptance', { exact: true })).toHaveCount(1)
+})
+
+test('manual retry reconciles the same attempt key and keeps partial output separate', async ({
+  page
+}) => {
+  const retries = []
+  let initialStarts = 0
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/retry')) {
+      retries.push(route.request().postDataJSON())
+      return route.fulfill(
+        retries.length === 1
+          ? { status: 503, json: {} }
+          : {
+              json: {
+                ...session,
+                executionId: 'attempt-b',
+                taskId: 'same-task',
+                attemptId: 'b',
+                attemptNumber: 2,
+                sourceAttemptId: 'a',
+                status: 'RUNNING',
+                deadline: Date.now() + 60000
+              }
+            }
+      )
+    }
+    if (url.pathname.endsWith('/events')) {
+      const second = url.pathname.includes('attempt-b')
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: second ? 'attempt-b' : 'attempt-a',
+          taskId: 'same-task',
+          attemptId: second ? 'b' : 'a',
+          status: second ? 'COMPLETED' : 'FAILED',
+          retryEligible: !second,
+          cursor: 2,
+          events: [
+            {
+              sequence: 1,
+              type: 'TEXT',
+              text: second ? 'Independent new answer' : 'Incomplete original answer'
+            },
+            {
+              sequence: 2,
+              type: second ? 'COMPLETED' : 'FAILED',
+              error: second ? null : 'connection_failed'
+            }
+          ]
+        }
+      })
+    }
+    if (url.pathname.endsWith('/executions')) {
+      initialStarts++
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: 'attempt-a',
+          taskId: 'same-task',
+          attemptId: 'a',
+          attemptNumber: 1,
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    }
+    return route.fulfill({ json: session })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Original frozen task')
+  await page.getByRole('button', { name: '安全重试原任务' }).click()
+  await expect(page.getByRole('alert')).toContainText('重试受理结果尚未确认')
+  await page.getByRole('button', { name: '安全重试原任务' }).click()
+  await expect(page.getByText('Independent new answer', { exact: true })).toBeVisible()
+  await expect(page.getByText('Incomplete original answer', { exact: true })).toBeVisible()
+  expect(retries).toHaveLength(2)
+  expect(retries[0]).toEqual({ expectedAttemptId: 'a', retryKey: expect.any(String) })
+  expect(retries[1]).toEqual(retries[0])
+  expect(initialStarts).toBe(1)
+})
+
+test('exhausted foreground reads keep authoritative status and can still be stopped', async ({
+  page
+}) => {
+  let reads = 0
+  let starts = 0
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    const run = {
+      ...session,
+      executionId: 'unreachable-run',
+      taskId: 'task-u',
+      attemptId: 'attempt-u'
+    }
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/stop'))
+      return route.fulfill({
+        json: {
+          ...run,
+          status: 'CANCELLED',
+          cursor: 2,
+          retryEligible: true,
+          events: [{ sequence: 2, type: 'CANCELLED' }]
+        }
+      })
+    if (url.pathname.endsWith('/executions')) {
+      starts++
+      return route.fulfill({ json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 } })
+    }
+    if (url.pathname.endsWith('/events')) {
+      reads++
+      if (reads > 1) return route.abort('connectionfailed')
+      return route.fulfill({
+        json: {
+          ...run,
+          status: 'RUNNING',
+          cursor: 1,
+          events: [{ sequence: 1, type: 'TEXT', text: 'Unconfirmed partial' }]
+        }
+      })
+    }
+    return route.fulfill({ json: session })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Read without replay')
+  await expect(page.getByRole('button', { name: '继续读取原执行' })).toBeVisible({ timeout: 10000 })
+  expect(reads).toBe(5)
+  expect(starts).toBe(1)
+  await expect(page.getByText('Unconfirmed partial', { exact: true })).toBeVisible()
+  await expect(page.getByText('· 未完成')).toHaveCount(0)
+  await page.getByRole('button', { name: '停止生成', exact: true }).click()
+  await expect(page.getByRole('button', { name: '安全重试原任务' })).toBeVisible()
+  await page.getByRole('textbox', { name: '消息' }).fill('A distinct later turn')
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled()
+})
+
+test('changed input is a distinct task while the older unknown submission keeps its key', async ({
+  page
+}) => {
+  const posts = []
+  const modelOperations = new Map()
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (url.pathname.endsWith('/events')) {
+      const earlier = url.pathname.includes('earlier')
+      return route.fulfill({
+        json: {
+          ...session,
+          executionId: earlier ? 'earlier' : 'later',
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            {
+              sequence: 1,
+              type: 'TEXT',
+              text: earlier ? 'Reconciled earlier result' : 'Distinct later result'
+            },
+            { sequence: 2, type: 'COMPLETED' }
+          ]
+        }
+      })
+    }
+    if (url.pathname.endsWith('/executions')) {
+      const body = route.request().postDataJSON()
+      posts.push(body)
+      const original = modelOperations.get(body.submissionKey)
+      if (original) return route.fulfill({ json: original })
+      const run = {
+        ...session,
+        executionId: posts.length === 1 ? 'earlier' : 'later',
+        status: 'RUNNING',
+        deadline: Date.now() + 60000
+      }
+      modelOperations.set(body.submissionKey, run)
+      if (posts.length === 1) return route.fulfill({ status: 503, json: {} })
+      return route.fulfill({ json: run })
+    }
+    return route.fulfill({ json: session })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Earlier uncertain task')
+  await expect(page.getByRole('button', { name: '核对同次提交' })).toBeVisible()
+  await send(page, 'Changed input is a new task')
+  await expect(page.getByText('Distinct later result', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '核对同次提交' }).click()
+  await expect(page.getByText('Reconciled earlier result', { exact: true })).toBeVisible()
+  expect(posts.map((post) => post.text)).toEqual([
+    'Earlier uncertain task',
+    'Changed input is a new task',
+    'Earlier uncertain task'
+  ])
+  expect(posts[1].submissionKey).not.toBe(posts[0].submissionKey)
+  expect(posts[2].submissionKey).toBe(posts[0].submissionKey)
+  expect(modelOperations.size).toBe(2)
 })

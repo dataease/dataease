@@ -17,6 +17,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
     parser.add_argument('--task-scheduling', action='store_true', help='public HTTP task scheduling across independent JVMs')
+    parser.add_argument('--recovery-tools', action='store_true', help='public tool correction recovery loop')
+    parser.add_argument('--recovery', action='store_true', help='public foreground recovery loop')
     parser.add_argument('--task-progress', action='store_true', help='isolated public task private-frame timing loop')
     parser.add_argument('--progress-case', default='all', choices=['all', 'text-plain', 'sql-plain', 'text-burst', 'sql-burst'])
     parser.add_argument('--progress-frames', type=int, default=512)
@@ -83,6 +85,9 @@ def main():
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
             'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
             'sdk/common/src/main/java/io/dataease/constant/AuthResourceEnum.java',
+            'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
+            'sdk/common/src/main/java/io/dataease/exception/DEException.java',
+            'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
             'sdk/common/src/main/java/io/dataease/auth/ConfigurationSecurity.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceRelationApi.java',
@@ -95,6 +100,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecoveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecordsMenuInit.java',
             'core/core-backend/src/main/java/io/dataease/menu/manage/MenuManage.java',
@@ -115,6 +121,10 @@ def main():
         java = ['java']
         if args.task_scheduling:
             java.append('-Dai.test.schedulingOnly=true')
+        if args.recovery_tools:
+            java.append('-Dai.test.recoveryToolsOnly=true')
+        if args.recovery:
+            java.append('-Dai.test.recoveryOnly=true')
         if args.only_tasks or args.task_contracts:
             java.append('-Dai.test.onlyTasks=true')
         if args.task_contracts:

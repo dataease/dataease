@@ -48,10 +48,10 @@ public class AiSqlConversationScene implements AiConversationScene {
         }
     }
     @Override public List<AiToolProtocol.Definition> tools() {
-        return List.of(new AiToolProtocol.Definition("list_tables", "Read table names in the current authorized datasource; no data rows.", Map.of()),
-                new AiToolProtocol.Definition("get_table_fields", "Read fields of an exact table returned by list_tables; no data rows.", Map.of("table", "Exact authorized table name")),
-                new AiToolProtocol.Definition("validate_sql", "Statically check candidate SQL against current authorized metadata, without executing it. " + AiSqlStaticValidator.SCOPE, Map.of("sql", "Whole candidate SQL; correct INVALID references and validate the correction again; UNSUPPORTED is not validated.")),
-                new AiToolProtocol.Definition("propose_sql", "Propose SQL for explicit user application to the original editor draft. Runs the same static validation; only PASS produces an applicable SQL suggestion. Never saves or executes SQL.", Map.of("sql", "Complete SQL suggestion within the declared validation subset")));
+        return List.of(new AiToolProtocol.Definition("list_tables", "Read table names in the current authorized datasource; no data rows.", Map.of(), AiToolProtocol.RetrySafety.READ_ONLY),
+                new AiToolProtocol.Definition("get_table_fields", "Read fields of an exact table returned by list_tables; no data rows.", Map.of("table", "Exact authorized table name"), AiToolProtocol.RetrySafety.READ_ONLY),
+                new AiToolProtocol.Definition("validate_sql", "Statically check candidate SQL against current authorized metadata, without executing it. " + AiSqlStaticValidator.SCOPE, Map.of("sql", "Whole candidate SQL; correct INVALID references and validate the correction again; UNSUPPORTED is not validated."), AiToolProtocol.RetrySafety.READ_ONLY),
+                new AiToolProtocol.Definition("propose_sql", "Propose SQL for explicit user application to the original editor draft. Runs the same static validation; only PASS produces an applicable SQL suggestion. Never saves or executes SQL.", Map.of("sql", "Complete SQL suggestion within the declared validation subset"), AiToolProtocol.RetrySafety.READ_ONLY));
     }
     @Override public List<AiToolProtocol.Definition> tools(Context context) {
         return context.resourceId().isBlank() ? List.of() : tools();

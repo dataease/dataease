@@ -68,7 +68,7 @@ public final class TaskNode {
             public List<Resource> resources() { return List.of(new Resource("11", "controlled resource")); }
             public Context resolve(String id, String input) { return new Context(id, "controlled resource", "v1", "Explain SQL: " + input); }
             public List<AiToolProtocol.Definition> tools(Context context) {
-                return context.instruction().contains("controlled-read") ? List.of(new AiToolProtocol.Definition("inspect", "Read owned metadata fixture", Map.of())) : List.of();
+                return context.instruction().contains("controlled-read") ? List.of(new AiToolProtocol.Definition("inspect", "Read owned metadata fixture", Map.of(), AiToolProtocol.RetrySafety.READ_ONLY)) : List.of();
             }
             public String execute(Context context, String name, Map<String, String> arguments, Runnable check, long deadline) {
                 if (TransactionSynchronizationManager.isActualTransactionActive()) throw new AssertionError("tool I/O must not hold metadata transaction");

@@ -12,3 +12,5 @@ declare const request: {
   delete: (option: unknown) => Promise<any>
 }
 export default request
+
+export const isRequestError: (error: unknown) => error is { response?: { status?: number } }

@@ -48,7 +48,9 @@ public class AiTaskManage implements AiToolConversationFeature {
         final List<Tool> tools = new ArrayList<>();
         final Set<String> ids = new HashSet<>(), requests = new HashSet<>();
         int toolSteps;
+        final Set<String> invalidRequests = new HashSet<>();
         volatile String failureCode;
+        volatile boolean replayUnsafe;
         Run(Work work) { this.work = work; }
     }
     private static Thread daemon(Runnable work, String name) { var thread = new Thread(work, name); thread.setDaemon(true); return thread; }
@@ -157,7 +159,7 @@ public class AiTaskManage implements AiToolConversationFeature {
                 try {
                     authorized(owner, () -> { scene(input(task).scene()).authorize(context(task)); return null; });
                     if (attempt.getDeliveryExpiresAt() > System.currentTimeMillis())
-                        result.add(new Notice(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), attempt.getErrorCode(), attempt.getDeliveryExpiresAt()));
+                        result.add(new Notice(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), attempt.getErrorCode(), attempt.getDeliveryExpiresAt(), retryEligible(attempt)));
                 } catch (AiErrors.Failure denied) { /* A revoked resource is never disclosed by its old notice. */ }
                 if (result.size() == 50) break;
             }
@@ -219,7 +221,8 @@ public class AiTaskManage implements AiToolConversationFeature {
             }
             // Cancellation is a cleanup operation; it never delivers a protected resource/result.
             return new Task(locked.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), null, null, null,
-                    locked.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), null, null, null, null);
+                    locked.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), null, null, null, null,
+                    attempt.getExecutionId(), attempt.getSourceAttemptId(), retryEligible(attempt), null);
         });
     }
     public Task retry(Long id, Retry request) {
@@ -246,6 +249,7 @@ public class AiTaskManage implements AiToolConversationFeature {
             var previous = em.find(CoreAiTaskAttempt.class, locked.getCurrentAttemptId());
             if (!Objects.equals(previous.getId(), request.expectedAttemptId()) || !Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(previous.getStatus()))
                 throw AiErrors.error("conflict");
+            if (!Boolean.TRUE.equals(previous.getRetrySafe())) throw AiErrors.error("outcome_unknown");
             admission(owner.actor());
             var next = attempt(locked, previous.getAttemptNumber() + 1, retry); next.setSourceAttemptId(previous.getId()); em.persist(next);
             locked.setCurrentAttemptId(next.getId()); em.flush(); return view(locked, next);
@@ -264,12 +268,17 @@ public class AiTaskManage implements AiToolConversationFeature {
     private Task view(CoreAiTask task) {
         return view(task, em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId()));
     }
+    private boolean retryEligible(CoreAiTaskAttempt attempt) {
+        return Boolean.TRUE.equals(attempt.getRetrySafe()) && Set.of("FAILED", "CANCELLED", "INTERRUPTED").contains(attempt.getStatus());
+    }
     private Task view(CoreAiTask task, CoreAiTaskAttempt attempt) {
         var input = input(task); var context = context(task);
         if (attempt.getFinishedAt() != null && System.currentTimeMillis() >= expires(attempt)) throw AiErrors.error("scope_changed");
         return new Task(task.getId(), attempt.getId(), attempt.getAttemptNumber(), attempt.getStatus(), input.scene(), context.resourceId(), context.resourceName(),
                 task.getCreatedAt(), attempt.getStartedAt(), attempt.getFinishedAt(), attempt.getErrorCode(), attempt.getModelId(), attempt.getModelRevision(), attempt.getModelIdentifier(),
-                attempt.getResultJson() == null ? null : decode(attempt.getResultJson(), io.dataease.api.ai.conversation.AiConversationDtos.Result.class));
+                attempt.getResultJson() == null ? null : decode(attempt.getResultJson(), io.dataease.api.ai.conversation.AiConversationDtos.Result.class),
+                attempt.getExecutionId(), attempt.getSourceAttemptId(), retryEligible(attempt),
+                attempt.getRecoveryJson() == null ? null : decode(attempt.getRecoveryJson(), RecoverySnapshot.class).progress());
     }
     private long expires(CoreAiTaskAttempt attempt) {
         return attempt.getDeliveryExpiresAt() == null ? attempt.getFinishedAt() + DELIVERY_MILLIS : attempt.getDeliveryExpiresAt();
@@ -408,6 +417,15 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void check(Run run) {
         active(run); authorized(run.work.owner(), () -> { scene(run.work.input().scene()).authorize(run.work.context()); return null; });
     }
+    private record RecoverySnapshot(io.dataease.api.ai.config.AiConfigDtos.Recovery policy, io.dataease.api.ai.conversation.AiConversationDtos.RecoveryProgress progress) { }
+    private void recoveryProgress(Run run) {
+        var progress = run.stream.recovery().progress();
+        String snapshot = encode(new RecoverySnapshot(run.stream.recovery().policy(), new io.dataease.api.ai.conversation.AiConversationDtos.RecoveryProgress(
+                progress.stepId(), progress.stepKind(), progress.technicalRetries(), progress.corrections(), progress.reason())));
+        boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.recoveryJson=:progress where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
+                .setParameter("progress", snapshot).setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+        if (!saved) throw AiErrors.error("cancelled");
+    }
     private void execute(Run run) {
         check(run);
         var work = run.work; var scene = scene(work.input().scene());
@@ -425,11 +443,15 @@ public class AiTaskManage implements AiToolConversationFeature {
             stream = runtime.getObject().streamTaskTools(code(), work.taskId().toString(), new AiDataScope(work.taskId().toString(), version, AiToolProtocol.fingerprint(input), false, null), input, work.deadline());
         }
         run.stream = stream;
+        var attemptIdentity = em.find(CoreAiTaskAttempt.class, work.attemptId());
+        stream.recovery().link(new io.dataease.api.ai.runtime.AiExecutionLink(work.taskId().toString(), work.attemptId().toString(), attemptIdentity.getAttemptNumber(),
+                attemptIdentity.getSourceAttemptId() == null ? null : attemptIdentity.getSourceAttemptId().toString()));
+        stream.recovery().observe(ignored -> recoveryProgress(run));
         var model = stream.model();
         // Pin actual selected model before any network send; a failed state commit cannot submit a request.
-        boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.modelId=:model, a.modelRevision=:revision, a.credentialRevision=:credential, a.modelIdentifier=:identifier, a.deadline=:deadline where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
+        boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.modelId=:model, a.modelRevision=:revision, a.credentialRevision=:credential, a.modelIdentifier=:identifier, a.deadline=:deadline, a.executionId=:execution where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
                 .setParameter("model", model.id()).setParameter("revision", model.revision()).setParameter("credential", model.credentialRevision()).setParameter("identifier", model.identifier())
-                .setParameter("deadline", stream.deadline()).setParameter("id", work.attemptId()).setParameter("fence", work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+                .setParameter("deadline", stream.deadline()).setParameter("execution", stream.executionId()).setParameter("id", work.attemptId()).setParameter("fence", work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
         if (!saved) throw AiErrors.error("cancelled");
         if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), value -> append(run, value), step -> step(run, step), failure -> fail(run, failure));
         else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), value -> append(run, value), () -> complete(run, draft), failure -> fail(run, failure));
@@ -448,15 +470,32 @@ public class AiTaskManage implements AiToolConversationFeature {
             if (step.calls().size() != 1 || run.toolSteps >= AiToolProtocol.MAX_MODEL_STEPS - 1) throw AiErrors.error("output_limit");
             var call = step.calls().get(0); var scene = scene(run.work.input().scene());
             var definition = scene.tools(run.work.context()).stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
-            var arguments = AiToolProtocol.arguments(definition, call);
+            Map<String, String> arguments;
+            try { arguments = AiToolProtocol.arguments(definition, call); }
+            catch (AiErrors.Failure malformed) {
+                if (!"invalid".equals(malformed.safeCode())) throw malformed;
+                String feedback = AiToolProtocol.correction(call, stream.recovery(), run.invalidRequests); stream.result(feedback);
+                run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, feedback));
+                stream.send(new AiToolProtocol.Input(run.transcript, scene.tools(run.work.context())), () -> progress(run), value -> append(run, value), next -> step(run, next), failure -> fail(run, failure));
+                return;
+            }
             if (!run.ids.add(call.id()) || !run.requests.add(call.name() + ":" + new TreeMap<>(arguments))) throw AiErrors.error("output_limit");
             run.toolSteps++;
-            String result = authorized(run.work.owner(), () -> {
+            java.util.function.Supplier<String> execute = () -> authorized(run.work.owner(), () -> {
                 check(run); stream.verifyStep();
                 String value = scene.execute(run.work.context(), call.name(), arguments, () -> progress(run), stream.deadline());
                 check(run); stream.verifyStep(); return value;
             });
+            if (definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN) {
+                run.replayUnsafe = true;
+                boolean safeSaved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.retrySafe=false where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
+                        .setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+                if (!safeSaved) throw AiErrors.error("cancelled");
+            }
+            String result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
+                    () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, execute);
             active(run); stream.result(result);
+            if (AiToolProtocol.invalidResult(result) && !stream.recovery().correct(call.name() + ":" + new TreeMap<>(arguments))) throw AiErrors.error("invalid");
             run.tools.add(new Tool(call.id(), call.name(), "SUCCEEDED", arguments, result));
             run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, result));
             stream.send(new AiToolProtocol.Input(run.transcript, scene.tools(run.work.context())), () -> progress(run), value -> append(run, value), next -> step(run, next), failure -> fail(run, failure));
@@ -473,7 +512,7 @@ public class AiTaskManage implements AiToolConversationFeature {
         } catch (RuntimeException failure) { fail(run, failure); }
     }
     private void fail(Run run, Throwable failure) {
-        String code = failure instanceof AiErrors.Failure known ? known.safeCode() : "upstream_failed";
+        String code = run.replayUnsafe ? "outcome_unknown" : failure instanceof AiErrors.Failure known ? known.safeCode() : "upstream_failed";
         try { terminal(run, "FAILED", code, null); }
         catch (RuntimeException unavailable) {
             // Keep a bounded slot until a failure terminal can commit; never strand RUNNING under a healthy node.

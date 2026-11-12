@@ -1,10 +1,14 @@
 import request from '@/config/axios'
-import type { AiAssistanceResult } from './aiConversation'
+import type { AiAssistanceResult, AiRecoveryProgress } from './aiConversation'
 
 export interface AiTask {
   taskId: string
   attemptId: string
   attemptNumber: number
+  executionId?: string | null
+  sourceAttemptId?: string | null
+  retryEligible?: boolean
+  recovery?: AiRecoveryProgress | null
   status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED' | 'INTERRUPTED'
   resourceId: string | null
   resourceName: string | null
@@ -26,6 +30,7 @@ export interface AiTaskNotice {
   status: AiTask['status']
   errorCode?: string | null
   expiresAt: number
+  retryEligible?: boolean
 }
 export interface AiTaskSubmit {
   submissionKey: string
@@ -40,10 +45,10 @@ export interface AiTaskSubmit {
 const data = <T>(promise: Promise<{ data: T }>) => promise.then(result => result.data)
 export const submitAiTask = (value: AiTaskSubmit) =>
   data<AiTask>(request.post({ url: '/ai/tasks', data: value, handleErrorLocally: true }))
-export const activeAiTasks = () =>
-  data<AiTask[]>(request.get({ url: '/ai/tasks', handleErrorLocally: true }))
-export const getAiTask = (id: string) =>
-  data<AiTask>(request.get({ url: `/ai/tasks/${id}`, handleErrorLocally: true }))
+export const activeAiTasks = (signal?: AbortSignal) =>
+  data<AiTask[]>(request.get({ url: '/ai/tasks', signal, handleErrorLocally: true }))
+export const getAiTask = (id: string, signal?: AbortSignal) =>
+  data<AiTask>(request.get({ url: `/ai/tasks/${id}`, signal, handleErrorLocally: true }))
 export const cancelAiTask = (id: string) =>
   data<AiTask>(request.post({ url: `/ai/tasks/${id}/cancel`, handleErrorLocally: true }))
 export const retryAiTask = (id: string, expectedAttemptId: string, retryKey: string) =>
@@ -55,8 +60,8 @@ export const retryAiTask = (id: string, expectedAttemptId: string, retryKey: str
     })
   )
 
-export const pendingAiTaskNotices = () =>
-  data<AiTaskNotice[]>(request.get({ url: '/ai/tasks/notices', handleErrorLocally: true }))
+export const pendingAiTaskNotices = (signal?: AbortSignal) =>
+  data<AiTaskNotice[]>(request.get({ url: '/ai/tasks/notices', signal, handleErrorLocally: true }))
 export const acknowledgeAiTaskNotice = (attemptId: string) =>
   request.post({ url: `/ai/tasks/notices/${attemptId}/ack`, handleErrorLocally: true })
 export const deliverAiTaskConversation = (id: string, origin: AiTaskOrigin) =>
