@@ -3299,8 +3299,8 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       }
 
       .table-checkbox-list {
-        height: calc(100% - 190px);
-        overflow-y: auto;
+        height: calc(100% - 194px);
+        overflow-y: hidden;
         padding: 0 8px;
 
         .not-allow {
