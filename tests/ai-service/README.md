@@ -195,3 +195,14 @@ npm --prefix tests/browser test -- --config=playwright.ai-conversation.config.mj
 The actual Vue page/browser fixture covers increments, cursor replay, escaped actual tool parameters/results and statuses, visible program PASS/INVALID/UNSUPPORTED verdicts, hide/expand, stop/follow-up, aborting an in-flight poll, completion/stop races, context/identity changes, offline/pagehide/refresh and a localized timeout with incomplete output. Its request/store boundaries are synthetic; it does not establish real authentication/HMAC, DE resource permission or configured-model compatibility. Main-path acceptance must use the root-coordinated isolated development deployment, current configured compatible model and authorized datasource; record that evidence separately. Other databases/profiles, Redis/cluster streaming and licensed real-user/workspace matrices remain environment validation work.
 
 When reusing an older `CoreApplication.jar`, `--ai-classpath` may include current compiled SDK/dependency directories as well as jars. The runner prioritizes the compiled test/source overlay and those current directories before the packaged baseline. The installed license SDK must match the current parent version. No product Maven lifecycle or dependency download is performed by the runner.
+
+## 独立后台任务回归
+
+```sh
+uv run python tests/ai-service/run.py --task-contracts
+uv run python tests/ai-service/run.py --only-tasks
+```
+
+沿同一 runner 的既有依赖前提，`--task-contracts` 是公开 MVC/JSON 的快速红绿入口：幂等受理、改输入拒绝、重试键绑定原尝试、字符串 ID、有界准入、真实后台模型池/工具、撤权读取与安全取消、连续终态提交失败恢复。测试身份和业务场景受控，传输调用真实本机合成模型 HTTP，元数据库为隔离 H2。离线 Hibernate 检查 PostgreSQL/MySQL/H2 的字符字段 DDL/JDBC 映射，不等于这些数据库全部实测。
+
+`--only-tasks` 还运行 TaskClusterRegression：拥有随机 loopback 端口的 H2 TCP 与独立 JVM 后端节点，通过真实 HTTP 访问实际 MVC/API/runtime/JPA。覆盖同时受理/只领取一次、跨节点取消、超过前台租期无轮询完成、QUEUED 跨进程恢复、进程 STOP/CONT 与过期归属 fencing、禁止自动续跑、全部节点重启后的持久结果，以及本人/撤权拒绝与仅进行中列表。进程、数据库和临时目录均由夹具创建并清理，不启动完整 DataEase，不使用产品登录凭据或业务数据库；不冒称 XPack 多空间权限、真实模型或 Redis 模型全局限额验收。完整默认回归包含本组测试并保留原前台/SDK 回归。

@@ -44,7 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
-        SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); persistence(); KeyringRegression.run();
+        SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) TaskClusterRegression.run(); if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
     }
     private static void crypto() {
@@ -91,6 +91,7 @@ public class Regression {
         String url="jdbc:h2:mem:ai_regression;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=2000";
         Configuration hibernate=new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class)
                 .addAnnotatedClass(CoreAiOrgPolicy.class).addAnnotatedClass(CoreMenu.class)
+                .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class)
                 .setProperty("hibernate.connection.url",url).setProperty("hibernate.connection.driver_class","org.h2.Driver")
                 .setProperty("hibernate.connection.username","sa").setProperty("hibernate.connection.password","")
                 .setProperty("hibernate.dialect","org.hibernate.dialect.H2Dialect").setProperty("hibernate.hbm2ddl.auto","none")
@@ -104,6 +105,7 @@ public class Regression {
             var jdbc=new JdbcTemplate(new DriverManagerDataSource(url,"sa",""));
             jdbc.execute("create table core_menu(id bigint primary key,pid bigint,type integer,name varchar(45),component varchar(45),menu_sort integer,icon varchar(45),path varchar(45),hidden boolean,in_layout boolean,auth boolean)");
             jdbc.update("insert into core_menu(id,pid,type,name,component,hidden,in_layout,auth) values(130,15,2,?,?,false,true,true)", "retained-menu", "retained/component");
+            var taskMigration=new io.dataease.listener.sql.AiTaskInit(jdbc,factory,em,manager); taskMigration.execute(); taskMigration.execute();
             var migration=new AiConfigurationInit(jdbc,factory,em,manager); migration.execute(); migration.execute();
             var menuMigration=new io.dataease.listener.sql.AiConfigurationMenuInit(em,manager);menuMigration.execute();menuMigration.execute();
             check(settings.count()==1,"migration singleton idempotent without ddl-auto");check(menus.count()==2,"existing menu and independent AI configuration menu");
@@ -171,6 +173,8 @@ public class Regression {
             CoreAiSetting runtimeSetting=manage.setting();
             String runtimeImpact=manage.impact("SETTINGS",next.id()+":true").token();
             manage.saveSettings(new SettingsChange(runtimeSetting.getRowVersion(),true,next.id(),false,60,30000,4096,5,2,runtimeImpact));
+            TaskRegression.run(em,manager,access,manage,policies,keys,limiter);
+            if (Boolean.getBoolean("ai.test.onlyTasks")) return;
             RuntimeRegression.run(manage,policies,keys,new AiAdmission("ehcache","standalone",new StaticListableBeanFactory().getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class),settings,"test",manager),access);
             ConversationRegression.run(manage,policies,keys,limiter,access);
             ToolConversationRegression.run(manage,policies,keys,limiter,access);

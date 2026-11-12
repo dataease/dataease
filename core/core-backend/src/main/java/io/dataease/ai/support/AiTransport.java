@@ -144,6 +144,8 @@ public class AiTransport {
     }
     /** One controlled interactive upstream stream. No default WebClient, retry or model-side tool execution. */
     public final class Stream implements AutoCloseable {
+        private final boolean background;
+        private Stream(boolean background) { this.background = background; }
         private final RequestCancellation cancellation = new RequestCancellation();
         private Future<?> future;
         private boolean started, closed;
@@ -160,7 +162,7 @@ public class AiTransport {
             try {
                 future = executor.submit(() -> {
                     try {
-                        perform(c, s, false, deadline, recheck, cancellation, builder -> {
+                        perform(c, s, background, deadline, recheck, cancellation, builder -> {
                             var options = (org.springframework.ai.openai.OpenAiChatOptions) prompt.getOptions();
                             var payload = json.createObjectNode();
                             payload.put("model", options.getModel()); payload.put("stream", true); payload.put("n", 1);
@@ -198,7 +200,10 @@ public class AiTransport {
         }
     }
     /** One model step, scheduled directly: its completion may enqueue the next step, never await a child worker. */
+    public Stream stream(boolean background) { return new Stream(background); }
     public final class ToolStream implements AutoCloseable {
+        private final boolean background;
+        private ToolStream(boolean background) { this.background = background; }
         private final RequestCancellation cancellation = new RequestCancellation();
         private Future<?> future;
         private boolean closed;
@@ -215,7 +220,7 @@ public class AiTransport {
             try {
                 future = executor.submit(() -> {
                     try {
-                        var result = perform(connection, settings, false, deadline, recheck, cancellation, builder ->
+                        var result = perform(connection, settings, background, deadline, recheck, cancellation, builder ->
                             builder.baseUrl(connection.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + connection.key()).build()
                                 .post().uri(outbound.completionPath(connection.url())).contentType(MediaType.APPLICATION_JSON).body(payload)
                                 .exchange((request, response) -> {
@@ -234,7 +239,8 @@ public class AiTransport {
             closed = true; cancellation.cancel(); if (future != null) { future.cancel(true); executor.purge(); }
         }
     }
-    public ToolStream toolStream() { return new ToolStream(); }
+    public ToolStream toolStream() { return new ToolStream(false); }
+    public ToolStream toolStream(boolean background) { return new ToolStream(background); }
     private AiToolProtocol.Step readToolEvents(InputStream input, int allocation, AiToolProtocol.Budget budget, Runnable guard,
                                                java.util.function.Consumer<String> delta) throws IOException {
         var bounded = new FilterInputStream(input) {
@@ -313,7 +319,7 @@ public class AiTransport {
         if (!value.isTextual() || !value.asText().matches(pattern) || previous != null && !previous.equals(value.asText())) throw AiErrors.error("response_invalid");
         return value.asText();
     }
-    public Stream stream() { return new Stream(); }
+    public Stream stream() { return new Stream(false); }
     private RuntimeException safeFailure(Throwable failure, long deadline) {
         if (System.currentTimeMillis() >= deadline) return AiErrors.error("timeout");
         if (failure instanceof io.dataease.exception.DEException known) return known;

@@ -1,5 +1,22 @@
 export default {
   ai_conversation: {
+    tasks: '背景任務',
+    background: '背景 SQL 輔助',
+    task_lifecycle:
+      '獨立背景任務在離開、重新整理或登出後繼續執行。這裡僅恢復本人的進行中任務；結果不會自動套用或儲存。',
+    task_load_failed: '暫時無法讀取背景任務',
+    task_request_failed: '背景任務操作未確認，請重試；相同操作不會重複建立。',
+    task_attempt: '嘗試',
+    task_cancel: '取消背景任務',
+    task_retry: '重試背景任務',
+    task_completed: '背景任務已完成，結果已儲存。',
+    task_status_queued: '等待執行',
+    task_status_running: '正在執行',
+    task_status_completed: '已完成',
+    task_status_failed: '執行失敗',
+    task_status_cancelled: '已取消',
+    task_status_interrupted: '執行中斷',
+
     select_target: '產生 SQL 或讀取結構前請先選取資料來源；一般 SQL 解釋可直接提問。',
     interrupt_title: '中斷目前產生？',
     interrupt_message: '中斷後本次未完成內容無法套用。取消將繼續原執行並保留上下文。',

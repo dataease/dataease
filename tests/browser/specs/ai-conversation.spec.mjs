@@ -335,7 +335,7 @@ test('cancelling interruption confirmation preserves the execution and its conte
   await page.getByRole('button', { name: '停止生成', exact: true }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.getByRole('button', { name: '继续生成', exact: true }).click()
-  await expect(page.getByRole('status')).toContainText('正在生成')
+  await expect(page.getByText('正在生成', { exact: true })).toBeVisible()
   expect(stops).toBe(0)
   expect(closes).toBe(0)
   await expect(page.getByText('Original question', { exact: true })).toBeVisible()
@@ -1113,3 +1113,53 @@ for (const context of ['user', 'workspace', 'proxy']) {
     expect(turns).toEqual([{ contextVersion: 'v1', text: 'New context question' }])
   })
 }
+
+test('independent background task remains active after reload and exposes cancel and retry', async ({
+  page
+}) => {
+  let task
+  let cancelled = 0
+  let retried = 0
+  await page.route('**/fixture-api/ai/conversations**', (route) =>
+    route.fulfill({
+      json: route.request().url().endsWith('/resources') ? [] : {}
+    })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/cancel')) {
+      cancelled++
+      task = { ...task, status: 'CANCELLED' }
+    } else if (url.pathname.endsWith('/retry')) {
+      retried++
+      task = { ...task, attemptId: '1002', attemptNumber: 2, status: 'QUEUED' }
+    } else if (route.request().method() === 'POST') {
+      task = {
+        taskId: '1000',
+        attemptId: '1001',
+        attemptNumber: 1,
+        status: 'RUNNING',
+        resourceName: '',
+        modelIdentifier: 'fixed-model'
+      }
+      expect(route.request().postDataJSON().submissionKey).toBeTruthy()
+    } else if (url.pathname.endsWith('/ai/tasks'))
+      return route.fulfill({
+        json: task && ['RUNNING', 'QUEUED'].includes(task.status) ? [task] : []
+      })
+    return route.fulfill({ json: task })
+  })
+  await page.goto('/?view=conversation')
+  await page.getByRole('textbox', { name: '消息' }).fill('Explain independently')
+  await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+  await expect(page.getByRole('region', { name: '后台任务' })).toContainText('fixed-model')
+  await page.reload()
+  await expect(page.getByRole('region', { name: '后台任务' })).toContainText('fixed-model')
+  expect(cancelled).toBe(0)
+  await page.getByRole('button', { name: '取消后台任务' }).click()
+  await expect(page.getByRole('button', { name: '重试后台任务' })).toBeVisible()
+  await page.getByRole('button', { name: '重试后台任务' }).click()
+  expect(cancelled).toBe(1)
+  expect(retried).toBe(1)
+  await expect(page.getByRole('region', { name: '后台任务' })).toContainText('2')
+})

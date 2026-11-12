@@ -1,5 +1,22 @@
 export default {
   ai_conversation: {
+    tasks: 'Background tasks',
+    background: 'Background SQL assistance',
+    task_lifecycle:
+      'Independent tasks continue after leaving, refreshing or signing out. Only your active tasks are restored here. Results are never applied or saved to a business resource automatically.',
+    task_load_failed: 'Background tasks are temporarily unavailable',
+    task_request_failed: 'Task operation was not confirmed. Retry the same operation safely.',
+    task_attempt: 'Attempt',
+    task_cancel: 'Cancel background task',
+    task_retry: 'Retry background task',
+    task_completed: 'Background task completed and its result was stored.',
+    task_status_queued: 'Queued',
+    task_status_running: 'Running',
+    task_status_completed: 'Completed',
+    task_status_failed: 'Failed',
+    task_status_cancelled: 'Cancelled',
+    task_status_interrupted: 'Interrupted',
+
     select_target:
       'Select a datasource before generating SQL or reading schema. General SQL questions need no selection.',
     interrupt_title: 'Interrupt current generation?',

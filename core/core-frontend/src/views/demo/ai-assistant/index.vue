@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackgroundTasks from './BackgroundTasks.vue'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router_2'
 import { ElMessageBox } from 'element-plus-secondary'
@@ -476,6 +477,7 @@ onBeforeUnmount(() => {
       <el-button :disabled="busy || (!resourceId && !input.trim())" @click="send(true)">{{
         tr('single')
       }}</el-button>
+      <BackgroundTasks :resource-id="resourceId" :editor-id="editorId" :sql="sql" :text="input" />
       <el-button @click="end">{{ tr('end') }}</el-button>
       <el-button v-if="busy" :disabled="!execution" @click="stop">{{ tr('stop') }}</el-button>
       <p role="status">{{ busy ? tr('running') : tr('ready') }}</p>

@@ -1,5 +1,22 @@
 export default {
   ai_conversation: {
+    tasks: '后台任务',
+    background: '后台 SQL 辅助',
+    task_lifecycle:
+      '独立后台任务离开、刷新或退出登录后继续执行。这里仅恢复本人进行中任务；完成结果不会自动应用或保存。',
+    task_load_failed: '暂时无法读取后台任务',
+    task_request_failed: '后台任务操作未确认，请重试；相同操作不会重复创建。',
+    task_attempt: '尝试',
+    task_cancel: '取消后台任务',
+    task_retry: '重试后台任务',
+    task_completed: '后台任务已完成，结果已保存。',
+    task_status_queued: '等待执行',
+    task_status_running: '正在执行',
+    task_status_completed: '已完成',
+    task_status_failed: '执行失败',
+    task_status_cancelled: '已取消',
+    task_status_interrupted: '运行中断',
+
     select_target: '生成 SQL 或读取结构前请先选择数据源；普通 SQL 解释可直接提问。',
     interrupt_title: '中断当前生成？',
     interrupt_message: '中断后本次未完成内容不能应用。取消将继续原执行并保留上下文。',
