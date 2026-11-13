@@ -1,12 +1,50 @@
 import { defineStore, storeToRefs } from 'pinia'
+import { markRaw } from 'vue'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
 import { deepCopy } from '@/utils/utils'
 import { BASE_THEMES } from '@/views/chart/components/editor/util/dataVisualization'
 import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { useCache } from '@/hooks/web/useCache'
-const { wsCache } = useCache('localStorage')
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import {
+  discardCanvasDraft,
+  flushCanvasDraft,
+  queueCanvasDraft,
+  setCanvasDraftErrorHandler
+} from '@/utils/canvasDraftCache'
+
+export const SNAPSHOT_MAX_COUNT = 50
+export const SNAPSHOT_MAX_BYTES = 20 * 1024 * 1024
+
+// 估算历史模型占用，不重复 JSON 序列化；单个超预算模型仍保留当前态。
+const estimateSnapshotBytes = value => {
+  let bytes = 0
+  const pending = [value]
+  while (pending.length && bytes <= SNAPSHOT_MAX_BYTES) {
+    const item = pending.pop()
+    if (typeof item === 'string') {
+      bytes += item.length * 2
+    } else if (item && typeof item === 'object') {
+      bytes += 32
+      for (const key in item) {
+        bytes += key.length * 2 + 8
+        pending.push(item[key])
+      }
+    } else {
+      bytes += 8
+    }
+  }
+  return bytes
+}
+
+setCanvasDraftErrorHandler(() => {
+  ElMessage.warning({
+    message: useI18n().t('visualization.canvas_draft_storage_failed'),
+    grouping: true
+  })
+})
 
 const dvMainStore = dvMainStoreWithOut()
 const {
@@ -39,17 +77,21 @@ export const snapshotStore = defineStore('snapshot', {
       snapshotDisableTime: 1, // 镜像禁用时间，解决redo undo 造成的样式变更
       styleChangeTimes: -1, // 组件样式修改次数
       cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
-      snapshotCacheTimes: 0, // 当前未计入镜像中的修改变动次数, 此为定时缓存，缓存间隔时间5秒一次 针对类型样式这种变动不大的修改
+      snapshotCacheTimes: 0, // 当前未计入镜像中的修改次数，主画布每秒检查有变动时才记录
       cacheViewIdInfo: {
         snapshotCacheViewCalc: [], // 当前未计入镜像需要图表计算的图表ID, all代表全部
         snapshotCacheViewRender: [] // 当前未计入镜像需要图表渲染的图表ID,all代表全部
       },
       snapshotData: [], // 编辑器快照数据
+      snapshotSizes: [], // 每份快照的估算字节数
+      snapshotBytes: 0,
       snapshotIndex: -1 // 快照索引
     }
   },
   actions: {
     initSnapShot() {
+      // 切换资源前提交已排队的草稿；任务持有原资源 ID，不跟随新画布变化。
+      void flushCanvasDraft()
       this.styleChangeTimes = -1
       this.cacheStyleChangeTimes = 0
       this.snapshotCacheTimes = 0
@@ -58,6 +100,8 @@ export const snapshotStore = defineStore('snapshot', {
         snapshotCacheViewRender: []
       }
       this.snapshotData = []
+      this.snapshotSizes = []
+      this.snapshotBytes = 0
       this.snapshotIndex = -1
     },
     //定时检查变动次数 存在变动次数则进行镜像处理
@@ -86,10 +130,15 @@ export const snapshotStore = defineStore('snapshot', {
     },
     recordSnapshotCache(type?, viewId = 'all') {
       if (dataPrepareState.value) {
+        const appendViewId = list => {
+          if (list.includes('all')) return
+          if (viewId === 'all') list.splice(0, list.length, 'all')
+          else if (!list.includes(viewId)) list.push(viewId)
+        }
         if (type === 'calcData') {
-          this.cacheViewIdInfo.snapshotCacheViewCalc.push(viewId)
+          appendViewId(this.cacheViewIdInfo.snapshotCacheViewCalc)
         } else if (type === 'renderChart') {
-          this.cacheViewIdInfo.snapshotCacheViewRender.push(viewId)
+          appendViewId(this.cacheViewIdInfo.snapshotCacheViewRender)
         }
         this.snapshotCacheTimes++
       }
@@ -103,6 +152,11 @@ export const snapshotStore = defineStore('snapshot', {
         componentSnapshot.dvInfo.pid = dvInfo.value.pid
         componentSnapshot.dvInfo.dataState = dvInfo.value.dataState
         componentSnapshot.dvInfo.contentId = dvInfo.value.contentId
+        // 历史模型不可变，可直接用于草稿；发布到画布的副本会重新挂入临时素材包。
+        queueCanvasDraft({
+          ...this.snapshotData[this.snapshotIndex],
+          dvInfo: { ...componentSnapshot.dvInfo }
+        })
         // undo 是当前没有记录
         this.snapshotPublish(componentSnapshot)
         this.styleChangeTimes++
@@ -118,6 +172,10 @@ export const snapshotStore = defineStore('snapshot', {
         snapshotInfo.dvInfo.pid = dvInfo.value.pid
         snapshotInfo.dvInfo.dataState = dvInfo.value.dataState
         snapshotInfo.dvInfo.contentId = dvInfo.value.contentId
+        queueCanvasDraft({
+          ...this.snapshotData[this.snapshotIndex],
+          dvInfo: { ...snapshotInfo.dvInfo }
+        })
         this.snapshotPublish(snapshotInfo)
         this.styleChangeTimes++
         this.snapshotDisableTime = Date.now() + 3000
@@ -184,7 +242,14 @@ export const snapshotStore = defineStore('snapshot', {
       this.styleChangeTimes = 0
       this.snapshotCacheTimes = 0
     },
+    clearCanvasDraft(resourceId = dvInfo.value.id) {
+      if (String(resourceId) === String(dvInfo.value.id)) {
+        this.snapshotCacheTimes = 0
+      }
+      return discardCanvasDraft(resourceId)
+    },
     resetSnapshot() {
+      void flushCanvasDraft()
       this.styleChangeTimes = -1
       this.cacheStyleChangeTimes = 0
       this.snapshotCacheTimes = 0
@@ -193,6 +258,8 @@ export const snapshotStore = defineStore('snapshot', {
         snapshotCacheViewRender: []
       }
       this.snapshotData = []
+      this.snapshotSizes = []
+      this.snapshotBytes = 0
       this.snapshotIndex = -1
       this.recordSnapshot()
     },
@@ -217,15 +284,28 @@ export const snapshotStore = defineStore('snapshot', {
             )
           )
         }
-        this.snapshotData[++this.snapshotIndex] = newSnapshot
         // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉
         if (this.snapshotIndex < this.snapshotData.length - 1) {
-          this.snapshotData = this.snapshotData.slice(0, this.snapshotIndex + 1)
+          this.snapshotData.splice(this.snapshotIndex + 1)
+          const removedSizes = this.snapshotSizes.splice(this.snapshotIndex + 1)
+          this.snapshotBytes -= removedSizes.reduce((sum, size) => sum + size, 0)
         }
+        const size = estimateSnapshotBytes(newSnapshot)
+        this.snapshotData.push(markRaw(newSnapshot))
+        this.snapshotSizes.push(size)
+        this.snapshotBytes += size
+        while (
+          this.snapshotData.length > 1 &&
+          (this.snapshotData.length > SNAPSHOT_MAX_COUNT || this.snapshotBytes > SNAPSHOT_MAX_BYTES)
+        ) {
+          this.snapshotData.shift()
+          this.snapshotBytes -= this.snapshotSizes.shift()
+        }
+        this.snapshotIndex = this.snapshotData.length - 1
         // 清理缓存计数器
         this.snapshotCacheTimes = 0
-        if (this.snapshotData.length > 1) {
-          wsCache.set('DE-DV-CATCH-' + dvInfo.value.id, newSnapshot)
+        if (this.styleChangeTimes > 0) {
+          queueCanvasDraft(newSnapshot)
         }
       }
     }

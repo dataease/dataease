@@ -49,13 +49,18 @@ import { watermarkFind } from '@/api/watermark'
 import { Base64 } from 'js-base64'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
+import { getCanvasDraft } from '@/utils/canvasDraftCache'
 import DvPreview from '@/views/data-visualization/DvPreview.vue'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { findCopyResource, recoverToPublished } from '@/api/visualization/dataVisualization'
+import {
+  checkCanvasChange,
+  findCopyResource,
+  recoverToPublished
+} from '@/api/visualization/dataVisualization'
 import ComponentToolBarV3 from '@/components/data-visualization/ComponentToolBarV3.vue'
 import DeRulerV3 from '@/custom-component/common/DeRulerV3.vue'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -319,11 +324,35 @@ const initScroll = () => {
     }
   })
 }
-const doUseCache = flag => {
-  if (!loadFinish.value) return
-  const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
-  if (flag && canvasCache) {
-    const canvasCacheSeries = deepCopy(canvasCache)
+let pendingCanvasDraft:
+  | {
+      resourceId: Parameters<typeof getCanvasDraft>[0]
+      data: Awaited<ReturnType<typeof getCanvasDraft>>
+    }
+  | undefined
+const isCurrentDraftResource = resourceId =>
+  loadFinish.value && !editorAccessRevoked && String(state.resourceId) === String(resourceId)
+
+const prepareCanvasDraft = async resourceId => {
+  const draft = await getCanvasDraft(resourceId)
+  if (!isCurrentDraftResource(resourceId) || !draft) return
+  let draftOutdated = !draft.dvInfo?.contentId
+  if (state.opt !== 'copy' && !draftOutdated) {
+    const response = await checkCanvasChange({ id: resourceId, contentId: draft.dvInfo.contentId })
+    if (!isCurrentDraftResource(resourceId)) return
+    if (response?.data !== 'Success' && response?.data !== 'Repeat') return
+    draftOutdated = response.data === 'Repeat'
+  }
+  pendingCanvasDraft = { resourceId, data: draft }
+  return { canvasType: 'dataV', resourceId, draftOutdated }
+}
+
+const doUseCache = async flag => {
+  const pending = pendingCanvasDraft
+  if (!pending || !isCurrentDraftResource(pending.resourceId)) return
+  pendingCanvasDraft = undefined
+  if (flag && pending.data) {
+    const canvasCacheSeries = deepCopy(pending.data)
     snapshotStore.snapshotPublish(canvasCacheSeries)
     state.canvasInitStatus = true
     nextTick(() => {
@@ -335,10 +364,11 @@ const doUseCache = flag => {
       }, 2000)
     })
   } else {
-    initLocalCanvasData(() => {
+    await snapshotStore.clearCanvasDraft(pending.resourceId)
+    if (!isCurrentDraftResource(pending.resourceId)) return
+    await initLocalCanvasData(() => {
       // do init
     })
-    wsCache.delete('DE-DV-CATCH-' + state.resourceId)
   }
 }
 
@@ -450,6 +480,7 @@ const afterSave = () => {
 const loadFinish = ref(false)
 let editorAccessRevoked = false
 const revokeEditorAccess = () => {
+  pendingCanvasDraft = undefined
   editorAccessRevoked = true
   loadFinish.value = false
   canvasQuery.invalidate()
@@ -498,9 +529,16 @@ onMounted(async () => {
   initDataset()
   if (dvId) {
     state.canvasInitStatus = false
-    const canvasCache = wsCache.get('DE-DV-CATCH-' + dvId)
-    if (canvasCache) {
-      canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
+    let draftInfo
+    try {
+      draftInfo = await prepareCanvasDraft(dvId)
+    } catch (error) {
+      // 校验失败时保留本地草稿，先加载服务器版本，避免未经确认恢复旧内容。
+      console.error(error)
+    }
+    if (!isCurrentDraftResource(dvId)) return
+    if (draftInfo) {
+      canvasCacheOutRef.value?.dialogInit(draftInfo)
     } else {
       await initLocalCanvasData(() => {
         // do init

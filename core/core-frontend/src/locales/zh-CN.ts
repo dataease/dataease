@@ -3509,6 +3509,9 @@ export default {
     keep_size: '调整大小保持内部组件尺寸',
     no_save_tips: '存在未保存的{0}',
     no_save_tips2: '存在未保存的修改，立即恢复？',
+    canvas_draft_outdated:
+      '本地草稿基于旧版本或无法确认其版本。是否恢复？恢复不会自动保存到服务器，保存时仍需检查版本冲突。',
+    canvas_draft_storage_failed: '浏览器草稿保存失败，当前编辑和撤销仍可使用，请及时保存到服务器。',
     locate_tips: '定位到中心点',
     new_tab: '新建Tab',
     pop_area: '弹窗区域',
