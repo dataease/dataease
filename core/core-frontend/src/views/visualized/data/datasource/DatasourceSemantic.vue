@@ -223,7 +223,7 @@ const showRelations = () => emit('show-relations', selectedTable.value)
 const tableLabel = (table: TableSemantic) =>
   table.physicalLabel !== table.tableName ? table.physicalLabel : ''
 const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
-  [`${field.tableName}.${field.fieldName}`, field.physicalType].filter(Boolean).join(' · ')
+  [`${field.tableName}.${field.fieldName}`, field.physicalType].filter(Boolean).join('·')
 </script>
 
 <template>
@@ -248,7 +248,7 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
             :aria-pressed="table.tableName === selectedTable"
             @click="selectedTable = table.tableName"
           >
-            <strong>{{ table.tableName }}</strong>
+            <strong class="metadata-lable">{{ table.tableName }}</strong>
             <div class="metadata-secondary">{{ tableLabel(table) }}</div>
           </button>
           <button
@@ -281,15 +281,15 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
             <el-button type="primary">{{ tr('complete') }}</el-button>
           </div>
         </div>
-        <div class="metadata-section">{{ tr('description') }}</div>
-        <div class="metadata-description">
+        <div class="metadata-secondary metadata-section">{{ tr('description') }}</div>
+        <div class="metadata-lable metadata-description">
           {{ currentTable.description || tr('noDescription') }}
         </div>
         <div class="metadata-secondary metadata-section">
           {{ tr('grain') }} · {{ currentTable.grain || tr('pending') }}
         </div>
         <div class="metadata-heading metadata-field-heading">
-          <strong>{{ tr('fieldSemantics') }} {{ fields.length }}</strong>
+          <strong class="metadata-lable">{{ tr('fieldSemantics') }} {{ fields.length }}</strong>
           <el-button class="metadata-actions" link type="primary" @click="showRelations"
             >{{ tr('showRelations') }} {{ relationCount }}</el-button
           >
@@ -482,7 +482,7 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
         :disabled="saving"
         @submit.prevent
       >
-        <p>{{ fieldLabel(editingField) }}</p>
+        <p class="metadata-lable">{{ fieldLabel(editingField) }}</p>
         <el-form-item :label="tr('businessName')" required>
           <el-input v-model="fieldForm.businessName" maxlength="255" />
         </el-form-item>
@@ -733,5 +733,9 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
   padding: 12px 0;
   border-top: 1px solid var(--ed-border-color);
   border-bottom: 1px solid var(--ed-border-color);
+}
+
+.metadata-lable {
+  font-size: 14px;
 }
 </style>
