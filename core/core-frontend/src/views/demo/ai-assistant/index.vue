@@ -656,8 +656,11 @@ const applySuggestion = async (index: number) => {
     applying.value = false
   }
 }
+const interruptionPending = computed(
+  () => busy.value || Boolean(execution.value) || pendingSubmissions.value.length > 0
+)
 const confirmInterruption = async () => {
-  if (!busy.value) return true
+  if (!interruptionPending.value) return true
   try {
     await ElMessageBox.confirm(tr('interrupt_message'), tr('interrupt_title'), {
       confirmButtonText: tr('interrupt'),
@@ -675,7 +678,7 @@ const end = async () => {
 }
 onBeforeRouteLeave(confirmInterruption)
 const beforeUnload = (event: BeforeUnloadEvent) => {
-  if (busy.value) {
+  if (interruptionPending.value) {
     event.preventDefault()
     event.returnValue = ''
   }

@@ -1852,11 +1852,80 @@ test('manual retry reconciles the same attempt key and keeps partial output sepa
   expect(initialStarts).toBe(1)
 })
 
-test('exhausted foreground reads keep authoritative status and can still be stopped', async ({
+test('lost execution acceptance still confirms leaving and preserves reconciliation', async ({
+  page
+}) => {
+  const starts = []
+  let closes = 0
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') {
+      closes++
+      return route.fulfill({ json: {} })
+    }
+    const run = {
+      ...session,
+      executionId: 'accepted-unknown',
+      status: 'RUNNING',
+      deadline: Date.now() + 60000
+    }
+    if (url.pathname.endsWith('/executions')) {
+      starts.push(route.request().postDataJSON())
+      return route.fulfill(starts.length === 1 ? { status: 503, json: {} } : { json: run })
+    }
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...run,
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            { sequence: 1, type: 'TEXT', text: 'Original accepted answer' },
+            { sequence: 2, type: 'COMPLETED' }
+          ]
+        }
+      })
+    return route.fulfill({ json: session })
+  })
+  await page.goto('/?view=conversation&router=1')
+  await send(page, 'Accepted but response lost')
+  await expect(page.getByRole('button', { name: '核对同次提交' })).toBeVisible()
+  await page.getByRole('button', { name: '结束会话', exact: true }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await page.evaluate(() => {
+    void window.aiNavigate('/after')
+  })
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  expect(await page.evaluate(() => window.aiRoute())).toBe('/assistant')
+  expect(
+    await page.evaluate(() => {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    })
+  ).toBe(true)
+  expect(closes).toBe(0)
+  expect(starts).toHaveLength(1)
+  await page.getByRole('button', { name: '核对同次提交' }).click()
+  await expect(page.getByText('Original accepted answer', { exact: true })).toBeVisible()
+  expect(starts).toHaveLength(2)
+  expect(starts[1].submissionKey).toBe(starts[0].submissionKey)
+  await page.evaluate(() => window.aiNavigate('/after'))
+  await expect(page.getByText('After assistant', { exact: true })).toBeVisible()
+})
+
+test('exhausted foreground reads still confirm interruption and preserve cancelled navigation', async ({
   page
 }) => {
   let reads = 0
   let starts = 0
+  let stops = 0
+  let closes = 0
   await page.route('**/fixture-api/ai/conversations**', (route) => {
     const url = new URL(route.request().url())
     const run = {
@@ -1866,8 +1935,12 @@ test('exhausted foreground reads keep authoritative status and can still be stop
       attemptId: 'attempt-u'
     }
     if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
-    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
-    if (url.pathname.endsWith('/stop'))
+    if (route.request().method() === 'DELETE') {
+      closes++
+      return route.fulfill({ json: {} })
+    }
+    if (url.pathname.endsWith('/stop')) {
+      stops++
       return route.fulfill({
         json: {
           ...run,
@@ -1877,6 +1950,7 @@ test('exhausted foreground reads keep authoritative status and can still be stop
           events: [{ sequence: 2, type: 'CANCELLED' }]
         }
       })
+    }
     if (url.pathname.endsWith('/executions')) {
       starts++
       return route.fulfill({ json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 } })
@@ -1895,7 +1969,7 @@ test('exhausted foreground reads keep authoritative status and can still be stop
     }
     return route.fulfill({ json: session })
   })
-  await page.goto('/?view=conversation')
+  await page.goto('/?view=conversation&router=1')
   await send(page, 'Read without replay')
   await expect(page.getByRole('button', { name: '继续读取原执行' })).toBeVisible({ timeout: 10000 })
   expect(reads).toBe(5)
@@ -1903,9 +1977,38 @@ test('exhausted foreground reads keep authoritative status and can still be stop
   await expect(page.getByText('Unconfirmed partial', { exact: true })).toBeVisible()
   await expect(page.getByText('· 未完成')).toHaveCount(0)
   await page.getByRole('button', { name: '停止生成', exact: true }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  await page.getByRole('button', { name: '结束会话', exact: true }).click()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await page.evaluate(() => {
+    void window.aiNavigate('/after')
+  })
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('button', { name: '继续生成', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  expect(await page.evaluate(() => window.aiRoute())).toBe('/assistant')
+  expect(
+    await page.evaluate(() => {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    })
+  ).toBe(true)
+  expect(stops).toBe(0)
+  expect(closes).toBe(0)
+  expect(starts).toBe(1)
+  await expect(page.getByText('Unconfirmed partial', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: '继续读取原执行' })).toBeVisible()
+  await page.getByRole('button', { name: '停止生成', exact: true }).click()
+  await page.getByRole('button', { name: '确认中断', exact: true }).click()
   await expect(page.getByRole('button', { name: '安全重试原任务' })).toBeVisible()
+  expect(stops).toBe(1)
   await page.getByRole('textbox', { name: '消息' }).fill('A distinct later turn')
   await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled()
+  await page.evaluate(() => window.aiNavigate('/after'))
+  await expect(page.getByText('After assistant', { exact: true })).toBeVisible()
 })
 
 test('changed input is a distinct task while the older unknown submission keeps its key', async ({

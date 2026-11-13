@@ -19,7 +19,25 @@ if (query.get('view') === 'conversation-route') {
   router.isReady().then(() => app.mount('#app'))
 } else if (query.get('view') === 'conversation') {
   const { default: Conversation } = await import('@/views/demo/ai-assistant/index.vue')
-  createApp(Conversation).use(ElementPlus).mount('#app')
+  if (query.has('router')) {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/assistant', component: Conversation },
+        { path: '/after', component: { render: () => h('p', 'After assistant') } }
+      ]
+    })
+    window.aiNavigate = (path) => router.push(path)
+    window.aiRoute = () => router.currentRoute.value.path
+    const app = createApp({ render: () => h(RouterView) })
+      .use(router)
+      .use(ElementPlus)
+    await router.push('/assistant')
+    await router.isReady()
+    app.mount('#app')
+  } else {
+    createApp(Conversation).use(ElementPlus).mount('#app')
+  }
 } else if (query.get('view') === 'ai-menu') {
   const recordsOnly = query.get('access') === 'records'
   const router = createRouter({
