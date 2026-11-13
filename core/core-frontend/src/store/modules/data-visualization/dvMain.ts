@@ -1683,6 +1683,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   fieldId: targetFieldId,
                   operator: 'eq',
                   value: [QDItem.value],
+                  ...(QDItem.dateStyle === 'H_m_s' ? { dateStyle: 'H_m_s' } : {}),
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
@@ -1709,6 +1710,13 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (element.component === 'VQuery' && Array.isArray(element.propValue)) {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
+                if (QDItem.dateStyle === 'H_m_s' && ['1', '7'].includes(filterItem.displayType)) {
+                  ElMessage.warning({
+                    message: t('visualization.time_only_query_linkage_unsupported'),
+                    grouping: true
+                  })
+                  return
+                }
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
                   // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
