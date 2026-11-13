@@ -24,6 +24,30 @@ const send = async (page, text) => {
   await page.getByRole('button', { name: '发送', exact: true }).click()
 }
 
+for (const [status, message] of [
+  [403, '无权使用此 AI 功能或配置。'],
+  [409, '配置或引用已变化，请刷新后重新操作。']
+]) {
+  test(`normalized conversation HTTP ${status} shows the specific refusal`, async ({ page }) => {
+    await page.route('**/fixture-api/ai/conversations**', (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+      if (url.pathname.endsWith('/executions'))
+        return route.fulfill({
+          status,
+          json: { msg: 'Untrusted upstream detail' }
+        })
+      if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+      return route.fulfill({ json: session })
+    })
+    await page.goto('/?view=conversation')
+    await send(page, 'Explain SELECT')
+    await expect(page.getByRole('alert')).toHaveText(message)
+    await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('Explain SELECT')
+    await expect(page.getByText('Untrusted upstream detail')).toHaveCount(0)
+  })
+}
+
 test('ordinary SQL explanations can start without selecting a datasource', async ({ page }) => {
   let opened
   const general = {
