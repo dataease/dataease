@@ -1596,7 +1596,6 @@ defineExpose({
       width: calc(100% - 180px);
       float: right;
       height: 100%;
-      border-left: 1px solid rgba(31, 35, 41, 0.15);
       padding: 16px 24px 24px;
       position: relative;
       .empty-img__search {
@@ -1660,6 +1659,9 @@ defineExpose({
       :deep(.cell) {
         padding: 0 10px;
       }
+    }
+    .resource-type + .tree-table {
+      border-left: 1px solid rgba(31, 35, 41, 0.15);
     }
     .full-tree-table {
       width: calc(100%) !important;
