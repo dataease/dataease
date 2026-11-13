@@ -77,6 +77,7 @@
 </template>
 
 <script lang="ts" setup>
+import { hasRequiredFilterValue, missingRequiredFilters } from './requiredFilter'
 import icon_reset_outlined from '@/assets/svg/icon_reset_outlined.svg'
 import { getCurrentInstance, onMounted, ref, toDisplayString, toRefs } from 'vue'
 import { Icon } from '@/components/icon-custom'
@@ -597,10 +598,7 @@ const validate = () => {
         return false
       }
 
-      if (
-        (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
-        (ele.defaultValue !== 0 && !ele.defaultValue)
-      ) {
+      if (!hasRequiredFilterValue(ele)) {
         ElMessage.error(t('v_query.cannot_be_empty_de'))
         return true
       }
@@ -661,6 +659,14 @@ const validate = () => {
 }
 
 const confirm = () => {
+  const missing = missingRequiredFilters(
+    filterInfo.value.sourceFilter,
+    filterInfo.value.defaultFilter
+  )
+  if (missing.length) {
+    ElMessage.error(t('report.filter.empty_tips', [missing.join('、')]))
+    return
+  }
   if (validate()) return
   const checkResult = checkData()
   if (checkResult) {

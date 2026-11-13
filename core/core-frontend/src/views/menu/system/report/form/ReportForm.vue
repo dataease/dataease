@@ -80,7 +80,14 @@ const next = async () => {
   }
 }
 
-const saveHandler = () => {
+const saveHandler = async () => {
+  const baseData = await baseForm.value?.getFormData()
+  if (!baseData) {
+    activeStep.value = 0
+    formLoading.value = false
+    return
+  }
+  baseFormData.value = baseData
   const param = {
     ...baseFormData.value,
     ...recipientFormData.value,
