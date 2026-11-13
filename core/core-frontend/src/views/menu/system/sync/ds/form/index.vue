@@ -795,6 +795,10 @@ defineExpose({
 
 <style lang="less">
 .datasource-drawer-fullscreen {
+  .schema-label .ed-form-item__label {
+    width: 100%;
+  }
+
   .ed-drawer__body {
     padding: 0;
   }
