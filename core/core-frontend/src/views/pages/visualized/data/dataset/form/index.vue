@@ -1786,11 +1786,7 @@ const errorTips = ref('')
 const handleDatasetName = () => {
   errorTips.value = ''
   if (!datasetName.value.trim()) {
-    errorTips.value = t('commons.input_content')
-  }
-
-  if (datasetName.value.trim().length < 1) {
-    errorTips.value = t('datasource.input_limit_1_64', [1, 64])
+    errorTips.value = t('data_set.the_dataset_name')
   }
   showInput.value = !!errorTips.value
 }
