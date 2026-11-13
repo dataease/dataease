@@ -103,6 +103,12 @@ export default {
     save_copy: '儲存並複製連結'
   },
   common: {
+    embedded_origin_mismatch:
+      '嵌入來源校驗失敗，請聯絡管理員核對嵌入應用的允許網域和 DataEase 存取位址設定',
+    embedded_token_expired: '嵌入憑證已過期，請重新取得後重試',
+    embedded_token_invalid: '嵌入憑證無效，請重新取得後重試',
+    embedded_auth_failed: '嵌入驗證失敗，請聯絡管理員',
+
     language_required: '語言不能為空',
     language_unsupported: '不支援所選語言，請重新選擇',
     language_switch_failed: '語言切換失敗，請重試',
