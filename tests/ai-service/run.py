@@ -137,8 +137,11 @@ def main():
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/AuthManage.java',
                 'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiMenuClassificationRegression.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/org/manage/OrgPageManage.java'])
-        private_audit = root/'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiAuditAuthorizationRegression.java'
-        if args.xpack and private_audit.is_file():
+        private_audit = next((path for path in [
+            root/'de-xpack/tests/ai-service/AiAuditAuthorizationRegression.java',
+            root/'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiAuditAuthorizationRegression.java',
+        ] if path.is_file()), None)
+        if args.xpack and private_audit is not None:
             sources.append(private_audit)
         sources.extend((root/'tests/ai-service').glob('*.java'))
         sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasource*Semantic.java'))
@@ -194,7 +197,7 @@ def main():
             commands.append([*java, '-cp', classpath, 'io.dataease.ai.TaskStructureNodeRegression'])
         if args.xpack:
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
-        if args.xpack and private_audit.is_file():
+        if args.xpack and private_audit is not None:
             commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiAuditAuthorizationRegression'])
         try:
             for command in commands:

@@ -151,7 +151,7 @@ python3 tests/ai-service/run.py --xpack \
 npm --prefix tests/browser test -- --config=playwright.ai-service.config.mjs
 ```
 
-Java 夹具使用现有 CoreApplication.jar 读取基线依赖，重新编译本次源码，使用内存 H2 及仅绑定本机的合成模型 HTTP；可选 Redis 参数启动本次任务独占实例并在结束后关闭。没有该参数时不宣称 Redis 动态回归通过。`--xpack` 仅定向编译修改的私有扩展源码，不启动应用或连接产品数据库。所有模型、密钥和业务数据均为合成数据。
+Java 夹具使用现有 CoreApplication.jar 读取基线依赖，重新编译本次源码，使用内存 H2 及仅绑定本机的合成模型 HTTP；可选 Redis 参数启动本次任务独占实例并在结束后关闭。没有该参数时不宣称 Redis 动态回归通过。`--xpack` 仅定向编译修改的私有扩展源码，不启动应用或连接产品数据库。跨仓库 AI 授权夹具位于私有仓库的 `tests/ai-service/`，由本入口显式编译当前核心及私有源码；不放入权限模块默认的 `src/test/java`，避免模块测试编译依赖核心实现。入口也兼容旧版私有仓库的夹具路径。所有模型、密钥和业务数据均为合成数据。
 
 浏览器夹具加载真实 Vue 页面、API 封装和 Element Plus Secondary，仅替换 axios、身份 Store 和国际化边界。覆盖新增/编辑、旧响应、失败反馈、未知保存核对、组织隐藏选择及批量、两种尺寸和主题，以及社区组织卡片隐藏、历史引用删除保护和未知能力拒绝。它不替代完整产品登录、真实权限矩阵或网关加解密联调。
 
