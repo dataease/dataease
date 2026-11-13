@@ -482,19 +482,30 @@ const openNodeMenu = async (page, name) => {
   return page.locator(".menu-more_popper:visible");
 };
 
-test("list nodes share canvas field selection and deletion commands", async ({
-  page,
-}) => {
+test("list nodes keep deletion command and select on click", async ({ page }) => {
   await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   let menu = await openNodeMenu(page, "items");
-  await expect(menu.getByRole("menuitem")).toHaveCount(2);
+  await expect(menu.getByRole("menuitem")).toHaveCount(1);
+  await expect(
+    menu.getByRole("menuitem", { name: "字段选择", exact: true })
+  ).toHaveCount(0);
   await expect(page.locator(".node-title")).toHaveText("orders");
-  await menu.getByRole("menuitem", { name: "字段选择", exact: true }).click();
+  await page.locator(".node-title").click();
+  await expect(page.locator(".menu-more_popper:visible")).toHaveCount(0);
+  const itemRow = page
+    .locator(".node-items .node-item")
+    .filter({ has: page.getByRole("button", { name: "items", exact: true }) });
+  await itemRow.getByRole("button", { name: "items", exact: true }).click();
   await expect(page.locator(".node-title")).toHaveText("items");
   await expect(page.locator(".node-union.active-node .tableName")).toHaveText(
     "items"
   );
+  await page.getByRole("tab", { name: "数据预览", exact: true }).first().click();
+  await expect(page.locator(".node-preview")).toBeVisible();
+  await itemRow.getByRole("button", { name: "items", exact: true }).click();
+  await expect(page.locator(".node-preview")).toBeHidden();
+  await expect(page.locator(".node-fields")).toBeVisible();
   menu = await openNodeMenu(page, "items");
   await menu.getByRole("menuitem", { name: "删除", exact: true }).click();
   await expect(
@@ -516,7 +527,7 @@ test("list SQL node supports rename and edit SQL", async ({ page }) => {
     .click();
   await expect(
     page.locator(".menu-more_popper:visible").getByRole("menuitem")
-  ).toHaveCount(4);
+  ).toHaveCount(3);
   const canvasCommands = await page
     .locator(".menu-more_popper:visible")
     .getByRole("menuitem")
@@ -524,7 +535,7 @@ test("list SQL node supports rename and edit SQL", async ({ page }) => {
   await page.locator(".node-title").click();
   await expect(page.locator(".menu-more_popper:visible")).toHaveCount(0);
   let menu = await openNodeMenu(page, "items");
-  await expect(menu.getByRole("menuitem")).toHaveCount(4);
+  await expect(menu.getByRole("menuitem")).toHaveCount(3);
   expect(await menu.getByRole("menuitem").allTextContents()).toEqual(
     canvasCommands
   );
