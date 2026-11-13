@@ -306,6 +306,33 @@ const closeTableInfo = (tableName: string) => {
   }
 }
 
+// 复制提示的 reference 同样只在 hover 时存在，鼠标移出整行时图标直接消失、tooltip 收不到 mouseleave，
+// 会停留在打开状态并被重新定位到页面左上角，因此移出时主动关闭，并在关闭动画期间保持图标可见
+const copyTipOpenName = ref('')
+const copyTooltipRefs = new Map<string, { hide: () => void }>()
+
+const setCopyTooltipRef = (tableName: string) => (instance: { hide: () => void } | null) => {
+  if (instance) {
+    copyTooltipRefs.set(tableName, instance)
+  } else {
+    copyTooltipRefs.delete(tableName)
+  }
+}
+
+const openCopyTip = (tableName: string) => {
+  copyTipOpenName.value = tableName
+}
+
+const closeCopyTip = (tableName: string) => {
+  if (copyTipOpenName.value === tableName) {
+    copyTipOpenName.value = ''
+  }
+}
+
+const hideCopyTooltip = (tableName: string) => {
+  copyTooltipRefs.get(tableName)?.hide()
+}
+
 const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
@@ -772,20 +799,29 @@ const mousedownDrag = () => {
               :class="[
                 {
                   active: activeName === datasourceTableData[index].tableName,
-                  'info-open': tableInfoOpenName === datasourceTableData[index].tableName
+                  'info-open': tableInfoOpenName === datasourceTableData[index].tableName,
+                  'copy-tip-open': copyTipOpenName === datasourceTableData[index].tableName
                 }
               ]"
               class="list-item_primary"
               :style="style"
               :title="datasourceTableData[index].tableName"
               @click="setActiveName(datasourceTableData[index])"
+              @mouseleave="hideCopyTooltip(datasourceTableData[index].tableName)"
             >
               <el-icon class="icon-color">
                 <Icon name="icon_form_outlined"><icon_form_outlined class="svg-icon" /></Icon>
               </el-icon>
               <span class="label">{{ datasourceTableData[index].tableName }}</span>
               <span class="name-copy">
-                <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
+                <el-tooltip
+                  :ref="setCopyTooltipRef(datasourceTableData[index].tableName)"
+                  effect="dark"
+                  :content="t('common.copy')"
+                  placement="top"
+                  @show="openCopyTip(datasourceTableData[index].tableName)"
+                  @hide="closeCopyTip(datasourceTableData[index].tableName)"
+                >
                   <el-icon
                     class="hover-icon"
                     @click="copyInfo(datasourceTableData[index].tableName)"
@@ -1366,7 +1402,8 @@ const mousedownDrag = () => {
         }
       }
 
-      .list-item_primary.info-open {
+      .list-item_primary.info-open,
+      .list-item_primary.copy-tip-open {
         .name-copy {
           display: inline;
         }
