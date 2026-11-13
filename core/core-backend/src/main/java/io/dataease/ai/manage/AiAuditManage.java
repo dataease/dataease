@@ -46,6 +46,7 @@ public class AiAuditManage {
         row.setResourceReference(resourceReference); row.setModelId(model.id()); row.setModelRevision(model.revision());
         row.setCredentialRevision(model.credentialRevision()); row.setModelIdentifier(model.identifier()); row.setSettingRevision(settingsRevision);
         row.setDeploymentMode(access.mode().mode().name()); row.setStatus("RUNNING"); row.setIncomplete(false); row.setGapCount(0L); row.setLastSequence(0);
+        row.setDeadline(context.deadline()); row.setRetentionDays(retentionDays);
         row.setFeature(bounded(row, row.getFeature(), 100)); row.setModelIdentifier(bounded(row, row.getModelIdentifier(), 256));
         row.setResourceReference(bounded(row, row.getResourceReference(), 1000));
         return new Session(row, recovery, retentionDays);
@@ -251,21 +252,27 @@ public class AiAuditManage {
                     var current = em.find(CoreAiAuditExecution.class, snapshot.getId(), jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
                     if (em.find(CoreAiAuditRetired.class, snapshot.getId()) != null || expired(current) || expired(snapshot)) return;
                     var row = copy(snapshot);
+                    CoreAiAuditEntry existing = entry == null ? null : em.find(CoreAiAuditEntry.class, entry.getId());
+                    // A recovered execution cannot acquire new steps; concluded entries are immutable.
+                    if (entry != null && current != null && current.getRecoveredAt() != null && existing == null) return;
                     if (entry != null) {
-                        var existing = em.find(CoreAiAuditEntry.class, entry.getId());
                         int sequence = existing != null ? existing.getSequence() : (current == null ? 0 : current.getLastSequence()) + 1;
                         entry.setSequence(sequence); snapshot.setLastSequence(Math.max(snapshot.getLastSequence(), sequence)); row.setLastSequence(snapshot.getLastSequence());
                     }
                     if (current != null) {
+                        row.setDeadline(current.getDeadline()); row.setRetentionDays(current.getRetentionDays());
+                        row.setRecoveredAt(current.getRecoveredAt());
                         row.setIncomplete(Boolean.TRUE.equals(current.getIncomplete()) || Boolean.TRUE.equals(row.getIncomplete()));
                         row.setGapCount(Math.max(current.getGapCount(), row.getGapCount()));
                         row.setLastSequence(Math.max(current.getLastSequence(), row.getLastSequence()));
-                        if (current.getFinishedAt() != null && (row.getFinishedAt() == null || current.getFinishedAt() > row.getFinishedAt())) {
+                        if (current.getFinishedAt() != null && (current.getRecoveredAt() != null || row.getFinishedAt() == null || current.getFinishedAt() > row.getFinishedAt())) {
                             row.setFinishedAt(current.getFinishedAt()); row.setRetentionExpiresAt(current.getRetentionExpiresAt()); row.setStatus(current.getStatus());
-                        }
+                        } else if (row.getFinishedAt() != null && current.getRetentionDays() != null)
+                            row.setRetentionExpiresAt(row.getFinishedAt() + TimeUnit.DAYS.toMillis(current.getRetentionDays()));
+                        if (current.getRecoveredAt() != null) row.setLastSequence(current.getLastSequence());
                     }
                     em.merge(row);
-                    if (entry != null) em.merge(entry);
+                    if (entry != null && (existing == null || existing.getFinishedAt() == null)) em.merge(entry);
                     em.flush();
                 });
                 return true;

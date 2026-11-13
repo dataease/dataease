@@ -12,7 +12,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 public final class RetentionSchemaRegression {
     public static void run() {
         verify("MySQLDialect", "MySQL"); verify("PostgreSQLDialect", "PostgreSQL"); verify("H2Dialect", "REGULAR");
-        System.out.println("PASS retention 2.55 additive partial-upgrade retry preserves original expiries/configuration with MySQL/PostgreSQL/H2 dialect registries over isolated H2");
+        System.out.println("PASS retention 2.55 and audit recovery 2.57 partial-upgrade retry preserve original expiries/configuration with MySQL/PostgreSQL/H2 dialect registries over isolated H2");
     }
     private static void verify(String dialect, String mode) {
         String url = "jdbc:h2:mem:retention_ddl_" + mode + ";MODE=" + mode + ";DB_CLOSE_DELAY=-1";
@@ -37,6 +37,21 @@ public final class RetentionSchemaRegression {
             migration.execute();
             if (jdbc.queryForObject("select delivery_retention_days from core_ai_setting where id=1", Integer.class) != 14) throw new AssertionError("migration rerun resets administrator retention");
             jdbc.queryForObject("select count(*) from core_ai_audit_retired", Long.class);
+            jdbc.execute("create table core_ai_audit_execution(id varchar(100) primary key,started_at bigint,finished_at bigint,retention_expires_at bigint,status varchar(24),retention_days integer)");
+            jdbc.update("insert into core_ai_audit_execution values('ended',100,200,12345,'COMPLETED',null),('old-running',1000,null,null,'RUNNING',null),('partial-upgrade',1000,null,null,'RUNNING',45)");
+            var recovery = new io.dataease.listener.sql.AiAuditRecoveryInit(jdbc, factory);
+            recovery.execute(); recovery.execute();
+            if (jdbc.queryForObject("select retention_expires_at from core_ai_audit_execution where id='ended'", Long.class) != 12345
+                    || jdbc.queryForObject("select finished_at from core_ai_audit_execution where id='ended'", Long.class) != 200
+                    || jdbc.queryForObject("select deadline from core_ai_audit_execution where id='old-running'", Long.class) != 301000
+                    || jdbc.queryForObject("select retention_days from core_ai_audit_execution where id='old-running'", Integer.class) != 90
+                    || jdbc.queryForObject("select retention_days from core_ai_audit_execution where id='partial-upgrade'", Integer.class) != 45)
+                throw new AssertionError("2.57 preserves terminal facts and freezes a conservative legacy recovery baseline: " + dialect);
+            jdbc.update("update core_ai_setting set audit_retention_days=7 where id=1");
+            jdbc.update("update core_ai_audit_execution set deadline=400000 where id='partial-upgrade'"); recovery.execute();
+            if (jdbc.queryForObject("select retention_days from core_ai_audit_execution where id='old-running'", Integer.class) != 90
+                    || jdbc.queryForObject("select deadline from core_ai_audit_execution where id='partial-upgrade'", Long.class) != 400000)
+                throw new AssertionError("2.57 retry cannot replace an already frozen policy or deadline");
         }
     }
 }

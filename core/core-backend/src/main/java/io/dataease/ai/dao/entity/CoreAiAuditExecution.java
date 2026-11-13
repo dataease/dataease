@@ -65,6 +65,15 @@ public class CoreAiAuditExecution {
     @Column(name = "started_at")
     @Comment("First actual work time")
     private Long startedAt;
+    @Column(name = "deadline")
+    @Comment("Frozen execution deadline for recovery after owner loss")
+    private Long deadline;
+    @Column(name = "retention_days")
+    @Comment("Frozen audit retention policy, independent from later settings")
+    private Integer retentionDays;
+    @Column(name = "recovered_at")
+    @Comment("Recovery fence; null for ordinary SDK completions that may reuse their context")
+    private Long recoveredAt;
     @Column(name = "finished_at")
     @Comment("Attempt end time, independent from result delivery")
     private Long finishedAt;
@@ -72,7 +81,7 @@ public class CoreAiAuditExecution {
     @Comment("Audit retention expiry, independent from configurable result delivery")
     private Long retentionExpiresAt;
     @Column(name = "status", length = 24)
-    @Comment("RUNNING COMPLETED FAILED CANCELLED")
+    @Comment("RUNNING COMPLETED FAILED CANCELLED INTERRUPTED")
     private String status;
     @Column(name = "incomplete")
     @Comment("Evidence is partial, degraded or has a capture gap")

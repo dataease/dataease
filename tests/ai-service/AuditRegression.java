@@ -43,7 +43,8 @@ public final class AuditRegression {
             if ("slow".equals(mode.get())) body = "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"cancelled-partial\"},\"finish_reason\":null}]}\n\n";
             if ("echo".equals(mode.get())) body = "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"hello synthetic-audit-\"},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"secret goodbye\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
             if ("invalid-json".equals(mode.get())) body = "{\"unexpected\":\"invalid-private-payload synthetic-audit-secret\"}";
-            exchange.getResponseHeaders().set("Content-Type", "invalid-json".equals(mode.get()) ? "application/json" : "text/event-stream");
+            if ("native".equals(mode.get())) body = "{\"id\":\"native-audit\",\"object\":\"chat.completion\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"native-answer\"},\"finish_reason\":\"stop\"}]}";
+            exchange.getResponseHeaders().set("Content-Type", Set.of("invalid-json", "native").contains(mode.get()) ? "application/json" : "text/event-stream");
             exchange.sendResponseHeaders(200, 0);
             try {
                 exchange.getResponseBody().write(body.getBytes(StandardCharsets.UTF_8)); exchange.getResponseBody().flush();
@@ -67,6 +68,11 @@ public final class AuditRegression {
                 public void authorize(Context context) { }
             };
             var beans = new StaticListableBeanFactory(); beans.addBean("scene", scene);
+            beans.addBean("nativeAudit", new AiFeature() {
+                public String code() { return "native-audit"; }
+                public void authorize(io.dataease.api.ai.runtime.AiExecutionContext context) { }
+                public void authorizeInput(io.dataease.api.ai.runtime.AiExecutionContext context, org.springframework.ai.chat.prompt.Prompt prompt) { }
+            });
             var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
             beans.addBean("conversation", conversations);
             var decision = new java.util.concurrent.atomic.AtomicReference<Boolean>(true);
@@ -91,6 +97,29 @@ public final class AuditRegression {
             var retention = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(mvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
             retention.put("expectedVersion",retention.path("rowVersion").asLong()); retention.putObject("retention").put("auditDays",45).put("deliveryDays",7);
             if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(retention))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("configured audit retention through public settings API");
+            mode.set("native");
+            var previousRequest = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+            org.springframework.web.context.request.RequestContextHolder.setRequestAttributes(new org.springframework.web.context.request.ServletRequestAttributes(new org.springframework.mock.web.MockHttpServletRequest()));
+            String nativeExecution;
+            int beforeNative = sends.get();
+            try {
+                var context = runtime.current("native-audit", new io.dataease.api.ai.runtime.AiDataScope("owned-native", "v1", null, false, null));
+                nativeExecution = context.executionId();
+                var nativeModel = runtime.current(context);
+                if (!"native-answer".equals(nativeModel.call("native-first")) || !"native-answer".equals(nativeModel.call("native-second")))
+                    throw new AssertionError("native SDK supports multiple actual calls under one context");
+            } finally { org.springframework.web.context.request.RequestContextHolder.setRequestAttributes(previousRequest); }
+            var nativeEvidence = json.readTree(mvc.perform(get("/ai/audit/" + nativeExecution)).andReturn().getResponse().getContentAsString());
+            if (sends.get() != beforeNative + 2 || nativeEvidence.path("entries").size() != 2
+                    || !nativeEvidence.path("entries").get(0).path("requestBody").asText().contains("native-first")
+                    || !nativeEvidence.path("entries").get(1).path("requestBody").asText().contains("native-second")
+                    || nativeEvidence.path("incomplete").asBoolean())
+                throw new AssertionError("same-context native calls must each retain actual input/output audit");
+            for (var entry : nativeEvidence.path("entries")) if (!"SUCCEEDED".equals(entry.path("status").asText())
+                    || !entry.path("responseBody").asText().contains("native-answer"))
+                throw new AssertionError("every repeated native call retains its completed response");
+            System.out.println("PASS native SDK same-context repeated model calls retain both actual audit entries");
+            mode.set("normal");
             var response = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType("application/json")
                     .content("{\"scene\":\"sql\",\"resourceId\":\"11\",\"editorId\":\"audit-editor\",\"sql\":\"select 1\",\"text\":\"audit-question\"}")).andReturn().getResponse().getContentAsString());
             String execution = response.path("executionId").asText();

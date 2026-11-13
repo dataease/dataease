@@ -31,6 +31,7 @@ public class AiRetentionCleanup {
     /** Formal job entry, also usable by isolated acceptance; deliberately has no user-facing route. */
     public void clean() {
         long now = System.currentTimeMillis();
+        recoverAudits(now);
         var deliveries = em.createQuery("select a.id from CoreAiTaskAttempt a where a.status in " + ENDED + " and a.finishedAt is not null and a.deliveryExpiresAt<=:now and a.deliveryPurgedAt is null order by a.id", Long.class)
                 .setParameter("now", now).setMaxResults(100).getResultList();
         for (var id : deliveries) tx.executeWithoutResult(status -> {
@@ -60,6 +61,32 @@ public class AiRetentionCleanup {
             // Children before parent in one transaction; a tombstone stops late entries and gap repair.
             em.createQuery("delete from CoreAiAuditEntry e where e.executionId=:id").setParameter("id", id).executeUpdate();
             em.remove(row); em.flush(); em.clear();
+        });
+    }
+    private void recoverAudits(long now) {
+        // A terminal background attempt is authoritative. Other executions are bounded by their frozen deadline.
+        // Leave a short window for ordinary terminal callbacks to finish before compensating a missing callback.
+        var ids = em.createQuery("select e.id from CoreAiAuditExecution e where e.finishedAt is null and "
+                        + "(e.deadline<=:now or exists (select a.id from CoreAiTaskAttempt a where a.executionId=e.id "
+                        + "and a.status in " + ENDED + " and a.finishedAt is not null and (a.status='INTERRUPTED' or a.finishedAt<=:settled))) order by e.id", String.class)
+                .setParameter("now", now).setParameter("settled", now - 5000).setMaxResults(100).getResultList();
+        for (String id : ids) tx.executeWithoutResult(status -> {
+            var row = em.find(CoreAiAuditExecution.class, id, LockModeType.PESSIMISTIC_WRITE);
+            if (row == null || row.getFinishedAt() != null) return;
+            var attempts = em.createQuery("select a from CoreAiTaskAttempt a where a.executionId=:execution", CoreAiTaskAttempt.class)
+                    .setParameter("execution", id).setMaxResults(1).getResultList();
+            var attempt = attempts.isEmpty() ? null : attempts.get(0);
+            if (attempt != null && (!ended(attempt.getStatus()) || attempt.getFinishedAt() == null)) return;
+            if (attempt == null && (row.getDeadline() == null || row.getDeadline() > now)) return;
+            if (row.getRetentionDays() == null || row.getRetentionDays() < 1) return;
+            long finished = attempt == null ? row.getDeadline() : attempt.getFinishedAt();
+            row.setStatus(attempt == null ? "INTERRUPTED" : attempt.getStatus()); row.setFinishedAt(finished);
+            row.setRetentionExpiresAt(finished + java.util.concurrent.TimeUnit.DAYS.toMillis(row.getRetentionDays()));
+            row.setIncomplete(true); row.setRecoveredAt(now);
+            // Keep captured request/response and usage; do not invent output or alter already completed steps.
+            em.createQuery("update CoreAiAuditEntry e set e.status='INTERRUPTED',e.finishedAt=:finished,e.incomplete=true,e.errorCode='interrupted' where e.executionId=:execution and e.finishedAt is null")
+                    .setParameter("finished", finished).setParameter("execution", id).executeUpdate();
+            em.flush();
         });
     }
     private boolean ended(String state) { return java.util.Set.of("COMPLETED", "FAILED", "CANCELLED", "INTERRUPTED").contains(state); }
