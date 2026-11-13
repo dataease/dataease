@@ -122,6 +122,7 @@ const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref(t('data_set.unnamed_dataset'))
+let datasetNameBeforeEdit = ''
 const tabActive = ref('preview')
 const editorStep = ref<'relation' | 'process'>('relation')
 const expandedPanel = ref<'canvas' | 'details' | null>(null)
@@ -138,13 +139,15 @@ const handleNodeCommand = (node: DatasetNode, command: string) =>
   datasetDrag.value?.handleCommand(node, command)
 const changeNodeFieldName = (id: string, value: string) => {
   const field = allfields.value.find(field => field.id === id)
-  if (!field) return
+  if (!field || field.name === value) return
   field.name = value
   changeUpdate()
 }
 const changeNodeFieldType = (id: string, value: (number | string)[]) => {
   const field = allfields.value.find(field => field.id === id)
   if (!field) return
+  const current = field.deTypeArr?.length ? field.deTypeArr : [field.deType]
+  if (JSON.stringify(current) === JSON.stringify(value)) return
   field.deTypeArr = [...value]
   cascaderChange(field, value)
   changeUpdate()
@@ -427,6 +430,7 @@ const confirmCustomTime = () => {
     delete currentField.value.name
     recoverSelection()
     updateCustomTime.value = false
+    changeUpdate()
   } else {
     ruleFormRef.value.validate(valid => {
       if (valid) {
@@ -440,6 +444,7 @@ const confirmCustomTime = () => {
           return false
         })
         updateCustomTime.value = false
+        changeUpdate()
       }
     })
   }
@@ -475,24 +480,30 @@ const editeSave = (returnAfterSave: boolean) => {
 }
 
 const handleFieldMore = (ele, type) => {
-  changeUpdate()
   if (tabActive.value === 'manage') {
     dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
     quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
   }
   const arr = ['text', 'time', 'value', 'float', 'value', 'location', 'binary', 'url']
   if (arr.includes(type as string)) {
-    ele.deType = arr.indexOf(type)
-    ele.dateFormat = ''
+    const deType = arr.indexOf(type)
+    if (ele.deType !== deType) {
+      ele.deType = deType
+      ele.dateFormat = ''
+      changeUpdate()
+    }
     return
   }
   if (timeTypes.includes(type as string)) {
     currentField.value.dateFormat = ele.dateFormat
     currentField.value.dateFormatType = ele.dateFormatType
 
-    ele.deType = 1
-    ele.dateFormatType = type
-    ele.dateFormat = type
+    if (ele.deType !== 1 || ele.dateFormatType !== type) {
+      ele.deType = 1
+      ele.dateFormatType = type
+      ele.dateFormat = type
+      changeUpdate()
+    }
   }
   switch (type) {
     case 'copy':
@@ -501,12 +512,14 @@ const handleFieldMore = (ele, type) => {
       } else {
         copyField(ele)
       }
+      changeUpdate()
       break
     case 'delete':
       deleteField(ele)
       break
     case 'translate':
       dqTrans(ele.id)
+      changeUpdate()
       break
     case 'editor':
       if (ele.extField === 3) {
@@ -543,6 +556,7 @@ const dqTransArr = groupType => {
       ele.groupType = groupType
     }
   })
+  changeUpdate()
   recoverSelection()
 }
 
@@ -654,6 +668,7 @@ const deleteField = item => {
       if (action === 'confirm') {
         delFieldById([item.id])
         datasetDrag.value.dfsNodeFieldBackReal(item)
+        changeUpdate()
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -720,6 +735,7 @@ const confirmNormalField = () => {
         }
         return false
       })
+      changeUpdate()
       closeNormalField()
     }
   })
@@ -748,6 +764,7 @@ const confirmEditCalc = () => {
       } else {
         allfields.value.push(obj)
       }
+      changeUpdate()
       editCalcField.value = false
     }
   })
@@ -900,9 +917,9 @@ const tabChange = val => {
   })
 }
 
-const addComplete = () => {
+const addComplete = (isInit = false) => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
-  changeUpdate()
+  if (!isInit) changeUpdate()
   if (!state.nodeNameList?.length) {
     columns.value = []
     tableData.value = []
@@ -1295,6 +1312,7 @@ const confirmGroupField = () => {
         } else {
           allfields.value.push({ ...currentGroupField, groupList })
         }
+        changeUpdate()
         editGroupField.value = false
       }
     }, 1000)
@@ -1681,6 +1699,7 @@ const cascaderChangeArr = val => {
       ele.deTypeArr = deType === 1 && ele.deExtractType === 0 ? [deType, dateFormat] : [deType]
     }
   })
+  changeUpdate()
   recoverSelection()
 }
 
@@ -1718,6 +1737,7 @@ const cascaderChange = (row, val) => {
   row.deType = deType
   row.dateFormat = deType === 1 ? dateFormat : ''
   row.dateFormatType = deType === 1 ? dateFormat : ''
+  changeUpdate()
 }
 
 const dfsUnion = (arr, list) => {
@@ -1744,6 +1764,7 @@ const dfsUnion = (arr, list) => {
   })
 }
 const handleClick = () => {
+  datasetNameBeforeEdit = datasetName.value
   showInput.value = true
   nextTick(() => {
     editorName.value.focus()
@@ -1793,6 +1814,7 @@ const handleDatasetName = () => {
     errorTips.value = t('datasource.input_limit_1_64', [1, 64])
   }
   showInput.value = !!errorTips.value
+  if (!errorTips.value && datasetName.value !== datasetNameBeforeEdit) changeUpdate()
 }
 
 const treeProps = {
@@ -2284,6 +2306,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             v-model="scope.row.name"
                             maxlength="100"
                             :placeholder="t('commons.input_content')"
+                            @change="changeUpdate"
                           />
                         </div>
                       </template>
@@ -2494,6 +2517,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                           <el-input
                             v-model="scope.row.name"
                             :placeholder="t('commons.input_content')"
+                            @change="changeUpdate"
                           />
                         </div>
                       </template>

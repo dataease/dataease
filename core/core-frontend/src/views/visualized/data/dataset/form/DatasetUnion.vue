@@ -132,7 +132,7 @@ const initState = nodeList => {
   Object.assign(state.nodeList, nodeList)
   nextTick(() => {
     isUpdate = true
-    emits('addComplete')
+    emits('addComplete', true)
   })
 }
 
