@@ -64,7 +64,8 @@ export const updateMaterial = (data: {
   categoryId?: string
   moveCategory?: boolean
 }) => request.post({ url: '/material/update', data })
-export const deleteMaterial = (id: string) => request.post({ url: '/material/delete/' + id })
+export const deleteMaterial = (id: string, options?: { handleErrorLocally?: boolean }) =>
+  request.post({ url: '/material/delete/' + id, handleErrorLocally: options?.handleErrorLocally })
 export const uploadMaterial = (
   file: File,
   categoryId?: string,
