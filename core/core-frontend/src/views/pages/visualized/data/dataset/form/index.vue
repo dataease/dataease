@@ -1628,7 +1628,8 @@ const deTypeSelection = ref([])
 const fieldSelection = ref([])
 
 const showCascaderBatch = computed(() => {
-  return !!deTypeSelection.value.length && Array.from(new Set(deTypeSelection.value)).length === 1
+  const deTypes = fieldSelection.value.map(ele => ele.deType)
+  return !!deTypes.length && new Set(deTypes).size === 1
 })
 
 const clearSelection = () => {
@@ -1644,7 +1645,7 @@ const setDeTypeSelection = () => {
   ]
 
   deTypeSelection.value = fieldSelection.value.map(ele => {
-    if (ele.extField === 2 && ele.deExtractType === undefined) {
+    if (ele.extField === 2 && (ele.deExtractType === undefined || ele.deExtractType === null)) {
       return ele.deType
     }
     return ele.deExtractType
