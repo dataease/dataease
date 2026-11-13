@@ -46,11 +46,12 @@ const guideSections = [
 ]
 const failureMessage = (error: unknown) => {
   if (typeof error === 'string') return error
-  if (isAxiosError(error)) {
+  if (isRequestError(error)) {
     if (error.response?.status === 403) return t('ai_service.failure_forbidden')
     if (error.response?.status === 409) return t('ai_service.failure_conflict')
-    if (error.code === 'ECONNABORTED') return t('ai_service.failure_timeout')
-    if (error.code === 'ERR_NETWORK') return t('ai_service.failure_connection_failed')
+    const transportCode = isAxiosError(error) ? error.code : error.transportCode
+    if (transportCode === 'ECONNABORTED') return t('ai_service.failure_timeout')
+    if (transportCode === 'ERR_NETWORK') return t('ai_service.failure_connection_failed')
   }
   return tr('failed')
 }
