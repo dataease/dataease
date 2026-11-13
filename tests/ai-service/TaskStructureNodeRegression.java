@@ -56,7 +56,7 @@ public final class TaskStructureNodeRegression {
         new Translator().setMessageSource(new StaticMessageSource()); V3UserUtil.setUid(1L);
         var changed = new AtomicReference<String>("");
         var beans = new StaticListableBeanFactory();
-        var access = new AiAccess(null, null) {
+        var access = new SyntheticAccess(null, null) {
             public AiDeploymentMode.State mode() { return new AiDeploymentMode.State(AiDeploymentMode.Mode.LICENSED, "structure-node-fixture"); }
             public Identity capture() { return new Identity(V3UserUtil.getUid(), null, null, mode()); }
             public void verify(Identity identity, boolean configuration) {

@@ -55,8 +55,8 @@ public final class CommunityRuntimeRegression {
             fixture.status.set(F2CLicResult.Status.valid);
             ChatModel licensed = provider.current(provider.current(feature.code(), scope));
             taskOrg.set(9002L);
-            var orgTask = provider.current(provider.task(feature.code(), "licensed-task", scope));
-            ModeRegression.denied(() -> orgTask.call("hello"), "licensed disabled organization remains effective");
+            ModeRegression.denied(() -> provider.task(feature.code(), "licensed-task", scope), "licensed disabled organization is refused at admission");
+            ModeRegression.require(calls.get() == 0, "disabled organization never sends a model request");
             fixture.status.set(F2CLicResult.Status.no_record);
             ModeRegression.denied(() -> licensed.call("hello"), "old licensed runtime cannot become community");
             ModeRegression.denied(() -> provider.task(feature.code(), "old-org-task", scope), "community task cannot erase organization/proxy");

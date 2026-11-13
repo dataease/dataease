@@ -13,6 +13,9 @@ public final class AiIdentityScope {
     private final AiAccess access;
     public AiIdentityScope(AiAccess access) { this.access = access; }
     public <T> T call(AiAccess.Identity owner, Supplier<T> operation) {
+        return access.inDeploymentScope(owner, () -> callIdentity(owner, operation));
+    }
+    private <T> T callIdentity(AiAccess.Identity owner, Supplier<T> operation) {
         // 不复制 Servlet 请求/事务。HTTP 传输线程只安装服务器保存的身份，并可靠清理。
         boolean request = RequestContextHolder.getRequestAttributes() != null;
         int depth = authorityDepth.get(); authorityDepth.set(depth + 1);

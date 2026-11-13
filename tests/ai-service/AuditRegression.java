@@ -78,7 +78,7 @@ public final class AuditRegression {
                         return null;
                     });
             var authorization = new StaticListableBeanFactory(); authorization.addBean("auth", auth);
-            var auditAccess = new AiAccess(authorization.getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class), null) {
+            var auditAccess = new SyntheticAccess(authorization.getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class), null) {
                 public Identity capture() { return access.capture(); }
                 public void verify(Identity identity, boolean configurationAccess) { access.verify(identity, configurationAccess); }
                 public AiDeploymentMode.State mode() { return access.mode(); }

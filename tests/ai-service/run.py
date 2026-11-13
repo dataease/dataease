@@ -29,6 +29,7 @@ def main():
     parser.add_argument('--task-scheduling', action='store_true', help='public HTTP task scheduling across independent JVMs')
     parser.add_argument('--recovery-tools', action='store_true', help='public tool correction recovery loop')
     parser.add_argument('--recovery', action='store_true', help='public foreground recovery loop')
+    parser.add_argument('--identity-scope', action='store_true', help='trusted worker identity and original business license dispatch')
     parser.add_argument('--task-progress', action='store_true', help='isolated public task private-frame timing loop')
     parser.add_argument('--progress-case', default='all', choices=['all', 'text-plain', 'sql-plain', 'text-burst', 'sql-burst'])
     parser.add_argument('--progress-frames', type=int, default=512)
@@ -150,6 +151,8 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/InitSqlListener.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceMetadataInit.java'])
         java = ['java']
+        if args.identity_scope:
+            java.append('-Dai.test.identityScopeOnly=true')
         if args.disabled_errors:
             java.append('-Dai.test.disabledErrorsOnly=true')
         if args.conflict_errors:

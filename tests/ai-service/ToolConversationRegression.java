@@ -179,7 +179,7 @@ public final class ToolConversationRegression {
                 }
                 throw new AssertionError("unexpected operation authorization " + method.getName());
             }));
-            var dialogueAccess = new AiAccess(null, null) {
+            var dialogueAccess = new SyntheticAccess(null, null) {
                 public AiDeploymentMode.State mode() { return access.mode(); }
                 public Identity capture() { Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null; return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode()); }
                 public void verify(Identity identity, boolean configuration) { access.verify(identity, configuration); if (identity.actor() == null) throw AiErrors.error("forbidden"); }

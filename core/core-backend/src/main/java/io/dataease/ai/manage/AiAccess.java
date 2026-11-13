@@ -6,6 +6,7 @@ import io.dataease.ai.support.AiErrors;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 @Component
 public class AiAccess {
@@ -14,6 +15,9 @@ public class AiAccess {
     private final AiDeploymentMode deployment;
     public AiAccess(ObjectProvider<InteractiveAuthApi> authorization, AiDeploymentMode deployment) { this.authorization = authorization; this.deployment = deployment; }
     public AiDeploymentMode.State mode() { return deployment.current(); }
+    public <T> T inDeploymentScope(Identity owner, Supplier<T> operation) {
+        return deployment.inScope(owner.deployment(), operation);
+    }
     public Identity capture() {
         if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) throw AiErrors.error("forbidden");
         AiDeploymentMode.State state = mode();

@@ -55,7 +55,46 @@ public final class ModeRegression {
     }
     static void require(boolean value,String label) { if(!value)throw new AssertionError(label); }
     static void denied(Runnable work,String label) { try{work.run();throw new AssertionError(label);}catch(AiErrors.Failure expected){} }
+    private static void licenseScope() {
+        new io.dataease.license.utils.CommonBeanFactory().setApplicationContext(new StaticApplicationContext());
+        Fixture f = new Fixture(); f.status.set(F2CLicResult.Status.valid); V3UserUtil.setUid(1L);
+        var owner = f.access.capture(); V3UserUtil.clear();
+        var scope = new AiIdentityScope(f.access);
+        io.dataease.license.utils.LicenseUtil.set(null);
+        scope.call(owner, () -> {
+            require(io.dataease.license.utils.LicenseUtil.licenseValid(), "licensed worker must retain the original business license dispatch");
+            return null;
+        });
+        require(io.dataease.license.utils.LicenseUtil.get() == null && V3UserUtil.getUid() == null, "worker license and actor are cleaned");
+        var previous = new F2CLicResult(); previous.setStatus(F2CLicResult.Status.expired);
+        io.dataease.license.utils.LicenseUtil.set(previous);
+        try {
+            scope.call(owner, () -> {
+                Object outer = io.dataease.license.utils.LicenseUtil.get();
+                scope.call(owner, () -> { require(io.dataease.license.utils.LicenseUtil.licenseValid(), "nested scope remains licensed"); return null; });
+                require(io.dataease.license.utils.LicenseUtil.get() == outer, "nested scope restores its caller license");
+                throw new IllegalStateException("synthetic business failure");
+            });
+            throw new AssertionError("business failure must propagate");
+        } catch (IllegalStateException expected) { }
+        require(io.dataease.license.utils.LicenseUtil.get() == previous && V3UserUtil.getUid() == null, "exception restores previous license and actor");
+        AtomicBoolean entered = new AtomicBoolean();
+        f.failure.set(true);
+        denied(() -> scope.call(owner, () -> entered.getAndSet(true)), "license source unavailable refuses work");
+        f.failure.set(false); f.race.set(true);
+        denied(() -> scope.call(owner, () -> entered.getAndSet(true)), "license record changing during validation refuses work");
+        denied(() -> scope.call(owner, () -> entered.getAndSet(true)), "renewed source rejects stale owner revision");
+        require(!entered.get() && io.dataease.license.utils.LicenseUtil.get() == previous, "refused work cannot inherit caller license");
+        f.status.set(F2CLicResult.Status.no_record); V3UserUtil.setUid(1L);
+        var community = f.access.capture(); V3UserUtil.clear();
+        previous.setStatus(F2CLicResult.Status.valid);
+        scope.call(community, () -> { require(!io.dataease.license.utils.LicenseUtil.licenseValid(), "community scope cannot inherit a licensed caller"); return null; });
+        require(io.dataease.license.utils.LicenseUtil.get() == previous && V3UserUtil.getUid() == null, "community scope restores its caller");
+        io.dataease.license.utils.LicenseUtil.set(null);
+        System.out.println("PASS AI worker license dispatch, nested/exception cleanup, community isolation and fresh-source revocation");
+    }
     public static void run() throws Exception {
+        licenseScope();
         Fixture f = new Fixture(); V3UserUtil.setUid(1L);
         f.nullRecord.set(true);require(!f.mode.current().organizations(),"explicit no-record source supports nullable empty record");
         f.status.set(F2CLicResult.Status.valid);denied(f.mode::current,"missing record with valid result is inconsistent");

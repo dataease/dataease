@@ -51,7 +51,7 @@ public final class TaskNode {
         var mode = new AiDeploymentMode(null, null, null) {
             public State current() { return new State(Mode.LICENSED, "controlled-task-identity-v1"); }
         };
-        var access = new AiAccess(null, mode) {
+        var access = new SyntheticAccess(null, mode) {
             public Identity capture() {
                 Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
                 return new Identity(V3UserUtil.getUid(), proxy, proxy, mode());
