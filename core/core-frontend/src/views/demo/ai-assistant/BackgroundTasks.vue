@@ -54,7 +54,10 @@ const locateBusy = async () => {
   const current = generation
   try {
     const task = await getAiTask(busyTaskId.value)
-    if (current === generation) remember(task)
+    if (current === generation) {
+      remember(task)
+      void poll()
+    }
   } catch (error) {
     if (current === generation) failure.value = requestFailure(error)
   }
@@ -107,6 +110,59 @@ const retryKeys = new Map<string, string>()
 const active = (task: AiTask) => ['QUEUED', 'RUNNING'].includes(task.status)
 const finished = new Set<string>()
 const toasts = new Map<string, ReturnType<typeof ElMessage>>()
+const resultOpen = ref(false)
+const resultLoading = ref(false)
+const resultFailure = ref('')
+const resultTask = ref<AiTask>()
+const resultSelection = ref<Pick<AiTask, 'taskId' | 'attemptId'>>()
+let resultRead: AbortController | undefined
+let resultGeneration = 0
+const clearResult = () => {
+  resultGeneration++
+  resultRead?.abort()
+  resultTask.value = undefined
+  resultSelection.value = undefined
+  resultFailure.value = ''
+  resultLoading.value = false
+}
+watch(
+  resultOpen,
+  open => {
+    if (!open) clearResult()
+  },
+  { flush: 'sync' }
+)
+const viewResult = async (selected: Pick<AiTask, 'taskId' | 'attemptId'>) => {
+  clearResult()
+  const current = resultGeneration
+  resultSelection.value = { taskId: selected.taskId, attemptId: selected.attemptId }
+  resultOpen.value = true
+  resultLoading.value = true
+  resultRead = new AbortController()
+  try {
+    // Recheck current result access; the completion notice is not a result authorization.
+    const task = await getAiTask(selected.taskId, resultRead.signal)
+    if (current !== resultGeneration) return
+    if (task.attemptId !== selected.attemptId || task.status !== 'COMPLETED' || !task.result) {
+      resultFailure.value = tr('task_result_unavailable')
+      return
+    }
+    resultTask.value = task
+  } catch (error) {
+    if (current !== resultGeneration) return
+    const key =
+      error && typeof error === 'object' && 'messageKey' in error ? error.messageKey : null
+    const status = isRequestError(error) ? error.response?.status : undefined
+    resultFailure.value =
+      key === 'i18n_ai_result_expired'
+        ? tr('task_result_expired')
+        : status === 403
+        ? t('ai_service.failure_forbidden')
+        : tr('task_result_unavailable')
+  } finally {
+    if (current === resultGeneration) resultLoading.value = false
+  }
+}
 const closeToasts = () => {
   toasts.forEach(toast => toast.close())
   toasts.clear()
@@ -159,7 +215,22 @@ const notify = (task: AiTask | AiTaskNotice) => {
       ? tr('task_completed')
       : tr(`task_status_${task.status.toLowerCase()}`) +
         (task.errorCode ? ' · ' + t('ai_service.' + aiFailureKey(task.errorCode)) : '')
-  const content = retry
+  const completed = task.status === 'COMPLETED'
+  const content = completed
+    ? h('span', [
+        message + ' ',
+        h(
+          'button',
+          {
+            type: 'button',
+            onClick: () => {
+              if (current === generation) void viewResult(task)
+            }
+          },
+          tr('task_view_result')
+        )
+      ])
+    : retry
     ? h('span', [
         message + ' ',
         h(
@@ -180,7 +251,7 @@ const notify = (task: AiTask | AiTaskNotice) => {
     ElMessage({
       message: content,
       type: task.status === 'COMPLETED' ? 'success' : 'info',
-      duration: retry ? 0 : 6000,
+      duration: completed || retry ? 0 : 6000,
       showClose: true,
       onClose: () => toasts.delete(task.attemptId)
     })
@@ -237,6 +308,7 @@ const submit = async () => {
       return
     }
     remember(task)
+    void poll()
     return task
   } catch (error) {
     if (current === generation) {
@@ -285,6 +357,7 @@ const change = async (task: AiTask | AiTaskNotice, retry = false) => {
     } else result = await cancelAiTask(task.taskId)
     if (current === generation) {
       remember(result)
+      void poll()
       return true
     }
   } catch (error) {
@@ -294,25 +367,29 @@ const change = async (task: AiTask | AiTaskNotice, retry = false) => {
   }
 }
 const poll = async () => {
-  if (readPaused.value) return
+  if (readPaused.value || reading || document.hidden || !navigator.onLine) return
+  clearTimeout(timer)
   const current = generation
-  reading?.abort()
-  reading = new AbortController()
-  const signal = reading.signal
+  const request = new AbortController()
+  reading = request
+  const signal = request.signal
+  const isCurrent = () => current === generation && reading === request
   const deadline = readStarted
-    ? window.setTimeout(() => reading?.abort(), Math.max(1, 10000 - (Date.now() - readStarted)))
+    ? window.setTimeout(() => request.abort(), Math.max(1, 10000 - (Date.now() - readStarted)))
     : undefined
   try {
     const activeTasks = await activeAiTasks(signal)
+    if (!isCurrent()) return
     const activeIds = new Set(activeTasks.map(task => task.taskId))
     const completed = await Promise.all(
       tasks.value
         .filter(task => active(task) && !activeIds.has(task.taskId))
         .map(task => getAiTask(task.taskId, signal))
     )
-    if (current !== generation) return
+    if (!isCurrent()) return
     activeTasks.forEach(remember)
     completed.forEach(remember)
+    const observed = new Map([...activeTasks, ...completed].map(task => [task.taskId, task]))
     // A notice acknowledged by another tab cannot consume the original conversation's task association.
     for (const [id, linked] of origins) {
       if (linked.origin.sessionId !== props.origin?.sessionId) {
@@ -320,12 +397,12 @@ const poll = async () => {
         continue
       }
       try {
-        const task = await getAiTask(id, signal)
-        if (current !== generation) return
+        const task = observed.get(id) ?? (await getAiTask(id, signal))
+        if (!isCurrent()) return
         if (active(task)) continue
         if (task.status === 'COMPLETED' && !conversationDelivered.has(task.attemptId)) {
           const delivered = await deliverAiTaskConversation(id, linked.origin)
-          if (current !== generation || linked.origin.sessionId !== props.origin?.sessionId) return
+          if (!isCurrent() || linked.origin.sessionId !== props.origin?.sessionId) return
           conversationDelivered.add(delivered.attemptId)
           if (conversationDelivered.size > 50)
             conversationDelivered.delete(conversationDelivered.values().next().value!)
@@ -340,18 +417,18 @@ const poll = async () => {
       }
     }
     const notices = await pendingAiTaskNotices(signal)
-    if (current !== generation) return
+    if (!isCurrent()) return
     for (const notice of notices) {
       if (notice.expiresAt <= Date.now()) continue
       notify(notice)
       await acknowledgeAiTaskNotice(notice.attemptId)
-      if (current !== generation) return
+      if (!isCurrent()) return
     }
     loadingFailed.value = false
     readFailures = 0
     readStarted = 0
   } catch (error) {
-    if (current !== generation) return
+    if (!isCurrent()) return
     const status = isRequestError(error) ? error.response?.status : undefined
     readStarted ||= Date.now()
     readFailures++
@@ -363,9 +440,25 @@ const poll = async () => {
     loadingFailed.value = true
   } finally {
     window.clearTimeout(deadline)
-    if (current === generation && !readPaused.value)
-      timer = setTimeout(poll, readFailures ? readFailures * 1000 : 1000)
+    if (isCurrent()) {
+      reading = undefined
+      if (!readPaused.value && !document.hidden && navigator.onLine)
+        timer = setTimeout(
+          poll,
+          readFailures ? readFailures * 1000 : tasks.value.length || origins.size ? 2000 : 30000
+        )
+    }
   }
+}
+const pauseReading = () => {
+  clearTimeout(timer)
+  const previous = reading
+  reading = undefined
+  previous?.abort()
+}
+const refreshWhenVisible = () => {
+  if (document.hidden || !navigator.onLine) pauseReading()
+  else void poll()
 }
 const copyExecution = async (id: string) => {
   try {
@@ -386,7 +479,7 @@ watch(
   () => [user.uid, user.oid, user.proxyInfo?.proxyOid],
   () => {
     generation++
-    reading?.abort()
+    pauseReading()
     readFailures = 0
     readStarted = 0
     readPaused.value = false
@@ -397,22 +490,35 @@ watch(
     origins.clear()
     conversationDelivered.clear()
     closeToasts()
+    resultOpen.value = false
+    clearResult()
     pending.value = false
     failure.value = ''
     void poll()
   },
   { flush: 'sync' }
 )
-onMounted(poll)
+onMounted(() => {
+  void poll()
+  document.addEventListener('visibilitychange', refreshWhenVisible)
+  window.addEventListener('focus', refreshWhenVisible)
+  window.addEventListener('online', refreshWhenVisible)
+  window.addEventListener('offline', refreshWhenVisible)
+})
 onBeforeUnmount(() => {
   generation++
   tableGeneration++
   tableRead?.abort()
-  reading?.abort()
-  clearTimeout(timer)
+  pauseReading()
+  document.removeEventListener('visibilitychange', refreshWhenVisible)
+  window.removeEventListener('focus', refreshWhenVisible)
+  window.removeEventListener('online', refreshWhenVisible)
+  window.removeEventListener('offline', refreshWhenVisible)
   origins.clear()
   conversationDelivered.clear()
   closeToasts()
+  resultOpen.value = false
+  clearResult()
 })
 defineExpose({
   controlledMode: mutexMode,
@@ -477,10 +583,55 @@ defineExpose({
         tr('task_cancel')
       }}</el-button>
     </article>
+    <el-dialog
+      v-model="resultOpen"
+      :title="tr('task_result')"
+      width="min(680px, calc(100vw - 32px))"
+      append-to-body
+      destroy-on-close
+    >
+      <div class="task-result" :aria-busy="resultLoading">
+        <p v-if="resultLoading" role="status">{{ tr('task_result_loading') }}</p>
+        <p v-else-if="resultFailure" role="alert">{{ resultFailure }}</p>
+        <template v-else-if="resultTask?.result">
+          <p>
+            {{ tr('original_target') }}：{{ resultTask.resourceName || tr('no_resource') }} ·
+            {{ tr('task_attempt') }} {{ resultTask.attemptNumber }}
+          </p>
+          <p v-if="resultTask.executionId">
+            <small>{{ resultTask.executionId }}</small>
+            <el-button link @click="copyExecution(resultTask.executionId)">{{
+              tr('copy_execution')
+            }}</el-button>
+          </p>
+          <p class="task-result-text">{{ resultTask.result.text }}</p>
+          <template v-if="resultTask.result.type === 'SQL_SUGGESTION' && resultTask.result.sql">
+            <h3>{{ tr('suggestion') }}</h3>
+            <pre class="task-result-text">{{ resultTask.result.sql }}</pre>
+          </template>
+        </template>
+      </div>
+      <template #footer>
+        <el-button v-if="resultFailure && resultSelection" @click="viewResult(resultSelection)">{{
+          tr('task_result_reload')
+        }}</el-button>
+        <el-button @click="resultOpen = false">{{ tr('task_result_close') }}</el-button>
+      </template>
+    </el-dialog>
   </section>
 </template>
 
 <style scoped>
+.task-result {
+  max-height: 65vh;
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+
+.task-result-text {
+  white-space: pre-wrap;
+}
+
 :deep(.ed-checkbox) {
   height: auto;
   max-width: 100%;
