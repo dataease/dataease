@@ -926,9 +926,8 @@ const dynamicResourceClass = (param) => {
   }
   if (activeAuth.value === "resource" && row.disabled) {
     classes.push("de-row-disabled");
-  }
-  if (activeAuth.value === "menu" && !row.leaf) {
-    classes.push("de-row-disabled");
+  } else if (activeAuth.value === "menu" && !row.leaf) {
+    classes.push("de-menu-group");
   }
   return classes.join(" ");
 };
@@ -1716,6 +1715,10 @@ defineExpose({
   .custom-tree-node {
     color: var(--el-text-color-placeholder, #a8abb2);
   }
+}
+
+:deep(.de-menu-group .custom-tree-node > span) {
+  color: var(--ed-color-primary);
 }
 
 .role-tree-container {
