@@ -144,7 +144,8 @@ public class Dimension2SQLObj {
                                 String.format(SQLConstants.DE_DATE_FORMAT, String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "yyyy"),
                                 String.format(SQLConstants.QUARTER, String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT)));
                     } else {
-                        String s = String.format(SQLConstants.DE_STR_TO_DATE, originField, StringUtils.isEmpty(x.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : (Utils.isValidDateFormat(x.getDateFormat()) ? Utils.transValue(x.getDateFormat()) : SQLConstants.DEFAULT_DATE_FORMAT));
+                        String dateValue = partialDate ? String.format("NULLIF(%s, '')", originField) : originField;
+                        String s = String.format(SQLConstants.DE_STR_TO_DATE, dateValue, StringUtils.isEmpty(x.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : (Utils.isValidDateFormat(x.getDateFormat()) ? Utils.transValue(x.getDateFormat()) : SQLConstants.DEFAULT_DATE_FORMAT));
                         fieldName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, s, SQLConstants.DEFAULT_DATE_FORMAT, format);
                     }
                 } else if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_FLOAT) || Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_BOOL)) {
