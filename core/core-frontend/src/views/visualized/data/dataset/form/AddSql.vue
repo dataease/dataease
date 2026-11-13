@@ -1690,6 +1690,12 @@ const mousedownDrag = () => {
   .ed-input-group__prepend {
     padding: 0 11px;
     width: 163px;
+    // 下拉框需铺满 prepend，否则左侧留白露出内外两层边框
+    .ed-select {
+      flex: none;
+      width: calc(100% + 22px);
+      margin: 0 -11px;
+    }
   }
   .de-group__prepend {
     .ed-date-editor {
