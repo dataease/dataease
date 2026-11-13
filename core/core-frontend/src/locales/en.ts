@@ -48,6 +48,14 @@ export default {
     delete_hint:
       'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed. Delete this material?',
     deleted: 'Deleted successfully',
+    batch_delete: 'Delete selected',
+    batch_selected_count: '{count} selected',
+    batch_select_item: 'Select material {name}',
+    batch_delete_confirm:
+      'Delete {count} selected materials? They will be hidden from the library. Existing references will remain usable. Files are cleaned up after all references are removed.',
+    batch_delete_result: 'Deleted: {success}. Failed: {failed}.',
+    batch_delete_failure_detail: '{name}: {reason}',
+    batch_delete_unknown_error: 'Deletion failed. Please try again.',
     empty: 'No materials',
     file_hint: 'PNG, JPG/JPEG, GIF and safe SVG only. Maximum file size: 15 MiB.',
     confirm: 'Confirm selection',

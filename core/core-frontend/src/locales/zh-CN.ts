@@ -44,6 +44,14 @@ export default {
     delete_hint:
       '删除后，素材将从素材库隐藏，无法再选用；已使用该素材的仪表板、大屏等资源不受影响，全部引用解除后自动清理文件。确认删除？',
     deleted: '删除成功',
+    batch_delete: '批量删除',
+    batch_selected_count: '已选 {count} 项',
+    batch_select_item: '选择素材 {name}',
+    batch_delete_confirm:
+      '确定删除选中的 {count} 项素材吗？删除后素材将从素材库隐藏，无法再选用。已有引用可继续使用，全部引用解除后将自动清理文件。',
+    batch_delete_result: '删除成功 {success} 项，失败 {failed} 项',
+    batch_delete_failure_detail: '{name}：{reason}',
+    batch_delete_unknown_error: '删除失败，请重试',
     empty: '暂无素材',
     file_hint: '支持 PNG、JPG/JPEG、GIF、安全 SVG，单文件不超过 15 MiB。',
     confirm: '确认选择',
