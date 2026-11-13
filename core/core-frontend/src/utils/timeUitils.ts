@@ -1,5 +1,5 @@
-// 时分秒没有日期部分，保留原值，由联动条件携带日期粒度交给后端匹配时间部分
-const NO_DATE_GRANULARITY = ['H_m_s']
+// 时分秒和月日无法确定绝对日期区间，保留原值，由后端按展示粒度匹配。
+const NO_DATE_GRANULARITY = ['H_m_s', 'M_d']
 
 export const getRange = (outerTimeValue, timeGranularity) => {
   // y_Q（年季度，如 2026-3）与 y_W（年周，如 2026-44）不属于 Date 可解析的格式，
@@ -14,6 +14,10 @@ export const getRange = (outerTimeValue, timeGranularity) => {
   if (NO_DATE_GRANULARITY.includes(timeGranularity)) {
     return outerTimeValue
   }
+  const localRange = getLocalDisplayRange(outerTimeValue, timeGranularity)
+  if (localRange !== undefined) {
+    return localRange
+  }
   const selectValue = timeGranularity === 'y_M_d_H' ? outerTimeValue + ':' : outerTimeValue
   if (new Date(selectValue).toString() === 'Invalid Date') {
     return selectValue
@@ -27,7 +31,6 @@ export const getRange = (outerTimeValue, timeGranularity) => {
       return getMonthEnd(selectValue)
     case 'date':
     case 'y_M_d':
-    case 'M_d':
       return getDayEnd(selectValue)
     case 'hour':
     case 'y_M_d_H':
@@ -55,6 +58,78 @@ export const getTimeBegin = (selectValue, timeGranularity) => {
     default:
       return selectValue
   }
+}
+
+// 图表展示值没有时区，按本地日历解析，避免 Date 将 YYYY-MM-DD 当成 UTC。
+// 其他输入（时间戳、Date、带时区 ISO 等）仍沿用原有时间点转换逻辑。
+const getLocalDisplayRange = (value, granularity) => {
+  if (typeof value !== 'string') {
+    return undefined
+  }
+  const precision = {
+    y: 1,
+    y_M: 2,
+    y_M_d: 3,
+    y_M_d_H: 4,
+    y_M_d_H_m: 5,
+    y_M_d_H_m_s: 6,
+    datetime: 6
+  }[granularity]
+  if (!precision) {
+    return undefined
+  }
+  const matched =
+    /^(\d{4})(?:([-/])(\d{1,2})(?:\2(\d{1,2})(?:[ T](\d{1,2})(?::(\d{1,2})(?::(\d{1,2}))?)?)?)?)?$/.exec(
+      value
+    )
+  if (!matched) {
+    return undefined
+  }
+  const parts = [matched[1], ...matched.slice(3)]
+  if (parts.filter(part => part !== undefined).length !== precision) {
+    return undefined
+  }
+  const [year, month = 1, day = 1, hour = 0, minute = 0, second = 0] = parts.map(part =>
+    part === undefined ? undefined : Number(part)
+  )
+  const start = new Date(0)
+  start.setFullYear(year, month - 1, day)
+  start.setHours(hour, minute, second, 0)
+  if (
+    start.getFullYear() !== year ||
+    start.getMonth() !== month - 1 ||
+    start.getDate() !== day ||
+    (precision >= 4 && start.getHours() !== hour) ||
+    start.getMinutes() !== minute ||
+    start.getSeconds() !== second
+  ) {
+    return value
+  }
+  if (granularity === 'datetime') {
+    return [+start, +start]
+  }
+  const end = new Date(+start)
+  switch (precision) {
+    case 1:
+      end.setFullYear(year + 1, 0, 1)
+      end.setHours(0, 0, 0, 0)
+      break
+    case 2:
+      end.setMonth(month, 1)
+      end.setHours(0, 0, 0, 0)
+      break
+    case 3:
+      end.setDate(day + 1)
+      end.setHours(0, 0, 0, 0)
+      break
+    case 4:
+      return [+start, +start + 60 * 60 * 1000 - 1000]
+    case 5:
+      return [+start, +start + 60 * 1000 - 1000]
+    case 6:
+      return [+start, +start + 999]
+  }
+  return [+start, +end - 1000]
 }
 
 const getYearEnd = timestamp => {
