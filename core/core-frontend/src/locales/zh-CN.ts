@@ -4827,6 +4827,8 @@ export default {
     field_index: '索引',
     field_comment: '注释',
     confirm_delete_field: '确定删除 {0} 字段？',
+    source_field_required:
+      '至少保留一个来源字段（可为来源主键）；系统默认主键依赖来源字段生成，不能单独保留',
     msg_field_list_empty_tip:
       '字段列表不能为空，不能存在名称为空或者字段类型为UNKNOWN的数据,请检查',
     next_week: '未来一周',

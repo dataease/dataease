@@ -4811,6 +4811,8 @@ export default {
     field_index: '索引',
     field_comment: '註釋',
     confirm_delete_field: '確定刪除{0} 欄位？ ',
+    source_field_required:
+      '至少保留一個來源欄位（可為來源主鍵）；系統預設主鍵依賴來源欄位產生，不能單獨保留',
     msg_field_list_empty_tip: '欄位清單不能為空，不能存在名稱為空或欄位類型為UNKNOWN的資料,請檢查',
     next_week: '未來一週',
     next_month: '未來一個月',

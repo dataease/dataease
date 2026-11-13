@@ -35,6 +35,7 @@ import FieldChangeDetails from './FieldChangeDetails.vue'
 import FieldExecutionResults from './FieldExecutionResults.vue'
 import { maintenanceFieldType, normalizeFieldType } from './fieldType'
 import { fieldSignature as signature, getFieldChanges } from './fieldChanges'
+import { hasSourceField } from './fieldValidation'
 
 const { t } = useI18n()
 const emit = defineEmits<{
@@ -875,7 +876,12 @@ const startPrecisionAlignment = async () => {
  */
 const remove = (row: ITableField) => {
   if (!deletable(row) || !form.value) return
-  form.value.target.fieldList = form.value.target.fieldList.filter(field => field.id !== row.id)
+  const remainingFields = form.value.target.fieldList.filter(field => field.id !== row.id)
+  if (!hasSourceField(remainingFields)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    return
+  }
+  form.value.target.fieldList = remainingFields
   if (original.value.some(field => field.id === row.id)) removed.value.push(deepCopy(row))
   fieldSaved(row)
 }
@@ -923,6 +929,10 @@ const request = (operationId: string): ITaskMaintenanceRequest => ({
  */
 const inspect = async () => {
   if (!hasChanges.value || locked.value) return
+  if (!hasSourceField(form.value.target.fieldList)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    return
+  }
   const version = viewVersion
   loading.value = true
   error.value = ''
