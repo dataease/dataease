@@ -28,6 +28,8 @@ export function viewFieldTimeTrans(viewDataInfo, params) {
       const dataeaseName = idNameMap[dimension.id]
       // deType === 1 表示是时间类型
       if (nameTypeMap[dataeaseName] === 1) {
+        dimension['dateStyle'] =
+          params.option === 'linkage' ? nameDateStyleMap[dataeaseName] : undefined
         dimension['timeValue'] = getRange(dimension.value, nameDateStyleMap[dataeaseName])
       }
     })

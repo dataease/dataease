@@ -1,4 +1,4 @@
-// 只有时分秒、没有日期部分，无法确定绝对时间区间，保持原值不参与区间联动
+// 时分秒没有日期部分，保留原值，由联动条件携带日期粒度交给后端匹配时间部分
 const NO_DATE_GRANULARITY = ['H_m_s']
 
 export const getRange = (outerTimeValue, timeGranularity) => {

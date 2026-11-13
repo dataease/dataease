@@ -3681,6 +3681,8 @@ export default {
     current_chart_source_field: 'Current Chart Source Field',
     add_linkage_dependency_fields: 'Add Linkage Dependency Fields',
     select_linkage_tips: 'Please first select the charts that need linkage',
+    time_only_query_linkage_unsupported:
+      'Time-only dimensions cannot link to date query components. Use a dimension format that includes a date.',
     linkage_option_tips1:
       'If the linkage dimension has been configured for drilling, clicking the dimension will',
     linkage_option1: 'Pop up a floating box for the user to choose linkage or drilling',

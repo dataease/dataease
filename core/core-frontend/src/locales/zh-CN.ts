@@ -3577,6 +3577,7 @@ export default {
     current_chart_source_field: '当前图表源字段',
     add_linkage_dependency_fields: '追加联动依赖字段',
     select_linkage_tips: '请先勾选需要联动的图表',
+    time_only_query_linkage_unsupported: '时分秒维度无法联动日期查询组件，请使用包含日期的维度格式',
     linkage_option_tips1: '如果联动维度已配置钻取，点击维度将',
     linkage_option1: '弹出浮框，由用户选择联动或者下钻',
     linkage_option2: '同时触发联动和下钻',
