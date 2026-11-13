@@ -128,7 +128,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
                 <div class="target-field-count">
                   {{
                     t('spreadsheet.dataset_replacement.field_count', {
-                      count: getCompatibleTargetFields(item.source).length
+                      count: getVisibleTargetFields(item.source).length
                     })
                   }}
                 </div>
