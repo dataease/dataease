@@ -2065,7 +2065,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       <div
         class="drag-right"
         :style="{
-          width: `calc(100vw - ${editorStep === 'relation' && showLeft ? LeftWidth : 0}px)`
+          width: `calc(100% - ${editorStep === 'relation' && showLeft ? LeftWidth : 0}px)`
         }"
       >
         <div v-if="crossDatasources && editorStep === 'relation'" class="different-datasource">
@@ -3163,6 +3163,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     width: 100%;
     height: calc(100vh - 56px);
     position: relative;
+    overflow: hidden;
     .drag-left {
       position: absolute;
       height: calc(100vh - 56px);
@@ -3224,6 +3225,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 
       height: 100%;
       width: 240px;
+      flex-shrink: 0;
       padding-bottom: 16px;
 
       font-family: var(--de-custom_font, 'PingFang');

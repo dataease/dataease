@@ -537,6 +537,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   display: flex;
   min-height: 0;
   height: 100%;
+  overflow: hidden;
   border-top: 1px solid var(--deCardStrokeColor, #dee0e3);
 }
 .node-list {
