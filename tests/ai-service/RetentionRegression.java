@@ -18,6 +18,7 @@ public final class RetentionRegression {
             throw new AssertionError("public settings expose independent audit30/delivery7 retention defaults");
         var change = ((com.fasterxml.jackson.databind.node.ObjectNode) current).deepCopy();
         change.put("expectedVersion", current.path("rowVersion").asLong());
+        change.put("enabled", true);
         change.putObject("retention").put("auditDays", 45).put("deliveryDays", 3);
         var saved = json.readTree(mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(change))).andReturn().getResponse().getContentAsString());
         if (saved.path("retention").path("auditDays").asInt() != 45 || saved.path("retention").path("deliveryDays").asInt() != 3)
@@ -200,8 +201,46 @@ public final class RetentionRegression {
             session.begin("MODEL", "late-body-must-not-return", null).finish(true, null);
             if (jdbc.queryForObject("select count(*) from core_ai_audit_entry where execution_id='late-audit'", Long.class) != 0) throw new AssertionError("late entry cannot bypass retired execution");
             denied(() -> mvc.perform(get("/ai/audit/late-audit")), "retired audit detail never returns body");
+            recoveredAudits(audit, mvc, jdbc, cleanupClass, cleanup);
         } finally { audit.close(); }
         System.out.println("PASS retention independent audit expiry, atomic child-parent removal, fault retry, scheduled gap repair and late-write retirement");
+    }
+    private static void recoveredAudits(AiAuditManage audit, org.springframework.test.web.servlet.MockMvc mvc,
+            org.springframework.jdbc.core.JdbcTemplate jdbc, Class<?> cleanupClass, Object cleanup) throws Exception {
+        long deadline = System.currentTimeMillis() - 1000;
+        var model = new AiRuntimeManage.ModelSnapshot(1L, 1L, 1L, "owned-model");
+        var orphan = audit.session(new AuditContext("orphan-audit", deadline), model, 1L, null, "owned-resource", 45);
+        var completed = orphan.begin("MODEL", "captured-request", null); completed.output("captured-response"); completed.finish(true, null);
+        var unfinished = orphan.begin("TOOL", "unfinished-request", null);
+        var live = audit.session(new AuditContext("live-audit", System.currentTimeMillis() + 60000), model, 1L, null, "owned-resource", 3);
+        live.begin("MODEL", "live-request", null);
+        var active = audit.session(new AuditContext("active-audit", deadline), model, 1L, null, "owned-resource", 3);
+        active.begin("MODEL", "active-request", null);
+        jdbc.update("insert into core_ai_task_attempt(id,task_id,attempt_number,retry_hash,status,created_at,execution_id) values(9301,9301,1,'active-audit','RUNNING',1,'active-audit')");
+        try {
+            cleanupClass.getMethod("clean").invoke(cleanup);
+            var json = new ObjectMapper();
+            var recovered = json.readTree(mvc.perform(get("/ai/audit/orphan-audit")).andReturn().getResponse().getContentAsString());
+            if (!"INTERRUPTED".equals(recovered.path("status").asText()) || !recovered.path("incomplete").asBoolean()
+                    || recovered.path("finishedAt").asLong() != deadline
+                    || recovered.path("retentionExpiresAt").asLong() != deadline + java.util.concurrent.TimeUnit.DAYS.toMillis(45))
+                throw new AssertionError("orphan foreground audit ends at its frozen deadline with its original retention");
+            if (!"SUCCEEDED".equals(recovered.path("entries").get(0).path("status").asText())
+                    || !"captured-response".equals(recovered.path("entries").get(0).path("responseBody").asText())
+                    || !"INTERRUPTED".equals(recovered.path("entries").get(1).path("status").asText()))
+                throw new AssertionError("recovery preserves completed evidence and marks only unfinished steps");
+            unfinished.output("late-output"); unfinished.finish(true, null);
+            orphan.begin("MODEL", "late-new-step", null).finish(true, null); orphan.end("COMPLETED");
+            cleanupClass.getMethod("clean").invoke(cleanup);
+            var late = json.readTree(mvc.perform(get("/ai/audit/orphan-audit")).andReturn().getResponse().getContentAsString());
+            if (!late.equals(recovered)) throw new AssertionError("late owner writes cannot overwrite recovered audit facts or entries");
+            for (String id : java.util.List.of("live-audit", "active-audit")) {
+                var untouched = json.readTree(mvc.perform(get("/ai/audit/" + id)).andReturn().getResponse().getContentAsString());
+                if (!"RUNNING".equals(untouched.path("status").asText()) || !untouched.path("finishedAt").isNull())
+                    throw new AssertionError("cleanup must preserve live deadlines and authoritative running task attempts");
+            }
+        } finally { live.end("CANCELLED"); active.end("CANCELLED"); jdbc.update("delete from core_ai_task_attempt where id=9301"); }
+        System.out.println("PASS audit recovery protects live work, completed steps, original expiry and late-write terminal fence");
     }
     private static void partialDelivery(EntityManager em, org.springframework.transaction.PlatformTransactionManager manager,
                                         org.springframework.jdbc.core.JdbcTemplate jdbc, Class<?> type, Object cleanup) throws Exception {
@@ -231,13 +270,13 @@ public final class RetentionRegression {
         if (!errors.isEmpty()) throw new AssertionError("concurrent cleanup must remain idempotent",errors.peek());
         System.out.println("PASS retention partial delivery commit failure, bounded retry and concurrent cleanup consistency");
     }
-    private record AuditContext(String executionId) implements io.dataease.api.ai.runtime.AiExecutionContext {
+    private record AuditContext(String executionId, long deadline) implements io.dataease.api.ai.runtime.AiExecutionContext {
+        private AuditContext(String executionId) { this(executionId, System.currentTimeMillis() + 10000); }
         public String feature() { return "owned-retention"; }
         public Long actorId() { return 1L; }
         public Long organizationId() { return null; }
         public boolean background() { return false; }
         public Long proxyOrganizationId() { return null; }
-        public long deadline() { return System.currentTimeMillis()+10000; }
         public io.dataease.api.ai.runtime.AiDataScope scope() { return null; }
     }
     @FunctionalInterface private interface Request { org.springframework.test.web.servlet.ResultActions run() throws Exception; }

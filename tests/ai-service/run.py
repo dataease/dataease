@@ -21,6 +21,7 @@ def main():
     parser.add_argument('--disabled-errors', action='store_true', help='global/organization shutdown errors through actual MVC advice')
     parser.add_argument('--conflict-errors', action='store_true', help='task conflicts and busy conversation import through actual MVC advice')
     parser.add_argument('--audit', action='store_true', help='public HTTP execution audit and isolated persistence')
+    parser.add_argument('--audit-recovery', action='store_true', help='audit termination after a real worker JVM is killed')
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
     parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
     parser.add_argument('--task-structure', action='store_true', help='public controlled structure scene with authorized SQL metadata')
@@ -116,6 +117,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRetentionInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditRecoveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskResourceInit.java',
@@ -168,6 +170,8 @@ def main():
             java.append('-Dai.test.retentionOnly=true')
         if args.audit:
             java.append('-Dai.test.auditOnly=true')
+        if args.audit_recovery:
+            java.append('-Dai.test.auditRecoveryOnly=true')
         if args.task_scheduling:
             java.append('-Dai.test.schedulingOnly=true')
         if args.recovery_tools:

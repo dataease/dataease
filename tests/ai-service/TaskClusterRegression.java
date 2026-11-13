@@ -78,7 +78,7 @@ public final class TaskClusterRegression {
     }
     private static Process node(String name, boolean schedule) throws Exception {
         var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(), "-cp", System.getProperty("java.class.path"),
-                "io.dataease.ai.TaskNode", url, output.toString(), name, Boolean.toString(schedule), Boolean.toString(Boolean.getBoolean("ai.test.disabledErrorsOnly") || Boolean.getBoolean("ai.test.conflictErrorsOnly")))
+                "io.dataease.ai.TaskNode", url, output.toString(), name, Boolean.toString(schedule), Boolean.toString(Boolean.getBoolean("ai.test.disabledErrorsOnly") || Boolean.getBoolean("ai.test.conflictErrorsOnly")), Boolean.toString(Boolean.getBoolean("ai.test.auditRecoveryOnly")))
                 .redirectErrorStream(true).redirectOutput(output.resolve(name + ".log").toFile()).start();
         processes.add(process);
         long deadline = System.currentTimeMillis() + 20000;
@@ -415,6 +415,49 @@ public final class TaskClusterRegression {
         await(a, "/ai/tasks/" + afterTimeout.path("taskId").asText(), "COMPLETED");
         System.out.println("PASS resource mutex " + checks + " assertions");
     }
+    private static void auditRecovery(int accepting, jakarta.persistence.EntityManager em,
+            org.springframework.transaction.PlatformTransactionManager manager, JdbcTemplate jdbc) throws Exception {
+        var settings = (com.fasterxml.jackson.databind.node.ObjectNode) call(accepting, "/ai/settings", "GET", "");
+        settings.put("expectedVersion", settings.path("rowVersion").asLong());
+        settings.putObject("retention").put("auditDays", 45).put("deliveryDays", 7);
+        call(accepting, "/ai/settings", "POST", settings.toString());
+        var worker = node("audit-owner", true);
+        var submitted = call(accepting, "/ai/tasks", "POST", body("slow-audit-orphan"));
+        String taskPath = "/ai/tasks/" + submitted.path("taskId").asText();
+        awaitSend(accepting, taskPath, "slow-audit-orphan");
+        String execution = call(accepting, taskPath, "GET", "").path("executionId").asText();
+        String auditPath = "/ai/audit/" + execution;
+        var initial = call(accepting, auditPath, "GET", "");
+        check(initial.path("status").asText().equals("RUNNING") && initial.path("entries").size() == 1,
+                "actual model send has durable audit before owner loss");
+        String request = initial.path("entries").get(0).path("requestBody").asText();
+        settings = (com.fasterxml.jackson.databind.node.ObjectNode) call(accepting, "/ai/settings", "GET", "");
+        settings.put("expectedVersion", settings.path("rowVersion").asLong());
+        settings.putObject("retention").put("auditDays", 90).put("deliveryDays", 7);
+        call(accepting, "/ai/settings", "POST", settings.toString());
+        worker.destroyForcibly().waitFor();
+        node("audit-recovery", true); int recovered = port("audit-recovery");
+        var interrupted = await(recovered, taskPath, "INTERRUPTED");
+        var cleanup = new io.dataease.ai.manage.AiRetentionCleanup(em, manager);
+        cleanup.clean(); cleanup.clean();
+        var evidence = call(recovered, auditPath, "GET", "");
+        check("INTERRUPTED".equals(evidence.path("status").asText()) && evidence.path("incomplete").asBoolean(),
+                "another node must finalize audit after its execution owner is killed");
+        check(evidence.path("finishedAt").asLong() == interrupted.path("finishedAt").asLong()
+                && evidence.path("retentionExpiresAt").asLong() - evidence.path("finishedAt").asLong() == TimeUnit.DAYS.toMillis(45),
+                "recovered audit retains its own original policy and authoritative attempt finish");
+        var entry = evidence.path("entries").get(0);
+        check(request.equals(entry.path("requestBody").asText()) && entry.path("incomplete").asBoolean()
+                && "INTERRUPTED".equals(entry.path("status").asText()) && !entry.path("finishedAt").isNull(),
+                "recovery keeps captured evidence and marks unfinished model entry interrupted");
+        check(sends.get("slow-audit-orphan") == 1 && interrupted.path("result").isNull(), "audit recovery never reruns model or manufactures result");
+        jdbc.update("update core_ai_audit_execution set retention_expires_at=? where id=?", System.currentTimeMillis() - 1, execution);
+        cleanup.clean(); cleanup.clean();
+        check(call(recovered, auditPath, "GET", "", "1").statusCode() == 403
+                && jdbc.queryForObject("select count(*) from core_ai_audit_entry where execution_id=?", Long.class, execution) == 0,
+                "recovered audit expires independently and cleanup removes its bodies");
+        System.out.println("PASS audit recovery after hard-killed JVM: durable state, frozen retention, preserved partial evidence and no model replay");
+    }
     public static void main(String[] args) throws Exception { run(); }
     public static void run() throws Exception {
         output = Files.createTempDirectory("ai-task-cluster-");
@@ -455,6 +498,10 @@ public final class TaskClusterRegression {
             var delivery = new AiTaskDeliveryInit(jdbc, factory); delivery.execute(); delivery.execute();
             legacyUpgrade(jdbc, factory, em, manager);
             new AiTaskResourceInit(jdbc, factory, em, manager).execute();
+            if (Boolean.getBoolean("ai.test.auditRecoveryOnly")) {
+                new io.dataease.listener.sql.AiAuditInit(jdbc, factory, em, manager).execute();
+                new io.dataease.listener.sql.AiRetentionInit(jdbc, factory, em, manager).execute();
+            }
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 var model = new CoreAiModel(); model.setId(42L); model.setName("controlled task model"); model.setNameKey("controlled-task-model");
                 model.setModelIdentifier("cluster-model-v1"); model.setBaseUrl("http://127.0.0.1:" + provider.getAddress().getPort() + "/v1");
@@ -463,6 +510,7 @@ public final class TaskClusterRegression {
             });
             // A queued request survives the accepting process without ever having an execution owner.
             var accepting = node("accepting", false); int acceptingPort = port("accepting");
+            if (Boolean.getBoolean("ai.test.auditRecoveryOnly")) { auditRecovery(acceptingPort, em, manager, jdbc); return; }
             if (Boolean.getBoolean("ai.test.disabledErrorsOnly")) { disabledErrors(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.conflictErrorsOnly")) { conflictErrors(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.policyOnly")) { policy(acceptingPort); return; }

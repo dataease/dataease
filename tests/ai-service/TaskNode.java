@@ -33,6 +33,7 @@ public final class TaskNode {
     static final ObjectMapper JSON = new ObjectMapper();
     static SessionFactory factory(String url) {
         return new Configuration().addAnnotatedClass(CoreAiSetting.class).addAnnotatedClass(CoreAiModel.class).addAnnotatedClass(CoreAiOrgPolicy.class)
+                .addAnnotatedClass(CoreAiAuditExecution.class).addAnnotatedClass(CoreAiAuditEntry.class).addAnnotatedClass(CoreAiAuditRetired.class)
                 .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.connection.url", url).setProperty("hibernate.connection.driver_class", "org.h2.Driver")
                 .setProperty("hibernate.connection.username", "sa").setProperty("hibernate.connection.password", "")
@@ -57,6 +58,7 @@ public final class TaskNode {
                 return new Identity(V3UserUtil.getUid(), proxy, proxy, mode());
             }
             public java.util.List<io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization> organizations() { return List.of(new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(777L, "Controlled scope A", null), new io.dataease.api.permissions.auth.api.InteractiveAuthApi.AiOrganization(888L, "Controlled scope B", null)); }
+            public void audit(Identity identity, Long organization) { verify(identity, true); }
             public void verify(Identity identity, boolean configuration) {
                 if (configuration && (identity == null || !Objects.equals(identity.actor(), 1L))) throw AiErrors.error("forbidden");
                 if (identity == null || !Set.of(1L, 2L).contains(identity.actor()) || !identity.deployment().equals(mode())
@@ -110,7 +112,8 @@ public final class TaskNode {
         beans.addBean("conversations", conversations);
         var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, JSON, beans.getBeanProvider(AiConversationManage.class));
         beans.addBean("tasks", tasks);
-        beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, secrets(), transport, JSON, access));
+        var audit = args.length > 5 && Boolean.parseBoolean(args[5]) ? new AiAuditManage(em, manager, access, JSON) : null;
+        beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, secrets(), transport, JSON, access, audit));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "taskLifecycle", beans.getBeanProvider(AiTaskManage.class));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "conversationLifecycle", beans.getBeanProvider(AiConversationManage.class));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "em", em);
@@ -119,6 +122,7 @@ public final class TaskNode {
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "secrets", secrets());
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "validator", jakarta.validation.Validation.buildDefaultValidatorFactory().getValidator());
         var mvcBuilder = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiAvailabilityServer(access, beans.getBean(AiRuntimeManage.class)), new AiConfigurationServer(configuration, null), new AiConversationServer(conversations));
+        if (audit != null) mvcBuilder = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new AiConfigurationServer(configuration, null), new io.dataease.ai.server.AiAuditServer(audit));
         if (args.length > 4 && Boolean.parseBoolean(args[4])) mvcBuilder.setControllerAdvice(new io.dataease.exception.GlobalExceptionHandler());
         var mvc = mvcBuilder.build();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -144,7 +148,7 @@ public final class TaskNode {
             } finally { V3UserUtil.clear(); CommunityUtils.clear(); exchange.close(); }
         });
         server.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> { tasks.destroy(); transport.close(); server.stop(0); factory.close(); }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> { tasks.destroy(); transport.close(); if (audit != null) audit.close(); server.stop(0); factory.close(); }));
         if (Boolean.parseBoolean(args[3])) tasks.start();
         var ready = Path.of(args[1], args[2] + ".port");
         var preparing = Path.of(args[1], args[2] + ".port.tmp");

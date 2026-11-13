@@ -10,6 +10,8 @@ In the Vite development application, authenticated users can open `#/demo/ai-ass
 
 The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/`; its marked route block in `src/router/index.ts` is registered only in development. The `/demo` parent and `ai-assistant` child match the application's segment-based `pathValid` page admission check; registering the whole URL as a flat route would be rejected even though Vue Router resolves it. Browser regression covers that actual route table/permission-store check and renders the page through RouterView. After formal business integration, remove that route block and demo page, then adapt or remove their page-specific locale entries and browser fixture/tests. The shared conversation API, backend engine, SQL scene and Java behavior regressions have a separate lifecycle and can be reused by formal entry points.
 
+连续读取失败只表示页面暂时无法确认执行状态。只要仍持有未确认终态的执行或受理结果未知的提交，停止、结束会话、路由离开及刷新仍要求中断确认；取消确认保留部分输出和原执行读取或同次提交核对入口。确认终态后解除此保护，不自动重新提交模型请求。
+
 ## HTTP 契约与事件
 
 The shared SDK exposes `/ai/conversations`: `GET /resources`, `POST` to open a context, the compatible synchronous `POST /{id}/turns`, and `DELETE /{id}`. Streaming uses `POST /{id}/executions`, authenticated `GET /{id}/executions/{execution}/events?after=N` and `POST /{id}/executions/{execution}/stop`. All browser requests use the existing Axios/security wrapper. Events include session/execution/context IDs, monotonic sequence/cursor, text or safe terminal/error codes. Actual program tools emit a typed TOOL payload with callId, registered name, STARTED/RUNNING/SUCCEEDED/FAILED status, validated parameters and a safe result projection; model text cannot create tool events. The Vue page renders these as escaped text, separate from assistant text, and deduplicates the same call through its progress states. The UI deduplicates cursor replay and suppresses late old-generation responses. If stop finds an already completed execution, the UI drains missing events before showing it as complete. Timeout, unsupported capability, malformed response and permission failures use the existing safe error translations.
@@ -126,6 +128,10 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 迁移 2.55 增加留存设置、尝试清理标记及仅含执行 ID 的审计退休墓碑，不重写 2.49–2.54 或现有到期时间。`AiRetentionCleanup` 在应用就绪后每分钟分批执行，单轮最多处理 100 个交付尝试与 100 个审计执行。公开 Java `clean()` 是运维/隔离验收使用的正式作业入口，没有新增普通用户 HTTP 清理接口或历史列表。
 
+迁移 2.57 为审计持久保存执行期限、开始时的留存天数和补记标记。清理作业每轮先补记最多 100 个未结束审计：后台采用持久尝试的终态和结束时间，其他执行只在固定期限到达后标为中断；仍在排队或运行的后台尝试不被审计作业终止。普通终态留出五秒给正常回调完成写入。补记标识审计不完整，保留已采集正文及已完成条目，只结束未完成条目；带补记标记的执行拒绝迟到写入覆盖终态、到期时间或已结束条目，也不能新增条目。普通同步 SDK 的完成记录不带此标记，同一上下文后续合法调用仍逐次记录审计。该过程不恢复聊天、重放模型或生成缺失结果。
+
+旧审计未保存原始期限和留存快照，无法还原：2.57 仅对缺失字段按升级时的审计留存配置冻结天数，未结束记录按开始时间加当前最大执行时长 300 秒补齐期限，缺失开始时间时使用升级时间。既有终态和到期时间不变，部分迁移重试不覆盖已补字段。新执行始终采用自身原始快照。
+
 交付清理仅对明确终态且到期的尝试，通过事务内显式更新清空结果正文并确认过期通知。只有同一任务的所有尝试均已结束且交付到期，才清除任务输入、上下文和持久身份 JSON；保留归属绑定、提交指纹及终态事实作为最小幂等墓碑，使旧提交键不能重新触发模型。混合的新排队/运行/未到期尝试继续保留所需输入、身份、状态和资源占用；通知确认不会提前清除结果或审计。
 
 审计按自身期限独立清理，每个执行在同一事务中先删除条目，再删除执行记录并写入无正文/身份/资源的退休 ID。审计写入与清理对同一执行加锁，退休 ID 阻止迟到条目及五秒间隔的元数据缺口修复重新插入过期审计。交付与审计每项独立提交；中途失败保留已完成项，失败项回滚并在后续作业重试，不留下孤立正文。幂等与退休墓碑不属于用户历史记录，也不用于恢复聊天。
@@ -138,4 +144,4 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 后台身份始终来自持久任务。只由已验证的服务器身份作用域安装 SDK 的 `AiOwnerContext` 原空间投影，账号严格匹配且在嵌套、异常和线程结束时恢复；HTTP 参数和请求头不能选择该投影。它不授予权限、不模拟管理员代理，也不改变普通非 AI 请求的当前空间。原账号、成员关系和资源授权仍需在操作前后复核；用户退出登录、离开页面或切换当前空间本身不取消后台。
 
-交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.56`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。
+交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.57`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。

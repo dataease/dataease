@@ -247,7 +247,11 @@ These fixtures use synthetic identities and models, owned H2 and loopback ports.
 
 `uv run python tests/ai-service/run.py --retention --ai-classpath <既有依赖classpath文件>` 在独立 H2 样本上，通过公开设置/任务/审计 HTTP 与正式 `AiRetentionCleanup.clean()` 验证：默认值与管理员配置、旧请求兼容及 CAS、结果到期前后读取、通知确认、过期旧提交/重试/会话投递拒绝、混合尝试及运行/排队资源保护、交付分项提交失败、审计条目与父记录原子清理失败重跑、并发清理、晚到审计写入及定时缺口修复防复活。审计及清理结果只在隔离库读取观察。
 
-同一入口执行 2.55 的 MySQL/PostgreSQL/H2 方言注册表迁移及部分迁移重试；承载数据库均为隔离 H2，不代表真实 MySQL/PostgreSQL 迁移。`--task-upgrade` 另通过实际启动迁移监听器验证从 2.47/2.48/2.49/2.50/2.52/2.54 顺序升级到 2.55，并保留已有期限、配置和任务事实。已安装的真实 Vue/Playwright 配置回归中含独立留存字段及保存校验；这些隔离入口均不代替真实登录、配置模型或许可环境验收。
+同一入口执行 2.55/2.57 的 MySQL/PostgreSQL/H2 方言注册表迁移及部分迁移重试，并验证审计期限补记、运行中任务保护、已完成条目保留和迟到写入隔离；承载数据库均为隔离 H2，不代表真实 MySQL/PostgreSQL 迁移。`--task-upgrade` 另通过实际启动迁移监听器验证从 2.47/2.48/2.49/2.50/2.52/2.54/2.55/2.56 顺序升级到 2.57，并保留已有期限、配置和任务事实。已安装的真实 Vue/Playwright 配置回归中含独立留存字段及保存校验；这些隔离入口均不代替真实登录、配置模型或许可环境验收。
+
+`uv run python tests/ai-service/run.py --audit-recovery --ai-classpath <既有依赖classpath文件>` 通过独立 JVM、共享隔离 H2 和本机合成模型验证实际工作进程被强制结束后，其他节点补记中断审计。覆盖执行开始后修改留存配置仍采用原快照、保留已采集请求、缺失结果不伪造、不重发模型，以及到期清理重复执行。运行期不连接产品数据库或已配置模型。
+
+`--audit` 的原生 SDK 回归在同一可信上下文中连续调用本机合成模型，并通过公开审计 HTTP 确认两次请求与响应都保留；普通完成记录允许后续合法调用，只有清理补记标记会阻止迟到条目。
 
 ## Dynamic AI policy closure
 
