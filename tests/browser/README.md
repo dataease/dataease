@@ -75,6 +75,8 @@ npm --prefix tests/browser run report
 
 新增业务回归时，将用例放在 `specs/`，并在配置中为实际项目增加明确的 `testMatch`；不要让应用用例误入工具自检项目。可按缺陷号建立文件，如 `tapd-1077724.spec.mjs`。优先 `getByRole/getByLabel` 等稳定定位，确有必要才给业务组件补 `data-testid`。回归必须包含能在修复前失败、修复后通过的行为断言；纯后端问题优先 Java 定向测试。
 
+分组字段回归需要中文界面下的独立测试数据集。使用 MySQL 自定义 SQL 创建名为 `amount` 的 DECIMAL 列，为它创建名为 `Amount Group` 的分组字段，设置 10–20 数值区间并保存。将该数据集编辑页的路径（含数据集 ID）设为 `PLAYWRIGHT_GROUPED_DATASET_PATH`。设置 `PLAYWRIGHT_BASE_URL` 与 `PLAYWRIGHT_STORAGE_STATE` 后运行 `npm --prefix tests/browser test -- --project=app dataset-group-field.spec.mjs`。用例会修改并保存测试数据集，重跑前需恢复数值列和分组。
+
 ## 登录状态和输出
 
 确需复用登录状态时，使用测试账号手动登录并保存到被忽略的 `.auth/`：

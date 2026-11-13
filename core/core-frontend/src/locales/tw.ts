@@ -2448,6 +2448,7 @@ export default {
     create_grouping_field: '新建分組字段',
     editing_grouping_field: '編輯分組字段',
     grouping_field: '分組欄位',
+    grouping_rule_type_mismatch: '分組欄位「{name}」的規則與來源欄位類型不符，請重新設定後儲存',
     grouping_settings: '分組設定',
     ungrouped_value: '未分組的值',
     please_enter_number: '請輸入數字'

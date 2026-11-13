@@ -1429,7 +1429,27 @@ const resetAllfieldsUnionId = (arr, idMap) => {
   return JSON.parse(strUnion)
 }
 
-const datasetSave = () => {
+const datasetSave = (saveAndReturn = false) => {
+  const fieldsById = new Map(allfields.value.map(field => [field.id, field]))
+  const invalidGroup = allfields.value.find(field => {
+    if (field.extField !== 3) return false
+    const sourceType = fieldsById.get(field.originName)?.deType
+    const rules = field.groupList
+    if (!rules?.length) return true
+    if (sourceType === 0) return rules.some(rule => !rule.text?.length)
+    if (sourceType === 1) return rules.some(rule => !rule.startTime || !rule.endTime)
+    if ([2, 3, 4].includes(sourceType)) {
+      return rules.some(
+        rule => rule.min == null || rule.max == null || rule.min === '' || rule.max === ''
+      )
+    }
+    return true
+  })
+  if (invalidGroup) {
+    ElMessage.error(t('dataset.grouping_rule_type_mismatch', { name: invalidGroup.name }))
+    return
+  }
+  willBack = saveAndReturn
   if (nodeInfo.id) {
     editeSave()
     return
@@ -1452,11 +1472,6 @@ const datasetSave = () => {
     datasetName.value
   )
 }
-const datasetSaveAndBack = () => {
-  willBack = true
-  datasetSave()
-}
-
 const datasetPreviewLoading = ref(false)
 
 const datasetPreview = () => {
@@ -1757,10 +1772,10 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         </template>
       </span>
       <span class="operate">
-        <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack">{{
+        <el-button :disabled="showInput" type="primary" @click="datasetSave(true)">{{
           t('data_set.save_and_return')
         }}</el-button>
-        <el-button :disabled="showInput" type="primary" @click="datasetSave">{{
+        <el-button :disabled="showInput" type="primary" @click="datasetSave()">{{
           t('data_set.save')
         }}</el-button>
       </span>

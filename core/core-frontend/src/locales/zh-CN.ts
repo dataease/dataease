@@ -2453,6 +2453,7 @@ export default {
     create_grouping_field: '新建分组字段',
     editing_grouping_field: '编辑分组字段',
     grouping_field: '分组字段',
+    grouping_rule_type_mismatch: '分组字段「{name}」的规则与源字段类型不匹配，请重新配置后保存',
     grouping_settings: '分组设置',
     ungrouped_value: '未分组的值',
     please_enter_number: '请输入数字'

@@ -2521,6 +2521,8 @@ export default {
     create_grouping_field: 'Create a new grouping field',
     editing_grouping_field: 'Editing Grouping Fields',
     grouping_field: 'Grouping field',
+    grouping_rule_type_mismatch:
+      'The rules for grouping field “{name}” do not match its source field type. Reconfigure the rules before saving.',
     grouping_settings: 'Grouping settings',
     ungrouped_value: 'Ungrouped value',
     please_enter_number: 'Please enter a number'
