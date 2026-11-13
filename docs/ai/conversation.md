@@ -4,6 +4,8 @@
 
 浏览器通过已认证的 JSON 轮询取得增量；下文 SSE 指服务端读取的上游模型协议，HTTP 输出仍遵循根规范的推送限制。
 
+Demo 的可用性、后台任务和完成通知在页面可见且在线时同步：首次进入、重新聚焦、恢复可见或网络恢复时立即读取；空闲时每 30 秒同步一次，有进行中后台任务或待追加原对话的结果时每 2 秒更新后台进度。提交、重试或定位任务会唤醒后台读取，同一组件不并发启动重复轮询；同轮已读到的任务状态直接复用。隐藏标签页或断网暂停这些定时读取，离开页面清理定时器及事件监听；暂停读取不取消持久后台任务。前台执行仅在运行中读取增量，有新内容时间隔 500 毫秒，无新内容时逐步放缓至 2 秒；隐藏标签页时保留 5 秒读取以续租，确认终态后停止。空闲页的配置开关变化最迟在下一次同步反映，实际调用和结果交付仍由后端即时鉴权。
+
 ## 开发入口与页面生命周期
 
 In the Vite development application, authenticated users can open `#/demo/ai-assistant` (no product navigation item). The page title explicitly identifies it as a demo. Select a readable datasource in the current workspace, enter SQL and ask successive questions. The page displays actual upstream text increments and execution IDs. Stop retains partial output as incomplete and keeps previously completed history for follow-up. Hiding the assistant keeps polling and does not cancel it. Changing SQL or datasource affects subsequent requests; active output retains its original target. Stopping or ending an active execution and route navigation require confirmation; cancelling the confirmation preserves the execution and draft. Leaving or refreshing uses the browser interruption confirmation. Identity changes end the activity; short offline loss uses bounded reads of the original execution. No candidate SQL is executed or saved. The registered metadata tools read actual authorized table/field structure through existing DE APIs. The registered `validate_sql` tool returns real PASS/INVALID/UNSUPPORTED static verdicts, and the model can correct and revalidate within the same bounded round. Suggestions cannot be applied automatically.
@@ -67,6 +69,8 @@ Every typed model request conservatively counts the entire serialized JSON in Un
 ## 独立持久后台任务
 
 Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不使用前台轮询租期。离开、刷新、退出登录和停止页面轮询均不取消已受理任务；取消必须显式调用任务取消接口。页面重新打开只恢复本人当前身份/空间的进行中任务，终态时从列表移除。成功、失败、取消和中断均持久保存待投递完成消息，离线返回后以 toast 提示；失败、取消和中断提示提供绑定原尝试的安全重试操作。结果和待投递消息默认保留 7 天，由既有 AI 服务设置中的留存参数调整，过期在后端读取边界拒绝，不等待物理清理。没有已完成任务列表、历史任务页面或待读列表。后台结果不会自动应用、保存或执行候选 SQL。
+
+成功提示提供“查看结果”，在当前页面保留到手动关闭（同时最多保留十条提示）。点击后重新调用任务详情接口复核权限及有效期，在弹窗展示正文、原目标、执行 ID 和只读候选 SQL；不要求先开启前台对话。读取失败可单独重新读取，不触发模型执行；过期和无权限有明确提示。关闭弹窗、切换身份或离开页面会清除正文及在途读取。提示仍遵循原有去重与确认机制，已确认提示不会因刷新重新出现，不持久保存前端结果正文。
 
 `POST /ai/tasks` 接收 `submissionKey`、`capability`、`scene`、`resourceId`、`editorId`、`sql`、`text`，可选 `origin={sessionId,contextVersion}`。服务端验证原会话身份、场景、编辑器、资源及版本，客户端不能指定任意结果接收会话；无 origin 的旧七字段幂等指纹保持兼容。同一身份下，同次提交重发返回同一个持久任务；同键不同输入拒绝，修改输入应使用新键创建新任务。`GET /ai/tasks` 只列本人进行中任务，`GET /ai/tasks/{id}` 返回当前尝试的状态、固定模型版本及经当前资源权限复核的结果。所有 Long 任务/尝试 ID 以字符串传输。`POST /{id}/cancel` 先持久撤销执行归属，再停止本地模型工作；它只返回不含资源、模型或结果的安全状态投影。完成先胜出时仍返回已完成状态，受保护结果须单独经过 GET 的权限复核。`POST /{id}/retry` 接收 `retryKey` 和 `expectedAttemptId`，仅对 FAILED/CANCELLED/INTERRUPTED 创建下一尝试；重复相同操作只创建一次，复用键却改变原尝试拒绝。重试不会修改原任务输入。
 

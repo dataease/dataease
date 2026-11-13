@@ -24,6 +24,206 @@ const send = async (page, text) => {
   await page.getByRole('button', { name: '发送', exact: true }).click()
 }
 
+test('idle demo does not keep requesting availability tasks and notices every second', async ({
+  page
+}) => {
+  const reads = { availability: 0, tasks: 0, notices: 0 }
+  await page.route('**/fixture-api/ai/availability', (route) => {
+    reads.availability++
+    return route.fulfill({ json: { available: true } })
+  })
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    reads[route.request().url().endsWith('/notices') ? 'notices' : 'tasks']++
+    return route.fulfill({ json: [] })
+  })
+  await page.goto('/?view=conversation')
+  await expect.poll(() => reads).toEqual({ availability: 1, tasks: 1, notices: 1 })
+  await page.waitForTimeout(3500)
+  expect(reads).toEqual({ availability: 1, tasks: 1, notices: 1 })
+})
+
+test('idle demo checks again at thirty seconds and stops reading after route unmount', async ({
+  page
+}) => {
+  const reads = { availability: 0, tasks: 0, notices: 0 }
+  await page.clock.install()
+  await page.route('**/fixture-api/ai/availability', (route) => {
+    reads.availability++
+    return route.fulfill({ json: { available: true } })
+  })
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    reads[route.request().url().endsWith('/notices') ? 'notices' : 'tasks']++
+    return route.fulfill({ json: [] })
+  })
+  await page.goto('/?view=conversation&router=1')
+  await expect.poll(() => reads).toEqual({ availability: 1, tasks: 1, notices: 1 })
+  await page.clock.runFor(28000)
+  expect(reads).toEqual({ availability: 1, tasks: 1, notices: 1 })
+  await page.clock.runFor(2500)
+  await expect.poll(() => reads).toEqual({ availability: 2, tasks: 2, notices: 2 })
+  await page.evaluate(() => window.aiNavigate('/after'))
+  await expect(page.getByText('After assistant')).toBeVisible()
+  await page.clock.runFor(60000)
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  expect(reads).toEqual({ availability: 2, tasks: 2, notices: 2 })
+})
+
+for (const suspended of ['hidden', 'offline']) {
+  test(`idle demo pauses while ${suspended} and resumes without overlapping reads`, async ({
+    page
+  }) => {
+    const reads = { availability: 0, tasks: 0, notices: 0 }
+    const releases = []
+    let hold = false
+    await page.clock.install()
+    await page.route('**/fixture-api/ai/availability', async (route) => {
+      reads.availability++
+      if (hold) await new Promise((resolve) => releases.push(resolve))
+      return route.fulfill({ json: { available: true } })
+    })
+    await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+      route.fulfill({ json: [] })
+    )
+    await page.route('**/fixture-api/ai/tasks**', async (route) => {
+      const field = route.request().url().endsWith('/notices') ? 'notices' : 'tasks'
+      reads[field]++
+      if (hold && field === 'tasks') await new Promise((resolve) => releases.push(resolve))
+      return route.fulfill({ json: [] })
+    })
+    await page.goto('/?view=conversation')
+    await expect.poll(() => reads).toEqual({ availability: 1, tasks: 1, notices: 1 })
+    await page.evaluate((mode) => {
+      if (mode === 'hidden') {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+        document.dispatchEvent(new Event('visibilitychange'))
+      } else {
+        Object.defineProperty(navigator, 'onLine', { configurable: true, value: false })
+        window.dispatchEvent(new Event('offline'))
+      }
+    }, suspended)
+    await page.clock.runFor(60000)
+    expect(reads).toEqual({ availability: 1, tasks: 1, notices: 1 })
+    hold = true
+    await page.evaluate((mode) => {
+      if (mode === 'hidden') {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: false })
+        document.dispatchEvent(new Event('visibilitychange'))
+      } else {
+        Object.defineProperty(navigator, 'onLine', { configurable: true, value: true })
+        window.dispatchEvent(new Event('online'))
+      }
+    }, suspended)
+    await expect.poll(() => releases.length).toBe(2)
+    await page.evaluate(() => {
+      for (let i = 0; i < 10; i++) window.dispatchEvent(new Event('focus'))
+    })
+    expect(reads).toEqual({ availability: 2, tasks: 2, notices: 1 })
+    hold = false
+    releases.forEach((resolve) => resolve())
+    await expect.poll(() => reads).toEqual({ availability: 2, tasks: 2, notices: 2 })
+  })
+}
+
+test('background submission wakes idle polling and completion returns to idle frequency', async ({
+  page
+}) => {
+  let task
+  let reads = 0
+  let posts = 0
+  let completed = false
+  await page.clock.install()
+  await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+    route.fulfill({ json: [] })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('/notices')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'POST') {
+      posts++
+      task = { taskId: '900', attemptId: '901', attemptNumber: 1, status: 'RUNNING' }
+      return route.fulfill({ json: task })
+    }
+    if (path.endsWith('/tasks')) {
+      reads++
+      return route.fulfill({ json: task && !completed ? [task] : [] })
+    }
+    return route.fulfill({
+      json: { ...task, status: 'COMPLETED', result: { type: 'EXPLANATION', text: 'answer' } }
+    })
+  })
+  await page.goto('/?view=conversation')
+  await expect.poll(() => reads).toBe(1)
+  await page.getByRole('textbox', { name: '消息' }).fill('Background request')
+  await page.getByRole('button', { name: '后台 SQL 辅助', exact: true }).click()
+  await expect.poll(() => reads).toBe(2)
+  await page.clock.runFor(1000)
+  expect(reads).toBe(2)
+  completed = true
+  await page.clock.runFor(1200)
+  await expect(page.getByRole('button', { name: '查看结果', exact: true })).toBeVisible()
+  const terminalReads = reads
+  await page.clock.runFor(10000)
+  expect(reads).toBe(terminalReads)
+  expect(posts).toBe(1)
+})
+
+test('foreground empty increments back off while hidden reads retain the lease and terminal stops them', async ({
+  page
+}) => {
+  const reads = []
+  let completed = false
+  await page.clock.install()
+  await page.route('**/fixture-api/ai/tasks**', (route) => route.fulfill({ json: [] }))
+  await page.route('**/fixture-api/ai/conversations**', async (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    const run = { ...session, resourceId: '', executionId: 'polling-run' }
+    if (path.endsWith('/events')) {
+      reads.push(await page.evaluate(() => Date.now()))
+      return route.fulfill({
+        json: {
+          ...run,
+          status: completed ? 'COMPLETED' : 'RUNNING',
+          cursor: completed ? 1 : 0,
+          events: completed ? [{ sequence: 1, type: 'TEXT', text: 'Finished' }] : []
+        }
+      })
+    }
+    if (path.endsWith('/executions'))
+      return route.fulfill({ json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 } })
+    return route.fulfill({ json: { ...session, resourceId: '' } })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'One foreground request')
+  await expect.poll(() => reads.length).toBe(1)
+  await page.clock.runFor(1200)
+  await expect.poll(() => reads.length).toBe(2)
+  await page.clock.runFor(2200)
+  await expect.poll(() => reads.length).toBe(3)
+  expect(reads[1] - reads[0]).toBeGreaterThanOrEqual(1000)
+  expect(reads[2] - reads[1]).toBeGreaterThanOrEqual(2000)
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  await page.clock.runFor(2200)
+  await expect.poll(() => reads.length).toBe(4)
+  completed = true
+  await page.clock.runFor(5200)
+  await expect(page.getByText('Finished', { exact: true })).toBeVisible()
+  expect(reads[4] - reads[3]).toBeGreaterThanOrEqual(5000)
+  expect(reads[4] - reads[3]).toBeLessThan(15000)
+  await page.clock.runFor(10000)
+  expect(reads).toHaveLength(5)
+})
+
 for (const [status, message] of [
   [403, '无权使用此 AI 功能或配置。'],
   [409, '配置或引用已变化，请刷新后重新操作。']
@@ -1216,7 +1416,7 @@ test('independent background task remains active after reload and exposes cancel
   await expect(page.getByRole('region', { name: '后台任务' })).toContainText('2')
 })
 
-test('online task completion is a basic toast and never becomes a terminal task list', async ({
+test('online task completion opens its result from a persistent toast without a terminal task list', async ({
   page
 }) => {
   let task
@@ -1253,6 +1453,14 @@ test('online task completion is a basic toast and never becomes a terminal task 
   await expect(
     page.getByRole('alert').filter({ hasText: '后台任务已完成，结果已保存。' })
   ).toBeVisible()
+  const viewResult = page.getByRole('button', { name: '查看结果', exact: true })
+  await expect(viewResult).toBeVisible()
+  await page.waitForTimeout(6500)
+  await viewResult.click()
+  const result = page.getByRole('dialog', { name: '后台任务结果' })
+  await expect(result).toContainText('stored result')
+  await expect(currentTasks.locator('article')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: '应用到当前草稿' })).toHaveCount(0)
 })
 
 for (const status of ['QUEUED', 'RUNNING']) {
@@ -1355,9 +1563,10 @@ test('unknown background admission response keeps the same operation key for ret
 
 test('offline completion is toasted once after return and acknowledged without restoring chat', async ({
   page
-}) => {
+}, info) => {
   let acknowledged = false
   let deliveries = 0
+  let resultReads = 0
   await page.route('**/fixture-api/ai/conversations/resources', (route) =>
     route.fulfill({ json: [] })
   )
@@ -1382,17 +1591,138 @@ test('offline completion is toasted once after return and acknowledged without r
               }
             ]
       })
+    if (url.pathname.endsWith('/900')) {
+      resultReads++
+      return route.fulfill({
+        json: {
+          taskId: '900',
+          attemptId: '901',
+          attemptNumber: 1,
+          status: 'COMPLETED',
+          resourceName: 'Original datasource',
+          result: { type: 'SQL_SUGGESTION', text: 'durable answer', sql: 'SELECT 1' }
+        }
+      })
+    }
     return route.fulfill({ json: [] })
   })
+  await page.setViewportSize({ width: 360, height: 800 })
   await page.goto('/?view=conversation')
   await expect(page.getByRole('alert').filter({ hasText: '后台任务已完成' })).toBeVisible()
   await expect.poll(() => acknowledged).toBeTruthy()
+  expect(resultReads).toBe(0)
+  await page.getByRole('button', { name: '查看结果', exact: true }).click()
+  const result = page.getByRole('dialog', { name: '后台任务结果' })
+  await expect(result).toContainText('durable answer')
+  await expect(result).toContainText('SELECT 1')
+  await expect(result).toContainText('Original datasource')
+  expect(resultReads).toBe(1)
+  await expect(page.getByRole('button', { name: '应用到当前草稿' })).toHaveCount(0)
+  expect(await result.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true)
+  await page.screenshot({
+    path: info.outputPath('background-result-narrow.png'),
+    animations: 'disabled',
+    fullPage: true
+  })
+  await result.getByRole('button', { name: '关闭', exact: true }).click()
+  await expect(page.getByText('durable answer', { exact: true })).toHaveCount(0)
   await page.reload()
   await expect(page.getByRole('region', { name: '后台任务' }).locator('article')).toHaveCount(0)
   await page.waitForTimeout(1100)
   expect(deliveries).toBe(1)
   await expect(page.getByText('durable answer', { exact: true })).toHaveCount(0)
 })
+
+for (const [status, messageKey, message] of [
+  [404, 'i18n_ai_result_expired', '本次任务结果已过期，无法再查看。'],
+  [403, 'i18n_ai_forbidden', '无权使用此 AI 功能或配置。'],
+  [503, undefined, '暂时无法读取本次任务结果，请重新读取。']
+]) {
+  test(`background result HTTP ${status} clears stale content and retries only its read`, async ({
+    page
+  }) => {
+    const task = { taskId: '900', attemptId: '901', attemptNumber: 1, status: 'COMPLETED' }
+    let fail = false
+    let resultReads = 0
+    let modelSubmissions = 0
+    await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+      route.fulfill({ json: [] })
+    )
+    await page.route('**/fixture-api/ai/tasks**', (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/notices'))
+        return route.fulfill({ json: [{ ...task, expiresAt: Date.now() + 60000 }] })
+      if (path.endsWith('/ack')) return route.fulfill({ json: {} })
+      if (route.request().method() === 'POST') modelSubmissions++
+      if (path.endsWith('/900')) {
+        resultReads++
+        return route.fulfill(
+          fail
+            ? { status, json: { messageKey, msg: 'unsafe provider detail' } }
+            : { json: { ...task, result: { type: 'EXPLANATION', text: '<b>result text</b>' } } }
+        )
+      }
+      return route.fulfill({ json: [] })
+    })
+    await page.goto('/?view=conversation')
+    const viewResult = page.getByRole('button', { name: '查看结果', exact: true })
+    await viewResult.click()
+    const result = page.getByRole('dialog', { name: '后台任务结果' })
+    await expect(result).toContainText('<b>result text</b>')
+    await expect(result.locator('b')).toHaveCount(0)
+    await result.getByRole('button', { name: '关闭', exact: true }).click()
+    fail = true
+    await viewResult.click()
+    await expect(result.getByRole('alert')).toHaveText(message)
+    await expect(result).not.toContainText('result text')
+    await expect(result).not.toContainText('unsafe provider detail')
+    fail = false
+    await result.getByRole('button', { name: '重新读取结果', exact: true }).click()
+    await expect(result).toContainText('<b>result text</b>')
+    expect(resultReads).toBe(3)
+    expect(modelSubmissions).toBe(0)
+  })
+}
+
+for (const pending of [false, true]) {
+  test(`background result identity switch clears ${
+    pending ? 'pending' : 'visible'
+  } output`, async ({ page }) => {
+    let finishRead
+    let reading = false
+    let switched = false
+    const task = { taskId: '900', attemptId: '901', attemptNumber: 1, status: 'COMPLETED' }
+    await page.route('**/fixture-api/ai/conversations/resources', (route) =>
+      route.fulfill({ json: [] })
+    )
+    await page.route('**/fixture-api/ai/tasks**', async (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/notices'))
+        return route.fulfill({ json: switched ? [] : [{ ...task, expiresAt: Date.now() + 60000 }] })
+      if (path.endsWith('/900')) {
+        reading = true
+        if (pending)
+          await new Promise((resolve) => {
+            finishRead = resolve
+          })
+        return route.fulfill({
+          json: { ...task, result: { type: 'EXPLANATION', text: 'old identity result' } }
+        })
+      }
+      return route.fulfill({ json: [] })
+    })
+    await page.goto('/?view=conversation')
+    await page.getByRole('button', { name: '查看结果', exact: true }).click()
+    await expect.poll(() => reading).toBe(true)
+    if (!pending) await expect(page.getByText('old identity result')).toBeVisible()
+    switched = true
+    await page.evaluate(() => window.aiSwitchUser('workspace'))
+    if (pending) finishRead()
+    await expect(page.getByRole('dialog', { name: '后台任务结果' })).toHaveCount(0)
+    await expect(page.getByText('old identity result')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: '查看结果', exact: true })).toHaveCount(0)
+  })
+}
 
 test('background result joins only its still open original conversation after busy import and permits follow-up', async ({
   page
@@ -1559,7 +1889,7 @@ test('closed original conversation never receives late background result', async
   await expect.poll(() => body?.origin?.sessionId).toBe(session.sessionId)
   await page.getByRole('button', { name: '结束会话', exact: true }).click()
   complete = true
-  await page.waitForTimeout(1400)
+  await expect(page.getByRole('button', { name: '查看结果', exact: true })).toBeVisible()
   expect(consumed).toBe(0)
   await expect(page.getByText('original background answer', { exact: true })).toHaveCount(0)
   await expect(page.getByText('first question', { exact: true })).toHaveCount(0)
@@ -2284,9 +2614,11 @@ test('AI off hides the assistant and re-enable retains only valid pending toast'
   await page.getByRole('textbox', { name: '当前 SQL' }).fill('SELECT applied_business_draft')
   await page.getByRole('textbox', { name: '消息' }).fill('Temporary old question')
   available = false
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
   await expect(page.locator('main.ai-conversation')).toHaveCount(0)
   notificationReady = true
   available = true
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
   await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('')
   await expect(page.getByText('Temporary old question', { exact: true })).toHaveCount(0)
   await expect.poll(() => acknowledged).toBe(true)
@@ -2295,6 +2627,7 @@ test('AI off hides the assistant and re-enable retains only valid pending toast'
   )
   await page.getByRole('textbox', { name: '消息' }).fill('Missed off interval')
   revision = '1:0'
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
   await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('')
   await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
     'SELECT applied_business_draft'
@@ -2384,8 +2717,10 @@ for (const language of [
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.screenshot({ path: info.outputPath('narrow-policy.png'), fullPage: true })
     available = false
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
     await expect(page.locator('main.ai-conversation')).toHaveCount(0)
     available = true
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
     await expect(page.getByRole('textbox', { name: language.message })).toHaveValue('')
     await expect(page.getByRole('button', { name: language.retry, exact: true })).toHaveCount(0)
   })

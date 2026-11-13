@@ -229,14 +229,14 @@ watch(
     input.value = ''
     resources.value = []
     available.value = false
-    availabilityRead?.abort()
+    pauseAvailability()
     void refreshAvailability()
   },
   { flush: 'sync' }
 )
 const refreshAvailability = async () => {
+  if (availabilityRead || document.hidden || !navigator.onLine) return
   window.clearTimeout(availabilityTimer)
-  availabilityRead?.abort()
   const reading = new AbortController()
   availabilityRead = reading
   const deadline = window.setTimeout(() => reading.abort(), 5000)
@@ -263,8 +263,21 @@ const refreshAvailability = async () => {
     }
   } finally {
     window.clearTimeout(deadline)
-    if (availabilityRead === reading) availabilityTimer = setTimeout(refreshAvailability, 1000)
+    if (availabilityRead === reading) {
+      availabilityRead = undefined
+      availabilityTimer = setTimeout(refreshAvailability, 30000)
+    }
   }
+}
+const pauseAvailability = () => {
+  window.clearTimeout(availabilityTimer)
+  const previous = availabilityRead
+  availabilityRead = undefined
+  previous?.abort()
+}
+const refreshWhenVisible = () => {
+  if (document.hidden || !navigator.onLine) pauseAvailability()
+  else void refreshAvailability()
 }
 const waitForRead = (millis: number, signal?: AbortSignal) =>
   new Promise<void>(resolve => {
@@ -286,6 +299,7 @@ const pollRun = async (
   let cursor = messages.value[index].cursor ?? 0
   let recoveries = 0
   let recoveryStarted = 0
+  let readDelay = 500
   polling = new AbortController()
   while (current === generation && busy.value) {
     let events: AiConversationEvents
@@ -335,10 +349,12 @@ const pollRun = async (
       throw new Error('scope_changed')
     failure.value = ''
     applyEvents(events, index, cursor)
+    readDelay = events.cursor > cursor ? 500 : Math.min(readDelay * 2, 2000)
     cursor = Math.max(cursor, events.cursor)
     messages.value[index].cursor = cursor
     if (events.status !== 'RUNNING') break
-    await waitForRead(250, polling.signal)
+    // Foreground executions still need authenticated reads to renew their 15-second lease.
+    await waitForRead(document.hidden ? 5000 : readDelay, polling.signal)
   }
 }
 const observe = async (
@@ -729,17 +745,20 @@ const offline = () => {
 }
 onMounted(() => {
   void refreshAvailability()
-  window.addEventListener('focus', refreshAvailability)
+  document.addEventListener('visibilitychange', refreshWhenVisible)
+  window.addEventListener('focus', refreshWhenVisible)
+  window.addEventListener('online', refreshWhenVisible)
+  window.addEventListener('offline', refreshWhenVisible)
   window.addEventListener('pagehide', reset)
   window.addEventListener('beforeunload', beforeUnload)
   window.addEventListener('offline', offline)
 })
 onBeforeUnmount(() => {
-  window.clearTimeout(availabilityTimer)
-  const previous = availabilityRead
-  availabilityRead = undefined
-  previous?.abort()
-  window.removeEventListener('focus', refreshAvailability)
+  pauseAvailability()
+  document.removeEventListener('visibilitychange', refreshWhenVisible)
+  window.removeEventListener('focus', refreshWhenVisible)
+  window.removeEventListener('online', refreshWhenVisible)
+  window.removeEventListener('offline', refreshWhenVisible)
   resourceGeneration++
   window.removeEventListener('pagehide', reset)
   window.removeEventListener('beforeunload', beforeUnload)
