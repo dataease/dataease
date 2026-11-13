@@ -83,7 +83,7 @@ public final class TaskRegression {
             }
         };
         auditManager.setRollbackOnCommitFailure(true);
-        var auditAccess = new AiAccess(null, null) {
+        var auditAccess = new SyntheticAccess(null, null) {
             public Identity capture() { return access.capture(); }
             public AiDeploymentMode.State mode() { return access.mode(); }
             public void verify(Identity identity, boolean configurationAccess) { access.verify(identity, configurationAccess); }

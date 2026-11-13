@@ -44,6 +44,7 @@ public class Regression {
         check("AI 服务".equals(messages.getProperty("i18n_menu.ai-service")), "AI menu survives default properties encoding");
         new Translator().setMessageSource(new StaticMessageSource());
         new IDUtils().setSnowFlake(new SnowFlake()); V3UserUtil.setUid(1L);
+        if (Boolean.getBoolean("ai.test.identityScopeOnly")) { ModeRegression.run(); return; }
         if (Boolean.getBoolean("ai.test.runtimeOnly") || Boolean.getBoolean("ai.test.retentionOnly") || Boolean.getBoolean("ai.test.auditOnly") || Boolean.getBoolean("ai.test.recoveryOnly") || Boolean.getBoolean("ai.test.recoveryToolsOnly")) { persistence(); return; }
         SqlStaticValidationRegression.run(); ModeRegression.run(); ConversationPermissionRegression.run(); ApiRoutingRegression.run(); crypto(); prompt(); TaskSchemaRegression.run(); persistence(); if (!Boolean.getBoolean("ai.test.taskContractsOnly")) { TaskProgressRegression.main(new String[0]); TaskStructureNodeRegression.main(new String[0]); TaskClusterRegression.run(); } if (!Boolean.getBoolean("ai.test.onlyTasks")) KeyringRegression.run();
         System.out.println("PASS AI regression " + checks + " assertions (in-memory H2, no application or provider)");
@@ -140,7 +141,7 @@ public class Regression {
             AiDeploymentMode mode = new AiDeploymentMode(new StaticListableBeanFactory().getBeanProvider(io.dataease.license.manage.F2CLicManage.class),new StaticListableBeanFactory().getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class),new org.springframework.context.support.StaticApplicationContext()) {
                 public State current() { return new State(Mode.LICENSED,"test-license-v1"); }
             };
-            AiAccess access=new AiAccess(new StaticListableBeanFactory().getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class), mode) {
+            AiAccess access=new SyntheticAccess(new StaticListableBeanFactory().getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class), mode) {
                 public void configuration() { if(!permitted.get())throw AiErrors.error("forbidden"); }
                 public Identity capture() { return new Identity(1L,null,null,mode.current()); }
                 public void verify(Identity identity, boolean configuration) { if(!permitted.get())throw AiErrors.error("forbidden"); }
@@ -254,5 +255,16 @@ public class Regression {
             CommunityRuntimeRegression.run(manage, models, policies, keys, limiter, em, manager, access);
             Integer redisPort=Integer.getInteger("ai.test.redisPort");if(redisPort!=null)RedisRegression.run(settings,manager,em,redisPort);
         }
+    }
+}
+
+/** Fixtures replacing deployment/identity use this seam; ModeRegression exercises the real license scope. */
+abstract class SyntheticAccess extends AiAccess {
+    SyntheticAccess(org.springframework.beans.factory.ObjectProvider<io.dataease.api.permissions.auth.api.InteractiveAuthApi> authorization, AiDeploymentMode deployment) {
+        super(authorization, deployment);
+    }
+    @Override public <T> T inDeploymentScope(Identity owner, java.util.function.Supplier<T> operation) {
+        if (!Objects.equals(owner.deployment(), mode())) throw AiErrors.error("conflict");
+        return operation.get();
     }
 }

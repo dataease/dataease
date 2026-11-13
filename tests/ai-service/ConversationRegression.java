@@ -202,7 +202,7 @@ public final class ConversationRegression {
                 public Context resolve(String id, String sql) { return new Context(id, "Synthetic database", "v1", "SQL input: " + sql); }
                 public void authorize(Context c) { java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get())); if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !"11".equals(c.resourceId())) throw AiErrors.error("forbidden"); }
             };
-            var dialogueAccess = new AiAccess(null, null) {
+            var dialogueAccess = new SyntheticAccess(null, null) {
                 public AiDeploymentMode.State mode() { return access.mode(); }
                 public Identity capture() {
                     Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;

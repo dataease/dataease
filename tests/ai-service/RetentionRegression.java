@@ -166,7 +166,7 @@ public final class RetentionRegression {
                 || jdbc.queryForObject("select count(*) from core_ai_audit_execution where id='retained-audit'", Long.class) != 1
                 || jdbc.queryForObject("select count(*) from core_ai_audit_entry where execution_id='retained-audit'", Long.class) != 1)
             throw new AssertionError("retry cleans expired audit and preserves independent unexpired audit");
-        var auditAccess = new AiAccess(null, null) {
+        var auditAccess = new SyntheticAccess(null, null) {
             public Identity capture() { return access.capture(); }
             public void verify(Identity identity, boolean configuration) { access.verify(identity, configuration); }
             public AiDeploymentMode.State mode() { return access.mode(); }

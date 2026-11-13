@@ -146,7 +146,7 @@ public final class TaskProgressRegression {
                 var setting = em.find(CoreAiSetting.class, 1L); setting.setEnabled(true); setting.setDefaultModelId(42L); setting.setRequestTimeoutSeconds(5); em.flush();
             });
             var beans = new StaticListableBeanFactory();
-            var access = new AiAccess(null, null) {
+            var access = new SyntheticAccess(null, null) {
                 public AiDeploymentMode.State mode() { return new AiDeploymentMode.State(AiDeploymentMode.Mode.LICENSED, "progress-identity"); }
                 public Identity capture() { return new Identity(V3UserUtil.getUid(), null, null, mode()); }
                 public void verify(Identity identity, boolean configuration) { if (identity == null || !Objects.equals(identity.actor(), 1L) || !identity.deployment().equals(mode())) throw AiErrors.error("forbidden"); }
