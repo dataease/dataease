@@ -3610,6 +3610,10 @@ export default {
     keep_size: 'Adjust size & keeping inner',
     no_save_tips: 'There are unsaved {0}',
     no_save_tips2: 'There are unsaved changes, restore now?',
+    canvas_draft_outdated:
+      'This local draft is based on an older or unknown version. Restore it? Restoring does not save to the server; version conflicts will still be checked when saving.',
+    canvas_draft_storage_failed:
+      'The browser draft could not be saved. Editing and undo are still available. Please save your changes to the server.',
     locate_tips: 'Locate to Center',
     new_tab: 'New Tab',
     pop_area: 'Pop Up Area',

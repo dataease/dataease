@@ -282,7 +282,6 @@ const saveResource = (checkParams?) => {
     }
     try {
       canvasSaveWithParams(checkParams, async () => {
-        wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         snapshotStore.resetStyleChangeTimes()
         if (!embeddedStore.baseUrl) {
           // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前仪表板
@@ -357,7 +356,7 @@ const backToMain = () => {
 }
 const embeddedStore = useEmbedded()
 
-const backHandler = (url: string) => {
+const backHandler = async (url: string) => {
   if (isEmbedded.value) {
     wsCache.set(`db-info-id`, dvInfo.value.id)
     embeddedStore.clearState()
@@ -371,8 +370,10 @@ const backHandler = (url: string) => {
     })
     return
   }
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-  wsCache.set('db-info-id', dvInfo.value.id)
+  const resourceId = dvInfo.value.id
+  await snapshotStore.clearCanvasDraft(resourceId)
+  if (String(dvInfo.value.id) !== String(resourceId)) return
+  wsCache.set('db-info-id', resourceId)
   if (!!history.state.back) {
     history.back()
   } else {

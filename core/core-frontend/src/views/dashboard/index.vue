@@ -33,12 +33,17 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { Base64 } from 'js-base64'
 import { deepCopy } from '@/utils/utils'
+import { getCanvasDraft } from '@/utils/canvasDraftCache'
 const interactiveStore = interactiveStoreWithOut()
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { findCopyResource, recoverToPublished } from '@/api/visualization/dataVisualization'
+import {
+  checkCanvasChange,
+  findCopyResource,
+  recoverToPublished
+} from '@/api/visualization/dataVisualization'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -193,6 +198,7 @@ const onMobileConfig = () => {
 const loadFinish = ref(false)
 let editorAccessRevoked = false
 const revokeEditorAccess = () => {
+  pendingCanvasDraft = undefined
   editorAccessRevoked = true
   loadFinish.value = false
   canvasCacheOutRefShow.value = false
@@ -212,11 +218,35 @@ let p = null
 const xpackReadyPromise = new Promise(r => (p = r))
 const XpackLoaded = () => p(true)
 
-const doUseCache = flag => {
-  if (!loadFinish.value) return
-  const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
-  if (flag && canvasCache) {
-    const canvasCacheSeries = deepCopy(canvasCache)
+let pendingCanvasDraft:
+  | {
+      resourceId: Parameters<typeof getCanvasDraft>[0]
+      data: Awaited<ReturnType<typeof getCanvasDraft>>
+    }
+  | undefined
+const isCurrentDraftResource = resourceId =>
+  loadFinish.value && !editorAccessRevoked && String(state.resourceId) === String(resourceId)
+
+const prepareCanvasDraft = async resourceId => {
+  const draft = await getCanvasDraft(resourceId)
+  if (!isCurrentDraftResource(resourceId) || !draft) return
+  let draftOutdated = !draft.dvInfo?.contentId
+  if (state.opt !== 'copy' && !draftOutdated) {
+    const response = await checkCanvasChange({ id: resourceId, contentId: draft.dvInfo.contentId })
+    if (!isCurrentDraftResource(resourceId)) return
+    if (response?.data !== 'Success' && response?.data !== 'Repeat') return
+    draftOutdated = response.data === 'Repeat'
+  }
+  pendingCanvasDraft = { resourceId, data: draft }
+  return { canvasType: 'dashboard', resourceId, draftOutdated }
+}
+
+const doUseCache = async flag => {
+  const pending = pendingCanvasDraft
+  if (!pending || !isCurrentDraftResource(pending.resourceId)) return
+  pendingCanvasDraft = undefined
+  if (flag && pending.data) {
+    const canvasCacheSeries = deepCopy(pending.data)
     snapshotStore.snapshotPublish(canvasCacheSeries)
     dataInitState.value = true
     setTimeout(() => {
@@ -225,8 +255,9 @@ const doUseCache = flag => {
       snapshotStore.recordSnapshotCache('renderChart')
     }, 1500)
   } else {
-    initLocalCanvasData()
-    wsCache.delete('DE-DV-CATCH-' + state.resourceId)
+    await snapshotStore.clearCanvasDraft(pending.resourceId)
+    if (!isCurrentDraftResource(pending.resourceId)) return
+    await initLocalCanvasData()
   }
 }
 
@@ -304,12 +335,19 @@ onMounted(async () => {
   initDataset()
   if (resourceId) {
     dataInitState.value = false
-    const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
-    if (canvasCache) {
+    let draftInfo
+    try {
+      draftInfo = await prepareCanvasDraft(resourceId)
+    } catch (error) {
+      // 校验失败时保留本地草稿，先加载服务器版本，避免未经确认恢复旧内容。
+      console.error(error)
+    }
+    if (!isCurrentDraftResource(resourceId)) return
+    if (draftInfo) {
       canvasCacheOutRefShow.value = true
-      canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
+      canvasCacheOutRef.value?.dialogInit(draftInfo)
     } else {
-      initLocalCanvasData(() => {
+      await initLocalCanvasData(() => {
         // do init
       })
     }

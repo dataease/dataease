@@ -50,6 +50,7 @@ import {
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { flushCanvasDraft, hasPendingCanvasDraft } from '@/utils/canvasDraftCache'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 
@@ -1535,6 +1536,28 @@ const initSnapshotTimer = () => {
   }, 1000)
 }
 
+const flushEditorDraft = () => {
+  snapshotStore.snapshotCatchToStore()
+  void flushCanvasDraft()
+}
+
+const flushHiddenEditorDraft = () => {
+  if (document.visibilityState === 'hidden') flushEditorDraft()
+}
+
+const confirmPendingDraft = (event: BeforeUnloadEvent) => {
+  flushEditorDraft()
+  // 关闭页面不会等待 IndexedDB 完成，未落盘时保留浏览器的离开确认。
+  if (
+    hasPendingCanvasDraft() ||
+    snapshotStore.snapshotCacheTimes > 0 ||
+    (!dvInfo.value.id && snapshotStore.styleChangeTimes > 0)
+  ) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+}
+
 const linkJumpSetOpen = item => {
   //跳转设置需要先触发保存
   canvasSave(() => {
@@ -1644,6 +1667,9 @@ const canvasEventCleanups: Array<() => void> = []
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
+    document.addEventListener('visibilitychange', flushHiddenEditorDraft)
+    window.addEventListener('pagehide', flushEditorDraft)
+    window.addEventListener('beforeunload', confirmPendingDraft)
     initWatermark()
     dvMainStore.setEditMode('edit')
   }
@@ -1669,6 +1695,10 @@ onBeforeUnmount(() => {
   if (snapshotTimer.value) {
     clearInterval(snapshotTimer.value)
     snapshotTimer.value = null
+    flushEditorDraft()
+    document.removeEventListener('visibilitychange', flushHiddenEditorDraft)
+    window.removeEventListener('pagehide', flushEditorDraft)
+    window.removeEventListener('beforeunload', confirmPendingDraft)
   }
   canvasEventCleanups.forEach(unsubscribe => unsubscribe())
   canvasEventCleanups.length = 0

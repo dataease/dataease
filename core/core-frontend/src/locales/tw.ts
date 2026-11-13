@@ -3490,6 +3490,9 @@ export default {
     keep_size: '調整大小保持內部組件尺寸',
     no_save_tips: '存在未保存的{0}',
     no_save_tips2: '存在未保存的修改，立即恢復？',
+    canvas_draft_outdated:
+      '本機草稿基於舊版本或無法確認其版本。是否恢復？恢復不會自動儲存至伺服器，儲存時仍需檢查版本衝突。',
+    canvas_draft_storage_failed: '瀏覽器草稿儲存失敗，目前編輯及復原仍可使用，請及時儲存至伺服器。',
     locate_tips: '定位到中心點',
     new_tab: '新建Tab',
     pop_area: '彈窗區域',

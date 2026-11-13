@@ -1690,8 +1690,7 @@ const editDs = () => {
       return
     }
     canvasSave(() => {
-      wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-      // 当前窗口使用路由跳转以保留返回仪表板的历史记录
+      // 公共保存链已清理本地草稿，当前窗口用路由保留返回仪表板的历史记录
       router.push(routeLocation)
     })
   } else {
