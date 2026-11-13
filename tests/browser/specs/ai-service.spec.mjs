@@ -825,3 +825,46 @@ test('administrator saves independent retention with fixed-expiry explanation', 
   expect(saved.body.retention).toEqual({ auditDays: 45, deliveryDays: 3 })
   expect(saved.body.expectedVersion).toBe(0)
 })
+
+test('model length limits accept K/M, reject invalid input and persist follow-model mode', async ({
+  page
+}) => {
+  await page.getByRole('tab', { name: '使用设置', exact: true }).click()
+  await page.getByRole('button', { name: '调用限制', exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  const input = dialog.getByRole('textbox', {
+    name: '最大输入长度（字符）',
+    exact: true
+  })
+  const output = dialog.getByRole('textbox', {
+    name: '最大输出长度（Token）',
+    exact: true
+  })
+  await input.fill('1M')
+  await output.fill('64k')
+  await dialog.getByRole('button', { name: '保存', exact: true }).click()
+  let saved = requests.filter((r) => r.path === '/ai/settings' && r.method === 'POST').at(-1).body
+  expect(saved.maxInputChars).toBe(1048576)
+  expect(saved.maxOutputTokens).toBe(65536)
+  expect(saved.taskScheduling).toEqual(state.settings.taskScheduling)
+  await page.getByRole('button', { name: '调用限制', exact: true }).click()
+  await output.fill('oops')
+  await expect(dialog.getByRole('alert')).toContainText('请输入正整数')
+  await expect(dialog.getByRole('button', { name: '保存', exact: true })).toBeDisabled()
+  await dialog
+    .getByRole('group', { name: '最大输入长度（字符）', exact: true })
+    .getByText('跟随模型', { exact: true })
+    .click()
+  await dialog
+    .getByRole('group', { name: '最大输出长度（Token）', exact: true })
+    .getByText('跟随模型', { exact: true })
+    .click()
+  await dialog.getByRole('button', { name: '保存', exact: true }).click()
+  saved = requests.filter((r) => r.path === '/ai/settings' && r.method === 'POST').at(-1).body
+  expect(saved.maxInputChars).toBe(0)
+  expect(saved.maxOutputTokens).toBe(0)
+  await page.getByRole('button', { name: '调用限制', exact: true }).click()
+  await expect(dialog.getByRole('radio', { name: '跟随模型', exact: true }).first()).toBeChecked()
+  await expect(dialog.getByRole('radio', { name: '跟随模型', exact: true }).last()).toBeChecked()
+  await expect(dialog.getByText(/不会自动读取模型容量/)).toBeVisible()
+})

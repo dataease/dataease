@@ -15,6 +15,8 @@ import xml.etree.ElementTree as ET
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--model-limits', action='store_true', help='model defaults and optional per-request length limits')
+    parser.add_argument('--conversation', action='store_true', help='complete public conversation protocol regression')
     parser.add_argument('--runtime', action='store_true', help='native Java model policy and off/on epoch boundary')
     parser.add_argument('--retention', action='store_true', help='public settings and production retention cleanup on isolated H2')
     parser.add_argument('--task-policy', action='store_true', help='dynamic shutdown and authorization across independent JVMs')
@@ -118,6 +120,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiRetentionInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditRecoveryInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiSettingsDefaultsInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
             'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskResourceInit.java',
@@ -164,6 +167,10 @@ def main():
         if args.task_mutex:
             java.append('-Dai.test.mutexOnly=true')
 
+        if args.model_limits:
+            java.append('-Dai.test.modelLimitsOnly=true')
+        if args.conversation:
+            java.append('-Dai.test.conversationOnly=true')
         if args.runtime:
             java.append('-Dai.test.runtimeOnly=true')
         if args.retention:

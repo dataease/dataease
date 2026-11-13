@@ -188,7 +188,9 @@ export default {
     failure_timeout: 'AI 请求超时。',
     failure_cancelled: 'AI 请求已取消。',
     failure_upstream_failed: '模型服务调用失败，请检查连接、认证或服务状态。',
-    failure_response_invalid: '模型返回为空、被截断或不符合响应格式。',
+    failure_response_invalid: '模型返回为空或不符合响应格式。',
+    failure_response_truncated:
+      '模型输出达到长度上限，回答已被截断且未完成。请缩短回答要求，或联系管理员调高输出上限后重试。',
     failure_unsupported: '本期不支持此模型参数或调用能力。',
     failure_output_limit: '请求的输出长度超过系统限制。',
     failure_input_limit: '最终输入长度超过系统限制。',
@@ -365,6 +367,12 @@ export default {
     limits: '调用限制',
     limits_summary: '超时 {timeout} 秒 · 交互并发 {interactive} · 后台并发 {background}',
     requestTimeoutSeconds: '请求超时（秒）',
+    length_follow_model: '跟随模型',
+    length_custom: '自定义上限',
+    length_placeholder: '例如：65536、64K、1M',
+    length_invalid: '请输入正整数，可使用 K/M；换算结果不能超过 2147483647。',
+    length_hint:
+      '跟随模型：不附加 DE 的输入字符数或输出 Token 限制，由模型服务决定；不会自动读取模型容量。自定义输出上限按每次模型请求使用。输入单位为字符，不是上下文 Token。K = 1024，M = 1048576；超时、步骤数及传输大小保护仍生效。',
     maxInputChars: '最大输入长度（字符）',
     maxOutputTokens: '最大输出长度（Token）',
     interactiveConcurrency: '交互模型请求并发上限（个）',

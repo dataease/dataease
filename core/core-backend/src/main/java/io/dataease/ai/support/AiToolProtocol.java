@@ -102,13 +102,12 @@ public final class AiToolProtocol {
         public final int output;
         public Budget(int output) { this.output = output; }
         public synchronized int allocate() {
-            if (steps >= MAX_MODEL_STEPS || output < MAX_MODEL_STEPS) throw AiErrors.error("output_limit");
-            int allocation = output / MAX_MODEL_STEPS + (steps == MAX_MODEL_STEPS - 1 ? output % MAX_MODEL_STEPS : 0);
-            steps++; return allocation;
+            if (steps >= MAX_MODEL_STEPS || output < 0) throw AiErrors.error("output_limit");
+            steps++; return output;
         }
         public synchronized void frame() { if (++frames > 20000) throw AiErrors.error("response_invalid"); }
         public synchronized void raw(int bytes) { raw += bytes; if (raw > 4 * 1024 * 1024) throw AiErrors.error("response_invalid"); }
-        public synchronized void generated(int chars) { generated += chars; if (generated > Math.min(262144L, output * 16L)) throw AiErrors.error("output_limit"); }
+        public synchronized void generated(int chars) { generated += chars; if (generated > 262144L) throw AiErrors.error("output_limit"); }
         public synchronized void result(String result) { results += result.getBytes(java.nio.charset.StandardCharsets.UTF_8).length; if (results > MAX_RESULTS) throw AiErrors.error("output_limit"); }
     }
 }

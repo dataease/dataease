@@ -749,38 +749,49 @@ test('stop racing with completed server execution drains missing text before dis
   await expect(page.getByText('· 未完成')).toHaveCount(0)
 })
 
-test('safe timeout failure is explained and partial text remains incomplete', async ({ page }) => {
-  const run = { ...session, executionId: 'timeout-run' }
-  await page.route('**/fixture-api/ai/conversations**', async (route) => {
-    const request = route.request(),
-      url = new URL(request.url())
-    if (url.pathname.endsWith('/resources'))
-      return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
-    if (request.method() === 'DELETE') return route.fulfill({ json: {} })
-    if (url.pathname.endsWith('/executions'))
-      return route.fulfill({
-        json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
-      })
-    if (url.pathname.endsWith('/events'))
-      return route.fulfill({
-        json: {
-          ...run,
-          status: 'FAILED',
-          cursor: 2,
-          events: [
-            { sequence: 1, type: 'TEXT', text: 'Interrupted partial' },
-            { sequence: 2, type: 'FAILED', error: 'timeout' }
-          ]
-        }
-      })
-    return route.fulfill({ json: session })
+for (const [code, expected] of [
+  ['timeout', 'AI 请求超时。'],
+  [
+    'response_truncated',
+    '模型输出达到长度上限，回答已被截断且未完成。请缩短回答要求，或联系管理员调高输出上限后重试。'
+  ]
+]) {
+  test(`safe ${code} failure is explained and partial text remains incomplete`, async ({
+    page
+  }) => {
+    const run = { ...session, executionId: 'timeout-run' }
+    await page.route('**/fixture-api/ai/conversations**', async (route) => {
+      const request = route.request(),
+        url = new URL(request.url())
+      if (url.pathname.endsWith('/resources'))
+        return route.fulfill({ json: [{ id: '11', name: 'Isolated database' }] })
+      if (request.method() === 'DELETE') return route.fulfill({ json: {} })
+      if (url.pathname.endsWith('/executions'))
+        return route.fulfill({
+          json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
+        })
+      if (url.pathname.endsWith('/events'))
+        return route.fulfill({
+          json: {
+            ...run,
+            status: 'FAILED',
+            cursor: 2,
+            events: [
+              { sequence: 1, type: 'TEXT', text: 'Interrupted partial' },
+              { sequence: 2, type: 'FAILED', error: code }
+            ]
+          }
+        })
+      return route.fulfill({ json: session })
+    })
+    await selectResource(page)
+    await send(page, 'Will timeout')
+    await expect(page.getByRole('alert')).toHaveText(expected)
+    await expect(page.getByText('Interrupted partial', { exact: true })).toBeVisible()
+    await expect(page.getByText('· 未完成')).toBeVisible()
   })
-  await selectResource(page)
-  await send(page, 'Will timeout')
-  await expect(page.getByRole('alert')).toHaveText('AI 请求超时。')
-  await expect(page.getByText('Interrupted partial', { exact: true })).toBeVisible()
-  await expect(page.getByText('· 未完成')).toBeVisible()
-})
+}
+
 
 test('ending before the resource list arrives preserves that authorized list without reloading on SQL edits', async ({
   page

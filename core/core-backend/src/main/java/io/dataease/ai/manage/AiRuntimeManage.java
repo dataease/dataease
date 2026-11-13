@@ -238,10 +238,10 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             int allocation = budget.allocate();
             var payload = AiToolProtocol.payload(input);
             payload.put("model", model.getModelIdentifier()); payload.put("stream", true); payload.put("n", 1);
-            payload.put("MAX_COMPLETION_TOKENS".equals(model.getOutputTokenParameter()) ? "max_completion_tokens" : "max_tokens", allocation);
+            if (allocation > 0) payload.put("MAX_COMPLETION_TOKENS".equals(model.getOutputTokenParameter()) ? "max_completion_tokens" : "max_tokens", allocation);
             String serialized = payload.toString();
             // Conservative complete JSON count includes definitions, roles, ids, history, arguments, results and escaping.
-            if (serialized.codePointCount(0, serialized.length()) > settings.getMaxInputChars()
+            if (settings.getMaxInputChars() > 0 && serialized.codePointCount(0, serialized.length()) > settings.getMaxInputChars()
                     || serialized.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 4 * 1024 * 1024) throw AiErrors.error("input_limit");
             String fingerprint = AiToolProtocol.fingerprint(input);
             Runnable recheck = () -> {
