@@ -10,7 +10,7 @@ import {
   ITaskInfoRes
 } from '@/api/sync/syncTask'
 import type { ISinkFieldNameRules, SinkKeyPolicy } from '@/api/sync/syncTask'
-import { includes, map, remove } from 'lodash-es'
+import { includes, map } from 'lodash-es'
 import FormTitle from '../component/FormTitle.vue'
 import { getFieldListApi } from '@/api/sync/syncDatasource'
 import TargetFields from './TargetFields.vue'
@@ -23,6 +23,7 @@ import DorisProperty from './component/DorisProperty.vue'
 import PluginComponent from '@/components/plugin/src/PluginComponent.vue'
 import { SYNC_DATASOURCE_ROLE } from '../../ds/form/option'
 import { decimalParameterIssue } from './fieldType'
+import { hasSourceField } from './fieldValidation'
 
 const { t } = useI18n()
 
@@ -510,6 +511,13 @@ const edit = row => {
  * @param row
  */
 const delMappingField = (row: ITableField) => {
+  const remainingFields = form.value.target.fieldList.filter(
+    field => field.fieldName !== row.fieldName
+  )
+  if (!hasSourceField(remainingFields)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    return
+  }
   ElMessageBox.confirm(t('sync_task.msg_confirm_delete_field'), {
     confirmButtonType: 'danger',
     type: 'warning',
@@ -526,9 +534,7 @@ const delMappingField = (row: ITableField) => {
             args: [row]
           })
         : targetPropertyFormRef.value?.delMappingFieldHandler(row)
-      form.value.target.fieldList = remove(form.value.target.fieldList, v => {
-        return !includes(map([row], 'fieldName'), v['fieldName'])
-      })
+      form.value.target.fieldList = remainingFields
     })
     .catch(() => {
       return false
@@ -667,6 +673,14 @@ const existField = (row: any, fieldName: any, formFieldValue: any) => {
  * 批量删除映射字段
  */
 const batchDelMappingField = () => {
+  const selectedSources = new Set(map(form.value.target.multipleSelection, 'fieldSource'))
+  const remainingFields = form.value.target.fieldList.filter(
+    field => !selectedSources.has(field.fieldSource)
+  )
+  if (!hasSourceField(remainingFields)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    return
+  }
   const selectionSize = form.value.target.multipleSelection?.length
   ElMessageBox.confirm(t('sync_task.confirm_delete_field', [selectionSize]), {
     confirmButtonType: 'danger',
@@ -684,9 +698,7 @@ const batchDelMappingField = () => {
             args: [{}]
           })
         : targetPropertyFormRef.value?.batchDelMappingFieldHandler()
-      form.value.target.fieldList = form.value.target.fieldList.filter(
-        v => !new Set(map(form.value.target.multipleSelection, 'fieldSource')).has(v.fieldSource)
-      )
+      form.value.target.fieldList = remainingFields
     })
     .catch(() => {
       return false
@@ -695,12 +707,18 @@ const batchDelMappingField = () => {
 
 /**
  * 验证字段列表输入
+ * 至少保留一个来源字段，来源主键计入，系统生成字段不计入
  * 字段名称不能为空
  * 字段类型不能为UNKNOWN
  * Doris 数值类型必须显式配置合法的总精度和小数位
  */
 const validateFieldList = () => {
   const list = form.value.target.fieldList || []
+  if (!hasSourceField(list)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    formLoading.value = false
+    return false
+  }
   const unresolvedFields = list.filter(hasBlockingMappingIssue)
   if (unresolvedFields.length) {
     ElMessage.warning(
@@ -713,7 +731,7 @@ const validateFieldList = () => {
     scrollToFieldMappingWarnings()
     return false
   }
-  const result = list.length > 0 && !list.some(field => !field.fieldName?.trim())
+  const result = !list.some(field => !field.fieldName?.trim())
   if (!result) {
     ElMessage.warning(t('sync_task.msg_field_list_empty_tip'))
     formLoading.value = false

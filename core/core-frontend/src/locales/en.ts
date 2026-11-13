@@ -5035,6 +5035,8 @@ export default {
     field_index: 'Index',
     field_comment: 'Comment',
     confirm_delete_field: 'Are you sure you want to delete the {0} field? ',
+    source_field_required:
+      'Keep at least one source field (which may be a source primary key). The system-generated primary key depends on source fields and cannot be kept alone.',
     msg_field_list_empty_tip:
       'Field list cannot be empty, and data with empty name or field type of UNKNOWN cannot exist, please check',
     next_week: 'Next week',
