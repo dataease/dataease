@@ -31,15 +31,17 @@ public class AiModelTestManage {
         Runnable recheck = configuration.maintenanceCheck(connection, candidate, identity);
         boolean basic = false, structured = false;
         String parameter = "MAX_TOKENS";
+        // Capability negotiation uses a bounded synthetic probe even when runtime requests follow the model.
+        int probeTokens = settings.getMaxOutputTokens() > 0 ? settings.getMaxOutputTokens() : 4096;
         try {
-            OpenAiChatOptions options = OpenAiChatOptions.builder().model(connection.identifier()).maxTokens(settings.getMaxOutputTokens()).internalToolExecutionEnabled(false).build();
+            OpenAiChatOptions options = OpenAiChatOptions.builder().model(connection.identifier()).maxTokens(probeTokens).internalToolExecutionEnabled(false).build();
             try {
                 transport.call(connection, settings, new Prompt("Reply with the word OK.", options), false, deadline, recheck);
             } catch (AiErrors.Failure failure) {
                 if (!"max_tokens_unsupported".equals(failure.safeCode())) throw failure;
                 // 仅明确参数不支持时有限协商一次，非通用重试；每次实际 HTTP 仍独立准入和鉴权。
                 parameter = "MAX_COMPLETION_TOKENS";
-                options.setMaxTokens(null); options.setMaxCompletionTokens(settings.getMaxOutputTokens());
+                options.setMaxTokens(null); options.setMaxCompletionTokens(probeTokens);
                 transport.call(connection, settings, new Prompt("Reply with the word OK.", options), false, deadline, recheck);
             }
             basic = true;

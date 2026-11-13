@@ -69,8 +69,8 @@ public final class AiConfigDtos {
     }
     public record SettingsChange(@NotNull Long expectedVersion, @NotNull Boolean enabled,
             @JsonSerialize(using = ToStringSerializer.class) Long defaultModelId, @NotNull Boolean allowSamples,
-            @Min(5) @Max(300) int requestTimeoutSeconds, @Min(1000) @Max(200000) int maxInputChars,
-            @Min(128) @Max(32768) int maxOutputTokens, @Min(1) @Max(20) int interactiveConcurrency,
+            @Min(5) @Max(300) int requestTimeoutSeconds, @Min(0) int maxInputChars,
+            @Min(0) int maxOutputTokens, @Min(1) @Max(20) int interactiveConcurrency,
             @Min(1) @Max(20) int backgroundConcurrency, String impactToken, @Valid TaskScheduling taskScheduling, @Valid Recovery recovery, @Valid Retention retention) {
         public SettingsChange(Long expectedVersion, Boolean enabled, Long defaultModelId, Boolean allowSamples, int requestTimeoutSeconds,
                 int maxInputChars, int maxOutputTokens, int interactiveConcurrency, int backgroundConcurrency, String impactToken, TaskScheduling taskScheduling, Recovery recovery) {

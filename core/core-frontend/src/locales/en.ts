@@ -217,7 +217,9 @@ export default {
     failure_cancelled: 'AI request cancelled.',
     failure_upstream_failed:
       'Model request failed. Check connection, authentication and service status.',
-    failure_response_invalid: 'The model response is empty, truncated or invalid.',
+    failure_response_invalid: 'The model response is empty or invalid.',
+    failure_response_truncated:
+      'The model reached its output length limit. The response was truncated and is incomplete. Request a shorter answer or ask an administrator to increase the output limit before retrying.',
     failure_unsupported: 'This model option or capability is not supported.',
     failure_output_limit: 'Requested output exceeds the system limit.',
     failure_input_limit: 'Final input exceeds the system limit.',
@@ -408,6 +410,13 @@ export default {
     limits: 'Invocation limits',
     limits_summary: 'Timeout {timeout}s · Interactive {interactive} · Background {background}',
     requestTimeoutSeconds: 'Request timeout (seconds)',
+    length_follow_model: 'Follow model',
+    length_custom: 'Custom limit',
+    length_placeholder: 'e.g. 65536, 64K, 1M',
+    length_invalid:
+      'Enter a positive integer, optionally using K/M, up to 2147483647 after conversion.',
+    length_hint:
+      'Follow model adds no DE input character or output token limit; the provider decides. Model capacity is not detected automatically. A custom output limit applies to each model request. Input is measured in characters, not context tokens. K = 1024, M = 1048576. Timeouts, step counts and transport size protections still apply.',
     maxInputChars: 'Maximum input (characters)',
     maxOutputTokens: 'Maximum output (tokens)',
     interactiveConcurrency: 'Interactive model request concurrency',

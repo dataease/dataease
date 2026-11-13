@@ -35,7 +35,7 @@ public final class AiPromptPolicy {
         OpenAiChatOptions safe = new OpenAiChatOptions();
         safe.setModel(model); safe.setN(1); safe.setInternalToolExecutionEnabled(false);
         ChatOptions options = prompt.getOptions();
-        int requested = maximum;
+        Integer requested = maximum > 0 ? maximum : null;
         if (options != null) {
             if (!(options.getClass() == DefaultChatOptions.class || options.getClass() == OpenAiChatOptions.class)) throw AiErrors.error("unsupported");
             try {
@@ -65,7 +65,7 @@ public final class AiPromptPolicy {
                 if (provider.getResponseFormat() != null && provider.getOutputSchema() != null) safe.setOutputSchema(provider.getOutputSchema());
             }
         }
-        if (requested < 1 || requested > maximum) throw AiErrors.error("output_limit");
+        if (requested != null && (requested < 1 || maximum > 0 && requested > maximum)) throw AiErrors.error("output_limit");
         if ("MAX_COMPLETION_TOKENS".equals(parameter)) safe.setMaxCompletionTokens(requested); else safe.setMaxTokens(requested);
         checkFinite(safe.getTemperature(), 0, 2); checkFinite(safe.getTopP(), 0, 1);
         checkFinite(safe.getFrequencyPenalty(), -2, 2); checkFinite(safe.getPresencePenalty(), -2, 2);
@@ -74,7 +74,7 @@ public final class AiPromptPolicy {
             String schema = safe.getOutputSchema(); characters += schema.codePointCount(0, schema.length());
         }
         if (safe.getStopSequences() != null) for (String stop : safe.getStopSequences()) characters += stop.codePointCount(0, stop.length());
-        if (characters > inputLimit) throw AiErrors.error("input_limit");
+        if (inputLimit > 0 && characters > inputLimit) throw AiErrors.error("input_limit");
         return new Prompt(List.copyOf(messages), safe);
     }
     private static void checkFinite(Double value, double min, double max) {

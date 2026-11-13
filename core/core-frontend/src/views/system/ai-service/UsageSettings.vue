@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import TaskSchedulingSettings from './TaskSchedulingSettings.vue'
 import RecoverySettings from './RecoverySettings.vue'
 import RetentionSettings from './RetentionSettings.vue'
+import LengthLimitInput from './LengthLimitInput.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { CaretBottom } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -60,8 +61,8 @@ const effective = computed(() => {
 const formValue = () => JSON.stringify([mode.value, selectedModel.value, settingsDraft.value])
 const limits = [
   { key: 'requestTimeoutSeconds', min: 5, max: 300 },
-  { key: 'maxInputChars', min: 1000, max: 200000 },
-  { key: 'maxOutputTokens', min: 128, max: 32768 },
+  { key: 'maxInputChars', min: 0, max: 2147483647 },
+  { key: 'maxOutputTokens', min: 0, max: 2147483647 },
   { key: 'interactiveConcurrency', min: 1, max: 20 },
   { key: 'backgroundConcurrency', min: 1, max: 20 }
 ] as const
@@ -480,8 +481,14 @@ watch(
         label-position="top"
         :disabled="saving"
         class="ai-limits-form"
-        ><el-form-item v-for="limit in limits" :key="limit.key" :label="tr(limit.key)"
-          ><el-input-number
+        ><p class="ai-secondary">{{ tr('length_hint') }}</p>
+        <el-form-item v-for="limit in limits" :key="limit.key" :label="tr(limit.key)"
+          ><LengthLimitInput
+            v-if="limit.key === 'maxInputChars' || limit.key === 'maxOutputTokens'"
+            v-model="settingsDraft[limit.key]"
+            :label="tr(limit.key)" />
+          <el-input-number
+            v-else
             v-model="settingsDraft[limit.key]"
             :min="limit.min"
             :max="limit.max"

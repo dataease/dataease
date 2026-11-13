@@ -95,7 +95,7 @@ public final class ToolConversationRegression {
                 } else if ((sent.size() == 1 || Set.of("extra", "extra-order", "duplicate", "trailing").contains(mode.get())) && Set.of("unknown", "extra", "extra-order", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation").contains(mode.get())) {
                     content = switch (mode.get()) {
                         case "private-limit" -> frame(Map.of("reasoning", "private-budget-sentinel".repeat(1000)), "stop");
-                        case "usage-allocation" -> call("usage-allocation", "list_tables", "{}") + "data: {\"choices\":[],\"usage\":{\"completion_tokens\":820}}\n\n";
+                        case "usage-allocation" -> call("usage-allocation", "list_tables", "{}") + "data: {\"choices\":[],\"usage\":{\"completion_tokens\":4097}}\n\n";
                         case "missing-id" -> frame(Map.of("content", "Malformed call cannot become a final answer", "tool_calls", List.of(Map.of("index", 0, "type", "function", "function", Map.of("name", "list_tables", "arguments", "{}")))), "stop");
                         case "unknown" -> call("unknown", "execute_sql", "{}");
                         case "extra-order" -> call("extra-order-" + sent.size(), "list_tables", sent.size() == 1 ? "{\"datasourceId\":\"22\",\"extra\":\"x\"}" : "{\"extra\":\"x\",\"datasourceId\":\"22\"}");
@@ -312,14 +312,23 @@ public final class ToolConversationRegression {
                 String run = start(mvc, session, "Invalid tool");
                 try { result = terminal(mvc, run); }
                 catch (jakarta.servlet.ServletException failure) { if (!invalid.equals("outside")) throw failure; denied(mvc, run); continue; }
+                if ("length".equals(invalid) && !result.toString().contains("response_truncated"))
+                    throw new AssertionError("tool stream truncation must have its own safe error");
                 if (!result.path("status").asText().equals("FAILED") || sent.size() != (Set.of("extra", "extra-order", "duplicate", "trailing").contains(invalid) ? 2 : 1) || result.toString().contains("connection-secret") || result.toString().contains("private-budget-sentinel")) throw new AssertionError("invalid tool did not safely fail " + invalid + ": " + result);
                 if (!Set.of("outside", "tool-failure").contains(invalid) && !reads.isEmpty()) throw new AssertionError("invalid tool executed metadata " + invalid);
                 mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             }
             sent.clear(); reads.clear(); mode.set("chain"); session = open(mvc); result = terminal(mvc, start(mvc, session, "Four distinct tools"));
             int allocations = sent.stream().mapToInt(body -> body.path("max_tokens").asInt()).sum();
-            if (!result.path("status").asText().equals("COMPLETED") || sent.size() != 5 || allocations != 4096) throw new AssertionError("whole round must share configured allocation without usage refunds: " + allocations + " / " + result);
+            if (!result.path("status").asText().equals("COMPLETED") || sent.size() != 5 || allocations != 5 * 4096) throw new AssertionError("each model request must receive the full configured output limit: " + allocations + " / " + result);
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 0, 0, 5, 2, null));
+            sent.clear(); reads.clear(); session = open(mvc); result = terminal(mvc, start(mvc, session, "Follow model across four tools"));
+            if (!result.path("status").asText().equals("COMPLETED") || sent.size() != 5
+                    || sent.stream().anyMatch(body -> body.has("max_tokens") || body.has("max_completion_tokens")))
+                throw new AssertionError("all model-default tool turns must omit output limits");
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 5, 2, null));
             sent.clear(); reads.clear(); mode.set("chain-retry"); transientMetadata.set(2); session = open(mvc);
             result = terminal(mvc, start(mvc, session, "Technical retries consume the four actual tool calls"));
             if (!result.path("status").asText().equals("FAILED") || sent.size() != 3 || Collections.frequency(reads, "fields") != 2)
@@ -365,7 +374,7 @@ public final class ToolConversationRegression {
                 catch (jakarta.servlet.ServletException failure) { if (!(failure.getCause() instanceof AiErrors.Failure)) throw failure; }
             }
             V3UserUtil.clear(); V3UserUtil.setUid(1L);
-            System.out.println("PASS dialogue actual SQL scene metadata and static SQL correction/revalidation tools, split arguments/correlation, safe projections/history, invalid/out-of-scope tools, definitions/results input budget, global allocation, repeat bounds, cancel/late results and mid-tool READ revocation");
+            System.out.println("PASS dialogue actual SQL scene metadata and static SQL correction/revalidation tools, split arguments/correlation, safe projections/history, invalid/out-of-scope tools, definitions/results input budget, per-request allocation, repeat bounds, cancel/late results and mid-tool READ revocation");
         } finally {
             V3UserUtil.clear(); V3UserUtil.setUid(1L);
             if (manage != null) manage.destroy(); toolRelease.get().countDown(); transport.close(); server.stop(0); providerWorkers.shutdownNow();

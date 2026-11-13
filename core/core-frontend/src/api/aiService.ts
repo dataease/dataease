@@ -176,6 +176,7 @@ const safeFailureCodes = new Set([
   'cancelled',
   'upstream_failed',
   'response_invalid',
+  'response_truncated',
   'unsupported',
   'output_limit',
   'input_limit',

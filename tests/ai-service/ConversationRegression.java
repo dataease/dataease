@@ -530,7 +530,14 @@ public final class ConversationRegression {
             mvc.perform(delete("/ai/conversations/" + competing.path("sessionId").asText()));
             // The native SDK normalizes finish reasons; a truncated synchronous reply must not be completed/history.
             truncated.set(true);
-            deny(mvc, pathFor(streamingSession), streamingSession.path("contextVersion").asText(), "Truncated synchronous reply");
+            try {
+                mvc.perform(post(pathFor(streamingSession)).contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsBytes(Map.of("contextVersion", streamingSession.path("contextVersion").asText(), "text", "Truncated synchronous reply"))));
+                throw new AssertionError("truncated synchronous response accepted");
+            } catch (jakarta.servlet.ServletException failure) {
+                if (!(failure.getCause() instanceof AiErrors.Failure known) || !"response_truncated".equals(known.safeCode()))
+                    throw new AssertionError("synchronous truncation must have its own safe error", failure);
+            }
             truncated.set(false);
             var timeoutSettings = configuration.setting();
             configuration.saveSettings(new SettingsChange(timeoutSettings.getRowVersion(), true, saved.id(), false, 5, 30000, 4096, 1, 1,
@@ -581,6 +588,8 @@ public final class ConversationRegression {
                 protocol.set(invalid);
                 String failed = start(mvc, json, streamingPath, streamingSession, "Invalid protocol " + invalid);
                 var failure = await(mvc, json, failed + "/events", "FAILED", "FAILED");
+                if ("length".equals(invalid) && !failure.toString().contains("response_truncated"))
+                    throw new AssertionError("stream truncation must have its own safe error");
                 if (failure.toString().contains("secret")) throw new AssertionError("provider secret leaked through safe events");
             }
             protocol.set("framed");

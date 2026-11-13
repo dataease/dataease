@@ -62,9 +62,13 @@ public class AiTransport {
                     }).build();
             ChatResponse response = OpenAiChatModel.builder().openAiApi(api).retryTemplate(RetryTemplate.builder().maxAttempts(1).build())
                     .toolExecutionEligibilityPredicate((options, output) -> false).build().call(prompt);
-            if (response == null || response.getResults().isEmpty() || response.getResult().getOutput().getText() == null
-                    || response.getResult().getOutput().getText().isBlank()) throw AiErrors.error("response_invalid");
-            for (var result : response.getResults()) if (result.getOutput().hasToolCalls() || "length".equalsIgnoreCase(result.getMetadata().getFinishReason())) throw AiErrors.error("response_invalid");
+            if (response == null || response.getResults().isEmpty()) throw AiErrors.error("response_invalid");
+            for (var result : response.getResults()) {
+                if ("length".equalsIgnoreCase(result.getMetadata().getFinishReason())) throw AiErrors.error("response_truncated");
+                if (result.getOutput() == null || result.getOutput().hasToolCalls()) throw AiErrors.error("response_invalid");
+            }
+            if (response.getResult().getOutput().getText() == null || response.getResult().getOutput().getText().isBlank())
+                throw AiErrors.error("response_invalid");
             return response;
         }, audit);
     }
@@ -210,7 +214,7 @@ public class AiTransport {
                                         if (response.getStatusCode().value() >= 300) throw providerError(response);
                                         MediaType type = response.getHeaders().getContentType();
                                         if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
-                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens(), guard, text -> { delivered.set(true); delta.accept(text); }, budget);
+                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens() != null ? options.getMaxCompletionTokens() : 0, guard, text -> { delivered.set(true); delta.accept(text); }, budget);
                                         return Boolean.TRUE;
                                     });
                         }, recovery.audit()));
@@ -250,7 +254,7 @@ public class AiTransport {
                         var currentAllocation = new java.util.concurrent.atomic.AtomicInteger(allocation);
                         var result = recovery.execute("MODEL", deadline, guard, delivered::get, () -> {
                             int next = budget.allocate(); currentAllocation.set(next);
-                            payload.put(payload.has("max_completion_tokens") ? "max_completion_tokens" : "max_tokens", next);
+                            if (next > 0) payload.put(payload.has("max_completion_tokens") ? "max_completion_tokens" : "max_tokens", next);
                         }, () -> perform(connection, settings, background, deadline, recheck, cancellation, builder ->
                             builder.baseUrl(connection.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + connection.key()).build()
                                 .post().uri(outbound.completionPath(connection.url())).contentType(MediaType.APPLICATION_JSON).body(payload)
@@ -299,7 +303,7 @@ public class AiTransport {
             if (root.hasNonNull("usage")) {
                 var count = root.path("usage").path("completion_tokens");
                 if (!root.path("usage").isObject() || !count.isIntegralNumber() || !count.canConvertToLong() || count.asLong() < 0) throw AiErrors.error("response_invalid");
-                if (count.asLong() > allocation) throw AiErrors.error("output_limit");
+                if (allocation > 0 && count.asLong() > allocation) throw AiErrors.error("output_limit");
                 if (usage != null && usage != count.asLong()) throw AiErrors.error("response_invalid"); usage = count.asLong();
             }
             var choices = root.path("choices"); if (choices.isEmpty() && root.path("usage").isObject()) continue;
@@ -312,7 +316,7 @@ public class AiTransport {
                 if (!chunk.hasNonNull(key)) continue;
                 if (!chunk.path(key).isTextual()) throw AiErrors.error("response_invalid");
                 String part = chunk.path(key).asText(); generated += part.length(); budget.generated(part.length());
-                if (generated > Math.min(262144L, allocation * 16L)) throw AiErrors.error("output_limit");
+                if (generated > (allocation > 0 ? Math.min(262144L, allocation * 16L) : 262144L)) throw AiErrors.error("output_limit");
                 if ("content".equals(key) && !part.isEmpty()) { text.append(part); delta.accept(part); }
             }
             if (chunk.hasNonNull("tool_calls")) {
@@ -333,12 +337,13 @@ public class AiTransport {
                     if (function.hasNonNull("arguments")) {
                         var part = function.path("arguments"); if (!part.isTextual() || arguments.length() + part.asText().length() > AiToolProtocol.MAX_ARGUMENTS) throw AiErrors.error("response_invalid");
                         arguments.append(part.asText()); generated += part.asText().length(); budget.generated(part.asText().length());
-                        if (generated > allocation * 16L) throw AiErrors.error("output_limit");
+                        if (allocation > 0 && generated > allocation * 16L) throw AiErrors.error("output_limit");
                     }
                 }
             }
             if (choice.hasNonNull("finish_reason")) {
                 finish = choice.path("finish_reason").asText();
+                if ("length".equals(finish)) throw AiErrors.error("response_truncated");
                 if (!java.util.Set.of("stop", "tool_calls").contains(finish)) throw AiErrors.error("response_invalid");
             }
         }
@@ -422,7 +427,7 @@ public class AiTransport {
             try { root = json.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(event); }
             catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw AiErrors.error("response_invalid"); }
             if (root == null || !root.isObject() || root.has("error") || !root.path("choices").isArray()) throw AiErrors.error("response_invalid");
-            if (root.path("usage").path("completion_tokens").canConvertToLong() && root.path("usage").path("completion_tokens").asLong() > maxTokens) throw AiErrors.error("output_limit");
+            if (maxTokens > 0 && root.path("usage").path("completion_tokens").canConvertToLong() && root.path("usage").path("completion_tokens").asLong() > maxTokens) throw AiErrors.error("output_limit");
             var choices = root.path("choices");
             if (choices.isEmpty() && root.path("usage").isObject()) continue;
             if (choices.size() != 1 || !choices.get(0).path("index").isInt() || choices.get(0).path("index").asInt() != 0 || finished)
@@ -442,11 +447,12 @@ public class AiTransport {
                 String content = chunk.path("content").asText();
                 if (!content.isEmpty()) {
                     characters += content.length(); budget.generated(content.length());
-                    if (characters > Math.min(262144L, maxTokens * 16L)) throw AiErrors.error("output_limit");
+                    if (characters > (maxTokens > 0 ? Math.min(262144L, maxTokens * 16L) : 262144L)) throw AiErrors.error("output_limit");
                     guard.run(); delta.accept(content); text |= !content.isBlank();
                 }
             }
             if (choice.hasNonNull("finish_reason")) {
+                if ("length".equals(choice.path("finish_reason").asText())) throw AiErrors.error("response_truncated");
                 if (!"stop".equals(choice.path("finish_reason").asText())) throw AiErrors.error("response_invalid");
                 finished = true;
             }

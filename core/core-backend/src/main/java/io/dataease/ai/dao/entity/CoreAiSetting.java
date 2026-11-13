@@ -39,11 +39,11 @@ public class CoreAiSetting extends AiConfigEntity {
 
     @Column(name = "max_input_chars", nullable = false)
     @Comment("max_input_chars")
-    private Integer maxInputChars = 30000;
+    private Integer maxInputChars = 0;
 
     @Column(name = "max_output_tokens", nullable = false)
     @Comment("max_output_tokens")
-    private Integer maxOutputTokens = 4096;
+    private Integer maxOutputTokens = 0;
 
     @Column(name = "interactive_concurrency", nullable = false)
     @Comment("interactive_concurrency")
