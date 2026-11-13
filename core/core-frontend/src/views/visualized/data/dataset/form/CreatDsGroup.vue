@@ -8,15 +8,14 @@ import { ElMessage } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
-  getDatasetTree,
+  getDatasetCreationFolders,
   moveDatasetTree,
   createDatasetTree,
   renameDatasetTree
 } from '@/api/dataset'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
-import { BusiTreeRequest } from '@/models/tree/TreeNode'
-import { filterFreeFolder, getHighlightSegments } from '@/utils/utils'
+import { getHighlightSegments } from '@/utils/utils'
 export interface Tree {
   isCross: boolean
   name: string
@@ -170,11 +169,10 @@ const createInit = (type, data: Tree, exec, name?: string, onSaved?: () => void)
     allfields = data.allfields
     isCross = data.isCross
   }
-  const request = { leaf: false, weight: 7 } as BusiTreeRequest
-  getDatasetTree(request).then(res => {
-    filterFreeFolder(res, 'dataset')
-    dfs(res as unknown as Tree[])
-    state.tData = (res as unknown as Tree[]) || []
+  getDatasetCreationFolders().then(res => {
+    const folders = res as unknown as Tree[]
+    dfs(folders)
+    state.tData = folders
     let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
     curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
     originResourceTree.value = cloneDeep(unref(state.tData))
