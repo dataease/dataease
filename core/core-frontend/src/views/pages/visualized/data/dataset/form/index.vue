@@ -3497,9 +3497,11 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               padding: 0 8px;
               position: relative;
               height: 49px;
+              overflow-y: hidden;
 
               &.open {
                 height: 50%;
+                overflow-y: auto;
               }
               .title {
                 cursor: pointer;
@@ -3535,7 +3537,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                   }
                 }
               }
-              overflow-y: auto;
             }
 
             .field-d {
