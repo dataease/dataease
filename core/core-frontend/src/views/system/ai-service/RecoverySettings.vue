@@ -35,11 +35,12 @@ const change = (key: keyof AiRecoverySettings, value: number | undefined) =>
 </template>
 <style scoped>
 fieldset {
-  margin: 16px 0 0;
-  padding: 16px;
-  border: 1px solid var(--ed-border-color);
   min-width: 0;
+  padding: 16px;
+  margin: 16px 0 0;
+  border: 1px solid var(--ed-border-color);
 }
+
 p {
   color: var(--ed-text-color-secondary);
 }
