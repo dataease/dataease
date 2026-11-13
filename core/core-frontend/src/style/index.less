@@ -511,6 +511,17 @@ strong {
   justify-content: center;
 }
 
+// 兼容旧插件未生成水平定位类的消息
+.ed-message:not(.is-left):not(.is-right):not(.is-center) {
+  left: 50%;
+  transform: translateX(-50%);
+
+  &.ed-message-fade-enter-from,
+  &.ed-message-fade-leave-to {
+    transform: translate(-50%, -100%);
+  }
+}
+
 .de-message-export {
   min-width: 20px !important;
   padding: 16px 20px !important;
