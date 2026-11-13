@@ -337,6 +337,21 @@ test("field selections apply immediately and reuse loaded metadata", async ({
   await expect(page.locator(".drag-mask_dataset")).toBeHidden();
 });
 
+test("back navigation without edits leaves the editor without a warning", async ({
+  page,
+}) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await expect(page.locator(".sql-result .preview-data")).toContainText("orders:");
+  await page.locator(".top .name > .ed-icon").click();
+  await expect
+    .poll(() => page.evaluate(() => window.navigations?.length || 0))
+    .toBe(1);
+  await expect(page.locator(".ed-message-box")).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
 test("back navigation warns about unsaved field changes after saving", async ({
   page,
 }) => {
