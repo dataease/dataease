@@ -1683,7 +1683,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   fieldId: targetFieldId,
                   operator: 'eq',
                   value: [QDItem.value],
-                  ...(QDItem.dateStyle === 'H_m_s' ? { dateStyle: 'H_m_s' } : {}),
+                  ...(QDItem.linkageDateStyle === 'H_m_s' ? { dateStyle: 'H_m_s' } : {}),
+                  ...(QDItem.linkageDateStyle === 'M_d'
+                    ? { dateStyle: 'M_d', datePattern: QDItem.linkageDatePattern }
+                    : {}),
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
@@ -1710,9 +1713,16 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (element.component === 'VQuery' && Array.isArray(element.propValue)) {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
-                if (QDItem.dateStyle === 'H_m_s' && ['1', '7'].includes(filterItem.displayType)) {
+                if (
+                  ['H_m_s', 'M_d'].includes(QDItem.linkageDateStyle) &&
+                  ['1', '7'].includes(filterItem.displayType)
+                ) {
                   ElMessage.warning({
-                    message: t('visualization.time_only_query_linkage_unsupported'),
+                    message: t(
+                      QDItem.linkageDateStyle === 'M_d'
+                        ? 'visualization.month_day_query_linkage_unsupported'
+                        : 'visualization.time_only_query_linkage_unsupported'
+                    ),
                     grouping: true
                   })
                   return

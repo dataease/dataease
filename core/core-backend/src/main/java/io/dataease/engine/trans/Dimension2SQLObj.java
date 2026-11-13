@@ -96,7 +96,21 @@ public class Dimension2SQLObj {
 
     public static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias, boolean isCross) {
         String fieldName = "";
-        if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
+        boolean partialDate = "H_m_s".equals(x.getDateStyle()) || "M_d".equals(x.getDateStyle());
+        if (isCross && partialDate && Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)
+                && Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME)
+                && !StringUtils.equalsAnyIgnoreCase(x.getType(), "date", "time", "year")) {
+            // 直接截取跨源日期的日历部分，保持部分日期在不同时区下的一致性。
+            String dateText = String.format(SQLConstants.CAST, originField, "VARCHAR");
+            if ("H_m_s".equals(x.getDateStyle())) {
+                fieldName = String.format("SUBSTRING(%s, 12, 8)", dateText);
+            } else {
+                fieldName = String.format("SUBSTRING(%s, 6, 5)", dateText);
+                if (StringUtils.equalsIgnoreCase(x.getDatePattern(), "date_split")) {
+                    fieldName = String.format("REPLACE(%s, '-', '/')", fieldName);
+                }
+            }
+        } else if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
             if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
             } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME) && !StringUtils.equalsIgnoreCase(x.getType(), "year")) {
@@ -134,7 +148,8 @@ public class Dimension2SQLObj {
                         fieldName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, s, SQLConstants.DEFAULT_DATE_FORMAT, format);
                     }
                 } else if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_FLOAT) || Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_BOOL)) {
-                    String cast = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
+                    String castType = isCross && partialDate ? "BIGINT" : SQLConstants.DEFAULT_INT_FORMAT;
+                    String cast = String.format(SQLConstants.CAST, originField, castType);
                     String from_unixtime = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,

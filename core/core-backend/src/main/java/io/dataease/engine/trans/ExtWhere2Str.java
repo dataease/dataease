@@ -114,12 +114,14 @@ public class ExtWhere2Str {
                     }
 
                     if (request.getFilterType() == 2 && !Boolean.TRUE.equals(request.getIsTree())
-                            && field.getDeType() == 1 && "H_m_s".equals(request.getDateStyle())
+                            && field.getDeType() == 1
+                            && ("H_m_s".equals(request.getDateStyle()) || "M_d".equals(request.getDateStyle()))
                             && ("eq".equals(operator) || "in".equals(operator))) {
-                        // 时分秒联动按时间部分匹配，复用维度表达式以兼容日期、字符串日期和时间戳。
+                        // 时分秒和月日不补入日期或年份，按源展示粒度匹配目标日期字段。
                         ChartViewFieldDTO timeField = new ChartViewFieldDTO();
                         BeanUtils.copyBean(timeField, field);
-                        timeField.setDateStyle("H_m_s");
+                        timeField.setDateStyle(request.getDateStyle());
+                        timeField.setDatePattern(request.getDatePattern());
                         whereName = Dimension2SQLObj.getXFields(timeField, originName, null, isCross).getFieldName();
                     } else if (field.getDeType() == 1) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

@@ -3559,6 +3559,7 @@ export default {
     add_linkage_dependency_fields: '追加聯動依賴字段',
     select_linkage_tips: '請先勾選需要聯動的圖表',
     time_only_query_linkage_unsupported: '時分秒維度無法聯動日期查詢元件，請使用包含日期的維度格式',
+    month_day_query_linkage_unsupported: '月日維度無法聯動日期查詢元件，請使用包含年份的維度格式',
     linkage_option_tips1: '如果聯動維度已配置鑽取，點擊維度將',
     linkage_option1: '彈出浮框，由用戶選擇聯動或者下',
     linkage_option2: '同時觸發聯動和下鑽',
