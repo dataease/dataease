@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree } from '@/api/dataset'
+import { getDatasetCreationFolders, getDatasetTree } from '@/api/dataset'
 import { getFieldByDQ, type Field } from '@/api/chart'
 import type { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { Search, ArrowDown, ArrowUp, Close, Plus } from '@element-plus/icons-vue'
@@ -122,9 +122,13 @@ const showTree = computed(() => {
 const loadDatasetTree = async () => {
   loading.value = true
   try {
-    const res = await getDatasetTree({})
-    // 与数据集管理页一致，使用根节点权限判断是否允许创建数据集。
-    canCreateDataset.value = (res?.[0]?.weight ?? 0) >= 7
+    // 按保存弹窗的可选目录判断，根目录无权时仍可在有权的子目录创建。
+    const checkCreationFolders = props.showCreateDataset && !isDataEaseBi.value
+    const [res, creationFolders] = await Promise.all([
+      getDatasetTree({}),
+      checkCreationFolders ? getDatasetCreationFolders().catch(() => []) : []
+    ])
+    canCreateDataset.value = creationFolders.length > 0
     datasetTree.value = res?.[0]?.children || []
     emitDatasetNodeChange()
   } catch (error) {
