@@ -2,7 +2,6 @@
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
-import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_moreVertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import { HandleMore } from '@/components/handle-more'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -12,11 +11,6 @@ defineProps<{ nodeType: Node['type'] }>()
 const emit = defineEmits<{ command: [value: string] }>()
 const { t } = useI18n()
 const menuList = [
-  {
-    svgName: icon_textBox_outlined,
-    label: t('data_set.field_selection'),
-    command: 'editorField'
-  },
   {
     svgName: icon_deleteTrash_outlined,
     label: t('data_set.delete'),
