@@ -161,13 +161,12 @@ const filteredCandidates = computed(() => {
   );
 });
 
-const selectedUsers = computed(() => {
-  return allCandidates.value.filter((u) => selectedUserIds.value.has(u.id));
-});
+const selectedUsers = ref<any[]>([]);
 
 const open = async (oid: string) => {
   orgId.value = oid;
   selectedUserIds.value = new Set();
+  selectedUsers.value = [];
   selectedRoleIds.value = [];
   candidateKeyword.value = "";
   selectAll.value = false;
@@ -195,8 +194,12 @@ const isSelected = (id: number) => selectedUserIds.value.has(id);
 const toggleSelect = (user: any) => {
   if (selectedUserIds.value.has(user.id)) {
     selectedUserIds.value.delete(user.id);
+    selectedUsers.value = selectedUsers.value.filter((item) => item.id !== user.id);
   } else {
     selectedUserIds.value.add(user.id);
+    if (!selectedUsers.value.some((item) => item.id === user.id)) {
+      selectedUsers.value.push(user);
+    }
   }
   selectAll.value =
     selectedUserIds.value.size === filteredCandidates.value.length &&
@@ -205,19 +208,27 @@ const toggleSelect = (user: any) => {
 
 const handleSelectAll = (val: boolean) => {
   if (val) {
-    filteredCandidates.value.forEach((u) => selectedUserIds.value.add(u.id));
+    filteredCandidates.value.forEach((u) => {
+      selectedUserIds.value.add(u.id);
+      if (!selectedUsers.value.some((item) => item.id === u.id)) {
+        selectedUsers.value.push(u);
+      }
+    });
   } else {
     selectedUserIds.value.clear();
+    selectedUsers.value = [];
   }
 };
 
 const removeSelected = (user: any) => {
   selectedUserIds.value.delete(user.id);
+  selectedUsers.value = selectedUsers.value.filter((item) => item.id !== user.id);
   selectAll.value = false;
 };
 
 const clearSelected = () => {
   selectedUserIds.value.clear();
+  selectedUsers.value = [];
   selectAll.value = false;
 };
 
