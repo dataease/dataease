@@ -783,7 +783,7 @@ defineExpose({ taskFormVisible })
                     </el-form-item>
                     <el-form-item :label="t('sync_datasource.end_time')" prop="stopTime">
                       <el-date-picker
-                        v-model="formState.stopTime"
+                        v-model="formState.stopTimeString"
                         type="datetime"
                         :placeholder="t('sync_datasource.end_time')"
                         format="YYYY-MM-DD HH:mm"
