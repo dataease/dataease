@@ -47,7 +47,7 @@ const mfaRef = ref()
 const showMfa = ref(false)
 const mfaData = ref<MfaData>({ enabled: false, ready: false, uid: '', origin: 0 })
 const loginType = ref('default')
-const showPlatLoginMask = ref(true)
+const showPlatLoginMask = ref(appStore.getXpackValid)
 const checkUsername = value => {
   if (!value) {
     return true
