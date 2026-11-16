@@ -78,7 +78,7 @@ export default {
     retry: '重試',
     preview_failed: '素材預覽失敗，請重試',
     choose: '从素材庫選擇',
-    import_hint: '包內素材將匯入全域素材庫，供編輯者選用。',
+    import_hint: '匯入後，包內圖片將用於還原畫布。',
     export_failed: '必要素材無法读取，匯出已終止。'
   },
   remote_transfer: {

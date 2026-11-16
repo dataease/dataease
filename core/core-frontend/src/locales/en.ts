@@ -83,7 +83,7 @@ export default {
     retry: 'Retry',
     preview_failed: 'Could not preview this material. Please try again.',
     choose: 'Choose from material library',
-    import_hint: 'Materials in this package will be added to the shared library for editors.',
+    import_hint: 'Images in the package will be used to restore the canvas.',
     export_failed: 'A required material could not be read. Export cancelled.'
   },
   remote_transfer: {
