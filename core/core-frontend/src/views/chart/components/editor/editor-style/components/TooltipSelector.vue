@@ -661,6 +661,8 @@ onMounted(() => {
       <el-select
         v-model="tableDisplayFields"
         :effect="themes"
+        :tag-effect="toolTip"
+        :tag-color="toolTip === 'dark' ? '#434343' : undefined"
         :placeholder="t('chart.pls_select_field')"
         style="width: 100%"
         filterable

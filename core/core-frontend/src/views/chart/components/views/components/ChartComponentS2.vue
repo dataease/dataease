@@ -1135,4 +1135,17 @@ const tablePageClass = computed(() => {
   max-width: 400px;
   min-width: 80px;
 }
+
+// 编辑画布会隐藏后代元素的滚动条，提示框需要覆盖这条规则。
+.antv-s2-tooltip-container [data-table-tooltip-cell] {
+  &::-webkit-scrollbar {
+    display: block !important;
+    width: 8px !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, currentColor 45%, transparent);
+    border-radius: 4px;
+  }
+}
 </style>
