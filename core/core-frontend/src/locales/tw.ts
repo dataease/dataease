@@ -4989,6 +4989,11 @@ export default {
       water_mask: '水印設置',
       show_water_mask: '顯示水印',
       format: '格式',
+      excel_header_mode: '表頭名稱',
+      excel_header_dataset: '資料集欄位名',
+      excel_header_display: '圖表欄位顯示名',
+      excel_header_hint:
+        '僅影響圖表資料 Excel 附件。例如：資料集欄位為「訂單金額」，圖表顯示名為「銷售額」。未設定圖表顯示名時，使用資料集欄位名。',
       view_data: '圖表數據',
       all_data: '全部數據',
       pixel: '儀表板分辨率',

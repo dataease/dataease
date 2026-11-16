@@ -184,6 +184,22 @@
           </template>
         </el-select>
       </el-form-item>
+      <el-form-item v-if="formState.viewIdList?.length" prop="excelHeaderMode">
+        <template #label>
+          <div class="basic-form-info-tips">
+            <span>{{ t('report.form.excel_header_mode') }}</span>
+            <el-tooltip :content="t('report.form.excel_header_hint')" placement="top">
+              <el-icon
+                ><Icon name="dv-info"><dvInfo class="svg-icon" /></Icon
+              ></el-icon>
+            </el-tooltip>
+          </div>
+        </template>
+        <el-radio-group v-model="formState.excelHeaderMode">
+          <el-radio label="dataset">{{ t('report.form.excel_header_dataset') }}</el-radio>
+          <el-radio label="display">{{ t('report.form.excel_header_display') }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <!-- <el-form-item label="图表数据范围" prop="viewDataRange">
         <el-radio-group v-model="formState.viewDataRange">
           <el-radio :label="0">展示数据</el-radio>
@@ -414,6 +430,7 @@ const defaultFormData = ref({
   format: 0,
   viewIdList: [] as string[],
   viewDataRange: 1,
+  excelHeaderMode: 'dataset',
   pixel: '1920 * 1080',
   showWatermark: false,
   dataPermission: 0,
@@ -583,6 +600,9 @@ const getFormData = async () => {
   }
   const p = new Promise((r, e) => {
     reportBaseForm?.value?.validate(valid => {
+      if (!formState.value.viewIdList?.length) {
+        formState.value.excelHeaderMode = 'dataset'
+      }
       r(valid && formState.value)
     })
   })
@@ -611,6 +631,7 @@ const formatBase2Form = () => {
       formState.value[key] = props.baseFormData[key]
     }
   }
+  formState.value.excelHeaderMode ||= 'dataset'
   customTitle.value = formState.value['name'] === formState.value['title']
 }
 const removeViewTag = (val: string) => {
