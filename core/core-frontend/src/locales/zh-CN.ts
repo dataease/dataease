@@ -2343,6 +2343,7 @@ export default {
     carousel_enable: '开启轮播',
     carousel_stay_time: '停留时长（秒）',
     carousel_interval: '轮播间隔（秒）',
+    merged_cell_tooltip_tip: '已合并的单元格只显示单元格值。',
     custom_tooltip_content_tip:
       "可以${'{'}fieldName{'}'}的形式读取字段值（支持部分安全HTML标签，不支持属性和样式）",
     legend_range_division: '图例区间划分',

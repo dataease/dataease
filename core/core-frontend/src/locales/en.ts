@@ -2411,6 +2411,7 @@ export default {
     carousel_enable: 'Enable Carousel',
     carousel_stay_time: 'Stay Duration (seconds)',
     carousel_interval: 'Carousel Interval (seconds)',
+    merged_cell_tooltip_tip: 'Merged cells only show the cell value.',
     custom_tooltip_content_tip:
       "Can read field values in the form of ${'{'}fieldName{'}'} (Supports limited safe HTML tags without attributes or styles)",
     legend_range_division: 'Legend range division',
