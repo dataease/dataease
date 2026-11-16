@@ -9,6 +9,7 @@ import io.dataease.api.ds.vo.ExcelSheetData;
 import io.dataease.api.ds.vo.RemoteExcelRequest;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
 import io.dataease.excel.ExcelCell;
 import io.dataease.excel.ExcelCellType;
 import io.dataease.excel.ExcelIO;
@@ -504,6 +505,8 @@ public class ExcelUtils {
         List<ExcelSheetData> excelSheetDataList = null;
         try (InputStream inputStream = file.getInputStream()) {
             excelSheetDataList = parseExcel(filename, inputStream, true, filename);
+        } catch (DEException e) {
+            throw e;
         } catch (Exception e) {
             DEException.throwException(e);
         }
@@ -1052,7 +1055,7 @@ public class ExcelUtils {
                 SheetDataCollector collector = new SheetDataCollector(isPreview);
                 try (ExcelReadSession session = ExcelIO.openRead(inputStream, new ExcelReadOptions())) {
                     List<ExcelSheetInfo> sheets = session.getSheets();
-                    if (sheets.size() > 100) throw new IOException(Translator.get("i18n_excel_sheet_limit"));
+                    if (sheets.size() > 100) throw DEException.of(ErrorCategory.VALIDATION, "i18n_excel_sheet_limit");
                     for (ExcelSheetInfo sheet : sheets) {
                         collector.clear();
                         List<TableField> fields = new ArrayList<>();
