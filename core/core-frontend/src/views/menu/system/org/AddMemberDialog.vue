@@ -20,7 +20,11 @@
           />
         </div>
         <div class="candidate-toolbar">
-          <el-checkbox v-model="selectAll" @change="handleSelectAll">
+          <el-checkbox
+            :model-value="selectAll"
+            :indeterminate="selectAllIndeterminate"
+            @change="handleSelectAll"
+          >
             {{ t("dataset.check_all") }}
           </el-checkbox>
         </div>
@@ -150,8 +154,6 @@ const roleList = ref([
   { label: t("role.system_role"), options: [] },
   { label: t("role.custom_role"), options: [] },
 ]);
-const selectAll = ref(false);
-
 const filteredCandidates = computed(() => {
   if (!candidateKeyword.value) return allCandidates.value;
   const kw = candidateKeyword.value.toLowerCase();
@@ -163,13 +165,25 @@ const filteredCandidates = computed(() => {
 
 const selectedUsers = ref<any[]>([]);
 
+const selectAll = computed(
+  () =>
+    filteredCandidates.value.length > 0 &&
+    filteredCandidates.value.every((u) => selectedUserIds.value.has(u.id)),
+);
+
+const selectAllIndeterminate = computed(() => {
+  const selectedCount = filteredCandidates.value.filter((u) =>
+    selectedUserIds.value.has(u.id),
+  ).length;
+  return selectedCount > 0 && selectedCount < filteredCandidates.value.length;
+});
+
 const open = async (oid: string) => {
   orgId.value = oid;
   selectedUserIds.value = new Set();
   selectedUsers.value = [];
   selectedRoleIds.value = [];
   candidateKeyword.value = "";
-  selectAll.value = false;
   dialogVisible.value = true;
   await loadCandidates();
   await loadRoleOptions();
@@ -201,9 +215,6 @@ const toggleSelect = (user: any) => {
       selectedUsers.value.push(user);
     }
   }
-  selectAll.value =
-    selectedUserIds.value.size === filteredCandidates.value.length &&
-    filteredCandidates.value.length > 0;
 };
 
 const handleSelectAll = (val: boolean) => {
@@ -214,22 +225,23 @@ const handleSelectAll = (val: boolean) => {
         selectedUsers.value.push(u);
       }
     });
-  } else {
-    selectedUserIds.value.clear();
-    selectedUsers.value = [];
+    return;
   }
+  const visibleIds = new Set(filteredCandidates.value.map((u) => u.id));
+  visibleIds.forEach((id) => selectedUserIds.value.delete(id));
+  selectedUsers.value = selectedUsers.value.filter(
+    (item) => !visibleIds.has(item.id),
+  );
 };
 
 const removeSelected = (user: any) => {
   selectedUserIds.value.delete(user.id);
   selectedUsers.value = selectedUsers.value.filter((item) => item.id !== user.id);
-  selectAll.value = false;
 };
 
 const clearSelected = () => {
   selectedUserIds.value.clear();
   selectedUsers.value = [];
-  selectAll.value = false;
 };
 
 const confirmAdd = async () => {
