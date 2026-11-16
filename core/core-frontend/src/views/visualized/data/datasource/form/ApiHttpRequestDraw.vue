@@ -214,7 +214,7 @@ const initApiItem = (
     isPlugin.value = isPluginDs
   }
 
-  credentialSourceId = from.copySourceId || from.id
+  credentialSourceId = from.copy ? undefined : from.id
   copyItem.value = val.copy
   copyDs.value = from.copy
   dsType.value = from.type
