@@ -132,12 +132,58 @@ public final class ConversationRegression {
     private static String pathFor(com.fasterxml.jackson.databind.JsonNode session) {
         return "/ai/conversations/" + session.path("sessionId").asText() + "/turns";
     }
+    private static void idleMaintenance(MockMvc mvc, ObjectMapper json, AiConfigurationManage configuration,
+                                        AtomicInteger identityChecks, AtomicBoolean identityAllowed) throws Exception {
+        var field = AiConfigurationManage.class.getDeclaredField("em"); field.setAccessible(true);
+        var em = (jakarta.persistence.EntityManager) field.get(configuration);
+        var statistics = em.getEntityManagerFactory().unwrap(org.hibernate.SessionFactory.class).getStatistics();
+        boolean statisticsEnabled = statistics.isStatisticsEnabled();
+        statistics.setStatisticsEnabled(true);
+        var retained = new ArrayList<String>();
+        try {
+            var session = continueContext(mvc, json, null, "11", "select 1", "idle-initial");
+            retained.add(session.path("sessionId").asText());
+            String events = null;
+            for (int turn = 0; turn < 3; turn++) {
+                events = start(mvc, json, "/ai/conversations/" + session.path("sessionId").asText() + "/executions", session, "Idle regression turn " + turn) + "/events";
+                await(mvc, json, events, "COMPLETED", "多字节");
+                if (turn < 2) {
+                    session = continueContext(mvc, json, session, "11", "select " + (turn + 2), "idle-context-" + turn);
+                    retained.add(session.path("sessionId").asText());
+                }
+            }
+            var button = json.readTree(mvc.perform(post("/ai/conversations/capabilities/sql.assist").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "idle-button", "sql", "select 1", "text", "Idle one-shot"))))
+                    .andReturn().getResponse().getContentAsString());
+            retained.add(button.path("sessionId").asText());
+            await(mvc, json, "/ai/conversations/" + button.path("sessionId").asText() + "/executions/" + button.path("executionId").asText() + "/events", "COMPLETED", "多字节");
+            retained.add(open(mvc, json, "idle-unstarted").path("sessionId").asText());
+            long queries = statistics.getPrepareStatementCount();
+            int checks = identityChecks.get();
+            Thread.sleep(2200);
+            long idleQueries = statistics.getPrepareStatementCount() - queries;
+            int idleChecks = identityChecks.get() - checks;
+            if (idleQueries != 0 || idleChecks != 0)
+                throw new AssertionError("idle, completed and retired conversations must not poll storage/identity: SQL=" + idleQueries + ", identity=" + idleChecks);
+            // Skipping background checks must not turn a retained result into an authorization cache.
+            identityAllowed.set(false);
+            denyGet(mvc, events);
+            identityAllowed.set(true);
+            denyGet(mvc, events);
+            System.out.println("PASS idle/unstarted, completed, retired and one-shot conversations: 0 SQL and 0 identity checks over 2.2s; revoked result remains inaccessible");
+        } finally {
+            identityAllowed.set(true);
+            for (String id : retained) mvc.perform(delete("/ai/conversations/" + id));
+            statistics.setStatisticsEnabled(statisticsEnabled);
+        }
+    }
     public static void run(AiConfigurationManage configuration, CoreAiOrgPolicyRepository policies,
                            AiSecrets keys, AiAdmission admission, AiAccess access) throws Exception {
         var json = new ObjectMapper();
         var sent = new ArrayList<com.fasterxml.jackson.databind.JsonNode>();
         var allowed = new AtomicBoolean(true);
         var identityAllowed = new AtomicBoolean(true);
+        var identityChecks = new AtomicInteger();
         var sceneLatencyMillis = new AtomicInteger();
         var revokeDuringCall = new AtomicBoolean();
         var streamFirst = new CountDownLatch(1);
@@ -258,7 +304,7 @@ public final class ConversationRegression {
                     Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
                     return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode());
                 }
-                public void verify(Identity identity, boolean configuration) { if (!identityAllowed.get()) throw AiErrors.error("forbidden"); access.verify(identity, configuration); }
+                public void verify(Identity identity, boolean configuration) { identityChecks.incrementAndGet(); if (!identityAllowed.get()) throw AiErrors.error("forbidden"); access.verify(identity, configuration); }
             };
             var beans = new StaticListableBeanFactory(); beans.addBean("scene", scene);
             var manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess);
@@ -269,6 +315,11 @@ public final class ConversationRegression {
             var configMvc = MockMvcBuilders.standaloneSetup(new io.dataease.ai.server.AiConfigurationServer(configuration, null)).build();
             var recoverySettings = json.readTree(configMvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
             if (recoverySettings.path("recovery").path("stepRetries").asInt(-1) != 2 || recoverySettings.path("recovery").path("attemptRetries").asInt(-1) != 3) throw new AssertionError("AI administrator exposes bounded recovery defaults");
+
+            protocol.set("framed");
+            try { idleMaintenance(mvc, json, configuration, identityChecks, identityAllowed); }
+            catch (Exception | AssertionError failure) { manage.destroy(); throw failure; }
+            protocol.set("normal"); sent.clear();
 
             byte[] openOnce = json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "idempotent-editor", "sql", "select 1", "openKey", "open-once"));
             var openedOnce = json.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(openOnce)).andReturn().getResponse().getContentAsString());
