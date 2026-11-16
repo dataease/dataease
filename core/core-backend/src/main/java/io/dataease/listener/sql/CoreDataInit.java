@@ -177,10 +177,7 @@ public class CoreDataInit implements CoreSqlBlock {
     }
 
     private void initCoreSysSetting() {
-        String defaultOpen = "false";
-        if (LocalModelUtils.isDesktop()) {
-            defaultOpen = "true";
-        }
+        String defaultOpen = LocalModelUtils.isDesktop() ? "1" : "0";
         List<CoreSysSetting> settings = Arrays.asList(
                 new CoreSysSetting(1L, "basic.dsIntervalTime", "6", "text", 11),
                 new CoreSysSetting(2L, "basic.dsExecuteTime", "minute", "text", 3),
