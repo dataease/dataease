@@ -6,14 +6,20 @@ export default function defaultConditionTrans(canvasInfo) {
   const allFilter = []
   const componentMap = {}
   // 获取所有查询条件
-  componentDataArray.forEach(item => {
-    if (item.component === 'VQuery') {
-      item.propValue?.forEach(filterItem => {
-        componentMap[filterItem.id] = item
-      })
-      Array.prototype.push.apply(allFilter, item.propValue)
-    }
-  })
+  const collect = items =>
+    items.forEach(item => {
+      if (item.component === 'VQuery') {
+        item.propValue?.forEach(filterItem => {
+          componentMap[filterItem.id] = item
+        })
+        Array.prototype.push.apply(allFilter, item.propValue)
+      } else if (item.component === 'Group') {
+        collect(item.propValue || [])
+      } else if (item.component === 'DeTabs') {
+        item.propValue?.forEach(tab => collect(tab.componentData || []))
+      }
+    })
+  collect(componentDataArray)
 
   const allDefaultFilter = deepCopy(allFilter)
   if (reportFilterInfo) {

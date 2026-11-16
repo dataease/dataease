@@ -42,7 +42,7 @@ export default {
     download: '下載',
     move: '移動分類',
     delete_hint:
-      '刪除後，素材將从素材庫隱藏，無法再選用；已使用该素材的儀表板、大螢幕等資源不受影響，全部引用解除後自動清理檔案。確認刪除？',
+      '刪除後，素材將從素材庫隱藏，無法再選用。已使用該素材的儀表板、大螢幕等資源不受影響，全部引用解除後自動清理檔案。',
     deleted: '刪除成功',
     batch_delete: '批次刪除',
     batch_selected_count: '已選 {count} 項',
@@ -103,6 +103,12 @@ export default {
     save_copy: '儲存並複製連結'
   },
   common: {
+    embedded_origin_mismatch:
+      '嵌入來源校驗失敗，請聯絡管理員核對嵌入應用的允許網域和 DataEase 存取位址設定',
+    embedded_token_expired: '嵌入憑證已過期，請重新取得後重試',
+    embedded_token_invalid: '嵌入憑證無效，請重新取得後重試',
+    embedded_auth_failed: '嵌入驗證失敗，請聯絡管理員',
+
     language_required: '語言不能為空',
     language_unsupported: '不支援所選語言，請重新選擇',
     language_switch_failed: '語言切換失敗，請重試',

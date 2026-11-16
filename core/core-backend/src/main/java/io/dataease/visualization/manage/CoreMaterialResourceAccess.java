@@ -8,6 +8,8 @@ import io.dataease.constant.*;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
+import io.dataease.exception.ErrorResponses;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -63,7 +65,7 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
                 InteractiveAuthApi auth = requireAuth();
                 if (!auth.menuIds().contains(menuId) || !hasWritableDestination(auth, type)) throw denied();
             } else {
-                requireAuth().checkAuth(new BusiPerCheckDTO(parentId, type, AuthEnum.MANAGE));
+                checkSelectionPermission(new BusiPerCheckDTO(parentId, type, AuthEnum.MANAGE));
             }
             return Set.of();
         }
@@ -87,9 +89,14 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
                 requireCommunityResource(resource, edit);
             } else if (!(edit && Objects.equals(resource.getPid(), -1L)
                     && Objects.equals(resource.getCreateBy(), V3UserUtil.getUid().toString()))) {
-                requireAuth().checkAuth(new BusiPerCheckDTO(resource.getId(),
+                var permission = new BusiPerCheckDTO(resource.getId(),
                         "dataV".equals(resource.getType()) ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL,
-                        edit || draft ? AuthEnum.MANAGE : AuthEnum.READ));
+                        edit || draft ? AuthEnum.MANAGE : AuthEnum.READ);
+                if (edit) {
+                    checkSelectionPermission(permission);
+                } else {
+                    requireAuth().checkAuth(permission);
+                }
             }
         }
         if (draft) {
@@ -193,6 +200,19 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
         InteractiveAuthApi auth = authProvider.getIfAvailable();
         if (auth == null) throw denied();
         return auth;
+    }
+
+    private void checkSelectionPermission(BusiPerCheckDTO permission) {
+        try {
+            requireAuth().checkAuth(permission);
+        } catch (DEException failure) {
+            if (ErrorResponses.category(failure) == ErrorCategory.FORBIDDEN
+                    || (failure.getCause() instanceof DEException cause
+                    && ErrorResponses.category(cause) == ErrorCategory.FORBIDDEN)) {
+                throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_material_selection_denied").causedBy(failure);
+            }
+            throw failure;
+        }
     }
 
     private DEException denied() {

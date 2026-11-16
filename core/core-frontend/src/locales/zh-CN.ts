@@ -42,7 +42,7 @@ export default {
     download: '下载',
     move: '移动分类',
     delete_hint:
-      '删除后，素材将从素材库隐藏，无法再选用；已使用该素材的仪表板、大屏等资源不受影响，全部引用解除后自动清理文件。确认删除？',
+      '删除后，素材将从素材库隐藏，无法再选用。已使用该素材的仪表板、大屏等资源不受影响，全部引用解除后自动清理文件。',
     deleted: '删除成功',
     batch_delete: '批量删除',
     batch_selected_count: '已选 {count} 项',
@@ -103,6 +103,12 @@ export default {
     save_copy: '保存并复制链接'
   },
   common: {
+    embedded_origin_mismatch:
+      '嵌入来源校验失败，请联系管理员核对嵌入应用的允许域名和 DataEase 访问地址配置',
+    embedded_token_expired: '嵌入凭证已过期，请重新获取后重试',
+    embedded_token_invalid: '嵌入凭证无效，请重新获取后重试',
+    embedded_auth_failed: '嵌入鉴权失败，请联系管理员',
+
     language_required: '语言不能为空',
     language_unsupported: '不支持所选语言，请重新选择',
     language_switch_failed: '语言切换失败，请重试',

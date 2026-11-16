@@ -46,7 +46,7 @@ export default {
     download: 'Download',
     move: 'Move to category',
     delete_hint:
-      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed. Delete this material?',
+      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed.',
     deleted: 'Deleted successfully',
     batch_delete: 'Delete selected',
     batch_selected_count: '{count} selected',
@@ -109,6 +109,14 @@ export default {
     save_copy: 'Save and copy link'
   },
   common: {
+    embedded_origin_mismatch:
+      'Embedded origin validation failed. Contact your administrator to check the allowed domain and DataEase access address.',
+    embedded_token_expired:
+      'The embedded credential has expired. Obtain a new credential and retry.',
+    embedded_token_invalid:
+      'The embedded credential is invalid. Obtain a new credential and retry.',
+    embedded_auth_failed: 'Embedded authentication failed. Contact your administrator.',
+
     language_required: 'Language is required',
     language_unsupported: 'The selected language is not supported',
     language_switch_failed: 'Unable to switch language. Please try again.',

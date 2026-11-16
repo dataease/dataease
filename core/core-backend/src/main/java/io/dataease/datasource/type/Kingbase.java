@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.exception.DEException;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +15,7 @@ import java.util.List;
 public class Kingbase extends Pg {
     private String driver = "com.kingbase8.Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName");
+    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName", "logger", "loggerFile", "loggerLevel");
 
     @Override
     public String getJdbc() {
@@ -27,7 +28,7 @@ public class Kingbase extends Pg {
             if (!getJdbcUrl().startsWith("jdbc:kingbase8") && !getJdbcUrl().startsWith("jdbc:kingbase")) {
                 DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
             }
-            return getJdbcUrl();
+            return JdbcUrlSecurityPolicy.validate("kingbase", getDriver(), getJdbcUrl(), getExtraParams());
         }
         String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
@@ -58,6 +59,6 @@ public class Kingbase extends Pg {
                 DEException.throwException("Illegal parameter: " + illegalParameter);
             }
         }
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("kingbase", getDriver(), jdbcUrl, getExtraParams());
     }
 }

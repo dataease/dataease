@@ -249,6 +249,7 @@
 </template>
 
 <script lang="ts" setup>
+import { missingRequiredFilters } from './requiredFilter'
 import areaStack from '@/assets/svg/area-stack.svg'
 import area from '@/assets/svg/area.svg'
 import barGroupStack from '@/assets/svg/bar-group-stack.svg'
@@ -345,6 +346,7 @@ const state = reactive({
   viewMap: {},
   customFilter: {
     sourceFilter: [],
+    sourceDefaultFilter: [],
     defaultFilter: []
   }
 })
@@ -564,6 +566,21 @@ const dvNodeClick = data => {
 
 const getFormData = async () => {
   hideMceDialog()
+  const filters = state.customFilter
+  const overrides = new Map(
+    (formState.value['reportFilter'] || []).map(item => [
+      String(item.filterId),
+      JSON.parse(item.filterInfo)
+    ])
+  )
+  const effective = filters.sourceDefaultFilter.map(
+    filter => overrides.get(String(filter.id)) || filter
+  )
+  const missing = missingRequiredFilters(filters.sourceFilter, effective)
+  if (missing.length) {
+    ElMessage.error(t('report.filter.empty_tips', [missing.join('、')]))
+    return false
+  }
   const p = new Promise((r, e) => {
     reportBaseForm?.value?.validate(valid => {
       r(valid && formState.value)

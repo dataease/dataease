@@ -20,6 +20,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("db2", "jdbc:db2"),
             Map.entry("gaussdb", "jdbc:gaussdb"),
             Map.entry("pg", "jdbc:postgresql"),
+            Map.entry("kingbase", "jdbc:kingbase"),
             Map.entry("redshift", "jdbc:redshift"),
             Map.entry("h2", "jdbc:h2"),
             Map.entry("ck", "jdbc:clickhouse"),
@@ -71,8 +72,9 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("oracle", Set.of()),
             Map.entry("db2", Set.of()),
             Map.entry("gaussdb", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger")),
-            Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname")),
-            Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile")),
+            Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
+            Map.entry("kingbase", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
+            Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile", "logger", "loggerfile", "loggerlevel")),
             Map.entry("h2", Set.of("init=", "runscript")),
             Map.entry("ck", Set.of())
     );

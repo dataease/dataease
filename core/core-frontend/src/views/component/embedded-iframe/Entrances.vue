@@ -9,6 +9,9 @@ import { onBeforeMount, onBeforeUnmount } from 'vue'
 import { initApi } from './embedded'
 import { useCache } from '@/hooks/web/useCache'
 import { rsaEncryp, ensureDekey } from '@/utils/encryption'
+import { embeddedErrorMessage } from '@/config/axios/embeddedError'
+import { toDataEaseError } from '@/config/axios/error'
+import { wasErrorPresented } from '@/config/axios/errorPresenter'
 import { ElMessage } from 'element-plus-secondary'
 const { wsCache } = useCache()
 const embeddedStore = () => useEmbedded()
@@ -20,7 +23,7 @@ const communicationCb = async event => {
   }
   await ensureDekey()
   const origin = event.origin
-  if(origin === window.location.origin) {
+  if (origin === window.location.origin) {
     embeddedStore().setIframeData(event.data)
     appStore().setIsIframe(true)
     window['dataease-embedded-host'] = event.source
@@ -28,22 +31,28 @@ const communicationCb = async event => {
     return
   }
   const originText = rsaEncryp(window.btoa(origin)).toString()
-  initApi(event.data.embeddedToken, originText).then(res => {
-    if (!res.msg) {
-      embeddedStore().setIframeData(event.data)
-      appStore().setIsIframe(true)
-      window['dataease-embedded-host'] = event.source
-      emits('initIframe', embeddedStore().getType)
-    } else {
-      showError()
-    }
-  }).catch(() => {
-    showError()
-  })
-  
+  initApi(event.data.embeddedToken, originText)
+    .then(res => {
+      if (!res.msg) {
+        embeddedStore().setIframeData(event.data)
+        appStore().setIsIframe(true)
+        window['dataease-embedded-host'] = event.source
+        emits('initIframe', embeddedStore().getType)
+      } else {
+        showError()
+      }
+    })
+    .catch(error => {
+      if (!wasErrorPresented(error)) showError(toDataEaseError(error).messageKey)
+    })
 }
-const showError = () => {
-  ElMessage.error('未知来源，域名匹配错误！')
+const showError = (messageKey?: string) => {
+  ElMessage({
+    type: 'error',
+    message: embeddedErrorMessage(messageKey),
+    grouping: true,
+    showClose: true
+  })
 }
 const isInIframe = () => {
   try {
@@ -54,7 +63,10 @@ const isInIframe = () => {
   }
 }
 onBeforeMount(async () => {
-  if (window.location.href.includes('#/preview?dvId=') && (wsCache.get('user.token') || !isInIframe())) {
+  if (
+    window.location.href.includes('#/preview?dvId=') &&
+    (wsCache.get('user.token') || !isInIframe())
+  ) {
     emits('initIframe', false)
     return
   }

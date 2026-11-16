@@ -500,10 +500,6 @@ const selectNode = (node: Node) => {
 }
 
 const handleCommand = (ele, command) => {
-  if (command === 'editorField') {
-    selectNode(ele)
-  }
-
   if (command === 'rename') {
     tableRename({ name: ele.tableName, id: ele.id })
   }
