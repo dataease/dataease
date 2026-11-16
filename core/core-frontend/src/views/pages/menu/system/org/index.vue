@@ -401,14 +401,16 @@ onMounted(async () => {
     <div class="org-member-panel">
       <template v-if="currentOrgId">
         <div class="member-header">
-          <div class="member-header-left">
-            <span class="member-org-name">{{ currentOrgName }}</span>
-            <span class="member-count">{{ memberPage.total }} {{ t('org.members') }}</span>
-          </div>
-          <div class="member-header-right">
+          <span class="member-org-name">{{ currentOrgName }}</span>
+          <span class="member-count">{{ memberPage.total }} {{ t('org.members') }}</span>
+        </div>
+        <el-row class="member-actions">
+          <el-col :span="12">
             <el-button type="primary" @click="handleAddMember">
               {{ t('org.add_member') }}
             </el-button>
+          </el-col>
+          <el-col :span="12" class="member-search">
             <el-input
               v-model="memberKeyword"
               clearable
@@ -424,8 +426,8 @@ onMounted(async () => {
                 </el-icon>
               </template>
             </el-input>
-          </div>
-        </div>
+          </el-col>
+        </el-row>
         <div class="member-table-wrap">
           <GridTable
             :table-data="memberList"
@@ -669,30 +671,26 @@ onMounted(async () => {
 
   .member-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
     margin-bottom: 16px;
 
-    .member-header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      .member-org-name {
-        font-size: 16px;
-        font-weight: 500;
-      }
-
-      .member-count {
-        font-size: 13px;
-        color: #646a73;
-      }
+    .member-org-name {
+      font-size: 16px;
+      font-weight: 500;
     }
 
-    .member-header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .member-count {
+      font-size: 13px;
+      color: #646a73;
+    }
+  }
+
+  .member-actions {
+    margin-bottom: 16px;
+
+    .member-search {
+      text-align: right;
     }
   }
 
