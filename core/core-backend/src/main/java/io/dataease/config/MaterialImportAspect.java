@@ -1,31 +1,33 @@
 package io.dataease.config;
 
-import io.dataease.api.material.MaterialBundleService;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
+import io.dataease.result.ResultCode;
 import io.dataease.utils.MaterialDocuments;
 import io.dataease.utils.MaterialReferences;
-import io.dataease.exception.DEException;
-import io.dataease.result.ResultCode;
-import io.dataease.i18n.Translator;
+import io.dataease.visualization.manage.ImportedImageManage;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
-import org.springframework.beans.factory.ObjectProvider;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.core.annotation.Order;
-import java.util.*;
+
+import java.util.Map;
+import java.util.Set;
 
 @Aspect
 @Component
 @Order(0)
 public class MaterialImportAspect {
-    private final ObjectProvider<MaterialBundleService> bundles;
+    private final ImportedImageManage importedImages;
     private final TransactionTemplate transactions;
 
-    public MaterialImportAspect(ObjectProvider<MaterialBundleService> bundles, PlatformTransactionManager manager) {
-        this.bundles = bundles;
+    public MaterialImportAspect(ImportedImageManage importedImages, PlatformTransactionManager manager) {
+        this.importedImages = importedImages;
         this.transactions = new TransactionTemplate(manager);
     }
 
@@ -37,39 +39,23 @@ public class MaterialImportAspect {
         var bundle = argument instanceof DataVisualizationBaseRequest request ? request.getMaterialBundle()
                 : ((TemplateManageRequest) argument).getMaterialBundle();
         if (bundle == null) return point.proceed();
-        var service = bundles.getIfAvailable();
-        if (service == null) throw invalid();
         String style = argument instanceof DataVisualizationBaseRequest request ? request.getCanvasStyleData()
                 : ((TemplateManageRequest) argument).getTemplateStyle();
         String components = argument instanceof DataVisualizationBaseRequest request ? request.getComponentData()
                 : ((TemplateManageRequest) argument).getTemplateData();
-        if (bundle.getFiles() == null) throw invalid();
-        Set<String> provided = new HashSet<>();
-        for (var file : bundle.getFiles()) {
-            if (file == null || !provided.add(file.getReference())) throw invalid();
+        String method = point.getSignature().getName();
+        if (!method.equals("saveCanvas")) {
+            importedImages.validatePreview(bundle, style, components);
         }
-        Set<String> images = MaterialDocuments.images(style, components);
-        boolean finalCanvasSave = point.getSignature().getName().equals("saveCanvas");
-        if ((!finalCanvasSave && !images.equals(provided)) || images.stream()
-                .anyMatch(image -> image.startsWith("material-file://") && !provided.contains(image))) {
-            throw invalid();
-        }
-        if (point.getSignature().getName().equals("decompression")) {
-            service.validate(bundle);
+        if (method.equals("decompression")) {
             return point.proceed();
         }
-        var selectedBundle = new io.dataease.api.material.vo.MaterialBundle();
-        selectedBundle.setVersion(bundle.getVersion());
-        if (finalCanvasSave) {
-            // Validate the entire source package, then restore only images still used after
-            // editing the import preview. Unused entries cannot become independent uploads.
-            service.validate(bundle);
-            selectedBundle.setFiles(bundle.getFiles().stream().filter(file -> images.contains(file.getReference())).toList());
-        } else selectedBundle.setFiles(bundle.getFiles());
+        Set<String> images = importedImages.imageReferences(style, components);
         Object[] result = new Object[1];
         Throwable[] error = new Throwable[1];
         transactions.executeWithoutResult(status -> {
-            Map<String, String> mapping = service.restore(selectedBundle);
+            // The preview can be edited before saving. Restore only the images still in use.
+            Map<String, String> mapping = importedImages.restore(bundle, images);
             if (argument instanceof DataVisualizationBaseRequest request) {
                 request.setCanvasStyleData(MaterialDocuments.remap(request.getCanvasStyleData(), mapping));
                 request.setComponentData(MaterialDocuments.remap(request.getComponentData(), mapping));
@@ -79,13 +65,13 @@ public class MaterialImportAspect {
                             new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<Long, io.dataease.extensions.view.dto.ChartViewDTO>>() { }));
                 }
                 request.setDynamicData(MaterialDocuments.remap(request.getDynamicData(), mapping));
-                validateComplete(request.getCanvasStyleData(), request.getComponentData(), mapping);
+                validateComplete(request.getCanvasStyleData(), request.getComponentData(), request.getDynamicData());
             } else {
                 var request = (TemplateManageRequest) argument;
                 request.setTemplateStyle(MaterialDocuments.remap(request.getTemplateStyle(), mapping));
                 request.setTemplateData(MaterialDocuments.remap(request.getTemplateData(), mapping));
                 request.setDynamicData(MaterialDocuments.remap(request.getDynamicData(), mapping));
-                validateComplete(request.getTemplateStyle(), request.getTemplateData(), mapping);
+                validateComplete(request.getTemplateStyle(), request.getTemplateData(), request.getDynamicData());
             }
             try { result[0] = point.proceed(); }
             catch (Throwable e) { status.setRollbackOnly(); error[0] = e; }
@@ -94,14 +80,13 @@ public class MaterialImportAspect {
         return result[0];
     }
 
-    private void validateComplete(String style, String components, Map<String, String> mapping) {
+    private void validateComplete(String... documents) {
         // Any remaining portable reference is invalid; normal library selections are checked
         // by the same lifecycle authorization as ordinary resource saves.
-        try { MaterialReferences.collect(style, components); }
-        catch (IllegalArgumentException e) { throw invalid(); }
-    }
-
-    private DEException invalid() {
-        return new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_material_invalid"));
+        try {
+            MaterialReferences.collect(documents);
+        } catch (IllegalArgumentException e) {
+            throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_static_resource_invalid"));
+        }
     }
 }

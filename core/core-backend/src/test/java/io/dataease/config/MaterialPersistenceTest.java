@@ -7,8 +7,10 @@ import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.material.vo.MaterialBundle;
+import io.dataease.api.material.vo.MaterialBundleEntry;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.visualization.manage.CoreMaterialResourceAccess;
+import io.dataease.visualization.manage.ImportedImageManage;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.*;
@@ -100,14 +102,12 @@ class MaterialPersistenceTest {
     }
 
     @Test void importRemapsDocumentsAndRejectsMissingManifestFiles() throws Throwable {
-        MaterialBundleService service = mock(MaterialBundleService.class);
-        when(service.restore(any())).thenReturn(Map.of("material-file://1", "material://789"));
-        StaticListableBeanFactory beans = new StaticListableBeanFactory();
-        beans.addBean("bundles", service);
-        var aspect = new MaterialImportAspect(beans.getBeanProvider(MaterialBundleService.class), manager);
+        ImportedImageManage images = mock(ImportedImageManage.class);
+        when(images.restore(any(), anySet())).thenReturn(Map.of("material-file://1", "/static-resource/imported.png"));
+        var aspect = new MaterialImportAspect(images, manager);
         var request = new DataVisualizationBaseRequest();
         MaterialBundle bundle = new MaterialBundle();
-        var file = new io.dataease.api.material.vo.MaterialBundleEntry();
+        var file = new MaterialBundleEntry();
         file.setReference("material-file://1");
         bundle.getFiles().add(file);
         request.setMaterialBundle(bundle);
@@ -120,7 +120,8 @@ class MaterialPersistenceTest {
         when(point.getArgs()).thenReturn(new Object[]{request});
         when(point.proceed()).thenReturn("101");
         assertEquals("101", aspect.restore(point));
-        assertTrue(request.getCanvasStyleData().contains("material://789"));
+        assertTrue(request.getCanvasStyleData().contains("/static-resource/imported.png"));
+        request.setMaterialBundle(bundle);
         request.setComponentData("[{\"component\":\"Picture\",\"propValue\":{\"url\":\"material-file://2\"}}]");
         assertThrows(io.dataease.exception.DEException.class, () -> aspect.restore(point));
     }
@@ -166,14 +167,12 @@ class MaterialPersistenceTest {
     }
 
     @Test void editedImportDoesNotRestoreRemovedFilesOrRejectNormalSelections() throws Throwable {
-        MaterialBundleService service = mock(MaterialBundleService.class);
-        when(service.restore(any())).thenReturn(Map.of());
-        var beans = new StaticListableBeanFactory();
-        beans.addBean("bundles", service);
-        var aspect = new MaterialImportAspect(beans.getBeanProvider(MaterialBundleService.class), manager);
+        ImportedImageManage images = mock(ImportedImageManage.class);
+        when(images.restore(any(), anySet())).thenReturn(Map.of());
+        var aspect = new MaterialImportAspect(images, manager);
         var request = new DataVisualizationBaseRequest();
         var bundle = new MaterialBundle();
-        var file = new io.dataease.api.material.vo.MaterialBundleEntry();
+        var file = new MaterialBundleEntry();
         file.setReference("material-file://1");
         bundle.getFiles().add(file);
         request.setMaterialBundle(bundle);
@@ -185,10 +184,7 @@ class MaterialPersistenceTest {
         when(point.getSignature()).thenReturn(signature);
         when(point.getArgs()).thenReturn(new Object[]{request});
         aspect.restore(point);
-        verify(service).validate(bundle);
-        var captured = org.mockito.ArgumentCaptor.forClass(MaterialBundle.class);
-        verify(service).restore(captured.capture());
-        assertTrue(captured.getValue().getFiles().isEmpty());
+        verify(images).restore(eq(bundle), argThat(references -> !references.contains("material-file://1")));
         assertTrue(request.getCanvasStyleData().contains("material://123"));
     }
 }
