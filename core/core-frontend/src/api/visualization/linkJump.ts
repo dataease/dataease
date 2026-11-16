@@ -19,10 +19,11 @@ export function updateJumpSet(requestInfo) {
     loading: true
   })
 }
-export function queryTargetVisualizationJumpInfo(requestInfo) {
+export function queryTargetVisualizationJumpInfo(requestInfo, signal?: AbortSignal) {
   return request.post({
     url: '/linkJump/queryTargetVisualizationJumpInfo',
     data: requestInfo,
+    signal,
     loading: true
   })
 }

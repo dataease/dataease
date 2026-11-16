@@ -6,10 +6,8 @@ import type { SpreadsheetRuntimeOptions } from '../../../types/mode'
 import type { SpreadsheetOuterParamsRuntime } from '../../../types/outer-params'
 import type { SpreadsheetFilterConfig, SpreadsheetQueryFilterItem } from '../../../types/plugin'
 import { loadSpreadsheetOuterParams } from '../utils/load-outer-params'
-import {
-  applySpreadsheetOuterParamsToFilterConfig,
-  resolveSpreadsheetOuterParams
-} from '../utils/outer-params'
+import { resolveSpreadsheetOuterParams } from '../utils/outer-params'
+import { applySpreadsheetQueryParamsToFilterConfig } from '../../DataEaseFilterPlugin/utils/query-params'
 
 export class SpreadsheetOuterParamsService extends Disposable {
   private ready?: Promise<void>
@@ -64,7 +62,7 @@ export class SpreadsheetOuterParamsService extends Disposable {
       .then(() => {
         if (this._disposed) throw new Error(useI18n().t('spreadsheet.load_error'))
         if (!this.params) return config
-        return applySpreadsheetOuterParamsToFilterConfig(config, this.params)
+        return applySpreadsheetQueryParamsToFilterConfig(config, this.params.queryValues)
       })
       .catch(error => {
         this.notifyError(error)

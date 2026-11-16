@@ -29,6 +29,9 @@ public class VisualizationLinkJumpBaseRequest {
 
     private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 
+    // 缺省沿用仪表板/大屏；电子表格目标始终校验正式稿。
+    private String targetResourceType;
+
     public VisualizationLinkJumpBaseRequest() {
     }
 

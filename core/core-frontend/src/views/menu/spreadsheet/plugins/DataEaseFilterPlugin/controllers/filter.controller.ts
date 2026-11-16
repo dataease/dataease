@@ -30,6 +30,7 @@ import { FilterInstanceService } from '../services/filter-instance.service'
 import { SpreadsheetFilterRuntimeService } from '../services/filter-runtime.service'
 import { FilterConfigContextService } from '../services/filter-config-context.service'
 import { SpreadsheetOuterParamsService } from '../../DataEaseOuterParamsPlugin/services/outer-params.service'
+import { SpreadsheetLinkJumpService } from '../../DataEaseLinkJumpPlugin/services/link-jump.service'
 import type { SpreadsheetFilterConfig } from '../../../types/plugin'
 import {
   dispatchSpreadsheetFilterConfigChange,
@@ -76,7 +77,8 @@ export class DataEaseFilterController extends Disposable {
     @IUIPartsService private readonly _uiPartsService: IUIPartsService,
     @Inject(ComponentManager) private readonly _componentManager: ComponentManager,
     @Inject(IconManager) private readonly _iconManager: IconManager,
-    @Inject(IResourceManagerService) private readonly _resourceManagerService: IResourceManagerService,
+    @Inject(IResourceManagerService)
+    private readonly _resourceManagerService: IResourceManagerService,
     @Inject(IUniverInstanceService)
     private readonly _univerInstanceService: IUniverInstanceService,
     @Inject(FilterInstanceService) private readonly _filterInstanceService: FilterInstanceService,
@@ -86,6 +88,8 @@ export class DataEaseFilterController extends Disposable {
     private readonly _filterConfigContextService: FilterConfigContextService,
     @Inject(SpreadsheetOuterParamsService)
     private readonly _outerParamsService: SpreadsheetOuterParamsService,
+    @Inject(SpreadsheetLinkJumpService)
+    private readonly _linkJumpService: SpreadsheetLinkJumpService,
     @Inject(SpreadsheetModeService)
     private readonly _spreadsheetModeService: SpreadsheetModeService
   ) {
@@ -150,11 +154,14 @@ export class DataEaseFilterController extends Disposable {
         }
         // Univer 的通用 Vue 适配器会在 React props 引用变化时重挂载组件；
         // 查询栏不依赖这些 props，保持同一个 Vue 实例可避免初始化 options 被重复加载。
-        render(h(SpreadsheetQueryBar, {
-          mode,
-          isInitialValuesPending: () => this._getPendingValuesUnitId() !== undefined,
-          onInitialValuesReady: values => this._handleValuesReady(values)
-        }), container)
+        render(
+          h(SpreadsheetQueryBar, {
+            mode,
+            isInitialValuesPending: () => this._getPendingValuesUnitId() !== undefined,
+            onInitialValuesReady: values => this._handleValuesReady(values)
+          }),
+          container
+        )
         return () => render(null, container)
       }, [])
       return createElement('div', { ref: containerRef })
@@ -198,15 +205,21 @@ export class DataEaseFilterController extends Disposable {
         businesses: [UniverInstanceType.UNIVER_SHEET],
         onLoad: (unitId, resource) => {
           const loadedConfig = this._filterInstanceService.normalize(resource)
-          const outerParamsConfig = this._outerParamsService.applyToFilterConfig(loadedConfig)
-          if (!outerParamsConfig) {
+          const linkageConfig = this._linkJumpService.applyToFilterConfig(loadedConfig)
+          // 与仪表板一致，先应用点击联动，再应用外参；两者完成前不发布查询控件。
+          const previewConfig = linkageConfig
+            ? linkageConfig.then(
+                config => this._outerParamsService.applyToFilterConfig(config) || config
+              )
+            : this._outerParamsService.applyToFilterConfig(loadedConfig)
+          if (!previewConfig) {
             const valuesReady = this._initializeValues(unitId, loadedConfig)
             this._spreadsheetFilterRuntimeService.setValuesReady(unitId, valuesReady)
             return
           }
           this._pendingInitialConfigs.set(unitId, loadedConfig)
-          // 只归一化并登记等待，外参转换成功后再提交配置、显示控件及初始化默认值。
-          const valuesReady = outerParamsConfig.then(config => {
+          // 只归一化并登记等待，预览参数转换成功后再提交配置和初始化默认值。
+          const valuesReady = previewConfig.then(config => {
             if (this._disposed || this._pendingInitialConfigs.get(unitId) !== loadedConfig) return
             this._pendingInitialConfigs.delete(unitId)
             return this._initializeValues(unitId, config)
@@ -252,8 +265,7 @@ export class DataEaseFilterController extends Disposable {
     const saveConfig = (payload: SpreadsheetFilterSaveConfigPayload) => this._saveConfig(payload)
     const deleteCondition = (conditionId: string) => this._deleteCondition(conditionId)
     const disableFilter = () => this._disableFilter()
-    const openStyle = (payload?: SpreadsheetFilterOpenStylePayload) =>
-      this._openStylePanel(payload)
+    const openStyle = (payload?: SpreadsheetFilterOpenStylePayload) => this._openStylePanel(payload)
     onSpreadsheetFilterRequestConfigContext(requestConfigContext)
     onSpreadsheetFilterSaveConfig(saveConfig)
     onSpreadsheetFilterDeleteCondition(deleteCondition)
@@ -326,12 +338,15 @@ export class DataEaseFilterController extends Disposable {
 
   private _createValuesReady(unitId: string, config: SpreadsheetFilterConfig): Promise<void> {
     this._resolveValuesReady(unitId)
-    const requiresOptions = config.visible && config.conditions.some(condition =>
-      condition.visible &&
-      condition.defaultValueEnabled &&
-      condition.defaultValueFirstItem &&
-      ['textSelect', 'numberSelect', 'treeSelect'].includes(condition.displayType)
-    )
+    const requiresOptions =
+      config.visible &&
+      config.conditions.some(
+        condition =>
+          condition.visible &&
+          condition.defaultValueEnabled &&
+          condition.defaultValueFirstItem &&
+          ['textSelect', 'numberSelect', 'treeSelect'].includes(condition.displayType)
+      )
     if (!requiresOptions) {
       return Promise.resolve()
     }
@@ -349,10 +364,7 @@ export class DataEaseFilterController extends Disposable {
 
     // QueryBar 已持有相同的值，这里只更新资源状态，不再反向广播配置变化。
     const config = this._filterInstanceService.get(unitId)
-    this._filterInstanceService.setConfigForUnit(
-      unitId,
-      this._withSelectValues(config, values)
-    )
+    this._filterInstanceService.setConfigForUnit(unitId, this._withSelectValues(config, values))
     this._spreadsheetFilterRuntimeService.setValues(unitId, values)
     this._resolveValuesReady(unitId)
   }
@@ -456,7 +468,9 @@ export class DataEaseFilterController extends Disposable {
   }
 
   private _getCurrentUnitId(): string | undefined {
-    const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
+    const workbook = this._univerInstanceService.getCurrentUnitOfType(
+      UniverInstanceType.UNIVER_SHEET
+    )
     return (workbook as any)?.getUnitId?.() || (workbook as any)?.getId?.()
   }
 

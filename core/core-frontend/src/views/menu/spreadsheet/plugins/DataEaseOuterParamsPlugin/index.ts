@@ -8,6 +8,7 @@ import {
 import type { SpreadsheetRuntimeOptions } from '../../types/mode'
 import { SpreadsheetFilterRuntimeService } from '../DataEaseFilterPlugin/services/filter-runtime.service'
 import { SpreadsheetOuterParamsService } from './services/outer-params.service'
+import { SpreadsheetLinkJumpService } from '../DataEaseLinkJumpPlugin/services/link-jump.service'
 
 export class DataEaseOuterParamsPlugin extends Plugin {
   static override type = UniverInstanceType.UNIVER_SHEET
@@ -38,7 +39,10 @@ export class DataEaseOuterParamsPlugin extends Plugin {
       const valuesReady = this._injector
         .get(SpreadsheetFilterRuntimeService)
         .waitForValues(workbook.getUnitId())
-      this._injector.get(SpreadsheetOuterParamsService).completeInitialization(valuesReady)
+      const linkageReady = this._injector.get(SpreadsheetLinkJumpService).waitForReady()
+      this._injector
+        .get(SpreadsheetOuterParamsService)
+        .completeInitialization(Promise.all([valuesReady, linkageReady]).then(() => undefined))
     })
   }
 }

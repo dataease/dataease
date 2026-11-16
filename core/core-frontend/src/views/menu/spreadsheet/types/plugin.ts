@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import type { SpreadsheetLinkageFilter } from './link-jump'
 
 export type FieldSortType = 'none' | 'asc' | 'desc' | 'custom_sort'
 
@@ -304,6 +305,8 @@ export interface PluginDataConfig {
   queryFilter?: SpreadsheetQueryFilterItem[]
   // 外部参数仅用于本次取数请求，不回写工作簿配置。
   outerParamsFilter?: SpreadsheetQueryFilterItem[]
+  // 跳转联动仅保存在预览会话中，与外参、查询栏条件分别传入。
+  linkageFilters?: SpreadsheetLinkageFilter[]
   resultLimit: number
 }
 

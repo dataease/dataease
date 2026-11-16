@@ -1,21 +1,19 @@
 import { queryData } from '../../../api/data'
 import type { SpreadsheetQueryFilterItem } from '../../../types/plugin'
+import type { SpreadsheetLinkageFilter } from '../../../types/link-jump'
 import {
   DEFAULT_DATE_PATTERN,
   DEFAULT_DATE_STYLE,
   normalizeFormatterConfig
 } from '../utils/field-format'
-import type {
-  PivotTableConfig,
-  PivotTableField,
-  PivotTableQueryResult
-} from '../types'
+import type { PivotTableConfig, PivotTableField, PivotTableQueryResult } from '../types'
 import { normalizePivotFields } from '../utils/pivot-config-validator'
 
 export class PivotTableDataService {
   async queryData(
     config: PivotTableConfig,
-    outerParamsFilter: SpreadsheetQueryFilterItem[] = []
+    outerParamsFilter: SpreadsheetQueryFilterItem[] = [],
+    linkageFilters: SpreadsheetLinkageFilter[] = []
   ): Promise<PivotTableQueryResult> {
     const normalizeFields = (fields: PivotTableField[]) =>
       normalizePivotFields(fields).map(field => {
@@ -41,6 +39,7 @@ export class PivotTableDataService {
         ...config.data,
         // 空数组也覆盖旧值，避免复用临时查询配置时残留外部条件。
         outerParamsFilter,
+        linkageFilters,
         zones: {
           rows: normalizeFields(config.data.zones.rows),
           columns: normalizeFields(config.data.zones.columns)

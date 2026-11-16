@@ -15,7 +15,7 @@
         class="preview-main-frame"
         id="iframe-de-preview-pop"
         :src="
-          state.url.startsWith('#/preview?dvId=')
+          state.url.startsWith('#/preview?dvId=') || state.url.startsWith('#/spreadsheet-preview?')
             ? `?${new Date().getTime()}${state.url}`
             : state.url
         "
@@ -83,7 +83,10 @@ const previewInit = params => {
     state.height = '65%'
   }
   state.dialogShow = true
-  if (embeddedStore.getToken && state.url.includes('#/preview?dvId=')) {
+  const previewPage = ['#/preview?dvId=', '#/spreadsheet-preview?'].some(path =>
+    state.url.includes(path)
+  )
+  if (embeddedStore.getToken && previewPage) {
     if (xpackIframe?.value) {
       xpackIframe.value.iframeInit(null)
     }
