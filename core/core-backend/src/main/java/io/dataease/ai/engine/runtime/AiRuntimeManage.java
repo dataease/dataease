@@ -327,17 +327,32 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         return resolveModel(c.organizationId(), s);
     }
     private String usageRevision(Long organization, CoreAiSetting settings) {
+        return usageRevision(settings, organizationPolicy(organization));
+    }
+    private CoreAiOrgPolicy organizationPolicy(Long organization) {
+        return organization == null ? null : policies.findById(organization).orElse(null);
+    }
+    private String usageRevision(CoreAiSetting settings, CoreAiOrgPolicy policy) {
         Long epoch = settings.getUsageEpoch();
-        Long organizationEpoch = organization == null ? 0L : policies.findById(organization).map(CoreAiOrgPolicy::getUsageEpoch).orElse(0L);
+        Long organizationEpoch = policy == null ? 0L : policy.getUsageEpoch();
         if (epoch == null || organizationEpoch == null) throw AiErrors.error("scope_changed");
         return epoch + ":" + organizationEpoch;
     }
-    public String usageRevision(AiAccess.Identity owner) { verifyUsage(owner); return usageRevision(owner.organization(), configuration.setting()); }
+    public String usageRevision(AiAccess.Identity owner) {
+        access.verify(owner, false);
+        CoreAiSetting settings = configuration.setting();
+        // Enablement and the shutdown fence must come from the same read, never a cross-request cache.
+        return usageRevision(settings, enabledPolicy(owner.organization(), settings));
+    }
     public void verifyUsage(AiAccess.Identity owner) {
         access.verify(owner, false);
-        if (!Boolean.TRUE.equals(configuration.setting().getEnabled())) throw AiErrors.error("disabled");
-        if (owner.organization() != null && policies.findById(owner.organization()).map(p -> "DISABLED".equals(p.getMode())).orElse(false))
-            throw AiErrors.error("organization_disabled");
+        enabledPolicy(owner.organization(), configuration.setting());
+    }
+    private CoreAiOrgPolicy enabledPolicy(Long organization, CoreAiSetting settings) {
+        if (!Boolean.TRUE.equals(settings.getEnabled())) throw AiErrors.error("disabled");
+        CoreAiOrgPolicy policy = organizationPolicy(organization);
+        if (policy != null && "DISABLED".equals(policy.getMode())) throw AiErrors.error("organization_disabled");
+        return policy;
     }
     public void verifyTaskExecution(AiAccess.Identity owner, Long modelId, Long revision, Long credentialRevision) {
         verifyUsage(owner);

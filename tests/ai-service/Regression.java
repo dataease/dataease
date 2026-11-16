@@ -109,6 +109,7 @@ public class Regression {
                 .setProperty("hibernate.connection.username","sa").setProperty("hibernate.connection.password","")
                 .setProperty("hibernate.dialect","org.hibernate.dialect.H2Dialect").setProperty("hibernate.hbm2ddl.auto","none")
                 .setProperty("hibernate.show_sql","false");
+        hibernate.getProperties().put("hibernate.session_factory.statement_inspector", (org.hibernate.resource.jdbc.spi.StatementInspector) ConversationRegression::inspectSettingSql);
         try(var factory=hibernate.buildSessionFactory();var validators=jakarta.validation.Validation.buildDefaultValidatorFactory()) {
             EntityManager em=SharedEntityManagerCreator.createSharedEntityManager(factory);
             var manager=new JpaTransactionManager(factory); TransactionTemplate tx=new TransactionTemplate(manager);

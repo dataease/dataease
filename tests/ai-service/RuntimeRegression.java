@@ -24,6 +24,37 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 
 public final class RuntimeRegression {
+    private static void usageReads(AiRuntimeManage runtime, AiConfigurationManage configuration,
+                                   CoreAiOrgPolicyRepository policies, AiAccess access) throws Exception {
+        // Current identity is synthetic here; settings and workspace policies are read from isolated H2.
+        var field = AiConfigurationManage.class.getDeclaredField("em"); field.setAccessible(true);
+        var em = (jakarta.persistence.EntityManager) field.get(configuration);
+        var tx = new org.springframework.transaction.support.TransactionTemplate(new org.springframework.orm.jpa.JpaTransactionManager(em.getEntityManagerFactory()));
+        long org = 987654321L;
+        var owner = new AiAccess.Identity(1L, org, null, access.mode());
+        var policy = new CoreAiOrgPolicy(); policy.setOrgId(org); policy.setUsageEpoch(7L);
+        tx.executeWithoutResult(status -> em.persist(policy));
+        long globalEpoch = configuration.setting().getUsageEpoch();
+        try {
+            int settings = ConversationRegression.settingsReads(), organizations = ConversationRegression.organizationReads();
+            for (int read = 0; read < 3; read++) {
+                if (!(globalEpoch + ":7").equals(runtime.usageRevision(owner))) throw new AssertionError("current workspace shutdown epoch");
+            }
+            if (ConversationRegression.settingsReads() - settings != 3 || ConversationRegression.organizationReads() - organizations != 3)
+                throw new AssertionError("each usage revision check must read global settings and workspace policy only once");
+            tx.executeWithoutResult(status -> { var current = em.find(CoreAiOrgPolicy.class, org); current.setMode("DISABLED"); current.setUsageEpoch(8L); });
+            try { runtime.usageRevision(owner); throw new AssertionError("workspace disablement reused a previous grant"); }
+            catch (AiErrors.Failure denied) { if (!"organization_disabled".equals(denied.safeCode())) throw denied; }
+            tx.executeWithoutResult(status -> { var current = em.find(CoreAiOrgPolicy.class, org); current.setMode("INHERIT"); current.setUsageEpoch(9L); });
+            if (!(globalEpoch + ":9").equals(runtime.usageRevision(owner))) throw new AssertionError("workspace off/on must publish the new epoch on the next check");
+            tx.executeWithoutResult(status -> policies.deleteById(org));
+            if (!(globalEpoch + ":0").equals(runtime.usageRevision(owner))) throw new AssertionError("missing workspace policy inherits the global setting");
+            int beforeCommunity = ConversationRegression.organizationReads();
+            runtime.usageRevision(new AiAccess.Identity(1L, null, null, access.mode()));
+            if (ConversationRegression.organizationReads() != beforeCommunity) throw new AssertionError("community usage must not query workspace policy");
+            System.out.println("PASS usage policy: one settings and one workspace SQL per check, fresh disable/off-on epochs, inherited missing policy and no community workspace reads");
+        } finally { tx.executeWithoutResult(status -> { if (policies.existsById(org)) policies.deleteById(org); }); }
+    }
     public static void run(AiConfigurationManage configuration, CoreAiOrgPolicyRepository policies, AiSecrets keys,
                            AiAdmission admission, AiAccess access) throws Exception {
         AtomicBoolean allowed = new AtomicBoolean(true);
@@ -52,6 +83,7 @@ public final class RuntimeRegression {
         AiRuntimeManage provider=new AiRuntimeManage(beans.getBeanProvider(AiFeature.class),configuration,policies,keys,transport,new ObjectMapper(),access);
         var attributes=new ServletRequestAttributes(new MockHttpServletRequest());RequestContextHolder.setRequestAttributes(attributes);
         try{
+            usageReads(provider, configuration, policies, access);
             var scope=new AiDataScope("dataset:1@v1","permissions:v1",null,false,null);
             var context=provider.current("synthetic-sql",scope);ChatModel model=provider.current(context);
             if(!"OK".equals(model.call("hello")))throw new AssertionError("direct call");
