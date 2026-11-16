@@ -115,3 +115,19 @@ npm --prefix tests/browser test -- --config=playwright.threshold-tags.config.mjs
 覆盖 1440px 和 960px 视口下的接收人、邮件、飞书群、国际飞书群及 Webhook 选中标签字号，群组下拉候选字号、四项多选、长名称与删除标签。修复前两个用例均在期望 12px、实际 14px 的群组标签断言失败；修复后均通过。这是实际组件的浏览器回归，不代表完整登录、权限、后端群组连接或生产构建已验证。
 
 CLI 可先运行 `node tests/browser/fixtures/threshold-tags/server.mjs`，再从 `tests/browser` 使用独立会话打开上述地址。测试启动器默认要求端口未被占用；确需复用手动启动的本夹具时设置 `THRESHOLD_TAGS_SERVER=1`。
+
+## 预览工作表标签右键回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.preview-sheet-tab.config.mjs
+```
+
+独立配置启动 `127.0.0.1:4192` 的 Vite 夹具，复用主前端已安装的 Univer 和真实预览右键控制器，使用合成工作簿，不连接业务后端。覆盖非标签区域右键不进入控制器、预览标签右键禁用菜单、编辑模式保留菜单、左键切表及销毁重建后的监听清理。该回归验证事件范围与交互行为，不代表完整大屏回归或大数据量性能基准。
+
+## 水印间距回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.watermark-spacing.config.mjs
+```
+
+独立配置不启动应用服务，通过主前端已安装的 TypeScript 提取并执行真实水印 DOM 渲染函数，在浏览器内使用合成容器和水印文字。覆盖单行、单列、极小容器、普通画布和长仪表板的坐标有效性与覆盖范围，不连接业务后端，也不验证用户 API 或整页水印权限。

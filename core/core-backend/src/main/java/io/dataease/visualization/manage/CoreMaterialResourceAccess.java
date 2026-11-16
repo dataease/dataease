@@ -16,7 +16,6 @@ import io.dataease.model.BusiNodeVO;
 import io.dataease.result.ResultCode;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.MaterialReferences;
-import io.dataease.utils.ServletUtils;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import jakarta.annotation.Resource;
@@ -40,9 +39,6 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
     @Override
     public Set<Long> authorize(MaterialContext context, boolean edit) {
         if (context == null) throw denied();
-        boolean embedded = ServletUtils.isEmbeddedRequest();
-        if (embedded && (edit || context.getResourceId() == null || context.getTemplateId() != null
-                || !"core".equals(context.getResourceTable()))) throw denied();
         if (context.getTemplateId() != null) {
             // Templates use the existing authenticated global template catalogue.
             if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null || edit) throw denied();
@@ -71,9 +67,6 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
         }
         DataVisualizationInfo resource = resources.findById(context.getResourceId()).orElseThrow(this::denied);
         if (!Set.of("dashboard", "dataV").contains(resource.getType())) throw denied();
-        if (embedded && (Boolean.TRUE.equals(resource.getDeleteFlag()) || !"leaf".equals(resource.getNodeType())
-                || !(Objects.equals(resource.getStatus(), CommonConstants.DV_STATUS.PUBLISHED)
-                || Objects.equals(resource.getStatus(), CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)))) throw denied();
         boolean draft = "snapshot".equals(context.getResourceTable());
         if (!draft && !"core".equals(context.getResourceTable())) throw denied();
         var link = V3UserUtil.getLink();
