@@ -1,4 +1,4 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.engine.conversation;
 
 import java.util.List;
 import java.util.Map;

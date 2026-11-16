@@ -1,5 +1,12 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.scene.structure.AiStructureMutexScene;
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.net.httpserver.HttpServer;
 import io.dataease.ai.dao.entity.*;

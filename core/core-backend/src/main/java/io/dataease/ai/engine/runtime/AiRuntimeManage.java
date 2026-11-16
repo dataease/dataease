@@ -1,4 +1,9 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.engine.runtime;
+
+import io.dataease.ai.manage.AiAccess;
+import io.dataease.ai.manage.AiAuditManage;
+import io.dataease.ai.manage.AiConfigurationManage;
+import io.dataease.ai.manage.AiDeploymentMode;
 
 import io.dataease.api.ai.runtime.*;
 import io.dataease.ai.dao.entity.*;

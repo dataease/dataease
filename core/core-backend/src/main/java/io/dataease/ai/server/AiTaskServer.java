@@ -1,6 +1,6 @@
 package io.dataease.ai.server;
 
-import io.dataease.ai.manage.AiTaskManage;
+import io.dataease.ai.engine.task.AiTaskManage;
 import io.dataease.api.ai.task.AiTaskApi;
 import io.dataease.api.ai.task.AiTaskDtos.*;
 import org.springframework.web.bind.annotation.RestController;

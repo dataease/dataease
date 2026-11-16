@@ -1,5 +1,7 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.dao.repository.*;
@@ -118,7 +120,7 @@ public class Regression {
             jdbc.execute("alter table core_ai_task_attempt drop column recovery_json");
             jdbc.update("insert into core_ai_task_attempt (id,task_id,attempt_number,retry_hash,status,created_at,finished_at) values (777,777,1,'legacy-delivery','COMPLETED',1000,2000)");
             var deliveryMigration=new io.dataease.listener.sql.AiTaskDeliveryInit(jdbc,factory); deliveryMigration.execute(); deliveryMigration.execute();
-            if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id=777", Long.class) != 2000L + io.dataease.ai.manage.AiTaskManage.DELIVERY_MILLIS
+            if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id=777", Long.class) != 2000L + io.dataease.ai.engine.task.AiTaskManage.DELIVERY_MILLIS
                     || jdbc.queryForObject("select notice_ack_at from core_ai_task_attempt where id=777", Long.class) != 2000L) throw new AssertionError("legacy result expiry backfill preserves original finish and creates no old pending notice");
             System.out.println("PASS AI 2.50 additive retryable delivery migration, original expiry and no manufactured legacy notices");
             var migration=new AiConfigurationInit(jdbc,factory,em,manager); migration.execute(); migration.execute();

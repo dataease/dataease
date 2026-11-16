@@ -1,5 +1,9 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.manage.*;
 import jakarta.persistence.EntityManager;

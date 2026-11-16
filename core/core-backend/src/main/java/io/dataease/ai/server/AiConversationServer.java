@@ -1,6 +1,6 @@
 package io.dataease.ai.server;
 
-import io.dataease.ai.manage.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.api.ai.conversation.AiConversationApi;
 import io.dataease.api.ai.conversation.AiConversationDtos.*;
 import org.springframework.web.bind.annotation.RestController;

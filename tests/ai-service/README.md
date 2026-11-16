@@ -187,6 +187,8 @@ H2 证明事务和跨 JVM 回归，不代表 MySQL/GreatSQL、PostgreSQL、SQL S
 
 修改开发验收入口、会话生命周期、工具、协议或资源预算前，读取 [对话助手开发说明](../../docs/ai/conversation.md)。本文保留回归命令、覆盖范围和环境限制。
 
+连续对话回归：`--conversation` 检查首次绑定、切换、清空数据源和修改 SQL 后的真实模型请求历史、原始有效期、幂等续接及运行中拒绝续接；`--recovery-tools` 检查实际 SQL 场景的历史来源标注、切库后仅操作当前库、清空目标后保留工具历史但不开放工具、最新问题旁的 NONE 状态且状态提示不累积入历史、历史资源撤权后拒绝新请求和结果交付。浏览器用例 `continuous dialogue` 检查 Demo 持续续接、普通追问复用及主动结束后新开对话。模型使用本机受控 HTTP 夹具，不代表真实模型回答质量验收。
+
 `ConversationRegression.java` runs actual dialogue MVC routes and real controlled loopback model HTTP, replacing only approved scene/identity/model boundaries. It covers multiround isolation and aggregate budgets, a first SSE increment while upstream is still blocked, fast private/token bursts under a five-second deadline with a deliberately slow scene READ boundary, cursor/terminal behavior, same-session and interactive admission, stop before/after the first delta, healthy parallel-stream isolation, cancellation history exclusion, protocol/output/UTF-8 failures, finite timeout, buffered-delivery permission/configuration revocation, active close/shutdown, and capacity recovery after an abandoned client. The same runner verifies one-shot capability submission without chat history, refusal of one-shot continuation, repeated-button capacity release, typed suggestions and fresh application authorization. It includes ToolConversationRegression through the actual SQL scene and the approved external DatasourceApi seam: actual table/field tool roundtrips, invalid candidate → model correction → PASS revalidation, split arguments, correlation/follow-up transcript, safe projection, invalid/out-of-scope calls, whole-round token reservations, definitions/results input budgets, repeat bounds, stop/late results and mid-tool READ revocation. `SqlStaticValidationRegression` independently covers the public pure validation boundary with the declared syntax/reference/security corpus and cancellation/deadline refusal. It also keeps the native synchronous SDK, original controlled transport/pool, community permission parity and keyring regressions. It starts neither DataEase nor a business database and calls no real model.
 
 ```sh
@@ -210,7 +212,9 @@ uv run python tests/ai-service/run.py --task-idle
 
 `--only-tasks` 还运行 TaskClusterRegression：拥有随机 loopback 端口的 H2 TCP 与独立 JVM 后端节点，通过真实 HTTP 访问实际 MVC/API/runtime/JPA。覆盖同时受理/只领取一次、跨节点取消、超过前台租期无轮询完成、QUEUED 跨进程恢复、进程 STOP/CONT 与过期归属 fencing、禁止自动续跑、全部节点重启后的持久结果，以及本人/撤权拒绝与仅进行中列表。进程、数据库和临时目录均由夹具创建并清理，不启动完整 DataEase，不使用产品登录凭据或业务数据库；不冒称 XPack 多空间权限、真实模型或 Redis 模型全局限额验收。完整默认回归包含本组测试并保留原前台/SDK 回归。
 
-`--task-idle` 是空闲调度的独立红绿入口：通过隔离 H2 的实际执行统计，观察全空、仅历史终态、AI 关闭三种状态各 4 秒的任务 SQL、调度行锁及正文查询；心跳单独计数。断言每窗口任务 SQL 不超过 8 次且仍存在兜底探测、无调度锁或正文读取。实际 HTTP 提交分别覆盖本机唤醒、无调度器的另一 JVM 受理后被工作节点发现、重新启用后继续处理新任务；记录受理到领取耗时，正常隔离环境上限为 2 秒加 500ms 测试调度容差。该容差不扩大产品承诺。`--task-contracts` 同时覆盖受理提交失败回滚后，超过兜底间隔仍没有任务或模型请求。性能统计只代表此隔离库与实际运行版本，不代表所有生产数据库的查询计划或容量。
+`--task-idle` 是空闲调度的独立红绿入口：通过隔离 H2 的实际执行统计，观察全空、仅历史终态、AI 关闭三种状态各 4 秒的任务 SQL、调度行锁及正文查询；心跳单独计数并断言为零。断言每窗口任务 SQL 不超过 8 次且仍存在兜底探测、无调度锁或正文读取。实际 HTTP 提交分别覆盖本机唤醒、无调度器的另一 JVM 受理后被工作节点发现、重新启用后继续处理新任务；记录受理到领取耗时，正常隔离环境上限为 2 秒加 500ms 测试调度容差。该容差不扩大产品承诺。`--task-contracts` 同时覆盖受理提交失败回滚后，超过兜底间隔仍没有任务或模型请求。性能统计只代表此隔离库与实际运行版本，不代表所有生产数据库的查询计划或容量。
+
+`--task-idle` 还在领取提交前设置受控屏障，验证已有执行的心跳不被领取事务阻塞；验证超过 15 秒的活动任务持续续约、空闲超过租期后仍可用新身份领取且清理旧租约，并暂停一个受控工作 JVM：租约有效时另一空闲节点只做轻量探测，租约过期后即使没有排队任务也会恢复 INTERRUPTED，旧节点继续运行后的迟到结果不能提交。终态提交失败时的运行槽和心跳保持由 `--task-contracts` 覆盖。
 
 `--task-idle` 另在隔离准入边界注入短暂/持续 `policy_blocked`，验证发送前有界等待、只发送一次、取消及关闭/重新启用后不发请求。`--task-scheduling` 在原公平性/容量回归后连续执行 12 轮“领取后立即降低容量”，覆盖模型初始化与配置发布的竞态；不以等待模型已开始来跳过该窗口。
 

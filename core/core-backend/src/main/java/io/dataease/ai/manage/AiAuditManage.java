@@ -1,5 +1,7 @@
 package io.dataease.ai.manage;
 
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.support.*;

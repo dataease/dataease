@@ -2863,3 +2863,97 @@ for (const language of [
       fullPage: true
     })
   })
+
+test('continuous dialogue retains its server history when binding a datasource and editing SQL', async ({
+  page
+}) => {
+  const openings = []
+  let current,
+    turn = 0
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('/resources'))
+      return route.fulfill({
+        json: [
+          { id: '11', name: 'Isolated database' },
+          { id: '12', name: 'Another database' }
+        ]
+      })
+    if (route.request().method() === 'DELETE') return route.fulfill({ json: {} })
+    if (path.endsWith('/executions')) {
+      turn++
+      return route.fulfill({
+        json: {
+          ...current,
+          executionId: `continuous-${turn}`,
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    }
+    if (path.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...current,
+          executionId: `continuous-${turn}`,
+          status: 'COMPLETED',
+          cursor: 2,
+          events: [
+            { sequence: 1, type: 'TEXT', text: `continuous reply ${turn}` },
+            { sequence: 2, type: 'COMPLETED' }
+          ]
+        }
+      })
+    const body = route.request().postDataJSON()
+    openings.push(body)
+    current = {
+      ...session,
+      sessionId: `continuous-session-${openings.length}`,
+      resourceId: body.resourceId || '',
+      contextVersion: `version-${openings.length}`
+    }
+    return route.fulfill({ json: current })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, '查看所有表')
+  await expect(page.getByText('continuous reply 1', { exact: true })).toBeVisible()
+  await page.getByRole('combobox', { name: '数据源' }).click()
+  await page.getByRole('option', { name: 'Isolated database' }).click()
+  await send(page, '现在呢')
+  await expect(page.getByText('continuous reply 2', { exact: true })).toBeVisible()
+  expect(openings[1].previousSessionId).toBe('continuous-session-1')
+  await page.getByRole('textbox', { name: '当前 SQL' }).fill('select 2')
+  await send(page, '继续解释')
+  await expect(page.getByText('continuous reply 3', { exact: true })).toBeVisible()
+  expect(openings[2].previousSessionId).toBe('continuous-session-2')
+  expect(openings[2].sql).toBe('select 2')
+  await expect(page.getByText('查看所有表', { exact: true })).toBeVisible()
+  await send(page, '还有呢')
+  await expect(page.getByText('continuous reply 4', { exact: true })).toBeVisible()
+  expect(openings).toHaveLength(3)
+  await page.getByRole('combobox', { name: '数据源' }).click()
+  await page.getByRole('option', { name: 'Another database' }).click()
+  await send(page, '查看这个库')
+  await expect(page.getByText('continuous reply 5', { exact: true })).toBeVisible()
+  expect(openings[3].previousSessionId).toBe('continuous-session-3')
+  await expect(page.getByRole('status').filter({ hasText: '新的对话上下文' })).toHaveCount(0)
+  await page.getByRole('combobox', { name: '数据源' }).hover()
+  await page
+    .locator('[class*="select__wrapper"]')
+    .filter({
+      has: page.getByRole('combobox', { name: '数据源' })
+    })
+    .locator('[class*="select__clear"]')
+    .click()
+  await send(page, '继续纯对话')
+  await expect(page.getByText('continuous reply 6', { exact: true })).toBeVisible()
+  expect(openings[4].previousSessionId).toBe('continuous-session-4')
+  expect(openings[4].resourceId).toBe('')
+  await send(page, '还记得吗')
+  await expect(page.getByText('continuous reply 7', { exact: true })).toBeVisible()
+  expect(openings).toHaveLength(5)
+  await page.getByRole('button', { name: '结束会话', exact: true }).click()
+  await send(page, '新的对话')
+  await expect(page.getByText('continuous reply 8', { exact: true })).toBeVisible()
+  expect(openings[5].previousSessionId).toBeUndefined()
+})

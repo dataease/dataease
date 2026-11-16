@@ -1,4 +1,12 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.engine.task;
+
+import io.dataease.ai.manage.AiAccess;
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.manage.AiIdentityScope;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.scene.structure.AiStructureMutexScene;
+import io.dataease.ai.engine.runtime.AiToolConversationFeature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.dao.entity.*;
@@ -35,7 +43,10 @@ public class AiTaskManage implements AiToolConversationFeature {
     private static final long NODE_LEASE_MILLIS = 15000;
     private static final long IDLE_POLL_MILLIS = 1500;
     private static final long ACTIVE_POLL_MILLIS = 250;
-    private final String nodeId = UUID.randomUUID().toString();
+    private volatile String nodeId;
+    // Serialize claim/registration with shutdown. Heartbeat I/O must not wait for a claim lock.
+    private final Object leaseLock = new Object();
+    private volatile String claimingLease;
     private final AtomicBoolean started = new AtomicBoolean();
     private volatile boolean stopped;
     private final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-heartbeat"));
@@ -45,7 +56,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private long nextPolicyCheck;
     private long nextMaintenance;
     private final Map<Long, Run> running = new ConcurrentHashMap<>();
-    private record Work(Long taskId, Long attemptId, String fence, AiAccess.Identity owner, Submit input, AiConversationScene.Context context, long deadline) { }
+    private record Work(Long taskId, Long attemptId, String nodeId, String fence, AiAccess.Identity owner, Submit input, AiConversationScene.Context context, long deadline) { }
     private static final class Run {
         final Work work;
         volatile AiRuntimeManage.StreamHandle stream;
@@ -433,20 +444,29 @@ public class AiTaskManage implements AiToolConversationFeature {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         if (!started.compareAndSet(false, true)) return;
-        tx.executeWithoutResult(status -> {
-            var node = new CoreAiTaskNode(); node.setId(nodeId); node.setHeartbeatAt(System.currentTimeMillis()); em.persist(node);
-        });
         heartbeat.scheduleWithFixedDelay(this::pulse, 1000, 1000, TimeUnit.MILLISECONDS);
         monitor.scheduleWithFixedDelay(this::monitorRunning, 0, ACTIVE_POLL_MILLIS, TimeUnit.MILLISECONDS);
         scheduler.execute(this::dispatchLoop);
     }
     private void pulse() {
-        if (stopped) return;
+        String lease = nodeId;
+        if (stopped || lease == null || running.isEmpty() && !lease.equals(claimingLease)) return;
         try {
             boolean alive = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskNode n set n.heartbeatAt=:now where n.id=:id and n.heartbeatAt>:cutoff")
-                    .setParameter("now", System.currentTimeMillis()).setParameter("id", nodeId).setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS).executeUpdate() == 1));
-            if (!alive) { stopped = true; interruptOwn(); running.values().forEach(this::close); running.clear(); }
+                    .setParameter("now", System.currentTimeMillis()).setParameter("id", lease).setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS).executeUpdate() == 1));
+            if (!alive) synchronized (leaseLock) {
+                // This renewal may race normal idle reactivation; never stop a newer identity.
+                if (!lease.equals(nodeId) || running.isEmpty()) return;
+                stopped = true;
+                try { interruptOwn(); }
+                finally { running.values().forEach(this::close); running.clear(); }
+            }
         } catch (RuntimeException unavailable) { /* Lease expires closed; every execution boundary checks durable ownership. */ }
+    }
+    /** A healthy remote execution does not make an otherwise idle worker busy. */
+    private boolean hasActionableTasks() {
+        return !em.createQuery("select a.id from CoreAiTaskAttempt a where a.status='QUEUED' or (a.status='RUNNING' and a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff))", Long.class)
+                .setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS).setMaxResults(1).getResultList().isEmpty();
     }
     private void dispatchLoop() {
         while (!stopped) {
@@ -465,7 +485,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private long dispatch() {
         if (stopped) return IDLE_POLL_MILLIS;
         try {
-            if (!hasTasks("('QUEUED','RUNNING')")) return IDLE_POLL_MILLIS;
+            if (running.isEmpty() && !hasActionableTasks()) return IDLE_POLL_MILLIS;
             long now = System.nanoTime();
             if (now >= nextPolicyCheck) {
                 invalidateUnauthorized();
@@ -477,8 +497,7 @@ public class AiTaskManage implements AiToolConversationFeature {
                 nextMaintenance = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
             }
             while (!stopped && running.size() < 20 && hasTasks("('QUEUED')")) {
-                Work work = claim(); if (work == null) break;
-                var run = new Run(work); running.put(work.attemptId(), run);
+                Run run = claimRun(); if (run == null) break;
                 try { execute(run); } catch (RuntimeException failure) { fail(run, failure); }
             }
             return ACTIVE_POLL_MILLIS;
@@ -522,7 +541,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void invalidateUnauthorized() {
         boolean capacityFull = em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status='RUNNING'", Long.class).getSingleResult()
                 >= em.find(CoreAiSetting.class, 1L).getTaskMaxRunning();
-        var candidates = em.createQuery("select t from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and a.status in ('QUEUED','RUNNING') order by t.createdAt", CoreAiTask.class).setMaxResults(10020).getResultList();
+        var candidates = em.createQuery("select t from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and (a.status='QUEUED' or (a.status='RUNNING' and a.nodeId=:node)) order by t.createdAt", CoreAiTask.class).setParameter("node", nodeId).setMaxResults(10020).getResultList();
         for (var task : candidates) {
             var attempt = em.find(CoreAiTaskAttempt.class, task.getCurrentAttemptId());
             try {
@@ -544,12 +563,30 @@ public class AiTaskManage implements AiToolConversationFeature {
             }
         }
     }
-    private Work claim() {
+    private Run claimRun() {
+        synchronized (leaseLock) {
+            if (stopped) return null;
+            // Keep an existing lease alive even if its last run ends while the next claim waits.
+            claimingLease = running.isEmpty() ? null : nodeId;
+            try {
+                Work work = claim(claimingLease);
+                if (work == null) return null;
+                nodeId = work.nodeId();
+                var run = new Run(work); running.put(work.attemptId(), run);
+                return run;
+            } finally { claimingLease = null; }
+        }
+    }
+    private Work claim(String existingLease) {
         return tx.execute(status -> {
             coordinate();
             if (em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status='RUNNING'", Long.class).getSingleResult() >= em.find(CoreAiSetting.class, 1L).getTaskMaxRunning()) return null;
-            var node = em.find(CoreAiTaskNode.class, nodeId);
-            if (node == null || node.getHeartbeatAt() <= System.currentTimeMillis() - NODE_LEASE_MILLIS) return null;
+            boolean activate = existingLease == null;
+            String lease = activate ? UUID.randomUUID().toString() : existingLease;
+            if (!activate) {
+                var node = em.find(CoreAiTaskNode.class, lease);
+                if (node == null || node.getHeartbeatAt() <= System.currentTimeMillis() - NODE_LEASE_MILLIS) return null;
+            }
             var coordination = em.find(CoreAiTaskSchedule.class, 1L);
             var actors = em.createQuery("select distinct t.actorId from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and a.status='QUEUED' and t.actorId is not null order by t.actorId", Long.class).getResultList();
             if (actors.isEmpty()) return null;
@@ -561,11 +598,18 @@ public class AiTaskManage implements AiToolConversationFeature {
             long now = System.currentTimeMillis();
             long deadline = now + em.find(CoreAiSetting.class, 1L).getRequestTimeoutSeconds() * 1000L;
             int won = em.createQuery("update CoreAiTaskAttempt a set a.status='RUNNING', a.nodeId=:node, a.fence=:fence, a.startedAt=:now, a.deadline=:deadline where a.id=:id and a.status='QUEUED' and a.queueDeadline>:now")
-                    .setParameter("node", nodeId).setParameter("fence", fence).setParameter("now", now).setParameter("deadline", deadline).setParameter("id", id).executeUpdate();
+                    .setParameter("node", lease).setParameter("fence", fence).setParameter("now", now).setParameter("deadline", deadline).setParameter("id", id).executeUpdate();
             if (won != 1) return null;
+            if (activate) {
+                var node = new CoreAiTaskNode(); node.setId(lease); node.setHeartbeatAt(now); em.persist(node);
+                // Retire only an unreferenced old lease. An uncertain earlier commit must remain
+                // visible to stale-execution recovery and must never be renewed by this activation.
+                if (nodeId != null) em.createQuery("delete from CoreAiTaskNode n where n.id=:node and not exists (select a.id from CoreAiTaskAttempt a where a.status='RUNNING' and a.nodeId=n.id)")
+                        .setParameter("node", nodeId).executeUpdate();
+            }
             coordination.setLastActorId(actor);
             var attempt = em.find(CoreAiTaskAttempt.class, id); var task = em.find(CoreAiTask.class, attempt.getTaskId());
-            return new Work(task.getId(), id, fence, decode(task.getOwnerJson(), AiAccess.Identity.class), input(task), context(task), deadline);
+            return new Work(task.getId(), id, lease, fence, decode(task.getOwnerJson(), AiAccess.Identity.class), input(task), context(task), deadline);
         });
     }
     private void maintainWaiting() {
@@ -591,7 +635,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void active(Run run) {
         progress(run);
         var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId()); live(attempt);
-        if (!Objects.equals(run.work.fence(), attempt.getFence()) || !nodeId.equals(attempt.getNodeId())) throw AiErrors.error("cancelled");
+        if (!Objects.equals(run.work.fence(), attempt.getFence()) || !run.work.nodeId().equals(attempt.getNodeId())) throw AiErrors.error("cancelled");
     }
     private void check(Run run) {
         active(run); authorized(run.work.owner(), () -> { scene(run.work.input().scene()).authorize(run.work.context()); return null; });
@@ -602,7 +646,7 @@ public class AiTaskManage implements AiToolConversationFeature {
         String snapshot = encode(new RecoverySnapshot(run.stream.recovery().policy(), new io.dataease.api.ai.conversation.AiConversationDtos.RecoveryProgress(
                 progress.stepId(), progress.stepKind(), progress.technicalRetries(), progress.corrections(), progress.reason()), run.recoverySource));
         boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.recoveryJson=:progress where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
-                .setParameter("progress", snapshot).setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+                .setParameter("progress", snapshot).setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", run.work.nodeId()).executeUpdate() == 1));
         if (!saved) throw AiErrors.error("cancelled");
     }
     private void execute(Run run) {
@@ -635,7 +679,7 @@ public class AiTaskManage implements AiToolConversationFeature {
         // Pin actual selected model before any network send; a failed state commit cannot submit a request.
         boolean saved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.modelId=:model, a.modelRevision=:revision, a.credentialRevision=:credential, a.modelIdentifier=:identifier, a.deadline=:deadline, a.executionId=:execution where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
                 .setParameter("model", model.id()).setParameter("revision", model.revision()).setParameter("credential", model.credentialRevision()).setParameter("identifier", model.identifier())
-                .setParameter("deadline", stream.deadline()).setParameter("execution", stream.executionId()).setParameter("id", work.attemptId()).setParameter("fence", work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+                .setParameter("deadline", stream.deadline()).setParameter("execution", stream.executionId()).setParameter("id", work.attemptId()).setParameter("fence", work.fence()).setParameter("node", work.nodeId()).executeUpdate() == 1));
         if (!saved) throw AiErrors.error("cancelled");
         if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), value -> append(run, value), step -> step(run, step), failure -> fail(run, failure));
         else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), value -> append(run, value), () -> complete(run, draft), failure -> fail(run, failure));
@@ -673,7 +717,7 @@ public class AiTaskManage implements AiToolConversationFeature {
             if (definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN) {
                 run.replayUnsafe = true;
                 boolean safeSaved = Boolean.TRUE.equals(tx.execute(status -> em.createQuery("update CoreAiTaskAttempt a set a.retrySafe=false where a.id=:id and a.status='RUNNING' and a.fence=:fence and a.nodeId=:node")
-                        .setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", nodeId).executeUpdate() == 1));
+                        .setParameter("id", run.work.attemptId()).setParameter("fence", run.work.fence()).setParameter("node", run.work.nodeId()).executeUpdate() == 1));
                 if (!safeSaved) throw AiErrors.error("cancelled");
             }
             String result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
@@ -701,7 +745,8 @@ public class AiTaskManage implements AiToolConversationFeature {
         catch (RuntimeException unavailable) {
             // Keep a bounded slot until a failure terminal can commit; never strand RUNNING under a healthy node.
             close(run); run.failureCode = code;
-            if (!stopped) running.putIfAbsent(run.work.attemptId(), run);
+            // terminal() retains the registered slot on commit failure; never resurrect a
+            // slot concurrently removed by a committed cancellation or shutdown.
         }
     }
     private void terminal(Run run, String state, String error, String result) {
@@ -711,19 +756,21 @@ public class AiTaskManage implements AiToolConversationFeature {
                 coordinate();
                 em.find(CoreAiTask.class, run.work.taskId(), LockModeType.PESSIMISTIC_WRITE);
                 var attempt = em.find(CoreAiTaskAttempt.class, run.work.attemptId(), LockModeType.PESSIMISTIC_WRITE);
-                if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !nodeId.equals(attempt.getNodeId())) return false;
+                if (attempt == null || !"RUNNING".equals(attempt.getStatus()) || !Objects.equals(attempt.getFence(), run.work.fence()) || !run.work.nodeId().equals(attempt.getNodeId())) return false;
                 live(attempt);
                 ended(attempt, state, error, result); em.flush(); return true;
             }));
+            running.remove(run.work.attemptId(), run);
             if (saved && run.stream != null) run.stream.finishAudit(state);
-        } finally { close(run); running.remove(run.work.attemptId(), run); wakeup.release(); }
+        } finally { close(run); wakeup.release(); }
     }
     private void close(Run run) { if (run.stream != null) run.stream.close(); }
     private void interruptOwn() {
-        interrupted(nodeId);
+        if (nodeId != null) interrupted(nodeId);
     }
     @PreDestroy public void destroy() {
-        stopped = true; scheduler.shutdownNow(); heartbeat.shutdownNow(); monitor.shutdownNow();
+        synchronized (leaseLock) { stopped = true; }
+        scheduler.shutdownNow(); heartbeat.shutdownNow(); monitor.shutdownNow();
         if (started.get()) { try { interruptOwn(); } finally { running.values().forEach(this::close); running.clear(); } }
     }
 }

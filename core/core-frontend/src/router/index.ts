@@ -18,7 +18,7 @@ export const routes: AppRouteRecordRaw[] = [
               name: 'demo-ai-assistant',
               hidden: true,
               meta: { hidden: true },
-              component: () => import('@/views/demo/ai-assistant/index.vue')
+              component: () => import('@/views/demo/ai-assistant/sql/index.vue')
             }
           ]
         }
