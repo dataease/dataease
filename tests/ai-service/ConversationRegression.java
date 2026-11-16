@@ -35,6 +35,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 /** Public dialogue HTTP + real controlled model HTTP; only the business scene is synthetic. */
 public final class ConversationRegression {
+    private static final ThreadLocal<AtomicInteger> settingSql = ThreadLocal.withInitial(AtomicInteger::new);
+    private static final ThreadLocal<AtomicInteger> organizationSql = ThreadLocal.withInitial(AtomicInteger::new);
+    private static final AtomicInteger scheduledSettingSql = new AtomicInteger();
+    static int settingsReads() { return settingSql.get().get(); }
+    static int organizationReads() { return organizationSql.get().get(); }
+    static String inspectSettingSql(String sql) {
+        String normalized = sql.toLowerCase(Locale.ROOT);
+        if (normalized.startsWith("select ") && normalized.contains(" from core_ai_setting ")) {
+            settingSql.get().incrementAndGet();
+            if ("de-ai-sessions".equals(Thread.currentThread().getName())) scheduledSettingSql.incrementAndGet();
+        }
+        if (normalized.startsWith("select ") && normalized.contains(" from core_ai_org_policy ")) organizationSql.get().incrementAndGet();
+        return sql;
+    }
     private static void deny(MockMvc mvc, String path, String version, String text) throws Exception {
         try {
             var response = mvc.perform(post(path).contentType(MediaType.APPLICATION_JSON)
@@ -132,6 +146,13 @@ public final class ConversationRegression {
     private static String pathFor(com.fasterxml.jackson.databind.JsonNode session) {
         return "/ai/conversations/" + session.path("sessionId").asText() + "/turns";
     }
+    private static void enable(AiConfigurationManage configuration, boolean enabled) {
+        var settings = configuration.setting();
+        configuration.saveSettings(new SettingsChange(settings.getRowVersion(), enabled, settings.getDefaultModelId(), settings.getAllowSamples(),
+                settings.getRequestTimeoutSeconds(), settings.getMaxInputChars(), settings.getMaxOutputTokens(),
+                settings.getInteractiveConcurrency(), settings.getBackgroundConcurrency(),
+                configuration.impact("SETTINGS", settings.getDefaultModelId() + ":" + enabled).token()));
+    }
     private static void idleMaintenance(MockMvc mvc, ObjectMapper json, AiConfigurationManage configuration,
                                         AtomicInteger identityChecks, AtomicBoolean identityAllowed) throws Exception {
         var field = AiConfigurationManage.class.getDeclaredField("em"); field.setAccessible(true);
@@ -188,6 +209,7 @@ public final class ConversationRegression {
         var scheduledIdentityChecks = new AtomicInteger();
         var requestThread = Thread.currentThread();
         var revokeIdentityOnRead = new AtomicBoolean();
+        var changePolicyOnRead = new AtomicReference<Runnable>();
         var sceneLatencyMillis = new AtomicInteger();
         var revokeDuringCall = new AtomicBoolean();
         var streamFirst = new CountDownLatch(1);
@@ -304,6 +326,10 @@ public final class ConversationRegression {
                     java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get()));
                     if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !Set.of("", "11", "12").contains(c.resourceId())) throw AiErrors.error("forbidden");
                     if (Thread.currentThread() == requestThread && revokeIdentityOnRead.getAndSet(false)) identityAllowed.set(false);
+                    if (Thread.currentThread() == requestThread) {
+                        Runnable change = changePolicyOnRead.getAndSet(null);
+                        if (change != null) change.run();
+                    }
                 }
             };
             var authorization = (io.dataease.api.permissions.auth.api.InteractiveAuthApi) java.lang.reflect.Proxy.newProxyInstance(
@@ -612,18 +638,25 @@ public final class ConversationRegression {
                 throw new AssertionError("first actual upstream increment is delivered while upstream remains blocked");
             for (int read = 0; read < 3; read++) {
                 int beforeRead = requestIdentityChecks.get();
+                int beforeSettings = settingSql.get().get();
                 var increment = json.readTree(mvc.perform(get(eventsPath).param("after", "0")).andReturn().getResponse().getContentAsString());
                 int lookups = requestIdentityChecks.get() - beforeRead;
-                System.out.println("DIAG running conversation event read identity lookups=" + lookups);
+                int settingsReads = settingSql.get().get() - beforeSettings;
+                System.out.println("DIAG running conversation event read identity lookups=" + lookups + ", setting SQL=" + settingsReads);
                 if (!"RUNNING".equals(increment.path("status").asText()) || lookups < 2 || lookups > 3)
                     throw new AssertionError("each live event read must freshly verify identity at bounded entry/delivery boundaries: " + lookups);
+                if (settingsReads != 4) throw new AssertionError("event reads must share the settings load for each enable/epoch check: " + settingsReads);
             }
             int beforeSweep = scheduledIdentityChecks.get();
+            int beforeSweepSettings = scheduledSettingSql.get();
             Thread.sleep(2200);
             int sweepLookups = scheduledIdentityChecks.get() - beforeSweep;
+            int sweepSettings = scheduledSettingSql.get() - beforeSweepSettings;
             if (sweepLookups < 2 || sweepLookups > 6)
                 throw new AssertionError("active session sweeps retain bounded fresh identity checks while upstream is blocked: " + sweepLookups);
-            System.out.println("PASS running event reads use 3 fresh identity lookups each; active sweeps use " + sweepLookups + " lookups over 2.2s");
+            if (sweepSettings < 2 || sweepSettings > 6)
+                throw new AssertionError("active sweeps must share each enable/epoch settings read: " + sweepSettings);
+            System.out.println("PASS running event reads use 3 fresh identity lookups and 4 setting SQL each; active sweeps use " + sweepLookups + " identity lookups and " + sweepSettings + " setting SQL over 2.2s");
             // Execution IDs are not bearer credentials; another actor cannot read or stop this stream.
             V3UserUtil.clear(); V3UserUtil.setUid(2L);
             denyGet(mvc, eventsPath); deny(mvc, streamingPath + "/" + run.path("executionId").asText() + "/stop", version, "forged stop");
@@ -763,6 +796,23 @@ public final class ConversationRegression {
             streamRelease.get().countDown();
             await(mvc, json, configRun + "/events", "COMPLETED", "继续");
             mvc.perform(delete("/ai/conversations/" + configChanged.path("sessionId").asText()));
+            for (boolean reopenDuringRead : List.of(false, true)) {
+                var shutdownDuringRead = open(mvc, json, "shutdown-during-read-" + reopenDuringRead);
+                String shutdownExecutions = "/ai/conversations/" + shutdownDuringRead.path("sessionId").asText() + "/executions";
+                firstChunk.set(new CountDownLatch(1)); streamRelease.set(new CountDownLatch(1));
+                String blocked = start(mvc, json, shutdownExecutions, shutdownDuringRead, "Disable AI while checking buffered delivery");
+                await(mvc, json, blocked + "/events", "RUNNING", "星河");
+                changePolicyOnRead.set(() -> {
+                    enable(configuration, false);
+                    if (reopenDuringRead) enable(configuration, true);
+                });
+                denyGet(mvc, blocked + "/events");
+                if (changePolicyOnRead.get() != null) throw new AssertionError("policy must change inside the result authorization boundary");
+                if (!reopenDuringRead) enable(configuration, true);
+                streamRelease.get().countDown();
+                denyGet(mvc, blocked + "/events");
+            }
+            System.out.println("PASS settings checks reject AI shutdown and complete off/on transitions during buffered delivery; restored AI cannot revive the old result");
             // Closing an active context cancels its stream; the released slot is usable by a fresh editor.
             var activeClose = open(mvc, json, "close-active");
             String closePath = "/ai/conversations/" + activeClose.path("sessionId").asText() + "/executions";
