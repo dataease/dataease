@@ -64,7 +64,8 @@ export function getTableTooltipFields(type: string, xAxis: Axis[] = [], yAxis: A
     return dimensions
   }
   if (type === 'table-normal') {
-    return [...dimensions, ...yAxis].filter(field => !field.hide)
+    // 列隐藏只控制表格展示，提示仍可读取当前行的字段值。
+    return [...dimensions, ...yAxis]
   }
   return []
 }
