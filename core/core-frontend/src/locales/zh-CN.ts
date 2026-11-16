@@ -1572,6 +1572,7 @@ export default {
     actions: '操作',
     edit: '编辑',
     confirm: '确认',
+    unconfirm: '取消确认',
     remove: '移除',
     add: '添加',
     removeRelationPrompt: '确定移除表关联「{name}」？',
@@ -1588,6 +1589,8 @@ export default {
     noMatchingPhysicalTables: '暂无匹配的物理表',
     tableSelectionCount: '已选 {total} 张，待添加 {added} 张',
     refreshTable: '更新字段',
+    refreshTablePrompt:
+      '确定更新「{name}」的字段？仍存在的字段会保留已填写的语义，源表中已删除的字段及其语义会移除。',
     removeNamedTable: '移除语义表「{table}」',
     removeTablePrompt: '确定移除语义表「{name}」？已填写的语义会保留。',
     invalidRelation: '已失效',

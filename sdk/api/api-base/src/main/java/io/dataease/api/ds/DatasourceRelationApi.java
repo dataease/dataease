@@ -29,6 +29,14 @@ public interface DatasourceRelationApi {
     void saveRelation(@PathVariable("datasourceId") Long datasourceId, @RequestBody Relation relation);
 
     @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/relation/{id}/confirmation")
+    @Operation(summary = "更新表关联确认状态")
+    void setConfirmed(@PathVariable("datasourceId") Long datasourceId, @PathVariable("id") Long id,
+                      @RequestBody Confirmation confirmation);
+
+    record Confirmation(boolean confirmed) {}
+
+    @DePermit({"#p0+':manage'"})
     @DeleteMapping("/{datasourceId}/relation/{id}")
     @Operation(summary = "移除表关联")
     void removeRelation(@PathVariable("datasourceId") Long datasourceId, @PathVariable("id") Long id);

@@ -18,8 +18,11 @@ export interface FieldSemantic {
 }
 
 export interface DatasourceSemantics {
-  relationCounts: Record<string, number>
   tables: TableSemantic[]
+}
+
+export interface TableSemanticDetails {
+  relationCount: number
   fields: (Omit<FieldSemantic, 'businessName' | 'description'> & {
     businessName: string | null
     description: string | null
@@ -33,6 +36,12 @@ const path = (id: string) => `/datasource/metadata/${id}`
 
 export const getDatasourceSemantics = (id: string) =>
   request.get<Promise<{ data: DatasourceSemantics }>>({ url: `${path(id)}/semantics` })
+
+export const getDatasourceSemanticDetails = (id: string, tableName: string) =>
+  request.get<Promise<{ data: TableSemanticDetails }>>({
+    url: `${path(id)}/semantics/detail`,
+    params: { tableName }
+  })
 
 export const saveDatasourceTableSemantic = (id: string, data: TableSemantic) =>
   request.post({ url: `${path(id)}/table`, data })

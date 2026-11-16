@@ -23,10 +23,10 @@ public interface CoreDatasourceRelationRepository extends JpaRepository<CoreData
                                                        @Param("tableName") String tableName);
 
     @Query("""
-            select r.leftTable, r.rightTable from CoreDatasourceRelation r
-            where r.datasource.id = :datasourceId
+            select count(r) from CoreDatasourceRelation r
+            where r.datasource.id = :datasourceId and (r.leftTable = :tableName or r.rightTable = :tableName)
             """)
-    List<Object[]> findTablePairs(@Param("datasourceId") Long datasourceId);
+    long countByReferencedTable(@Param("datasourceId") Long datasourceId, @Param("tableName") String tableName);
 
     Optional<CoreDatasourceRelation> findByIdAndDatasource_Id(Long id, Long datasourceId);
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   getTableField,
@@ -12,6 +13,7 @@ import {
   listDatasourceRelations,
   removeDatasourceRelation,
   saveDatasourceRelation,
+  setDatasourceRelationConfirmed,
   type Relation
 } from '@/api/datasourceRelation'
 
@@ -30,6 +32,8 @@ const saving = ref(false)
 const drawer = ref(false)
 const query = ref('')
 const statusFilter = ref('')
+const currentPage = ref(1)
+const pageSize = ref(10)
 const loadingTables = ref(false)
 
 const cardinalities = ['ONE_TO_ONE', 'ONE_TO_MANY', 'MANY_TO_ONE', 'MANY_TO_MANY'] as const
@@ -57,6 +61,26 @@ const filteredRelations = computed(() => {
       [row.name, row.leftTable, row.rightTable].some(value => value.toLowerCase().includes(keyword))
   )
 })
+const pagination = computed(() => ({
+  currentPage: currentPage.value,
+  pageSize: pageSize.value,
+  total: filteredRelations.value.length
+}))
+const pagedRelations = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredRelations.value.slice(start, start + pageSize.value)
+})
+
+watch([query, tableFilter, statusFilter, pageSize], () => {
+  currentPage.value = 1
+})
+watch(
+  () => filteredRelations.value.length,
+  total => {
+    currentPage.value = Math.min(currentPage.value, Math.max(1, Math.ceil(total / pageSize.value)))
+  }
+)
+
 const tableOptions = computed(() =>
   Array.from(
     new Set([
@@ -168,6 +192,12 @@ const changeRelationTable = (side: 'left' | 'right') => {
 const saveRelation = (row: Relation) =>
   runSave(() => saveDatasourceRelation(props.datasourceId, row))
 
+const toggleConfirmation = (row: Relation) => {
+  const id = row.id
+  if (!id) return
+  return runSave(() => setDatasourceRelationConfirmed(props.datasourceId, id, !row.confirmed))
+}
+
 const removeRelation = async (row: Relation) => {
   if (!row.id) return
   const id = row.id
@@ -214,7 +244,14 @@ const fieldLabel = (field: PhysicalField) =>
           >
         </div>
       </div>
-      <el-table :data="filteredRelations" :empty-text="tr('noRelations')">
+      <grid-table
+        :pagination="pagination"
+        :table-data="pagedRelations"
+        :empty-desc="tr('noRelations')"
+        :is-search="!!(query.trim() || tableFilter || statusFilter)"
+        @current-change="currentPage = $event"
+        @size-change="pageSize = $event"
+      >
         <el-table-column :label="tr('relationName')" min-width="150">
           <template #default="{ row }">
             <strong>{{ row.name }}</strong>
@@ -263,27 +300,27 @@ const fieldLabel = (field: PhysicalField) =>
         <el-table-column v-if="canManage" :label="tr('actions')" min-width="180">
           <template #default="{ row }">
             <el-button
-              link
+              text
               type="primary"
               :disabled="saving || loadingTables"
               @click="openRelation(row)"
               >{{ tr('edit') }}</el-button
             >
             <el-button
-              v-if="row.valid && !row.confirmed"
-              link
+              v-if="row.valid || row.confirmed"
+              text
               type="primary"
               :disabled="saving"
-              @click="saveRelation(row)"
+              @click="toggleConfirmation(row)"
             >
-              {{ tr('confirm') }}
+              {{ tr(row.confirmed ? 'unconfirm' : 'confirm') }}
             </el-button>
-            <el-button link type="primary" :disabled="saving" @click="removeRelation(row)">{{
+            <el-button text type="primary" :disabled="saving" @click="removeRelation(row)">{{
               tr('remove')
             }}</el-button>
           </template>
         </el-table-column>
-      </el-table>
+      </grid-table>
     </template>
 
     <el-drawer

@@ -57,6 +57,11 @@ public class DatasourceRelationServer implements DatasourceRelationApi {
     }
 
     @Override
+    public void setConfirmed(Long datasourceId, Long id, Confirmation confirmation) {
+        metadata.setConfirmed(datasourceId, id, confirmation.confirmed());
+    }
+
+    @Override
     public void removeRelation(Long datasourceId, Long id) {
         metadata.removeRelation(datasourceId, id);
     }

@@ -12,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,18 +35,8 @@ public class DatasourceRelationManage {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
-    public Map<String, Long> countByTable(Long datasourceId) {
-        var pairs = repository.findTablePairs(datasourceId);
-        Map<String, Long> counts = new HashMap<>();
-        for (var pair : pairs) {
-            String left = (String) pair[0];
-            String right = (String) pair[1];
-            counts.merge(left, 1L, Long::sum);
-            if (!left.equals(right)) {
-                counts.merge(right, 1L, Long::sum);
-            }
-        }
-        return counts;
+    public long countByTable(Long datasourceId, String tableName) {
+        return repository.countByReferencedTable(datasourceId, tableName);
     }
 
     @Transactional
@@ -93,6 +81,16 @@ public class DatasourceRelationManage {
         if (create) {
             repository.save(row);
         }
+    }
+
+    @Transactional
+    public void setConfirmed(Long datasourceId, Long id, boolean confirmed) {
+        access.lock(datasourceId);
+        var row = relation(datasourceId, id);
+        if (confirmed && !row.isValid()) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_invalid_relation"));
+        }
+        row.setConfirmed(confirmed);
     }
 
     @Transactional

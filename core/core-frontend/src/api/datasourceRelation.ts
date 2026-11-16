@@ -25,5 +25,11 @@ export const listDatasourceRelations = (id: string) =>
 export const saveDatasourceRelation = (id: string, data: Relation) =>
   request.post({ url: `${path(id)}/relation`, data })
 
+export const setDatasourceRelationConfirmed = (
+  id: string,
+  relationId: string,
+  confirmed: boolean
+) => request.post({ url: `${path(id)}/relation/${relationId}/confirmation`, data: { confirmed } })
+
 export const removeDatasourceRelation = (id: string, relationId: string) =>
   request.delete({ url: `${path(id)}/relation/${relationId}` })

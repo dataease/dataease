@@ -1664,6 +1664,7 @@ export default {
     actions: 'Actions',
     edit: 'Edit',
     confirm: 'Confirm',
+    unconfirm: 'Unconfirm',
     remove: 'Remove',
     add: 'Add',
     removeRelationPrompt: 'Remove the relationship “{name}”?',
@@ -1680,6 +1681,8 @@ export default {
     noMatchingPhysicalTables: 'No matching physical tables',
     tableSelectionCount: '{total} selected, {added} to add',
     refreshTable: 'Refresh fields',
+    refreshTablePrompt:
+      'Refresh fields for “{name}”? Saved semantics for existing fields will be kept. Fields deleted from the source table and their semantics will be removed.',
     removeNamedTable: 'Remove semantic table “{table}”',
     removeTablePrompt: 'Remove semantic table “{name}”? Its saved semantics will be retained.',
     invalidRelation: 'Invalid',

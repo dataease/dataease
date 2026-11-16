@@ -9,13 +9,15 @@ import { listDatasourceTables, type PhysicalTable } from '@/api/datasource'
 import {
   addDatasourceSemanticTables,
   getDatasourceSemantics,
+  getDatasourceSemanticDetails,
   refreshDatasourceSemanticTable,
   removeDatasourceSemanticTable,
   saveDatasourceFieldSemantic,
   saveDatasourceTableSemantic,
   type DatasourceSemantics,
   type FieldSemantic,
-  type TableSemantic
+  type TableSemantic,
+  type TableSemanticDetails
 } from '@/api/datasourceSemantic'
 
 const props = defineProps<{ datasourceId: string; canManage: boolean }>()
@@ -23,7 +25,7 @@ const emit = defineEmits<{ 'show-relations': [tableName: string] }>()
 const { t } = useI18n()
 const { t: tr } = useI18n('datasourceMetadata')
 
-const semantics = ref<DatasourceSemantics>({ relationCounts: {}, tables: [], fields: [] })
+const semantics = ref<DatasourceSemantics>({ tables: [] })
 const tables = ref<PhysicalTable[]>([])
 const loading = ref(false)
 const loadFailed = ref(false)
@@ -39,7 +41,7 @@ const loadingTables = ref(false)
 
 const tableForm = ref<TableSemantic>()
 const fieldForm = ref<FieldSemantic>()
-const editingField = ref<DatasourceSemantics['fields'][number]>()
+const editingField = ref<TableSemanticDetails['fields'][number]>()
 
 const activeTables = computed(() => semantics.value.tables.filter(table => table.active))
 const currentTable = computed(() =>
@@ -98,16 +100,33 @@ const setResultsSelected = (selected: boolean) => {
   for (const name of selectableResults.value) setTableSelected(name, selected)
 }
 
-const fields = computed(() =>
-  semantics.value.fields.filter(field => field.tableName === selectedTable.value)
-)
+const detail = ref<TableSemanticDetails>()
+const detailLoading = ref(false)
+const detailFailed = ref(false)
+let detailRequest = 0
+
+const loadDetail = async () => {
+  const request = ++detailRequest
+  const tableName = currentTable.value?.tableName
+  detail.value = undefined
+  detailFailed.value = false
+  detailLoading.value = !!tableName
+  if (!tableName) return
+  try {
+    const { data } = await getDatasourceSemanticDetails(props.datasourceId, tableName)
+    if (request === detailRequest) detail.value = data
+  } catch {
+    if (request === detailRequest) detailFailed.value = true
+  } finally {
+    if (request === detailRequest) detailLoading.value = false
+  }
+}
+
+watch(currentTable, loadDetail)
+
+const fields = computed(() => detail.value?.fields ?? [])
 const confirmedCount = computed(() => fields.value.filter(field => field.confirmed).length)
-const relationCount = computed(() => {
-  const counts = semantics.value.relationCounts
-  return Object.prototype.hasOwnProperty.call(counts, selectedTable.value)
-    ? counts[selectedTable.value]
-    : 0
-})
+const relationCount = computed(() => detail.value?.relationCount ?? 0)
 const refreshSemantics = async () => {
   const { data } = await getDatasourceSemantics(props.datasourceId)
   semantics.value = data
@@ -184,11 +203,21 @@ const removeTable = async (tableName: string) => {
   await runSave(() => removeDatasourceSemanticTable(props.datasourceId, tableName))
 }
 
-const refreshTable = (tableName: string) =>
-  runSave(async () => {
+const refreshTable = async (tableName: string) => {
+  try {
+    await ElMessageBox.confirm(tr('refreshTablePrompt', { name: tableName }), tr('refreshTable'), {
+      type: 'warning',
+      confirmButtonText: tr('refreshTable'),
+      cancelButtonText: t('common.cancel')
+    })
+  } catch {
+    return
+  }
+  await runSave(async () => {
     const { data: available } = await refreshDatasourceSemanticTable(props.datasourceId, tableName)
     if (!available) ElMessage.warning(tr('tableUnavailableNamed', { table: tableName }))
   })
+}
 
 const openTable = () => {
   if (!currentTable.value) return
@@ -203,7 +232,7 @@ const openTable = () => {
 const saveTable = (form: TableSemantic) =>
   runSave(() => saveDatasourceTableSemantic(props.datasourceId, form))
 
-const openField = (semantic: DatasourceSemantics['fields'][number]) => {
+const openField = (semantic: TableSemanticDetails['fields'][number]) => {
   editingField.value = semantic
   fieldForm.value = {
     tableName: semantic.tableName,
@@ -222,12 +251,29 @@ const showRelations = () => emit('show-relations', selectedTable.value)
 
 const tableLabel = (table: TableSemantic) =>
   table.physicalLabel !== table.tableName ? table.physicalLabel : ''
-const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
+const fieldColumns = computed(() => [
+  { key: 'fieldName', title: tr('fieldAndType'), width: 135, flexGrow: 1 },
+  { key: 'businessName', title: tr('businessName'), width: 120, flexGrow: 1 },
+  { key: 'description', title: tr('description'), width: 190, flexGrow: 2 },
+  { key: 'status', title: tr('status'), width: 100 },
+  ...(props.canManage ? [{ key: 'actions', title: tr('actions'), width: 80 }] : [])
+])
+const tableList = ref<{ scrollToItem: (index: number) => void }>()
+watch(
+  activeTables,
+  tables => {
+    const index = tables.findIndex(table => table.tableName === selectedTable.value)
+    if (index >= 0) tableList.value?.scrollToItem(index)
+  },
+  { flush: 'post' }
+)
+
+const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
   [`${field.tableName}.${field.fieldName}`, field.physicalType].filter(Boolean).join('·')
 </script>
 
 <template>
-  <section v-loading="loading" class="metadata-panel">
+  <section v-loading="loading" class="metadata-panel metadata-semantic-panel">
     <el-empty v-if="loadFailed" :description="tr('loadFailed')">
       <el-button @click="load">{{ tr('retry') }}</el-button>
     </el-empty>
@@ -240,114 +286,150 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
         <el-button v-if="canManage" :disabled="saving || loadingTables" @click="openMembership">{{
           tr('addTables')
         }}</el-button>
-        <div v-for="table in activeTables" :key="table.tableName" class="metadata-table-row">
-          <button
-            type="button"
-            class="metadata-table-button"
-            :class="{ selected: table.tableName === selectedTable }"
-            :aria-pressed="table.tableName === selectedTable"
-            @click="selectedTable = table.tableName"
-          >
-            <strong class="metadata-label">{{ table.tableName }}</strong>
-            <div class="metadata-secondary">{{ tableLabel(table) }}</div>
-          </button>
-          <button
-            v-if="canManage"
-            class="metadata-remove-table"
-            type="button"
-            :aria-label="tr('removeNamedTable', { table: table.tableName })"
-            :title="tr('remove')"
-            :disabled="saving"
-            @click="removeTable(table.tableName)"
-          >
-            <Icon name="icon_close_outlined"
-              ><icon_close_outlined class="svg-icon" aria-hidden="true"
-            /></Icon>
-          </button>
+        <div class="metadata-virtual-list">
+          <el-auto-resizer>
+            <template #default="{ height, width }">
+              <FixedSizeList
+                v-if="height > 0 && width > 0 && activeTables.length"
+                ref="tableList"
+                :total="activeTables.length"
+                :item-size="52"
+                :height="height"
+                :width="width"
+              >
+                <template #default="{ index, style }">
+                  <div class="metadata-table-row" :style="style">
+                    <button
+                      type="button"
+                      class="metadata-table-button"
+                      :class="{ selected: activeTables[index].tableName === selectedTable }"
+                      :aria-pressed="activeTables[index].tableName === selectedTable"
+                      @click="selectedTable = activeTables[index].tableName"
+                    >
+                      <strong class="metadata-label" :title="activeTables[index].tableName">{{
+                        activeTables[index].tableName
+                      }}</strong>
+                      <div
+                        class="metadata-secondary"
+                        :title="tableLabel(activeTables[index]) || undefined"
+                      >
+                        {{ tableLabel(activeTables[index]) }}
+                      </div>
+                    </button>
+                    <button
+                      v-if="canManage"
+                      class="metadata-remove-table"
+                      type="button"
+                      :aria-label="tr('removeNamedTable', { table: activeTables[index].tableName })"
+                      :title="tr('remove')"
+                      :disabled="saving"
+                      @click="removeTable(activeTables[index].tableName)"
+                    >
+                      <Icon name="icon_close_outlined"
+                        ><icon_close_outlined class="svg-icon" aria-hidden="true"
+                      /></Icon>
+                    </button>
+                  </div>
+                </template>
+              </FixedSizeList>
+            </template>
+          </el-auto-resizer>
         </div>
       </aside>
-      <div v-if="currentTable" class="metadata-detail">
-        <div class="metadata-heading metadata-detail-header">
-          <strong>{{ tableLabel(currentTable) || currentTable.tableName }}</strong>
-          <span v-if="tableLabel(currentTable)" class="metadata-secondary">{{
-            currentTable.tableName
-          }}</span>
-          <div v-if="canManage" class="metadata-actions metadata-table-actions">
-            <el-button :disabled="saving" @click="openTable">{{ tr('edit') }}</el-button>
-            <el-button :disabled="saving" @click="refreshTable(currentTable.tableName)">
-              {{ tr('refreshTable') }}
-            </el-button>
-            <el-button>{{ tr('chat') }}</el-button>
-            <el-button type="primary">{{ tr('complete') }}</el-button>
+      <div v-if="currentTable" class="metadata-detail metadata-field-pane">
+        <div class="metadata-overview">
+          <div class="metadata-heading metadata-detail-header">
+            <strong>{{ tableLabel(currentTable) || currentTable.tableName }}</strong>
+            <span v-if="tableLabel(currentTable)" class="metadata-secondary">{{
+              currentTable.tableName
+            }}</span>
+            <div v-if="canManage" class="metadata-actions metadata-table-actions">
+              <el-button :disabled="saving" @click="openTable">{{ tr('edit') }}</el-button>
+              <el-button :disabled="saving" @click="refreshTable(currentTable.tableName)">
+                {{ tr('refreshTable') }}
+              </el-button>
+              <el-button type="primary">{{ tr('complete') }}</el-button>
+            </div>
+          </div>
+          <div class="metadata-secondary metadata-section">{{ tr('description') }}</div>
+          <div class="metadata-label metadata-description">
+            {{ currentTable.description || tr('noDescription') }}
+          </div>
+          <div class="metadata-secondary metadata-section">
+            {{ tr('grain') }} · {{ currentTable.grain || tr('pending') }}
+          </div>
+          <div class="metadata-heading metadata-field-heading">
+            <strong class="metadata-label"
+              >{{ tr('fieldSemantics') }} {{ detail ? fields.length : '' }}</strong
+            >
+            <el-button class="metadata-actions" link type="primary" @click="showRelations"
+              >{{ tr('showRelations') }} {{ detail ? relationCount : '' }}</el-button
+            >
+          </div>
+          <el-alert
+            v-if="!currentTable.available"
+            :title="tr('tableUnavailable')"
+            type="warning"
+            :closable="false"
+          />
+          <div v-if="detail" class="metadata-secondary metadata-section">
+            {{ tr('progress', { confirmed: confirmedCount, total: fields.length }) }}
           </div>
         </div>
-        <div class="metadata-secondary metadata-section">{{ tr('description') }}</div>
-        <div class="metadata-label metadata-description">
-          {{ currentTable.description || tr('noDescription') }}
-        </div>
-        <div class="metadata-secondary metadata-section">
-          {{ tr('grain') }} · {{ currentTable.grain || tr('pending') }}
-        </div>
-        <div class="metadata-heading metadata-field-heading">
-          <strong class="metadata-label">{{ tr('fieldSemantics') }} {{ fields.length }}</strong>
-          <el-button class="metadata-actions" link type="primary" @click="showRelations"
-            >{{ tr('showRelations') }} {{ relationCount }}</el-button
-          >
-        </div>
-        <el-alert
-          v-if="!currentTable.available"
-          :title="tr('tableUnavailable')"
-          type="warning"
-          :closable="false"
-        />
-        <div class="metadata-secondary metadata-section">
-          {{ tr('progress', { confirmed: confirmedCount, total: fields.length }) }}
-        </div>
-        <el-table :data="fields" :empty-text="tr('noFields')">
-          <el-table-column :label="tr('fieldAndType')" min-width="135">
-            <template #default="{ row }">
-              <div>{{ row.fieldName }}</div>
-              <div class="metadata-secondary">{{ row.physicalType }}</div>
-            </template>
-          </el-table-column>
-          <el-table-column :label="tr('businessName')" min-width="120">
-            <template #default="{ row }">{{ row.businessName || tr('incomplete') }}</template>
-          </el-table-column>
-          <el-table-column :label="tr('description')" min-width="190">
-            <template #default="{ row }">
-              <div v-if="row.description?.trim()" class="metadata-description">
-                {{ row.description }}
-              </div>
-              <div
-                v-else-if="row.physicalComment"
-                class="metadata-description metadata-physical-comment"
+        <div v-loading="detailLoading" class="metadata-virtual-list">
+          <el-empty v-if="detailFailed" :description="tr('loadFailed')" :image-size="64">
+            <el-button @click="loadDetail">{{ tr('retry') }}</el-button>
+          </el-empty>
+          <el-auto-resizer v-else-if="detail">
+            <template #default="{ height, width }">
+              <el-table-v2
+                v-if="height > 0 && width > 0"
+                :key="selectedTable"
+                :columns="fieldColumns"
+                :data="fields"
+                :width="width"
+                :height="height"
+                :estimated-row-height="56"
+                row-key="fieldName"
               >
-                {{ row.physicalComment }}
-              </div>
-              <div v-if="row.aliases" class="metadata-secondary">
-                {{ tr('aliases') }} · {{ row.aliases }}
-              </div>
+                <template #cell="{ column, rowData: row }">
+                  <div v-if="column.key === 'fieldName'" class="metadata-description">
+                    <div>{{ row.fieldName }}</div>
+                    <div class="metadata-secondary">{{ row.physicalType }}</div>
+                  </div>
+                  <div v-else-if="column.key === 'businessName'" class="metadata-description">
+                    {{ row.businessName || tr('incomplete') }}
+                  </div>
+                  <div v-else-if="column.key === 'description'" class="metadata-description">
+                    <div v-if="row.description?.trim()">{{ row.description }}</div>
+                    <div v-else class="metadata-physical-comment">{{ row.physicalComment }}</div>
+                    <div v-if="row.aliases" class="metadata-secondary">
+                      {{ tr('aliases') }} · {{ row.aliases }}
+                    </div>
+                  </div>
+                  <el-tag
+                    v-else-if="column.key === 'status'"
+                    :type="row.confirmed ? 'success' : 'info'"
+                  >
+                    {{ tr(row.confirmed ? 'confirmed' : 'incomplete') }}
+                  </el-tag>
+                  <el-button
+                    v-else
+                    text
+                    type="primary"
+                    :disabled="saving || !currentTable.available"
+                    @click="openField(row)"
+                  >
+                    {{ tr('edit') }}
+                  </el-button>
+                </template>
+                <template #empty>
+                  <el-empty :description="tr('noFields')" :image-size="64" />
+                </template>
+              </el-table-v2>
             </template>
-          </el-table-column>
-          <el-table-column :label="tr('status')" min-width="100">
-            <template #default="{ row }">
-              <el-tag :type="row.confirmed ? 'success' : 'info'">{{
-                tr(row.confirmed ? 'confirmed' : 'incomplete')
-              }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column v-if="canManage" :label="tr('actions')" width="80">
-            <template #default="{ row }">
-              <el-button
-                link
-                type="primary"
-                :disabled="saving || !currentTable.available"
-                @click="openField(row)"
-                >{{ tr('edit') }}</el-button
-              >
-            </template>
-          </el-table-column>
-        </el-table>
+          </el-auto-resizer>
+        </div>
       </div>
       <el-empty v-else class="metadata-detail" :description="tr('noSemanticTables')" />
     </div>
@@ -555,9 +637,34 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
   gap: 12px;
 }
 
+.metadata-semantic-panel {
+  overflow: hidden;
+}
+
 .metadata-semantics {
   display: flex;
-  min-height: 100%;
+  height: 100%;
+}
+
+.metadata-field-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.metadata-overview {
+  flex-shrink: 0;
+  max-height: 65%;
+  overflow: auto;
+}
+
+.metadata-virtual-list {
+  flex: 1;
+  min-height: 0;
+
+  :deep(.ed-table-v2__row-cell > .metadata-description) {
+    min-width: 0;
+    padding-block: 8px;
+  }
 }
 
 .metadata-sidebar {
@@ -574,7 +681,15 @@ const fieldLabel = (field: DatasourceSemantics['fields'][number]) =>
 }
 
 .metadata-table-row {
-  position: relative;
+  box-sizing: border-box;
+  padding-bottom: 4px;
+}
+
+.metadata-table-button > * {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .metadata-remove-table {

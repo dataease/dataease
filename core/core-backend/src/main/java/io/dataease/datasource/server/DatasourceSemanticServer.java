@@ -33,6 +33,12 @@ public class DatasourceSemanticServer implements DatasourceSemanticApi {
     }
 
     @Override
+    public TableDetails detail(Long datasourceId, String tableName) {
+        requireText(tableName, 512);
+        return metadata.detail(datasourceId, tableName);
+    }
+
+    @Override
     public void saveTable(Long datasourceId, TableSemantic table) {
         requireText(table.tableName(), 512);
         limit(table.description(), 4000);

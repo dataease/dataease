@@ -1557,6 +1557,7 @@ export default {
     actions: '操作',
     edit: '編輯',
     confirm: '確認',
+    unconfirm: '取消確認',
     remove: '移除',
     add: '新增',
     removeRelationPrompt: '確定移除表關聯「{name}」？',
@@ -1573,6 +1574,8 @@ export default {
     noMatchingPhysicalTables: '沒有符合條件的實體表',
     tableSelectionCount: '已選 {total} 張，待新增 {added} 張',
     refreshTable: '更新欄位',
+    refreshTablePrompt:
+      '確定更新「{name}」的欄位？仍存在的欄位會保留已填寫的語意，來源表中已刪除的欄位及其語意會移除。',
     removeNamedTable: '移除語意表「{table}」',
     removeTablePrompt: '確定移除語意表「{name}」？已填寫的語意會保留。',
     invalidRelation: '已失效',

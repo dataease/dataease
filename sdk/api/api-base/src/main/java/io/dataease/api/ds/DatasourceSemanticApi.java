@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
 
@@ -19,8 +18,13 @@ import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
 public interface DatasourceSemanticApi {
     @DePermit({"#p0+':read'"})
     @GetMapping("/{datasourceId}/semantics")
-    @Operation(summary = "查询表和字段语义")
+    @Operation(summary = "查询语义表列表")
     Semantics list(@PathVariable("datasourceId") Long datasourceId);
+
+    @DePermit({"#p0+':read'"})
+    @GetMapping("/{datasourceId}/semantics/detail")
+    @Operation(summary = "查询单表字段语义及关联数量")
+    TableDetails detail(@PathVariable("datasourceId") Long datasourceId, @RequestParam("tableName") String tableName);
 
     @DePermit({"#p0+':manage'"})
     @PostMapping("/{datasourceId}/table")
@@ -49,9 +53,13 @@ public interface DatasourceSemanticApi {
 
     @Schema(description = "数据源语义管理数据")
     record Semantics(
-            @Schema(description = "语义表列表") List<TableSemantic> tables,
+            @Schema(description = "语义表列表") List<TableSemantic> tables
+    ) {}
+
+    @Schema(description = "单表语义详情")
+    record TableDetails(
             @Schema(description = "已添加语义表的字段及其语义") List<FieldSemantic> fields,
-            @Schema(description = "以物理表名为键的关联数量，自关联计一次") Map<String, Long> relationCounts
+            @Schema(description = "当前表的关联数量，自关联计一次") long relationCount
     ) {}
 
     @Schema(description = "物理表引用")

@@ -1362,7 +1362,8 @@ const getMenuList = (val: boolean, data?: any) => {
       class="datasource-content"
       :class="{
         auto: isIframe || isDataEaseBi,
-        h100: isDataEaseBi || isIframe
+        h100: isDataEaseBi || isIframe,
+        'semantic-content': hasPhysicalTables && activeName === 'semantics'
       }"
     >
       <template v-if="!state.datasourceTree.length && mounted">
@@ -2424,6 +2425,17 @@ const getMenuList = (val: boolean, data?: any) => {
   .datasource-content {
     flex: 1;
     position: relative;
+
+    &.semantic-content {
+      display: flex;
+      height: calc(100dvh - 56px);
+      flex-direction: column;
+      overflow: hidden;
+
+      .datasource-info {
+        flex-shrink: 0;
+      }
+    }
 
     .datasource-info {
       background: #fff;
