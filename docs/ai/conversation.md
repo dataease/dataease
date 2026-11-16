@@ -6,11 +6,11 @@
 
 Demo 的可用性、后台任务和完成通知在页面可见且在线时同步：首次进入、重新聚焦、恢复可见或网络恢复时立即读取；空闲时每 30 秒同步一次，有进行中后台任务或待追加原对话的结果时每 2 秒更新后台进度。提交、重试或定位任务会唤醒后台读取，同一组件不并发启动重复轮询；同轮已读到的任务状态直接复用。隐藏标签页或断网暂停这些定时读取，离开页面清理定时器及事件监听；暂停读取不取消持久后台任务。前台执行仅在运行中读取增量，有新内容时间隔 500 毫秒，无新内容时逐步放缓至 2 秒；隐藏标签页时保留 5 秒读取以续租，确认终态后停止。空闲页的配置开关变化最迟在下一次同步反映，实际调用和结果交付仍由后端即时鉴权。
 
-前台每次提问（含一次性辅助、同步 turns 和手动重试）受理时校验当前 AI 开关及适用空间策略，并固定模型、凭据、输入/输出限额、超时、恢复及审计配置。该轮模型请求、自动重试和工具续调使用同一快照，不因模型编辑、全局/空间 AI 关闭或关闭后重开而换模或失效；下一次提问和手动重试读取最新配置。已受理操作的幂等重发只核对原执行，不创建新快照。前台增量读取、结果应用和活动巡检不再读取 AI 设置、空间策略或模型配置。
+前台每次提问（含一次性辅助、同步 turns 和手动重试）受理时重新检查一次当前用户启用状态及 AI 使用资格，校验当前 AI 开关及适用空间策略，并固定模型、凭据、输入/输出限额、超时、恢复及审计配置。该轮模型请求、自动重试和工具续调使用同一快照，不因模型编辑、全局/空间 AI 关闭或关闭后重开而换模或失效；下一次提问和手动重试读取最新配置。已受理操作的幂等重发只核对原执行，不创建新快照。前台增量读取、结果应用和活动巡检不再查询用户启用状态、AI 设置、空间策略或模型配置。打开新上下文及资源列表入口仍检查当前使用资格；继续在同一上下文提问必须重新检查，不以会话已存在代替新提问准入。
 
-后端临时会话扫描每秒先按内存中的有效期清理过期会话；仅对存在活动执行的会话继续检查期限、读取租约及当前身份/资源权限。空闲会话、已退役上下文和已完成的一次性结果不在扫描中查库。账号、部署模式或资源撤权仍会清理会话；空闲期间在下一次受保护操作发现这些变化。AI 配置变化不清空会话历史，原有停止、关闭、超时和丢失客户端租约处理保持。
+后端临时会话扫描每秒先按内存中的有效期清理过期会话；仅对存在活动执行的会话继续检查期限、读取租约及当前身份/资源权限。空闲会话、已退役上下文和已完成的一次性结果不在扫描中查库。HTTP 当前身份/空间不匹配、部署模式变化或资源撤权仍拒绝访问或清理会话；空闲期间在下一次受保护操作发现这些变化。账号中途停用不再通过 AI 自己的巡检终止已受理前台回答，而是在下一次提问/手动重试时拒绝。接口原有登录认证不变。AI 配置变化不清空会话历史，原有停止、关闭、超时和丢失客户端租约处理保持。
 
-增量读取、完成交付校验和活动会话巡检使用有界的身份校验作用域：进入时读取当前使用权限，同一线程内完全相同的账号、空间、代理及部署版本可复用该次身份校验，返回前再次读取以拒绝中途撤权。配置管理权限不复用使用权限，部署版本及资源权限仍按原边界检查。作用域在正常、异常及嵌套退出时清理或恢复，不跨请求、线程或巡检轮次；仅包围读取/校验，不包围模型请求、工具执行或写操作。
+前台保存仅由服务端成功校验后生成的使用资格凭据，随受控上下文/执行保存，不接受客户端传入。每次业务边界显式安装该凭据，同身份的嵌套使用资格检查复用受理结果；账号、空间、代理和部署版本必须精确匹配。资源 READ、资源版本和历史范围继续实时检查，配置管理权限不复用。部署模式及版本仍在作用域前后检查；线程局部状态在正常/异常退出时清理，嵌套退出恢复上一层，不自动传播到其他线程。新提问/手动重试即使处于旧作用域内，也强制重新读取使用资格。普通后台任务、原生 SDK 和管理员入口保持各自检查规则。
 
 固定执行配置不固定系统并发容量：每次实际模型 HTTP 请求仍通过当前全局容量准入，配置发布的短暂屏障最多等待 1 秒，持续阻断或容量已满仍拒绝。容量读取仅发生于发送前，不发生于吐字/轮询。持久后台任务及通用原生 SDK 的动态策略规则不变；它们的每次使用策略版本校验共享一次全局配置和一次适用空间策略读取，社区身份不读取空间策略。
 
@@ -79,7 +79,7 @@ Generation never applies or saves SQL. An explicit `POST /{id}/executions/{execu
 
 ## 身份与授权边界
 
-Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene reuses the current datasource tree and existing datasource READ operation. Verified community mode follows the SQL business permission entry; licensed mode requires the original authorization provider and never falls back on denial or missing providers. Current actor, workspace/proxy, deployment revision and resource permission are checked before history reuse, every model send, every tool execution and result boundary, completed-history commit and every event delivery. SSE parsing and bounded private buffering use local terminal/deadline/lease guards; delivery/commit boundaries never reuse an earlier operation's authority. Foreground execution configuration is fixed when each question is accepted; new questions resolve current settings and organization policy. Revocation permanently retires the session and clears buffered output/history; restoring access cannot revive it. Execution IDs are not bearer credentials.
+Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene reuses the current datasource tree and existing datasource READ operation. Verified community mode follows the SQL business permission entry; licensed mode requires the original authorization provider and never falls back on denial or missing providers. Current actor, workspace/proxy, deployment revision and resource permission are checked before history reuse, every model send, every tool execution and result boundary, completed-history commit and every event delivery. SSE parsing and bounded private buffering use local terminal/deadline/lease guards; delivery/commit boundaries recheck resource authority and execution ownership while reusing the foreground attempt's accepted usage eligibility. Foreground execution configuration is fixed when each question is accepted; new questions resolve current settings and organization policy. Resource revocation permanently retires the session and clears buffered output/history; restoring resource access cannot revive it. User enablement is checked for each new foreground question/manual retry, not for every increment. Execution IDs are not bearer credentials.
 
 `AiIdentityScope` 每次进入可信业务作用域时，从现有许可源重新验证部署模式及版本，并临时绑定该次验证结果到 `LicenseUtil`，供原有业务分派和插件检查使用。它不复制 HTTP 请求中的许可快照；离开作用域时恢复调用方原有许可状态，异常和嵌套调用同样恢复。社区作用域会隔离调用方遗留的有效许可；许可源不可用或版本不匹配时拒绝进入业务操作。
 

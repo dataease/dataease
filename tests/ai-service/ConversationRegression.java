@@ -186,12 +186,11 @@ public final class ConversationRegression {
             int idleChecks = identityChecks.get() - checks;
             if (idleQueries != 0 || idleChecks != 0)
                 throw new AssertionError("idle, completed and retired conversations must not poll storage/identity: SQL=" + idleQueries + ", identity=" + idleChecks);
-            // Skipping background checks must not turn a retained result into an authorization cache.
             identityAllowed.set(false);
-            denyGet(mvc, events);
+            await(mvc, json, events, "COMPLETED", "多字节");
+            deny(mvc, "/ai/conversations/" + session.path("sessionId").asText() + "/executions", session.path("contextVersion").asText(), "Disabled user cannot submit another question");
             identityAllowed.set(true);
-            denyGet(mvc, events);
-            System.out.println("PASS idle/unstarted, completed, retired and one-shot conversations: 0 SQL and 0 identity checks over 2.2s; revoked result remains inaccessible");
+            System.out.println("PASS idle/unstarted, completed, retired and one-shot conversations: 0 SQL and 0 identity checks over 2.2s; accepted result remains readable but disabled user cannot start another question");
         } finally {
             identityAllowed.set(true);
             for (String id : retained) mvc.perform(delete("/ai/conversations/" + id));
@@ -413,15 +412,23 @@ public final class ConversationRegression {
             String laterPath = start(mvc, json, retryExecutions, retrySession, "Later successful turn");
             await(mvc, json, laterPath + "/events", "COMPLETED", "多字节");
             byte[] retryBody = json.writeValueAsBytes(Map.of("retryKey", "retry-once", "expectedAttemptId", failedAttempt.path("attemptId").asText()));
+            identityAllowed.set(false);
+            try { mvc.perform(post(failedPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(retryBody)); throw new AssertionError("disabled user cannot manually retry"); }
+            catch (jakarta.servlet.ServletException failure) { if (!(failure.getCause() instanceof AiErrors.Failure known) || !known.safeCode().equals("forbidden")) throw failure; }
+            identityAllowed.set(true); int beforeRetry = requestIdentityChecks.get();
             var retried = json.readTree(mvc.perform(post(failedPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(retryBody)).andReturn().getResponse().getContentAsString());
+            if (requestIdentityChecks.get() - beforeRetry != 1) throw new AssertionError("manual retry must freshly check usage once");
             String retriedPath = retryExecutions + "/" + retried.path("executionId").asText();
             var recovered = await(mvc, json, retriedPath + "/events", "COMPLETED", "多字节");
             if (!failedAttempt.path("taskId").equals(recovered.path("taskId")) || recovered.path("attemptNumber").asInt() != 2
                     || !failedAttempt.path("attemptId").equals(recovered.path("sourceAttemptId"))) throw new AssertionError("manual retry preserves task and links an independent attempt");
             var frozen = sent.get(sent.size() - 1).path("messages");
             if (frozen.size() != 2 || !frozen.get(1).path("content").asText().equals("Original frozen task") || !sent.get(sent.size() - 1).path("model").asText().equals("new-attempt-model")) throw new AssertionError("retry must use first complete input snapshot, never later history");
+            identityAllowed.set(false); int beforeReplay = requestIdentityChecks.get();
             var replayRetry = json.readTree(mvc.perform(post(failedPath + "/retry").contentType(MediaType.APPLICATION_JSON).content(retryBody)).andReturn().getResponse().getContentAsString());
             if (!replayRetry.path("executionId").equals(retried.path("executionId"))) throw new AssertionError("retry response loss must not create another attempt");
+            if (requestIdentityChecks.get() != beforeReplay) throw new AssertionError("accepted retry replay must not requery user enablement");
+            identityAllowed.set(true);
             String followingPath = start(mvc, json, retryExecutions, retrySession, "After old retry");
             await(mvc, json, followingPath + "/events", "COMPLETED", "多字节");
             var following = sent.get(sent.size() - 1).path("messages");
@@ -435,9 +442,9 @@ public final class ConversationRegression {
             String transientPath = start(mvc, json, "/ai/conversations/" + transientSession.path("sessionId").asText() + "/executions", transientSession, "Retry temporary service failure");
             for (int wait = 0; wait < 100 && sent.isEmpty(); wait++) Thread.sleep(10);
             if (sent.isEmpty()) throw new AssertionError("initial retryable HTTP request never reached provider");
-            enable(configuration, false);
+            enable(configuration, false); identityAllowed.set(false);
             await(mvc, json, transientPath + "/events", "COMPLETED", "多字节");
-            enable(configuration, true);
+            enable(configuration, true); identityAllowed.set(true);
             if (sent.size() != 2 || !sent.get(0).equals(sent.get(1)) || System.currentTimeMillis() - retryStarted < 1000) throw new AssertionError("temporary model failure retries original model/input after bounded wait");
 
             recovery(configMvc, json, 0, 0); sent.clear(); temporaryFailures.set(1);
@@ -647,8 +654,8 @@ public final class ConversationRegression {
                 int lookups = requestIdentityChecks.get() - beforeRead;
                 int settingsReads = settingSql.get().get() - beforeSettings;
                 System.out.println("DIAG running conversation event read identity lookups=" + lookups + ", setting SQL=" + settingsReads);
-                if (!"RUNNING".equals(increment.path("status").asText()) || lookups < 2 || lookups > 3)
-                    throw new AssertionError("each live event read must freshly verify identity at bounded entry/delivery boundaries: " + lookups);
+                if (!"RUNNING".equals(increment.path("status").asText()) || lookups != 0)
+                    throw new AssertionError("accepted event reads must not query user enablement: " + lookups);
                 if (settingsReads != 0) throw new AssertionError("event reads must not reload execution settings: " + settingsReads);
             }
             int beforeSweep = scheduledIdentityChecks.get();
@@ -656,11 +663,11 @@ public final class ConversationRegression {
             Thread.sleep(2200);
             int sweepLookups = scheduledIdentityChecks.get() - beforeSweep;
             int sweepSettings = scheduledSettingSql.get() - beforeSweepSettings;
-            if (sweepLookups < 2 || sweepLookups > 6)
-                throw new AssertionError("active session sweeps retain bounded fresh identity checks while upstream is blocked: " + sweepLookups);
+            if (sweepLookups != 0)
+                throw new AssertionError("active sweeps must not query user enablement: " + sweepLookups);
             if (sweepSettings != 0)
                 throw new AssertionError("active sweeps must not reload execution settings: " + sweepSettings);
-            System.out.println("PASS running event reads use 3 fresh identity lookups and 0 setting SQL each; active sweeps use " + sweepLookups + " identity lookups and " + sweepSettings + " setting SQL over 2.2s");
+            System.out.println("PASS running event reads use 0 identity lookups and 0 setting SQL each; active sweeps use " + sweepLookups + " identity lookups and " + sweepSettings + " setting SQL over 2.2s");
             // Execution IDs are not bearer credentials; another actor cannot read or stop this stream.
             V3UserUtil.clear(); V3UserUtil.setUid(2L);
             denyGet(mvc, eventsPath); deny(mvc, streamingPath + "/" + run.path("executionId").asText() + "/stop", version, "forged stop");
@@ -777,9 +784,16 @@ public final class ConversationRegression {
             String revoked = start(mvc, json, streamingPath, streamingSession, "Identity revoked before delivery");
             if (!firstChunk.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("revocation stream reached upstream");
             revokeIdentityOnRead.set(true);
-            denyGet(mvc, revoked + "/events");
-            identityAllowed.set(true); streamRelease.get().countDown();
-            deny(mvc, streamingPath, streamingSession.path("contextVersion").asText(), "Revoked identity history must never resume");
+            await(mvc, json, revoked + "/events", "RUNNING", "星河");
+            streamRelease.get().countDown();
+            await(mvc, json, revoked + "/events", "COMPLETED", "继续");
+            deny(mvc, streamingPath, streamingSession.path("contextVersion").asText(), "Disabled user cannot submit next question");
+            identityAllowed.set(true);
+            int beforeNextQuestion = requestIdentityChecks.get();
+            String nextQuestion = start(mvc, json, streamingPath, streamingSession, "Re-enabled user asks again");
+            if (requestIdentityChecks.get() - beforeNextQuestion != 1) throw new AssertionError("each new question must freshly verify user enablement exactly once");
+            await(mvc, json, nextQuestion + "/events", "COMPLETED", "继续");
+            mvc.perform(delete("/ai/conversations/" + streamingSession.path("sessionId").asText()));
             // Resource revocation also suppresses buffered output and permanently retires that context.
             var resourceRevoked = open(mvc, json, "resource-revoked");
             String resourcePath = "/ai/conversations/" + resourceRevoked.path("sessionId").asText() + "/executions";
