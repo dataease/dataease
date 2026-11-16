@@ -5006,6 +5006,11 @@ export default {
       water_mask: '水印设置',
       show_water_mask: '显示水印',
       format: '格式',
+      excel_header_mode: '表头名称',
+      excel_header_dataset: '数据集字段名',
+      excel_header_display: '图表字段显示名',
+      excel_header_hint:
+        '仅影响图表数据 Excel 附件。例如：数据集字段为“订单金额”，图表显示名为“销售额”。未设置图表显示名时，使用数据集字段名。',
       view_data: '图表数据',
       all_data: '全部数据',
       pixel: '仪表板分辨率',

@@ -34,6 +34,9 @@ public class ReportCreator implements Serializable {
 
     private Integer viewDataRange;
 
+    /** Excel 表头模式：dataset（默认）或 display。 */
+    private String excelHeaderMode;
+
     private String pixel;
 
     private List<Integer> reciFlagList;
