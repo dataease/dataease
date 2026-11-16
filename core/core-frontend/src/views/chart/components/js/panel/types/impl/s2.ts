@@ -113,9 +113,13 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     Object.assign(content.style, {
       boxSizing: 'border-box',
       display: 'grid',
-      // 窄提示框内为字段值预留宽度，避免长字段名挤占整行。
-      gridTemplateColumns: showFieldNames ? 'minmax(0, 2fr) minmax(0, 3fr)' : 'minmax(0, 1fr)',
-      gap: '8px 16px',
+      // 小提示框的字段名列仍按内容收紧，避免百分比上限挤断短字段名。
+      gridTemplateColumns: showFieldNames
+        ? 'fit-content(max(8em, 40%)) minmax(min-content, 1fr)'
+        : 'minmax(0, 1fr)',
+      gap: '8px 12px',
+      // 给小字号的文字留足行高，避免末行溢出触发滚动条。
+      lineHeight: '1.5',
       overflow: 'auto',
       overflowWrap: 'anywhere',
       overscrollBehavior: 'contain',
