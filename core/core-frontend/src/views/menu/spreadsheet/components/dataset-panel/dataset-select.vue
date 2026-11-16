@@ -411,6 +411,7 @@ defineExpose({
   }
 
   .dataset-select-trigger {
+    position: relative;
     width: 100%;
     height: 32px;
     display: flex;
@@ -476,9 +477,10 @@ defineExpose({
     }
 
     .trigger-clear {
-      display: none;
-      flex-shrink: 0;
-      margin-left: 4px;
+      // 鼠标移向确认框时保留关闭图标的位置，供 Popper 定位。
+      position: absolute;
+      right: 12px;
+      visibility: hidden;
       color: #646a73;
       font-size: 14px;
 
@@ -489,11 +491,11 @@ defineExpose({
 
     &:hover {
       .trigger-arrow.has-clear {
-        display: none;
+        visibility: hidden;
       }
 
       .trigger-clear {
-        display: inline-flex;
+        visibility: visible;
       }
     }
   }
