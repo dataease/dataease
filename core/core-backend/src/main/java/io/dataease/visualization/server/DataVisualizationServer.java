@@ -1200,7 +1200,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public VisualizationExport2AppVO export2AppCheck(VisualizationAppExportRequest appExportRequest) {
         List<Long> viewIds = appExportRequest.getViewIds();
-        List<Long> dsIds = appExportRequest.getDsIds();
+        List<Long> dsIds = CollectionUtils.emptyIfNull(appExportRequest.getDsIds()).stream()
+                .filter(Objects::nonNull)
+                .toList();
         Long dvId = appExportRequest.getDvId();
         List<AppCoreChartViewVO> chartViewVOInfo = null;
         List<AppCoreDatasetGroupVO> datasetGroupVOInfo = null;
@@ -1214,7 +1216,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 校验请求数据集均具备 READ 权限
         if (CollectionUtils.isNotEmpty(dsIds)) {
             for (Long dsId : dsIds) {
-                if (dsId == null || !corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
+                if (!corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
                     denyVisualizationRead();
                 }
             }
