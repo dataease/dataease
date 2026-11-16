@@ -203,11 +203,16 @@ When reusing an older `CoreApplication.jar`, `--ai-classpath` may include curren
 ```sh
 uv run python tests/ai-service/run.py --task-contracts
 uv run python tests/ai-service/run.py --only-tasks
+uv run python tests/ai-service/run.py --task-idle
 ```
 
 沿同一 runner 的既有依赖前提，`--task-contracts` 是公开 MVC/JSON 的快速红绿入口：幂等受理、改输入拒绝、重试键绑定原尝试、字符串 ID、有界准入、真实后台模型池/工具、撤权读取与安全取消、连续终态提交失败恢复。测试身份和业务场景受控，传输调用真实本机合成模型 HTTP，元数据库为隔离 H2。离线 Hibernate 检查 PostgreSQL/MySQL/H2 的字符字段 DDL/JDBC 映射，不等于这些数据库全部实测。
 
 `--only-tasks` 还运行 TaskClusterRegression：拥有随机 loopback 端口的 H2 TCP 与独立 JVM 后端节点，通过真实 HTTP 访问实际 MVC/API/runtime/JPA。覆盖同时受理/只领取一次、跨节点取消、超过前台租期无轮询完成、QUEUED 跨进程恢复、进程 STOP/CONT 与过期归属 fencing、禁止自动续跑、全部节点重启后的持久结果，以及本人/撤权拒绝与仅进行中列表。进程、数据库和临时目录均由夹具创建并清理，不启动完整 DataEase，不使用产品登录凭据或业务数据库；不冒称 XPack 多空间权限、真实模型或 Redis 模型全局限额验收。完整默认回归包含本组测试并保留原前台/SDK 回归。
+
+`--task-idle` 是空闲调度的独立红绿入口：通过隔离 H2 的实际执行统计，观察全空、仅历史终态、AI 关闭三种状态各 4 秒的任务 SQL、调度行锁及正文查询；心跳单独计数。断言每窗口任务 SQL 不超过 8 次且仍存在兜底探测、无调度锁或正文读取。实际 HTTP 提交分别覆盖本机唤醒、无调度器的另一 JVM 受理后被工作节点发现、重新启用后继续处理新任务；记录受理到领取耗时，正常隔离环境上限为 2 秒加 500ms 测试调度容差。该容差不扩大产品承诺。`--task-contracts` 同时覆盖受理提交失败回滚后，超过兜底间隔仍没有任务或模型请求。性能统计只代表此隔离库与实际运行版本，不代表所有生产数据库的查询计划或容量。
+
+`--task-idle` 另在隔离准入边界注入短暂/持续 `policy_blocked`，验证发送前有界等待、只发送一次、取消及关闭/重新启用后不发请求。`--task-scheduling` 在原公平性/容量回归后连续执行 12 轮“领取后立即降低容量”，覆盖模型初始化与配置发布的竞态；不以等待模型已开始来跳过该窗口。
 
 ### 后台解析进度时序
 

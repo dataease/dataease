@@ -56,6 +56,7 @@ public final class TaskRegression {
         });
         var followed = new java.util.concurrent.atomic.AtomicBoolean();
         var stateSends = new java.util.concurrent.atomic.AtomicInteger();
+        var rollbackSends = new java.util.concurrent.atomic.AtomicInteger();
         var continuationFailures = new java.util.concurrent.atomic.AtomicInteger();
         var policyFailures = new java.util.concurrent.atomic.AtomicInteger(3);
         var policySends = new java.util.concurrent.atomic.AtomicInteger();
@@ -141,6 +142,7 @@ public final class TaskRegression {
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v1/chat/completions", exchange -> {
             var modelRequest = json.readTree(exchange.getRequestBody());
+            if (modelRequest.path("messages").toString().contains("rolled-back-acceptance")) rollbackSends.incrementAndGet();
             if (modelRequest.path("messages").toString().contains("legacy-policy")) {
                 legacyPolicySends.incrementAndGet(); exchange.sendResponseHeaders(503, -1); exchange.close(); return;
             }
@@ -301,6 +303,17 @@ public final class TaskRegression {
             failCommit.set(false);
             await(mvc, json, statePath, "FAILED");
             if (stateSends.get() != sentBeforeRecovery) throw new AssertionError("terminal persistence recovery cannot rerun model work");
+            long acceptedBefore = em.createQuery("select count(t) from CoreAiTask t", Long.class).getSingleResult();
+            failCommit.set(true);
+            boolean rolledBack = false;
+            try { mvc.perform(post("/ai/tasks").contentType("application/json").content(request.replace("same-submit", "rolled-back-acceptance").replace("explain", "rolled-back-acceptance"))); }
+            catch (jakarta.servlet.ServletException expected) { rolledBack = expected.getCause() instanceof org.springframework.transaction.TransactionSystemException; }
+            finally { failCommit.set(false); }
+            if (!rolledBack) throw new AssertionError("acceptance reached the controlled transaction commit failure");
+            Thread.sleep(1800);
+            if (em.createQuery("select count(t) from CoreAiTask t", Long.class).getSingleResult() != acceptedBefore || rollbackSends.get() != 0)
+                throw new AssertionError("rolled-back acceptance cannot survive or run through wakeup/fallback discovery");
+            System.out.println("PASS acceptance rollback creates neither durable task nor model request after fallback discovery");
         } finally {
             failCommit.set(false);
             conversations.destroy(); tasks.destroy(); transport.close(); audit.close(); server.stop(0);

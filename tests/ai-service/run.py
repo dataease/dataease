@@ -30,6 +30,7 @@ def main():
     parser.add_argument('--task-structure-nodes', action='store_true', help='actual SQL/structure scenes across independent JVM map iteration seeds')
     parser.add_argument('--task-mutex', action='store_true', help='public resource occupancy across independent JVMs')
     parser.add_argument('--task-scheduling', action='store_true', help='public HTTP task scheduling across independent JVMs')
+    parser.add_argument('--task-idle', action='store_true', help='actual idle SQL and wakeup across independent JVMs')
     parser.add_argument('--recovery-tools', action='store_true', help='public tool correction recovery loop')
     parser.add_argument('--recovery', action='store_true', help='public foreground recovery loop')
     parser.add_argument('--identity-scope', action='store_true', help='trusted worker identity and original business license dispatch')
@@ -181,6 +182,8 @@ def main():
             java.append('-Dai.test.auditRecoveryOnly=true')
         if args.task_scheduling:
             java.append('-Dai.test.schedulingOnly=true')
+        if args.task_idle:
+            java.append('-Dai.test.idleOnly=true')
         if args.recovery_tools:
             java.append('-Dai.test.recoveryToolsOnly=true')
         if args.recovery:
@@ -206,7 +209,7 @@ def main():
             java.append('-Dai.test.redisPort=' + str(port))
         commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
                      '-cp', classpath, '-d', str(classes), *map(str, sources)],
-                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_policy or args.task_scheduling or args.task_mutex or args.disabled_errors or args.conflict_errors else ['io.dataease.ai.Regression'])]]
+                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_policy or args.task_scheduling or args.task_idle or args.task_mutex or args.disabled_errors or args.conflict_errors else ['io.dataease.ai.Regression'])]]
         if args.task_structure:
             commands.append([*java, '-cp', classpath, 'io.dataease.ai.TaskStructureNodeRegression'])
         if args.xpack:

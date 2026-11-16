@@ -106,7 +106,16 @@ public final class TaskNode {
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "settings", settings);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "policies", policies);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "models", repositories.getRepository(CoreAiModelRepository.class));
-        var admission = new AiAdmission("ehcache", "standalone", beans.getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class), settings, "owned-task-node", manager);
+        var admission = new AiAdmission("ehcache", "standalone", beans.getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class), settings, "owned-task-node", manager) {
+            @Override public Permit acquire(CoreAiSetting setting, boolean background, long deadline) {
+                if (background && Files.exists(Path.of(args[1], "block-background-admission"))) {
+                    try { Files.writeString(Path.of(args[1], "admission-blocked"), "blocked"); }
+                    catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
+                    throw AiErrors.error("policy_blocked");
+                }
+                return super.acquire(setting, background, deadline);
+            }
+        };
         var transport = new AiTransport(new AiOutboundPolicy(), admission, JSON);
         var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
         beans.addBean("conversations", conversations);
