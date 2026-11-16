@@ -110,6 +110,8 @@ public final class ConversationPermissionRegression {
             var missingAccess = new AiAccess(empty.getBeanProvider(InteractiveAuthApi.class), fixture.mode);
             var missingScene = new AiSqlConversationScene(datasource, empty.getBeanProvider(InteractiveAuthApi.class), missingAccess, permissions);
             empty.addBean("scene", missingScene);
+            // Only the authorization provider is missing; retain the normal runtime dependency.
+            empty.addBean("runtime", new AiRuntimeManage(empty.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), usageConfiguration, null, null, null, new com.fasterxml.jackson.databind.ObjectMapper(), missingAccess));
             var missing = new AiConversationManage(empty.getBeanProvider(AiConversationScene.class), empty.getBeanProvider(AiRuntimeManage.class), missingAccess);
             try {
                 if (open(MockMvcBuilders.standaloneSetup(new AiConversationServer(missing)).build()) < 400)

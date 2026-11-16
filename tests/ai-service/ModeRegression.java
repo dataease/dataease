@@ -21,6 +21,7 @@ public final class ModeRegression {
     static final class Fixture {
         final AtomicReference<F2CLicResult.Status> status = new AtomicReference<>(F2CLicResult.Status.no_record);
         final AtomicBoolean enabled = new AtomicBoolean(true), failure = new AtomicBoolean(), race = new AtomicBoolean(), nullRecord = new AtomicBoolean(), authorizationNull = new AtomicBoolean();
+        final AtomicBoolean configurationAllowed = new AtomicBoolean(true);
         final AtomicInteger menus = new AtomicInteger(), communities = new AtomicInteger(), directories = new AtomicInteger();
         final LicensePO record = new LicensePO();
         final AiDeploymentMode mode;
@@ -41,7 +42,7 @@ public final class ModeRegression {
                     case "checkAiCommunityAllowed":
                         return !authorizationNull.get() && enabled.get() && Objects.equals(a[0],1L);
                     case "checkAiAllowed":
-                        menus.incrementAndGet(); return authorizationNull.get() ? null : enabled.get();
+                        menus.incrementAndGet(); return authorizationNull.get() ? null : enabled.get() && (!Boolean.TRUE.equals(a[3]) || configurationAllowed.get());
                     case "checkAiCommunityAccess":
                         communities.incrementAndGet(); if(!enabled.get()||!Objects.equals(a[0],1L)) throw new IllegalStateException("identity rejected"); return null;
                     case "checkAiAccess":
@@ -58,6 +59,62 @@ public final class ModeRegression {
     }
     static void require(boolean value,String label) { if(!value)throw new AssertionError(label); }
     static void denied(Runnable work,String label) { try{work.run();throw new AssertionError(label);}catch(AiErrors.Failure expected){} }
+    private static void usageVerification() throws Exception {
+        Fixture f = new Fixture(); f.status.set(F2CLicResult.Status.valid); V3UserUtil.setUid(1L);
+        var owner = f.access.capture();
+        for (int read = 0; read < 2; read++) {
+            int before = f.menus.get();
+            f.access.withVerifiedUsage(owner, () -> {
+                for (int nested = 0; nested < 20; nested++) f.access.verify(owner, false);
+                return null;
+            });
+            require(f.menus.get() - before == 2, "each read checks identity at entry and exit, never inherits the preceding read's grant");
+        }
+        int beforeNested = f.menus.get();
+        f.access.withVerifiedUsage(owner, () -> {
+            f.access.withVerifiedUsage(owner, () -> { f.access.verify(owner, false); return null; });
+            f.access.verify(owner, false);
+            return null;
+        });
+        require(f.menus.get() - beforeNested == 4, "explicit nested read boundaries recheck and restore the caller scope");
+        f.access.withVerifiedUsage(owner, () -> {
+            int before = f.menus.get();
+            f.access.verify(new AiAccess.Identity(2L, owner.organization(), owner.proxy(), owner.deployment()), false);
+            f.access.verify(new AiAccess.Identity(owner.actor(), 9001L, owner.proxy(), owner.deployment()), false);
+            f.access.verify(new AiAccess.Identity(owner.actor(), owner.organization(), 9001L, owner.deployment()), false);
+            require(f.menus.get() - before == 3, "actor, organization and proxy checks cannot reuse another identity's grant");
+            f.configurationAllowed.set(false);
+            denied(() -> f.access.verify(owner, true), "usage verification must never grant configuration authority");
+            f.configurationAllowed.set(true);
+            AtomicReference<Throwable> failure = new AtomicReference<>();
+            int beforeWorker = f.menus.get();
+            Thread worker = new Thread(() -> { try { f.access.verify(owner, false); } catch (Throwable error) { failure.set(error); } });
+            worker.start();
+            try { worker.join(); } catch (InterruptedException error) { throw new IllegalStateException(error); }
+            require(failure.get() == null && f.menus.get() == beforeWorker + 1, "read grants never cross threads");
+            return null;
+        });
+        denied(() -> f.access.withVerifiedUsage(owner, () -> {
+            f.enabled.set(false);
+            f.access.verify(owner, false);
+            return "must not be delivered";
+        }), "account revoked during a read must be rejected before delivery");
+        denied(() -> f.access.verify(owner, false), "failed exit cannot leave a reusable grant");
+        f.enabled.set(true);
+        try {
+            f.access.withVerifiedUsage(owner, () -> { throw new IllegalStateException("read failed"); });
+            throw new AssertionError("read failure must propagate");
+        } catch (IllegalStateException expected) { }
+        f.enabled.set(false);
+        denied(() -> f.access.verify(owner, false), "exception must clear the grant on a reused thread");
+        f.enabled.set(true);
+        denied(() -> f.access.withVerifiedUsage(owner, () -> {
+            f.record.setUpdateTime(2L);
+            f.access.verify(owner, false);
+            return null;
+        }), "deployment revision remains freshly checked inside the read scope");
+        System.out.println("PASS bounded identity verification: fresh entry/exit, nested cleanup, actor/workspace/proxy/configuration/thread isolation and mid-read revocation");
+    }
     private static void licenseScope() {
         new io.dataease.license.utils.CommonBeanFactory().setApplicationContext(new StaticApplicationContext());
         Fixture f = new Fixture(); f.status.set(F2CLicResult.Status.valid); V3UserUtil.setUid(1L);
@@ -106,6 +163,7 @@ public final class ModeRegression {
         System.out.println("PASS AI worker license dispatch, nested/exception cleanup, community isolation and fresh-source revocation");
     }
     public static void run() throws Exception {
+        usageVerification();
         licenseScope();
         Fixture f = new Fixture(); V3UserUtil.setUid(1L);
         f.nullRecord.set(true);require(!f.mode.current().organizations(),"explicit no-record source supports nullable empty record");

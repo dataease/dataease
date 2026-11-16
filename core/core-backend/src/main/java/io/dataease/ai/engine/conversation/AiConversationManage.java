@@ -414,10 +414,11 @@ public class AiConversationManage implements AiToolConversationFeature {
             Run run = run(state, execution);
             if (after < 0 || after > run.sequence) throw AiErrors.error("invalid");
             try {
-                authorized(state.owner, () -> {
-                    check(state);
+                authorizedRead(state, () -> {
                     // Failed/cancelled attempts retain their safe task identity for explicit new attempts.
+                    // Delivery verification already authorizes this conversation through the runtime feature.
                     if (Set.of("RUNNING", "COMPLETED").contains(run.status)) run.stream.verifyDelivery();
+                    else check(state);
                     return null;
                 });
             } catch (RuntimeException failure) {
@@ -483,7 +484,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         synchronized (run.state) {
             if (!"RUNNING".equals(run.status)) return;
             try {
-                authorized(run.state.owner, () -> { check(run.state); run.stream.verifyDelivery(); return null; });
+                authorizedRead(run.state, () -> { run.stream.verifyDelivery(); return null; });
                 progress(run);
                 if (run.text.isEmpty() || run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
                 if (run.state.single) {
@@ -684,6 +685,9 @@ public class AiConversationManage implements AiToolConversationFeature {
     private <T> T authorized(AiAccess.Identity owner, Supplier<T> operation) {
         return new AiIdentityScope(access).call(owner, operation);
     }
+    private <T> T authorizedRead(State state, Supplier<T> operation) {
+        return access.withVerifiedUsage(state.owner, () -> authorized(state.owner, operation));
+    }
     private State owned(String id) {
         State state = sessions.get(id);
         AiAccess.Identity owner;
@@ -703,7 +707,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private AiAccess.Identity identity() {
         if (RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
-        var identity = access.capture(); access.verify(identity, false); runtime.getObject().verifyUsage(identity); return identity;
+        var identity = access.capture(); runtime.getObject().verifyUsage(identity); return identity;
     }
     private boolean same(AiAccess.Identity a, AiAccess.Identity b) { return Objects.equals(a, b); }
     private AiConversationScene scene(String code) {
@@ -727,7 +731,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                 if (run == null) return;
                 if (now >= run.stream.deadline()) { terminate(run, "FAILED", "timeout"); return; }
                 if (now >= run.lease) { invalidate(state); return; }
-                try { authorized(state.owner, () -> { runtime.getObject().verifyUsage(state.owner); check(state); return null; }); }
+                try { authorizedRead(state, () -> { check(state); return null; }); }
                 catch (AiErrors.Failure revoked) { invalidate(state); return; }
                 catch (RuntimeException unavailable) { return; }
             }

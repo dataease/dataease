@@ -190,7 +190,8 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             updateAdmission(settings, latest);
         };
         Runnable verify = () -> { inspect(detached, prompt); policy.accept(true); };
-        Runnable delivery = () -> { feature(feature).authorize(detached); policy.accept(false); };
+        // resolve() inside policy checks the feature's full scope as well as the current model policy.
+        Runnable delivery = () -> policy.accept(false);
         var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
                 secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
         // Only detached setting values enter admission; no JPA/request-bound entity crosses threads.
