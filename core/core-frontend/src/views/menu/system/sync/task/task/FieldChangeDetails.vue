@@ -7,6 +7,8 @@ const props = defineProps<{
   changes: { before?: ITableField; after?: ITableField }[]
   mappingNotes?: Record<string, string>
   afterLabel?: string
+  beforeSourceQuery?: string
+  afterSourceQuery?: string
 }>()
 const { t } = useI18n()
 const attributes = [
@@ -101,6 +103,21 @@ const changeCount = computed(() =>
 
 <template>
   <div class="field-change-details">
+    <details v-if="afterSourceQuery != null" class="field-change-group" open>
+      <summary class="field-change-heading">
+        {{ t('sync_maintenance.source_query_changed') }}
+      </summary>
+      <div class="comment-comparison query-comparison">
+        <div>
+          <span class="secondary">{{ t('sync_maintenance.before') }}</span>
+          <pre>{{ beforeSourceQuery }}</pre>
+        </div>
+        <div>
+          <span class="secondary">{{ afterLabel || t('sync_maintenance.after') }}</span>
+          <pre>{{ afterSourceQuery }}</pre>
+        </div>
+      </div>
+    </details>
     <div class="changes-heading">
       <span>{{ t('sync_maintenance.changes_title') }}</span>
       <span class="secondary">{{
@@ -183,6 +200,18 @@ const changeCount = computed(() =>
 .field-change-details {
   line-height: 22px;
   overflow-wrap: anywhere;
+}
+.query-comparison {
+  padding-top: 14px;
+  pre {
+    margin: 4px 0 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: inherit;
+  }
+}
+.field-change-group + .changes-heading {
+  margin-top: 12px;
 }
 .secondary {
   color: var(--ed-text-color-secondary);

@@ -38,6 +38,7 @@ import PluginActionToolbar from '@/views/menu/spreadsheet/components/PluginActio
 import PluginRenderIndicator from '@/views/menu/spreadsheet/components/PluginRenderIndicator.vue'
 import DatasetReplacementDialog from '@/views/menu/spreadsheet/components/dataset-replacement/DatasetReplacementDialog.vue'
 import SpreadsheetPreviewOverlay from '@/views/menu/spreadsheet/components/SpreadsheetPreviewOverlay.vue'
+import SpreadsheetOuterParamsDialog from '@/views/menu/spreadsheet/components/SpreadsheetOuterParamsDialog.vue'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -50,10 +51,15 @@ import {
   parseSheetData,
   serializeSheetData
 } from '@/views/menu/spreadsheet/utils/univerConfig'
+import { loadSpreadsheetOuterParamsEditorContext } from '@/views/menu/spreadsheet/utils/outer-params-editor'
 import { SPREADSHEET_EVENTS } from '@/views/menu/spreadsheet/utils/events'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import type { PluginEditPayload } from '@/views/menu/spreadsheet/types/editor'
 import type { PluginConfig } from '@/views/menu/spreadsheet/types/plugin'
+import type {
+  SpreadsheetOuterParamsConfig,
+  SpreadsheetOuterParamsContext
+} from '@/views/menu/spreadsheet/types/outer-params'
 import type { DatasetReplacementScope } from '@/views/menu/spreadsheet/plugins/DataEaseDatasetReplacementPlugin/types'
 import { clearUniverProtectionResources } from '@/views/menu/spreadsheet/plugins/DataEaseToolbarUIPlugin/config/protection-config'
 import { pluginSnapshotCleaningService } from '@/views/menu/spreadsheet/services/plugin-snapshot-cleaning.service'
@@ -139,6 +145,12 @@ const sessionAvailable = computed(
 const isCurrentSession = (revision: number) =>
   !disposed.value && revision === sessionRevision && sessionMatchesRoute.value
 const pendingPublish = ref(false)
+const openingOuterParams = ref(false)
+const outerParamsVisible = ref(false)
+const outerParamsContext = shallowRef<SpreadsheetOuterParamsContext>({
+  conditions: [],
+  dataAreas: []
+})
 const previewVisible = ref(false)
 const previewWorkbookData = shallowRef<Partial<IWorkbookData>>()
 const closePreviewOnFullscreenExit = ref(false)
@@ -368,6 +380,8 @@ const applyPluginEditorPayload = (payload: PluginEditPayload | null): void => {
 
 const resetWorkbookEditor = () => {
   loading.value = true
+  outerParamsVisible.value = false
+  openingOuterParams.value = false
   stopDraftCheck()
   pendingPluginEditorPayload = undefined
   applyPluginEditorPayload(null)
@@ -602,6 +616,63 @@ const persistSpreadsheet = async (
 }
 
 const handleSave = () => persistSpreadsheet()
+
+const persistAndOpenOuterParams = async () => {
+  const revision = sessionRevision
+  openingOuterParams.value = true
+  try {
+    // 先保存工作簿，使外参绑定校验使用的编辑稿与当前条件、数据区域一致。
+    const saved = await persistSpreadsheet(undefined, true)
+    if (!saved || !isCurrentSession(revision)) {
+      return
+    }
+    const savedWorkbook = parseSheetData(saved.sheetData)
+    if (!savedWorkbook) {
+      throw new Error(t('spreadsheet.outer_params_load_error'))
+    }
+    const context = await loadSpreadsheetOuterParamsEditorContext(savedWorkbook)
+    if (!isCurrentSession(revision)) {
+      return
+    }
+
+    outerParamsContext.value = context
+    outerParamsVisible.value = true
+  } catch (error) {
+    if (isCurrentSession(revision)) {
+      presentError(error, t('spreadsheet.outer_params_load_error'))
+    }
+  } finally {
+    if (isCurrentSession(revision)) {
+      openingOuterParams.value = false
+    }
+  }
+}
+
+const handleOpenOuterParams = () => {
+  if (
+    !sessionAvailable.value ||
+    mutating.value ||
+    openingOuterParams.value ||
+    previewVisible.value
+  ) {
+    return
+  }
+  if (!session.id) {
+    ElMessage.warning(t('spreadsheet.save_first'))
+    return
+  }
+  pendingPublish.value = false
+  void persistAndOpenOuterParams()
+}
+
+const handleOuterParamsSaved = (config: SpreadsheetOuterParamsConfig) => {
+  if (config.spreadsheetId !== session.id || !sessionAvailable.value) {
+    return
+  }
+  if (spreadsheetStatus.value === SpreadsheetPublishStatus.Published) {
+    spreadsheetStatus.value = SpreadsheetPublishStatus.SavedUnpublished
+  }
+}
 
 const publishSavedSpreadsheet = async (id: string | number) => {
   if (!sessionAvailable.value || session.id !== String(id)) return
@@ -1039,7 +1110,7 @@ onBeforeUnmount(() => {
     ref="editorRootRef"
     class="spreadsheet-editor"
     :class="{ embedded: isEmbedded }"
-    v-loading="loading"
+    v-loading="loading || openingOuterParams"
   >
     <SpreadsheetToolbar
       :key="sessionRevision"
@@ -1047,7 +1118,7 @@ onBeforeUnmount(() => {
       :saving="saving"
       :publishing="publishing"
       :recovering="recovering"
-      :disabled="!sessionAvailable"
+      :disabled="!sessionAvailable || openingOuterParams || outerParamsVisible"
       :status="spreadsheetStatus"
       @back="handleBack"
       @save="handleSave"
@@ -1058,6 +1129,7 @@ onBeforeUnmount(() => {
       @recover-published="handleRecoverPublished"
       @cancel-publish="handleCancelPublish"
       @replace-dataset="handleOpenWorkbookDatasetReplacement"
+      @outer-params="handleOpenOuterParams"
       @rename="handleRename"
     />
 
@@ -1089,6 +1161,13 @@ onBeforeUnmount(() => {
       ref="resourceGroupOpt"
       @finish="resourceOptFinish"
       @cancel="pendingPublish = false"
+    />
+    <SpreadsheetOuterParamsDialog
+      v-if="outerParamsVisible && session.id"
+      v-model="outerParamsVisible"
+      :spreadsheet-id="session.id"
+      :context="outerParamsContext"
+      @saved="handleOuterParamsSaved"
     />
     <SpreadsheetPreviewOverlay
       v-if="previewVisible && previewWorkbookData"

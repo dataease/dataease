@@ -1,3 +1,4 @@
+import { embeddedErrorMessage } from './embeddedError'
 import axios, {
   AxiosInstance,
   AxiosRequestHeaders,
@@ -375,6 +376,17 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
   }
   if (normalized.code === 50005 && normalized.httpStatus === 409) return Promise.reject(normalized)
   const gatewayFailure = header.has('DE-GATEWAY-FLAG') || reason === 'UNAUTHENTICATED'
+  const embeddedRequest = AxiosHeaders.from(error.config?.headers).has('X-EMBEDDED-TOKEN')
+  if (embeddedRequest && (gatewayFailure || normalized.httpStatus === 401)) {
+    ElMessage({
+      type: 'error',
+      message: embeddedErrorMessage(normalized.messageKey),
+      showClose: true,
+      grouping: true
+    })
+    normalized.presented = true
+    return Promise.reject(normalized)
+  }
   const forbiddenFailure =
     header.has('DE-FORBIDDEN-FLAG') || header.get('X-DE-Error-Reason') === 'FORBIDDEN'
   if (

@@ -30,6 +30,10 @@ public class TaskMaintenanceRequest {
     private String schemaFingerprint;
     private String sourceFingerprint;
     private String planFingerprint;
+    /**
+     * 仅在原来源连接下修正查询，未提供时沿用已保存 SQL
+     */
+    private String sourceQuery;
     @NotNull
     @Size(max = 2048)
     private List<SinkMaintenance.Change> changes = new ArrayList<>();

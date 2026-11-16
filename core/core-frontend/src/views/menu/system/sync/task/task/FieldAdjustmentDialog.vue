@@ -7,6 +7,7 @@ import {
   getTaskMaintenanceApi,
   getTaskMaintenanceStatusApi,
   getTaskMaintenanceDetailsApi,
+  readTaskMaintenanceSourceApi,
   previewTaskMaintenanceApi,
   resumeTaskMaintenanceApi,
   recheckTaskMaintenanceApi,
@@ -24,6 +25,8 @@ import type {
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
 import { useI18n } from '@/hooks/web/useI18n'
+import { Icon } from '@/components/icon-custom'
+import iconDatabase from '@/assets/svg/icon_database_outlined.svg'
 import TargetFields from './TargetFields.vue'
 import TargetFieldForm from './TargetFieldForm.vue'
 import FullRefreshDialog from './FullRefreshDialog.vue'
@@ -32,6 +35,7 @@ import FieldChangeDetails from './FieldChangeDetails.vue'
 import FieldExecutionResults from './FieldExecutionResults.vue'
 import { maintenanceFieldType, normalizeFieldType } from './fieldType'
 import { fieldSignature as signature, getFieldChanges } from './fieldChanges'
+import { hasSourceField } from './fieldValidation'
 
 const { t } = useI18n()
 const emit = defineEmits<{
@@ -42,6 +46,22 @@ const visible = ref(false)
 const activeTab = ref('current')
 const rulesVisible = ref(false)
 const queryVisible = ref(false)
+const queryEditorVisible = ref(false)
+const originalSourceQuery = ref('')
+const sourceQuery = ref('')
+const queryInput = ref('')
+const originalSource =
+  ref<
+    Pick<
+      ITaskMaintenance,
+      | 'sourceQuery'
+      | 'sourceFields'
+      | 'fieldTypes'
+      | 'sourceFingerprint'
+      | 'blockedReason'
+      | 'blockedCode'
+    >
+  >()
 const detailsVisible = ref('')
 const changesVisible = ref(false)
 const uncertainOperation = ref('')
@@ -112,6 +132,8 @@ const changes = computed<IFieldAdjustmentChange[]>(() => {
   })
   return result
 })
+const queryChanged = computed(() => sourceQuery.value !== originalSourceQuery.value)
+const hasChanges = computed(() => changes.value.length > 0 || queryChanged.value)
 const previewChanges = computed(() =>
   changes.value.map(change => ({
     before: original.value.find(field => field.fieldName === change.originalTargetName),
@@ -275,7 +297,7 @@ const initializationText = computed(() => {
 const initializationRetryable = computed(
   () =>
     context.value?.state === 'REINIT_REQUIRED' &&
-    !changes.value.length &&
+    !hasChanges.value &&
     !context.value.blockedReason &&
     !['RUNNING', 'CONNECTION_LOST'].includes(context.value.initializationStatus)
 )
@@ -285,11 +307,24 @@ const initializationRetryable = computed(
 const locked = computed(
   () =>
     loading.value ||
+    queryEditorVisible.value ||
     !!uncertainOperation.value ||
     submitted.value ||
     ['RUNNING', 'CONNECTION_LOST'].includes(context.value?.initializationStatus) ||
     (!!context.value?.blockedReason &&
       !(precisionAlignment.value && context.value.blockedCode === 'PRECISION_UNSPECIFIED'))
+)
+const queryEditable = computed(
+  () =>
+    context.value?.sourceMode === 'QUERY' &&
+    context.value.sourceQuerySupported &&
+    context.value.structureVerified &&
+    !precisionAlignment.value &&
+    !submitted.value &&
+    !uncertainOperation.value &&
+    !context.value.executionRecovery &&
+    !['RUNNING', 'CONNECTION_LOST'].includes(context.value.initializationStatus) &&
+    (!context.value.blockedReason || context.value.blockedCode === 'SOURCE_READ_FAILED')
 )
 const processing = computed(
   () =>
@@ -323,6 +358,11 @@ const sourceType = (row: ITableField) => {
       : t('sync_maintenance.type_unavailable'))
   return source ? type : t('sync_maintenance.saved_type', [type])
 }
+const missingSource = (row: ITableField) =>
+  !!context.value?.sourceFingerprint &&
+  !!row.fieldSource &&
+  !form.value?.source.fieldList.some(field => field.fieldName === row.fieldSource)
+const missingFields = computed(() => (form.value?.target.fieldList || []).filter(missingSource))
 const targetType = (row: ITableField) => {
   const structure = context.value?.structure
   if (normalizeFieldType(row.fieldType) === 'DECIMAL') {
@@ -432,6 +472,7 @@ const optionHint = (row: ITableField, option: 'fieldPk' | 'fieldIndex') =>
     : '')
 const rowStatus = (row: ITableField) => {
   if (pendingDelete(row)) return t('sync_maintenance.deleted')
+  if (missingSource(row)) return t('sync_maintenance.source_missing_status')
   const before = original.value.find(field => field.id === row.id)
   if (!before) return t('sync_maintenance.added')
   if (signature(before) !== signature(row)) return t('sync_maintenance.modified')
@@ -448,7 +489,12 @@ const issuesFor = (row: ITableField) => {
       : issue.fieldName === row.fieldName
   )
 }
-const fieldErrors = (row: ITableField) => issuesFor(row).map(issue => issue.reason)
+const fieldErrors = (row: ITableField) => [
+  ...(missingSource(row) && !pendingDelete(row)
+    ? [t('sync_maintenance.source_missing_field', [row.fieldSource])]
+    : []),
+  ...(activeTab.value === 'draft' ? issuesFor(row).map(issue => issue.reason) : [])
+]
 /**
  * 修改后的行需要重新检查，清除该行的旧结果而保留其他行的问题
  */
@@ -462,11 +508,14 @@ const fieldSaved = (row: ITableField) => {
  * 大量字段分页时先跳转问题所在页，再复用字段抽屉展示具体属性错误
  */
 const locateIssue = () => {
-  const index = ordinaryDraft.value.findIndex(row => issuesFor(row).length)
-  if (index < 0) return
+  const index = ordinaryDraft.value.findIndex(row => fieldErrors(row).length)
+  if (index < 0) {
+    if (missingFields.value.length) protectedExpanded.value = ['protected']
+    return
+  }
   pagination.currentPage = Math.floor(index / pagination.pageSize) + 1
   const row = ordinaryDraft.value[index]
-  if (!pendingDelete(row)) edit(row)
+  if (!pendingDelete(row) && !missingSource(row)) edit(row)
 }
 /**
  * 读取保存配置并复制成独立草稿，概览省略字段编辑专用元数据
@@ -479,9 +528,22 @@ const load = async (id: string, version: number, overview = false) => {
   // 读取受阻时只更新门禁，保留同一套编辑基线和草稿
   if (activeTab.value === 'draft' && response.data.blockedReason) {
     context.value.blockedReason = response.data.blockedReason
+    context.value.blockedCode = response.data.blockedCode
     return false
   }
   context.value = response.data
+  originalSource.value = {
+    sourceQuery: response.data.sourceQuery,
+    sourceFields: response.data.sourceFields,
+    fieldTypes: response.data.fieldTypes,
+    sourceFingerprint: response.data.sourceFingerprint,
+    blockedReason: response.data.blockedReason,
+    blockedCode: response.data.blockedCode
+  }
+  originalSourceQuery.value = response.data.sourceQuery || ''
+  sourceQuery.value = originalSourceQuery.value
+  queryInput.value = sourceQuery.value
+  queryEditorVisible.value = false
   original.value = (response.data.fields || []).map(field => ({ ...field, id: generateID() }))
   protectedExpanded.value = ordinaryCurrent.value.length ? [] : ['protected']
   removed.value = []
@@ -552,6 +614,8 @@ const mergeStatus = (state: ITaskMaintenance) => {
     logId: state.logId,
     beforeFields: state.beforeFields ?? context.value.beforeFields,
     afterFields: state.afterFields ?? context.value.afterFields,
+    beforeSourceQuery: state.beforeSourceQuery ?? context.value.beforeSourceQuery,
+    afterSourceQuery: state.afterSourceQuery ?? context.value.afterSourceQuery,
     initializationStatus: state.initializationStatus,
     initializationError: state.initializationError,
     executionRecovery: state.executionRecovery,
@@ -645,6 +709,11 @@ const open = async (id: string, name: string) => {
   activeTab.value = 'current'
   rulesVisible.value = false
   queryVisible.value = false
+  queryEditorVisible.value = false
+  originalSourceQuery.value = ''
+  sourceQuery.value = ''
+  queryInput.value = ''
+  originalSource.value = undefined
   detailsVisible.value = ''
   changesVisible.value = false
   uncertainOperation.value = pendingSubmissions.get(id) || ''
@@ -719,6 +788,58 @@ const startEditing = async () => {
   }
 }
 /**
+ * 查询编辑使用独立草稿，读取成功前不替换已核实的源字段和目标字段草稿
+ */
+const editSourceQuery = () => {
+  if (loading.value || !queryEditable.value) return
+  queryInput.value = sourceQuery.value
+  queryEditorVisible.value = true
+  queryVisible.value = false
+  confirmation.value = false
+}
+const cancelSourceQuery = () => {
+  queryInput.value = sourceQuery.value
+  queryEditorVisible.value = false
+}
+const readSourceQuery = async () => {
+  if (loading.value || !queryEditable.value || !queryInput.value.trim()) return
+  const version = viewVersion
+  stopPolling()
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await readTaskMaintenanceSourceApi({
+      taskId: context.value.taskId,
+      operationId: generateID(),
+      configFingerprint: context.value.configFingerprint,
+      schemaFingerprint: context.value.schemaFingerprint,
+      sourceQuery: queryInput.value,
+      changes: []
+    })
+    if (!isCurrentView(version)) return
+    if (response.data.blockedReason) {
+      error.value = response.data.blockedReason
+      return
+    }
+    context.value = response.data
+    sourceQuery.value = response.data.sourceQuery
+    form.value.source.fieldList = (response.data.sourceFields || []).map(field => ({
+      ...field,
+      id: generateID()
+    }))
+    form.value.source.targetFieldTypeList = response.data.fieldTypes
+    queryEditorVisible.value = false
+    activeTab.value = 'draft'
+    validationIssues.value = []
+    validationBlockers.value = []
+    preview.value = undefined
+  } catch (cause) {
+    if (isCurrentView(version)) showError(cause)
+  } finally {
+    if (isCurrentView(version)) loading.value = false
+  }
+}
+/**
  * 历史缺失精度只生成配置校准草稿，预检查和正式提交仍由服务端核对实际结构与全部字段
  */
 const startPrecisionAlignment = async () => {
@@ -755,7 +876,12 @@ const startPrecisionAlignment = async () => {
  */
 const remove = (row: ITableField) => {
   if (!deletable(row) || !form.value) return
-  form.value.target.fieldList = form.value.target.fieldList.filter(field => field.id !== row.id)
+  const remainingFields = form.value.target.fieldList.filter(field => field.id !== row.id)
+  if (!hasSourceField(remainingFields)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    return
+  }
+  form.value.target.fieldList = remainingFields
   if (original.value.some(field => field.id === row.id)) removed.value.push(deepCopy(row))
   fieldSaved(row)
 }
@@ -794,6 +920,7 @@ const request = (operationId: string): ITaskMaintenanceRequest => ({
   configFingerprint: context.value.configFingerprint,
   schemaFingerprint: context.value.schemaFingerprint,
   sourceFingerprint: context.value.sourceFingerprint,
+  sourceQuery: queryChanged.value ? sourceQuery.value : undefined,
   changes: changes.value,
   alignTargetPrecision: precisionAlignment.value || undefined
 })
@@ -801,7 +928,11 @@ const request = (operationId: string): ITaskMaintenanceRequest => ({
  * 预检查失败留在编辑页保留全部草稿，通过后才进入执行确认，不在此处修改任务配置
  */
 const inspect = async () => {
-  if (!changes.value.length || locked.value) return
+  if (!hasChanges.value || locked.value) return
+  if (!hasSourceField(form.value.target.fieldList)) {
+    ElMessage.warning(t('sync_task.source_field_required'))
+    return
+  }
   const version = viewVersion
   loading.value = true
   error.value = ''
@@ -818,6 +949,8 @@ const inspect = async () => {
       confirmation.value = false
       const index = ordinaryDraft.value.findIndex(row => issuesFor(row).length)
       if (index >= 0) pagination.currentPage = Math.floor(index / pagination.pageSize) + 1
+      else if (protectedFields.value.some(field => issuesFor(field).length))
+        protectedExpanded.value = ['protected']
       return
     }
     exclusive.value = false
@@ -860,6 +993,8 @@ const apply = async () => {
     if (!isCurrentView(version)) return
     mergeStatus(result)
     precisionAlignment.value = false
+    queryEditorVisible.value = false
+    sourceQuery.value = originalSourceQuery.value
     form.value.target.fieldList = deepCopy(original.value)
     removed.value = []
     confirmation.value = false
@@ -931,7 +1066,11 @@ const resume = async () => {
  * 取消编辑、重新读取和关闭窗口共用草稿确认，已提交或已生效的修改不参与本地撤销
  */
 const confirmDiscard = async () => {
-  if (activeTab.value === 'draft' && changes.value.length && !uncertainOperation.value) {
+  if (
+    ((activeTab.value === 'draft' && hasChanges.value) ||
+      (queryEditorVisible.value && queryInput.value !== sourceQuery.value)) &&
+    !uncertainOperation.value
+  ) {
     try {
       await ElMessageBox.confirm(t('sync_maintenance.discard'), {
         type: 'warning',
@@ -979,6 +1118,17 @@ const fullSubmitted = (taskId: string) => {
 const discardDraft = () => {
   if (!form.value || submitted.value) return
   precisionAlignment.value = false
+  queryEditorVisible.value = false
+  sourceQuery.value = originalSourceQuery.value
+  queryInput.value = sourceQuery.value
+  if (originalSource.value) {
+    Object.assign(context.value, originalSource.value)
+    form.value.source.fieldList = (originalSource.value.sourceFields || []).map(field => ({
+      ...field,
+      id: generateID()
+    }))
+    form.value.source.targetFieldTypeList = originalSource.value.fieldTypes
+  }
   form.value.target.fieldList = deepCopy(original.value)
   removed.value = []
   validationIssues.value = []
@@ -1212,6 +1362,14 @@ defineExpose({ open })
                   t(queryVisible ? 'sync_maintenance.hide_query' : 'sync_maintenance.view_query')
                 }}
               </el-button>
+              <el-button
+                v-if="queryEditable && !queryEditorVisible"
+                link
+                type="primary"
+                :disabled="loading"
+                @click="editSourceQuery"
+                >{{ t('sync_maintenance.edit_source_query') }}</el-button
+              >
             </div>
           </div>
           <div class="connection-card">
@@ -1230,11 +1388,32 @@ defineExpose({ open })
             </div>
           </div>
         </div>
-        <div v-if="queryVisible" class="query-block">
+        <div v-if="queryVisible && !queryEditorVisible" class="query-block">
           <div class="query-content">
             <pre>{{ context?.sourceQuery }}</pre>
           </div>
           <p class="context-label query-help">{{ t('sync_maintenance.query_readonly') }}</p>
+        </div>
+        <div v-if="queryEditorVisible" class="query-block">
+          <el-input
+            v-model="queryInput"
+            type="textarea"
+            :rows="6"
+            :aria-label="t('sync_maintenance.source_query_draft')"
+            :disabled="loading"
+          />
+          <p class="context-label query-help">{{ t('sync_maintenance.query_edit_help') }}</p>
+          <div class="query-actions">
+            <el-button :disabled="loading" @click="cancelSourceQuery">{{
+              t('sync_maintenance.cancel_query_edit')
+            }}</el-button>
+            <el-button
+              type="primary"
+              :disabled="loading || !queryInput.trim()"
+              @click="readSourceQuery"
+              >{{ t('sync_maintenance.read_query_fields') }}</el-button
+            >
+          </div>
         </div>
       </div>
       <div class="adjustment-content">
@@ -1282,10 +1461,33 @@ defineExpose({ open })
             !uncertainOperation
           "
           :title="context.blockedReason"
+          :description="
+            context.blockedCode === 'SOURCE_READ_FAILED' && context.sourceQuerySupported
+              ? t('sync_maintenance.query_read_failed_help')
+              : undefined
+          "
           type="warning"
           :closable="false"
           show-icon
         />
+        <el-alert
+          v-if="queryChanged && activeTab === 'draft'"
+          :title="t('sync_maintenance.query_pending')"
+          type="warning"
+          :closable="false"
+          show-icon
+        />
+        <div v-if="missingFields.length" class="validation-summary">
+          <el-alert
+            :title="t('sync_maintenance.source_missing_help')"
+            type="warning"
+            :closable="false"
+            show-icon
+          />
+          <el-button v-if="activeTab === 'draft'" link type="primary" @click="locateIssue">{{
+            t('sync_maintenance.locate_issue')
+          }}</el-button>
+        </div>
         <template v-if="uncertainOperation">
           <el-alert
             :title="t('sync_maintenance.response_unknown')"
@@ -1446,7 +1648,7 @@ defineExpose({ open })
             :option-hint="optionHint"
             :editable="row => editable(row) && context.structure?.operations.includes('UPDATE')"
             :deletable="deletable"
-            :status="activeTab === 'draft' ? rowStatus : undefined"
+            :status="rowStatus"
             :deleted="pendingDelete"
             :show-actions="activeTab === 'draft' && !precisionAlignment"
             :compact="true"
@@ -1454,7 +1656,7 @@ defineExpose({ open })
             :target-type="targetType"
             :actual-target-type="showActualDefinition ? actualTargetType : undefined"
             :protected-hint="protectedReason"
-            :field-errors="activeTab === 'draft' ? fieldErrors : undefined"
+            :field-errors="fieldErrors"
             @page="
               activeTab === 'draft'
                 ? (pagination.currentPage = $event)
@@ -1495,6 +1697,9 @@ defineExpose({ open })
                     actualTargetType(field)
                   }}</span
                 >
+                <p v-for="message in fieldErrors(field)" :key="message" class="validation-reason">
+                  {{ message }}
+                </p>
               </div>
             </el-collapse-item>
           </el-collapse>
@@ -1517,9 +1722,14 @@ defineExpose({ open })
     <template #footer>
       <div class="adjustment-footer">
         <span v-if="activeTab === 'draft'" class="footer-note">{{
-          t(changes.length ? 'sync_maintenance.pending_count' : 'sync_maintenance.no_changes', [
-            changes.length
-          ])
+          t(
+            queryChanged
+              ? 'sync_maintenance.query_pending_count'
+              : hasChanges
+              ? 'sync_maintenance.pending_count'
+              : 'sync_maintenance.no_changes',
+            [changes.length]
+          )
         }}</span>
         <el-button
           v-if="
@@ -1548,7 +1758,7 @@ defineExpose({ open })
           <el-button v-if="!precisionAlignment" :disabled="loading" @click="reloadFields">{{
             t('sync_maintenance.reload')
           }}</el-button>
-          <el-button type="primary" :disabled="locked || !changes.length" @click="inspect">{{
+          <el-button type="primary" :disabled="locked || !hasChanges" @click="inspect">{{
             t('sync_maintenance.check_all')
           }}</el-button>
         </template>
@@ -1713,7 +1923,12 @@ defineExpose({ open })
           <p>{{ t('sync_maintenance.collapse_help') }}</p>
         </details>
       </section>
-      <FieldChangeDetails :changes="previewChanges" :mapping-notes="preview.mappingNotes" />
+      <FieldChangeDetails
+        :changes="previewChanges"
+        :mapping-notes="preview.mappingNotes"
+        :before-source-query="preview.beforeSourceQuery"
+        :after-source-query="preview.afterSourceQuery"
+      />
     </div>
     <template #footer>
       <div v-if="preview" class="confirmation-footer">
@@ -1776,7 +1991,11 @@ defineExpose({ open })
     class="maintenance-secondary-dialog"
     align-center
   >
-    <FieldChangeDetails :changes="operationChanges" />
+    <FieldChangeDetails
+      :changes="operationChanges"
+      :before-source-query="context?.beforeSourceQuery"
+      :after-source-query="context?.afterSourceQuery"
+    />
     <template #footer
       ><el-button @click="changesVisible = false">{{
         t('sync_maintenance.close')
@@ -1793,17 +2012,24 @@ defineExpose({ open })
     <template #header>
       <div class="rules-heading">{{ t('sync_maintenance.rules_entry') }}</div>
       <div class="rule-provider">
-        <div class="connection-line">
+        <div class="rule-provider-icon" aria-hidden="true">
+          <Icon name="icon_database_outlined"><icon-database class="svg-icon" /></Icon>
+        </div>
+        <div class="rule-provider-name">
           <span class="context-label">{{ t('sync_maintenance.target_datasource') }}</span>
           <span class="ellipsis" :title="context?.targetName">{{
             context?.targetName || '-'
           }}</span>
         </div>
-        <div class="connection-line">
-          <span class="context-label">{{ t('sync_maintenance.database_type') }}</span>
-          <span>{{ context?.targetType || '-' }}</span>
-          <span class="context-label">{{ t('sync_maintenance.database_version') }}</span>
-          <span :title="context?.structure?.version">{{ databaseVersion || '-' }}</span>
+        <div class="rule-provider-version">
+          <span :title="t('sync_maintenance.database_type')">{{ context?.targetType || '-' }}</span>
+          <span
+            class="ellipsis"
+            :title="`${t('sync_maintenance.database_version')}：${
+              context?.structure?.version || '-'
+            }`"
+            >{{ databaseVersion || '-' }}</span
+          >
         </div>
       </div>
       <p v-if="context?.structure?.rules?.length" class="rules-intro context-label">
@@ -1819,7 +2045,7 @@ defineExpose({ open })
         >
           <template #title>
             <span class="rule-title">
-              <span>{{ rule.item }}</span>
+              <span class="rule-name">{{ rule.item }}</span>
               <el-tag size="small" type="info">{{
                 t(
                   rule.source === 'DATABASE'
@@ -1831,18 +2057,18 @@ defineExpose({ open })
               }}</el-tag>
             </span>
           </template>
-          <template v-if="rule.officialText">
-            <p class="context-label">{{ t('sync_maintenance.official_excerpt') }}</p>
+          <div v-if="rule.supported" class="rule-section rule-supported">
+            <div class="rule-section-label">{{ t('sync_maintenance.rule_supported') }}</div>
+            <p>{{ rule.supported }}</p>
+          </div>
+          <div v-if="rule.restricted" class="rule-section rule-restricted">
+            <div class="rule-section-label">{{ t('sync_maintenance.rule_restricted') }}</div>
+            <p>{{ rule.restricted }}</p>
+          </div>
+          <details v-if="rule.officialText" class="rule-official">
+            <summary>{{ t('sync_maintenance.official_excerpt') }}</summary>
             <blockquote class="official-excerpt">{{ rule.officialText }}</blockquote>
-          </template>
-          <p v-if="rule.supported">
-            <span class="context-label">{{ t('sync_maintenance.rule_supported') }}：</span
-            >{{ rule.supported }}
-          </p>
-          <p v-if="rule.restricted">
-            <span class="context-label">{{ t('sync_maintenance.rule_restricted') }}：</span
-            >{{ rule.restricted }}
-          </p>
+          </details>
           <p v-if="rule.documentationUrl?.startsWith('https://')" class="rule-documentation">
             <span v-if="rule.applicableVersion" class="context-label">{{
               rule.applicableVersion
@@ -2051,6 +2277,11 @@ defineExpose({ open })
   margin: 8px 0 0;
   line-height: 1.6;
 }
+.query-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
 .adjustment-actions {
   display: flex;
   align-items: center;
@@ -2102,25 +2333,89 @@ defineExpose({ open })
   line-height: 24px;
 }
 .rule-provider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-top: 12px;
   font-size: 14px;
   font-weight: normal;
-  .context-label:first-child {
-    min-width: 60px;
+}
+.rule-provider-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--ed-color-primary-light-9);
+  color: var(--ed-color-primary);
+  .svg-icon {
+    width: 20px;
+    height: 20px;
   }
-  .context-label:not(:first-child) {
-    margin-left: 12px;
+}
+.rule-provider-name {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: 22px;
+  .context-label {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+.rule-provider-version {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 45%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--ed-fill-color-light);
+  color: var(--ed-text-color-secondary);
+  font-size: 12px;
+  line-height: 20px;
+  > :first-child {
+    flex-shrink: 0;
   }
 }
 .rules-intro {
-  margin: 8px 0 0;
+  margin: 12px 0 0;
+  font-size: 12px;
   font-weight: normal;
+  line-height: 20px;
 }
 .plugin-rules {
   margin-top: 0;
+  border: 0;
+  :deep(.ed-collapse-item__header) {
+    height: auto;
+    min-height: 48px;
+    padding: 10px 0;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: left;
+    background: var(--ed-bg-color);
+    &.is-active {
+      color: var(--ed-color-primary);
+    }
+  }
+  :deep(.ed-collapse-item__arrow) {
+    order: -1;
+    flex-shrink: 0;
+    margin: 0 10px 0 0;
+  }
+  :deep(.ed-collapse-item:last-child) {
+    .ed-collapse-item__header,
+    .ed-collapse-item__wrap {
+      border-bottom: 0;
+    }
+  }
 }
 .plugin-rules :deep(.ed-collapse-item__content) {
-  padding: 12px 16px 16px;
+  padding: 0 0 16px 22px;
 }
 .rules-effect {
   flex: 1;
@@ -2140,7 +2435,7 @@ defineExpose({ open })
   }
 }
 .plugin-rules p {
-  margin: 8px 0;
+  margin: 4px 0 0;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
@@ -2151,9 +2446,48 @@ defineExpose({ open })
   flex-wrap: wrap;
   gap: 8px 12px;
 }
+.rule-title {
+  flex: 1;
+  min-width: 0;
+  justify-content: space-between;
+  .rule-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  :deep(.ed-tag) {
+    flex-shrink: 0;
+  }
+}
+.rule-section {
+  margin-bottom: 12px;
+}
+.rule-section-label {
+  font-weight: 500;
+  line-height: 22px;
+}
+.rule-supported .rule-section-label {
+  color: var(--ed-color-success);
+}
+.rule-restricted .rule-section-label {
+  color: var(--ed-color-warning);
+}
+.rule-official {
+  margin-top: 12px;
+  color: var(--ed-text-color-secondary);
+  summary {
+    cursor: pointer;
+    line-height: 22px;
+  }
+}
+.plugin-rules .rule-documentation {
+  margin-top: 12px;
+  font-size: 12px;
+}
 .official-excerpt {
-  margin: 8px 0 16px;
+  margin: 8px 0 0;
   padding: 8px 12px;
+  background: var(--ed-fill-color-light);
   border-left: 3px solid var(--ed-border-color);
   line-height: 1.6;
   white-space: pre-line;
@@ -2203,12 +2537,17 @@ defineExpose({ open })
 }
 .protected-field {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   overflow-wrap: anywhere;
   padding: 6px 0;
   line-height: 22px;
   > span {
     min-width: 0;
+  }
+  .validation-reason {
+    flex-basis: 100%;
+    margin: 0;
   }
 }
 .footer-note {
@@ -2220,6 +2559,17 @@ defineExpose({ open })
   flex-grow: 1;
 }
 @media (max-width: 600px) {
+  .rule-provider {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .rule-provider-name {
+    flex-basis: calc(100% - 44px);
+  }
+  .rule-provider-version {
+    max-width: 100%;
+    margin-left: 44px;
+  }
   .confirmation-actions .confirmation-hint {
     flex-basis: 100%;
   }
@@ -2287,13 +2637,14 @@ defineExpose({ open })
 // 规则列表独占正文滚动区，头部连接信息和底部说明通过插槽固定，不跟随规则展开而移出视野
 .maintenance-rules-dialog {
   .ed-dialog__header {
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--ed-border-color);
+    padding-bottom: 8px;
   }
   .ed-dialog__body {
-    padding-top: 16px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .ed-dialog__footer {
+    padding-top: 12px;
     border-top: 1px solid var(--ed-border-color);
   }
 }

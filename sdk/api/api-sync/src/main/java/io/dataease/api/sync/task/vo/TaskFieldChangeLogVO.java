@@ -16,6 +16,8 @@ public class TaskFieldChangeLogVO extends TaskEventLogVO {
     private String operationId;
     private String operatorName;
     private String targetTable;
+    private String beforeSourceQuery;
+    private String afterSourceQuery;
     private List<TableFieldDTO> beforeFields;
     private List<TableFieldDTO> afterFields;
     private List<SinkMaintenance.Step> progress;

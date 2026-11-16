@@ -30,6 +30,7 @@ public final class SinkMaintenance {
         private List<String> indexFieldTypes = new ArrayList<>();
         private List<Rule> rules = new ArrayList<>();
         private Integer fieldNameMaxLength;
+        private SinkFieldNameRules fieldNameRules;
         private Integer fieldCommentMaxLength;
         private Map<String, Integer> sizeLimits = new LinkedHashMap<>();
         private Map<String, Integer> precisionLimits = new LinkedHashMap<>();

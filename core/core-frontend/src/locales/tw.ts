@@ -432,8 +432,16 @@ export default {
     download: '下載',
     move: '移動分類',
     delete_hint:
-      '刪除後，素材將从素材庫隱藏，無法再選用；已使用该素材的儀表板、大螢幕等資源不受影響，全部引用解除後自動清理檔案。確認刪除？',
+      '刪除後，素材將從素材庫隱藏，無法再選用。已使用該素材的儀表板、大螢幕等資源不受影響，全部引用解除後自動清理檔案。',
     deleted: '刪除成功',
+    batch_delete: '批次刪除',
+    batch_selected_count: '已選 {count} 項',
+    batch_select_item: '選擇素材 {name}',
+    batch_delete_confirm:
+      '確定刪除選取的 {count} 項素材嗎？刪除後素材將從素材庫隱藏，無法再選用。已有引用可繼續使用，全部引用解除後將自動清理檔案。',
+    batch_delete_result: '刪除成功 {success} 項，失敗 {failed} 項',
+    batch_delete_failure_detail: '{name}：{reason}',
+    batch_delete_unknown_error: '刪除失敗，請重試',
     empty: '暫無素材',
     file_hint: '支持 PNG、JPG/JPEG、GIF、安全 SVG，單一檔案不超過 15 MiB。',
     confirm: '確認選擇',
@@ -485,6 +493,12 @@ export default {
     save_copy: '儲存並複製連結'
   },
   common: {
+    embedded_origin_mismatch:
+      '嵌入來源校驗失敗，請聯絡管理員核對嵌入應用的允許網域和 DataEase 存取位址設定',
+    embedded_token_expired: '嵌入憑證已過期，請重新取得後重試',
+    embedded_token_invalid: '嵌入憑證無效，請重新取得後重試',
+    embedded_auth_failed: '嵌入驗證失敗，請聯絡管理員',
+
     language_required: '語言不能為空',
     language_unsupported: '不支援所選語言，請重新選擇',
     language_switch_failed: '語言切換失敗，請重試',
@@ -680,7 +694,8 @@ export default {
     parameter_default_value_de: '參數預設值',
     confirm_the_deletion: '未被勾選, 與其相關的計算欄位將被刪除，確認刪除？ ',
     confirm_to_delete: '確定要刪除{a}嗎',
-    also_be_deleted: '刪除後，被關聯的表或sql片段將被刪除，與其相關的計算欄位也將被刪除。 ',
+    delete_node_join_tip: '該節點的關聯將被移除。若有下游節點，也會一併刪除。',
+    also_be_deleted: '依賴被刪除節點的計算欄位也將被刪除。',
     deleted_confirm_deletion: '如果該欄位被刪除，與其相關的計算欄位將被刪除，確認刪除？ ',
     delete_field_a: '確認刪除欄位{a}嗎',
     field_name: '欄位名稱',
@@ -3954,6 +3969,9 @@ export default {
     keep_size: '調整大小保持內部組件尺寸',
     no_save_tips: '存在未保存的{0}',
     no_save_tips2: '存在未保存的修改，立即恢復？',
+    canvas_draft_outdated:
+      '本機草稿基於舊版本或無法確認其版本。是否恢復？恢復不會自動儲存至伺服器，儲存時仍需檢查版本衝突。',
+    canvas_draft_storage_failed: '瀏覽器草稿儲存失敗，目前編輯及復原仍可使用，請及時儲存至伺服器。',
     locate_tips: '定位到中心點',
     new_tab: '新建Tab',
     pop_area: '彈窗區域',
@@ -4022,6 +4040,8 @@ export default {
     current_chart_source_field: '當前圖表源字段',
     add_linkage_dependency_fields: '追加聯動依賴字段',
     select_linkage_tips: '請先勾選需要聯動的圖表',
+    time_only_query_linkage_unsupported: '時分秒維度無法聯動日期查詢元件，請使用包含日期的維度格式',
+    month_day_query_linkage_unsupported: '月日維度無法聯動日期查詢元件，請使用包含年份的維度格式',
     linkage_option_tips1: '如果聯動維度已配置鑽取，點擊維度將',
     linkage_option1: '彈出浮框，由用戶選擇聯動或者下',
     linkage_option2: '同時觸發聯動和下鑽',
@@ -4830,6 +4850,22 @@ export default {
     database_version: '版本',
     source_table: '來源資料表',
     target_table: '目標資料表',
+    edit_source_query: '修正來源 SQL',
+    source_query_draft: '來源 SQL 草稿',
+    query_edit_help:
+      '僅在原來源連線下修正 SQL。讀取成功後仍須檢查欄位對應並確認調整；SQL 變更後將全量重新取數並替換目標資料',
+    cancel_query_edit: '取消 SQL 修改',
+    read_query_fields: '讀取查詢欄位',
+    query_read_failed_help:
+      '請恢復缺失的來源欄位，或修正來源 SQL 後重新讀取。僅刪除目標欄位無法修復失效查詢',
+    query_pending: '來源 SQL 草稿已讀取，確認調整前不會生效；本次需要全量重新初始化',
+    query_pending_count: '本次查詢修改及 {0} 個欄位修改尚未生效',
+    source_query_changed: '來源 SQL 變更',
+    source_missing_status: '來源欄位缺失',
+    source_missing_field:
+      '來源欄位 {0} 已不存在，請恢復來源欄位或透過 DE 刪除對應普通目標欄位及對應',
+    source_missing_help:
+      '部分目標欄位引用的來源欄位已不存在。請恢復來源欄位，或在下方刪除對應普通目標欄位及對應；刪除目標欄會遺失該欄歷史資料，受保護欄位須恢復有效來源',
     query_source: '來源：查詢結果',
     view_query: '查看查詢',
     hide_query: '收起查詢',
@@ -5001,6 +5037,9 @@ export default {
       '使用任務目前生效的設定執行一次全量同步，不套用尚未提交的欄位修改，不改變原同步方式和排程設定',
     full_exclusive: '我已確認：本次同步期間，沒有其他任務或程式寫入目標資料表',
     full_submitted: '本次全量同步已提交，請在任務日誌中查看執行結果',
+    full_submit_error_help:
+      '請先查看該任務的執行日誌，確認本次同步是否已啟動及執行結果，再決定是否重試',
+    full_request_id: '請求編號：{0}。聯絡管理員時，請提供此編號以定位伺服器錯誤',
     full_unsupported: '目標連線「{0}」（{1}）目前不支援全量同步一次',
     rules_entry: '修改規則',
     rules_expand_hint: '展開查看支援範圍、限制及官方說明。',
@@ -5081,6 +5120,11 @@ export default {
     recovery_execution_failed: '已確認相關操作結束，本次執行按失敗結束'
   },
   sync_task: {
+    field_name_rules_unavailable: '目標欄位命名規則不可用，請重新讀取欄位資訊',
+    field_name_control: '同步欄位名稱不能包含換行、定位字元等控制字元',
+    field_name_characters: '名稱包含目前目標版本不支援的字元，請檢查特殊符號或 Unicode 設定（{0}）',
+    field_name_reserved: '名稱使用了資料庫保留前綴',
+    field_name_protected: '名稱使用了 DataEase 同步系統保留前綴',
     decimal_precision_required:
       '欄位 {0}（來源類型 {1}）的目標類型 {2} 尚未指定總精度，請依實際資料明確設定總精度和小數位，避免使用資料庫預設值',
     decimal_parameters_invalid:
@@ -5246,6 +5290,8 @@ export default {
     field_index: '索引',
     field_comment: '註釋',
     confirm_delete_field: '確定刪除{0} 欄位？ ',
+    source_field_required:
+      '至少保留一個來源欄位（可為來源主鍵）；系統預設主鍵依賴來源欄位產生，不能單獨保留',
     msg_field_list_empty_tip: '欄位清單不能為空，不能存在名稱為空或欄位類型為UNKNOWN的資料,請檢查',
     next_week: '未來一週',
     next_month: '未來一個月',
@@ -5940,6 +5986,19 @@ export default {
   },
   spreadsheet: {
     title: '電子表格',
+    outer_params_title: '外部參數設定',
+    outer_params_enable: '啟用外部參數',
+    outer_params_select_data_areas: '選擇關聯的資料區域',
+    outer_params_filter_tips: '篩選方式僅支援文字下拉、數字下拉和下拉樹查詢條件',
+    outer_params_invalid_target: '綁定目標已失效，請重新選擇',
+    outer_params_duplicate_target: '同一目標和綁定方式只能綁定一個外部參數',
+    outer_params_ambiguous_targets: '活頁簿包含重複的查詢條件或資料區域識別碼，無法設定外部參數',
+    outer_params_invalid_name: '參數名稱不能為空且不能重複',
+    outer_params_invalid_default: '預設值必須是 JSON 陣列',
+    outer_params_default_tips: '請使用 JSON 陣列格式，例如單值 ["name1"]、多值 ["name1","name2"]',
+    outer_params_load_error: '外部參數設定載入失敗',
+    outer_params_save_error: '外部參數儲存失敗',
+    outer_params_fix_errors: '請先修正參數設定中的錯誤',
     new_folder: '新建文件夾',
     root_folder: '根目錄',
     new_sheet: '新建電子表格',

@@ -19,7 +19,7 @@ import {ref} from 'vue';
 import zh from '${frontend}/src/locales/zh-CN';
 export const useI18n=()=>({t:(key)=>key.split('.').reduce((v,k)=>v?.[k],zh)||key});
 export const useAppStoreWithOut=()=>({});export const useEmbedded=()=>({});export const useAppearanceStoreWithOut=()=>({});
-export const useCache=()=>({wsCache:{set(){}}});export const useEmitt=()=>({emitter:{emit(){}}});
+export const useCache=()=>({wsCache:{get(){return undefined},set(){}}});export const useEmitt=()=>({emitter:{emit(){}}});
 export const useRoute=()=>({query:location.search.includes('create')?{datasourceId:'source'}:{id:'dataset'},params:{}});export const useRouter=()=>({push(value){window.navigations??=[];window.navigations.push(value)}});export const cancelMap={};
 export const getCSSVariable=()=> '#3370ff';
 const field=(id,name,node)=>({id,name,originName:name,description:'字段说明 '+name,type:'VARCHAR',deType:0,deExtractType:0,extField:0,groupType:'d',checked:true,datasetTableId:node,datasourceId:'source'});
@@ -27,11 +27,14 @@ const nodes=['orders','items'].map((name,i)=>({currentDs:{id:name,tableName:name
 if(location.search.includes('sqlNode')){nodes[1].currentDs.type='sql';nodes[1].currentDs.info=JSON.stringify({table:'items',sql:'c2VsZWN0IDE='});nodes[1].currentDs.sqlVariableDetails=JSON.stringify([{variableName:'amount',type:'LONG',defaultValue:'1'}])}
 nodes[0].childrenDs=[nodes[1]];
 if(location.search.includes('singleSql')){nodes.splice(1);nodes[0].childrenDs=[];nodes[0].currentDs.type='sql';nodes[0].currentDs.sqlVariableDetails='[]'}
-export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[{...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]}]:[])]}));
+const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]};if(location.search.includes('calcAbsent')){delete f.deExtractType}else if(location.search.includes('calcNull')){f.deExtractType=null}return f};export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[calcField()]:[])]}));
 export const getDatasourceList=async()=>[];export const getTables=async()=>['orders','items'].map(tableName=>({tableName,type:'db',datasourceId:'source',name:tableName}));export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
 export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);window.fieldRequestDetails??=[];window.fieldRequestDetails.push(data);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}if(window.holdFieldRequests){await new Promise(resolve=>{window.pendingFields??=[];window.pendingFields.push(resolve)})}else await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return ['_id','_name','_extra'].map((suffix,i)=>field('',(['orders','items'].includes(data.id)?data.id:data.tableName||data.id)+suffix,data.id))};
 export const getPreviewData=async(data)=>{window.previewRequests??=[];window.previewRequests.push(JSON.parse(JSON.stringify(data)));await new Promise(r=>setTimeout(r,window.previewDelays?.shift()??(data.union[0].currentDs.id==='orders'?180:20)));window.previewCompleted??=[];window.previewCompleted.push(data.union[0].currentDs.id);return {data:{fields:data.allFields.map(f=>({...f,dataeaseName:f.id})),data:[Object.fromEntries(data.allFields.map(f=>[f.id,data.union[0].currentDs.tableName+':'+f.name]))]}}};
 export const saveDatasetTree=async(data)=>{window.saved=JSON.parse(JSON.stringify(data));sessionStorage.setItem('savedDataset',JSON.stringify(data))};
+export const getDatasetTree=async()=>[{id:'folder',name:'测试文件夹',children:[]}];
+export const createDatasetTree=async(data)=>{window.saved=JSON.parse(JSON.stringify(data));return {...window.saved,id:'created-dataset',allFields:window.saved.allFields.map(({deTypeArr,...field})=>field)}};
+export const moveDatasetTree=async()=>undefined;export const renameDatasetTree=async()=>undefined;
 `
   );
   await fs.writeFile(
@@ -102,6 +105,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "DatasetTableDetails.vue",
               "DatasetNodeMenu.vue",
               "DatasetPanelFullscreen.vue",
+              "CreatDsGroup.vue",
               "HandleMore.vue",
               "UnionFieldList.vue",
             ].includes(path.basename(id))

@@ -697,11 +697,10 @@ export class DataEaseDetailTableController extends Disposable {
       .filter(plugin => affectedIdSet.has(plugin.id))
 
     for (const plugin of detailPlugins) {
-      const queryConfig = this._spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, plugin)
       try {
-        await this._tableFillService.fillTable(this._univerApi, queryConfig)
+        await this._tableFillService.fillTable(this._univerApi, plugin)
       } catch (error) {
-        this._markRestoreError(unitId, queryConfig, error)
+        this._markRestoreError(unitId, plugin, error)
       }
     }
   }

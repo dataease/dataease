@@ -9,6 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.permissions.auth.vo.PermissionValVO;
 import io.dataease.constant.AuthEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.result.ResultCode;
@@ -42,6 +43,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -172,7 +174,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
-        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag, CommonConstants.RESOURCE_TABLE.SNAPSHOT, DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
+        DataVisualizationInfo resource = requireVisualizationDraftAccess(dvId);
+        if (!Objects.equals(resource.getPid(), -1L)) {
+            denyVisualizationRead();
+        }
+        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, resource.getType(), CommonConstants.RESOURCE_TABLE.SNAPSHOT, DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
         if (result != null && result.getPid() == -1) {
             return result;
         } else {
@@ -187,7 +193,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public DataVisualizationVO findById(DataVisualizationBaseRequest request) {
         Long dvId = request.getId();
         String busiFlag = request.getBusiFlag();
-        String resourceTable = request.getResourceTable();
+        String resourceTable = StringUtils.defaultIfBlank(request.getResourceTable(), CommonConstants.RESOURCE_TABLE.CORE)
+                .trim().toLowerCase(Locale.ROOT);
+        if (!CommonConstants.RESOURCE_TABLE.CORE.equals(resourceTable)
+                && !CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
+            throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        request.setResourceTable(resourceTable);
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)
+                || DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
+            // Authorize before reading drafts or recovering a snapshot, regardless of the claimed source.
+            DataVisualizationInfo resource = requireVisualizationDraftAccess(dvId);
+            busiFlag = resource.getType();
+            request.setBusiFlag(busiFlag);
+        }
         // 如果是编辑查询 则进行镜像检查
         if (DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
             Specification<SnapshotDataVisualizationInfo> spec = (root, query, criteriaBuilder) -> {
@@ -256,6 +275,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     private DataVisualizationInfo requireVisualizationPermission(Long id, AuthEnum permission) {
+        DataVisualizationInfo resource = requireVisualizationResource(id);
+        checkVisualizationPermission(resource, permission, visualizationAuth());
+        return resource;
+    }
+
+    private DataVisualizationInfo requireVisualizationResource(Long id) {
         if (id == null || id <= 0 || V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) {
             denyVisualizationRead();
         }
@@ -264,16 +289,46 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 || !("dashboard".equals(resource.getType()) || "dataV".equals(resource.getType()))) {
             denyVisualizationRead();
         }
-        // Resolve the permission category from stored metadata, not request.busiFlag.
+        return resource;
+    }
+
+    private InteractiveAuthApi visualizationAuth() {
         InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
-        if (auth != null) {
-            auth.checkAuth(new BusiPerCheckDTO(id, "dashboard".equals(resource.getType())
-                    ? BusiResourceEnum.PANEL : BusiResourceEnum.SCREEN, permission));
-        } else if (!Objects.equals(V3UserUtil.getUid(), 1L)
+        if (auth == null && (!Objects.equals(V3UserUtil.getUid(), 1L)
                 || CommonBeanFactory.getBean("substituleLoginServer") == null
-                || CommonBeanFactory.getBean("loginServer") != null) {
+                || CommonBeanFactory.getBean("loginServer") != null)) {
             // Only the actual single-user community implementation may omit this service.
             denyVisualizationRead();
+        }
+        return auth;
+    }
+
+    private void checkVisualizationPermission(DataVisualizationInfo resource, AuthEnum permission, InteractiveAuthApi auth) {
+        if (auth != null) {
+            // Resolve the permission category from stored metadata, not request.busiFlag.
+            auth.checkAuth(new BusiPerCheckDTO(resource.getId(), "dashboard".equals(resource.getType())
+                    ? BusiResourceEnum.PANEL : BusiResourceEnum.SCREEN, permission));
+        }
+    }
+
+    private DataVisualizationInfo requireVisualizationDraftAccess(Long id) {
+        DataVisualizationInfo resource = requireVisualizationResource(id);
+        InteractiveAuthApi auth = visualizationAuth();
+        if (Objects.equals(resource.getPid(), -1L)) {
+            // Temporary copies are not registered in the permission tree; only their creator may open them.
+            if (!Objects.equals(resource.getCreateBy(), String.valueOf(V3UserUtil.getUid()))
+                    || V3UserUtil.getUser() == null
+                    || !Objects.equals(resource.getOrgId(), V3UserUtil.getUser().getOid())) {
+                denyVisualizationRead();
+            }
+        } else {
+            if (auth != null) {
+                PermissionValVO permission = auth.queryAuth(id);
+                if (permission == null || permission.getWeight() < AuthEnum.MANAGE.getWeight()) {
+                    denyVisualizationRead();
+                }
+            }
+            checkVisualizationPermission(resource, AuthEnum.MANAGE, auth);
         }
         return resource;
     }

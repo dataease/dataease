@@ -201,7 +201,6 @@ const saveResource = (checkParams?) => {
     nextTick(() => {
       canvasSaveWithParams(checkParams, async () => {
         snapshotStore.resetStyleChangeTimes()
-        wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         if (!embeddedStore.baseUrl) {
           // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前大屏
           try {
@@ -272,7 +271,7 @@ const backToMain = () => {
 const embeddedStore = useEmbedded()
 const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
-const backHandler = (url: string) => {
+const backHandler = async (url: string) => {
   if (isEmbedded.value) {
     wsCache.set(`dv-info-id`, dvInfo.value.id)
     embeddedStore.clearState()
@@ -287,8 +286,10 @@ const backHandler = (url: string) => {
     return
   }
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-  wsCache.set('dv-info-id', dvInfo.value.id)
+  const resourceId = dvInfo.value.id
+  await snapshotStore.clearCanvasDraft(resourceId)
+  if (String(dvInfo.value.id) !== String(resourceId)) return
+  wsCache.set('dv-info-id', resourceId)
   if (!!history.state.back) {
     history.back()
   } else {

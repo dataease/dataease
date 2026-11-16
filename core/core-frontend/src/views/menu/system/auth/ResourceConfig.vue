@@ -250,7 +250,7 @@ const findFirstValidNode = (treeData: any[], isMenu: boolean): any | null => {
   while (stack.length) {
     const node = stack.shift()
     if (!node) continue
-    const isValid = isMenu ? node.leaf : !node.disabled
+    const isValid = !node.disabled && (!isMenu || node.leaf)
     if (isValid) return node
     if (node.children?.length) {
       stack.push(...node.children)
@@ -262,7 +262,7 @@ const findFirstValidNode = (treeData: any[], isMenu: boolean): any | null => {
 const selectFirstItem = () => {
   const isMenu = activeAuth.value === 'menu'
 
-  // 菜单树：始终需要找第一个 leaf=true 的节点
+  // 菜单树：选择第一个具备授权权的叶子节点
   // 资源树：isSystem 时所有节点可用保持原逻辑，非 isSystem 时找第一个 disabled !== true 的节点
   const needsValidSearch = isMenu || !isSystem
 
@@ -305,6 +305,10 @@ const selectFirstItem = () => {
   }
 }
 const menuIdChange = async data => {
+  if (data.disabled) {
+    menuTreeRef.value?.setCurrentKey(selectedMenuId.value)
+    return
+  }
   if (!data.leaf) {
     ElMessage.warning('菜单目录不能授权，请选择具体菜单')
     let targetId = selectedMenuId.value
@@ -1096,7 +1100,10 @@ defineExpose({
         :filter-node-method="filterMenuNode"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node f18" :class="{ 'is-disabled': !data.leaf }">
+          <span
+            class="custom-tree-node f18"
+            :class="{ 'is-disabled': !data.leaf || data.disabled }"
+          >
             <el-icon v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>

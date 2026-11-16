@@ -81,6 +81,7 @@ const getDatasetField = (field: Field) =>
   props.allFields.find(item => field.id && item.id === field.id) || field
 const getDatasetFieldName = (field: Field) =>
   fieldDrafts.value[field.originName]?.name ?? getDatasetField(field).name
+const needsFieldName = (field: Field) => field.checked && !getDatasetFieldName(field)?.trim()
 const getDatasetFieldType = (field: Field): FieldTypePath => {
   const draft = fieldDrafts.value[field.originName]?.typePath
   if (draft) return draft
@@ -327,8 +328,8 @@ watch(
     if (fieldsLoaded.value && !applying.value) resetFields()
   }
 )
-watch(activeTab, tab => {
-  if (tab === 'preview') void preview()
+watch([activeTab, fieldsLoaded], ([tab, loaded]) => {
+  if (tab === 'preview' && loaded) void preview()
 })
 onBeforeUnmount(() => {
   ++fieldRequest
@@ -432,9 +433,13 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                     :model-value="getDatasetFieldName(row)"
                     :disabled="applying"
                     :aria-label="`${t('dataset.dataset_field_name')} ${row.originName}`"
+                    :aria-invalid="needsFieldName(row)"
                     maxlength="100"
                     @update:model-value="value => changeFieldName(row, value)"
                   />
+                  <p v-if="needsFieldName(row)" class="field-name-error">
+                    {{ t('dataset.input_edit_name') }}
+                  </p>
                 </template>
               </el-table-column>
               <el-table-column :label="t('dataset.dataset_field_type')" min-width="160">
@@ -473,7 +478,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
         </div>
         <div v-show="activeTab === 'preview'" v-loading="previewLoading" class="node-preview">
           <el-button
-            :disabled="!selectedNode.currentDsFields.length"
+            :disabled="!fieldsLoaded || !selectedNode.currentDsFields.length"
             :loading="previewLoading"
             secondary
             @click="preview"
@@ -501,6 +506,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 .node-tabs-row {
   position: relative;
   flex-shrink: 0;
+  margin-top: -4px;
   margin-bottom: 16px;
 }
 .node-tabs {
@@ -531,6 +537,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   display: flex;
   min-height: 0;
   height: 100%;
+  overflow: hidden;
   border-top: 1px solid var(--deCardStrokeColor, #dee0e3);
 }
 .node-list {
@@ -571,7 +578,6 @@ defineExpose({ commit, selectNode, hasPendingChanges })
     white-space: nowrap;
     .node-icon {
       flex-shrink: 0;
-      color: #646a73;
     }
     .label {
       flex: 1;
@@ -629,6 +635,13 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   }
   .field-remark {
     color: var(--deTextSecondary, #646a73);
+  }
+  .field-name-error {
+    margin: 0;
+    padding: 0 8px;
+    color: var(--ed-color-danger);
+    font-size: 12px;
+    line-height: 18px;
   }
   flex: 1;
   min-height: 0;

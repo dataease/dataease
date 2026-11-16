@@ -892,6 +892,8 @@ export async function canvasSave(callBack) {
 }
 
 export async function canvasSaveWithParams(params, callBack) {
+  const savingDvInfo = curDvInfo.value
+  const sourceResourceId = savingDvInfo.id
   dvMainStore.removeGroupArea()
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
@@ -956,6 +958,26 @@ export async function canvasSaveWithParams(params, callBack) {
       { confirmButtonType: 'danger', type: 'warning', autofocus: false, showClose: false }
     )
   ).then(async res => {
+    // 保存成功后先取消旧资源的待写任务，再更新 ID，避免草稿被延迟任务恢复。
+    // 新资源还没有 ID 时不能传 undefined，否则会触发清理当前资源的默认参数。
+    if (sourceResourceId !== undefined && sourceResourceId !== null && sourceResourceId !== '') {
+      await snapshotStore.clearCanvasDraft(sourceResourceId)
+    }
+    if (
+      method === saveCanvas &&
+      res.data !== undefined &&
+      res.data !== null &&
+      res.data !== '' &&
+      String(res.data) !== String(sourceResourceId)
+    ) {
+      await snapshotStore.clearCanvasDraft(res.data)
+    }
+    if (
+      curDvInfo.value !== savingDvInfo ||
+      String(curDvInfo.value.id) !== String(sourceResourceId)
+    ) {
+      return res
+    }
     if (method === updateCanvas) {
       // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
       const status = params?.status ? params?.status : res.data?.status
@@ -979,7 +1001,7 @@ export async function canvasSaveWithParams(params, callBack) {
       snapshotStore.resetSnapshot()
     }
     snapshotStore.resetStyleChangeTimes()
-    callBack(res)
+    await callBack(res)
   })
 }
 

@@ -19,6 +19,7 @@ import {
   PluginRenderStatusService
 } from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
+import { SpreadsheetOuterParamsService } from '../../DataEaseOuterParamsPlugin/services/outer-params.service'
 import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
@@ -52,6 +53,8 @@ export class PivotTableFillService {
     private readonly pluginRenderLoadingService: PluginRenderLoadingService,
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(SpreadsheetOuterParamsService)
+    private readonly spreadsheetOuterParamsService: SpreadsheetOuterParamsService,
     @Inject(TableRenderExpansionService)
     private readonly tableRenderExpansionService: TableRenderExpansionService,
     @Inject(PluginRenderStatusService)
@@ -175,10 +178,15 @@ export class PivotTableFillService {
         await this.spreadsheetFilterRuntimeService.waitForValues(unitId)
         if (!isCurrentWorksheet()) return false
       }
+      const outerParamsFilter = unitId
+        ? await this.spreadsheetOuterParamsService.getFieldFilters(unitId, config.id)
+        : []
+      if (!isCurrentWorksheet()) return false
+      // 外参加载期间查询条件可能变化，实际取数前再读取最新条件。
       const queryConfig = unitId
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
-      const result = await this.dataService.queryData(queryConfig)
+      const result = await this.dataService.queryData(queryConfig, outerParamsFilter)
       if (!isCurrentWorksheet()) return false
       if (unitId) {
         // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。

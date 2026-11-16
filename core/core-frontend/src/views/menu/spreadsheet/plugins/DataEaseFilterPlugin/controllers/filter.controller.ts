@@ -28,11 +28,9 @@ import { ToggleSpreadsheetFilterMenuFactory } from './menu'
 import { FILTER_PLUGIN_RESOURCE_NAME } from '../../../utils/plugin-resource'
 import { FilterInstanceService } from '../services/filter-instance.service'
 import { SpreadsheetFilterRuntimeService } from '../services/filter-runtime.service'
+import { FilterConfigContextService } from '../services/filter-config-context.service'
+import { SpreadsheetOuterParamsService } from '../../DataEaseOuterParamsPlugin/services/outer-params.service'
 import type { SpreadsheetFilterConfig } from '../../../types/plugin'
-import { DetailTableInstanceService } from '../../DataEaseDetailTablePlugin/services/detail-table-instance.service'
-import type { DetailTableConfig } from '../../DataEaseDetailTablePlugin/types'
-import { PivotTableInstanceService } from '../../DataEasePivotTablePlugin/services/pivot-table-instance.service'
-import type { PivotTableConfig } from '../../DataEasePivotTablePlugin/types'
 import {
   dispatchSpreadsheetFilterConfigChange,
   dispatchSpreadsheetFilterQuery,
@@ -48,8 +46,6 @@ import {
   onSpreadsheetFilterRequestConfigContext,
   onSpreadsheetFilterSaveConfig,
   resetSpreadsheetFilterEventState,
-  type SpreadsheetFilterAvailableField,
-  type SpreadsheetFilterAvailablePlugin,
   type SpreadsheetFilterConfigContextRequestPayload,
   type SpreadsheetFilterOpenStylePayload,
   type SpreadsheetFilterSaveConfigPayload
@@ -58,8 +54,6 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { SPREADSHEET_EVENTS } from '../../../utils/events'
 import { h, render } from 'vue'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
-import { getDsDetailsWithPerm, type DatasetDetail } from '@/api/dataset'
-import { getFieldByDQ, type Field } from '@/api/chart'
 import { cloneDeep } from 'lodash-es'
 import {
   getSpreadsheetFilterInitialValues,
@@ -72,6 +66,7 @@ const { emitter } = useEmitt()
 
 export class DataEaseFilterController extends Disposable {
   private readonly _valuesReadyResolvers = new Map<string, () => void>()
+  private readonly _pendingInitialConfigs = new Map<string, SpreadsheetFilterConfig>()
 
   constructor(
     @Inject(Injector) private readonly _injector: Injector,
@@ -87,6 +82,10 @@ export class DataEaseFilterController extends Disposable {
     @Inject(FilterInstanceService) private readonly _filterInstanceService: FilterInstanceService,
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly _spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(FilterConfigContextService)
+    private readonly _filterConfigContextService: FilterConfigContextService,
+    @Inject(SpreadsheetOuterParamsService)
+    private readonly _outerParamsService: SpreadsheetOuterParamsService,
     @Inject(SpreadsheetModeService)
     private readonly _spreadsheetModeService: SpreadsheetModeService
   ) {
@@ -99,6 +98,15 @@ export class DataEaseFilterController extends Disposable {
     this._initSheetSwitchListener()
     this._initResourceHook()
     this._initUIParts()
+  }
+
+  override dispose(): void {
+    super.dispose()
+    this._pendingInitialConfigs.clear()
+    // 整个 Univer 销毁时不会触发资源 onUnLoad，主动释放默认首项及初始化通知的等待。
+    for (const unitId of this._valuesReadyResolvers.keys()) {
+      this._resolveValuesReady(unitId)
+    }
   }
 
   private _initCommands(): void {
@@ -189,20 +197,25 @@ export class DataEaseFilterController extends Disposable {
         pluginName: FILTER_PLUGIN_RESOURCE_NAME,
         businesses: [UniverInstanceType.UNIVER_SHEET],
         onLoad: (unitId, resource) => {
-          const loadedConfig = this._filterInstanceService.set(unitId, resource)
-          const values = getSpreadsheetFilterInitialValues(loadedConfig)
-          const config = this._filterInstanceService.setConfigForUnit(
-            unitId,
-            this._withSelectValues(loadedConfig, values)
-          )
-          this._spreadsheetFilterRuntimeService.setValues(unitId, values)
-          const valuesReady = this._createValuesReady(unitId, config)
+          const loadedConfig = this._filterInstanceService.normalize(resource)
+          const outerParamsConfig = this._outerParamsService.applyToFilterConfig(loadedConfig)
+          if (!outerParamsConfig) {
+            const valuesReady = this._initializeValues(unitId, loadedConfig)
+            this._spreadsheetFilterRuntimeService.setValuesReady(unitId, valuesReady)
+            return
+          }
+          this._pendingInitialConfigs.set(unitId, loadedConfig)
+          // 只归一化并登记等待，外参转换成功后再提交配置、显示控件及初始化默认值。
+          const valuesReady = outerParamsConfig.then(config => {
+            if (this._disposed || this._pendingInitialConfigs.get(unitId) !== loadedConfig) return
+            this._pendingInitialConfigs.delete(unitId)
+            return this._initializeValues(unitId, config)
+          })
           this._spreadsheetFilterRuntimeService.setValuesReady(unitId, valuesReady)
-          dispatchSpreadsheetFilterVisibleChange(config.visible)
-          dispatchSpreadsheetFilterConfigChange(config)
           // 首次查询由明细表、透视表在默认值就绪后统一执行，资源加载本身不广播刷新。
         },
         onUnLoad: unitId => {
+          this._pendingInitialConfigs.delete(unitId)
           this._resolveValuesReady(unitId)
           this._filterInstanceService.delete(unitId)
           this._filterInstanceService.setVisible(false)
@@ -210,10 +223,27 @@ export class DataEaseFilterController extends Disposable {
           resetSpreadsheetFilterEventState()
           dispatchSpreadsheetFilterVisibleChange(false)
         },
-        toJson: unitId => JSON.stringify(this._filterInstanceService.get(unitId)),
+        // 初始化期间保存仍保留原始条件，不能把尚未提交的资源序列化为空配置。
+        toJson: unitId =>
+          JSON.stringify(
+            this._pendingInitialConfigs.get(unitId) || this._filterInstanceService.get(unitId)
+          ),
         parseJson: data => JSON.parse(data) as SpreadsheetFilterConfig
       })
     )
+  }
+
+  private _initializeValues(unitId: string, loadedConfig: SpreadsheetFilterConfig): Promise<void> {
+    const values = getSpreadsheetFilterInitialValues(loadedConfig)
+    const config = this._filterInstanceService.setConfigForUnit(
+      unitId,
+      this._withSelectValues(loadedConfig, values)
+    )
+    this._spreadsheetFilterRuntimeService.setValues(unitId, values)
+    const valuesReady = this._createValuesReady(unitId, config)
+    dispatchSpreadsheetFilterVisibleChange(config.visible)
+    dispatchSpreadsheetFilterConfigChange(config)
+    return valuesReady
   }
 
   private _initEventListeners(): void {
@@ -248,23 +278,18 @@ export class DataEaseFilterController extends Disposable {
     )
   }
 
-  private async _requestConfigContext(payload: SpreadsheetFilterConfigContextRequestPayload): Promise<void> {
-    if (this._spreadsheetModeService.isPreview()) {
+  private async _requestConfigContext(
+    payload: SpreadsheetFilterConfigContextRequestPayload
+  ): Promise<void> {
+    const context = await this._filterConfigContextService.getConfigContext()
+    if (!context) {
       return
     }
-    const unitId = this._getCurrentUnitId()
-    if (!unitId) {
-      return
-    }
-
-    const config = this._filterInstanceService.get(unitId)
-    const availablePlugins = await this._getAvailablePlugins(unitId)
 
     payload.onReady({
-      config,
-      availablePlugins,
-      selectedConditionId: payload?.selectedConditionId,
-      initialAction: payload?.initialAction
+      ...context,
+      selectedConditionId: payload.selectedConditionId,
+      initialAction: payload.initialAction
     })
   }
 
@@ -433,142 +458,6 @@ export class DataEaseFilterController extends Disposable {
   private _getCurrentUnitId(): string | undefined {
     const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
     return (workbook as any)?.getUnitId?.() || (workbook as any)?.getId?.()
-  }
-
-  private async _getAvailablePlugins(unitId: string): Promise<SpreadsheetFilterAvailablePlugin[]> {
-    const detailTableInstanceService = this._getDetailTableInstanceService()
-    const pivotTableInstanceService = this._getPivotTableInstanceService()
-    const detailPlugins = detailTableInstanceService?.get(unitId) || []
-    const pivotPlugins = pivotTableInstanceService?.get(unitId) || []
-    const datasetIds = [
-      ...detailPlugins.map(plugin => plugin.data?.datasetId),
-      ...pivotPlugins.map(plugin => plugin.data?.datasetId)
-    ].filter((id): id is string | number => id !== undefined && id !== null && id !== '')
-    const datasetMap = new Map<string, DatasetDetail>()
-
-    if (datasetIds.length) {
-      try {
-        const details = await getDsDetailsWithPerm([...new Set(datasetIds)])
-        details?.forEach((detail: DatasetDetail) => datasetMap.set(String(detail.id), detail))
-      } catch {
-        // Keep plugin rows visible even when their dataset fields cannot be loaded.
-      }
-    }
-
-    return Promise.all([
-      ...detailPlugins.map(plugin =>
-        this._buildAvailablePlugin(unitId, plugin, 'detail', datasetMap)
-      ),
-      ...pivotPlugins.map(plugin =>
-        this._buildAvailablePlugin(unitId, plugin, 'pivot', datasetMap)
-      )
-    ])
-  }
-
-  private _getDetailTableInstanceService(): DetailTableInstanceService | undefined {
-    try {
-      return this._injector.get(DetailTableInstanceService)
-    } catch (error) {
-      return undefined
-    }
-  }
-
-  private _getPivotTableInstanceService(): PivotTableInstanceService | undefined {
-    try {
-      return this._injector.get(PivotTableInstanceService)
-    } catch (error) {
-      return undefined
-    }
-  }
-
-  private async _buildAvailablePlugin(
-    unitId: string,
-    plugin: DetailTableConfig | PivotTableConfig,
-    pluginType: 'detail' | 'pivot',
-    datasetMap: Map<string, DatasetDetail>
-  ): Promise<SpreadsheetFilterAvailablePlugin> {
-    const datasetId = plugin.data?.datasetId
-    const dataset = datasetId === undefined ? undefined : datasetMap.get(String(datasetId))
-    let datasetFields: {
-      dimensionList?: Array<Field & { agg?: boolean }>
-      quotaList?: Array<Field & { agg?: boolean }>
-    } | undefined = dataset?.fields
-    if (dataset && plugin.fieldOwnerId) {
-      try {
-        // 联动字段按实例读取副本，原字段及副本继续由后端过滤列权限。
-        datasetFields = await getFieldByDQ(datasetId, plugin.fieldOwnerId, {}) as unknown as typeof datasetFields
-      } catch {
-        // 副本加载失败时保留已取得的公共字段，不影响其他实例配置。
-      }
-    }
-    // 沿用筛选配置的约束，不能把新增的计数、聚合字段带入联动选项。
-    const isSelectableField = (field: Field & { agg?: boolean }) =>
-      String(field.id) !== '-1' && !field.agg
-    const fields: SpreadsheetFilterAvailableField[] = [
-      ...(datasetFields?.dimensionList || []).filter(isSelectableField).map(field => ({
-        fieldId: field.id,
-        fieldName: field.name || field.dataeaseName,
-        groupType: 'd' as const,
-        deType: field.deType,
-        desensitized: field.desensitized
-      })),
-      ...(datasetFields?.quotaList || []).filter(isSelectableField).map(field => ({
-        fieldId: field.id,
-        fieldName: field.name || field.dataeaseName,
-        groupType: 'q' as const,
-        deType: field.deType,
-        desensitized: field.desensitized
-      }))
-    ]
-
-    return {
-      pluginId: plugin.id,
-      pluginName: pluginType === 'detail'
-        ? this._getDetailPluginName(unitId, plugin as DetailTableConfig)
-        : this._getPivotPluginName(unitId, plugin as PivotTableConfig),
-      pluginType,
-      datasetId,
-      datasetName: dataset?.name || this._getDatasetName(plugin as DetailTableConfig),
-      fields
-    }
-  }
-
-  private _getDatasetName(plugin: DetailTableConfig): string {
-    const data = plugin.data as any
-    return data?.datasetName || data?.dataset?.name || (plugin.data?.datasetId ? `数据集 ${plugin.data.datasetId}` : '-')
-  }
-
-  private _getDetailPluginName(unitId: string, plugin: DetailTableConfig): string {
-    const sheetName = this._getCurrentSheetName(unitId, plugin)
-    const startCell = plugin.placement?.startCell || 'A1'
-    const defaultName = `${sheetName}!${startCell}`
-    return plugin.style?.base?.customBlockName
-      ? plugin.style.base.blockName || defaultName
-      : defaultName
-  }
-
-  private _getPivotPluginName(unitId: string, plugin: PivotTableConfig): string {
-    const sheetName = this._getCurrentSheetName(unitId, plugin)
-    const startCell = plugin.placement?.startCell || 'A1'
-    const defaultName = `${sheetName}!${startCell}`
-    return plugin.style?.base?.customBlockName
-      ? plugin.style.base.blockName || defaultName
-      : defaultName
-  }
-
-  private _getCurrentSheetName(
-    unitId: string,
-    plugin: DetailTableConfig | PivotTableConfig
-  ): string {
-    const sheetId = plugin.placement?.sheetId
-    const workbook = this._univerInstanceService.getUnit(
-      unitId,
-      UniverInstanceType.UNIVER_SHEET
-    )
-    const worksheet = sheetId ? workbook?.getSheetBySheetId(sheetId) : undefined
-
-    // 默认区块名始终跟随当前 Sheet 名，避免使用实例创建时保存的旧名称。
-    return worksheet?.getName?.() || plugin.placement?.sheetName || sheetId || 'Sheet'
   }
 
   private _mergeIds(...idsList: string[][]): string[] {

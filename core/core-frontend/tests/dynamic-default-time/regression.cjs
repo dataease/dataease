@@ -204,7 +204,7 @@ test('实际保存校验拒绝非法规则和颠倒范围，包括自动字段',
     path.join(root, 'src/custom-component/v-query/QueryConditionConfiguration.vue'),
     'utf8'
   )
-  const start = source.indexOf('const validate = () =>')
+  const start = source.indexOf('const validate = ')
   const code = transformSync(
     source.slice(start, source.indexOf('const handleBeforeClose =', start)),
     { loader: 'ts' }
@@ -223,10 +223,84 @@ test('实际保存校验拒绝非法规则和颠倒范围，包括自动字段',
       ElMessage: { error: key => messages.push(key) },
       t: key => key
     }
-    assert.equal(vm.runInNewContext(code + ';validate()', context), true)
+    assert.equal(vm.runInNewContext(code + ';validate(new Date())', context), true)
     assert.equal(messages.length, 1)
   }
 })
+
+test('确认使用点击时刻重新计算单值和范围，并应用跨日结果', () => {
+  const source = fs.readFileSync(
+    path.join(root, 'src/custom-component/v-query/QueryConditionConfiguration.vue'),
+    'utf8'
+  )
+  const extract = (name, next) =>
+    source.slice(source.indexOf(`const ${name} =`), source.indexOf(`const ${next} =`))
+  const code = transformSync(
+    [
+      extract('validate', 'handleBeforeClose'),
+      extract('multipleChange', 'isInRange'),
+      extract('confirmClick', 'fieldsComputed')
+    ].join('\n'),
+    { loader: 'ts' }
+  ).code
+  const preview = new Date(2026, 10, 11, 23, 58, 0)
+  const confirmedAt = new Date(2026, 10, 12, 0, 0, 0, 500)
+  const clockOffset = { mode: 'relative', hours: 0, minutes: 0, seconds: 1, around: 'f' }
+  const single = make({ auto: true, clockOffset, defaultValue: preview, selectValue: preview })
+  const range = make({
+    id: 'range',
+    auto: true,
+    displayType: '7',
+    clockOffset,
+    clockOffsetRange: { ...clockOffset, around: 'b' },
+    defaultValue: [preview, preview],
+    selectValue: [preview, preview]
+  })
+  const fixed = make({ id: 'fixed', auto: true, timeType: 'fixed', defaultValue: preview })
+  const queryElement = { value: { propValue: [] } }
+  const events = []
+  const messages = []
+  const snapshots = []
+  class ConfirmationDate extends Date {
+    constructor(...args) {
+      super(...(args.length ? args : [confirmedAt.getTime()]))
+    }
+  }
+  vm.runInNewContext(code + ';confirmClick()', {
+    Date: ConfirmationDate,
+    conditions: { value: [single, range, fixed] },
+    validateDynamicDefault: validate,
+    isCustomClockDefault: customClockDefault,
+    evaluateDynamicDefault: evaluate,
+    hasUnresolvedFixedTimeValue: () => false,
+    defaultConfigurationRef: { value: undefined },
+    handleDialogClick: () => undefined,
+    dialogVisible: { value: true },
+    curComponent: { value: undefined },
+    queryElement,
+    cascadeArr: [],
+    snapshotStore: { recordSnapshotCache: name => snapshots.push(name) },
+    relationshipChartIndex: { value: 0 },
+    cloneDeep: structuredClone,
+    unref: ref => ref.value,
+    nextTick: callback => callback(),
+    emits: name => events.push(name),
+    ElMessage: { error: message => messages.push(message) },
+    t: key => key
+  })
+  const [savedSingle, savedRange, savedFixed] = queryElement.value.propValue
+  const start = [2026, 11, 11, 23, 59, 59]
+  const end = [2026, 11, 12, 0, 0, 1]
+  assert.deepEqual(local(savedSingle.defaultValue), start)
+  assert.deepEqual(local(savedSingle.selectValue), start)
+  assert.deepEqual(savedRange.defaultValue.map(local), [start, end])
+  assert.deepEqual(savedRange.selectValue.map(local), [start, end])
+  assert.equal(+savedFixed.selectValue, +preview)
+  assert.deepEqual(messages, [])
+  assert.deepEqual(snapshots, ['confirmClick'])
+  assert.deepEqual(events, ['reRenderAll', 'queryData'])
+})
+
 for (const timeGranularity of ['year', 'month', 'date'])
   test(`${timeGranularity} 首次查询仍包含完整周期`, () => {
     const c = make({

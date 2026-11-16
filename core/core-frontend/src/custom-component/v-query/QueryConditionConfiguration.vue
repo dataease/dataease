@@ -28,7 +28,11 @@ import { enumValueObj } from '@/api/dataset'
 import { getFieldByDQ, type Field } from '@/api/chart'
 import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig, attributes, splitConditionValues } from './options'
-import { evaluateDynamicDefault, validateDynamicDefault } from './dynamic-default-time'
+import {
+  evaluateDynamicDefault,
+  isCustomClockDefault,
+  validateDynamicDefault
+} from './dynamic-default-time'
 import { hasUnresolvedFixedTimeValue, normalizeFixedTimeConfig } from './fixed-time-value'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
@@ -1166,8 +1170,7 @@ const setParams = ele => {
   ele.conditionValueS = defaultConditionValueS
 }
 
-const validate = () => {
-  const baseline = new Date()
+const validate = (baseline: Date) => {
   return conditions.value.some(ele => {
     if (
       ['1', '7'].includes(ele.displayType) &&
@@ -1481,7 +1484,8 @@ const handleBeforeClose = () => {
 }
 const emits = defineEmits(['queryData', 'reRenderAll'])
 const confirmClick = () => {
-  if (validate()) return
+  const baseline = new Date()
+  if (validate(baseline)) return
   defaultConfigurationRef.value?.mult()
   defaultConfigurationRef.value?.single()
   handleDialogClick()
@@ -1503,6 +1507,16 @@ const confirmClick = () => {
   queryElement.value.propValue = []
   nextTick(() => {
     conditions.value.forEach(itx => {
+      if (
+        ['1', '7'].includes(itx.displayType) &&
+        itx.defaultValueCheck &&
+        itx.timeType === 'dynamic' &&
+        isCustomClockDefault(itx)
+      ) {
+        const value = evaluateDynamicDefault(itx, baseline, 'config')
+        itx.defaultValue = value
+        itx.selectValue = value
+      }
       cascadeArr.forEach(ele => {
         ele.forEach(item => {
           if (item.datasetId.split('--')[1] === itx.id) {

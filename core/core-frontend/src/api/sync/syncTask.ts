@@ -263,6 +263,19 @@ export const getSinkKeyPolicyApi = (target: ITarget) => {
   return request.post({ url: '/sync/task/target/keyPolicy', data: target })
 }
 
+export interface ISinkFieldNameRules {
+  version: string
+  pattern: string
+  maxLength: number
+  caseSensitive: boolean
+  reservedPrefixes: string[]
+  reservedPrefixCaseSensitive: boolean
+  protectedPrefixes: string[]
+  unsupportedPattern: string
+  description: string
+  documentationUrl: string
+}
+
 export const getDatasourceTableListApi = (dsId: string) => {
   return request.get({ url: `/sync/datasource/table/list/${dsId}` })
 }
@@ -303,6 +316,7 @@ export interface IMaintenanceStructure {
     applicableVersion?: string
   }[]
   fieldNameMaxLength?: number
+  fieldNameRules?: ISinkFieldNameRules
   fieldCommentMaxLength?: number
   sizeLimits?: Record<string, number>
   precisionLimits?: Record<string, number>
@@ -356,6 +370,9 @@ export interface ITaskMaintenance {
   sourceMode?: 'TABLE' | 'QUERY'
   sourceTable?: string
   sourceQuery?: string
+  sourceQuerySupported?: boolean
+  beforeSourceQuery?: string
+  afterSourceQuery?: string
   operationId?: string
   state: string
   /** 服务端是否仍在推进调整，旧接口未提供时保留原展示行为 */
@@ -438,6 +455,7 @@ export interface ITaskMaintenanceRequest {
   schemaFingerprint?: string
   sourceFingerprint?: string
   planFingerprint?: string
+  sourceQuery?: string
   changes: IFieldAdjustmentChange[]
   confirmed?: boolean
   deleteConfirmed?: boolean
@@ -454,6 +472,16 @@ export const getTaskMaintenanceApi = (id: string, fullRefresh = false) =>
     handleErrorLocally: true,
     url: `/sync/task/maintenance/${id}`,
     ...(fullRefresh ? { params: { fullRefresh: true } } : {})
+  })
+
+/**
+ * 在任务原来源连接下读取查询草稿，成功后再将字段作为本次调整候选
+ */
+export const readTaskMaintenanceSourceApi = (data: ITaskMaintenanceRequest) =>
+  request.post<Promise<{ data: ITaskMaintenance }>>({
+    handleErrorLocally: true,
+    url: '/sync/task/maintenance/source',
+    data
   })
 
 /**

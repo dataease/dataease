@@ -12,6 +12,8 @@ import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
+import io.dataease.utils.BeanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -111,7 +113,17 @@ public class ExtWhere2Str {
                         }
                     }
 
-                    if (field.getDeType() == 1) {
+                    if (request.getFilterType() == 2 && !Boolean.TRUE.equals(request.getIsTree())
+                            && field.getDeType() == 1
+                            && ("H_m_s".equals(request.getDateStyle()) || "M_d".equals(request.getDateStyle()))
+                            && ("eq".equals(operator) || "in".equals(operator))) {
+                        // 时分秒和月日不补入日期或年份，按源展示粒度匹配目标日期字段。
+                        ChartViewFieldDTO timeField = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(timeField, field);
+                        timeField.setDateStyle(request.getDateStyle());
+                        timeField.setDatePattern(request.getDatePattern());
+                        whereName = Dimension2SQLObj.getXFields(timeField, originName, null, isCross).getFieldName();
+                    } else if (field.getDeType() == 1) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             // 此处获取标准格式的日期
                             whereName = String.format(SQLConstants.DE_STR_TO_DATE_T, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : (Utils.isValidDateFormat(field.getDateFormat()) ? Utils.transValue(field.getDateFormat()) : SQLConstants.DEFAULT_DATE_FORMAT));

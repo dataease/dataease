@@ -144,7 +144,7 @@ const rowClassName = ({ row }: { row: ITableField }) =>
     <el-table-column
       v-if="showActions !== false"
       :label="t('common.operate')"
-      width="100"
+      width="120"
       fixed="right"
     >
       <template #default="{ row }">

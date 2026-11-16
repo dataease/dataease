@@ -481,8 +481,16 @@ export default {
     download: 'Download',
     move: 'Move to category',
     delete_hint:
-      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed. Delete this material?',
+      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed.',
     deleted: 'Deleted successfully',
+    batch_delete: 'Delete selected',
+    batch_selected_count: '{count} selected',
+    batch_select_item: 'Select material {name}',
+    batch_delete_confirm:
+      'Delete {count} selected materials? They will be hidden from the library. Existing references will remain usable. Files are cleaned up after all references are removed.',
+    batch_delete_result: 'Deleted: {success}. Failed: {failed}.',
+    batch_delete_failure_detail: '{name}: {reason}',
+    batch_delete_unknown_error: 'Deletion failed. Please try again.',
     empty: 'No materials',
     file_hint: 'PNG, JPG/JPEG, GIF and safe SVG only. Maximum file size: 15 MiB.',
     confirm: 'Confirm selection',
@@ -536,6 +544,14 @@ export default {
     save_copy: 'Save and copy link'
   },
   common: {
+    embedded_origin_mismatch:
+      'Embedded origin validation failed. Contact your administrator to check the allowed domain and DataEase access address.',
+    embedded_token_expired:
+      'The embedded credential has expired. Obtain a new credential and retry.',
+    embedded_token_invalid:
+      'The embedded credential is invalid. Obtain a new credential and retry.',
+    embedded_auth_failed: 'Embedded authentication failed. Contact your administrator.',
+
     language_required: 'Language is required',
     language_unsupported: 'The selected language is not supported',
     language_switch_failed: 'Unable to switch language. Please try again.',
@@ -739,8 +755,9 @@ export default {
     confirm_the_deletion:
       'Not checked, the associated calculated fields will be deleted, confirm the deletion? ',
     confirm_to_delete: 'Are you sure you want to delete {a}?',
-    also_be_deleted:
-      'After deletion, the associated table or sql fragment will be deleted, and the associated calculated fields will also be deleted. ',
+    delete_node_join_tip:
+      'This node’s joins will be removed. Any downstream nodes will also be deleted.',
+    also_be_deleted: 'Calculated fields that depend on the deleted nodes will also be deleted.',
     deleted_confirm_deletion:
       'If the field is deleted, the associated calculated fields will be deleted, confirm the deletion? ',
     delete_field_a: 'Are you sure you want to delete field {a}?',
@@ -4119,6 +4136,10 @@ export default {
     keep_size: 'Adjust size & keeping inner',
     no_save_tips: 'There are unsaved {0}',
     no_save_tips2: 'There are unsaved changes, restore now?',
+    canvas_draft_outdated:
+      'This local draft is based on an older or unknown version. Restore it? Restoring does not save to the server; version conflicts will still be checked when saving.',
+    canvas_draft_storage_failed:
+      'The browser draft could not be saved. Editing and undo are still available. Please save your changes to the server.',
     locate_tips: 'Locate to Center',
     new_tab: 'New Tab',
     pop_area: 'Pop Up Area',
@@ -4190,6 +4211,10 @@ export default {
     current_chart_source_field: 'Current Chart Source Field',
     add_linkage_dependency_fields: 'Add Linkage Dependency Fields',
     select_linkage_tips: 'Please first select the charts that need linkage',
+    time_only_query_linkage_unsupported:
+      'Time-only dimensions cannot link to date query components. Use a dimension format that includes a date.',
+    month_day_query_linkage_unsupported:
+      'Month/day dimensions cannot link to date query components. Use a dimension format that includes a year.',
     linkage_option_tips1:
       'If the linkage dimension has been configured for drilling, clicking the dimension will',
     linkage_option1: 'Pop up a floating box for the user to choose linkage or drilling',
@@ -5039,6 +5064,23 @@ export default {
     database_version: 'Version',
     source_table: 'Source table',
     target_table: 'Target table',
+    edit_source_query: 'Edit source SQL',
+    source_query_draft: 'Source SQL draft',
+    query_edit_help:
+      'Edit SQL using the existing source connection. Read its fields, review mappings and confirm the adjustment. SQL changes require a full reload that replaces target data',
+    cancel_query_edit: 'Cancel SQL edit',
+    read_query_fields: 'Read query fields',
+    query_read_failed_help:
+      'Restore the missing source field, or edit the source SQL and read its fields again. Deleting a target field alone does not repair the query',
+    query_pending:
+      'The source SQL draft has been read but is not yet applied. A full reinitialization is required',
+    query_pending_count: 'The query change and {0} field changes have not been applied',
+    source_query_changed: 'Source SQL change',
+    source_missing_status: 'Source field missing',
+    source_missing_field:
+      'Source field {0} no longer exists. Restore it or use DE to delete the corresponding ordinary target field and mapping',
+    source_missing_help:
+      'Some target fields refer to missing source fields. Restore the source fields or delete the corresponding ordinary target fields and mappings below. Deleting a target column removes its historical values; protected fields require valid sources',
     query_source: 'Source: query result',
     view_query: 'View query',
     hide_query: 'Hide query',
@@ -5233,6 +5275,10 @@ export default {
     full_exclusive:
       'I confirm that no other task or program will write to the target table during this synchronization',
     full_submitted: 'Full synchronization submitted. Check task logs for execution results.',
+    full_submit_error_help:
+      'Check this task’s execution logs to confirm whether synchronization started and its result before retrying.',
+    full_request_id:
+      'Request ID: {0}. Provide this ID to an administrator to locate the server error.',
     full_unsupported:
       'Target connection {0} ({1}) does not currently support one-time full synchronization',
     rules_entry: 'Modification rules',
@@ -5328,6 +5374,14 @@ export default {
     recovery_execution_failed: 'Related operations have ended; end this run as failed'
   },
   sync_task: {
+    field_name_rules_unavailable:
+      'Target column naming rules are unavailable. Reload the field information.',
+    field_name_control:
+      'Sync column names cannot contain control characters such as line breaks or tabs.',
+    field_name_characters:
+      'The name contains characters unsupported by the target version. Check special characters or Unicode settings ({0}).',
+    field_name_reserved: 'The name uses a database-reserved prefix.',
+    field_name_protected: 'The name uses a DataEase sync-reserved prefix.',
     decimal_precision_required:
       'Field {0} (source type {1}) has no explicit precision for target type {2}. Set precision and scale based on the actual data instead of relying on database defaults',
     decimal_parameters_invalid:
@@ -5507,6 +5561,8 @@ export default {
     field_index: 'Index',
     field_comment: 'Comment',
     confirm_delete_field: 'Are you sure you want to delete the {0} field? ',
+    source_field_required:
+      'Keep at least one source field (which may be a source primary key). The system-generated primary key depends on source fields and cannot be kept alone.',
     msg_field_list_empty_tip:
       'Field list cannot be empty, and data with empty name or field type of UNKNOWN cannot exist, please check',
     next_week: 'Next week',
@@ -6233,6 +6289,23 @@ export default {
   },
   spreadsheet: {
     title: 'Spreadsheet',
+    outer_params_title: 'External parameter settings',
+    outer_params_enable: 'Enable external parameters',
+    outer_params_select_data_areas: 'Select linked data regions',
+    outer_params_filter_tips:
+      'Filtering is supported only for text dropdown, number dropdown, and tree query conditions',
+    outer_params_invalid_target: 'The binding target is no longer valid. Select it again.',
+    outer_params_duplicate_target:
+      'Each target and binding mode can only be bound to one external parameter',
+    outer_params_ambiguous_targets:
+      'The workbook contains duplicate query condition or data region IDs. External parameters cannot be configured.',
+    outer_params_invalid_name: 'Parameter names must be nonempty and unique',
+    outer_params_invalid_default: 'The default value must be a JSON array',
+    outer_params_default_tips:
+      'Use a JSON array, for example ["name1"] for one value or ["name1","name2"] for multiple values',
+    outer_params_load_error: 'Failed to load external parameter settings',
+    outer_params_save_error: 'Failed to save external parameters',
+    outer_params_fix_errors: 'Correct the parameter settings before saving',
     new_folder: 'New Folder',
     root_folder: 'Root folder',
     new_sheet: 'New Spreadsheet',

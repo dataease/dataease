@@ -15,4 +15,6 @@ public class PluginQueryDataConfig {
     private Long resultLimit;
     private FilterTreeObj customFilter;
     private List<ChartExtFilterDTO> queryFilter;
+    // 外部参数字段绑定独立传入，不与查询组件条件混用。
+    private List<ChartExtFilterDTO> outerParamsFilter;
 }

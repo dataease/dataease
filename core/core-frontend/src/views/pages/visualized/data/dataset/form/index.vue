@@ -122,6 +122,7 @@ const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref(t('data_set.unnamed_dataset'))
+let datasetNameBeforeEdit = ''
 const tabActive = ref('preview')
 const editorStep = ref<'relation' | 'process'>('relation')
 const expandedPanel = ref<'canvas' | 'details' | null>(null)
@@ -138,19 +139,30 @@ const handleNodeCommand = (node: DatasetNode, command: string) =>
   datasetDrag.value?.handleCommand(node, command)
 const changeNodeFieldName = (id: string, value: string) => {
   const field = allfields.value.find(field => field.id === id)
-  if (!field) return
+  if (!field || field.name === value) return
   field.name = value
   changeUpdate()
 }
 const changeNodeFieldType = (id: string, value: (number | string)[]) => {
   const field = allfields.value.find(field => field.id === id)
   if (!field) return
+  const current = field.deTypeArr?.length ? field.deTypeArr : [field.deType]
+  if (JSON.stringify(current) === JSON.stringify(value)) return
   field.deTypeArr = [...value]
   cascaderChange(field, value)
   changeUpdate()
 }
 const changeEditorStep = async (step: 'relation' | 'process') => {
-  if (step === 'process' && !(await nodeDetails.value?.commit())) return
+  if (step === 'process') {
+    if (!(await nodeDetails.value?.commit())) return
+    const unnamedField = allfields.value.find(field => field.extField === 0 && !field.name?.trim())
+    if (unnamedField) {
+      expandedPanel.value = null
+      await selectCanvasNode(unnamedField.datasetTableId)
+      ElMessage.warning(t('dataset.input_edit_name'))
+      return
+    }
+  }
   if (step === 'relation') {
     ++datasetPreviewRequest
     previewQuery.invalidate()
@@ -418,6 +430,7 @@ const confirmCustomTime = () => {
     delete currentField.value.name
     recoverSelection()
     updateCustomTime.value = false
+    changeUpdate()
   } else {
     ruleFormRef.value.validate(valid => {
       if (valid) {
@@ -431,6 +444,7 @@ const confirmCustomTime = () => {
           return false
         })
         updateCustomTime.value = false
+        changeUpdate()
       }
     })
   }
@@ -441,7 +455,7 @@ watch(searchTable, val => {
     ele.tableName.toLowerCase().includes(val.toLowerCase())
   )
 })
-const editeSave = () => {
+const editeSave = (returnAfterSave: boolean) => {
   const union = []
   loading.value = true
   dfsNodeList(union, datasetDrag.value.getNodeList())
@@ -456,7 +470,7 @@ const editeSave = () => {
     .then(() => {
       isUpdate = false
       ElMessage.success(t('data_set.saved_successfully'))
-      if (willBack) {
+      if (returnAfterSave) {
         pushDataset()
       }
     })
@@ -466,24 +480,30 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
-  changeUpdate()
   if (tabActive.value === 'manage') {
     dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
     quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
   }
   const arr = ['text', 'time', 'value', 'float', 'value', 'location', 'binary', 'url']
   if (arr.includes(type as string)) {
-    ele.deType = arr.indexOf(type)
-    ele.dateFormat = ''
+    const deType = arr.indexOf(type)
+    if (ele.deType !== deType) {
+      ele.deType = deType
+      ele.dateFormat = ''
+      changeUpdate()
+    }
     return
   }
   if (timeTypes.includes(type as string)) {
     currentField.value.dateFormat = ele.dateFormat
     currentField.value.dateFormatType = ele.dateFormatType
 
-    ele.deType = 1
-    ele.dateFormatType = type
-    ele.dateFormat = type
+    if (ele.deType !== 1 || ele.dateFormatType !== type) {
+      ele.deType = 1
+      ele.dateFormatType = type
+      ele.dateFormat = type
+      changeUpdate()
+    }
   }
   switch (type) {
     case 'copy':
@@ -492,12 +512,14 @@ const handleFieldMore = (ele, type) => {
       } else {
         copyField(ele)
       }
+      changeUpdate()
       break
     case 'delete':
       deleteField(ele)
       break
     case 'translate':
       dqTrans(ele.id)
+      changeUpdate()
       break
     case 'editor':
       if (ele.extField === 3) {
@@ -534,6 +556,7 @@ const dqTransArr = groupType => {
       ele.groupType = groupType
     }
   })
+  changeUpdate()
   recoverSelection()
 }
 
@@ -645,6 +668,7 @@ const deleteField = item => {
       if (action === 'confirm') {
         delFieldById([item.id])
         datasetDrag.value.dfsNodeFieldBackReal(item)
+        changeUpdate()
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -711,6 +735,7 @@ const confirmNormalField = () => {
         }
         return false
       })
+      changeUpdate()
       closeNormalField()
     }
   })
@@ -739,6 +764,7 @@ const confirmEditCalc = () => {
       } else {
         allfields.value.push(obj)
       }
+      changeUpdate()
       editCalcField.value = false
     }
   })
@@ -891,9 +917,9 @@ const tabChange = val => {
   })
 }
 
-const addComplete = () => {
+const addComplete = (isInit = false) => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
-  changeUpdate()
+  if (!isInit) changeUpdate()
   if (!state.nodeNameList?.length) {
     columns.value = []
     tableData.value = []
@@ -1286,6 +1312,7 @@ const confirmGroupField = () => {
         } else {
           allfields.value.push({ ...currentGroupField, groupList })
         }
+        changeUpdate()
         editGroupField.value = false
       }
     }, 1000)
@@ -1425,12 +1452,6 @@ const handleResize = debounce(() => {
   quotaTableHeight.value =
     (editorStep.value === 'process' ? clientHeight - 56 : sqlResultHeight.value) - 242
 }, 60)
-let willBack = false
-const saveAndBack = () => {
-  if (!willBack) return
-  pushDataset()
-}
-
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
@@ -1512,9 +1533,9 @@ const resetAllfieldsUnionId = (arr, idMap) => {
   return JSON.parse(strUnion)
 }
 
-const datasetSave = () => {
+const datasetSave = (returnAfterSave = false) => {
   if (nodeInfo.id) {
-    editeSave()
+    editeSave(returnAfterSave)
     return
   }
   let union = []
@@ -1532,12 +1553,9 @@ const datasetSave = () => {
     'dataset',
     { id: pid || '0', union, allfields: allfields.value, isCross: isCross.value },
     '',
-    datasetName.value
+    datasetName.value,
+    returnAfterSave ? pushDataset : undefined
   )
-}
-const datasetSaveAndBack = () => {
-  willBack = true
-  datasetSave()
 }
 
 const datasetPreviewLoading = ref(false)
@@ -1610,7 +1628,8 @@ const deTypeSelection = ref([])
 const fieldSelection = ref([])
 
 const showCascaderBatch = computed(() => {
-  return !!deTypeSelection.value.length && Array.from(new Set(deTypeSelection.value)).length === 1
+  const deTypes = fieldSelection.value.map(ele => ele.deType)
+  return !!deTypes.length && new Set(deTypes).size === 1
 })
 
 const clearSelection = () => {
@@ -1626,7 +1645,7 @@ const setDeTypeSelection = () => {
   ]
 
   deTypeSelection.value = fieldSelection.value.map(ele => {
-    if (ele.extField === 2 && ele.deExtractType === undefined) {
+    if (ele.extField === 2 && (ele.deExtractType === undefined || ele.deExtractType === null)) {
       return ele.deType
     }
     return ele.deExtractType
@@ -1681,6 +1700,7 @@ const cascaderChangeArr = val => {
       ele.deTypeArr = deType === 1 && ele.deExtractType === 0 ? [deType, dateFormat] : [deType]
     }
   })
+  changeUpdate()
   recoverSelection()
 }
 
@@ -1718,6 +1738,7 @@ const cascaderChange = (row, val) => {
   row.deType = deType
   row.dateFormat = deType === 1 ? dateFormat : ''
   row.dateFormatType = deType === 1 ? dateFormat : ''
+  changeUpdate()
 }
 
 const dfsUnion = (arr, list) => {
@@ -1744,6 +1765,7 @@ const dfsUnion = (arr, list) => {
   })
 }
 const handleClick = () => {
+  datasetNameBeforeEdit = datasetName.value
   showInput.value = true
   nextTick(() => {
     editorName.value.focus()
@@ -1778,6 +1800,7 @@ const finish = res => {
     name
   }
   allfields.value = res.allFields || []
+  tabChange(tabActive.value)
 }
 
 const errorTips = ref('')
@@ -1785,13 +1808,10 @@ const errorTips = ref('')
 const handleDatasetName = () => {
   errorTips.value = ''
   if (!datasetName.value.trim()) {
-    errorTips.value = t('commons.input_content')
-  }
-
-  if (datasetName.value.trim().length < 1) {
-    errorTips.value = t('datasource.input_limit_1_64', [1, 64])
+    errorTips.value = t('data_set.the_dataset_name')
   }
   showInput.value = !!errorTips.value
+  if (!errorTips.value && datasetName.value !== datasetNameBeforeEdit) changeUpdate()
 }
 
 const treeProps = {
@@ -1894,14 +1914,14 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           v-if="editorStep === 'process'"
           :disabled="showInput"
           type="primary"
-          @click="datasetSaveAndBack"
+          @click="datasetSave(true)"
           >{{ t('data_set.save_and_return') }}</el-button
         >
         <el-button
           v-if="editorStep === 'process'"
           :disabled="showInput"
           type="primary"
-          @click="datasetSave"
+          @click="datasetSave()"
           >{{ t('data_set.save') }}</el-button
         >
       </span>
@@ -2064,7 +2084,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       <div
         class="drag-right"
         :style="{
-          width: `calc(100vw - ${editorStep === 'relation' && showLeft ? LeftWidth : 0}px)`
+          width: `calc(100% - ${editorStep === 'relation' && showLeft ? LeftWidth : 0}px)`
         }"
       >
         <div v-if="crossDatasources && editorStep === 'relation'" class="different-datasource">
@@ -2283,6 +2303,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             v-model="scope.row.name"
                             maxlength="100"
                             :placeholder="t('commons.input_content')"
+                            @change="changeUpdate"
                           />
                         </div>
                       </template>
@@ -2493,6 +2514,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                           <el-input
                             v-model="scope.row.name"
                             :placeholder="t('commons.input_content')"
+                            @change="changeUpdate"
                           />
                         </div>
                       </template>
@@ -2768,11 +2790,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       </template>
     </el-drawer>
   </div>
-  <creat-ds-group
-    @finish="finish"
-    @onDatasetSave="saveAndBack"
-    ref="creatDsFolder"
-  ></creat-ds-group>
+  <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
   <el-dialog
     modal-class="calc-field-edit-dialog"
     v-model="editCalcField"
@@ -3166,6 +3184,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     width: 100%;
     height: calc(100vh - 56px);
     position: relative;
+    overflow: hidden;
     .drag-left {
       position: absolute;
       height: calc(100vh - 56px);
@@ -3227,6 +3246,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 
       height: 100%;
       width: 240px;
+      flex-shrink: 0;
       padding-bottom: 16px;
 
       font-family: var(--de-custom_font, 'PingFang');
@@ -3299,8 +3319,8 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       }
 
       .table-checkbox-list {
-        height: calc(100% - 190px);
-        overflow-y: auto;
+        height: calc(100% - 194px);
+        overflow-y: hidden;
         padding: 0 8px;
 
         .not-allow {
@@ -3478,9 +3498,11 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               padding: 0 8px;
               position: relative;
               height: 49px;
+              overflow-y: hidden;
 
               &.open {
                 height: 50%;
+                overflow-y: auto;
               }
               .title {
                 cursor: pointer;
@@ -3516,7 +3538,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                   }
                 }
               }
-              overflow-y: auto;
             }
 
             .field-d {

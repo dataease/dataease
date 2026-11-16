@@ -7,8 +7,8 @@ import {
 } from '@/utils/CalculateFields'
 import { type Field } from '@/api/chart'
 import { cloneDeep } from 'lodash-es'
-import type { BusiTreeRequest } from '@/models/tree/TreeNode'
-import { nameTrim } from '@/utils/utils'
+import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
+import { filterFreeFolder, nameTrim } from '@/utils/utils'
 export interface DatasetOrFolder {
   name: string
   action?: string
@@ -138,6 +138,13 @@ export const getDatasetTree = async (data: BusiTreeRequest): Promise<IResponse> 
   return request.post({ url: '/datasetTree/tree', data }).then(res => {
     return res?.data
   })
+}
+
+export const getDatasetCreationFolders = async (): Promise<BusiTreeNode[]> => {
+  const res = await getDatasetTree({ leaf: false, weight: 7 })
+  const folders = (res ?? []) as unknown as BusiTreeNode[]
+  filterFreeFolder(folders, 'dataset')
+  return folders
 }
 
 export const barInfoApi = async (id, signal?: AbortSignal): Promise<IResponse> => {

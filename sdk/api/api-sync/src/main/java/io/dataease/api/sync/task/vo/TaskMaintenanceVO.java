@@ -22,6 +22,9 @@ public class TaskMaintenanceVO {
     private String sourceMode;
     private String sourceTable;
     private String sourceQuery;
+    private boolean sourceQuerySupported;
+    private String beforeSourceQuery;
+    private String afterSourceQuery;
     private String operationId;
     private String state;
     private String phase;

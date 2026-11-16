@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import icon_warning_colorful from '@/assets/svg/icon_warning_colorful.svg'
 import { computed, defineEmits, reactive, ref, watch } from 'vue'
 import {
   addApi,
@@ -38,6 +39,7 @@ const taskFormVisible = ref<boolean>(false)
  */
 const isEdit = computed(() => !!props.taskId)
 const checkingTarget = ref(false)
+const showCheckError = ref(false)
 let taskRequestSequence = 0
 const targetCheckTitle = computed(() => {
   if (formState.value.targetDatasourceMissing) return t('sync_task.target_connection_missing')
@@ -592,34 +594,59 @@ defineExpose({ taskFormVisible })
           v-if="isEdit && (formState.editableCheckFailed || formState.sourceDatasourceMissing)"
           class="target-check-notice"
         >
-          <el-alert type="warning" :closable="false" show-icon>
-            <template #title>{{
-              formState.editableCheckFailed
-                ? targetCheckTitle
-                : t('sync_task.source_connection_missing')
-            }}</template>
-            <div class="target-check-context">
-              {{
-                t('sync_task.original_target', [
-                  formState.target.datasource?.name ||
-                    formState.target.datasourceId ||
-                    t('sync_task.connection_not_recorded'),
-                  formState.target.tableName
-                ])
-              }}
-            </div>
-            <div>{{ t('sync_task.target_check_readonly') }}</div>
-            <details v-if="formState.targetTableCheckError" class="target-check-details">
-              <summary>{{ t('sync_task.check_error_details') }}</summary>
-              <pre>{{ formState.targetTableCheckError }}</pre>
-            </details>
-          </el-alert>
-          <el-button
-            :loading="checkingTarget"
-            :disabled="formLoading || (isEdit && formState.id !== props.taskId)"
-            @click="getTaskInfo(true)"
-            >{{ t('sync_task.recheck_target') }}</el-button
-          >
+          <el-row :gutter="24" :justify="'center'">
+            <el-col :span="12">
+              <div class="target-check-alert">
+                <span class="target-check-icon">
+                  <Icon name="icon_warning_colorful">
+                    <icon_warning_colorful class="svg-icon" />
+                  </Icon>
+                </span>
+                <div class="target-check-content">
+                  <div class="target-check-title">
+                    {{
+                      formState.editableCheckFailed
+                        ? targetCheckTitle
+                        : t('sync_task.source_connection_missing')
+                    }}
+                  </div>
+                  <div class="target-check-context">
+                    {{
+                      t('sync_task.original_target', [
+                        formState.target.datasource?.name ||
+                          formState.target.datasourceId ||
+                          t('sync_task.connection_not_recorded'),
+                        formState.target.tableName
+                      ])
+                    }}
+                  </div>
+                  <div class="target-check-desc">{{ t('sync_task.target_check_readonly') }}</div>
+                  <div class="target-check-actions">
+                    <el-button
+                      v-if="formState.targetTableCheckError"
+                      link
+                      type="primary"
+                      @click="showCheckError = !showCheckError"
+                      >{{ t('sync_task.check_error_details') }}</el-button
+                    >
+                    <el-button
+                      link
+                      type="primary"
+                      :loading="checkingTarget"
+                      :disabled="formLoading || (isEdit && formState.id !== props.taskId)"
+                      @click="getTaskInfo(true)"
+                      >{{ t('sync_task.recheck_target') }}</el-button
+                    >
+                  </div>
+                  <pre
+                    v-if="showCheckError && formState.targetTableCheckError"
+                    class="target-check-error"
+                    >{{ formState.targetTableCheckError }}</pre
+                  >
+                </div>
+              </div>
+            </el-col>
+          </el-row>
         </div>
         <el-form
           ref="taskFormRef"
@@ -847,29 +874,65 @@ defineExpose({ taskFormVisible })
 <style lang="less">
 .task-form-drawer-fullscreen {
   .target-check-notice {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin: 24px 0;
+    padding-top: 24px;
 
-    .ed-alert {
+    .target-check-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 16px;
+      border-radius: var(--ed-border-radius-base);
+      background: var(--ed-color-warning-light-9);
+      font-size: 14px;
+      line-height: 22px;
+      overflow-wrap: anywhere;
+    }
+
+    .target-check-icon {
+      display: flex;
+      flex-shrink: 0;
+      width: 16px;
+      height: 22px;
+      align-items: center;
+
+      .svg-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .target-check-content {
       flex: 1;
       min-width: 0;
     }
-    .ed-button {
-      flex-shrink: 0;
+
+    .target-check-title {
+      font-weight: 600;
+      color: var(--ed-text-color-primary);
     }
-  }
-  .target-check-context {
-    margin: 8px 0;
-    overflow-wrap: anywhere;
-  }
-  .target-check-details {
-    margin-top: 12px;
-    summary {
-      cursor: pointer;
+
+    .target-check-context {
+      margin-top: 8px;
+      color: var(--ed-text-color-primary);
     }
-    pre {
+
+    .target-check-desc {
+      margin-top: 4px;
+      color: var(--ed-text-color-primary);
+    }
+
+    .target-check-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 12px;
+
+      .ed-button + .ed-button {
+        margin-left: 0;
+      }
+    }
+
+    .target-check-error {
       margin: 8px 0 0;
       max-height: 160px;
       overflow: auto;

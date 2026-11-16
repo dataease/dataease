@@ -1,4 +1,4 @@
-import type { Component } from "vue"
+import type { Component } from 'vue'
 
 export type FieldSortType = 'none' | 'asc' | 'desc' | 'custom_sort'
 
@@ -186,6 +186,8 @@ export interface SpreadsheetFilterCondition {
   sortType?: 'asc' | 'desc' | 'customSort'
   sortList?: Array<string | number>
   manualOptions: Array<string | number>
+  // 外部参数仅在预览实例中限制候选项，不写回工作簿配置。
+  optionFilter?: string[]
   displayForm: 'dropdown' | 'tile'
   optionCountMode: 'default' | 'all'
   queryMode: 'click' | 'auto'
@@ -300,6 +302,8 @@ export interface PluginDataConfig {
   zones: Record<string, FieldItemData[]>
   customFilter: FilterTree
   queryFilter?: SpreadsheetQueryFilterItem[]
+  // 外部参数仅用于本次取数请求，不回写工作簿配置。
+  outerParamsFilter?: SpreadsheetQueryFilterItem[]
   resultLimit: number
 }
 
@@ -309,7 +313,6 @@ export interface PluginFieldValuesRequest {
   data: PluginDataConfig
   field: FieldItemData
 }
-
 
 export interface TablePluginConfig extends PluginConfig {
   // 历史实例 ID 可能不是数字，字段副本使用独立的归属 ID。
@@ -321,7 +324,6 @@ export interface TablePluginConfig extends PluginConfig {
     startCell: string
   }
 }
-
 
 // ==========================================
 // 3. 样式子类型（被各插件复用）
@@ -357,7 +359,6 @@ export interface TableColumnWidthStyle {
   autoWidth: boolean
   fixedWidth: number
 }
-
 
 export interface FieldZoneSchema {
   id: string

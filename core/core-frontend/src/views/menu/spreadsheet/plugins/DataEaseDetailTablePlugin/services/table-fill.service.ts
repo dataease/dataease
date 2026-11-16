@@ -10,6 +10,7 @@ import { ElMessage } from 'element-plus-secondary'
 import { DetailTableRenderStyleService } from './detail-table-render-style.service'
 import { DetailTableEditProtectionService } from './detail-table-edit-protection.service'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
+import { SpreadsheetOuterParamsService } from '../../DataEaseOuterParamsPlugin/services/outer-params.service'
 import { findConfiguredField, getFieldNumberFormat, toNativeCellValue } from '../utils/field-format'
 import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
@@ -55,6 +56,8 @@ export class TableFillService {
     private readonly detailTableEditProtectionService: DetailTableEditProtectionService,
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(SpreadsheetOuterParamsService)
+    private readonly spreadsheetOuterParamsService: SpreadsheetOuterParamsService,
     @Inject(PluginRenderLoadingService)
     private readonly pluginRenderLoadingService: PluginRenderLoadingService,
     @Inject(TableRenderExpansionService)
@@ -172,10 +175,15 @@ export class TableFillService {
         await this.spreadsheetFilterRuntimeService.waitForValues(unitId)
         if (!isCurrentWorksheet()) return false
       }
+      const outerParamsFilter = unitId
+        ? await this.spreadsheetOuterParamsService.getFieldFilters(unitId, config.id)
+        : []
+      if (!isCurrentWorksheet()) return false
+      // 外参加载期间查询条件可能变化，实际取数前再读取最新条件。
       const queryConfig = unitId
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
-      const dataResult = await this.dataService.queryData(queryConfig)
+      const dataResult = await this.dataService.queryData(queryConfig, outerParamsFilter)
       if (!isCurrentWorksheet()) return false
       if (unitId) {
         // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。

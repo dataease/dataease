@@ -359,6 +359,14 @@ const handleNodeClick = (data: SpreadsheetTreeNode, node: { disabled?: boolean }
     spreadsheetListTree.value.setCurrentKey(null)
     return
   }
+  if (!isEmbedded.value) {
+    // 替换当前地址并同步路由状态，刷新后仍定位到选中的电子表格。
+    void router.replace({
+      path: '/spreadsheet/index',
+      query: { ...route.query, id: String(data.id) },
+      hash: route.hash
+    })
+  }
   loadSpreadsheetPreview(data.id as number, data.weight)
 }
 
@@ -403,7 +411,10 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
         void loadFavoriteStatus(data.id, currentPreviewRequestVersion)
       }
       if (spreadsheetRef.value) {
-        spreadsheetRef.value.loadSheetData(previewWorkbookData.value)
+        // 等待当前资源 ID 同步到子组件，再加载选中的工作簿。
+        await nextTick()
+        if (currentPreviewRequestVersion !== previewRequestVersion) return
+        spreadsheetRef.value?.loadSheetData(previewWorkbookData.value)
       }
     } catch (e) {
       if (currentPreviewRequestVersion !== previewRequestVersion) {
@@ -1052,6 +1063,7 @@ onBeforeUnmount(() => {
             <UniverSheet
               ref="spreadsheetRef"
               :model-value="previewWorkbookData"
+              :spreadsheet-id="selectedNodeInfo.id"
               :data-key="previewDataKey"
               :locale="currentLang"
               mode="preview"

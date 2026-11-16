@@ -432,8 +432,16 @@ export default {
     download: '下载',
     move: '移动分类',
     delete_hint:
-      '删除后，素材将从素材库隐藏，无法再选用；已使用该素材的仪表板、大屏等资源不受影响，全部引用解除后自动清理文件。确认删除？',
+      '删除后，素材将从素材库隐藏，无法再选用。已使用该素材的仪表板、大屏等资源不受影响，全部引用解除后自动清理文件。',
     deleted: '删除成功',
+    batch_delete: '批量删除',
+    batch_selected_count: '已选 {count} 项',
+    batch_select_item: '选择素材 {name}',
+    batch_delete_confirm:
+      '确定删除选中的 {count} 项素材吗？删除后素材将从素材库隐藏，无法再选用。已有引用可继续使用，全部引用解除后将自动清理文件。',
+    batch_delete_result: '删除成功 {success} 项，失败 {failed} 项',
+    batch_delete_failure_detail: '{name}：{reason}',
+    batch_delete_unknown_error: '删除失败，请重试',
     empty: '暂无素材',
     file_hint: '支持 PNG、JPG/JPEG、GIF、安全 SVG，单文件不超过 15 MiB。',
     confirm: '确认选择',
@@ -485,6 +493,12 @@ export default {
     save_copy: '保存并复制链接'
   },
   common: {
+    embedded_origin_mismatch:
+      '嵌入来源校验失败，请联系管理员核对嵌入应用的允许域名和 DataEase 访问地址配置',
+    embedded_token_expired: '嵌入凭证已过期，请重新获取后重试',
+    embedded_token_invalid: '嵌入凭证无效，请重新获取后重试',
+    embedded_auth_failed: '嵌入鉴权失败，请联系管理员',
+
     language_required: '语言不能为空',
     language_unsupported: '不支持所选语言，请重新选择',
     language_switch_failed: '语言切换失败，请重试',
@@ -680,7 +694,8 @@ export default {
     parameter_default_value_de: '参数默认值',
     confirm_the_deletion: '未被勾选, 与其相关的计算字段将被删除，确认删除？',
     confirm_to_delete: '确定要删除{a}吗',
-    also_be_deleted: '删除后，被关联的表或sql片段将被删除，与其相关的计算字段也将被删除。',
+    delete_node_join_tip: '该节点的连表关系将被移除。若有下游节点，也会一并删除。',
+    also_be_deleted: '依赖被删除节点的计算字段也将被删除。',
     deleted_confirm_deletion: '如果该字段被删除，与其相关的计算字段将被删除，确认删除？',
     delete_field_a: '确认删除字段{a}吗',
     field_name: '字段名称',
@@ -3973,6 +3988,9 @@ export default {
     keep_size: '调整大小保持内部组件尺寸',
     no_save_tips: '存在未保存的{0}',
     no_save_tips2: '存在未保存的修改，立即恢复？',
+    canvas_draft_outdated:
+      '本地草稿基于旧版本或无法确认其版本。是否恢复？恢复不会自动保存到服务器，保存时仍需检查版本冲突。',
+    canvas_draft_storage_failed: '浏览器草稿保存失败，当前编辑和撤销仍可使用，请及时保存到服务器。',
     locate_tips: '定位到中心点',
     new_tab: '新建Tab',
     pop_area: '弹窗区域',
@@ -4041,6 +4059,8 @@ export default {
     current_chart_source_field: '当前图表源字段',
     add_linkage_dependency_fields: '追加联动依赖字段',
     select_linkage_tips: '请先勾选需要联动的图表',
+    time_only_query_linkage_unsupported: '时分秒维度无法联动日期查询组件，请使用包含日期的维度格式',
+    month_day_query_linkage_unsupported: '月日维度无法联动日期查询组件，请使用包含年份的维度格式',
     linkage_option_tips1: '如果联动维度已配置钻取，点击维度将',
     linkage_option1: '弹出浮框，由用户选择联动或者下钻',
     linkage_option2: '同时触发联动和下钻',
@@ -4847,6 +4867,21 @@ export default {
     database_version: '版本',
     source_table: '来源表',
     target_table: '目标表',
+    edit_source_query: '修正来源 SQL',
+    source_query_draft: '来源 SQL 草稿',
+    query_edit_help:
+      '仅在原来源连接下修正 SQL。读取成功后仍需检查字段映射并确认调整；SQL 变更后将全量重新取数并替换目标数据',
+    cancel_query_edit: '取消 SQL 修改',
+    read_query_fields: '读取查询字段',
+    query_read_failed_help:
+      '请恢复缺失的源字段，或修正来源 SQL 后重新读取。仅删除目标字段无法修复失效查询',
+    query_pending: '来源 SQL 草稿已读取，确认调整前不会生效；本次需要全量重新初始化',
+    query_pending_count: '本次查询修改及 {0} 个字段修改尚未生效',
+    source_query_changed: '来源 SQL 变更',
+    source_missing_status: '源字段缺失',
+    source_missing_field: '源字段 {0} 已不存在，请恢复源字段或通过 DE 删除对应普通目标字段及映射',
+    source_missing_help:
+      '部分目标字段引用的源字段已不存在。请恢复源字段，或在下方删除对应普通目标字段及映射；删除目标列会丢失该列历史数据，受保护字段须恢复有效来源',
     query_source: '来源：查询结果',
     view_query: '查看查询',
     hide_query: '收起查询',
@@ -5018,6 +5053,9 @@ export default {
       '使用任务当前生效的配置执行一次全量同步，不应用未提交的字段修改，不改变原同步方式和定时设置',
     full_exclusive: '我已确认：本次同步期间，没有其他任务或程序写入目标表',
     full_submitted: '本次全量同步已提交，请在任务日志中查看执行结果',
+    full_submit_error_help:
+      '请先查看该任务的执行日志，确认本次同步是否已启动及执行结果，再决定是否重试',
+    full_request_id: '请求编号：{0}。联系管理员时，请提供此编号以定位服务端错误',
     full_unsupported: '目标连接“{0}”（{1}）当前不支持全量同步一次',
     rules_entry: '修改规则',
     rules_expand_hint: '展开查看支持范围、限制及官方说明。',
@@ -5098,6 +5136,11 @@ export default {
     recovery_execution_failed: '已确认相关操作结束，本次运行按失败结束'
   },
   sync_task: {
+    field_name_rules_unavailable: '目标字段命名规则不可用，请重新读取字段信息',
+    field_name_control: '同步字段名称不能包含换行、制表符等控制字符',
+    field_name_characters: '名称包含当前目标版本不支持的字符，请检查特殊符号或 Unicode 设置（{0}）',
+    field_name_reserved: '名称使用了数据库保留前缀',
+    field_name_protected: '名称使用了 DataEase 同步系统保留前缀',
     decimal_precision_required:
       '字段 {0}（源类型 {1}）的目标类型 {2} 尚未指定总精度，请根据实际数据明确设置总精度和小数位，避免使用数据库默认值',
     decimal_parameters_invalid:
@@ -5263,6 +5306,8 @@ export default {
     field_index: '索引',
     field_comment: '注释',
     confirm_delete_field: '确定删除 {0} 字段？',
+    source_field_required:
+      '至少保留一个来源字段（可为来源主键）；系统默认主键依赖来源字段生成，不能单独保留',
     msg_field_list_empty_tip:
       '字段列表不能为空，不能存在名称为空或者字段类型为UNKNOWN的数据,请检查',
     next_week: '未来一周',
@@ -5960,6 +6005,19 @@ export default {
   },
   spreadsheet: {
     title: '电子表格',
+    outer_params_title: '外部参数设置',
+    outer_params_enable: '启用外部参数',
+    outer_params_select_data_areas: '选择关联的数据区域',
+    outer_params_filter_tips: '过滤方式仅支持文本下拉、数字下拉和下拉树查询条件',
+    outer_params_invalid_target: '绑定目标已失效，请重新选择',
+    outer_params_duplicate_target: '同一目标和绑定方式只能绑定一个外部参数',
+    outer_params_ambiguous_targets: '工作簿包含重复的查询条件或数据区域标识，无法配置外部参数',
+    outer_params_invalid_name: '参数名称不能为空且不能重复',
+    outer_params_invalid_default: '默认值必须是 JSON 数组',
+    outer_params_default_tips: '请使用 JSON 数组格式，例如单值 ["name1"]、多值 ["name1","name2"]',
+    outer_params_load_error: '外部参数配置加载失败',
+    outer_params_save_error: '外部参数保存失败',
+    outer_params_fix_errors: '请先修正参数配置中的错误',
     new_folder: '新建文件夹',
     root_folder: '根目录',
     new_sheet: '新建电子表格',
