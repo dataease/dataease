@@ -150,7 +150,6 @@ public final class TaskNode {
         var audit = args.length > 5 && Boolean.parseBoolean(args[5]) ? new AiAuditManage(em, manager, access, JSON) : null;
         beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, secrets(), transport, JSON, access, audit));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "taskLifecycle", beans.getBeanProvider(AiTaskManage.class));
-        org.springframework.test.util.ReflectionTestUtils.setField(configuration, "conversationLifecycle", beans.getBeanProvider(AiConversationManage.class));
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "em", em);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "access", access);
         org.springframework.test.util.ReflectionTestUtils.setField(configuration, "admission", admission);

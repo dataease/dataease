@@ -130,6 +130,9 @@ public final class TaskClusterRegression {
                 System.out.println("DIAG " + evidence);
                 if (!expected) failures.add(evidence); else checks++;
             }
+            var deniedQuestion = call(port, "/ai/conversations/" + session.path("sessionId").asText() + "/executions", "POST",
+                    TaskNode.JSON.writeValueAsString(Map.of("contextVersion", session.path("contextVersion").asText(), "text", "new question while disabled")), "1", proxy);
+            check(deniedQuestion.statusCode() == 403, "disabled AI rejects a new foreground question: " + reason);
             if (organization) {
                 JsonNode row = null;
                 for (var item : call(port, "/ai/org-policies", "GET", "").path("items")) if ("777".equals(item.path("id").asText())) row = item;
@@ -137,10 +140,11 @@ public final class TaskClusterRegression {
             } else enabled(port, true);
             var terminal = TaskNode.JSON.readTree(call(port, taskPath, "GET", "", "1", proxy).body());
             check("CANCELLED".equals(terminal.path("status").asText()) && reason.equals(terminal.path("errorCode").asText()), "re-enable preserves cancellation safeCode " + reason);
-            var oldStart = call(port, "/ai/conversations/" + session.path("sessionId").asText() + "/executions", "POST", TaskNode.JSON.writeValueAsString(Map.of("contextVersion", session.path("contextVersion").asText(), "text", "must-not-revive")), "1", proxy);
-            check(oldStart.statusCode() >= 400, "re-enable cannot revive old session after " + reason);
+            var continued = call(port, "/ai/conversations", "POST", TaskNode.JSON.writeValueAsString(Map.of("scene", "sql", "resourceId", "11",
+                    "editorId", "disabled-errors", "sql", "select 1", "previousSessionId", session.path("sessionId").asText())), "1", proxy);
+            check(continued.statusCode() == 200, "AI policy changes preserve foreground context after " + reason);
         }
-        check(sends.isEmpty(), "shutdown refusals and old sessions never reach the model transport");
+        check(sends.isEmpty(), "shutdown refusals and context continuation never reach the model transport");
         if (!failures.isEmpty()) throw new AssertionError("shutdown policy error contract failures: " + failures);
         System.out.println("PASS disabled error contracts " + checks + " assertions (actual MVC advice, contract2/legacy, global/organization)");
     }

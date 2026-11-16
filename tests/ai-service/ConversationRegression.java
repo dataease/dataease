@@ -433,7 +433,11 @@ public final class ConversationRegression {
             var transientSession = open(mvc, json, "transient-editor");
             long retryStarted = System.currentTimeMillis();
             String transientPath = start(mvc, json, "/ai/conversations/" + transientSession.path("sessionId").asText() + "/executions", transientSession, "Retry temporary service failure");
+            for (int wait = 0; wait < 100 && sent.isEmpty(); wait++) Thread.sleep(10);
+            if (sent.isEmpty()) throw new AssertionError("initial retryable HTTP request never reached provider");
+            enable(configuration, false);
             await(mvc, json, transientPath + "/events", "COMPLETED", "多字节");
+            enable(configuration, true);
             if (sent.size() != 2 || !sent.get(0).equals(sent.get(1)) || System.currentTimeMillis() - retryStarted < 1000) throw new AssertionError("temporary model failure retries original model/input after bounded wait");
 
             recovery(configMvc, json, 0, 0); sent.clear(); temporaryFailures.set(1);
@@ -645,7 +649,7 @@ public final class ConversationRegression {
                 System.out.println("DIAG running conversation event read identity lookups=" + lookups + ", setting SQL=" + settingsReads);
                 if (!"RUNNING".equals(increment.path("status").asText()) || lookups < 2 || lookups > 3)
                     throw new AssertionError("each live event read must freshly verify identity at bounded entry/delivery boundaries: " + lookups);
-                if (settingsReads != 4) throw new AssertionError("event reads must share the settings load for each enable/epoch check: " + settingsReads);
+                if (settingsReads != 0) throw new AssertionError("event reads must not reload execution settings: " + settingsReads);
             }
             int beforeSweep = scheduledIdentityChecks.get();
             int beforeSweepSettings = scheduledSettingSql.get();
@@ -654,9 +658,9 @@ public final class ConversationRegression {
             int sweepSettings = scheduledSettingSql.get() - beforeSweepSettings;
             if (sweepLookups < 2 || sweepLookups > 6)
                 throw new AssertionError("active session sweeps retain bounded fresh identity checks while upstream is blocked: " + sweepLookups);
-            if (sweepSettings < 2 || sweepSettings > 6)
-                throw new AssertionError("active sweeps must share each enable/epoch settings read: " + sweepSettings);
-            System.out.println("PASS running event reads use 3 fresh identity lookups and 4 setting SQL each; active sweeps use " + sweepLookups + " identity lookups and " + sweepSettings + " setting SQL over 2.2s");
+            if (sweepSettings != 0)
+                throw new AssertionError("active sweeps must not reload execution settings: " + sweepSettings);
+            System.out.println("PASS running event reads use 3 fresh identity lookups and 0 setting SQL each; active sweeps use " + sweepLookups + " identity lookups and " + sweepSettings + " setting SQL over 2.2s");
             // Execution IDs are not bearer credentials; another actor cannot read or stop this stream.
             V3UserUtil.clear(); V3UserUtil.setUid(2L);
             denyGet(mvc, eventsPath); deny(mvc, streamingPath + "/" + run.path("executionId").asText() + "/stop", version, "forged stop");
@@ -806,13 +810,19 @@ public final class ConversationRegression {
                     enable(configuration, false);
                     if (reopenDuringRead) enable(configuration, true);
                 });
-                denyGet(mvc, blocked + "/events");
+                await(mvc, json, blocked + "/events", "RUNNING", "星河");
                 if (changePolicyOnRead.get() != null) throw new AssertionError("policy must change inside the result authorization boundary");
-                if (!reopenDuringRead) enable(configuration, true);
                 streamRelease.get().countDown();
-                denyGet(mvc, blocked + "/events");
+                await(mvc, json, blocked + "/events", "COMPLETED", "继续");
+                if (!reopenDuringRead) {
+                    deny(mvc, shutdownExecutions, shutdownDuringRead.path("contextVersion").asText(), "New question while AI disabled");
+                    enable(configuration, true);
+                }
+                String next = start(mvc, json, shutdownExecutions, shutdownDuringRead, "New question after re-enable");
+                await(mvc, json, next + "/events", "COMPLETED", "继续");
+                mvc.perform(delete("/ai/conversations/" + shutdownDuringRead.path("sessionId").asText()));
             }
-            System.out.println("PASS settings checks reject AI shutdown and complete off/on transitions during buffered delivery; restored AI cannot revive the old result");
+            System.out.println("PASS accepted questions survive AI shutdown and off/on transitions; disabled AI rejects new questions and re-enable preserves conversation history");
             // Closing an active context cancels its stream; the released slot is usable by a fresh editor.
             var activeClose = open(mvc, json, "close-active");
             String closePath = "/ai/conversations/" + activeClose.path("sessionId").asText() + "/executions";
@@ -880,7 +890,7 @@ public final class ConversationRegression {
             String shutdownRun = start(mvc, json, shutdownPath, shutdown, "Shutdown while active");
             if (!firstChunk.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("shutdown upstream started");
             manage.destroy(); streamRelease.get().countDown(); denyGet(mvc, shutdownRun + "/events");
-            System.out.println("PASS conversation HTTP multiround/isolation/budget, true upstream increments, stop/admission/history, protocol/UTF-8/output limits, finite timeout, permission/config buffered-delivery revocation, close/shutdown and lost-client capacity recovery");
+            System.out.println("PASS conversation HTTP multiround/isolation/budget, true upstream increments, stop/admission/history, protocol/UTF-8/output limits, finite timeout, permission revocation/configuration snapshot delivery, close/shutdown and lost-client capacity recovery");
         } finally {
             var s = configuration.setting();
             configuration.saveSettings(new SettingsChange(s.getRowVersion(), true, previous, false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", previous + ":true").token()));

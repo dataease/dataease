@@ -248,10 +248,7 @@ const refreshAvailability = async () => {
     if (status.available !== available.value || revision !== usageRevision.value) {
       usageRevision.value = revision
       available.value = status.available
-      reset()
       resourceGeneration++
-      resources.value = []
-      input.value = ''
       if (status.available) void load()
     }
   } catch (error) {
@@ -387,6 +384,7 @@ const finishReading = (current: number) => {
   polling = undefined
 }
 const send = async (single = false, resume = false) => {
+  if (!available.value && !resume) return
   if (execution.value && !busy.value) return
   if (
     busy.value ||
@@ -510,6 +508,7 @@ const send = async (single = false, resume = false) => {
   }
 }
 const retry = async (index: number) => {
+  if (!available.value) return
   const source = messages.value[index],
     target = source?.target,
     original = source?.run
@@ -771,7 +770,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main v-if="available" :key="usageRevision" class="ai-conversation">
+  <main
+    v-if="available || session || activity || messages.length || pendingSubmission"
+    class="ai-conversation"
+  >
     <h1>{{ tr('title') }}</h1>
     <p>{{ tr('description') }}</p>
     <el-button @click="hidden = !hidden">{{ hidden ? tr('expand') : tr('hide') }}</el-button>
@@ -820,12 +822,17 @@ onBeforeUnmount(() => {
       </p>
       <el-button
         :disabled="
-          busy || !!execution || !!matchingSubmission(true) || (!resourceId && !input.trim())
+          !available ||
+          busy ||
+          !!execution ||
+          !!matchingSubmission(true) ||
+          (!resourceId && !input.trim())
         "
         @click="send(true)"
         >{{ tr('single') }}</el-button
       >
       <BackgroundTasks
+        v-if="available"
         ref="backgroundTasks"
         :resource-id="resourceId"
         :editor-id="editorId"
@@ -843,6 +850,7 @@ onBeforeUnmount(() => {
         tr('stop')
       }}</el-button>
       <p role="status">{{ busy ? tr('running') : tr('ready') }}</p>
+      <p v-if="!available" role="status">{{ t('ai_service.failure_disabled') }}</p>
       <p v-if="failure" role="alert">{{ failure }}</p>
       <el-button
         v-if="pendingSubmission"
@@ -906,9 +914,12 @@ onBeforeUnmount(() => {
             @click="resumeProgress(index)"
             >{{ tr('resume_progress') }}</el-button
           >
-          <el-button v-if="message.run?.retryEligible" :disabled="busy" @click="retry(index)">{{
-            tr('retry_attempt')
-          }}</el-button>
+          <el-button
+            v-if="message.run?.retryEligible"
+            :disabled="!available || busy"
+            @click="retry(index)"
+            >{{ tr('retry_attempt') }}</el-button
+          >
           <p v-if="message.recovery">
             {{ tr('current_step') }}: {{ message.recovery.stepKind }} ·
             {{ tr('technical_retries') }} {{ message.recovery.technicalRetries }} ·
@@ -936,7 +947,9 @@ onBeforeUnmount(() => {
         <el-button
           type="primary"
           native-type="submit"
-          :disabled="busy || !!execution || !!matchingSubmission(false) || !input.trim()"
+          :disabled="
+            !available || busy || !!execution || !!matchingSubmission(false) || !input.trim()
+          "
           >{{ tr('send') }}</el-button
         >
         <el-button

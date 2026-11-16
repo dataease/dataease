@@ -56,6 +56,10 @@ public class AiTransport {
     }
     public ChatResponse call(Connection connection, CoreAiSetting settings, Prompt prompt, boolean background, long deadline, Runnable recheck,
                              io.dataease.ai.audit.AiAuditManage.Session audit) {
+        return call(connection, settings, prompt, background, deadline, recheck, audit, false);
+    }
+    public ChatResponse call(Connection connection, CoreAiSetting settings, Prompt prompt, boolean background, long deadline, Runnable recheck,
+                             io.dataease.ai.audit.AiAuditManage.Session audit, boolean acceptedConversation) {
         return execute(connection, settings, background, deadline, recheck, client -> {
             OpenAiApi api = OpenAiApi.builder().baseUrl(connection.url()).apiKey(connection.key())
                     .completionsPath(outbound.completionPath(connection.url())).restClientBuilder(client).responseErrorHandler(new org.springframework.web.client.DefaultResponseErrorHandler() {
@@ -72,7 +76,7 @@ public class AiTransport {
             if (response.getResult().getOutput().getText() == null || response.getResult().getOutput().getText().isBlank())
                 throw AiErrors.error("response_invalid");
             return response;
-        }, audit);
+        }, audit, acceptedConversation);
     }
     public List<String> discover(Connection connection, CoreAiSetting settings, long deadline, Runnable recheck) {
         return execute(connection, settings, false, deadline, recheck, builder -> {
@@ -89,10 +93,10 @@ public class AiTransport {
     }
     private interface Work<T> { T run(RestClient.Builder builder); }
     private <T> T execute(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck, Work<T> work) {
-        return execute(c, s, background, deadline, recheck, work, null);
+        return execute(c, s, background, deadline, recheck, work, null, false);
     }
     private <T> T execute(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck, Work<T> work,
-                          io.dataease.ai.audit.AiAuditManage.Session audit) {
+                          io.dataease.ai.audit.AiAuditManage.Session audit, boolean acceptedConversation) {
         long remaining = deadline - System.currentTimeMillis();
         if (remaining <= 0) throw AiErrors.error("timeout");
         Future<T> future;
@@ -100,7 +104,7 @@ public class AiTransport {
         try {
             future = executor.submit(() -> {
                 try {
-                    return perform(c, s, background, deadline, recheck, cancellation, work, audit);
+                    return perform(c, s, background, deadline, recheck, cancellation, work, audit, acceptedConversation);
                 } finally {
                     clearWorker();
                 }
@@ -123,10 +127,10 @@ public class AiTransport {
     }
     private <T> T perform(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck,
                           RequestCancellation cancellation, Work<T> work) {
-        return perform(c, s, background, deadline, recheck, cancellation, work, null);
+        return perform(c, s, background, deadline, recheck, cancellation, work, null, false);
     }
     private <T> T perform(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck,
-                          RequestCancellation cancellation, Work<T> work, io.dataease.ai.audit.AiAuditManage.Session audit) {
+                          RequestCancellation cancellation, Work<T> work, io.dataease.ai.audit.AiAuditManage.Session audit, boolean acceptedConversation) {
         recheck.run();
         outbound.normalize(c.url());
         long budget = deadline - System.currentTimeMillis();
@@ -149,7 +153,7 @@ public class AiTransport {
                     .defaultStatusHandler(status -> status.value() >= 300, (request, response) -> { throw providerError(response); })
                     .requestInterceptor((request, bytes, execution) -> {
                 if (bytes.length > 4 * 1024 * 1024) throw AiErrors.error("input_limit");
-                AiAdmission.Permit permit = acquire(s, background, deadline, recheck, cancellation);
+                AiAdmission.Permit permit = acquire(s, background, deadline, recheck, cancellation, acceptedConversation);
                 try {
                     recheck.run();
                     if (audit != null) capture[0] = audit.begin("MODEL", new String(bytes, java.nio.charset.StandardCharsets.UTF_8), c.key());
@@ -171,19 +175,20 @@ public class AiTransport {
         }
     }
     /**
-     * Background work may reach admission while a capacity-only configuration is publishing.
-     * Wait only before sending HTTP, outside a transaction, and refresh the complete policy each time.
+     * Background work and accepted conversations may reach admission while configuration is publishing.
+     * Wait only before sending HTTP, outside a transaction. Accepted conversations refresh capacity only;
+     * background work also refreshes execution policy.
      * This is not a provider retry and cannot replay a request whose outcome is unknown. */
     private AiAdmission.Permit acquire(CoreAiSetting settings, boolean background, long deadline,
-                                       Runnable recheck, RequestCancellation cancellation) {
+                                       Runnable recheck, RequestCancellation cancellation, boolean acceptedConversation) {
         long until = Math.min(deadline, System.currentTimeMillis() + 1000);
         while (true) {
             if (cancellation.cancelled() || Thread.currentThread().isInterrupted()) throw AiErrors.error("cancelled");
             if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
             recheck.run();
-            try { return admission.acquire(settings, background, deadline); }
+            try { return acceptedConversation ? admission.acquireCurrent(background, deadline) : admission.acquire(settings, background, deadline); }
             catch (AiErrors.Failure blocked) {
-                if (!background || !"policy_blocked".equals(blocked.safeCode()) || System.currentTimeMillis() >= until) throw blocked;
+                if ((!background && !acceptedConversation) || !"policy_blocked".equals(blocked.safeCode()) || System.currentTimeMillis() >= until) throw blocked;
             }
             try { Thread.sleep(Math.min(25, Math.max(1, until - System.currentTimeMillis()))); }
             catch (InterruptedException cancelled) { Thread.currentThread().interrupt(); throw AiErrors.error("cancelled"); }
@@ -191,8 +196,8 @@ public class AiTransport {
     }
     /** One controlled interactive upstream stream. No default WebClient, retry or model-side tool execution. */
     public final class Stream implements AutoCloseable {
-        private final boolean background;
-        private Stream(boolean background) { this.background = background; }
+        private final boolean background, acceptedConversation;
+        private Stream(boolean background, boolean acceptedConversation) { this.background = background; this.acceptedConversation = acceptedConversation; }
         private final RequestCancellation cancellation = new RequestCancellation();
         private Future<?> future;
         private boolean started, closed;
@@ -236,7 +241,7 @@ public class AiTransport {
                                         readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens() != null ? options.getMaxCompletionTokens() : 0, guard, text -> { delivered.set(true); delta.accept(text); }, budget);
                                         return Boolean.TRUE;
                                     });
-                        }, recovery.audit()));
+                        }, recovery.audit(), acceptedConversation));
                         if (!cancellation.cancelled()) completed.run();
                     } catch (Throwable failure) {
                         if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline));
@@ -249,10 +254,11 @@ public class AiTransport {
         }
     }
     /** One model step, scheduled directly: its completion may enqueue the next step, never await a child worker. */
-    public Stream stream(boolean background) { return new Stream(background); }
+    public Stream stream(boolean background, boolean acceptedConversation) { return new Stream(background, acceptedConversation); }
+    public Stream stream(boolean background) { return new Stream(background, false); }
     public final class ToolStream implements AutoCloseable {
-        private final boolean background;
-        private ToolStream(boolean background) { this.background = background; }
+        private final boolean background, acceptedConversation;
+        private ToolStream(boolean background, boolean acceptedConversation) { this.background = background; this.acceptedConversation = acceptedConversation; }
         private final RequestCancellation cancellation = new RequestCancellation();
         private Future<?> future;
         private boolean closed;
@@ -282,7 +288,7 @@ public class AiTransport {
                                     var type = response.getHeaders().getContentType();
                                     if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
                                     return readToolEvents(response.getBody(), currentAllocation.get(), budget, guard, text -> { delivered.set(true); delta.accept(text); });
-                                }), recovery.audit()));
+                                }), recovery.audit(), acceptedConversation));
                         guard.run(); if (!cancellation.cancelled()) completed.accept(result);
                     } catch (Throwable failure) { if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline)); }
                     finally { clearWorker(); }
@@ -293,8 +299,9 @@ public class AiTransport {
             closed = true; cancellation.cancel(); if (future != null) { future.cancel(true); executor.purge(); }
         }
     }
-    public ToolStream toolStream() { return new ToolStream(false); }
-    public ToolStream toolStream(boolean background) { return new ToolStream(background); }
+    public ToolStream toolStream() { return new ToolStream(false, false); }
+    public ToolStream toolStream(boolean background, boolean acceptedConversation) { return new ToolStream(background, acceptedConversation); }
+    public ToolStream toolStream(boolean background) { return new ToolStream(background, false); }
     private AiToolProtocol.Step readToolEvents(InputStream input, int allocation, AiToolProtocol.Budget budget, Runnable guard,
                                                java.util.function.Consumer<String> delta) throws IOException {
         var bounded = new FilterInputStream(input) {
@@ -374,7 +381,7 @@ public class AiTransport {
         if (!value.isTextual() || !value.asText().matches(pattern) || previous != null && !previous.equals(value.asText())) throw AiErrors.error("response_invalid");
         return value.asText();
     }
-    public Stream stream() { return new Stream(false); }
+    public Stream stream() { return new Stream(false, false); }
     private RuntimeException safeFailure(Throwable failure, long deadline) {
         if (System.currentTimeMillis() >= deadline) return AiErrors.error("timeout");
         if (failure instanceof io.dataease.exception.DEException known) return known;

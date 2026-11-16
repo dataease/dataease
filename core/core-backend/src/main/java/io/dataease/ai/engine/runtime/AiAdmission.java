@@ -119,6 +119,10 @@ public class AiAdmission {
         if (cluster) { if (!"OK".equals(run("finish", current, owner))) throw AiErrors.error("policy_blocked"); }
         else synchronized (this) { if (Objects.equals(owner, updating)) { appliedRevision = current.getRevision(); updating = null; } }
     }
+    /** Execution policy is frozen, but every new HTTP request still consumes current global capacity. */
+    public Permit acquireCurrent(boolean task, long deadline) {
+        return acquire(settings.findById(1L).orElseThrow(() -> AiErrors.error("policy_blocked")), task, deadline);
+    }
     public Permit acquire(CoreAiSetting s, boolean task, long deadline) {
         if (deadline <= System.currentTimeMillis()) throw AiErrors.error("timeout");
         String owner = UUID.randomUUID().toString();

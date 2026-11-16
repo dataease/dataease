@@ -26,9 +26,11 @@ import java.util.stream.Collectors;
 @Component
 public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private record Context(String executionId, String feature, Long actorId, Long organizationId, boolean background,
-            long deadline, RequestAttributes request, String proxyBinding, String taskId, String taskVersion, AiDataScope scope, AiDeploymentMode.State deployment, String usageRevision) implements AiExecutionContext {
+            long deadline, RequestAttributes request, String proxyBinding, String taskId, String taskVersion, AiDataScope scope, AiDeploymentMode.State deployment, String usageRevision, ExecutionSnapshot snapshot) implements AiExecutionContext {
         public Long proxyOrganizationId() { return proxyBinding != null && !proxyBinding.endsWith(":none") ? organizationId : null; }
     }
+    private record ExecutionSnapshot(CoreAiSetting settings, CoreAiModel model) { }
+    private CoreAiSetting settings(Context context) { return context.snapshot() == null ? configuration.setting() : context.snapshot().settings(); }
     private final Map<String, AiFeature> features;
     private final AiConfigurationManage configuration;
     private final CoreAiOrgPolicyRepository policies;
@@ -58,7 +60,23 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         Long org = identity.organization();
         return new Context(UUID.randomUUID().toString(), feature, actor, org, false,
                 System.currentTimeMillis() + configuration.setting().getRequestTimeoutSeconds() * 1000L,
-                RequestContextHolder.getRequestAttributes(), binding(), null, null, scope, identity.deployment(), usageRevision(identity));
+                RequestContextHolder.getRequestAttributes(), binding(), null, null, scope, identity.deployment(), usageRevision(identity), null);
+    }
+    /** A foreground question accepts policy once; later boundaries still reauthorize identity and resources. */
+    public AiExecutionContext currentConversation(String feature, AiDataScope scope) {
+        Objects.requireNonNull(scope); feature(feature);
+        if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null || RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
+        AiAccess.Identity identity = access.capture(); access.verify(identity, false);
+        CoreAiSetting settings = json.convertValue(configuration.setting(), CoreAiSetting.class);
+        CoreAiOrgPolicy policy = enabledPolicy(identity.organization(), settings);
+        Long selected = policy != null && "SPECIFIED".equals(policy.getMode()) ? policy.getModelId() : settings.getDefaultModelId();
+        CoreAiModel model = json.convertValue(configuration.available(selected), CoreAiModel.class);
+        Context context = new Context(UUID.randomUUID().toString(), feature, identity.actor(), identity.organization(), false,
+                System.currentTimeMillis() + settings.getRequestTimeoutSeconds() * 1000L,
+                RequestContextHolder.getRequestAttributes(), binding(), null, null, scope, identity.deployment(), null,
+                new ExecutionSnapshot(settings, model));
+        resolve(context, settings);
+        return context;
     }
     @Override public AiExecutionContext task(String feature, String taskId, AiDataScope scope) {
         Objects.requireNonNull(scope);
@@ -69,7 +87,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         access.verify(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment), false);
         return new Context(UUID.randomUUID().toString(), feature, identity.actorId(), identity.organizationId(), true,
                 System.currentTimeMillis() + configuration.setting().getRequestTimeoutSeconds() * 1000L,
-                null, identity.actorId() + ":" + (identity.proxyOrganizationId() == null ? "none" : identity.proxyOrganizationId()), taskId, identity.identityVersion(), scope, deployment, usageRevision(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment)));
+                null, identity.actorId() + ":" + (identity.proxyOrganizationId() == null ? "none" : identity.proxyOrganizationId()), taskId, identity.identityVersion(), scope, deployment, usageRevision(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment)), null);
     }
     @Override public ChatModel current(AiExecutionContext value) {
         if (!(value instanceof Context context)) throw AiErrors.error("forbidden");
@@ -78,7 +96,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             @Override public ChatResponse call(Prompt prompt) {
                 caller(context);
                 if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
-                CoreAiSetting s = configuration.setting();
+                CoreAiSetting s = settings(context);
                 CoreAiModel model = resolve(context, s);
                 long deadline = Math.min(context.deadline(), System.currentTimeMillis() + s.getRequestTimeoutSeconds() * 1000L);
                 Prompt finalPrompt = AiPromptPolicy.constrain(prompt, model.getModelIdentifier(), s.getMaxOutputTokens(), s.getMaxInputChars(), json, model.getOutputTokenParameter());
@@ -89,7 +107,8 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 CoreAiSetting admissionSettings = json.convertValue(s, CoreAiSetting.class);
                 Runnable recheck = () -> {
                     inspect(context, finalPrompt);
-                    CoreAiSetting latest = configuration.setting();
+                    if (context.snapshot() != null) { resolve(context, s); return; }
+                    CoreAiSetting latest = settings(context);
                     CoreAiModel current = resolve(context, latest);
                     if (!securityPolicyEquivalent(s, latest) || !Objects.equals(current.getId(), model.getId())
                             || !Objects.equals(current.getConfigRevision(), model.getConfigRevision())
@@ -98,7 +117,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 };
                 var capture = audit == null ? null : auditSession(context, new ModelSnapshot(model.getId(), model.getConfigRevision(), model.getCredentialRevision(), model.getModelIdentifier()), s.getRevision(), null, s.getAuditRetentionDays());
                 try {
-                    ChatResponse response = capture == null
+                    ChatResponse response = context.snapshot() != null
+                            ? transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck, capture, true)
+                            : capture == null
                             ? transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck)
                             : transport.call(connection, admissionSettings, finalPrompt, context.background(), deadline, recheck, capture);
                     caller(context); recheck.run();
@@ -136,7 +157,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final ModelSnapshot model;
         private final AiRecovery recovery;
         private Streaming(Context context, Prompt prompt, AiConfigurationManage.Connection connection, CoreAiSetting settings, Runnable verify, Runnable delivery, ModelSnapshot model) {
-            this.stream = transport.stream(context.background()); this.model = model; this.recovery = new AiRecovery(settings);
+            this.stream = transport.stream(context.background(), context.snapshot() != null); this.model = model; this.recovery = new AiRecovery(settings);
             if (audit != null) recovery.audit(auditSession(context, model, settings.getRevision(), recovery, settings.getAuditRetentionDays()));
             this.context = context; this.prompt = prompt; this.connection = connection; this.settings = settings; this.verify = verify; this.delivery = delivery;
         }
@@ -153,7 +174,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         @Override public synchronized void close() { stream.close(); finishAudit("CANCELLED"); connection = null; prompt = null; verify = null; }
     }
     public Streaming stream(String feature, AiDataScope scope, Prompt input) {
-        return stream((Context) current(feature, scope), input);
+        return stream((Context) currentConversation(feature, scope), input);
     }
     public Streaming streamTask(String feature, String taskId, AiDataScope scope, Prompt input) {
         return stream((Context) task(feature, taskId, scope), input);
@@ -164,26 +185,27 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private Context boundedTask(String feature, String taskId, AiDataScope scope, long deadline) {
         Context c = (Context) task(feature, taskId, scope);
         return new Context(c.executionId(), c.feature(), c.actorId(), c.organizationId(), c.background(), Math.min(c.deadline(), deadline),
-                c.request(), c.proxyBinding(), c.taskId(), c.taskVersion(), c.scope(), c.deployment(), c.usageRevision());
+                c.request(), c.proxyBinding(), c.taskId(), c.taskVersion(), c.scope(), c.deployment(), c.usageRevision(), c.snapshot());
     }
     private Streaming stream(Context request, Prompt input) {
         String feature = request.feature(); AiDataScope scope = request.scope();
         caller(request);
         if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
         if (!feature(feature).supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
-        CoreAiSetting original = configuration.setting();
+        CoreAiSetting original = settings(request);
         CoreAiModel model = resolve(request, original);
         Prompt prompt = AiPromptPolicy.constrain(input, model.getModelIdentifier(), original.getMaxOutputTokens(), original.getMaxInputChars(), json, model.getOutputTokenParameter());
         if (scope.inputFingerprint() != null && !AiPromptFingerprint.of(prompt).equals(scope.inputFingerprint())) throw AiErrors.error("scope_changed");
         inspect(request, prompt);
         // Detached immutable authorization coordinates; never copy RequestAttributes into a worker.
         Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
-                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision());
+                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision(), request.snapshot());
         var settings = json.convertValue(original, CoreAiSetting.class);
         var modelId = model.getId();
         var configRevision = model.getConfigRevision(); var credentialRevision = model.getCredentialRevision();
         java.util.function.Consumer<Boolean> policy = enforceDeadline -> {
-            var latest = configuration.setting(); var selected = resolve(detached, latest, enforceDeadline);
+            if (detached.snapshot() != null) { resolve(detached, original, enforceDeadline); return; }
+            var latest = settings(detached); var selected = resolve(detached, latest, enforceDeadline);
             if (!securityPolicyEquivalent(original, latest) || !Objects.equals(modelId, selected.getId())
                     || !Objects.equals(configRevision, selected.getConfigRevision()) || !Objects.equals(credentialRevision, selected.getCredentialRevision()))
                 throw AiErrors.error("conflict");
@@ -217,17 +239,21 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private final AiRecovery recovery;
         private final String modelIdentifier;
         private AiTransport.ToolStream active;
+        private AiConfigurationManage.Connection connection;
         private volatile boolean closed;
         private ToolStreaming(Context context, CoreAiSetting settings, CoreAiModel model) {
             this.context = context; this.settings = settings; this.modelIdentifier = model.getModelIdentifier();
             modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
+            if (context.snapshot() != null) connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
+                    secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
             budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens()); recovery = new AiRecovery(settings);
             if (audit != null) recovery.audit(auditSession(context, model(), settingRevision, recovery, settings.getAuditRetentionDays()));
         }
         public String executionId() { return context.executionId(); }
         public long deadline() { return context.deadline(); }
         private CoreAiModel verify(boolean deadline) {
-            var latest = configuration.setting(); var current = resolve(context, latest, deadline);
+            if (context.snapshot() != null) return resolve(context, settings, deadline);
+            var latest = settings(context); var current = resolve(context, latest, deadline);
             if (!securityPolicyEquivalent(settings, latest) || !Objects.equals(modelId, current.getId())
                     || !Objects.equals(configRevision, current.getConfigRevision()) || !Objects.equals(credentialRevision, current.getCredentialRevision())) throw AiErrors.error("conflict");
             updateAdmission(settings, latest); return current;
@@ -255,18 +281,18 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
                 progress.run(); verify(true); feature.authorizeToolInput(context, input);
                 if (!fingerprint.equals(AiToolProtocol.fingerprint(input))) throw AiErrors.error("scope_changed");
             };
-            var connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
+            var selectedConnection = context.snapshot() != null ? connection : new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
                     secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
             synchronized (this) {
                 if (closed) throw AiErrors.error("cancelled"); progress.run();
-                active = transport.toolStream(context.background());
-                active.start(connection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed, recovery);
+                active = transport.toolStream(context.background(), context.snapshot() != null);
+                active.start(selectedConnection, settings, payload, context.deadline(), allocation, budget, recheck, progress, delta, completed, failed, recovery);
             }
         }
-        public synchronized void close() { closed = true; if (active != null) active.close(); active = null; finishAudit("CANCELLED"); }
+        public synchronized void close() { closed = true; if (active != null) active.close(); active = null; connection = null; finishAudit("CANCELLED"); }
     }
     public ToolStreaming streamTools(String feature, AiDataScope scope, AiToolProtocol.Input input) {
-        return streamTools((Context) current(feature, scope), input);
+        return streamTools((Context) currentConversation(feature, scope), input);
     }
     public ToolStreaming streamTaskTools(String feature, String taskId, AiDataScope scope, AiToolProtocol.Input input) {
         return streamTools((Context) task(feature, taskId, scope), input);
@@ -279,9 +305,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
         if (!(feature(feature) instanceof AiToolConversationFeature toolFeature) || !toolFeature.supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
         if (scope.inputFingerprint() == null || !scope.inputFingerprint().equals(AiToolProtocol.fingerprint(input))) throw AiErrors.error("scope_changed");
-        var original = configuration.setting(); var model = resolve(request, original); toolFeature.authorizeToolInput(request, input);
+        var original = settings(request); var model = resolve(request, original); toolFeature.authorizeToolInput(request, input);
         Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
-                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision());
+                request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision(), request.snapshot());
         return new ToolStreaming(detached, json.convertValue(original, CoreAiSetting.class), model);
     }
     private void inspect(Context context, Prompt prompt) {
@@ -309,7 +335,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     private CoreAiModel resolve(Context c, CoreAiSetting s) { return resolve(c, s, true); }
     private CoreAiModel resolve(Context c, CoreAiSetting s, boolean enforceDeadline) {
         if (enforceDeadline && System.currentTimeMillis() >= c.deadline()) throw AiErrors.error("timeout");
-        if (!Objects.equals(c.usageRevision(), usageRevision(c.organizationId(), s))) throw AiErrors.error("scope_changed");
+        if (c.snapshot() == null && !Objects.equals(c.usageRevision(), usageRevision(c.organizationId(), s))) throw AiErrors.error("scope_changed");
         AiFeature feature = feature(c.feature());
         if (c.background()) {
             AiFeature.TaskIdentity now = feature.taskIdentity(c.taskId());
@@ -324,7 +350,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             if (c.background() || !Boolean.TRUE.equals(s.getAllowSamples())) throw AiErrors.error("samples_denied");
             feature.checkSampleConfirmation(c);
         }
-        return resolveModel(c.organizationId(), s);
+        return c.snapshot() == null ? resolveModel(c.organizationId(), s) : c.snapshot().model();
     }
     private String usageRevision(Long organization, CoreAiSetting settings) {
         return usageRevision(settings, organizationPolicy(organization));

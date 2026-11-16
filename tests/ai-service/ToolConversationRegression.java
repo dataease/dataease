@@ -79,6 +79,7 @@ public final class ToolConversationRegression {
     public static void run(AiConfigurationManage config, CoreAiOrgPolicyRepository policies, AiSecrets keys, AiAdmission admission, AiAccess access) throws Exception {
         var sent = new CopyOnWriteArrayList<JsonNode>();
         var reads = new CopyOnWriteArrayList<String>();
+        var authorizations = new CopyOnWriteArrayList<String>();
         var mode = new AtomicReference<String>("tables");
         var operationAllowed = new AtomicBoolean(true);
         var firstResourceAllowed = new AtomicBoolean(true);
@@ -92,6 +93,7 @@ public final class ToolConversationRegression {
         server.createContext("/v1/chat/completions", exchange -> {
             try {
                 var body = JSON.readTree(exchange.getRequestBody()); sent.add(body);
+                authorizations.add(exchange.getRequestHeaders().getFirst("Authorization"));
                 String content;
                 if (mode.get().equals("arguments-correction") && sent.size() <= 2) {
                     content = call("args-" + sent.size(), "get_table_fields", sent.size() == 1 ? "{\"table\":\"\"}" : "{\"table\":\"AI_PROBE\"}");
@@ -427,6 +429,34 @@ public final class ToolConversationRegression {
                 denied(mvc, revoked); operationAllowed.set(true); denied(mvc, revoked);
                 if (sent.size() != 1) throw new AssertionError("revoked metadata result reached next model");
             }
+            // Change the selected model's credentials/configuration and global policy between two actual tool model calls.
+            sent.clear(); reads.clear(); authorizations.clear(); mode.set("slow");
+            toolEntered.set(new CountDownLatch(1)); toolRelease.set(new CountDownLatch(1));
+            session = open(mvc); String snapshotRun = start(mvc, session, "Keep accepted configuration through tool continuation");
+            if (!toolEntered.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("snapshot tool boundary never reached");
+            candidate.setDraftHandle(null); candidate.setExpectedVersion(saved.rowVersion()); candidate.setExpectedConfigRevision(saved.configRevision());
+            candidate.setModelIdentifier("changed-tool-chat"); candidate.setApiKey("synthetic-rotated-key");
+            candidate.setTestProof(config.testProof(config.candidate(candidate, true))); config.save(candidate, false);
+            setting = config.setting();
+            config.saveSettings(new SettingsChange(setting.getRowVersion(), false, saved.id(), false, 5, 30000, 512, 5, 2,
+                    config.impact("SETTINGS", saved.id() + ":false").token()));
+            Thread.sleep(5100); // The new timeout must not replace this attempt's original deadline.
+            toolRelease.get().countDown(); result = terminal(mvc, snapshotRun);
+            if (!"COMPLETED".equals(result.path("status").asText()) || sent.size() != 2
+                    || sent.stream().anyMatch(body -> !"tool-chat".equals(body.path("model").asText()))
+                    || authorizations.stream().anyMatch(value -> !"Bearer synthetic-key".equals(value))
+                    || sent.get(1).path("max_tokens").asInt() <= 512)
+                throw new AssertionError("accepted tool continuation changed its model, credential, budget or deadline");
+            setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 30000, 512, 5, 2,
+                    config.impact("SETTINGS", saved.id() + ":true").token()));
+            sent.clear(); authorizations.clear(); mode.set("tables");
+            result = terminal(mvc, start(mvc, session, "Use latest configuration on next question"));
+            if (!"COMPLETED".equals(result.path("status").asText()) || sent.isEmpty()
+                    || sent.stream().anyMatch(body -> !"changed-tool-chat".equals(body.path("model").asText()) || body.path("max_tokens").asInt() > 512)
+                    || authorizations.stream().anyMatch(value -> !"Bearer synthetic-rotated-key".equals(value)))
+                throw new AssertionError("next question failed to select current model, credential and budget");
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            System.out.println("PASS tool continuation freezes model/credential/budget/deadline across configuration edits and shutdown; next question uses latest configuration");
             sent.clear(); reads.clear(); mode.set("input-results");
             setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 4000, 4096, 5, 2, null));
             session = open(mvc); result = terminal(mvc, start(mvc, session, "Read fields"));
