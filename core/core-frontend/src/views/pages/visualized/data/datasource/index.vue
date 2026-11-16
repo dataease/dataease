@@ -6,6 +6,7 @@ import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
 import { throttle } from 'lodash-es'
+import { clearCopiedCredentials } from '@/utils/copiedCredentials'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_warning_colorful_red from '@/assets/svg/icon_warning_colorful_red.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
@@ -849,13 +850,13 @@ const handleCopy = async data => {
       return ele.type == res.data.type
     })
     if (configuration) {
-      configuration = JSON.parse(configuration)
+      configuration = clearCopiedCredentials(JSON.parse(configuration))
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(paramsStr)
+      paramsStr = clearCopiedCredentials(JSON.parse(paramsStr))
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(apiConfigurationStr)
+      apiConfigurationStr = clearCopiedCredentials(JSON.parse(apiConfigurationStr))
     }
     let datasource = reactive<Node>(cloneDeep(defaultInfo))
     Object.assign(datasource, {
@@ -878,7 +879,6 @@ const handleCopy = async data => {
       isPlugin: arr && arr.length > 0,
       staticMap: arr[0]?.staticMap
     })
-    datasource.copySourceId = datasource.id
     datasource.id = ''
     datasource.copy = true
     datasource.name = t('datasource.copy')

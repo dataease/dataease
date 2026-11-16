@@ -122,6 +122,8 @@ public class Regression {
             check(JSON.readTree(concealed).path(field).asText().equals("******"));
             check(JSON.readTree(ConfigurationCredentials.restore(concealed, stored)).equals(JSON.readTree(stored)));
             String cleared = JSON.writeValueAsString(Map.of("host", "db.local", field, ""));
+            check(ConfigurationCredentials.mask(JSON.readTree(cleared)).path(field).asText().isEmpty());
+            check(ConfigurationCredentials.mask(JSON.readTree("{\"" + field + "\":null}")).path(field).isNull());
             check(JSON.readTree(ConfigurationCredentials.restore(cleared, stored)).path(field).asText().isEmpty());
             denied(() -> ConfigurationCredentials.restore(concealed.replace("db.local", "other.local"), stored));
         }
@@ -167,6 +169,21 @@ public class Regression {
         } catch (java.lang.reflect.InvocationTargetException expected) {
             check(expected.getCause() instanceof DEException);
         }
+        var copyRequest = new io.dataease.api.ds.vo.BusiDsRequest();
+        copyRequest.setCopySourceId(101L);
+        var sourceMethod = server.getClass().getDeclaredMethod("credentialSourceId", io.dataease.api.ds.vo.BusiDsRequest.class);
+        sourceMethod.setAccessible(true);
+        check(sourceMethod.invoke(server, copyRequest) == null);
+        try {
+            restoreMethod.invoke(server, mysqlForm, null, "mysql");
+            throw new AssertionError("Copies must reenter credentials");
+        } catch (java.lang.reflect.InvocationTargetException expected) {
+            check(expected.getCause() instanceof DEException);
+        }
+        check(JSON.readTree((String) restoreMethod.invoke(server, "{\"host\":\"db.local\",\"password\":\"\"}", null, "mysql"))
+                .path("password").asText().isEmpty());
+        copyRequest.setId(101L);
+        check(sourceMethod.invoke(server, copyRequest).equals(101L));
         String oldArray = "[{\"name\":\"a\",\"password\":\"first\"},{\"name\":\"b\",\"password\":\"second\"}]";
         denied(() -> ConfigurationCredentials.restore("[{\"name\":\"b\",\"password\":\"******\"}]", oldArray));
         var transport = new Transport();

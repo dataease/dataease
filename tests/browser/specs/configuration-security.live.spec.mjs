@@ -349,20 +349,23 @@ test('actual MySQL save, edit, copy, credential replacement and downstream SQL',
       repeatType: 'boolean'
     })
     const copied = await page.evaluate(
-      async ({ id, name }) => {
+      async ({ id, name, password }) => {
         const api = await import('/src/api/datasource.ts')
         const dto = (await api.getById(id)).data
-        const cfg = JSON.parse(dto.configuration)
+        const { clearCopiedCredentials } = await import(
+          '/src/utils/copiedCredentials.ts'
+        )
+        const cfg = clearCopiedCredentials(JSON.parse(dto.configuration))
+        cfg.password = password
         const result = await api.save({
           ...dto,
           id: null,
-          copySourceId: id,
           name: `${name}-copy`,
           configuration: btoa(JSON.stringify(cfg))
         })
         return { id: result?.id }
       },
-      { id: created.id, name }
+      { id: created.id, name, password: fixture.password }
     )
     expect(copied.id).toBeTruthy()
     ids.push(copied.id)
