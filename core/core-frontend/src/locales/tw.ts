@@ -2325,6 +2325,7 @@ export default {
     carousel_enable: '開啟輪播',
     carousel_stay_time: '停留時長（秒）',
     carousel_interval: '輪播間隔（秒）',
+    merged_cell_tooltip_tip: '已合併的儲存格只顯示儲存格值。',
     custom_tooltip_content_tip:
       "可以使用 ${'{'}fieldName{'}'} 的形式讀取欄位值（支援部分安全HTML標籤，不支援屬性和樣式）",
     legend_range_division: '圖例區間劃分',
