@@ -2571,7 +2571,7 @@ for (const mine of [true, false])
     } else await expect(locate).toHaveCount(0)
   })
 
-test('AI off hides the assistant and re-enable retains only valid pending toast', async ({
+test('AI off hides an unused assistant and preserves the draft on re-enable', async ({
   page
 }) => {
   let available = true
@@ -2619,8 +2619,7 @@ test('AI off hides the assistant and re-enable retains only valid pending toast'
   notificationReady = true
   available = true
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('')
-  await expect(page.getByText('Temporary old question', { exact: true })).toHaveCount(0)
+  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('Temporary old question')
   await expect.poll(() => acknowledged).toBe(true)
   await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
     'SELECT applied_business_draft'
@@ -2628,7 +2627,7 @@ test('AI off hides the assistant and re-enable retains only valid pending toast'
   await page.getByRole('textbox', { name: '消息' }).fill('Missed off interval')
   revision = '1:0'
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('')
+  await expect(page.getByRole('textbox', { name: '消息' })).toHaveValue('Missed off interval')
   await expect(page.getByRole('textbox', { name: '当前 SQL' })).toHaveValue(
     'SELECT applied_business_draft'
   )
@@ -2721,7 +2720,9 @@ for (const language of [
     await expect(page.locator('main.ai-conversation')).toHaveCount(0)
     available = true
     await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-    await expect(page.getByRole('textbox', { name: language.message })).toHaveValue('')
+    await expect(page.getByRole('textbox', { name: language.message })).toHaveValue(
+      'New independent request'
+    )
     await expect(page.getByRole('button', { name: language.retry, exact: true })).toHaveCount(0)
   })
 
@@ -2956,4 +2957,67 @@ test('continuous dialogue retains its server history when binding a datasource a
   await send(page, '新的对话')
   await expect(page.getByText('continuous reply 8', { exact: true })).toBeVisible()
   expect(openings[5].previousSessionId).toBeUndefined()
+})
+
+test('accepted foreground answer survives availability changes and next questions wait for re-enable', async ({
+  page
+}) => {
+  let available = true
+  let revision = '0:0'
+  let completed = false
+  let deleted = 0
+  let submissions = 0
+  const run = { ...session, resourceId: '', executionId: 'snapshot-run' }
+  await page.route('**/fixture-api/ai/availability', (route) =>
+    route.fulfill({ json: { available, revision } })
+  )
+  await page.route('**/fixture-api/ai/tasks**', (route) => route.fulfill({ json: [] }))
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (route.request().method() === 'DELETE') {
+      deleted++
+      return route.fulfill({ json: {} })
+    }
+    if (path.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...run,
+          status: completed ? 'COMPLETED' : 'RUNNING',
+          cursor: completed ? 2 : 1,
+          events: [
+            { sequence: 1, type: 'TEXT', text: 'Snapshot answer' },
+            ...(completed ? [{ sequence: 2, type: 'TEXT', text: ' finished' }] : [])
+          ]
+        }
+      })
+    if (path.endsWith('/executions')) {
+      submissions++
+      return route.fulfill({
+        json: { ...run, status: 'RUNNING', deadline: Date.now() + 60000 }
+      })
+    }
+    return route.fulfill({ json: { ...session, resourceId: '' } })
+  })
+  await page.goto('/?view=conversation')
+  await send(page, 'Original question')
+  await expect(page.getByText('Snapshot answer', { exact: true })).toBeVisible()
+  available = false
+  revision = '1:0'
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  await expect(page.getByRole('button', { name: '后台 SQL 辅助', exact: true })).toHaveCount(0)
+  await expect(page.getByText('Snapshot answer', { exact: true })).toBeVisible()
+  completed = true
+  await expect(page.getByText('Snapshot answer finished', { exact: true })).toBeVisible()
+  await page.getByRole('textbox', { name: '消息' }).fill('Next question')
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeDisabled()
+  expect(deleted).toBe(0)
+  expect(submissions).toBe(1)
+  available = true
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled()
+  await expect(page.getByText('Original question', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '发送', exact: true }).click()
+  await expect.poll(() => submissions).toBe(2)
+  expect(deleted).toBe(0)
 })

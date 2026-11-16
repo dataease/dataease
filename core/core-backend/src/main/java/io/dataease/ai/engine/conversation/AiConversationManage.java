@@ -55,14 +55,13 @@ public class AiConversationManage implements AiToolConversationFeature {
         final Set<OperationKey> operations = new HashSet<>();
         Open opening;
         final boolean single;
-        final String usageRevision;
         volatile boolean singleFinished;
         volatile boolean closed;
         final Map<String, Run> runs = new LinkedHashMap<>();
         Run active;
         final AtomicBoolean executing = new AtomicBoolean();
-        State(Session view, AiAccess.Identity owner, AiConversationScene.Context context, boolean single, String usageRevision) {
-            this.view = view; this.owner = owner; this.context = context; this.single = single; this.usageRevision = usageRevision;
+        State(Session view, AiAccess.Identity owner, AiConversationScene.Context context, boolean single) {
+            this.view = view; this.owner = owner; this.context = context; this.single = single;
         }
     }
     private static final class Task {
@@ -184,7 +183,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         String id = UUID.randomUUID().toString();
         var view = new Session(id, UUID.randomUUID().toString(), scene.code(), context.resourceId(), context.resourceName(), request.editorId(),
                 source == null ? System.currentTimeMillis() + SESSION_MILLIS : source.view.expiresAt(), context.revision(), AiPromptFingerprint.of(new Prompt(Objects.toString(request.sql(), ""))));
-        State created = new State(view, owner, context, single, runtime.getObject().usageRevision(owner));
+        State created = new State(view, owner, context, single);
         if (source != null) synchronized (source) {
             if (source.closed) throw AiErrors.error("scope_changed");
             created.history.addAll(source.history); created.toolHistory.addAll(source.toolHistory);
@@ -311,9 +310,9 @@ public class AiConversationManage implements AiToolConversationFeature {
             Prompt prompt = new Prompt(messages);
             var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(prompt), false, null);
             var engine = runtime.getObject();
-            var execution = engine.current(code(), scope);
+            var execution = engine.currentConversation(code(), scope);
             var response = engine.current(execution).call(prompt);
-            // 权限及配置可能在模型执行时变化；交付和写入历史前再次复核。
+            // 身份和资源权限可能在模型执行时变化；交付和写入历史前再次复核。
             authorized(state.owner, () -> { check(state); return null; });
             if (System.currentTimeMillis() >= execution.deadline()) throw AiErrors.error("timeout");
             String text = response.getResult().getOutput().getText();
@@ -665,7 +664,6 @@ public class AiConversationManage implements AiToolConversationFeature {
         try {
             access.verify(state.owner, false);
             if (!same(access.capture(), state.owner)) throw AiErrors.error("forbidden");
-            if (!Objects.equals(state.usageRevision, runtime.getObject().usageRevision(state.owner))) throw AiErrors.error("scope_changed");
             authorized(state.owner, () -> {
                 var scopes = new LinkedHashMap<String, AiConversationScene.Context>();
                 scopes.put(scopeKey(state.context), state.context);
@@ -673,7 +671,6 @@ public class AiConversationManage implements AiToolConversationFeature {
                 for (var context : scopes.values()) scene(state.view.scene()).authorize(context);
                 return null;
             });
-            if (!Objects.equals(state.usageRevision, runtime.getObject().usageRevision(state.owner))) throw AiErrors.error("scope_changed");
         } catch (RuntimeException failure) {
             invalidate(state);
             throw failure instanceof AiErrors.Failure ? failure : AiErrors.error("forbidden");
@@ -707,18 +704,11 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private AiAccess.Identity identity() {
         if (RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
-        var identity = access.capture(); runtime.getObject().verifyUsage(identity); return identity;
+        var identity = access.capture(); access.verify(identity, false); return identity;
     }
     private boolean same(AiAccess.Identity a, AiAccess.Identity b) { return Objects.equals(a, b); }
     private AiConversationScene scene(String code) {
         var scene = code == null ? null : scenes.get(code); if (scene == null || scene.backgroundOnly()) throw AiErrors.error("unsupported"); return scene;
-    }
-    public void policyDisabled(Long organization) {
-        sessions.values().forEach(state -> {
-            if (organization == null || organization.equals(state.owner.organization())) {
-                synchronized (state) { invalidate(state); }
-            }
-        });
     }
     private void expire() {
         long now = System.currentTimeMillis();

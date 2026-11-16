@@ -6,11 +6,13 @@
 
 Demo 的可用性、后台任务和完成通知在页面可见且在线时同步：首次进入、重新聚焦、恢复可见或网络恢复时立即读取；空闲时每 30 秒同步一次，有进行中后台任务或待追加原对话的结果时每 2 秒更新后台进度。提交、重试或定位任务会唤醒后台读取，同一组件不并发启动重复轮询；同轮已读到的任务状态直接复用。隐藏标签页或断网暂停这些定时读取，离开页面清理定时器及事件监听；暂停读取不取消持久后台任务。前台执行仅在运行中读取增量，有新内容时间隔 500 毫秒，无新内容时逐步放缓至 2 秒；隐藏标签页时保留 5 秒读取以续租，确认终态后停止。空闲页的配置开关变化最迟在下一次同步反映，实际调用和结果交付仍由后端即时鉴权。
 
-后端临时会话扫描每秒先按内存中的有效期清理过期会话；仅对存在活动执行的会话继续检查期限、读取租约及当前权限/使用策略。空闲会话、已退役上下文和已完成的一次性结果不在扫描中查库。继续提问、续接上下文、重试、结果读取及 SQL 应用仍即时鉴权并核对使用策略版本；检测到撤权后清理会话。空闲期间不承诺立即发现账号或资源权限变化，全局/空间 AI 关闭再开启仍通过固定的使用策略版本拒绝旧会话。
+前台每次提问（含一次性辅助、同步 turns 和手动重试）受理时校验当前 AI 开关及适用空间策略，并固定模型、凭据、输入/输出限额、超时、恢复及审计配置。该轮模型请求、自动重试和工具续调使用同一快照，不因模型编辑、全局/空间 AI 关闭或关闭后重开而换模或失效；下一次提问和手动重试读取最新配置。已受理操作的幂等重发只核对原执行，不创建新快照。前台增量读取、结果应用和活动巡检不再读取 AI 设置、空间策略或模型配置。
 
-增量读取、完成交付校验和活动会话巡检使用有界的身份校验作用域：进入时读取当前使用权限，同一线程内完全相同的账号、空间、代理及部署版本可复用该次身份校验，返回前再次读取以拒绝中途撤权。配置管理权限不复用使用权限，部署版本、资源权限和 AI 策略仍按原边界检查。作用域在正常、异常及嵌套退出时清理或恢复，不跨请求、线程或巡检轮次；仅包围读取/校验，不包围模型请求、工具执行或写操作。普通文本流的交付统一由运行时策略解析执行完整场景授权，避免在一条读取链路重复进入相同场景。
+后端临时会话扫描每秒先按内存中的有效期清理过期会话；仅对存在活动执行的会话继续检查期限、读取租约及当前身份/资源权限。空闲会话、已退役上下文和已完成的一次性结果不在扫描中查库。账号、部署模式或资源撤权仍会清理会话；空闲期间在下一次受保护操作发现这些变化。AI 配置变化不清空会话历史，原有停止、关闭、超时和丢失客户端租约处理保持。
 
-每次使用策略版本校验只读取一次全局配置及一次适用空间策略，同份读取结果同时用于开关检查和 `usage_epoch` 计算；社区身份不读取空间策略。会话资源鉴权前后的两次版本校验仍独立读取，以发现校验期间发生的关闭或关闭后重开；请求入口及模型交付策略也保留各自检查，不缓存整轮对话的配置。
+增量读取、完成交付校验和活动会话巡检使用有界的身份校验作用域：进入时读取当前使用权限，同一线程内完全相同的账号、空间、代理及部署版本可复用该次身份校验，返回前再次读取以拒绝中途撤权。配置管理权限不复用使用权限，部署版本及资源权限仍按原边界检查。作用域在正常、异常及嵌套退出时清理或恢复，不跨请求、线程或巡检轮次；仅包围读取/校验，不包围模型请求、工具执行或写操作。
+
+固定执行配置不固定系统并发容量：每次实际模型 HTTP 请求仍通过当前全局容量准入，配置发布的短暂屏障最多等待 1 秒，持续阻断或容量已满仍拒绝。容量读取仅发生于发送前，不发生于吐字/轮询。持久后台任务及通用原生 SDK 的动态策略规则不变；它们的每次使用策略版本校验共享一次全局配置和一次适用空间策略读取，社区身份不读取空间策略。
 
 ## 目录与扩展位置
 
@@ -73,11 +75,11 @@ An empty datasource selection permits ordinary SQL explanations, with no resourc
 
 Completed event reads carry a typed `result`: `EXPLANATION`, or `SQL_SUGGESTION` with the exact candidate, explanation, original resource ID/name/revision, editor ID and source draft fingerprint. Both entry points use the same result projection. `propose_sql` runs the existing static validator; only a PASS proposal becomes applicable. Prose and fenced SQL remain explanation, and INVALID/UNSUPPORTED cannot become an applicable suggestion. The existing static-validation limits and no-execution/no-sample boundary still apply.
 
-Generation never applies or saves SQL. An explicit `POST /{id}/executions/{execution}/check-application` checks ownership, current authority/configuration, resource revision, original context and draft fingerprint before returning the original completed suggestion. The Demo also compares its selected datasource and editor content both before and after that request, so a late application check cannot overwrite a newer draft. Application only replaces the Demo editor text; saving a business resource remains outside this entry point. Session and execution JSON fields are additive, existing DTO constructors and the synchronous conversation/native SDK paths remain compatible.
+Generation never applies or saves SQL. An explicit `POST /{id}/executions/{execution}/check-application` checks ownership, current authority, resource revision, original context and draft fingerprint before returning the original completed suggestion. The Demo also compares its selected datasource and editor content both before and after that request, so a late application check cannot overwrite a newer draft. Application only replaces the Demo editor text; saving a business resource remains outside this entry point. Session and execution JSON fields are additive, existing DTO constructors and the synchronous conversation/native SDK paths remain compatible.
 
 ## 身份与授权边界
 
-Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene reuses the current datasource tree and existing datasource READ operation. Verified community mode follows the SQL business permission entry; licensed mode requires the original authorization provider and never falls back on denial or missing providers. Current actor, workspace/proxy, deployment revision and resource permission are checked before history reuse, every model send, every tool execution and result boundary, completed-history commit and every event delivery. SSE parsing and bounded private buffering use local terminal/deadline/lease guards; delivery/commit boundaries never reuse an earlier operation's authority. Current setting/model/configuration/credential revisions and effective organization policy are rechecked too. Revocation permanently retires the session and clears buffered output/history; restoring access cannot revive it. Execution IDs are not bearer credentials.
+Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene reuses the current datasource tree and existing datasource READ operation. Verified community mode follows the SQL business permission entry; licensed mode requires the original authorization provider and never falls back on denial or missing providers. Current actor, workspace/proxy, deployment revision and resource permission are checked before history reuse, every model send, every tool execution and result boundary, completed-history commit and every event delivery. SSE parsing and bounded private buffering use local terminal/deadline/lease guards; delivery/commit boundaries never reuse an earlier operation's authority. Foreground execution configuration is fixed when each question is accepted; new questions resolve current settings and organization policy. Revocation permanently retires the session and clears buffered output/history; restoring access cannot revive it. Execution IDs are not bearer credentials.
 
 `AiIdentityScope` 每次进入可信业务作用域时，从现有许可源重新验证部署模式及版本，并临时绑定该次验证结果到 `LicenseUtil`，供原有业务分派和插件检查使用。它不复制 HTTP 请求中的许可快照；离开作用域时恢复调用方原有许可状态，异常和嵌套调用同样恢复。社区作用域会隔离调用方遗留的有效许可；许可源不可用或版本不匹配时拒绝进入业务操作。
 
@@ -87,7 +89,7 @@ Streaming is an explicit feature opt-in and uses a runtime-owned detached handle
 
 ## 取消、租约与会话
 
-Each execution has one fixed configured deadline, including queue wait. Stop/close/shutdown abort both the task and its Apache request; permits remain held until the response closes. A 15-second client lease starts at registration and renews only on an authorized event poll. Losing that lease cancels the execution and removes its whole abandoned session/history, releasing per-user capacity. The parser also retires a lease-expired session while private/heartbeat frames keep arriving; the one-second sweep covers blocked reads and enforces session expiry and execution deadlines. Hiding the panel continues polling, but browser background-tab suspension or a network stall exceeding the lease can intentionally end the session. Pagehide closure is best effort; the lease and deadline bound an unreachable browser.
+Each execution has one fixed configured deadline, including queue wait. Stop/close/application shutdown abort both the task and its Apache request; permits remain held until the response closes. A 15-second client lease starts at registration and renews only on an authorized event poll. Losing that lease cancels the execution and removes its whole abandoned session/history, releasing per-user capacity. The parser also retires a lease-expired session while private/heartbeat frames keep arriving; the one-second sweep covers blocked reads and enforces session expiry and execution deadlines. Hiding the panel continues polling, but browser background-tab suspension or a network stall exceeding the lease can intentionally end the session. Pagehide closure is best effort; the lease and deadline bound an unreachable browser.
 
 Sessions are process-local, fixed at 30 minutes, at most 200 per process and four per current identity/workspace, and at most 50 completed turns. Concurrent executions on one session are rejected. Failed/cancelled turns never enter model history. Successful tool rounds atomically retain the complete user → assistant tool_calls → correlated role=tool result(s) → final assistant transcript for follow-up. The compatible synchronous conversation endpoint explicitly refuses a session containing TOOL history; native synchronous SDK policy and its refusal of tools/options are unchanged.
 
@@ -135,7 +137,7 @@ Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不�
 
 本地运行监控使用独立线程，每轮结束后等待 250ms；没有本地运行任务时不查库，避免领取和维护的耗时拖慢运行任务的取消、期限与归属检查。节点启动不写租约，空闲不写心跳。空闲后首次成功领取在同一事务中创建新的随机租约身份，领取期间保留已有租约的续约资格，心跳数据库操作不等待领取锁；领取提交和本地登记与关闭过程串行；不复活旧租约。每个执行尝试固定携带领取时的租约身份，迟到回调不能使用新身份。终态持久化失败时保留本地运行槽和续约，只有终态落库或确认已失去归属后才移除；显式取消仍按提交后的撤销结果处理。再次激活时只清理自身无运行引用的旧租约，保留仍有引用的记录供失联恢复。留存清理维持独立的每分钟作业；AI 关闭且遗留状态已处理后也只保留轻量探测和必要维护，不承诺完全零 SQL。standalone 不新增 Redis 要求，distributed 的既有模型请求准入不变，本次没有增加消息中间件或跨节点通知链路。
 
-后台任务已领取但模型请求尚未发送时，配置发布的短暂准入屏障可能返回 `policy_blocked`。该阶段最多等待 1 秒（仍受本次执行期限约束），每 25ms 重新检查权限、取消和当前配置后尝试准入；持续阻断则失败，不绕过准入，也不重放已发送的请求。这是发送前的本地准入等待，不消耗模型技术重试次数；前台仍立即返回准入失败，普通并发已满也不因此自动重试。
+后台任务已领取但模型请求尚未发送时，配置发布的短暂准入屏障可能返回 `policy_blocked`。该阶段最多等待 1 秒（仍受本次执行期限约束），每 25ms 重新检查权限、取消和当前配置后尝试准入；持续阻断则失败，不绕过准入，也不重放已发送的请求。这是发送前的本地准入等待，不消耗模型技术重试次数；已受理前台问题也允许相同的短暂准入等待，但只更新容量，不替换本轮执行配置；普通并发已满不因此自动重试。
 
 迁移 2.50 增加尝试的 `delivery_expires_at` / `notice_ack_at`。终态、业务结果、交付期限和待确认事实在同一短事务写入，失败不能宣告成功。升级前已结束的尝试只回填原 finishedAt+7 天，标为已确认，避免升级制造旧通知；不会重跑模型。`GET /ai/tasks/notices` 只返回当前本人身份/适用空间下仍有资源权限、未确认且未过期的安全终态投影，不含输入、正文或审计。`POST /ai/tasks/notices/{attemptId}/ack` 幂等确认；客户端在提示前按 attempt 去重，确认失败保留待投递，跨节点确认共享。
 
@@ -149,7 +151,7 @@ Foreground tasks remain bounded in memory and expire with their temporary sessio
 
 Replacing an idle chat for the same editor retires its interaction/history and releases its chat quota, retaining only bounded task/result records for application or safe retry. Completed SQL suggestions remain applicable through same-context follow-up, subject to the existing permission, resource revision and editor draft checks. Retired contexts cannot receive a background conversation import.
 
-Technical recovery shares one attempt counter across model and trusted safe tool steps. Defaults are two retries per failed step, three per attempt, with approximately one then two seconds plus jitter; a provider wait hint cannot extend the original deadline. Either retry count set to zero disables technical recovery. Authentication, balance, invalid configuration, permission, cancellation and deadline failures do not trigger automatic recovery. A model request that has delivered visible content cannot be retried automatically. Retry waits are cancellable, and every new request rechecks current authorization and admission limits while preserving the attempt's selected model, input/output constraints and deadline. Capacity/recovery setting changes apply without revoking a valid running attempt; model/credential or authority changes still invalidate further steps.
+Technical recovery shares one attempt counter across model and trusted safe tool steps. Defaults are two retries per failed step, three per attempt, with approximately one then two seconds plus jitter; a provider wait hint cannot extend the original deadline. Either retry count set to zero disables technical recovery. Authentication, balance, invalid configuration, permission, cancellation and deadline failures do not trigger automatic recovery. A model request that has delivered visible content cannot be retried automatically. Retry waits are cancellable, and every new request rechecks current authorization and admission limits while preserving the attempt's selected model, input/output constraints and deadline. Foreground attempts retain their original model, credentials and recovery settings across configuration changes; current authority is still required. Background attempts retain their existing model/credential revision checks. Global HTTP capacity is always checked at each send.
 
 Model correction has a separate two-round bound. Only malformed arguments for a registered tool or explicit invalid validation results can receive safe correction feedback; a repeated invalid request stops, and unknown/out-of-scope tools are rejected. Tools explicitly declare trusted read-only or reliable idempotent safety. Unknown safety permits one controlled call, records that the task cannot be replayed before entering the tool, and requires outcome verification instead of automatic or manual blind replay. Legacy persisted attempts without a trusted safety fact are also not replayable.
 
@@ -195,9 +197,9 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 ## 动态开关与可信身份
 
-关闭全局 AI 或某个适用空间的使用策略，会在配置事务中撤销受影响的排队/运行尝试 fence，按原任务和尝试释放资源；终态保留 `disabled` / `organization_disabled` 原因。后台巡检及模型、工具、提交和交付边界继续检查账号、原空间真实成员关系、资源权限及上下文。关闭期间拒绝新建、重试和普通交付，独立管理员审计及有权限的系统设置仍可访问。容量、恢复和留存配置不触发关闭，也不删除已受理队列。
+对持久后台任务，关闭全局 AI 或某个适用空间的使用策略，会在配置事务中撤销受影响的排队/运行尝试 fence，按原任务和尝试释放资源；终态保留 `disabled` / `organization_disabled` 原因。后台巡检及模型、工具、提交和交付边界继续检查账号、原空间真实成员关系、资源权限及上下文。关闭期间拒绝新建、重试和普通交付，独立管理员审计及有权限的系统设置仍可访问。容量、恢复和留存配置不触发关闭，也不删除已受理队列。
 
-迁移 `2.56` 为全局和空间使用策略增加单调 `usage_epoch`，只在对应策略由开启转为关闭时递增。模型上下文与临时会话固定该版本；节点即使错过完整关闭/重开间隔，也不能继续旧尝试或恢复旧聊天。`GET /ai/availability` 仅投影当前可信身份/空间的使用状态及版本；Demo 在关闭时隐藏助手，在版本变化时清理临时聊天及未知提交状态，保留业务 SQL 草稿。重新开启只恢复入口及按原有效期投递未确认 toast，不恢复旧执行、聊天或历史任务列表。
+迁移 `2.56` 为全局和空间使用策略增加单调 `usage_epoch`，只在对应策略由开启转为关闭时递增。后台任务和通用原生 SDK 模型上下文保留该版本围栏；前台对话每次提问固定执行配置，不再以会话级版本清理历史。`GET /ai/availability` 仍投影当前可信身份/空间的使用状态及版本。Demo 关闭新提问、手动重试和后台入口，同时保留已受理前台回答的读取、停止及历史；没有前台活动时隐藏助手。重新开启后恢复入口及原有效期内未确认 toast，保留消息草稿和业务 SQL 草稿，不恢复后台旧执行。身份/空间变化、权限拒绝和显式结束仍清理临时聊天。
 
 后台身份始终来自持久任务。只由已验证的服务器身份作用域安装 SDK 的 `AiOwnerContext` 原空间投影，账号严格匹配且在嵌套、异常和线程结束时恢复；HTTP 参数和请求头不能选择该投影。它不授予权限、不模拟管理员代理，也不改变普通非 AI 请求的当前空间。原账号、成员关系和资源授权仍需在操作前后复核；用户退出登录、离开页面或切换当前空间本身不取消后台。
 

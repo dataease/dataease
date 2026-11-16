@@ -2,7 +2,6 @@ package io.dataease.ai.configuration;
 
 import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.dao.repository.*;
-import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.engine.runtime.AiAdmission;
 import io.dataease.ai.engine.runtime.AiOutboundPolicy;
 import io.dataease.ai.engine.task.AiTaskManage;
@@ -40,13 +39,8 @@ public class AiConfigurationManage implements io.dataease.api.permissions.org.ap
     @Resource private AiAdmission admission;
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private org.springframework.beans.factory.ObjectProvider<AiTaskManage> taskLifecycle;
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private org.springframework.beans.factory.ObjectProvider<AiConversationManage> conversationLifecycle;
     private void disabled(Long organization, String reason) {
         if (taskLifecycle != null) taskLifecycle.getObject().policyDisabled(organization, reason);
-        if (conversationLifecycle != null) org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
-            @Override public void afterCommit() { conversationLifecycle.getObject().policyDisabled(organization); }
-        });
     }
 
     public CoreAiSetting setting() {
