@@ -44,6 +44,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
+import { removeSqlComments } from '@/utils/sqlUtil'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { isDesktop } from '@/utils/ModelUtil'
 import field_text from '@/assets/svg/field_text.svg'
@@ -574,7 +575,7 @@ const mouseupDrag = () => {
 }
 
 const validateVariableNames = () => {
-  const sql = codeCom.value.state.doc.toString()
+  const sql = removeSqlComments(codeCom.value.state.doc.toString())
   const hasEmptyVariable = /\$\{\s*}/.test(sql)
   const hasEmptyDeParamVariable = /\$DE_PARAM\{[\s\S]*?\$\[\s*][\s\S]*?\}/.test(sql)
   if (hasEmptyVariable || hasEmptyDeParamVariable) {
@@ -586,8 +587,9 @@ const validateVariableNames = () => {
 
 const parseVariable = () => {
   state.variablesTmp = []
+  const sql = removeSqlComments(codeCom.value.state.doc.toString())
   const variableReg = new RegExp('\\$DE_PARAM{(.*?)}', 'gim')
-  const variableMatch = codeCom.value.state.doc.toString().match(variableReg)
+  const variableMatch = sql.match(variableReg)
   if (variableMatch !== null) {
     const names = []
     const reg = new RegExp('\\$\\[[^\\]]+\\]', 'gim')
@@ -627,7 +629,7 @@ const parseVariable = () => {
     }
   } else {
     const reg = new RegExp('\\${(.*?)}', 'gim')
-    const match = codeCom.value.state.doc.toString().match(reg)
+    const match = sql.match(reg)
     const names = []
     if (match !== null) {
       for (let index = 0; index < match.length; index++) {
