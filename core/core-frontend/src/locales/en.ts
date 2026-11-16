@@ -2782,6 +2782,13 @@ export default {
       tip8: 'For Calcite functions, please refer to the documentation:'
     },
     batch_manage: 'Batch management',
+    type_change_pending: '{count} field type(s) to confirm',
+    type_change_pending_title: 'Field type to confirm',
+    type_change_not_auto: 'dataset field types were not changed automatically',
+    current_field_type: 'Current field type',
+    sql_detected_type: 'SQL detected type',
+    keep_current_type: 'Keep current type',
+    view_fields: 'View fields',
     origin_name: 'Physical field name',
     origin_type: 'Physical field type',
     field_diff: 'The selected field types are inconsistent and do not support conversion',
