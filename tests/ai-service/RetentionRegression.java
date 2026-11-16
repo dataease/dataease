@@ -1,11 +1,14 @@
 package io.dataease.ai;
 
+import io.dataease.ai.audit.AiAuditManage;
+import io.dataease.ai.configuration.AiConfigurationManage;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.task.AiTaskManage;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.security.identity.AiDeploymentMode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.ai.manage.*;
 import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,7 +43,7 @@ public final class RetentionRegression {
         permitted.set(false);
         try { denied(() -> mvc.perform(get("/ai/settings")), "ordinary user cannot read administrator retention settings"); }
         finally { permitted.set(true); }
-        var cleanupClass = Class.forName("io.dataease.ai.manage.AiRetentionCleanup");
+        var cleanupClass = Class.forName("io.dataease.ai.retention.AiRetentionCleanup");
         var cleanup = cleanupClass.getConstructor(EntityManager.class, org.springframework.transaction.PlatformTransactionManager.class).newInstance(em, manager);
         long now = System.currentTimeMillis();
         jdbc.update("insert into core_ai_task (id,current_attempt_id,owner_binding,submission_hash,input_hash,owner_json,input_json,context_json,created_at,actor_id) values(9001,9001,'owner','retention-task','hash','{}','input-body','context-body',?,1)", now);

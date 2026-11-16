@@ -2,7 +2,9 @@ package io.dataease.ai;
 
 import io.dataease.ai.dao.entity.CoreAiSetting;
 import io.dataease.ai.dao.repository.CoreAiSettingRepository;
-import io.dataease.ai.support.*;
+import io.dataease.ai.engine.runtime.AiAdmission;
+import io.dataease.ai.support.AiErrors;
+
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

@@ -1,10 +1,15 @@
 package io.dataease.ai;
 
+import io.dataease.ai.configuration.AiConfigurationManage.Connection;
+import io.dataease.ai.dao.entity.CoreAiSetting;
+import io.dataease.ai.engine.runtime.AiAdmission;
+import io.dataease.ai.engine.runtime.AiOutboundPolicy;
+import io.dataease.ai.engine.runtime.AiPromptPolicy;
+import io.dataease.ai.engine.runtime.AiTransport;
+import io.dataease.ai.support.AiErrors;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
-import io.dataease.ai.dao.entity.CoreAiSetting;
-import io.dataease.ai.manage.AiConfigurationManage.Connection;
-import io.dataease.ai.support.*;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import java.net.*;

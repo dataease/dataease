@@ -1,6 +1,7 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.security.identity;
 
 import io.dataease.ai.support.AiErrors;
+
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.license.bo.F2CLicResult;
 import io.dataease.license.dao.po.LicensePO;

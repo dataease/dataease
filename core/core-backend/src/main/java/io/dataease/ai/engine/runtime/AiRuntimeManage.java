@@ -1,14 +1,15 @@
 package io.dataease.ai.engine.runtime;
 
-import io.dataease.ai.manage.AiAccess;
-import io.dataease.ai.manage.AiAuditManage;
-import io.dataease.ai.manage.AiConfigurationManage;
-import io.dataease.ai.manage.AiDeploymentMode;
-
-import io.dataease.api.ai.runtime.*;
+import io.dataease.ai.audit.AiAuditManage;
+import io.dataease.ai.configuration.AiConfigurationManage;
 import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository;
-import io.dataease.ai.support.*;
+import io.dataease.ai.security.credential.AiSecrets;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.security.identity.AiDeploymentMode;
+import io.dataease.ai.support.AiErrors;
+
+import io.dataease.api.ai.runtime.*;
 import io.dataease.permission.util.V3UserUtil;
 import org.springframework.ai.chat.model.*;
 import org.springframework.ai.chat.prompt.*;

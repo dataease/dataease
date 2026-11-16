@@ -1,4 +1,6 @@
-package io.dataease.ai.support;
+package io.dataease.ai.security.credential;
+
+import io.dataease.ai.support.AiErrors;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

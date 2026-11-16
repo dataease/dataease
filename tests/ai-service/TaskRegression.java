@@ -1,15 +1,18 @@
 package io.dataease.ai;
 
+import io.dataease.ai.audit.AiAuditManage;
+import io.dataease.ai.configuration.AiConfigurationManage;
+import io.dataease.ai.dao.entity.CoreAiTaskNode;
 import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.task.AiTaskManage;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.security.identity.AiDeploymentMode;
+import io.dataease.ai.server.AiConversationServer;
+import io.dataease.ai.server.AiTaskServer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.ai.manage.*;
-import io.dataease.ai.dao.entity.CoreAiTaskNode;
-import io.dataease.ai.server.AiTaskServer;
-import io.dataease.ai.server.AiConversationServer;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,7 +38,7 @@ public final class TaskRegression {
         current.set("recovery", json.valueToTree(Map.of("stepRetries", step, "attemptRetries", attempt, "initialDelayMillis", 100)));
         if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(current))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("recovery settings accepted through public configuration HTTP");
     }
-    public static void run(EntityManager em, PlatformTransactionManager manager, AiAccess access, AiConfigurationManage configuration, io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository policies, io.dataease.ai.support.AiSecrets keys, io.dataease.ai.support.AiAdmission admission) throws Exception {
+    public static void run(EntityManager em, PlatformTransactionManager manager, AiAccess access, AiConfigurationManage configuration, io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository policies, io.dataease.ai.security.credential.AiSecrets keys, io.dataease.ai.engine.runtime.AiAdmission admission) throws Exception {
         var sceneAllowed = new java.util.concurrent.atomic.AtomicBoolean(true);
         var toolsOn = new java.util.concurrent.atomic.AtomicBoolean();
         var executed = new java.util.concurrent.atomic.AtomicInteger();
@@ -52,8 +55,8 @@ public final class TaskRegression {
             public io.dataease.api.ai.conversation.AiConversationDtos.Result result(Context context, String text, List<io.dataease.api.ai.conversation.AiConversationDtos.Tool> tools, String editor, String draft) {
                 return new io.dataease.api.ai.conversation.AiConversationDtos.Result("SQL_SUGGESTION", text, "select 1", context.resourceId(), context.resourceName(), context.revision(), editor, draft);
             }
-            public List<io.dataease.ai.support.AiToolProtocol.Definition> tools(Context context) {
-                return toolsOn.get() ? List.of(new io.dataease.ai.support.AiToolProtocol.Definition("inspect", "inspect authorized metadata", Map.of(), uncertain.get() ? io.dataease.ai.support.AiToolProtocol.RetrySafety.UNKNOWN : io.dataease.ai.support.AiToolProtocol.RetrySafety.READ_ONLY)) : List.of();
+            public List<io.dataease.ai.engine.runtime.AiToolProtocol.Definition> tools(Context context) {
+                return toolsOn.get() ? List.of(new io.dataease.ai.engine.runtime.AiToolProtocol.Definition("inspect", "inspect authorized metadata", Map.of(), uncertain.get() ? io.dataease.ai.engine.runtime.AiToolProtocol.RetrySafety.UNKNOWN : io.dataease.ai.engine.runtime.AiToolProtocol.RetrySafety.READ_ONLY)) : List.of();
             }
             public String execute(Context context, String name, Map<String, String> arguments) {
                 if (org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()) throw new AssertionError("tool I/O must not hold metadata transaction");
@@ -81,7 +84,7 @@ public final class TaskRegression {
         var tasks = new AiTaskManage(em, failingManager, beans.getBeanProvider(AiConversationScene.class),
                 beans.getBeanProvider(AiRuntimeManage.class), access, new ObjectMapper(), beans.getBeanProvider(AiConversationManage.class));
         var json = new ObjectMapper();
-        var transport = new io.dataease.ai.support.AiTransport(new io.dataease.ai.support.AiOutboundPolicy(), admission, json);
+        var transport = new io.dataease.ai.engine.runtime.AiTransport(new io.dataease.ai.engine.runtime.AiOutboundPolicy(), admission, json);
         var failAudit = new java.util.concurrent.atomic.AtomicBoolean();
         var auditManager = new org.springframework.orm.jpa.JpaTransactionManager(em.getEntityManagerFactory()) {
             @Override protected void doCommit(org.springframework.transaction.support.DefaultTransactionStatus status) {

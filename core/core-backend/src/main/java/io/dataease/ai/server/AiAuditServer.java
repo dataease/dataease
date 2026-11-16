@@ -1,6 +1,7 @@
 package io.dataease.ai.server;
 
-import io.dataease.ai.manage.AiAuditManage;
+import io.dataease.ai.audit.AiAuditManage;
+
 import io.dataease.api.ai.audit.AiAuditApi;
 import org.springframework.web.bind.annotation.RestController;
 

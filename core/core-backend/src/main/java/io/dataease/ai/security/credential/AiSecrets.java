@@ -1,8 +1,9 @@
-package io.dataease.ai.support;
+package io.dataease.ai.security.credential;
+
+import io.dataease.ai.support.AiErrors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.ai.manage.AiKeyringManage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;

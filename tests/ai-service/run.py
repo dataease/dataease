@@ -108,7 +108,7 @@ def main():
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
             'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
             'sdk/common/src/main/java/io/dataease/auth/ConfigurationSecurity.java',
-            'sdk/common/src/main/java/io/dataease/ai/manage/AiOwnerContext.java',
+            'sdk/common/src/main/java/io/dataease/ai/security/identity/AiOwnerContext.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceRelationApi.java',
             'core/core-backend/src/main/java/io/dataease/menu/dao/auto/entity/CoreMenu.java',
@@ -135,7 +135,8 @@ def main():
             sources.extend(root/path for path in [
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/server/InteractiveAuthServer.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/V3AuthTemplateImp.java',
-                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/AiAuthCache.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/ai/authorization/AiAuthCache.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/ai/authorization/AiAuthorizationService.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/RoleAuthManage.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/UserAuthManage.java',
                 'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/InteractiveAuthManage.java',

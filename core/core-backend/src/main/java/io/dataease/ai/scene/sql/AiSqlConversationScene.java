@@ -1,10 +1,10 @@
 package io.dataease.ai.scene.sql;
 
-import io.dataease.ai.manage.AiAccess;
 import io.dataease.ai.engine.conversation.AiConversationScene;
-
+import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiToolProtocol;
+
 import io.dataease.api.ai.conversation.AiConversationDtos;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldRequest;

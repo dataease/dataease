@@ -1,6 +1,5 @@
 package io.dataease.ai.engine.runtime;
 
-import io.dataease.ai.support.AiToolProtocol;
 import io.dataease.api.ai.runtime.AiExecutionContext;
 import io.dataease.api.ai.runtime.AiFeature;
 
