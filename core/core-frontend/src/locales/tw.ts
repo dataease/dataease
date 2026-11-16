@@ -2692,6 +2692,13 @@ export default {
       tip8: 'Calcite函數請參考文件：'
     },
     batch_manage: '批次管理',
+    type_change_pending: '{count} 個欄位類型待確認',
+    type_change_pending_title: '欄位類型待確認',
+    type_change_not_auto: '資料集欄位類型未自動修改',
+    current_field_type: '目前欄位類型',
+    sql_detected_type: 'SQL 檢測類型',
+    keep_current_type: '保留目前類型',
+    view_fields: '查看欄位',
     origin_name: '物理欄位名稱',
     origin_type: '物理字段類型',
     field_diff: '所選字段類型不一致，不支持轉換',

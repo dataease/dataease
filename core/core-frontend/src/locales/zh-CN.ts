@@ -2711,6 +2711,13 @@ export default {
       tip8: 'Calcite函数请参考文档：'
     },
     batch_manage: '批量管理',
+    type_change_pending: '{count} 个字段类型待确认',
+    type_change_pending_title: '字段类型待确认',
+    type_change_not_auto: '数据集字段类型未自动修改',
+    current_field_type: '当前字段类型',
+    sql_detected_type: 'SQL 检测类型',
+    keep_current_type: '保留当前类型',
+    view_fields: '查看字段',
     origin_name: '物理字段名',
     origin_type: '物理字段类型',
     field_diff: '所选字段类型不一致，不支持转换',

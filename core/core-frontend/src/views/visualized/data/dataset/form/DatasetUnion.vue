@@ -177,6 +177,66 @@ const delNodeFake = (id, arr) => {
 
 const changeSqlId = ref([])
 const changedNodeId = ref([])
+const fieldTypeDetectVersions = new Map<string, number>()
+const emitFieldTypeDetection = (
+  nodeId: string,
+  fields: Field[],
+  saved: { originName: string; deExtractType: number }[]
+) => {
+  emits('fieldTypeDetected', {
+    nodeId,
+    saved,
+    fields: (fields || []).map(ele => ({
+      originName: ele.originName,
+      deExtractType: ele.deExtractType,
+      deType: ele.deType
+    }))
+  })
+}
+// Snapshot the node's field types before its new SQL runs: once the save completes, the merged
+// field list already carries the new types and can no longer tell us they changed.
+const snapshotNodeFields = (nodeId: string) => {
+  let snapshot: {
+    originName: string
+    deExtractType: number
+    deType: number
+    deTypeArr?: (number | string)[]
+  }[] = []
+  const walk = list => {
+    ;(list || []).forEach(ele => {
+      if (ele.id === nodeId) {
+        snapshot = (ele.currentDsFields || []).map(field => ({
+          originName: field.originName,
+          deExtractType: field.deExtractType,
+          deType: field.deType,
+          deTypeArr: field.deTypeArr
+        }))
+      } else if (ele.children?.length) {
+        walk(ele.children)
+      }
+    })
+  }
+  walk(state.nodeList)
+  return snapshot
+}
+const detectNodeFieldTypes = (node, saved) => {
+  const request = (fieldTypeDetectVersions.get(node.id) || 0) + 1
+  fieldTypeDetectVersions.set(node.id, request)
+  getTableField({
+    datasourceId: node.datasourceId,
+    id: node.id,
+    info: node.info,
+    tableName: node.tableName,
+    type: 'sql',
+    isCross: isCross.value,
+    sqlVariableDetails: node.sqlVariableDetails
+  })
+    .then(res => {
+      if (fieldTypeDetectVersions.get(node.id) !== request) return
+      emitFieldTypeDetection(node.id, res as unknown as Field[], saved)
+    })
+    .catch(() => null) // The shared request interceptor reports field lookup failures.
+}
 const saveSqlNode = (val: SqlNode, cb) => {
   const { tableName, id, sql, datasourceId, sqlVariableDetails = null, changeFlag = false } = val
   if (changeFlag) {
@@ -240,7 +300,9 @@ const saveSqlNode = (val: SqlNode, cb) => {
     tableName,
     sqlVariableDetails
   }
+  const savedFields = snapshotNodeFields(id)
   dfsNodeBack([obj], [id], state.nodeList)
+  detectNodeFieldTypes(obj, savedFields)
   cb?.()
   emits('reGetName')
 }
@@ -1032,7 +1094,8 @@ const emits = defineEmits([
   'updateAllfields',
   'changeUpdate',
   'reGetName',
-  'selectNode'
+  'selectNode',
+  'fieldTypeDetected'
 ])
 </script>
 
