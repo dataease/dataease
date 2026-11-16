@@ -216,7 +216,7 @@ const clearErrorRecord = () => {
 };
 </script>
 <template>
-  <div style="display: inline-block; margin-left: 15px">
+  <div style="display: inline-block; margin-left: 12px">
     <el-button @click="showDialog">{{ t("userimport.buttonText") }}</el-button>
   </div>
   <el-dialog

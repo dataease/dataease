@@ -505,7 +505,7 @@ const unlockHandler = row => {
     class="user-table de-search-table"
   >
     <el-row class="user-table__filter top-operate">
-      <el-col :span="12">
+      <el-col :span="12" class="left-filter">
         <el-button @click="addUser" type="primary">
           {{ t('system.addUser') }}
         </el-button>
@@ -811,6 +811,11 @@ const unlockHandler = row => {
 
   .user-table__filter {
     flex-shrink: 0;
+  }
+
+  .left-filter {
+    display: flex;
+    align-items: center;
   }
 
   .user-table__content,
