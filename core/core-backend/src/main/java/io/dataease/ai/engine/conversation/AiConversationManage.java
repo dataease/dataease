@@ -721,15 +721,15 @@ public class AiConversationManage implements AiToolConversationFeature {
         operations.entrySet().removeIf(entry -> entry.getValue().expiresAt <= now);
         sessions.forEach((id, state) -> {
             synchronized (state) {
+                if (state.view.expiresAt() <= now) { invalidate(state); return; }
+                // Idle conversations and retained results are reauthorized on use, not polled in storage.
+                Run run = state.active;
+                if (run == null) return;
+                if (now >= run.stream.deadline()) { terminate(run, "FAILED", "timeout"); return; }
+                if (now >= run.lease) { invalidate(state); return; }
                 try { authorized(state.owner, () -> { runtime.getObject().verifyUsage(state.owner); check(state); return null; }); }
                 catch (AiErrors.Failure revoked) { invalidate(state); return; }
                 catch (RuntimeException unavailable) { return; }
-                if (state.view.expiresAt() <= now) invalidate(state);
-                else if (state.active != null) {
-                    Run run = state.active;
-                    if (now >= run.stream.deadline()) terminate(run, "FAILED", "timeout");
-                    else if (now >= run.lease) invalidate(state);
-                }
             }
         });
     }
