@@ -184,6 +184,10 @@ public final class ConversationRegression {
         var allowed = new AtomicBoolean(true);
         var identityAllowed = new AtomicBoolean(true);
         var identityChecks = new AtomicInteger();
+        var requestIdentityChecks = new AtomicInteger();
+        var scheduledIdentityChecks = new AtomicInteger();
+        var requestThread = Thread.currentThread();
+        var revokeIdentityOnRead = new AtomicBoolean();
         var sceneLatencyMillis = new AtomicInteger();
         var revokeDuringCall = new AtomicBoolean();
         var streamFirst = new CountDownLatch(1);
@@ -296,15 +300,29 @@ public final class ConversationRegression {
                 public String execute(Context context, String name, Map<String, String> arguments) { uncertainWrites.incrementAndGet(); throw AiErrors.error("connection_failed"); }
                 public List<Resource> resources() { return List.of(new Resource("11", "Synthetic database")); }
                 public Context resolve(String id, String sql) { return new Context(id, "Synthetic database", "v1", "SQL input: " + sql); }
-                public void authorize(Context c) { java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get())); if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !Set.of("", "11", "12").contains(c.resourceId())) throw AiErrors.error("forbidden"); }
+                public void authorize(Context c) {
+                    java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get()));
+                    if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !Set.of("", "11", "12").contains(c.resourceId())) throw AiErrors.error("forbidden");
+                    if (Thread.currentThread() == requestThread && revokeIdentityOnRead.getAndSet(false)) identityAllowed.set(false);
+                }
             };
-            var dialogueAccess = new SyntheticAccess(null, null) {
+            var authorization = (io.dataease.api.permissions.auth.api.InteractiveAuthApi) java.lang.reflect.Proxy.newProxyInstance(
+                    ConversationRegression.class.getClassLoader(), new Class<?>[]{io.dataease.api.permissions.auth.api.InteractiveAuthApi.class}, (proxy, method, arguments) -> {
+                        if (!Set.of("checkAiAllowed", "checkAiCommunityAllowed").contains(method.getName())) throw new UnsupportedOperationException(method.getName());
+                        identityChecks.incrementAndGet();
+                        if (Thread.currentThread() == requestThread) requestIdentityChecks.incrementAndGet();
+                        if ("de-ai-sessions".equals(Thread.currentThread().getName())) scheduledIdentityChecks.incrementAndGet();
+                        access.verify(access.capture(), false);
+                        return identityAllowed.get() && Objects.equals(arguments[0], 1L);
+                    });
+            var authorizationBeans = new StaticListableBeanFactory(Map.of("authorization", authorization));
+            // Exercise real AiAccess verification; only the external authorization SPI is synthetic.
+            var dialogueAccess = new SyntheticAccess(authorizationBeans.getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class), null) {
                 public AiDeploymentMode.State mode() { return access.mode(); }
                 public Identity capture() {
                     Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
                     return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode());
                 }
-                public void verify(Identity identity, boolean configuration) { identityChecks.incrementAndGet(); if (!identityAllowed.get()) throw AiErrors.error("forbidden"); access.verify(identity, configuration); }
             };
             var beans = new StaticListableBeanFactory(); beans.addBean("scene", scene);
             var manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess);
@@ -592,6 +610,20 @@ public final class ConversationRegression {
             }
             if (events == null || !events.toString().contains("星河") || !"RUNNING".equals(events.path("status").asText()))
                 throw new AssertionError("first actual upstream increment is delivered while upstream remains blocked");
+            for (int read = 0; read < 3; read++) {
+                int beforeRead = requestIdentityChecks.get();
+                var increment = json.readTree(mvc.perform(get(eventsPath).param("after", "0")).andReturn().getResponse().getContentAsString());
+                int lookups = requestIdentityChecks.get() - beforeRead;
+                System.out.println("DIAG running conversation event read identity lookups=" + lookups);
+                if (!"RUNNING".equals(increment.path("status").asText()) || lookups < 2 || lookups > 3)
+                    throw new AssertionError("each live event read must freshly verify identity at bounded entry/delivery boundaries: " + lookups);
+            }
+            int beforeSweep = scheduledIdentityChecks.get();
+            Thread.sleep(2200);
+            int sweepLookups = scheduledIdentityChecks.get() - beforeSweep;
+            if (sweepLookups < 2 || sweepLookups > 6)
+                throw new AssertionError("active session sweeps retain bounded fresh identity checks while upstream is blocked: " + sweepLookups);
+            System.out.println("PASS running event reads use 3 fresh identity lookups each; active sweeps use " + sweepLookups + " lookups over 2.2s");
             // Execution IDs are not bearer credentials; another actor cannot read or stop this stream.
             V3UserUtil.clear(); V3UserUtil.setUid(2L);
             denyGet(mvc, eventsPath); deny(mvc, streamingPath + "/" + run.path("executionId").asText() + "/stop", version, "forged stop");
@@ -707,7 +739,7 @@ public final class ConversationRegression {
             firstChunk.set(new CountDownLatch(1)); streamRelease.set(new CountDownLatch(1));
             String revoked = start(mvc, json, streamingPath, streamingSession, "Identity revoked before delivery");
             if (!firstChunk.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("revocation stream reached upstream");
-            identityAllowed.set(false);
+            revokeIdentityOnRead.set(true);
             denyGet(mvc, revoked + "/events");
             identityAllowed.set(true); streamRelease.get().countDown();
             deny(mvc, streamingPath, streamingSession.path("contextVersion").asText(), "Revoked identity history must never resume");

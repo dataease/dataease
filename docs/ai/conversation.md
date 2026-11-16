@@ -8,6 +8,8 @@ Demo 的可用性、后台任务和完成通知在页面可见且在线时同步
 
 后端临时会话扫描每秒先按内存中的有效期清理过期会话；仅对存在活动执行的会话继续检查期限、读取租约及当前权限/使用策略。空闲会话、已退役上下文和已完成的一次性结果不在扫描中查库。继续提问、续接上下文、重试、结果读取及 SQL 应用仍即时鉴权并核对使用策略版本；检测到撤权后清理会话。空闲期间不承诺立即发现账号或资源权限变化，全局/空间 AI 关闭再开启仍通过固定的使用策略版本拒绝旧会话。
 
+增量读取、完成交付校验和活动会话巡检使用有界的身份校验作用域：进入时读取当前使用权限，同一线程内完全相同的账号、空间、代理及部署版本可复用该次身份校验，返回前再次读取以拒绝中途撤权。配置管理权限不复用使用权限，部署版本、资源权限和 AI 策略仍按原边界检查。作用域在正常、异常及嵌套退出时清理或恢复，不跨请求、线程或巡检轮次；仅包围读取/校验，不包围模型请求、工具执行或写操作。普通文本流的交付统一由运行时策略解析执行完整场景授权，避免在一条读取链路重复进入相同场景。
+
 ## 目录与扩展位置
 
 后端根目录为 `core/core-backend/src/main/java/io/dataease/ai/`，按执行机制、具体场景和 HTTP 入口区分：
@@ -73,7 +75,7 @@ Generation never applies or saves SQL. An explicit `POST /{id}/executions/{execu
 
 ## 身份与授权边界
 
-Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene reuses the current datasource tree and existing datasource READ operation. Verified community mode follows the SQL business permission entry; licensed mode requires the original authorization provider and never falls back on denial or missing providers. Current actor, workspace/proxy, deployment revision and resource permission are checked before history reuse, every model send, every tool execution and result boundary, completed-history commit and every event delivery. SSE parsing and bounded private buffering use local terminal/deadline/lease guards; authority is never cached or bypassed at delivery/commit boundaries. Current setting/model/configuration/credential revisions and effective organization policy are rechecked too. Revocation permanently retires the session and clears buffered output/history; restoring access cannot revive it. Execution IDs are not bearer credentials.
+Requests contain resource/editor input and the server-issued context version, never identity, model settings or client-supplied history. The SQL scene reuses the current datasource tree and existing datasource READ operation. Verified community mode follows the SQL business permission entry; licensed mode requires the original authorization provider and never falls back on denial or missing providers. Current actor, workspace/proxy, deployment revision and resource permission are checked before history reuse, every model send, every tool execution and result boundary, completed-history commit and every event delivery. SSE parsing and bounded private buffering use local terminal/deadline/lease guards; delivery/commit boundaries never reuse an earlier operation's authority. Current setting/model/configuration/credential revisions and effective organization policy are rechecked too. Revocation permanently retires the session and clears buffered output/history; restoring access cannot revive it. Execution IDs are not bearer credentials.
 
 `AiIdentityScope` 每次进入可信业务作用域时，从现有许可源重新验证部署模式及版本，并临时绑定该次验证结果到 `LicenseUtil`，供原有业务分派和插件检查使用。它不复制 HTTP 请求中的许可快照；离开作用域时恢复调用方原有许可状态，异常和嵌套调用同样恢复。社区作用域会隔离调用方遗留的有效许可；许可源不可用或版本不匹配时拒绝进入业务操作。
 

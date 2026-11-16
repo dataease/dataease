@@ -14,10 +14,27 @@ public class AiAccess {
     public record Identity(Long actor, Long organization, Long proxy, AiDeploymentMode.State deployment) { }
     private final ObjectProvider<InteractiveAuthApi> authorization;
     private final AiDeploymentMode deployment;
+    private final ThreadLocal<Identity> verifiedUsage = new ThreadLocal<>();
     public AiAccess(ObjectProvider<InteractiveAuthApi> authorization, AiDeploymentMode deployment) { this.authorization = authorization; this.deployment = deployment; }
     public AiDeploymentMode.State mode() { return deployment.current(); }
     public <T> T inDeploymentScope(Identity owner, Supplier<T> operation) {
         return deployment.inScope(owner.deployment(), operation);
+    }
+    /** Only for bounded read/verification work: share identity checks, then recheck before delivery.
+     * Never wrap model/tool execution or mutations; no grant survives the operation or crosses threads. */
+    public <T> T withVerifiedUsage(Identity owner, Supplier<T> operation) {
+        Identity previous = verifiedUsage.get();
+        verifiedUsage.remove();
+        try {
+            verify(owner, false);
+            verifiedUsage.set(owner);
+            T result = operation.get();
+            verifiedUsage.remove();
+            verify(owner, false);
+            return result;
+        } finally {
+            if (previous == null) verifiedUsage.remove(); else verifiedUsage.set(previous);
+        }
     }
     public Identity capture() {
         if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) throw AiErrors.error("forbidden");
@@ -29,6 +46,7 @@ public class AiAccess {
     }
     public void verify(Identity identity, boolean configuration) {
         if (identity == null || !Objects.equals(identity.deployment(), mode())) throw AiErrors.error("conflict");
+        if (!configuration && identity.equals(verifiedUsage.get())) return;
         InteractiveAuthApi api = authorization.getIfAvailable();
         if (!identity.deployment().organizations()) {
             if (identity.organization() != null || identity.proxy() != null) throw AiErrors.error("forbidden");
