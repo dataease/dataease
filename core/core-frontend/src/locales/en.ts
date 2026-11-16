@@ -46,7 +46,7 @@ export default {
     download: 'Download',
     move: 'Move to category',
     delete_hint:
-      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed. Delete this material?',
+      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed.',
     deleted: 'Deleted successfully',
     batch_delete: 'Delete selected',
     batch_selected_count: '{count} selected',
