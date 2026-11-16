@@ -1161,6 +1161,8 @@ onMounted(() => {
     flex: 1;
     border-left: 1px solid #d9dcdf;
     padding: 24px;
+    display: flex;
+    flex-direction: column;
 
     .ed-input {
       width: 120px;
@@ -1196,10 +1198,11 @@ onMounted(() => {
     }
 
     .user-table {
-      height: calc(100% - 64px);
+      flex: 1;
+      min-height: 0;
 
       &.user-table_multiple {
-        height: calc(100% - 135px);
+        margin-bottom: 64px;
       }
     }
 
@@ -1265,11 +1268,13 @@ onMounted(() => {
 .bottom-bar {
   position: absolute;
   bottom: 0;
+  left: 0;
   height: 64px;
-  width: calc(100% - 308px);
+  width: 100%;
   padding-left: 24px;
   background: var(--neutral-00, #fff);
   box-shadow: 0px -2px 4px 0px rgba(31, 35, 41, 0.08);
+  border-bottom-right-radius: 12px;
   .bottom-info {
     color: #646a73;
     margin: 0 16px 0 24px;
