@@ -296,9 +296,24 @@ const getNodeField = ({ datasourceId, tableName }) => {
     })
 }
 
+// 源库表备注可能在页面停留期间被修改，打开详情时重新获取，避免沿用进入页面时的旧备注
+const tableComments = ref<Record<string, string>>({})
+const tableDisplayName = (source: { tableName: string; name?: string }) =>
+  tableComments.value[source.tableName] || source.name || source.tableName
+
+const refreshTableComment = (source: { datasourceId: string; tableName: string }) => {
+  getTables({ datasourceId: source.datasourceId }).then(res => {
+    const latest = (res || []).find(table => table.tableName === source.tableName)
+    if (latest) {
+      tableComments.value[source.tableName] = latest.name
+    }
+  })
+}
+
 const openTableInfo = (source: { datasourceId: string; tableName: string }) => {
   tableInfoOpenName.value = source.tableName
   getNodeField(source)
+  refreshTableComment(source)
 }
 
 const closeTableInfo = (tableName: string) => {
@@ -849,17 +864,11 @@ const mousedownDrag = () => {
                   <div class="table-filed" v-loading="gridDataLoading">
                     <div class="top flex-align-center">
                       <div class="title ellipsis">
-                        {{
-                          datasourceTableData[index].name || datasourceTableData[index].tableName
-                        }}
+                        {{ tableDisplayName(datasourceTableData[index]) }}
                       </div>
                       <el-icon
                         class="hover-icon de-hover-icon-primary"
-                        @click.stop="
-                          copyInfo(
-                            datasourceTableData[index].name || datasourceTableData[index].tableName
-                          )
-                        "
+                        @click.stop="copyInfo(tableDisplayName(datasourceTableData[index]))"
                       >
                         <Icon name="icon_copy_outlined"
                           ><icon_copy_outlined class="svg-icon"
