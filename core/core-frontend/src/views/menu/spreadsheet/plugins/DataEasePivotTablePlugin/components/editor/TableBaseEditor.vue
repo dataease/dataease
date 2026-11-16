@@ -84,9 +84,8 @@ const initBaseStyle = () => {
   baseStyle.value = {
     ...props.config?.style?.base,
     customBlockName,
-    blockName: customBlockName
-      ? props.config?.style?.base?.blockName || defaultBlockName.value
-      : defaultBlockName.value,
+    // 关闭自定义名称时，禁用的输入框仍回显已保存的名称。
+    blockName: props.config?.style?.base?.blockName || defaultBlockName.value,
     mergeCell,
     slashHeader,
     slashHeaderType
