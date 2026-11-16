@@ -967,7 +967,7 @@ onMounted(() => {
   }
 
   .role-height {
-    height: calc(100vh - 165px);
+    height: 100%;
     overflow: auto;
     position: relative;
   }
