@@ -3425,6 +3425,9 @@ export default {
     text_decoration: 'underline',
     select_target_resource: 'Please select the target resource',
     target_dashboard_dataV: 'Target Dashboard/Screen',
+    target_spreadsheet: 'Target Spreadsheet',
+    link_spreadsheet_field: 'Data Area/Query Condition and Field',
+    select_spreadsheet_target: 'Select a data area or query condition',
     dashboard_dataV: 'Dashboard/Data Screen',
     effective_during_link: 'Public link active',
     condition_style_set: 'Condition Style Settings',
@@ -5783,6 +5786,13 @@ export default {
   },
   spreadsheet: {
     title: 'Spreadsheet',
+    invalid_jump_params:
+      'The jump linkage parameters are invalid or outdated. Configure them again.',
+    invalid_query_value: 'The query condition value has an invalid format',
+    binding_ambiguous_targets:
+      'The workbook contains duplicate query condition or data region IDs. Bindings cannot be configured.',
+    unsupported_jump_filter:
+      'Jumping to spreadsheets with custom group filters is not supported yet',
     outer_params_title: 'External parameter settings',
     outer_params_enable: 'Enable external parameters',
     outer_params_select_data_areas: 'Select linked data regions',

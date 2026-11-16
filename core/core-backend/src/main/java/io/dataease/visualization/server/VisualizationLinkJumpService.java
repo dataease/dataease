@@ -4,21 +4,29 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.spreadsheet.SpreadsheetLinkJumpService;
 import io.dataease.api.visualization.VisualizationLinkJumpApi;
 import io.dataease.api.visualization.dto.VisualizationComponentDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO;
 import io.dataease.api.visualization.request.VisualizationLinkJumpBaseRequest;
 import io.dataease.api.visualization.response.VisualizationLinkJumpBaseResponse;
+import io.dataease.api.visualization.vo.VisualizationLinkJumpTargetViewInfoVO;
 import io.dataease.api.visualization.vo.VisualizationOutParamsJumpVO;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.auth.DeLinkPermit;
+import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.dao.auto.entity.QCoreChartView;
 import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
+import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.BeanUtils;
@@ -29,6 +37,7 @@ import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.manage.VisualizationLinkJumpManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +75,12 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @Resource
     private VisualizationLinkJumpManage visualizationLinkJumpManage;
 
+    @Resource
+    private ObjectProvider<SpreadsheetLinkJumpService> spreadsheetLinkJumpServices;
+
+    @Resource
+    private ObjectProvider<InteractiveAuthApi> interactiveAuthApis;
+
     @Override
     public List<DatasetTableFieldDTO> getTableFieldWithViewId(Long viewId) {
         return datasetTableFieldManage.queryTableFieldWithViewId(viewId);
@@ -88,8 +103,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
                 Optional.ofNullable(resultLinkJump.getLinkJumpInfoArray()).orElse(new ArrayList<>()).forEach(linkJumpInfo -> {
                     if (linkJumpInfo.getChecked()) {
                         String sourceJumpInfo = sourceViewId + "#" + linkJumpInfo.getSourceFieldId();
-                        // 内部仪表板跳转 需要设置好仪表板ID
-                        if ("inner".equals(linkJumpInfo.getLinkType())) {
+                        // 内部资源跳转必须存在目标 ID，电子表格保留独立的关联类型。
+                        if ("inner".equals(linkJumpInfo.getLinkType())
+                                || "spreadsheet".equals(linkJumpInfo.getLinkType())) {
                             if (linkJumpInfo.getTargetDvId() != null) {
                                 resultBase.put(sourceJumpInfo, linkJumpInfo);
                             }
@@ -116,6 +132,36 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         Long viewId = jumpDTO.getSourceViewId();
         Assert.notNull(dvId, "dvId cannot be null");
         Assert.notNull(viewId, "viewId cannot be null");
+        // 先校验所有生效的电子表格目标，再替换快照，避免失效映射落库或删除旧配置。
+        Map<Long, List<VisualizationLinkJumpTargetViewInfoVO>> spreadsheetTargets = new LinkedHashMap<>();
+        for (VisualizationLinkJumpInfoDTO info : Optional.ofNullable(jumpDTO.getLinkJumpInfoArray()).orElse(List.of())) {
+            if (info == null) {
+                throw invalidJump();
+            }
+            // 字段配置可以先于图表跳转开关保存，勾选的电子表格目标都必须校验。
+            if ("spreadsheet".equals(info.getLinkType()) && Boolean.TRUE.equals(info.getChecked())) {
+                if (info.getTargetDvId() == null) {
+                    throw invalidJump();
+                }
+                for (var target : Optional.ofNullable(info.getTargetViewInfoList()).orElse(List.of())) {
+                    if (target == null || target.getSourceFieldActiveId() == null) {
+                        throw invalidJump();
+                    }
+                }
+                spreadsheetTargets.computeIfAbsent(info.getTargetDvId(), key -> new ArrayList<>())
+                        .addAll(Optional.ofNullable(info.getTargetViewInfoList()).orElse(List.of()));
+            }
+        }
+        if (!spreadsheetTargets.isEmpty()) {
+            authorizeSpreadsheetJumpSource(dvId, AuthEnum.MANAGE);
+            QSnapshotCoreChartView sourceView = QSnapshotCoreChartView.snapshotCoreChartView;
+            if (queryFactory.selectOne().from(sourceView)
+                    .where(sourceView.id.eq(viewId), sourceView.sceneId.eq(dvId)).fetchFirst() == null) {
+                throw invalidJump();
+            }
+            SpreadsheetLinkJumpService service = requireSpreadsheetLinkJumpService();
+            spreadsheetTargets.forEach(service::validateTargets);
+        }
         //清理原有数据
         visualizationLinkJumpManage.deleteJumpTargetViewInfoSnapshot(dvId, viewId);
         visualizationLinkJumpManage.deleteJumpInfoSnapshot(dvId, viewId);
@@ -148,11 +194,34 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @DeLinkPermit("#p0.targetDvId")
     @Override
     public VisualizationLinkJumpBaseResponse queryTargetVisualizationJumpInfo(VisualizationLinkJumpBaseRequest request) {
+        boolean spreadsheet = "spreadsheet".equals(request.getTargetResourceType());
+        if (spreadsheet) {
+            if (request.getSourceViewId() == null || request.getSourceFieldId() == null || request.getTargetDvId() == null
+                    || request.getResourceTable() == null
+                    || !Set.of(CommonConstants.RESOURCE_TABLE.CORE, CommonConstants.RESOURCE_TABLE.SNAPSHOT)
+                    .contains(request.getResourceTable())) {
+                throw invalidJump();
+            }
+            authorizeSpreadsheetJumpSource(request.getSourceDvId(),
+                    CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable()) ? AuthEnum.MANAGE : AuthEnum.READ);
+        }
         List<VisualizationLinkJumpDTO> result = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
             QSnapshotVisualizationLinkJumpTargetViewInfo jtvi = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
             QSnapshotVisualizationLinkJumpInfo lji = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
             QSnapshotVisualizationLinkJump lj = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
+            QSnapshotCoreChartView sourceView = QSnapshotCoreChartView.snapshotCoreChartView;
+
+            // 区分合法的零映射和已经删除、停用或改目标的跳转，失效链接不能变成无条件预览。
+            // 跳转开关以图表 jumpActive 为准，旧的 linkJump.checked 不随开关更新。
+            if (spreadsheet && queryFactory.selectOne().from(lji).join(lj).on(lji.linkJumpId.eq(lj.id))
+                    .join(sourceView).on(sourceView.id.eq(lj.sourceViewId), sourceView.sceneId.eq(lj.sourceDvId))
+                    .where(sourceView.jumpActive.eq(true), lji.checked.eq(true), lji.linkType.eq("spreadsheet"),
+                            lj.sourceDvId.eq(request.getSourceDvId()), lj.sourceViewId.eq(request.getSourceViewId()),
+                            lji.sourceFieldId.eq(request.getSourceFieldId()), lji.targetDvId.eq(request.getTargetDvId()))
+                    .fetchFirst() == null) {
+                throw invalidJump();
+            }
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
                             Projections.fields(VisualizationLinkJumpDTO.class,
@@ -169,6 +238,11 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
             if (request.getSourceFieldId() != null) {
                 jpaQuery.where(lji.sourceFieldId.eq(request.getSourceFieldId()));
+            }
+            if (spreadsheet) {
+                jpaQuery.where(lji.linkType.eq("spreadsheet"), jtvi.targetType.eq("view"));
+            } else {
+                jpaQuery.where(lji.linkType.ne("spreadsheet").or(lji.linkType.isNull()));
             }
             result = jpaQuery.fetch();
 
@@ -177,6 +251,16 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QVisualizationLinkJumpTargetViewInfo jtvi = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
             QVisualizationLinkJumpInfo lji = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
             QVisualizationLinkJump lj = QVisualizationLinkJump.visualizationLinkJump;
+            QCoreChartView sourceView = QCoreChartView.coreChartView;
+
+            if (spreadsheet && queryFactory.selectOne().from(lji).join(lj).on(lji.linkJumpId.eq(lj.id))
+                    .join(sourceView).on(sourceView.id.eq(lj.sourceViewId), sourceView.sceneId.eq(lj.sourceDvId))
+                    .where(sourceView.jumpActive.eq(true), lji.checked.eq(true), lji.linkType.eq("spreadsheet"),
+                            lj.sourceDvId.eq(request.getSourceDvId()), lj.sourceViewId.eq(request.getSourceViewId()),
+                            lji.sourceFieldId.eq(request.getSourceFieldId()), lji.targetDvId.eq(request.getTargetDvId()))
+                    .fetchFirst() == null) {
+                throw invalidJump();
+            }
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
                             Projections.fields(VisualizationLinkJumpDTO.class,
@@ -194,8 +278,32 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             if (request.getSourceFieldId() != null) {
                 jpaQuery.where(lji.sourceFieldId.eq(request.getSourceFieldId()));
             }
+            if (spreadsheet) {
+                jpaQuery.where(lji.linkType.eq("spreadsheet"), jtvi.targetType.eq("view"));
+            } else {
+                jpaQuery.where(lji.linkType.ne("spreadsheet").or(lji.linkType.isNull()));
+            }
             result = jpaQuery.fetch();
 
+        }
+        if (spreadsheet) {
+            List<VisualizationLinkJumpTargetViewInfoVO> targets = new ArrayList<>();
+            for (VisualizationLinkJumpDTO mapping : result) {
+                if (StringUtils.isBlank(mapping.getSourceInfo()) || StringUtils.isBlank(mapping.getTargetInfo())) {
+                    throw invalidJump();
+                }
+                String[] target = mapping.getTargetInfo().split("#", -1);
+                if (target.length != 2) {
+                    throw invalidJump();
+                }
+                VisualizationLinkJumpTargetViewInfoVO info = new VisualizationLinkJumpTargetViewInfoVO();
+                info.setTargetType("view");
+                info.setTargetViewId(target[0]);
+                info.setTargetFieldId(target[1]);
+                targets.add(info);
+            }
+            // resourceTable 只选择源跳转配置；目标区域和查询条件始终来自已发布工作簿。
+            requireSpreadsheetLinkJumpService().validateTargets(request.getTargetDvId(), targets);
         }
         // 按sourceInfo分组聚合targetInfo
         Map<String, List<String>> groupedResults = result.stream()
@@ -218,6 +326,35 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
                 .collect(Collectors.toList());
 
         return new VisualizationLinkJumpBaseResponse(null, Optional.ofNullable(aggregatedResult).orElse(new ArrayList<>()).stream().filter(item -> StringUtils.isNotEmpty(item.getSourceInfo())).collect(Collectors.toMap(VisualizationLinkJumpDTO::getSourceInfo, VisualizationLinkJumpDTO::getTargetInfoList)));
+    }
+
+    private void authorizeSpreadsheetJumpSource(Long dvId, AuthEnum permission) {
+        if (dvId == null) {
+            throw invalidJump();
+        }
+        DataVisualizationInfo source = dataVisualizationInfoMapper.findById(dvId).orElseThrow(this::invalidJump);
+        if (Boolean.TRUE.equals(source.getDeleteFlag()) || !"leaf".equals(source.getNodeType())
+                || !("dashboard".equals(source.getType()) || "dataV".equals(source.getType()))) {
+            throw invalidJump();
+        }
+        InteractiveAuthApi auth = interactiveAuthApis.getIfAvailable();
+        if (auth == null) {
+            throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
+        }
+        BusiResourceEnum resource = "dataV".equals(source.getType()) ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL;
+        auth.checkAuth(new BusiPerCheckDTO(dvId, resource, permission));
+    }
+
+    private SpreadsheetLinkJumpService requireSpreadsheetLinkJumpService() {
+        SpreadsheetLinkJumpService service = spreadsheetLinkJumpServices.getIfAvailable();
+        if (service == null) {
+            throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
+        }
+        return service;
+    }
+
+    private DEException invalidJump() {
+        return DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
     }
 
     @Override

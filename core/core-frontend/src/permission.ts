@@ -25,7 +25,13 @@ const { open } = useLoading()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view', '/admin-login', '/401'] // 不重定向白名单
-const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview', '/dataset-embedded-form']
+const embeddedWindowWhiteList = [
+  '/dvCanvas',
+  '/dashboard',
+  '/preview',
+  '/spreadsheet-preview',
+  '/dataset-embedded-form'
+]
 const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
   const appearanceStore = useAppearanceStoreWithOut()
@@ -76,11 +82,16 @@ router.beforeEach(async (to, from, next) => {
       let pathname = window.location.pathname
       pathname = pathname.substring(0, pathname.length - 1)
       let url = window.origin + pathname + '/mobile.html#/index'
-      if (location.hash?.startsWith('#/preview')) {
+      if (
+        location.hash?.startsWith('#/preview') ||
+        location.hash?.startsWith('#/spreadsheet-preview')
+      ) {
         url = window.origin + pathname + '/mobile.html' + location.hash
       }
       if (window.location.search) {
-        url += window.location.search
+        // 新窗口认证信息位于 search，重定向后仍须放在 hash 前，不能混入跳转参数。
+        const hashIndex = url.indexOf('#')
+        url = `${url.slice(0, hashIndex)}${window.location.search}${url.slice(hashIndex)}`
       }
       window.location.href = url
     }

@@ -51,7 +51,7 @@ import {
   parseSheetData,
   serializeSheetData
 } from '@/views/menu/spreadsheet/utils/univerConfig'
-import { loadSpreadsheetOuterParamsEditorContext } from '@/views/menu/spreadsheet/utils/outer-params-editor'
+import { loadSpreadsheetBindingContext } from '@/views/menu/spreadsheet/utils/binding-context'
 import { SPREADSHEET_EVENTS } from '@/views/menu/spreadsheet/utils/events'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import type { PluginEditPayload } from '@/views/menu/spreadsheet/types/editor'
@@ -630,7 +630,7 @@ const persistAndOpenOuterParams = async () => {
     if (!savedWorkbook) {
       throw new Error(t('spreadsheet.outer_params_load_error'))
     }
-    const context = await loadSpreadsheetOuterParamsEditorContext(savedWorkbook)
+    const context = await loadSpreadsheetBindingContext(savedWorkbook)
     if (!isCurrentSession(revision)) {
       return
     }

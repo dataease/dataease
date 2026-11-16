@@ -58,7 +58,7 @@ const { start, done } = useNProgress()
 const interactiveStore = interactiveStoreWithOut()
 
 const { loadStart, loadDone } = usePageLoading()
-const whiteList = ['/login', '/panel', '/DashboardEmpty', '/preview'] // 不重定向白名单
+const whiteList = ['/login', '/panel', '/DashboardEmpty', '/preview', '/spreadsheet-preview'] // 不重定向白名单
 
 // 外观与 xpack 有效性属于全局配置：首次导航加载即可，无需每次导航重复请求
 let appearanceLoaded = false
