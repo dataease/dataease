@@ -131,7 +131,7 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     for (const name of names) {
       const value = row[name]
       const formatter = metaConfig.find(item => item.field === name)?.formatter
-      const formatted = value == null || value === '' ? '—' : formatter?.(value) ?? value
+      const formatted = value == null || value === '' ? '-' : formatter?.(value) ?? value
       if (showFieldNames) {
         const field = tooltipFields.find(field => field.dataeaseName === name)
         const label = document.createElement('span')
