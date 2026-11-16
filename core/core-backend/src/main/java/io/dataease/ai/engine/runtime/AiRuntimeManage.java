@@ -29,7 +29,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             long deadline, RequestAttributes request, String proxyBinding, String taskId, String taskVersion, AiDataScope scope, AiDeploymentMode.State deployment, String usageRevision, ExecutionSnapshot snapshot) implements AiExecutionContext {
         public Long proxyOrganizationId() { return proxyBinding != null && !proxyBinding.endsWith(":none") ? organizationId : null; }
     }
-    private record ExecutionSnapshot(CoreAiSetting settings, CoreAiModel model) { }
+    private record ExecutionSnapshot(CoreAiSetting settings, CoreAiModel model, AiAccess.AcceptedUsage usage) { }
     private CoreAiSetting settings(Context context) { return context.snapshot() == null ? configuration.setting() : context.snapshot().settings(); }
     private final Map<String, AiFeature> features;
     private final AiConfigurationManage configuration;
@@ -66,7 +66,8 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     public AiExecutionContext currentConversation(String feature, AiDataScope scope) {
         Objects.requireNonNull(scope); feature(feature);
         if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null || RequestContextHolder.getRequestAttributes() == null) throw AiErrors.error("forbidden");
-        AiAccess.Identity identity = access.capture(); access.verify(identity, false);
+        AiAccess.Identity identity = access.capture();
+        var usage = access.acceptUsage(identity);
         CoreAiSetting settings = json.convertValue(configuration.setting(), CoreAiSetting.class);
         CoreAiOrgPolicy policy = enabledPolicy(identity.organization(), settings);
         Long selected = policy != null && "SPECIFIED".equals(policy.getMode()) ? policy.getModelId() : settings.getDefaultModelId();
@@ -74,7 +75,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         Context context = new Context(UUID.randomUUID().toString(), feature, identity.actor(), identity.organization(), false,
                 System.currentTimeMillis() + settings.getRequestTimeoutSeconds() * 1000L,
                 RequestContextHolder.getRequestAttributes(), binding(), null, null, scope, identity.deployment(), null,
-                new ExecutionSnapshot(settings, model));
+                new ExecutionSnapshot(settings, model, usage));
         resolve(context, settings);
         return context;
     }
@@ -334,6 +335,10 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
     }
     private CoreAiModel resolve(Context c, CoreAiSetting s) { return resolve(c, s, true); }
     private CoreAiModel resolve(Context c, CoreAiSetting s, boolean enforceDeadline) {
+        if (c.snapshot() != null) return access.withAcceptedUsage(c.snapshot().usage(), () -> resolveAuthorized(c, s, enforceDeadline));
+        return resolveAuthorized(c, s, enforceDeadline);
+    }
+    private CoreAiModel resolveAuthorized(Context c, CoreAiSetting s, boolean enforceDeadline) {
         if (enforceDeadline && System.currentTimeMillis() >= c.deadline()) throw AiErrors.error("timeout");
         if (c.snapshot() == null && !Objects.equals(c.usageRevision(), usageRevision(c.organizationId(), s))) throw AiErrors.error("scope_changed");
         AiFeature feature = feature(c.feature());

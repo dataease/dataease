@@ -20,17 +20,30 @@ public class AiAccess {
     public <T> T inDeploymentScope(Identity owner, Supplier<T> operation) {
         return deployment.inScope(owner.deployment(), operation);
     }
-    /** Only for bounded read/verification work: share identity checks, then recheck before delivery.
-     * Never wrap model/tool execution or mutations; no grant survives the operation or crosses threads. */
-    public <T> T withVerifiedUsage(Identity owner, Supplier<T> operation) {
-        Identity previous = verifiedUsage.get();
-        verifiedUsage.remove();
+    /** Server-only proof of an accepted foreground use; cannot be constructed from request data. */
+    public final class AcceptedUsage {
+        private final Identity owner;
+        private AcceptedUsage(Identity owner) { this.owner = owner; }
+        private AiAccess issuer() { return AiAccess.this; }
+    }
+    public AcceptedUsage acceptUsage(Identity owner) {
+        Identity previous = verifiedUsage.get(); verifiedUsage.remove();
         try {
+            // A new question must recheck even when invoked inside an older accepted operation.
             verify(owner, false);
-            verifiedUsage.set(owner);
+            return new AcceptedUsage(owner);
+        } finally {
+            if (previous == null) verifiedUsage.remove(); else verifiedUsage.set(previous);
+        }
+    }
+    public <T> T withAcceptedUsage(AcceptedUsage accepted, Supplier<T> operation) {
+        if (accepted == null || accepted.issuer() != this) throw AiErrors.error("forbidden");
+        Identity previous = verifiedUsage.get(); verifiedUsage.set(accepted.owner);
+        try {
+            // verify still checks deployment; only the exact accepted usage identity skips storage.
+            verify(accepted.owner, false);
             T result = operation.get();
-            verifiedUsage.remove();
-            verify(owner, false);
+            verify(accepted.owner, false);
             return result;
         } finally {
             if (previous == null) verifiedUsage.remove(); else verifiedUsage.set(previous);

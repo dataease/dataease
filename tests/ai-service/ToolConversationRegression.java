@@ -82,6 +82,8 @@ public final class ToolConversationRegression {
         var authorizations = new CopyOnWriteArrayList<String>();
         var mode = new AtomicReference<String>("tables");
         var operationAllowed = new AtomicBoolean(true);
+        var userEnabled = new AtomicBoolean(true);
+        var usageChecks = new AtomicInteger();
         var firstResourceAllowed = new AtomicBoolean(true);
         var readTargets = new CopyOnWriteArrayList<Long>();
         var sourceRevision = new AtomicLong(1);
@@ -187,6 +189,9 @@ public final class ToolConversationRegression {
             config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 5, 2, config.impact("SETTINGS", saved.id() + ":true").token()));
             var beans = new StaticListableBeanFactory();
             beans.addBean("permission", (InteractiveAuthApi) Proxy.newProxyInstance(ToolConversationRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class}, (proxy, method, args) -> {
+                if (Set.of("checkAiAllowed", "checkAiCommunityAllowed").contains(method.getName())) {
+                    usageChecks.incrementAndGet(); return userEnabled.get() && Objects.equals(args[0], 1L);
+                }
                 if (method.getName().equals("checkAuth")) {
                     var request = (BusiPerCheckDTO) args[0];
                     if (!operationAllowed.get() || !Set.of(11L, 12L).contains(request.getId()) || Objects.equals(request.getId(), 11L) && !firstResourceAllowed.get() || request.getBusiEnum() != BusiResourceEnum.DATASOURCE || request.getAuthEnum() != AuthEnum.READ) throw AiErrors.error("forbidden");
@@ -194,10 +199,9 @@ public final class ToolConversationRegression {
                 }
                 throw new AssertionError("unexpected operation authorization " + method.getName());
             }));
-            var dialogueAccess = new SyntheticAccess(null, null) {
+            var dialogueAccess = new SyntheticAccess(beans.getBeanProvider(InteractiveAuthApi.class), null) {
                 public AiDeploymentMode.State mode() { return access.mode(); }
                 public Identity capture() { Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null; return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode()); }
-                public void verify(Identity identity, boolean configuration) { access.verify(identity, configuration); if (identity.actor() == null) throw AiErrors.error("forbidden"); }
             };
             var scene = new AiSqlConversationScene(datasource, beans.getBeanProvider(InteractiveAuthApi.class), dialogueAccess, new CorePermissionManage());
             beans.addBean("scene", scene);
@@ -434,6 +438,7 @@ public final class ToolConversationRegression {
             toolEntered.set(new CountDownLatch(1)); toolRelease.set(new CountDownLatch(1));
             session = open(mvc); String snapshotRun = start(mvc, session, "Keep accepted configuration through tool continuation");
             if (!toolEntered.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("snapshot tool boundary never reached");
+            int beforeContinuation = usageChecks.get(); userEnabled.set(false);
             candidate.setDraftHandle(null); candidate.setExpectedVersion(saved.rowVersion()); candidate.setExpectedConfigRevision(saved.configRevision());
             candidate.setModelIdentifier("changed-tool-chat"); candidate.setApiKey("synthetic-rotated-key");
             candidate.setTestProof(config.testProof(config.candidate(candidate, true))); config.save(candidate, false);
@@ -447,16 +452,22 @@ public final class ToolConversationRegression {
                     || authorizations.stream().anyMatch(value -> !"Bearer synthetic-key".equals(value))
                     || sent.get(1).path("max_tokens").asInt() <= 512)
                 throw new AssertionError("accepted tool continuation changed its model, credential, budget or deadline");
+            if (usageChecks.get() != beforeContinuation) throw new AssertionError("tool continuation and delivery must not requery accepted user enablement");
             setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 30000, 512, 5, 2,
                     config.impact("SETTINGS", saved.id() + ":true").token()));
             sent.clear(); authorizations.clear(); mode.set("tables");
+            try { start(mvc, session, "Disabled user asks again"); throw new AssertionError("disabled user started new tool question"); }
+            catch (jakarta.servlet.ServletException failure) { if (!(failure.getCause() instanceof AiErrors.Failure known) || !known.safeCode().equals("forbidden")) throw failure; }
+            if (!sent.isEmpty()) throw new AssertionError("disabled user reached the model");
+            userEnabled.set(true); int beforeNext = usageChecks.get();
             result = terminal(mvc, start(mvc, session, "Use latest configuration on next question"));
+            if (usageChecks.get() - beforeNext != 1) throw new AssertionError("whole tool question must check user enablement once");
             if (!"COMPLETED".equals(result.path("status").asText()) || sent.isEmpty()
                     || sent.stream().anyMatch(body -> !"changed-tool-chat".equals(body.path("model").asText()) || body.path("max_tokens").asInt() > 512)
                     || authorizations.stream().anyMatch(value -> !"Bearer synthetic-rotated-key".equals(value)))
                 throw new AssertionError("next question failed to select current model, credential and budget");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
-            System.out.println("PASS tool continuation freezes model/credential/budget/deadline across configuration edits and shutdown; next question uses latest configuration");
+            System.out.println("PASS actual SQL tool question checks usage once; continuation/delivery reuse accepted usage across user disable and configuration changes; next question rechecks user and configuration");
             sent.clear(); reads.clear(); mode.set("input-results");
             setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, 60, 4000, 4096, 5, 2, null));
             session = open(mvc); result = terminal(mvc, start(mvc, session, "Read fields"));
