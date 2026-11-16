@@ -1,13 +1,14 @@
 package io.dataease.ai;
 
+import io.dataease.ai.configuration.AiConfigurationManage;
 import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
-
-import io.dataease.ai.manage.*;
+import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.server.AiConversationServer;
 import io.dataease.ai.support.AiErrors;
+
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;

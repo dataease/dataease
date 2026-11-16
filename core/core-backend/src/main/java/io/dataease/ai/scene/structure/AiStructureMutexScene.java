@@ -1,14 +1,14 @@
 package io.dataease.ai.scene.structure;
 
 import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.support.AiErrors;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiToolProtocol;
 import io.dataease.api.ai.runtime.AiPromptFingerprint;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Component;

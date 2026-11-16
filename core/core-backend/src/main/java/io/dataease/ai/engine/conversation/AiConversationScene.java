@@ -1,9 +1,10 @@
 package io.dataease.ai.engine.conversation;
 
+import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.support.AiErrors;
+
 import java.util.List;
 import java.util.Map;
-import io.dataease.ai.support.AiToolProtocol;
-import io.dataease.ai.support.AiErrors;
 import io.dataease.api.ai.conversation.AiConversationDtos;
 
 /** 业务上下文与权限边界。共享引擎不解析或执行 SQL，不持有数据源凭据。 */

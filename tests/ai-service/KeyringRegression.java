@@ -1,12 +1,13 @@
 package io.dataease.ai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.dao.entity.CoreAiModel;
 import io.dataease.ai.dao.entity.CoreAiOrgPolicy;
 import io.dataease.ai.dao.entity.CoreAiSetting;
-import io.dataease.ai.manage.AiKeyringManage;
-import io.dataease.ai.support.AiKeyMaterial;
-import io.dataease.ai.support.AiSecrets;
+import io.dataease.ai.security.credential.AiKeyMaterial;
+import io.dataease.ai.security.credential.AiKeyringManage;
+import io.dataease.ai.security.credential.AiSecrets;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.sql.AiConfigurationInit;
 import io.dataease.listener.sql.AiKeyringInit;

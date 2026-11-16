@@ -1,7 +1,8 @@
 package io.dataease.ai;
 
-import io.dataease.ai.manage.AiConfigurationManage;
+import io.dataease.ai.configuration.AiConfigurationManage;
 import io.dataease.ai.server.AiConfigurationServer;
+
 import io.dataease.api.ai.config.AiConfigDtos.*;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;

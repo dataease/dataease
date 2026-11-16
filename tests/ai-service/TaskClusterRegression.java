@@ -1,8 +1,9 @@
 package io.dataease.ai;
 
+import io.dataease.ai.dao.entity.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.net.httpserver.HttpServer;
-import io.dataease.ai.dao.entity.*;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.sql.*;
 import org.h2.tools.Server;
@@ -438,7 +439,7 @@ public final class TaskClusterRegression {
         worker.destroyForcibly().waitFor();
         node("audit-recovery", true); int recovered = port("audit-recovery");
         var interrupted = await(recovered, taskPath, "INTERRUPTED");
-        var cleanup = new io.dataease.ai.manage.AiRetentionCleanup(em, manager);
+        var cleanup = new io.dataease.ai.retention.AiRetentionCleanup(em, manager);
         cleanup.clean(); cleanup.clean();
         var evidence = call(recovered, auditPath, "GET", "");
         check("INTERRUPTED".equals(evidence.path("status").asText()) && evidence.path("incomplete").asBoolean(),

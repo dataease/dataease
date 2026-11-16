@@ -1,7 +1,9 @@
-package io.dataease.ai.support;
+package io.dataease.ai.engine.runtime;
 
 import io.dataease.ai.dao.entity.CoreAiSetting;
 import io.dataease.ai.dao.repository.CoreAiSettingRepository;
+import io.dataease.ai.support.AiErrors;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

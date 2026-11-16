@@ -1,12 +1,12 @@
 package io.dataease.ai.engine.conversation;
 
-import io.dataease.ai.manage.AiAccess;
-import io.dataease.ai.manage.AiIdentityScope;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.runtime.AiToolConversationFeature;
-
+import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.security.identity.AiIdentityScope;
 import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiToolProtocol;
+
 import io.dataease.api.ai.conversation.AiConversationDtos.*;
 import io.dataease.api.ai.runtime.*;
 import io.dataease.permission.util.V3UserUtil;

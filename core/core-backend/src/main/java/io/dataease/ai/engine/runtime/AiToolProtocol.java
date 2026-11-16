@@ -1,4 +1,6 @@
-package io.dataease.ai.support;
+package io.dataease.ai.engine.runtime;
+
+import io.dataease.ai.support.AiErrors;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;

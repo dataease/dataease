@@ -1,9 +1,8 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.security.credential;
 
 import io.dataease.ai.dao.entity.CoreAiSetting;
 import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiKeyMaterial;
-import io.dataease.ai.support.AiSecrets;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;

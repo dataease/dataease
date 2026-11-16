@@ -239,9 +239,9 @@ Redis 许可结构全新初始化或丢失后，会进入恢复保护期；当�
 
 - 公共契约：`sdk/api/api-base/src/main/java/io/dataease/api/ai/runtime/`。
 - 调用编排：`core/core-backend/src/main/java/io/dataease/ai/engine/runtime/AiRuntimeManage.java`。
-- 输入与参数边界：`core/core-backend/src/main/java/io/dataease/ai/support/AiPromptPolicy.java`。
-- 并发准入：`core/core-backend/src/main/java/io/dataease/ai/support/AiAdmission.java`。
-- 传输与取消：`core/core-backend/src/main/java/io/dataease/ai/support/AiTransport.java`。
+- 输入与参数边界：`core/core-backend/src/main/java/io/dataease/ai/engine/runtime/AiPromptPolicy.java`。
+- 并发准入：`core/core-backend/src/main/java/io/dataease/ai/engine/runtime/AiAdmission.java`。
+- 传输与取消：`core/core-backend/src/main/java/io/dataease/ai/engine/runtime/AiTransport.java`。
 - 隔离验证及部署参数说明：[AI 服务验证说明](../../tests/ai-service/README.md)。
 
 SDK 路径内的限制由基础服务强制执行，调用参数不能关闭或放宽。它不是进程级安全沙箱：业务自行创建 HTTP/模型客户端仍可绕过这条调用路径，因此统一接入需要落实到依赖边界和代码审查。

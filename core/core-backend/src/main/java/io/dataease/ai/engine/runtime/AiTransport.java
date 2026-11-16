@@ -1,7 +1,9 @@
-package io.dataease.ai.support;
+package io.dataease.ai.engine.runtime;
 
+import io.dataease.ai.configuration.AiConfigurationManage.Connection;
 import io.dataease.ai.dao.entity.CoreAiSetting;
-import io.dataease.ai.manage.AiConfigurationManage.Connection;
+import io.dataease.ai.support.AiErrors;
+
 import jakarta.annotation.PreDestroy;
 import org.apache.hc.client5.http.DnsResolver;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -53,7 +55,7 @@ public class AiTransport {
         return call(connection, settings, prompt, background, deadline, recheck, null);
     }
     public ChatResponse call(Connection connection, CoreAiSetting settings, Prompt prompt, boolean background, long deadline, Runnable recheck,
-                             io.dataease.ai.manage.AiAuditManage.Session audit) {
+                             io.dataease.ai.audit.AiAuditManage.Session audit) {
         return execute(connection, settings, background, deadline, recheck, client -> {
             OpenAiApi api = OpenAiApi.builder().baseUrl(connection.url()).apiKey(connection.key())
                     .completionsPath(outbound.completionPath(connection.url())).restClientBuilder(client).responseErrorHandler(new org.springframework.web.client.DefaultResponseErrorHandler() {
@@ -90,7 +92,7 @@ public class AiTransport {
         return execute(c, s, background, deadline, recheck, work, null);
     }
     private <T> T execute(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck, Work<T> work,
-                          io.dataease.ai.manage.AiAuditManage.Session audit) {
+                          io.dataease.ai.audit.AiAuditManage.Session audit) {
         long remaining = deadline - System.currentTimeMillis();
         if (remaining <= 0) throw AiErrors.error("timeout");
         Future<T> future;
@@ -124,7 +126,7 @@ public class AiTransport {
         return perform(c, s, background, deadline, recheck, cancellation, work, null);
     }
     private <T> T perform(Connection c, CoreAiSetting s, boolean background, long deadline, Runnable recheck,
-                          RequestCancellation cancellation, Work<T> work, io.dataease.ai.manage.AiAuditManage.Session audit) {
+                          RequestCancellation cancellation, Work<T> work, io.dataease.ai.audit.AiAuditManage.Session audit) {
         recheck.run();
         outbound.normalize(c.url());
         long budget = deadline - System.currentTimeMillis();
@@ -140,7 +142,7 @@ public class AiTransport {
         };
         ScheduledFuture<?> abort = deadlines.schedule(cancellation::cancel,
                 Math.max(1, deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
-        final io.dataease.ai.manage.AiAuditManage.Exchange[] capture = new io.dataease.ai.manage.AiAuditManage.Exchange[1];
+        final io.dataease.ai.audit.AiAuditManage.Exchange[] capture = new io.dataease.ai.audit.AiAuditManage.Exchange[1];
         boolean succeeded = false; String error = null;
         try {
             RestClient.Builder builder = RestClient.builder().requestFactory(factory)
@@ -529,7 +531,7 @@ public class AiTransport {
             default -> "upstream_failed";
         }, retryAfter);
     }
-    private ClientHttpResponse captured(ClientHttpResponse response, io.dataease.ai.manage.AiAuditManage.Exchange capture) {
+    private ClientHttpResponse captured(ClientHttpResponse response, io.dataease.ai.audit.AiAuditManage.Exchange capture) {
         return new ClientHttpResponse() {
             private InputStream body;
             public HttpStatusCode getStatusCode() throws IOException { return response.getStatusCode(); }

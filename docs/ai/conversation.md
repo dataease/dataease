@@ -13,20 +13,29 @@ Demo 的可用性、后台任务和完成通知在页面可见且在线时同步
 ```text
 ai/
 ├── engine/
-│   ├── conversation/  # AiConversationManage、AiConversationScene；会话与场景扩展接口
-│   ├── runtime/       # AiRuntimeManage、AiToolConversationFeature；模型执行与工具协议接入
-│   └── task/          # AiTaskManage；独立后台任务、调度、租约与结果投递
+│   ├── conversation/  # 会话管理与场景扩展接口
+│   ├── runtime/       # 模型执行、传输、准入、提示词约束、工具协议与恢复
+│   └── task/          # 后台任务、调度、租约与结果投递
 ├── scene/
-│   ├── sql/           # AiSqlConversationScene、AiSqlStaticValidator；数据源/SQL 业务
-│   └── structure/     # AiStructureMutexScene；受控结构说明与资源互斥验收
-├── server/            # 既有 HTTP 入口；配置、可用性、会话、任务与审计
-├── manage/            # 配置、身份/许可、密钥、审计及留存管理
-├── support/           # 传输、准入、协议、恢复及安全基础能力
-├── dao/               # 持久化实体与仓储
-└── service/           # 既有 AI 基础服务
+│   ├── sql/           # 数据源与 SQL 业务、静态校验
+│   └── structure/     # 受控结构说明与资源互斥验收
+├── configuration/    # AI 设置、模型配置、发现与连接测试
+├── security/
+│   ├── identity/      # 身份、部署许可与后台身份作用域
+│   └── credential/    # 密钥材料、初始化、加解密与签名证明
+├── audit/            # 执行审计、证据与缺口修复
+├── retention/        # 审计及任务结果的留存清理
+├── server/           # 既有 HTTP 入口
+├── support/          # 跨模块错误码与异常转换
+├── dao/              # 持久化实体与仓储
+└── service/          # 既有 AI 基础服务
 ```
 
 SQL Demo 页面位于 `core/core-frontend/src/views/demo/ai-assistant/sql/`，包含 `index.vue` 和 `BackgroundTasks.vue`；开发路由仍为 `#/demo/ai-assistant`。SDK 中 `api/ai/conversation`、`api/ai/task` 和 `api/ai/runtime` 的公共包名、HTTP 路径和已有请求行为保持。
+
+后端已取消笼统的 `manage/` 目录；类名暂时保留既有命名，Spring Bean 名、HTTP 路径和持久化格式不变。配置或安全能力修改应进入对应职责目录，不重新建立集中业务逻辑目录。`AiOutboundPolicy` 处理模型地址规范化和端点路径，随传输放在 `engine/runtime/`，不把它当作资源授权模块。
+
+SDK 的 `AiOwnerContext` 统一位于 `sdk/common/src/main/java/io/dataease/ai/security/identity/`，身份安装仍为包内方法，只由经过校验的核心身份作用域调用。旧 `manage` 路径及兼容转发类已删除，主仓库与 XPack 消费者统一迁移到同一个类。本次是包路径变更，需要 SDK、核心和 XPack 配套重新构建与交付，不支持混用旧扩展二进制；HTTP 路径和持久化格式不变。
 
 新增业务实现放到对应的 `scene/<业务场景>/`，通过 `AiConversationScene` 定义业务上下文、授权、工具与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
 

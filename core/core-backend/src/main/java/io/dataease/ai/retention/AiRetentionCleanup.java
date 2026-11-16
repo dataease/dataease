@@ -1,6 +1,7 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.retention;
 
 import io.dataease.ai.dao.entity.*;
+
 import jakarta.persistence.*;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

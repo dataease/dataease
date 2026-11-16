@@ -1,6 +1,5 @@
-package io.dataease.ai.support;
+package io.dataease.ai.security.credential;
 
-import io.dataease.ai.manage.AiKeyringManage;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

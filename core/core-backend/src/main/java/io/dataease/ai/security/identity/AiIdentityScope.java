@@ -1,6 +1,7 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.security.identity;
 
 import io.dataease.ai.support.AiErrors;
+
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.CommunityUtils;
 import org.springframework.web.context.request.RequestContextHolder;

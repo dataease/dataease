@@ -1,7 +1,7 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.runtime.AiOutboundPolicy;
 import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiOutboundPolicy;
 
 public final class OutboundRegression {
     public static void run() throws Exception {

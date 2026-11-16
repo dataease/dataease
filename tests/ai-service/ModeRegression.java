@@ -1,7 +1,10 @@
 package io.dataease.ai;
 
-import io.dataease.ai.manage.*;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.security.identity.AiDeploymentMode;
+import io.dataease.ai.security.identity.AiIdentityScope;
 import io.dataease.ai.support.AiErrors;
+
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.license.bo.F2CLicResult;
 import io.dataease.license.dao.po.LicensePO;
@@ -63,6 +66,9 @@ public final class ModeRegression {
         io.dataease.license.utils.LicenseUtil.set(null);
         scope.call(owner, () -> {
             require(io.dataease.license.utils.LicenseUtil.licenseValid(), "licensed worker must retain the original business license dispatch");
+            require(io.dataease.ai.security.identity.AiOwnerContext.active(owner.actor()), "SDK readers observe the verified identity scope");
+            require(Objects.equals(io.dataease.ai.security.identity.AiOwnerContext.organization(owner.actor(), -1L), owner.organization()),
+                    "identity projection preserves the original organization including null");
             return null;
         });
         require(io.dataease.license.utils.LicenseUtil.get() == null && V3UserUtil.getUid() == null, "worker license and actor are cleaned");
@@ -78,6 +84,12 @@ public final class ModeRegression {
             throw new AssertionError("business failure must propagate");
         } catch (IllegalStateException expected) { }
         require(io.dataease.license.utils.LicenseUtil.get() == previous && V3UserUtil.getUid() == null, "exception restores previous license and actor");
+        require(!io.dataease.ai.security.identity.AiOwnerContext.active(owner.actor())
+                && Objects.equals(io.dataease.ai.security.identity.AiOwnerContext.organization(owner.actor(), -1L), -1L),
+                "exception clears the identity projection");
+        require(Arrays.stream(io.dataease.ai.security.identity.AiOwnerContext.class.getDeclaredMethods())
+                .filter(method -> java.lang.reflect.Modifier.isPublic(method.getModifiers()))
+                .allMatch(method -> Set.of("active", "organization").contains(method.getName())), "SDK identity projection must expose no public installer");
         AtomicBoolean entered = new AtomicBoolean();
         f.failure.set(true);
         denied(() -> scope.call(owner, () -> entered.getAndSet(true)), "license source unavailable refuses work");

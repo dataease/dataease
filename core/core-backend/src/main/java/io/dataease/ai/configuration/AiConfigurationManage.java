@@ -1,11 +1,15 @@
-package io.dataease.ai.manage;
-
-import io.dataease.ai.engine.conversation.AiConversationManage;
-import io.dataease.ai.engine.task.AiTaskManage;
+package io.dataease.ai.configuration;
 
 import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.dao.repository.*;
-import io.dataease.ai.support.*;
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.runtime.AiAdmission;
+import io.dataease.ai.engine.runtime.AiOutboundPolicy;
+import io.dataease.ai.engine.task.AiTaskManage;
+import io.dataease.ai.security.credential.AiSecrets;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.support.AiErrors;
+
 import io.dataease.api.ai.config.AiConfigDtos.*;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.IDUtils;

@@ -1,4 +1,4 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.security.identity;
 
 import java.util.Objects;
 import java.util.function.Supplier;

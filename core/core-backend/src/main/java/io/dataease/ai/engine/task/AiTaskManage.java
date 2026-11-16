@@ -1,17 +1,17 @@
 package io.dataease.ai.engine.task;
 
-import io.dataease.ai.manage.AiAccess;
+import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.engine.conversation.AiConversationScene;
-import io.dataease.ai.manage.AiIdentityScope;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
-import io.dataease.ai.scene.structure.AiStructureMutexScene;
 import io.dataease.ai.engine.runtime.AiToolConversationFeature;
+import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.scene.structure.AiStructureMutexScene;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.security.identity.AiIdentityScope;
+import io.dataease.ai.support.AiErrors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.ai.dao.entity.*;
-import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiToolProtocol;
 import io.dataease.api.ai.runtime.*;
 import io.dataease.api.ai.conversation.AiConversationDtos.Tool;
 import io.dataease.api.ai.conversation.AiConversationDtos.Result;

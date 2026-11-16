@@ -1,13 +1,13 @@
 package io.dataease.ai;
 
 import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
 import io.dataease.ai.scene.structure.AiStructureMutexScene;
+import io.dataease.ai.security.identity.AiDeploymentMode;
+import io.dataease.ai.support.AiErrors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.ai.manage.*;
-import io.dataease.ai.support.AiErrors;
-import io.dataease.ai.support.AiToolProtocol;
 import io.dataease.api.ai.runtime.AiPromptFingerprint;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;

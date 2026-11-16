@@ -1,10 +1,12 @@
 package io.dataease.ai.server;
 
+import io.dataease.ai.configuration.AiConfigurationManage;
+import io.dataease.ai.configuration.AiModelTestManage;
+import io.dataease.ai.support.AiErrors;
+
 import io.dataease.api.ai.config.AiConfigurationApi;
 import io.dataease.auth.ConfigurationSecurity;
 import io.dataease.api.ai.config.AiConfigDtos.*;
-import io.dataease.ai.manage.*;
-import io.dataease.ai.support.AiErrors;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 

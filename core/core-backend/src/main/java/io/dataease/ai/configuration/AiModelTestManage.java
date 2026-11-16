@@ -1,7 +1,10 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.configuration;
+
+import io.dataease.ai.engine.runtime.AiTransport;
+import io.dataease.ai.security.identity.AiAccess;
+import io.dataease.ai.support.AiErrors;
 
 import io.dataease.api.ai.config.AiConfigDtos.*;
-import io.dataease.ai.support.*;
 import org.springframework.ai.chat.prompt.*;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.ResponseFormat;

@@ -1,8 +1,9 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.security.identity;
+
+import io.dataease.ai.support.AiErrors;
 
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.permission.util.V3UserUtil;
-import io.dataease.ai.support.AiErrors;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
