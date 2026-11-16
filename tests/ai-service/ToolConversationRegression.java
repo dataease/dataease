@@ -1,5 +1,10 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.scene.sql.AiSqlConversationScene;
+
 import com.fasterxml.jackson.databind.*;
 import com.sun.net.httpserver.HttpServer;
 import io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository;
@@ -70,6 +75,8 @@ public final class ToolConversationRegression {
         var reads = new CopyOnWriteArrayList<String>();
         var mode = new AtomicReference<String>("tables");
         var operationAllowed = new AtomicBoolean(true);
+        var firstResourceAllowed = new AtomicBoolean(true);
+        var readTargets = new CopyOnWriteArrayList<Long>();
         var sourceRevision = new AtomicLong(1);
         var toolEntered = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var toolRelease = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
@@ -135,9 +142,9 @@ public final class ToolConversationRegression {
             if (method.getName().equals("tree") && (!Objects.equals(V3UserUtil.getUid(), 1L) || V3UserUtil.getProxy().isProxy())) return List.of();
             if (!Objects.equals(V3UserUtil.getUid(), 1L)) throw new AssertionError("metadata lost trusted actor");
             return switch (method.getName()) {
-                case "tree" -> { var node = new BusiNodeVO(); node.setId(11L); node.setLeaf(true); node.setName("Probe"); yield List.of(node); }
-                case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId(11L); ds.setName("Probe"); ds.setType("MySQL"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
-                case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Objects.equals(request.getDatasourceId(), 11L) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables");
+                case "tree" -> { var nodes = new ArrayList<BusiNodeVO>(); for (long id : List.of(11L, 12L)) { var node = new BusiNodeVO(); node.setId(id); node.setLeaf(true); node.setName("Probe " + id); nodes.add(node); } yield nodes; }
+                case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId((Long) args[0]); ds.setName("Probe " + args[0]); ds.setType("MySQL"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
+                case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Set.of(11L, 12L).contains(request.getDatasourceId()) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables"); readTargets.add(request.getDatasourceId());
                     if (mode.get().equals("chain-retry") && transientMetadata.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw AiErrors.error("connection_failed");
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
                     if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
@@ -174,7 +181,7 @@ public final class ToolConversationRegression {
             beans.addBean("permission", (InteractiveAuthApi) Proxy.newProxyInstance(ToolConversationRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class}, (proxy, method, args) -> {
                 if (method.getName().equals("checkAuth")) {
                     var request = (BusiPerCheckDTO) args[0];
-                    if (!operationAllowed.get() || !Objects.equals(request.getId(), 11L) || request.getBusiEnum() != BusiResourceEnum.DATASOURCE || request.getAuthEnum() != AuthEnum.READ) throw AiErrors.error("forbidden");
+                    if (!operationAllowed.get() || !Set.of(11L, 12L).contains(request.getId()) || Objects.equals(request.getId(), 11L) && !firstResourceAllowed.get() || request.getBusiEnum() != BusiResourceEnum.DATASOURCE || request.getAuthEnum() != AuthEnum.READ) throw AiErrors.error("forbidden");
                     return null;
                 }
                 throw new AssertionError("unexpected operation authorization " + method.getName());
@@ -242,7 +249,65 @@ public final class ToolConversationRegression {
             unboundResult = terminal(mvc, start(mvc, unbound, "Try reading a resource without selection"));
             if (!unboundResult.path("status").asText().equals("FAILED") || !reads.isEmpty())
                 throw new AssertionError("unbound scope must reject model attempts to acquire resource tools: " + unboundResult);
-            mvc.perform(delete("/ai/conversations/" + unbound.path("sessionId").asText()));
+            sent.clear(); reads.clear(); mode.set("tables");
+            var bound = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "general", "sql", "", "previousSessionId", unbound.path("sessionId").asText())))).andReturn().getResponse().getContentAsString());
+            var boundResult = terminal(mvc, start(mvc, bound, "现在呢"));
+            if (!"COMPLETED".equals(boundResult.path("status").asText()) || !sent.get(0).path("messages").toString().contains("Explain SELECT")
+                    || sent.get(0).path("tools").isEmpty() || !reads.equals(List.of("tables")))
+                throw new AssertionError("binding actual SQL scene retains prior intent and acquires only fresh authorized tools");
+            sent.clear(); reads.clear();
+            var edited = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", "general", "sql", "SELECT NAME FROM AI_PROBE", "previousSessionId", bound.path("sessionId").asText())))).andReturn().getResponse().getContentAsString());
+            var editedResult = terminal(mvc, start(mvc, edited, "Explain this draft"));
+            var continuedInput = sent.get(0).path("messages");
+            if (!"COMPLETED".equals(editedResult.path("status").asText()) || !continuedInput.get(0).path("content").asText().contains("SELECT NAME FROM AI_PROBE")
+                    || !continuedInput.toString().contains("现在呢") || !continuedInput.toString().contains("tool_call_id"))
+                throw new AssertionError("draft edits preserve completed tool call/result history under the same authorized resource");
+            sent.clear(); reads.clear(); readTargets.clear();
+            var switched = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "12", "editorId", "general", "sql", "", "previousSessionId", edited.path("sessionId").asText())))).andReturn().getResponse().getContentAsString());
+            var switchedRun = start(mvc, switched, "继续查看现在的库");
+            if (!"COMPLETED".equals(terminal(mvc, switchedRun).path("status").asText()) || !readTargets.equals(List.of(12L)))
+                throw new AssertionError("after switching, actual metadata reads must use only the new datasource");
+            var switchedInput = sent.get(0).path("messages");
+            if (!switchedInput.toString().contains("Explain SELECT") || !switchedInput.toString().contains("tool_call_id")
+                    || !switchedInput.get(0).path("content").asText().contains("\"resourceId\":\"11\"")
+                    || !switchedInput.get(0).path("content").asText().contains("\"resourceId\":\"12\""))
+                throw new AssertionError("old dialogue/tools retain source attribution alongside the new current datasource");
+            sent.clear(); reads.clear(); mode.set("general");
+            var cleared = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "", "editorId", "general", "sql", "", "previousSessionId", switched.path("sessionId").asText())))).andReturn().getResponse().getContentAsString());
+            var clearedRun = start(mvc, cleared, "继续聊刚才的 SQL 概念");
+            if (!"COMPLETED".equals(terminal(mvc, clearedRun).path("status").asText()) || !reads.isEmpty()
+                    || !sent.get(0).path("tools").isEmpty() || !sent.get(0).path("messages").toString().contains("tool_call_id"))
+                throw new AssertionError("clearing the target retains history but removes current tools");
+            var clearedInput = sent.get(0).path("messages");
+            var currentState = clearedInput.get(clearedInput.size() - 2);
+            if (!"system".equals(currentState.path("role").asText()) || !currentState.path("content").asText().contains("\"selection\":\"NONE\""))
+                throw new AssertionError("cleared selection must be explicit next to the latest question after historical metadata");
+            sent.clear();
+            terminal(mvc, start(mvc, cleared, "现在呢"));
+            var followupInput = sent.get(0).path("messages");
+            int systemCount = 0;
+            for (var message : followupInput) if ("system".equals(message.path("role").asText())) systemCount++;
+            if (systemCount != 2 || !followupInput.get(followupInput.size() - 2).path("content").asText().contains("\"selection\":\"NONE\""))
+                throw new AssertionError("ephemeral current-state notice must not accumulate in completed history");
+            sent.clear(); reads.clear(); mode.set("tables");
+            var forbiddenTool = terminal(mvc, start(mvc, cleared, "再次调用历史工具"));
+            if (!"FAILED".equals(forbiddenTool.path("status").asText()) || !reads.isEmpty())
+                throw new AssertionError("historical tool calls must not grant current tools after clearing the target");
+            firstResourceAllowed.set(false);
+            denied(mvc, switchedRun);
+            denied(mvc, clearedRun);
+            int beforeDenied = sent.size();
+            boolean deniedHistory = false;
+            try { start(mvc, cleared, "使用历史中的旧表"); }
+            catch (jakarta.servlet.ServletException failure) { deniedHistory = failure.getCause() instanceof AiErrors.Failure; }
+            if (!deniedHistory || sent.size() != beforeDenied) throw new AssertionError("revoked historical datasource must not leak into new model input");
+            firstResourceAllowed.set(true); mode.set("tables");
+
+            System.out.println("PASS actual SQL scope continuity preserves text/tool history and rebuilds authorized context");
             sent.clear(); reads.clear();
             // One-shot callers provide no conversation: actual registered tools/model still run.
             var accepted = mvc.perform(post("/ai/conversations/capabilities/sql.assist")

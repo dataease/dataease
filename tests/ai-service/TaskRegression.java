@@ -1,7 +1,13 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.manage.*;
+import io.dataease.ai.dao.entity.CoreAiTaskNode;
 import io.dataease.ai.server.AiTaskServer;
 import io.dataease.ai.server.AiConversationServer;
 import jakarta.persistence.EntityManager;
@@ -295,8 +301,13 @@ public final class TaskRegression {
             String statePath = "/ai/tasks/" + stateFailure.path("taskId").asText();
             for (int i = 0; i < 200 && !failCommit.get(); i++) Thread.sleep(25);
             if (!failCommit.get()) throw new AssertionError("controlled commit failure reached actual model completion");
-            // Repeated worker terminal failures while multiple node heartbeats continue committing normally.
+            // Failed terminal commits must keep the execution slot and its lease alive.
+            String pendingLease = em.createQuery("select a.nodeId from CoreAiTaskAttempt a where a.taskId=:task", String.class)
+                    .setParameter("task", stateFailure.path("taskId").asLong()).getSingleResult();
+            long pendingHeartbeat = em.find(CoreAiTaskNode.class, pendingLease).getHeartbeatAt();
             Thread.sleep(2200);
+            if (em.find(CoreAiTaskNode.class, pendingLease).getHeartbeatAt() <= pendingHeartbeat)
+                throw new AssertionError("terminal commit failure must not suspend the execution heartbeat");
             int sentBeforeRecovery = stateSends.get();
             var notSaved = json.readTree(mvc.perform(get(statePath)).andReturn().getResponse().getContentAsString());
             if ("COMPLETED".equals(notSaved.path("status").asText()) || !notSaved.path("result").isNull()) throw new AssertionError("uncommitted result must never be delivered as success");

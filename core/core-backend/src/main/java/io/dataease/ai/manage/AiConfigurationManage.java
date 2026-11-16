@@ -1,5 +1,8 @@
 package io.dataease.ai.manage;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import io.dataease.ai.dao.entity.*;
 import io.dataease.ai.dao.repository.*;
 import io.dataease.ai.support.*;

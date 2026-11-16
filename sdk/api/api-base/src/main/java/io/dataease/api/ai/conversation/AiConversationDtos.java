@@ -11,8 +11,10 @@ public final class AiConversationDtos {
     public record Open(@NotBlank @Pattern(regexp = "sql") String scene,
                        @Pattern(regexp = "[0-9]{1,20}|") String resourceId,
                        @NotBlank @Size(max = 100) String editorId,
-                       @Size(max = 30000) String sql, @Size(max = 100) String openKey) {
-        public Open(String scene, String resourceId, String editorId, String sql) { this(scene, resourceId, editorId, sql, null); }
+                       @Size(max = 30000) String sql, @Size(max = 100) String openKey,
+                       @Size(max = 100) String previousSessionId) {
+        public Open(String scene, String resourceId, String editorId, String sql, String openKey) { this(scene, resourceId, editorId, sql, openKey, null); }
+        public Open(String scene, String resourceId, String editorId, String sql) { this(scene, resourceId, editorId, sql, null, null); }
     }
     public record Session(String sessionId, String contextVersion, String scene, String resourceId,
                           String resourceName, String editorId, long expiresAt, String resourceVersion, String draftVersion) {

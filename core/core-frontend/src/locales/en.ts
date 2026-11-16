@@ -140,7 +140,7 @@ export default {
     guide_controls:
       'Hiding keeps the session and ongoing generation. Stopping ends only the current generation and retains earlier completed dialogue.',
     guide_session:
-      'Conversations are temporary. Changing SQL or datasource affects later requests; earlier results retain their original target. Apply suggestions explicitly after permission and version checks. Stopping or ending an active execution requires confirmation. Leaving or refreshing ends the foreground activity. Identity/workspace changes clear SQL and message drafts.',
+      'Conversations are temporary. Follow-ups, SQL edits and selecting, switching or clearing the datasource retain completed dialogue. Later operations use only the current datasource; historical information retains its original source. Earlier results retain their original target. Apply suggestions explicitly after permission and version checks. Stopping or ending an active execution requires confirmation. Leaving or refreshing ends the foreground activity. Identity/workspace changes clear SQL and message drafts.',
     resource: 'Datasource',
     sql: 'Current SQL',
     message: 'Message',

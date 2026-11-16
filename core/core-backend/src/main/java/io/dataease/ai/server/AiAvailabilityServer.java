@@ -1,7 +1,7 @@
 package io.dataease.ai.server;
 
 import io.dataease.ai.manage.AiAccess;
-import io.dataease.ai.manage.AiRuntimeManage;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.support.AiErrors;
 import io.dataease.api.ai.conversation.AiAvailabilityApi;
 import org.springframework.web.bind.annotation.RestController;

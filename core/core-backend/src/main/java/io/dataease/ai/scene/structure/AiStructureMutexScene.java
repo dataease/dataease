@@ -1,4 +1,7 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.scene.structure;
+
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.scene.sql.AiSqlConversationScene;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;

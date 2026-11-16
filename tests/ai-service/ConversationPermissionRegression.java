@@ -1,5 +1,10 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.scene.sql.AiSqlConversationScene;
+
 import io.dataease.ai.manage.*;
 import io.dataease.ai.server.AiConversationServer;
 import io.dataease.ai.support.AiErrors;

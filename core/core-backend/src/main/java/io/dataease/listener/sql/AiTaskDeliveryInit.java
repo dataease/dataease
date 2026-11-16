@@ -1,5 +1,7 @@
 package io.dataease.listener.sql;
 
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import io.dataease.initSql.Version;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -32,6 +34,6 @@ public class AiTaskDeliveryInit implements CoreSqlBlock {
         String bigint = session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(Types.BIGINT, session.getJdbcServices().getDialect());
         for (String column : List.of("delivery_expires_at", "notice_ack_at"))
             if (!columns.contains(column)) jdbc.execute("alter table core_ai_task_attempt add " + column + " " + bigint);
-        jdbc.update("update core_ai_task_attempt set notice_ack_at=finished_at, delivery_expires_at=finished_at+? where finished_at is not null and delivery_expires_at is null", io.dataease.ai.manage.AiTaskManage.DELIVERY_MILLIS);
+        jdbc.update("update core_ai_task_attempt set notice_ack_at=finished_at, delivery_expires_at=finished_at+? where finished_at is not null and delivery_expires_at is null", io.dataease.ai.engine.task.AiTaskManage.DELIVERY_MILLIS);
     }
 }

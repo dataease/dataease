@@ -1,5 +1,9 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.scene.structure.AiStructureMutexScene;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.manage.*;
 import io.dataease.ai.support.AiErrors;

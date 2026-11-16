@@ -1,4 +1,7 @@
-package io.dataease.ai.manage;
+package io.dataease.ai.scene.sql;
+
+import io.dataease.ai.manage.AiAccess;
+import io.dataease.ai.engine.conversation.AiConversationScene;
 
 import io.dataease.ai.support.AiErrors;
 import io.dataease.ai.support.AiToolProtocol;

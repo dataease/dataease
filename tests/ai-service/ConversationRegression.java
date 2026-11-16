@@ -1,5 +1,9 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository;
@@ -78,6 +82,45 @@ public final class ConversationRegression {
         current.set("recovery", json.valueToTree(Map.of("stepRetries", step, "attemptRetries", attempt, "initialDelayMillis", 1000)));
         if (mvc.perform(post("/ai/settings").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(current))).andReturn().getResponse().getStatus() != 200)
             throw new AssertionError("authorized recovery policy save");
+    }
+    private static com.fasterxml.jackson.databind.JsonNode continueContext(MockMvc mvc, ObjectMapper json,
+            com.fasterxml.jackson.databind.JsonNode previous, String resource, String sql, String openKey) throws Exception {
+        var body = new HashMap<String, Object>();
+        body.put("scene", "sql"); body.put("resourceId", resource); body.put("editorId", "continuous-context");
+        body.put("sql", sql); body.put("openKey", openKey);
+        if (previous != null) body.put("previousSessionId", previous.path("sessionId").asText());
+        var response = mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsBytes(body))).andReturn().getResponse();
+        if (response.getStatus() != 200) throw new AssertionError("continuing an authorized conversation opens successfully: " + response.getStatus());
+        return json.readTree(response.getContentAsString());
+    }
+    private static void continuity(MockMvc mvc, ObjectMapper json, List<com.fasterxml.jackson.databind.JsonNode> sent) throws Exception {
+        var initial = continueContext(mvc, json, null, "", "", "continuity-empty");
+        await(mvc, json, start(mvc, json, "/ai/conversations/" + initial.path("sessionId").asText() + "/executions", initial, "查看所有表") + "/events", "COMPLETED", "多字节");
+        var bound = continueContext(mvc, json, initial, "11", "", "continuity-bind");
+        await(mvc, json, start(mvc, json, "/ai/conversations/" + bound.path("sessionId").asText() + "/executions", bound, "现在呢") + "/events", "COMPLETED", "多字节");
+        var messages = sent.get(sent.size() - 1).path("messages");
+        if (messages.size() != 5 || !messages.get(1).path("content").asText().equals("查看所有表") || !messages.get(4).path("content").asText().equals("现在呢"))
+            throw new AssertionError("first datasource binding must carry the original question into the actual model request");
+        var edited = continueContext(mvc, json, bound, "11", "select 2", "continuity-edit");
+        await(mvc, json, start(mvc, json, "/ai/conversations/" + edited.path("sessionId").asText() + "/executions", edited, "继续解释") + "/events", "COMPLETED", "多字节");
+        messages = sent.get(sent.size() - 1).path("messages");
+        if (messages.size() != 7 || !messages.get(0).path("content").asText().contains("select 2") || !messages.get(1).path("content").asText().equals("查看所有表"))
+            throw new AssertionError("SQL draft refresh preserves history and uses the new system context");
+        if (edited.path("expiresAt").asLong() != initial.path("expiresAt").asLong()) throw new AssertionError("context refresh cannot extend the conversation lifetime");
+        var repeated = continueContext(mvc, json, bound, "11", "select 2", "continuity-edit");
+        if (!repeated.path("sessionId").equals(edited.path("sessionId"))) throw new AssertionError("continuation is idempotent even after the original context retires");
+        var switched = continueContext(mvc, json, edited, "12", "select 2", "continuity-cross-resource");
+        await(mvc, json, start(mvc, json, "/ai/conversations/" + switched.path("sessionId").asText() + "/executions", switched, "切换后继续") + "/events", "COMPLETED", "多字节");
+        messages = sent.get(sent.size() - 1).path("messages");
+        if (messages.size() != 9 || !messages.get(1).path("content").asText().equals("查看所有表"))
+            throw new AssertionError("datasource switching preserves the continuous dialogue");
+        var unbound = continueContext(mvc, json, switched, "", "", "continuity-clear");
+        await(mvc, json, start(mvc, json, "/ai/conversations/" + unbound.path("sessionId").asText() + "/executions", unbound, "只聊概念") + "/events", "COMPLETED", "多字节");
+        messages = sent.get(sent.size() - 1).path("messages");
+        if (messages.size() != 11 || !messages.get(1).path("content").asText().equals("查看所有表"))
+            throw new AssertionError("clearing the datasource keeps dialogue history");
+        mvc.perform(delete("/ai/conversations/" + unbound.path("sessionId").asText()));
+        System.out.println("PASS first datasource binding and SQL edits preserve server-owned conversation history with fresh scope and bounded lifetime");
     }
     private static String pathFor(com.fasterxml.jackson.databind.JsonNode session) {
         return "/ai/conversations/" + session.path("sessionId").asText() + "/turns";
@@ -200,7 +243,7 @@ public final class ConversationRegression {
                 public String execute(Context context, String name, Map<String, String> arguments) { uncertainWrites.incrementAndGet(); throw AiErrors.error("connection_failed"); }
                 public List<Resource> resources() { return List.of(new Resource("11", "Synthetic database")); }
                 public Context resolve(String id, String sql) { return new Context(id, "Synthetic database", "v1", "SQL input: " + sql); }
-                public void authorize(Context c) { java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get())); if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !"11".equals(c.resourceId())) throw AiErrors.error("forbidden"); }
+                public void authorize(Context c) { java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(sceneLatencyMillis.get())); if (!allowed.get() || !Objects.equals(V3UserUtil.getUid(), 1L) || !Set.of("", "11", "12").contains(c.resourceId())) throw AiErrors.error("forbidden"); }
             };
             var dialogueAccess = new SyntheticAccess(null, null) {
                 public AiDeploymentMode.State mode() { return access.mode(); }
@@ -412,6 +455,8 @@ public final class ConversationRegression {
             }
             mvc.perform(delete("/ai/conversations/" + lastEditedSession));
             sent.clear(); protocol.set("normal");
+            protocol.set("framed"); continuity(mvc, json, sent); protocol.set("normal");
+            sent.clear();
             System.out.println("PASS public foreground Open/submit idempotency, frozen manual retry, atomic activity quota and temporary model recovery");
             if (Boolean.getBoolean("ai.test.recoveryOnly")) { manage.destroy(); return; }
             var open = mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
@@ -494,6 +539,11 @@ public final class ConversationRegression {
             denyGet(mvc, eventsPath); deny(mvc, streamingPath + "/" + run.path("executionId").asText() + "/stop", version, "forged stop");
             V3UserUtil.clear(); V3UserUtil.setUid(1L);
             deny(mvc, streamingPath, streamingSession.path("contextVersion").asText(), "Concurrent turn on same context");
+            boolean activeRefreshDenied = false;
+            try { mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(Map.of("scene", "sql", "resourceId", "11", "editorId", streamingSession.path("editorId").asText(), "sql", "select 2", "previousSessionId", streamingSession.path("sessionId").asText())))); }
+            catch (jakarta.servlet.ServletException expected) { activeRefreshDenied = expected.getCause() instanceof AiErrors.Failure known && "concurrency".equals(known.safeCode()); }
+            if (!activeRefreshDenied) throw new AssertionError("context refresh cannot retire a running conversation");
             streamFinish.countDown();
             for (int attempt = 0; attempt < 100; attempt++) {
                 events = json.readTree(mvc.perform(get(eventsPath).param("after", "0")).andReturn().getResponse().getContentAsString());

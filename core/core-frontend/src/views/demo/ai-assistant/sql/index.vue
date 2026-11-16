@@ -178,6 +178,7 @@ type Submission = {
   sql: string
   editorId: string
   openKey: string
+  previousSessionId?: string
   submissionKey: string
   expiresAt: number
   target?: AiConversationSession
@@ -402,6 +403,7 @@ const send = async (single = false, resume = false) => {
     sql: sql.value,
     editorId,
     openKey: crypto.randomUUID(),
+    previousSessionId: single ? undefined : session.value?.sessionId,
     submissionKey: crypto.randomUUID(),
     expiresAt: Date.now() + 30 * 60 * 1000
   }
@@ -454,7 +456,8 @@ const send = async (single = false, resume = false) => {
           resourceId: submission.resourceId,
           editorId: submission.editorId,
           sql: submission.sql,
-          openKey: submission.openKey
+          openKey: submission.openKey,
+          previousSessionId: submission.previousSessionId
         })
         if (current !== generation) {
           void closeConversation(active.sessionId).catch(() => undefined)
@@ -786,7 +789,13 @@ onBeforeUnmount(() => {
       </details>
       <el-form label-position="top">
         <el-form-item :label="tr('resource')">
-          <el-select v-model="resourceId" :aria-label="tr('resource')" filterable clearable>
+          <el-select
+            v-model="resourceId"
+            :aria-label="tr('resource')"
+            :value-on-clear="''"
+            filterable
+            clearable
+          >
             <el-option
               v-for="resource in resources"
               :key="resource.id"

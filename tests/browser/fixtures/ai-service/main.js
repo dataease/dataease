@@ -18,7 +18,7 @@ if (query.get('view') === 'conversation-route') {
     .use(ElementPlus)
   router.isReady().then(() => app.mount('#app'))
 } else if (query.get('view') === 'conversation') {
-  const { default: Conversation } = await import('@/views/demo/ai-assistant/index.vue')
+  const { default: Conversation } = await import('@/views/demo/ai-assistant/sql/index.vue')
   if (query.has('router')) {
     const router = createRouter({
       history: createMemoryHistory(),

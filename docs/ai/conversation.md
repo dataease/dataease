@@ -6,17 +6,47 @@
 
 Demo 的可用性、后台任务和完成通知在页面可见且在线时同步：首次进入、重新聚焦、恢复可见或网络恢复时立即读取；空闲时每 30 秒同步一次，有进行中后台任务或待追加原对话的结果时每 2 秒更新后台进度。提交、重试或定位任务会唤醒后台读取，同一组件不并发启动重复轮询；同轮已读到的任务状态直接复用。隐藏标签页或断网暂停这些定时读取，离开页面清理定时器及事件监听；暂停读取不取消持久后台任务。前台执行仅在运行中读取增量，有新内容时间隔 500 毫秒，无新内容时逐步放缓至 2 秒；隐藏标签页时保留 5 秒读取以续租，确认终态后停止。空闲页的配置开关变化最迟在下一次同步反映，实际调用和结果交付仍由后端即时鉴权。
 
+## 目录与扩展位置
+
+后端根目录为 `core/core-backend/src/main/java/io/dataease/ai/`，按执行机制、具体场景和 HTTP 入口区分：
+
+```text
+ai/
+├── engine/
+│   ├── conversation/  # AiConversationManage、AiConversationScene；会话与场景扩展接口
+│   ├── runtime/       # AiRuntimeManage、AiToolConversationFeature；模型执行与工具协议接入
+│   └── task/          # AiTaskManage；独立后台任务、调度、租约与结果投递
+├── scene/
+│   ├── sql/           # AiSqlConversationScene、AiSqlStaticValidator；数据源/SQL 业务
+│   └── structure/     # AiStructureMutexScene；受控结构说明与资源互斥验收
+├── server/            # 既有 HTTP 入口；配置、可用性、会话、任务与审计
+├── manage/            # 配置、身份/许可、密钥、审计及留存管理
+├── support/           # 传输、准入、协议、恢复及安全基础能力
+├── dao/               # 持久化实体与仓储
+└── service/           # 既有 AI 基础服务
+```
+
+SQL Demo 页面位于 `core/core-frontend/src/views/demo/ai-assistant/sql/`，包含 `index.vue` 和 `BackgroundTasks.vue`；开发路由仍为 `#/demo/ai-assistant`。SDK 中 `api/ai/conversation`、`api/ai/task` 和 `api/ai/runtime` 的公共包名、HTTP 路径和已有请求行为保持。
+
+新增业务实现放到对应的 `scene/<业务场景>/`，通过 `AiConversationScene` 定义业务上下文、授权、工具与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
+
+本次是职责导航和包路径整理，不代表已实现任意资源对话。当前 `Open/Invoke` 的场景校验及 SQL 输入字段、资源列表和建议应用入口、会话的当前数据源提示，以及任务引擎中受控结构场景的表选择适配仍带有 SQL Demo 约束。接入第二种资源时，应根据真实场景扩展这些契约并将对应业务适配移到场景/入口层；不能只新增一个类就宣称完整接入。多种资源同时参与一轮对话仍需单独设计。
+
+包名迁移后，本地开发应由 IDE 执行后端模块 Rebuild 再启动，或使用项目适用的干净模块构建；普通增量编译可能留下旧包的 Spring 组件。不要手改生成类或启动两个不同包下的同名旧/新组件。
+
 ## 开发入口与页面生命周期
 
 In the Vite development application, authenticated users can open `#/demo/ai-assistant` (no product navigation item). The page title explicitly identifies it as a demo. Select a readable datasource in the current workspace, enter SQL and ask successive questions. The page displays actual upstream text increments and execution IDs. Stop retains partial output as incomplete and keeps previously completed history for follow-up. Hiding the assistant keeps polling and does not cancel it. Changing SQL or datasource affects subsequent requests; active output retains its original target. Stopping or ending an active execution and route navigation require confirmation; cancelling the confirmation preserves the execution and draft. Leaving or refreshing uses the browser interruption confirmation. Identity changes end the activity; short offline loss uses bounded reads of the original execution. No candidate SQL is executed or saved. The registered metadata tools read actual authorized table/field structure through existing DE APIs. The registered `validate_sql` tool returns real PASS/INVALID/UNSUPPORTED static verdicts, and the model can correct and revalidate within the same bounded round. Suggestions cannot be applied automatically.
 
-The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/`; its marked route block in `src/router/index.ts` is registered only in development. The `/demo` parent and `ai-assistant` child match the application's segment-based `pathValid` page admission check; registering the whole URL as a flat route would be rejected even though Vue Router resolves it. Browser regression covers that actual route table/permission-store check and renders the page through RouterView. After formal business integration, remove that route block and demo page, then adapt or remove their page-specific locale entries and browser fixture/tests. The shared conversation API, backend engine, SQL scene and Java behavior regressions have a separate lifecycle and can be reused by formal entry points.
+The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/sql/`; its marked route block in `src/router/index.ts` is registered only in development. The `/demo` parent and `ai-assistant` child match the application's segment-based `pathValid` page admission check; registering the whole URL as a flat route would be rejected even though Vue Router resolves it. Browser regression covers that actual route table/permission-store check and renders the page through RouterView. After formal business integration, remove that route block and demo page, then adapt or remove their page-specific locale entries and browser fixture/tests. The shared conversation API, backend engine, SQL scene and Java behavior regressions have a separate lifecycle and can be reused by formal entry points.
 
 连续读取失败只表示页面暂时无法确认执行状态。只要仍持有未确认终态的执行或受理结果未知的提交，停止、结束会话、路由离开及刷新仍要求中断确认；取消确认保留部分输出和原执行读取或同次提交核对入口。确认终态后解除此保护，不自动重新提交模型请求。
 
 ## HTTP 契约与事件
 
 The shared SDK exposes `/ai/conversations`: `GET /resources`, `POST` to open a context, the compatible synchronous `POST /{id}/turns`, and `DELETE /{id}`. Streaming uses `POST /{id}/executions`, authenticated `GET /{id}/executions/{execution}/events?after=N` and `POST /{id}/executions/{execution}/stop`. All browser requests use the existing Axios/security wrapper. Events include session/execution/context IDs, monotonic sequence/cursor, text or safe terminal/error codes. Actual program tools emit a typed TOOL payload with callId, registered name, STARTED/RUNNING/SUCCEEDED/FAILED status, validated parameters and a safe result projection; model text cannot create tool events. The Vue page renders these as escaped text, separate from assistant text, and deduplicates the same call through its progress states. The UI deduplicates cursor replay and suppresses late old-generation responses. If stop finds an already completed execution, the UI drains missing events before showing it as complete. Timeout, unsupported capability, malformed response and permission failures use the existing safe error translations.
+
+Demo 的页面聊天保持连续对话：普通追问复用当前会话；选择、切换或清空数据源，以及修改 SQL 草稿时，通过 `POST /ai/conversations` 的可选 `previousSessionId` 由后端续接已完成的文本/工具历史，并更新执行上下文快照。历史消息按范围记录原数据源，系统提示区分历史来源与当前目标；在最新用户问题前另提供本轮权威选择状态（NONE/SELECTED），短追问以此解释。该提示仅属于当前请求，不写入完成历史或改变历史范围索引；旧表信息不能被当成当前库的元数据或访问授权。工具定义、实际执行和新结果仅绑定当前目标；清空数据源后不提供资源工具，但保留工具调用及结果历史用于纯对话。旧结果仍绑定原目标，客户端不上传或拼装历史。续接必须同身份、同编辑器、同场景，来源未关闭、未过期、未退役且没有正在执行的请求。当前范围和历史涉及的资源范围在模型、工具及交付边界重新鉴权，重复资源范围合并检查，退役快照的旧结果及重试也保留历史资源鉴权信息；历史资源撤权或版本失效时拒绝继续使用并清理会话，不能通过切库绕过。身份/工作空间变化和显式结束仍清理会话，单次辅助按钮不参与聊天历史。续接保留原过期时间和累计轮次，不借更新目标延长会话或绕过轮次限制。需要独立会话的业务入口显式不传 `previousSessionId`；数据源变化本身不自动定义会话边界。旧客户端不传该字段时沿用原 Open 行为，新前端须配套新 SDK/后端；未改动 XPack 契约或实现。
 
 ## 共享 SQL 辅助能力与结果应用
 
@@ -84,11 +114,11 @@ Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不�
 
 后台从持久身份恢复可信 task 上下文，复用同一个 scene 的 resolve/authorize/tools/execute/result 与 runtime 的模型、工具协议和预算。每次模型发送、工具执行、结果提交和用户读取重新检查授权，实际选定模型及配置/凭据版本在首次发送前固定并保存。后台身份作用域仅安装服务端保存的身份，前后复核并清理 ThreadLocal，不传播 Servlet、事务或受管实体。模型/数据源 I/O 不占元数据库事务。私有流解析及静态校验热循环只检查本地运行状态和期限，不逐字符往返元数据库；调度器仍周期复核持久归属，模型/工具/结果边界继续实时鉴权和 fence 检查。
 
-数据库原子领取、当前尝试、节点归属和随机 fence 共同裁决提交；取消或中断先使旧执行不可提交，再释放归属。节点每秒续约，15 秒无有效心跳即失效；失效节点的 RUNNING 尝试标为 INTERRUPTED，不自动续跑。旧进程不能复活过期心跳或提交迟到结果，未开始的 QUEUED 尝试可由其他节点领取。已完成结果在节点重启后仍可经授权读取。状态/结果提交失败不能显示成功；本地保留有界终结工作，在数据库恢复后只重试保存失败状态，不重新调用模型。升级迁移仍应先由单节点完成，再启动其他节点。
+数据库原子领取、当前尝试、节点归属和随机 fence 共同裁决提交；取消或中断先使旧执行不可提交，再释放归属。仅有本地运行或待持久化终态任务时，节点每秒续约，15 秒无有效心跳即失效；失效节点的 RUNNING 尝试标为 INTERRUPTED，不自动续跑。旧进程不能复活过期心跳或提交迟到结果，未开始的 QUEUED 尝试可由其他节点领取。已完成结果在节点重启后仍可经授权读取。状态/结果提交失败不能显示成功；本地保留有界终结工作，在数据库恢复后只重试保存失败状态，不重新调用模型。升级迁移仍应先由单节点完成，再启动其他节点。
 
-调度在稳定空闲时每 1.5 秒执行一次有界的活动尝试 ID 探测，不读取任务正文、不统计运行总数、不获取共享调度锁。提交、手动重试和终态释放资源在事务提交后唤醒本机；并发通知合并，另一节点提交及漏通知由数据库探测兜底。发现活动任务后按 250ms 间隔继续调度，领取时仍在短事务中重新核对共享容量、用户轮转和等待期限。活动任务的全局权限复核按 500ms 间隔，排队超时和失联恢复按 1 秒间隔安排；先探测是否存在需要处理的记录，再获取协调锁复查。这里的间隔均不包含本轮数据库/权限检查耗时，不是故障或满载期间的硬时延保证。
+调度在稳定空闲时每 1.5 秒执行一次有界的排队或失联尝试 ID 探测，不读取任务正文、不统计运行总数、不获取共享调度锁。提交、手动重试和终态释放资源在事务提交后唤醒本机；并发通知合并，另一节点提交及漏通知由数据库探测兜底。仅有其他健康节点的 RUNNING 尝试时保持空闲探测，不进入本节点高频扫描。发现排队/失联任务或本地有执行时按 250ms 间隔继续调度，领取时仍在短事务中重新核对共享容量、用户轮转和等待期限。排队任务及本节点运行任务的权限复核按 500ms 间隔，活跃调度中的排队超时和失联恢复按 1 秒间隔安排；空闲节点通过 1.5 秒兜底探测发现过期租约后进入恢复；先探测是否存在需要处理的记录，再获取协调锁复查。这里的间隔均不包含本轮数据库/权限检查耗时，不是故障或满载期间的硬时延保证。
 
-本地运行监控使用独立线程，每轮结束后等待 250ms；没有本地运行任务时不查库，避免领取和维护的耗时拖慢运行任务的取消、期限与归属检查。节点心跳仍每秒写入，留存清理维持独立的每分钟作业；AI 关闭且遗留状态已处理后也只保留轻量探测和必要维护，不承诺完全零 SQL。standalone 不新增 Redis 要求，distributed 的既有模型请求准入不变，本次没有增加消息中间件或跨节点通知链路。
+本地运行监控使用独立线程，每轮结束后等待 250ms；没有本地运行任务时不查库，避免领取和维护的耗时拖慢运行任务的取消、期限与归属检查。节点启动不写租约，空闲不写心跳。空闲后首次成功领取在同一事务中创建新的随机租约身份，领取期间保留已有租约的续约资格，心跳数据库操作不等待领取锁；领取提交和本地登记与关闭过程串行；不复活旧租约。每个执行尝试固定携带领取时的租约身份，迟到回调不能使用新身份。终态持久化失败时保留本地运行槽和续约，只有终态落库或确认已失去归属后才移除；显式取消仍按提交后的撤销结果处理。再次激活时只清理自身无运行引用的旧租约，保留仍有引用的记录供失联恢复。留存清理维持独立的每分钟作业；AI 关闭且遗留状态已处理后也只保留轻量探测和必要维护，不承诺完全零 SQL。standalone 不新增 Redis 要求，distributed 的既有模型请求准入不变，本次没有增加消息中间件或跨节点通知链路。
 
 后台任务已领取但模型请求尚未发送时，配置发布的短暂准入屏障可能返回 `policy_blocked`。该阶段最多等待 1 秒（仍受本次执行期限约束），每 25ms 重新检查权限、取消和当前配置后尝试准入；持续阻断则失败，不绕过准入，也不重放已发送的请求。这是发送前的本地准入等待，不消耗模型技术重试次数；前台仍立即返回准入失败，普通并发已满也不因此自动重试。
 

@@ -238,7 +238,7 @@ Redis 许可结构全新初始化或丢失后，会进入恢复保护期；当�
 ## 10 源码与验证入口
 
 - 公共契约：`sdk/api/api-base/src/main/java/io/dataease/api/ai/runtime/`。
-- 调用编排：`core/core-backend/src/main/java/io/dataease/ai/manage/AiRuntimeManage.java`。
+- 调用编排：`core/core-backend/src/main/java/io/dataease/ai/engine/runtime/AiRuntimeManage.java`。
 - 输入与参数边界：`core/core-backend/src/main/java/io/dataease/ai/support/AiPromptPolicy.java`。
 - 并发准入：`core/core-backend/src/main/java/io/dataease/ai/support/AiAdmission.java`。
 - 传输与取消：`core/core-backend/src/main/java/io/dataease/ai/support/AiTransport.java`。

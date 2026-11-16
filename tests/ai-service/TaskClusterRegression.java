@@ -477,10 +477,11 @@ public final class TaskClusterRegression {
         System.out.println("DIAG idle " + label + " 4s taskSql=" + taskQueries + " locks=" + locks + " bodies=" + bodies + " heartbeats=" + heartbeats);
         check(locks == 0, "idle " + label + " never takes a shared task scheduling lock");
         check(bodies == 0, "idle " + label + " never loads task or attempt payloads");
+        check(heartbeats == 0, "idle " + label + " does not renew an execution lease");
         check(taskQueries > 0 && taskQueries <= 8, "idle " + label + " retains bounded database discovery instead of full dispatch sweeps");
     }
     private static void idle(int accepting, JdbcTemplate jdbc) throws Exception {
-        node("idle-worker", true); int worker = port("idle-worker");
+        var workerProcess = node("idle-worker", true); int worker = port("idle-worker");
         Thread.sleep(1200);
         idleWindow(jdbc, "empty-enabled");
         // This accepting JVM has no scheduler: the remote worker cannot receive its local wakeup.
@@ -528,7 +529,63 @@ public final class TaskClusterRegression {
                 check(!sends.containsKey(key), mode + " admission never sends a model request");
             }
         }
+        idleLeases(accepting, worker, workerProcess, jdbc);
         System.out.println("PASS idle scheduling " + checks + " assertions (actual SQL and public HTTP across JVMs)");
+    }
+    private static void idleLeases(int accepting, int worker, Process workerProcess, JdbcTemplate jdbc) throws Exception {
+        var longTask = call(worker, "/ai/tasks", "POST", body("slow-active-lease"));
+        String longPath = "/ai/tasks/" + longTask.path("taskId").asText();
+        awaitSend(worker, longPath, "slow-active-lease");
+        String oldLease = jdbc.queryForObject("select node_id from core_ai_task_attempt where task_id=?", String.class, longTask.path("taskId").asLong());
+        long heartbeat = jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, oldLease);
+        Files.createFile(output.resolve("hold-claim-commit"));
+        try {
+            var pending = call(worker, "/ai/tasks", "POST", body("claim-during-running"));
+            long until = System.currentTimeMillis() + 5000;
+            while (!Files.exists(output.resolve("claim-commit-held")) && System.currentTimeMillis() < until) Thread.sleep(10);
+            check(Files.exists(output.resolve("claim-commit-held")), "controlled claim reached its commit barrier");
+            long before = jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, oldLease);
+            Thread.sleep(2200);
+            check(jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, oldLease) > before,
+                    "an in-flight claim cannot block renewal of an existing execution lease");
+            Files.delete(output.resolve("hold-claim-commit"));
+            await(worker, "/ai/tasks/" + pending.path("taskId").asText(), "COMPLETED");
+        } finally { Files.deleteIfExists(output.resolve("hold-claim-commit")); }
+        Thread.sleep(16000);
+        check("RUNNING".equals(call(worker, longPath, "GET", "").path("status").asText())
+                        && jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, oldLease) > heartbeat + 10000,
+                "active execution keeps renewing beyond a full lease period");
+        release.get("slow-active-lease").countDown(); await(worker, longPath, "COMPLETED");
+        Thread.sleep(1200);
+        heartbeat = jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, oldLease);
+        Thread.sleep(16000);
+        check(jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, oldLease) == heartbeat,
+                "idle worker stops renewing beyond a full lease period");
+        var resumed = call(worker, "/ai/tasks", "POST", body("slow-idle-reactivation"));
+        String path = "/ai/tasks/" + resumed.path("taskId").asText();
+        awaitSend(worker, path, "slow-idle-reactivation");
+        String lease = jdbc.queryForObject("select node_id from core_ai_task_attempt where task_id=?", String.class, resumed.path("taskId").asLong());
+        check(!lease.equals(oldLease), "reactivation claims with a fresh identity rather than reviving an expired lease");
+        check(jdbc.queryForObject("select count(*) from core_ai_task_node where id=?", Long.class, oldLease) == 0,
+                "reactivation removes its unreferenced prior lease instead of accumulating rows per task");
+        // Freeze only the owned worker JVM. Its lease is still healthy while the new observer starts.
+        signal(workerProcess, "STOP");
+        try {
+            node("idle-observer", true); int observer = port("idle-observer");
+            idleWindow(jdbc, "healthy-remote-running");
+            long lastBeat = jdbc.queryForObject("select heartbeat_at from core_ai_task_node where id=?", Long.class, lease);
+            check(System.currentTimeMillis() - lastBeat < 15000, "remote lease remained valid throughout idle SQL measurement");
+            // With no queued/local work, the same lightweight probe must still discover stale ownership.
+            await(observer, path, "INTERRUPTED");
+        } finally { signal(workerProcess, "CONT"); }
+        release.get("slow-idle-reactivation").countDown();
+        int observer = port("idle-observer");
+        Thread.sleep(1200);
+        check("INTERRUPTED".equals(call(observer, path, "GET", "").path("status").asText()) && sends.get("slow-idle-reactivation") == 1,
+                "expired worker cannot commit late output or replay its attempt");
+        var next = call(accepting, "/ai/tasks", "POST", body("after-remote-expiry"));
+        await(observer, "/ai/tasks/" + next.path("taskId").asText(), "COMPLETED");
+        Thread.sleep(1200); idleWindow(jdbc, "after-recovery");
     }
     private static void capacityTransitions(int a, int b) throws Exception {
         for (int i = 0; i < 12; i++) {

@@ -1,5 +1,10 @@
 package io.dataease.ai;
 
+import io.dataease.ai.engine.conversation.AiConversationManage;
+import io.dataease.ai.engine.conversation.AiConversationScene;
+import io.dataease.ai.engine.runtime.AiRuntimeManage;
+import io.dataease.ai.engine.task.AiTaskManage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import io.dataease.ai.dao.entity.*;
@@ -45,7 +50,21 @@ public final class TaskNode {
     public static void main(String[] args) throws Exception {
         new Translator().setMessageSource(new StaticMessageSource()); new IDUtils().setSnowFlake(new SnowFlake(1, Math.floorMod(args[2].hashCode(), 31)));
         var factory = factory(args[0]);
-        var em = SharedEntityManagerCreator.createSharedEntityManager(factory); var manager = new JpaTransactionManager(factory);
+        var em = SharedEntityManagerCreator.createSharedEntityManager(factory);
+        var manager = new JpaTransactionManager(factory) {
+            @Override protected void doCommit(org.springframework.transaction.support.DefaultTransactionStatus status) {
+                Path barrier = Path.of(args[1], "hold-claim-commit");
+                if (Thread.currentThread().getName().equals("de-ai-task-dispatch") && Files.exists(barrier)) {
+                    try {
+                        Files.writeString(Path.of(args[1], "claim-commit-held"), "held");
+                        long until = System.currentTimeMillis() + 10000;
+                        while (Files.exists(barrier) && System.currentTimeMillis() < until) Thread.sleep(10);
+                        if (Files.exists(barrier)) throw new IllegalStateException("owned claim barrier timed out");
+                    } catch (java.io.IOException | InterruptedException failure) { throw new IllegalStateException(failure); }
+                }
+                super.doCommit(status);
+            }
+        };
         var repositories = new JpaRepositoryFactory(em); var settings = repositories.getRepository(CoreAiSettingRepository.class);
         var policies = repositories.getRepository(CoreAiOrgPolicyRepository.class);
         var beans = new StaticListableBeanFactory();
