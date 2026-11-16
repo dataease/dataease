@@ -147,9 +147,7 @@ public class AiTransport {
                     .defaultStatusHandler(status -> status.value() >= 300, (request, response) -> { throw providerError(response); })
                     .requestInterceptor((request, bytes, execution) -> {
                 if (bytes.length > 4 * 1024 * 1024) throw AiErrors.error("input_limit");
-                recheck.run();
-                if (Thread.currentThread().isInterrupted() || System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
-                AiAdmission.Permit permit = admission.acquire(s, background, deadline);
+                AiAdmission.Permit permit = acquire(s, background, deadline, recheck, cancellation);
                 try {
                     recheck.run();
                     if (audit != null) capture[0] = audit.begin("MODEL", new String(bytes, java.nio.charset.StandardCharsets.UTF_8), c.key());
@@ -168,6 +166,25 @@ public class AiTransport {
         } finally {
             abort.cancel(false);
             if (capture[0] != null) capture[0].finish(succeeded, succeeded ? null : cancellation.cancelled() ? "cancelled" : error == null ? "upstream_failed" : error);
+        }
+    }
+    /**
+     * Background work may reach admission while a capacity-only configuration is publishing.
+     * Wait only before sending HTTP, outside a transaction, and refresh the complete policy each time.
+     * This is not a provider retry and cannot replay a request whose outcome is unknown. */
+    private AiAdmission.Permit acquire(CoreAiSetting settings, boolean background, long deadline,
+                                       Runnable recheck, RequestCancellation cancellation) {
+        long until = Math.min(deadline, System.currentTimeMillis() + 1000);
+        while (true) {
+            if (cancellation.cancelled() || Thread.currentThread().isInterrupted()) throw AiErrors.error("cancelled");
+            if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+            recheck.run();
+            try { return admission.acquire(settings, background, deadline); }
+            catch (AiErrors.Failure blocked) {
+                if (!background || !"policy_blocked".equals(blocked.safeCode()) || System.currentTimeMillis() >= until) throw blocked;
+            }
+            try { Thread.sleep(Math.min(25, Math.max(1, until - System.currentTimeMillis()))); }
+            catch (InterruptedException cancelled) { Thread.currentThread().interrupt(); throw AiErrors.error("cancelled"); }
         }
     }
     /** One controlled interactive upstream stream. No default WebClient, retry or model-side tool execution. */

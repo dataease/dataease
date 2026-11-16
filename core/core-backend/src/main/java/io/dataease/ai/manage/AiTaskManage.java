@@ -33,11 +33,17 @@ import java.util.stream.Collectors;
 public class AiTaskManage implements AiToolConversationFeature {
     public static final long DELIVERY_MILLIS = TimeUnit.DAYS.toMillis(7);
     private static final long NODE_LEASE_MILLIS = 15000;
+    private static final long IDLE_POLL_MILLIS = 1500;
+    private static final long ACTIVE_POLL_MILLIS = 250;
     private final String nodeId = UUID.randomUUID().toString();
     private final AtomicBoolean started = new AtomicBoolean();
     private volatile boolean stopped;
     private final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-heartbeat"));
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-dispatch"));
+    private final ScheduledExecutorService monitor = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-monitor"));
+    private final Semaphore wakeup = new Semaphore(0);
+    private long nextPolicyCheck;
+    private long nextMaintenance;
     private final Map<Long, Run> running = new ConcurrentHashMap<>();
     private record Work(Long taskId, Long attemptId, String fence, AiAccess.Identity owner, Submit input, AiConversationScene.Context context, long deadline) { }
     private static final class Run {
@@ -111,7 +117,7 @@ public class AiTaskManage implements AiToolConversationFeature {
                 task.setSubmissionHash(submission); task.setInputHash(fingerprint); task.setInputJson(input); task.setOwnerJson(encode(owner));
                 task.setContextJson(encode(context)); task.setCreatedAt(System.currentTimeMillis());
                 var attempt = attempt(task, 1, hash(task.getId() + ":initial"));
-                task.setCurrentAttemptId(attempt.getId()); em.persist(task); em.persist(attempt); claimResources(claims, task.getId(), attempt.getId()); em.flush(); return view(task);
+                task.setCurrentAttemptId(attempt.getId()); em.persist(task); em.persist(attempt); claimResources(claims, task.getId(), attempt.getId()); em.flush(); wakeAfterCommit(); return view(task);
             });
             return checkedView(em.find(CoreAiTask.class, accepted.taskId()), owner);
         } catch (RuntimeException failure) {
@@ -169,6 +175,12 @@ public class AiTaskManage implements AiToolConversationFeature {
         var coordinator = em.find(CoreAiTaskSchedule.class, 1L, LockModeType.PESSIMISTIC_WRITE);
         if (coordinator == null) throw AiErrors.error("configuration_unavailable");
         return coordinator;
+    }
+    /** A rolled-back acceptance must never wake work; a lost signal is covered by durable discovery. */
+    private void wakeAfterCommit() {
+        org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
+            @Override public void afterCommit() { wakeup.release(); }
+        });
     }
     private void admission(Long actor) {
         expireWaiting();
@@ -237,10 +249,16 @@ public class AiTaskManage implements AiToolConversationFeature {
         em.flush();
         em.createQuery("delete from CoreAiTaskResource r where r.taskId=:task and r.attemptId=:attempt")
                 .setParameter("task", attempt.getTaskId()).setParameter("attempt", attempt.getId()).executeUpdate();
+        wakeAfterCommit();
     }
     private void interrupted(String node) {
+        // Do not acquire the shared coordinator unless there is recovery work. Recheck under the lock.
+        String condition = node == null ? "a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff)" : "a.nodeId=:node";
+        var probe = em.createQuery("select a.id from CoreAiTaskAttempt a where a.status='RUNNING' and " + condition, Long.class);
+        if (node == null) probe.setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS); else probe.setParameter("node", node);
+        if (probe.setMaxResults(1).getResultList().isEmpty()) return;
         tx.executeWithoutResult(status -> {
-            coordinate(); expireWaiting();
+            coordinate();
             var rows = em.createQuery("select a from CoreAiTaskAttempt a where a.status='RUNNING' and " +
                     (node == null ? "a.nodeId in (select n.id from CoreAiTaskNode n where n.heartbeatAt<=:cutoff)" : "a.nodeId=:node"), CoreAiTaskAttempt.class);
             if (node == null) rows.setParameter("cutoff", System.currentTimeMillis() - NODE_LEASE_MILLIS); else rows.setParameter("node", node);
@@ -313,7 +331,7 @@ public class AiTaskManage implements AiToolConversationFeature {
                 resourceConflict(claims, AiAccess.binding(owner));
                 admission(owner.actor());
                 var next = attempt(locked, previous.getAttemptNumber() + 1, retry); next.setSourceAttemptId(previous.getId()); em.persist(next);
-                locked.setCurrentAttemptId(next.getId()); claimResources(claims, locked.getId(), next.getId()); em.flush(); return view(locked, next);
+                locked.setCurrentAttemptId(next.getId()); claimResources(claims, locked.getId(), next.getId()); em.flush(); wakeAfterCommit(); return view(locked, next);
             });
         } catch (RuntimeException failure) { throw safeResourceFailure(failure, owner); }
         // A repeated retry may already have a result; recheck delivery after releasing all database locks.
@@ -419,7 +437,8 @@ public class AiTaskManage implements AiToolConversationFeature {
             var node = new CoreAiTaskNode(); node.setId(nodeId); node.setHeartbeatAt(System.currentTimeMillis()); em.persist(node);
         });
         heartbeat.scheduleWithFixedDelay(this::pulse, 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduler.scheduleWithFixedDelay(this::dispatch, 0, 250, TimeUnit.MILLISECONDS);
+        monitor.scheduleWithFixedDelay(this::monitorRunning, 0, ACTIVE_POLL_MILLIS, TimeUnit.MILLISECONDS);
+        scheduler.execute(this::dispatchLoop);
     }
     private void pulse() {
         if (stopped) return;
@@ -429,22 +448,55 @@ public class AiTaskManage implements AiToolConversationFeature {
             if (!alive) { stopped = true; interruptOwn(); running.values().forEach(this::close); running.clear(); }
         } catch (RuntimeException unavailable) { /* Lease expires closed; every execution boundary checks durable ownership. */ }
     }
-    private void dispatch() {
-        if (stopped) return;
+    private void dispatchLoop() {
+        while (!stopped) {
+            // Coalesce notifications received before this discovery. A notification during/after
+            // discovery remains pending and makes the following wait return immediately.
+            wakeup.drainPermits();
+            long delay = dispatch();
+            try { wakeup.tryAcquire(delay, TimeUnit.MILLISECONDS); }
+            catch (InterruptedException shutdown) { Thread.currentThread().interrupt(); return; }
+        }
+    }
+    private boolean hasTasks(String states) {
+        return !em.createQuery("select a.id from CoreAiTaskAttempt a where a.status in " + states, Long.class)
+                .setMaxResults(1).getResultList().isEmpty();
+    }
+    private long dispatch() {
+        if (stopped) return IDLE_POLL_MILLIS;
         try {
-            invalidateUnauthorized();
-            interrupted(null);
+            if (!hasTasks("('QUEUED','RUNNING')")) return IDLE_POLL_MILLIS;
+            long now = System.nanoTime();
+            if (now >= nextPolicyCheck) {
+                invalidateUnauthorized();
+                nextPolicyCheck = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(500);
+            }
+            if (now >= nextMaintenance) {
+                maintainWaiting();
+                interrupted(null);
+                nextMaintenance = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
+            }
+            while (!stopped && running.size() < 20 && hasTasks("('QUEUED')")) {
+                Work work = claim(); if (work == null) break;
+                var run = new Run(work); running.put(work.attemptId(), run);
+                try { execute(run); } catch (RuntimeException failure) { fail(run, failure); }
+            }
+            return ACTIVE_POLL_MILLIS;
+        } catch (RuntimeException unavailable) {
+            // Avoid a fast retry loop while the durable store is unavailable. No model submission
+            // can bypass the database claim or the runtime's fresh authorization/fence checks.
+            return IDLE_POLL_MILLIS;
+        }
+    }
+    private void monitorRunning() {
+        if (stopped || running.isEmpty()) return;
+        try {
             for (Run run : running.values()) {
                 if (run.failureCode != null) { fail(run, AiErrors.error(run.failureCode)); continue; }
                 try { check(run); if (run.stream != null) run.stream.verifyDelivery(); }
                 catch (RuntimeException terminal) { fail(run, terminal); }
             }
-            while (!stopped && running.size() < 20) {
-                Work work = claim(); if (work == null) break;
-                var run = new Run(work); running.put(work.attemptId(), run);
-                try { execute(run); } catch (RuntimeException failure) { fail(run, failure); }
-            }
-        } catch (RuntimeException unavailable) { /* Durable queue survives; no model submission until database recovery. */ }
+        } catch (RuntimeException unavailable) { /* Retry durable termination on the next active check. */ }
     }
     /** Called under the configuration transaction/coordinator: fence first, release exact resources second. */
     public void policyDisabled(Long organization, String reason) {
@@ -494,7 +546,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     private Work claim() {
         return tx.execute(status -> {
-            coordinate(); expireWaiting();
+            coordinate();
             if (em.createQuery("select count(a) from CoreAiTaskAttempt a where a.status='RUNNING'", Long.class).getSingleResult() >= em.find(CoreAiSetting.class, 1L).getTaskMaxRunning()) return null;
             var node = em.find(CoreAiTaskNode.class, nodeId);
             if (node == null || node.getHeartbeatAt() <= System.currentTimeMillis() - NODE_LEASE_MILLIS) return null;
@@ -515,6 +567,11 @@ public class AiTaskManage implements AiToolConversationFeature {
             var attempt = em.find(CoreAiTaskAttempt.class, id); var task = em.find(CoreAiTask.class, attempt.getTaskId());
             return new Work(task.getId(), id, fence, decode(task.getOwnerJson(), AiAccess.Identity.class), input(task), context(task), deadline);
         });
+    }
+    private void maintainWaiting() {
+        var due = em.createQuery("select a.id from CoreAiTaskAttempt a, CoreAiTask t where t.currentAttemptId=a.id and a.status='QUEUED' and (a.queueDeadline is null or a.queueDeadline<=:now or t.actorId is null)", Long.class)
+                .setParameter("now", System.currentTimeMillis()).setMaxResults(1).getResultList();
+        if (!due.isEmpty()) tx.executeWithoutResult(status -> { coordinate(); expireWaiting(); });
     }
     private void expireWaiting() {
         var expired = em.createQuery("select a from CoreAiTaskAttempt a, CoreAiTask t where t.currentAttemptId=a.id and a.status='QUEUED' and (a.queueDeadline is null or a.queueDeadline<=:now or t.actorId is null)", CoreAiTaskAttempt.class)
@@ -659,14 +716,14 @@ public class AiTaskManage implements AiToolConversationFeature {
                 ended(attempt, state, error, result); em.flush(); return true;
             }));
             if (saved && run.stream != null) run.stream.finishAudit(state);
-        } finally { close(run); running.remove(run.work.attemptId(), run); }
+        } finally { close(run); running.remove(run.work.attemptId(), run); wakeup.release(); }
     }
     private void close(Run run) { if (run.stream != null) run.stream.close(); }
     private void interruptOwn() {
         interrupted(nodeId);
     }
     @PreDestroy public void destroy() {
-        stopped = true; scheduler.shutdownNow(); heartbeat.shutdownNow();
+        stopped = true; scheduler.shutdownNow(); heartbeat.shutdownNow(); monitor.shutdownNow();
         if (started.get()) { try { interruptOwn(); } finally { running.values().forEach(this::close); running.clear(); } }
     }
 }

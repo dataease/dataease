@@ -458,6 +458,99 @@ public final class TaskClusterRegression {
                 "recovered audit expires independently and cleanup removes its bodies");
         System.out.println("PASS audit recovery after hard-killed JVM: durable state, frozen retention, preserved partial evidence and no model replay");
     }
+    private static void idleWindow(JdbcTemplate jdbc, String label) throws Exception {
+        // H2 measures executed SQL in the owned database, including transactions from the other JVM.
+        jdbc.execute("SET QUERY_STATISTICS FALSE");
+        jdbc.execute("SET QUERY_STATISTICS TRUE");
+        Thread.sleep(4000);
+        long taskQueries = 0, locks = 0, bodies = 0, heartbeats = 0;
+        for (var row : jdbc.queryForList("SELECT SQL_STATEMENT, EXECUTION_COUNT FROM INFORMATION_SCHEMA.QUERY_STATISTICS")) {
+            String sql = row.get("SQL_STATEMENT").toString().toLowerCase(Locale.ROOT);
+            long count = ((Number) row.get("EXECUTION_COUNT")).longValue();
+            if (!sql.contains("core_ai_task")) continue;
+            if (sql.startsWith("update core_ai_task_node")) { heartbeats += count; continue; }
+            taskQueries += count;
+            if (sql.contains("for update")) locks += count;
+            if (sql.contains("input_json") || sql.contains("result_json")) bodies += count;
+        }
+        jdbc.execute("SET QUERY_STATISTICS FALSE");
+        System.out.println("DIAG idle " + label + " 4s taskSql=" + taskQueries + " locks=" + locks + " bodies=" + bodies + " heartbeats=" + heartbeats);
+        check(locks == 0, "idle " + label + " never takes a shared task scheduling lock");
+        check(bodies == 0, "idle " + label + " never loads task or attempt payloads");
+        check(taskQueries > 0 && taskQueries <= 8, "idle " + label + " retains bounded database discovery instead of full dispatch sweeps");
+    }
+    private static void idle(int accepting, JdbcTemplate jdbc) throws Exception {
+        node("idle-worker", true); int worker = port("idle-worker");
+        Thread.sleep(1200);
+        idleWindow(jdbc, "empty-enabled");
+        // This accepting JVM has no scheduler: the remote worker cannot receive its local wakeup.
+        long submitted = System.nanoTime();
+        var remote = call(accepting, "/ai/tasks", "POST", body("idle-remote"));
+        String path = "/ai/tasks/" + remote.path("taskId").asText();
+        await(worker, path, "COMPLETED");
+        long started = jdbc.queryForObject("select started_at from core_ai_task_attempt where task_id=?", Long.class, remote.path("taskId").asLong());
+        long created = jdbc.queryForObject("select created_at from core_ai_task where id=?", Long.class, remote.path("taskId").asLong());
+        System.out.println("DIAG remote accepted-to-claim=" + (started - created) + "ms complete=" + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - submitted) + "ms");
+        check(started - created < 2500, "remote submission is discovered within 2s plus bounded fixture scheduling tolerance");
+        check(sends.get("idle-remote") == 1, "database fallback executes exactly one model request");
+        var local = call(worker, "/ai/tasks", "POST", body("idle-local"));
+        await(worker, "/ai/tasks/" + local.path("taskId").asText(), "COMPLETED");
+        Thread.sleep(1200);
+        idleWindow(jdbc, "terminal-history");
+        enabled(accepting, false); Thread.sleep(1200);
+        idleWindow(jdbc, "disabled");
+        enabled(accepting, true);
+        var reopened = call(accepting, "/ai/tasks", "POST", body("idle-reenabled"));
+        await(worker, "/ai/tasks/" + reopened.path("taskId").asText(), "COMPLETED");
+        check(sends.get("idle-reenabled") == 1, "re-enabling AI wakes new work without replaying history");
+        for (String mode : List.of("transient", "permanent", "cancelled", "disabled")) {
+            String key = "admission-" + mode;
+            Files.deleteIfExists(output.resolve("admission-blocked"));
+            Files.createFile(output.resolve("block-background-admission"));
+            var blocked = call(worker, "/ai/tasks", "POST", body(key));
+            String blockedPath = "/ai/tasks/" + blocked.path("taskId").asText();
+            long wait = System.currentTimeMillis() + 3000;
+            while (!Files.exists(output.resolve("admission-blocked")) && System.currentTimeMillis() < wait) Thread.sleep(10);
+            check(Files.exists(output.resolve("admission-blocked")), "controlled admission barrier reached for " + mode);
+            if ("transient".equals(mode)) {
+                Thread.sleep(150); Files.delete(output.resolve("block-background-admission"));
+                await(worker, blockedPath, "COMPLETED");
+                check(sends.getOrDefault(key, 0) == 1, "transient admission publication sends exactly once after recovery");
+            } else {
+                if ("cancelled".equals(mode)) call(accepting, blockedPath + "/cancel", "POST", "");
+                if ("disabled".equals(mode)) enabled(accepting, false);
+                if ("disabled".equals(mode)) enabled(accepting, true);
+                var result = await(worker, blockedPath, "permanent".equals(mode) ? "FAILED" : "CANCELLED");
+                if ("permanent".equals(mode)) check("policy_blocked".equals(result.path("errorCode").asText())
+                        && result.path("finishedAt").asLong() - result.path("startedAt").asLong() < 2500,
+                        "persistent admission failure has a bounded pre-send wait");
+                Files.delete(output.resolve("block-background-admission"));
+                check(!sends.containsKey(key), mode + " admission never sends a model request");
+            }
+        }
+        System.out.println("PASS idle scheduling " + checks + " assertions (actual SQL and public HTTP across JVMs)");
+    }
+    private static void capacityTransitions(int a, int b) throws Exception {
+        for (int i = 0; i < 12; i++) {
+            settings(a, 2, 100, 10, 300);
+            String oneKey = "slow-capacity-transition-" + i + "-one", twoKey = "slow-capacity-transition-" + i + "-two";
+            var one = call(a, "/ai/tasks", "POST", body(oneKey));
+            var two = call(b, "/ai/tasks", "POST", body(twoKey));
+            String onePath = "/ai/tasks/" + one.path("taskId").asText(), twoPath = "/ai/tasks/" + two.path("taskId").asText();
+            await(a, onePath, "RUNNING"); await(b, twoPath, "RUNNING");
+            settings(a, 1, 100, 10, 300);
+            Thread.sleep(300);
+            var oneState = call(b, onePath, "GET", ""); var twoState = call(a, twoPath, "GET", "");
+            check("RUNNING".equals(oneState.path("status").asText()) && "RUNNING".equals(twoState.path("status").asText()),
+                    "capacity transition " + i + " preserves claimed tasks: " + oneState.path("status") + "/" + oneState.path("errorCode")
+                            + ", " + twoState.path("status") + "/" + twoState.path("errorCode"));
+            call(a, onePath + "/cancel", "POST", ""); call(b, twoPath + "/cancel", "POST", "");
+            release.computeIfAbsent(oneKey, ignored -> new CountDownLatch(1)).countDown();
+            release.computeIfAbsent(twoKey, ignored -> new CountDownLatch(1)).countDown();
+        }
+        settings(a, 2, 100, 10, 300);
+        System.out.println("PASS repeated capacity transitions preserve claimed tasks through initialization");
+    }
     public static void main(String[] args) throws Exception { run(); }
     public static void run() throws Exception {
         output = Files.createTempDirectory("ai-task-cluster-");
@@ -510,6 +603,7 @@ public final class TaskClusterRegression {
             });
             // A queued request survives the accepting process without ever having an execution owner.
             var accepting = node("accepting", false); int acceptingPort = port("accepting");
+            if (Boolean.getBoolean("ai.test.idleOnly")) { idle(acceptingPort, jdbc); return; }
             if (Boolean.getBoolean("ai.test.auditRecoveryOnly")) { auditRecovery(acceptingPort, em, manager, jdbc); return; }
             if (Boolean.getBoolean("ai.test.disabledErrorsOnly")) { disabledErrors(acceptingPort); return; }
             if (Boolean.getBoolean("ai.test.conflictErrorsOnly")) { conflictErrors(acceptingPort); return; }
@@ -611,7 +705,9 @@ public final class TaskClusterRegression {
             var fairA2 = call(b, "/ai/tasks", "POST", body("slow-fair-a2"));
             var fairB1 = TaskNode.JSON.readTree(call(b, "/ai/tasks", "POST", body("slow-fair-b1"), "2").body());
             var fairB2 = TaskNode.JSON.readTree(call(a, "/ai/tasks", "POST", body("slow-fair-b2"), "2").body());
-            for (var entry : List.of(capOne, capTwo, capThree)) call(a, "/ai/tasks/" + entry.path("taskId").asText() + "/cancel", "POST", "");
+            // Remove the older queued actor-1 task first: releasing a running slot may wake a
+            // scheduler immediately, legitimately consuming that task's round-robin turn.
+            for (var entry : List.of(capThree, capOne, capTwo)) call(a, "/ai/tasks/" + entry.path("taskId").asText() + "/cancel", "POST", "");
             for (var key : List.of("slow-cap-one", "slow-cap-two", "slow-cap-three")) release.computeIfAbsent(key, ignored -> new CountDownLatch(1)).countDown();
             awaitSend(a, "/ai/tasks/" + fairA1.path("taskId").asText(), "slow-fair-a1");
             awaitSend(b, "/ai/tasks/" + fairB1.path("taskId").asText(), "slow-fair-b1", "2");
@@ -710,9 +806,11 @@ public final class TaskClusterRegression {
             var lowerOldTwo = call(b, "/ai/tasks", "POST", body("slow-lower-old-two"));
             settings(a, 1, 1, 1, 1);
             Thread.sleep(750);
-            check("RUNNING".equals(call(b, "/ai/tasks/" + lowerOne.path("taskId").asText(), "GET", "").path("status").asText())
-                    && "RUNNING".equals(call(a, "/ai/tasks/" + lowerTwo.path("taskId").asText(), "GET", "").path("status").asText()),
-                    "lowering capacity preserves existing running work across nodes");
+            var lowerOneState = call(b, "/ai/tasks/" + lowerOne.path("taskId").asText(), "GET", "");
+            var lowerTwoState = call(a, "/ai/tasks/" + lowerTwo.path("taskId").asText(), "GET", "");
+            check("RUNNING".equals(lowerOneState.path("status").asText()) && "RUNNING".equals(lowerTwoState.path("status").asText()),
+                    "lowering capacity preserves existing running work across nodes: " + lowerOneState.path("status") + "/" + lowerOneState.path("errorCode")
+                            + ", " + lowerTwoState.path("status") + "/" + lowerTwoState.path("errorCode"));
             release.computeIfAbsent("slow-lower-one", ignored -> new CountDownLatch(1)).countDown();
             check("COMPLETED".equals(await(b, "/ai/tasks/" + lowerOne.path("taskId").asText(), "COMPLETED").path("status").asText()),
                     "capacity-only settings change does not invalidate accepted execution policy");
@@ -737,6 +835,7 @@ public final class TaskClusterRegression {
                         "a second standalone node admits current committed policy after capacity update on another node");
             } finally { signal(first, "CONT"); }
             if (Boolean.getBoolean("ai.test.schedulingOnly")) {
+                capacityTransitions(a, b);
                 System.out.println("PASS task scheduling " + checks + " public HTTP assertions across independent JVMs");
                 return;
             }
