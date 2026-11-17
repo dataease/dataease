@@ -474,6 +474,7 @@ const initEchart = () => {
       scheduleRender()
     })
   }
+  myChart.dispatchAction({ type: 'hideTip' })
   myChart.resize()
   const { data, lineData, gapDetail } = prepareChartData()
   myChart.setOption(createChartOption(data, lineData, gapDetail), true)
