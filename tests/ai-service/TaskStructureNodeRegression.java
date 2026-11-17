@@ -3,6 +3,8 @@ package io.dataease.ai;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.tool.datasource.AiDatasourceTools;
+import io.dataease.ai.tool.sql.AiSqlTools;
 import io.dataease.ai.scene.structure.AiStructureMutexScene;
 import io.dataease.ai.security.identity.AiDeploymentMode;
 import io.dataease.ai.support.AiErrors;
@@ -49,6 +51,7 @@ public final class TaskStructureNodeRegression {
             if (!failures.isEmpty()) throw new AssertionError("unchanged actual structure rejected by independent JVM (orders=" + orders.size() + "): " + failures.getFirst());
             System.out.println("PASS actual SQL and structure scenes authorize identical current and legacy persisted contexts across 12 independent JVMs with " + orders.size() + " distinct map orders");
             System.out.println("PASS actual structure scene rejects changed field name, type, comment, order/count, table and datasource revision and revoked READ in every reader JVM");
+            System.out.println("PASS shared tools preserve selected scope, per-scene allowlists, cancellation/deadlines and pre-extraction structure fingerprints");
             System.out.println("PASS legacy structure requires its original raw hash, exact instruction prefix and strict complete JSON object snapshot");
         } finally {
             try (var files = Files.list(directory)) { for (var file : files.toList()) Files.deleteIfExists(file); }
@@ -59,6 +62,7 @@ public final class TaskStructureNodeRegression {
     private static void node(Path directory, String mode) throws Exception {
         new Translator().setMessageSource(new StaticMessageSource()); V3UserUtil.setUid(1L);
         var changed = new AtomicReference<String>("");
+        var fieldReads = new ArrayList<String>();
         var beans = new StaticListableBeanFactory();
         var access = new SyntheticAccess(null, null) {
             public AiDeploymentMode.State mode() { return new AiDeploymentMode.State(AiDeploymentMode.Mode.LICENSED, "structure-node-fixture"); }
@@ -77,8 +81,10 @@ public final class TaskStructureNodeRegression {
             return switch (method.getName()) {
                 case "tree" -> { var node = new BusiNodeVO(); node.setId(11L); node.setLeaf(true); node.setName("Probe"); yield List.of(node); }
                 case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId(11L); ds.setName("Probe"); ds.setType("MySQL"); ds.setUpdateTime(changed.get().equals("datasource") ? 2L : 1L); yield ds; }
-                case "getTables" -> { var table = new DatasetTableDTO(); table.setTableName(changed.get().equals("table") ? "AI_OTHER" : "AI_PROBE"); table.setName("Probe"); yield List.of(table); }
+                case "getTables" -> { var table = new DatasetTableDTO(); table.setTableName(changed.get().equals("table") ? "AI_OTHER" : "AI_PROBE"); table.setName("Probe");
+                    var other = new DatasetTableDTO(); other.setTableName("UNSELECTED"); other.setName("Unselected"); yield List.of(table, other); }
                 case "getTableField" -> {
+                    fieldReads.add(((DatasetTableFieldRequest) arguments[0]).getTableName());
                     var field = new TableField(); field.setOriginName(changed.get().equals("field") ? "OTHER_ID" : "ID");
                     field.setName(changed.get().equals("comment") ? "changed comment" : "Identifier"); field.setType(changed.get().equals("type") ? "VARCHAR" : "BIGINT");
                     var second = new TableField(); second.setOriginName("LABEL"); second.setName("Label"); second.setType("VARCHAR");
@@ -93,9 +99,42 @@ public final class TaskStructureNodeRegression {
                 default -> throw new AssertionError("unexpected datasource operation: " + method.getName());
             };
         });
-        var sql = new AiSqlConversationScene(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, new CorePermissionManage());
+        var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, new CorePermissionManage());
+        var sqlTools = new AiSqlTools(metadata);
+        var sql = new AiSqlConversationScene(metadata, sqlTools);
         try {
-            var structure = new AiStructureMutexScene(sql); var sqlContext = sql.resolve("11", "SELECT ID FROM AI_PROBE");
+            var structure = new AiStructureMutexScene(metadata); var sqlContext = sql.resolve("11", "SELECT ID FROM AI_PROBE");
+            var scope = new AiDatasourceTools.Scope(sqlContext.resourceId(), sqlContext.revision());
+            var selection = new AiDatasourceTools.Selection(scope, List.of("AI_PROBE"));
+            var selectedContext = structure.resolveTask("11", "", selection.tables());
+            fieldReads.clear();
+            String direct = metadata.inspectStructure().execute(selection, Map.of(), () -> { }, System.currentTimeMillis() + 5000);
+            String throughScene = structure.execute(selectedContext, "inspect_structure", Map.of(), () -> { }, System.currentTimeMillis() + 5000);
+            if (!JSON.readTree(direct).equals(JSON.readTree(throughScene)) || fieldReads.isEmpty()
+                    || fieldReads.stream().anyMatch(table -> !table.equals("AI_PROBE")))
+                throw new AssertionError("shared structure tool must preserve selected scope and scene result");
+            String fields = metadata.getTableFields().execute(scope, Map.of("table", "AI_PROBE"), () -> { }, System.currentTimeMillis() + 5000);
+            if (!JSON.readTree(fields).equals(JSON.readTree(sql.execute(sqlContext, "get_table_fields", Map.of("table", "AI_PROBE")))))
+                throw new AssertionError("SQL scene and independent tool must share metadata semantics");
+            if (!structure.tools().stream().map(AiToolProtocol.Definition::name).toList().equals(List.of("inspect_structure")))
+                throw new AssertionError("shared metadata tools must not automatically become available to structure scene");
+            for (String name : List.of("list_tables", "get_table_fields", "validate_sql", "propose_sql"))
+                expectFailure("unsupported", () -> structure.execute(selectedContext, name, Map.of(), () -> { }, System.currentTimeMillis() + 5000));
+            expectFailure("unsupported", () -> sql.execute(sqlContext, "inspect_structure", Map.of()));
+            expectFailure("unsupported", () -> sql.execute(sql.resolve("", ""), "list_tables", Map.of()));
+            fieldReads.clear();
+            expectFailure("unsupported", () -> metadata.inspectStructure().execute(selection, Map.of("table", "UNSELECTED"), () -> { }, System.currentTimeMillis() + 5000));
+            expectFailure("timeout", () -> metadata.getTableFields().execute(scope, Map.of("table", "AI_PROBE"), () -> { }, 0));
+            expectFailure("cancelled", () -> metadata.getTableFields().execute(scope, Map.of("table", "AI_PROBE"), () -> { throw AiErrors.error("cancelled"); }, System.currentTimeMillis() + 5000));
+            if (!fieldReads.isEmpty()) throw new AssertionError("refused tools performed metadata IO");
+            // Canonical projection from the pre-extraction format must retain exactly the same fingerprint.
+            var originalFields = Map.of("table", "AI_PROBE", "fields", List.of(
+                    Map.of("name", "ID", "type", "BIGINT", "comment", "Identifier"),
+                    Map.of("name", "LABEL", "type", "VARCHAR", "comment", "Label")));
+            String originalProjection = AiToolProtocol.result(new TreeMap<>(Map.of("AI_PROBE",
+                    JSON.writer().with(com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(originalFields))));
+            if (!direct.equals(originalProjection) || !JSON.readTree(selectedContext.revision()).path("structure").asText().equals(AiPromptFingerprint.of(new Prompt(originalProjection))))
+                throw new AssertionError("tool extraction changed persisted structure fingerprint");
             // Evidence that this fixture exercises the JDK's per-process Map.of iteration order.
             System.out.println("ORDER " + JSON.writeValueAsString(Map.of("table", "AI_PROBE", "fields", List.of(Map.of("name", "ID", "type", "BIGINT", "comment", "Identifier")))));
             Path snapshot = directory.resolve("context.json");
@@ -127,7 +166,7 @@ public final class TaskStructureNodeRegression {
                     }
                 }
             }
-        } finally { sql.destroy(); V3UserUtil.clear(); }
+        } finally { sqlTools.close(); V3UserUtil.clear(); }
     }
 
     private static AiConversationScene.Context legacy(AiConversationScene.Context context, String projection) throws Exception {
@@ -135,6 +174,11 @@ public final class TaskStructureNodeRegression {
         String revision = JSON.writeValueAsString(Map.of("datasource", datasource, "structure", AiPromptFingerprint.of(new Prompt(projection))));
         return new AiConversationScene.Context(context.resourceId(), context.resourceName(), revision,
                 context.instruction().substring(0, context.instruction().indexOf(PROJECTION) + PROJECTION.length()) + projection, context.selectedTables());
+    }
+
+    private static void expectFailure(String code, Runnable work) {
+        try { work.run(); throw new AssertionError("expected refusal: " + code); }
+        catch (AiErrors.Failure expected) { if (!expected.safeCode().equals(code)) throw expected; }
     }
 
     private static void expectScopeChanged(AiStructureMutexScene structure, AiConversationScene.Context context) {

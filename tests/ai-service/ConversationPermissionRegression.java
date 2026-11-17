@@ -5,6 +5,8 @@ import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.tool.datasource.AiDatasourceTools;
+import io.dataease.ai.tool.sql.AiSqlTools;
 import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.server.AiConversationServer;
 import io.dataease.ai.support.AiErrors;
@@ -82,7 +84,9 @@ public final class ConversationPermissionRegression {
         if (!permissions.checkAuth(new BusiPerCheckDTO(11L, BusiResourceEnum.DATASOURCE, AuthEnum.READ))) throw new AssertionError("existing community operation denied");
         var beans = new StaticListableBeanFactory(new HashMap<>(Map.of("authorization", api)));
         var access = new AiAccess(beans.getBeanProvider(InteractiveAuthApi.class), fixture.mode);
-        var scene = new AiSqlConversationScene(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, permissions);
+        var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, permissions);
+        var sqlTools = new AiSqlTools(metadata);
+        var scene = new AiSqlConversationScene(metadata, sqlTools);
         beans.addBean("scene", scene);
         var usageConfiguration = new AiConfigurationManage(null) {
             public io.dataease.ai.dao.entity.CoreAiSetting setting() { var setting = new io.dataease.ai.dao.entity.CoreAiSetting(); setting.setEnabled(true); return setting; }
@@ -108,7 +112,9 @@ public final class ConversationPermissionRegression {
             allowed.set(true);
             var empty = new StaticListableBeanFactory();
             var missingAccess = new AiAccess(empty.getBeanProvider(InteractiveAuthApi.class), fixture.mode);
-            var missingScene = new AiSqlConversationScene(datasource, empty.getBeanProvider(InteractiveAuthApi.class), missingAccess, permissions);
+            var missingMetadata = new AiDatasourceTools(datasource, empty.getBeanProvider(InteractiveAuthApi.class), missingAccess, permissions);
+            var missingTools = new AiSqlTools(missingMetadata);
+            var missingScene = new AiSqlConversationScene(missingMetadata, missingTools);
             empty.addBean("scene", missingScene);
             // Only the authorization provider is missing; retain the normal runtime dependency.
             empty.addBean("runtime", new AiRuntimeManage(empty.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), usageConfiguration, null, null, null, new com.fasterxml.jackson.databind.ObjectMapper(), missingAccess));
@@ -116,8 +122,8 @@ public final class ConversationPermissionRegression {
             try {
                 if (open(MockMvcBuilders.standaloneSetup(new AiConversationServer(missing)).build()) < 400)
                     throw new AssertionError("licensed missing provider used community fallback");
-            } finally { missing.destroy(); }
+            } finally { missing.destroy(); missingTools.close(); }
             System.out.println("PASS SQL dialogue and real scene metadata operation parity for installed expired-license community, current identity denial, licensed READ allow/deny and missing-provider rejection");
-        } finally { manage.destroy(); V3UserUtil.clear(); V3UserUtil.setUid(1L); }
+        } finally { manage.destroy(); sqlTools.close(); V3UserUtil.clear(); V3UserUtil.setUid(1L); }
     }
 }

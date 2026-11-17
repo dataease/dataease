@@ -1,4 +1,4 @@
-package io.dataease.ai.scene.sql;
+package io.dataease.ai.tool.sql;
 
 import io.dataease.ai.support.AiErrors;
 import net.sf.jsqlparser.JSQLParserException;

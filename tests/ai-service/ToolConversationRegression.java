@@ -9,6 +9,8 @@ import io.dataease.ai.engine.runtime.AiOutboundPolicy;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.runtime.AiTransport;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.tool.datasource.AiDatasourceTools;
+import io.dataease.ai.tool.sql.AiSqlTools;
 import io.dataease.ai.security.credential.AiSecrets;
 import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.security.identity.AiDeploymentMode;
@@ -181,6 +183,7 @@ public final class ToolConversationRegression {
         Long previous = config.setting().getDefaultModelId();
         var transport = new AiTransport(new AiOutboundPolicy(), admission, JSON);
         AiConversationManage manage = null;
+        AiSqlTools sqlTools = null;
         try {
             var draft = config.draft(); var candidate = new Candidate(); candidate.setId(draft.id()); candidate.setDraftHandle(draft.draftHandle());
             candidate.setName("Tool synthetic"); candidate.setProvider("OPENAI_COMPATIBLE"); candidate.setBaseUrl("http://127.0.0.1:" + server.getAddress().getPort() + "/v1");
@@ -203,7 +206,9 @@ public final class ToolConversationRegression {
                 public AiDeploymentMode.State mode() { return access.mode(); }
                 public Identity capture() { Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null; return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode()); }
             };
-            var scene = new AiSqlConversationScene(datasource, beans.getBeanProvider(InteractiveAuthApi.class), dialogueAccess, new CorePermissionManage());
+            var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), dialogueAccess, new CorePermissionManage());
+            sqlTools = new AiSqlTools(metadata);
+            var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
@@ -489,7 +494,9 @@ public final class ToolConversationRegression {
             System.out.println("PASS dialogue actual SQL scene metadata and static SQL correction/revalidation tools, split arguments/correlation, safe projections/history, invalid/out-of-scope tools, definitions/results input budget, per-request allocation, repeat bounds, cancel/late results and mid-tool READ revocation");
         } finally {
             V3UserUtil.clear(); V3UserUtil.setUid(1L);
-            if (manage != null) manage.destroy(); toolRelease.get().countDown(); transport.close(); server.stop(0); providerWorkers.shutdownNow();
+            if (manage != null) manage.destroy();
+            if (sqlTools != null) sqlTools.close();
+            toolRelease.get().countDown(); transport.close(); server.stop(0); providerWorkers.shutdownNow();
             var s = config.setting(); config.saveSettings(new SettingsChange(s.getRowVersion(), true, previous, false, 60, 30000, 4096, 5, 2, config.impact("SETTINGS", previous + ":true").token()));
         }
     }

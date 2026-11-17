@@ -16,7 +16,7 @@ Demo 的可用性、后台任务和完成通知在页面可见且在线时同步
 
 ## 目录与扩展位置
 
-后端根目录为 `core/core-backend/src/main/java/io/dataease/ai/`，按执行机制、具体场景和 HTTP 入口区分：
+后端根目录为 `core/core-backend/src/main/java/io/dataease/ai/`，按执行机制、具体场景、可复用工具和 HTTP 入口区分：
 
 ```text
 ai/
@@ -25,8 +25,11 @@ ai/
 │   ├── runtime/       # 模型执行、传输、准入、提示词约束、工具协议与恢复
 │   └── task/          # 后台任务、调度、租约与结果投递
 ├── scene/
-│   ├── sql/           # 数据源与 SQL 业务、静态校验
-│   └── structure/     # 受控结构说明与资源互斥验收
+│   ├── sql/           # SQL 上下文、工具选择与建议结果
+│   └── structure/     # 受控结构说明、结构快照与资源互斥验收
+├── tool/
+│   ├── datasource/    # 授权元数据读取、表/字段及选中结构工具
+│   └── sql/           # SQL 静态校验与建议工具、校验器生命周期
 ├── configuration/    # AI 设置、模型配置、发现与连接测试
 ├── security/
 │   ├── identity/      # 身份、部署许可与后台身份作用域
@@ -45,11 +48,24 @@ SQL Demo 页面位于 `core/core-frontend/src/views/demo/ai-assistant/sql/`，�
 
 SDK 的 `AiOwnerContext` 统一位于 `sdk/common/src/main/java/io/dataease/ai/security/identity/`，身份安装仍为包内方法，只由经过校验的核心身份作用域调用。旧 `manage` 路径及兼容转发类已删除，主仓库与 XPack 消费者统一迁移到同一个类。本次是包路径变更，需要 SDK、核心和 XPack 配套重新构建与交付，不支持混用旧扩展二进制；HTTP 路径和持久化格式不变。
 
-新增业务实现放到对应的 `scene/<业务场景>/`，通过 `AiConversationScene` 定义业务上下文、授权、工具与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
+新增场景适配放到对应的 `scene/<业务场景>/`，通过 `AiConversationScene` 定义业务上下文、授权、允许的工具集合与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。可复用工具实现放到 `tool/<业务领域>/`，场景显式组合所需工具，不依赖另一个具体场景。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
 
 本次是职责导航和包路径整理，不代表已实现任意资源对话。当前 `Open/Invoke` 的场景校验及 SQL 输入字段、资源列表和建议应用入口、会话的当前数据源提示，以及任务引擎中受控结构场景的表选择适配仍带有 SQL Demo 约束。接入第二种资源时，应根据真实场景扩展这些契约并将对应业务适配移到场景/入口层；不能只新增一个类就宣称完整接入。多种资源同时参与一轮对话仍需单独设计。
 
 包名迁移后，本地开发应由 IDE 执行后端模块 Rebuild 再启动，或使用项目适用的干净模块构建；普通增量编译可能留下旧包的 Spring 组件。不要手改生成类或启动两个不同包下的同名旧/新组件。
+
+## 场景与可复用工具
+
+`AiTool<C>` 将工具定义、参数名、重试安全声明和执行实现绑定在一起，`C` 是服务端准备的类型化资源范围，不来自模型参数。工具执行统一检查参数形状、取消与截止时间；模型协议、累计预算、恢复、事件和审计仍由共享引擎负责。工具模块不依赖 `AiConversationScene` 或会话历史，也不从客户端接收身份和模型配置。
+
+- `AiDatasourceTools` 提供经过既有 DE 权限链校验的资源列表、数据源版本、表和字段投影，并提供 `list_tables`、`get_table_fields`、`inspect_structure` 工具。SQL 与结构场景共用同一模块；内部直接使用类型化数据，不通过调用另一个场景并解析工具 JSON 复用能力。
+- `AiSqlTools` 提供 `validate_sql` 和 `propose_sql`，共用 `tool/sql/AiSqlStaticValidator`。解析线程池由该 Spring Bean 管理并在销毁时关闭，不再由 SQL 场景持有。
+- SQL 场景明确选择表、字段、校验及建议工具；未绑定数据源时不开放工具。结构场景只开放 `inspect_structure`，传入服务端绑定的选中表范围，保留结构指纹、历史快照兼容和资源互斥规则。
+- `propose_sql` 负责返回静态校验结论；只有 PASS 才形成可应用建议、原编辑器及草稿版本绑定、确认应用等规则继续由 SQL 场景和既有应用入口负责。
+
+工具存在或可注入不表示模型有权调用。引擎仍以 `scene.tools(context)` 的允许集合验证模型请求；scene 的执行分派只能选择该场景组合的工具，工具中的资源操作继续复核真实权限和版本。新增场景可复用现有工具，但必须准备自己的可信范围及授权，不能直接开放全部 Spring Bean 或绕过共享执行生命周期。
+
+本次提取保持 HTTP/SDK 契约、工具名称和参数、结果 JSON 结构及持久任务上下文格式。结构投影仍使用原有规范化 JSON 计算指纹，旧任务可继续校验；不需要数据迁移或 XPack 配套改动。后端运行前重新构建当前源码以加载新的工具 Bean；SQL 校验器旧路径的内部 Java 使用方需要更新 import。
 
 ## 开发入口与页面生命周期
 
@@ -67,7 +83,7 @@ Demo 的页面聊天保持连续对话：普通追问复用当前会话；选择
 
 ## 共享 SQL 辅助能力与结果应用
 
-`AiConversationScene` is the registered business boundary: `capability`, `resolve`, `authorize`, `tools(context)`, `execute` and `result` share authorized SQL context, metadata, validation and typed result semantics. These business operations do not require chat history or a polling lease; execution owners must perform their own identity/configuration checks and supply cancellation/deadline guards. The current HTTP execution lifecycle remains foreground and process-local. A future background owner must provide its own durable identity and lifecycle rather than extending this foreground lease.
+`AiConversationScene` is the registered business boundary: `capability`, `resolve`, `authorize`, `tools(context)`, `execute` and `result` select reusable tools and retain authorized SQL context and typed result semantics. Metadata and validation implementations live in `tool/datasource` and `tool/sql`. These business operations do not require chat history or a polling lease; execution owners must perform their own identity/configuration checks and supply cancellation/deadline guards. The conversation HTTP execution lifecycle remains foreground and process-local. The persistent task owner supplies its own durable identity and lifecycle rather than extending this foreground lease.
 
 The Demo provides a one-shot button through `POST /ai/conversations/capabilities/sql.assist` with `scene`, `resourceId`, `editorId`, `sql` and `text`. No conversation ID or client identity is accepted. Its returned execution includes the bound `context`; the same JSON event/stop endpoints deliver actual model and tool increments. A one-shot activity never commits chat history and refuses follow-up turns. Finished one-shot activities release interactive capacity. At most ten terminal one-shot results per identity are retained, within the shared 200-activity/30-minute envelope; new admissions may evict the oldest terminal one-shot results. Running one-shot activities still count toward the existing four foreground activities per identity. These temporary results are not a background task/history service.
 
@@ -95,7 +111,7 @@ Sessions are process-local, fixed at 30 minutes, at most 200 per process and fou
 
 ## 工具注册与元数据读取
 
-The core-only typed conversation capability is opt-in; no Spring AI automatic tool callbacks, native WebClient or arbitrary provider extensions are enabled. A scene registers strict string-argument definitions and executes only within the server-owned context. `list_tables` takes `{}`; `get_table_fields` takes only `{ "table": "exact returned table name" }`. These metadata tools accept neither identity, workspace, datasource, SQL, URL nor credentials. The SQL scene freshly checks the original current datasource tree and READ operation, invokes `DatasourceApi.getTables` using only trusted datasourceId, and invokes constrained `getTableField(DatasetTableFieldRequest)` only after exact table membership. It returns only table name/comment or field name/type/comment. Existing metadata operations may open a datasource connection and perform their existing zero-row metadata statements; model candidate SQL, preview/sample paths and direct Providers are never called. Current metadata is capped at 256 tables/fields, names 256 characters, comments 512 and field types 128; oversized structures fail explicitly rather than silently truncate.
+The core-only typed conversation capability is opt-in; no Spring AI automatic tool callbacks, native WebClient or arbitrary provider extensions are enabled. A scene registers strict string-argument definitions and executes only within the server-owned context. `list_tables` takes `{}`; `get_table_fields` takes only `{ "table": "exact returned table name" }`. These metadata tools accept neither identity, workspace, datasource, SQL, URL nor credentials. The shared datasource tool module freshly checks the original current datasource tree and READ operation, invokes `DatasourceApi.getTables` using only trusted datasourceId, and invokes constrained `getTableField(DatasetTableFieldRequest)` only after exact table membership. It returns only table name/comment or field name/type/comment. Existing metadata operations may open a datasource connection and perform their existing zero-row metadata statements; model candidate SQL, preview/sample paths and direct Providers are never called. Current metadata is capped at 256 tables/fields, names 256 characters, comments 512 and field types 128; oversized structures fail explicitly rather than silently truncate.
 
 ## SQL 静态校验
 
@@ -165,7 +181,7 @@ Recovery policy is captured when a new background attempt is accepted as `QUEUED
 
 Ordinary SQL assistance and foreground conversations declare no table lock. The controlled structure scene is server-declared `backgroundOnly`; foreground open/invoke/execution routes cannot select it or substitute its capability. A trusted `AiConversationScene.resourceClaims` declaration identifies an operation class, DE datasource ID and exact canonical physical table name. It is prepared with current resource authorization outside metadata transactions. Different DE datasource IDs remain independent, even when their connections point at the same database. Canonical names come from DE metadata; quoted/case-sensitive names are never blindly lowercased.
 
-The explicitly marked `structure-mutex.assist` Demo is read-only structure/resource-mutex acceptance. Select an authorized datasource and a batch of up to 32 tables. The background button and the current-message action submit the same capability through `POST /ai/tasks`, with optional `selectedTables`; both use identical admission and ownership rules. It reuses the current SQL scene's DE READ authorization and table/field projection. It does not implement semantic generation, read samples, execute candidate SQL or save business resources. Its result is an explanation with no applicable SQL, and is not imported into an unrelated SQL conversation. The ordinary SQL background option remains available without declarations.
+The explicitly marked `structure-mutex.assist` Demo is read-only structure/resource-mutex acceptance. Select an authorized datasource and a batch of up to 32 tables. The background button and the current-message action submit the same capability through `POST /ai/tasks`, with optional `selectedTables`; both use identical admission and ownership rules. It shares the datasource tool module's DE READ authorization and table/field projection with the SQL scene, without depending on that scene. It does not implement semantic generation, read samples, execute candidate SQL or save business resources. Its result is an explanation with no applicable SQL, and is not imported into an unrelated SQL conversation. The ordinary SQL background option remains available without declarations.
 
 Migration `2.53` adds the unique current resource owner table. Under the existing scheduling coordinator, duplicate submission/retry keys return their original task/attempt before checking conflicts or capacity. New overlapping requests are rejected immediately as `i18n_ai_task_resource_busy`, without a queue row. A batch either claims all resources and creates its attempt in the same short transaction, or claims nothing. Queue-capacity failures cannot leave partial claims. Same-owner conflicts may contain only a string `data.taskId` for locating the current task; other actors, workspaces or proxy contexts receive no task identifier or content. The conflict response only retains this locator after checking the original task snapshot outside the acceptance transaction; stale or inaccessible snapshots receive no locator. Every subsequent task read still requires current authorization.
 
