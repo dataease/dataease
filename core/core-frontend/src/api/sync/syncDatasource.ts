@@ -12,6 +12,23 @@ const hasConnectionDiagnostic = (error: DataEaseError) => {
   )
 }
 
+export const connectionChangeConfirmation = (error: DataEaseError) => {
+  const data = errorBody(error.response?.data).data
+  if (
+    data !== null &&
+    typeof data === 'object' &&
+    'confirmationRequired' in data &&
+    data.confirmationRequired === true &&
+    'affectedTaskCount' in data &&
+    typeof data.affectedTaskCount === 'number' &&
+    Number.isInteger(data.affectedTaskCount) &&
+    data.affectedTaskCount > 0
+  ) {
+    return data.affectedTaskCount
+  }
+  return undefined
+}
+
 export const sourceDsPageApi = (page: number, limit: number, data) => {
   return request.post({ url: `/sync/datasource/source/pager/${page}/${limit}`, data })
 }
@@ -47,7 +64,9 @@ export const updateApi = (data, handleErrorLocally = false) => {
   return request.post({
     url: '/sync/datasource/update',
     data,
-    handleErrorLocally: handleErrorLocally && hasConnectionDiagnostic
+    handleErrorLocally:
+      handleErrorLocally &&
+      (error => hasConnectionDiagnostic(error) || connectionChangeConfirmation(error) !== undefined)
   })
 }
 
