@@ -12,6 +12,8 @@ import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.runtime.AiTransport;
 import io.dataease.ai.engine.task.AiTaskManage;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.tool.datasource.AiDatasourceTools;
+import io.dataease.ai.tool.sql.AiSqlTools;
 import io.dataease.ai.scene.structure.AiStructureMutexScene;
 import io.dataease.ai.security.identity.AiDeploymentMode;
 import io.dataease.ai.server.AiTaskServer;
@@ -184,7 +186,9 @@ public final class TaskProgressRegression {
                     default -> throw new AssertionError("unexpected datasource operation: " + method.getName());
                 };
             });
-            var scene = new AiSqlConversationScene(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, new CorePermissionManage()); beans.addBean("scene", scene); beans.addBean("mutex", new AiStructureMutexScene(scene));
+            var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), access, new CorePermissionManage());
+            var sqlTools = new AiSqlTools(metadata);
+            var scene = new AiSqlConversationScene(metadata, sqlTools); beans.addBean("scene", scene); beans.addBean("mutex", new AiStructureMutexScene(metadata));
             var repositories = new JpaRepositoryFactory(em); var settings = repositories.getRepository(CoreAiSettingRepository.class);
             var configuration = new AiConfigurationManage(manager);
             org.springframework.test.util.ReflectionTestUtils.setField(configuration, "settings", settings);
@@ -253,7 +257,7 @@ public final class TaskProgressRegression {
                     if (!"COMPLETED".equals(terminal.path("status").asText()) || afterUpstream < 0 || !terminal.path("result").path("text").asText().equals("Short complete answer")) failures.add(summary);
                     System.out.println("DIAG task progress " + summary);
                 }
-            } finally { DELAY.set(0); tasks.destroy(); conversations.destroy(); transport.close(); audit.close(); scene.destroy(); api.stop(0); }
+            } finally { DELAY.set(0); tasks.destroy(); conversations.destroy(); transport.close(); audit.close(); sqlTools.close(); api.stop(0); }
             if (!failures.isEmpty()) throw new AssertionError("already-finished legal model output must complete promptly without consuming the 5-second deadline: " + failures);
             System.out.println("PASS task legal private-frame burst completes through public task HTTP/SQL scene/runtime/JPA within five-second policy");
         } finally { upstream.stop(0); providerWorkers.shutdownNow(); V3UserUtil.clear(); CommunityUtils.clear(); }

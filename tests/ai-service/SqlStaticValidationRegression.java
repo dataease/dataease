@@ -1,6 +1,6 @@
 package io.dataease.ai;
 
-import io.dataease.ai.scene.sql.AiSqlStaticValidator;
+import io.dataease.ai.tool.sql.AiSqlStaticValidator;
 import io.dataease.ai.support.AiErrors;
 import java.util.List;
 import java.util.concurrent.*;
