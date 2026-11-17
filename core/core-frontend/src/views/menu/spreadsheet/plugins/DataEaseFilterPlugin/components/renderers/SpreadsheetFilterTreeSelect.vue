@@ -2,6 +2,7 @@
 import type { Options } from '@popperjs/core'
 import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import { debounce, isEqual } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
 import type {
   SpreadsheetFilterCondition,
   SpreadsheetFilterTreePath
@@ -34,6 +35,14 @@ const props = defineProps<{
   popperAppendTo?: string
   popperOptions?: Partial<Options>
 }>()
+
+const { t } = useI18n()
+const defaultPlaceholder = computed(() => {
+  const mode = props.condition.multiple
+    ? 'visualization.multiple_choice'
+    : 'visualization.single_choice'
+  return `${t('common.please_select').trim()}（${t(mode)}）`
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: SpreadsheetFilterTreePath | SpreadsheetFilterTreePath[] | undefined]
@@ -203,7 +212,7 @@ watch(
     :show-checkbox="condition.multiple"
     :check-strictly="!condition.multiple"
     :render-after-expand="false"
-    :placeholder="placeholder || '请选择'"
+    :placeholder="placeholder || defaultPlaceholder"
     :append-to="popperAppendTo"
     popper-class="spreadsheet-filter-runtime-popper"
     :popper-options="popperOptions"
