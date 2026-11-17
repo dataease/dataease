@@ -132,7 +132,7 @@ const dfs = (arr: Tree[]) => {
 }
 const formatRootMiss = (id: string | number, treeData: Tree[]) => {
   if (!treeData?.length) {
-    return ''
+    return id
   }
   if (id === '0' && treeData[0].id !== '0') {
     return treeData[0].id
@@ -181,17 +181,17 @@ const createInit = (type, data: Tree, exec, name?: string, onSaved?: () => void)
       state.tData[0].name = t('data_set.data_set')
     }
     if (data.id) {
-      data.id = formatRootMiss(data.id, state.tData)
+      const resolvedId = formatRootMiss(data.id, state.tData)
       if (exec) {
         pid.value = data.pid
-        id.value = data.id
+        id.value = resolvedId
         datasetForm.pid = data.pid as string
         datasetForm.name = data.name
         orgRoot.value = data.orgRoot
       } else {
-        datasetForm.pid = data.id as string
-        pid.value = data.id
-        if (!findNodeById(state.tData, data.id as string)) {
+        datasetForm.pid = resolvedId as string
+        pid.value = resolvedId
+        if (!findNodeById(state.tData, resolvedId as string)) {
           datasetForm.pid = ''
           pid.value = ''
         }
@@ -289,7 +289,11 @@ const saveDataset = () => {
       }
       loading.value = true
       const req =
-        cmd.value === 'move' ? moveDatasetTree : params.id ? renameDatasetTree : createDatasetTree
+        cmd.value === 'move'
+          ? moveDatasetTree
+          : cmd.value === 'rename'
+          ? renameDatasetTree
+          : createDatasetTree
       req(params)
         .then(res => {
           dataset.value.resetFields()

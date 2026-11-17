@@ -636,13 +636,33 @@ onMounted(() => {
 
     <el-form-item
       v-if="showProperty('tableDisplayFields') && !batchOptStatus && !mobileInPc"
-      :label="t('v_query.display_field')"
       class="form-item"
       :class="'form-item-' + themes"
     >
+      <template #label>
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('v_query.display_field') }}</span>
+          <el-tooltip
+            :content="t('chart.merged_cell_tooltip_tip')"
+            :effect="toolTip"
+            :trigger="['hover', 'focus']"
+            placement="bottom"
+          >
+            <el-icon
+              class="hint-icon"
+              :class="{ 'hint-icon--dark': themes === 'dark' }"
+              tabindex="0"
+            >
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </template>
       <el-select
         v-model="tableDisplayFields"
         :effect="themes"
+        :tag-effect="toolTip"
+        :tag-color="toolTip === 'dark' ? '#434343' : undefined"
         :placeholder="t('chart.pls_select_field')"
         style="width: 100%"
         filterable

@@ -15,7 +15,7 @@ import { initApi } from './embedded'
 const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()
 const { t } = useI18n()
-const emits = defineEmits(['loaded'])
+const emits = defineEmits(['loaded', 'authentication-failed'])
 let promiseResolve: ((result: boolean | null) => void) | undefined
 let openerWindow: Window | null = null
 let verifying = false
@@ -118,7 +118,12 @@ const newWindowReady = async (): Promise<boolean | null> => {
 }
 onMounted(async () => {
   const result = await newWindowReady()
-  if (!disposed && result !== false) emits('loaded')
+  if (disposed) return
+  if (result === false) {
+    emits('authentication-failed')
+  } else {
+    emits('loaded')
+  }
 })
 onUnmounted(() => {
   disposed = true

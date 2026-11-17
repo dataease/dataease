@@ -130,7 +130,7 @@ const dfs = (arr: Tree[]) => {
 }
 const formatRootMiss = (id: string | number, treeData: Tree[]) => {
   if (!treeData?.length) {
-    return ''
+    return id
   }
   if (id === '0' && treeData[0].id !== '0') {
     return treeData[0].id
@@ -187,10 +187,10 @@ const createInit = (type, data: Tree, exec, name: string) => {
           oldName.value = data.name
           orgRoot.value = data.orgRoot
         } else {
-          data.id = formatRootMiss(data.id, state.tData) as string
-          datasetForm.pid = data.id as string
-          pid.value = data.id
-          if (!findNodeById(state.tData, String(data.id))) {
+          const resolvedId = formatRootMiss(data.id, state.tData) as string
+          datasetForm.pid = resolvedId
+          pid.value = resolvedId
+          if (!findNodeById(state.tData, resolvedId)) {
             datasetForm.pid = ''
             pid.value = ''
           }

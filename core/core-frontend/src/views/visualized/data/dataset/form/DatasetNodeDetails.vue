@@ -14,6 +14,8 @@ import type { CascaderOption, CascaderValue } from 'element-plus-secondary'
 import UnionFieldList from './UnionFieldList.vue'
 import DatasetNodeMenu from './DatasetNodeMenu.vue'
 import DatasetPanelFullscreen from './DatasetPanelFullscreen.vue'
+import FieldTypeDriftTip from './FieldTypeDriftTip.vue'
+import icon_warning_colorful from '@/assets/svg/icon_warning_colorful.svg'
 import type { Field, Node } from './util'
 
 type FieldTypePath = (number | string)[]
@@ -26,6 +28,7 @@ const props = defineProps<{
   fieldOptions: CascaderOption[]
   fieldOptionsText: CascaderOption[]
   applyFields: (node: Node, fields: Field[]) => Promise<boolean>
+  fieldTypeDrift?: (field: Field) => number | null
 }>()
 const emit = defineEmits<{
   select: [id: string]
@@ -33,6 +36,7 @@ const emit = defineEmits<{
   toggleFullscreen: []
   fieldName: [id: string, value: string]
   fieldType: [id: string, value: FieldTypePath]
+  keepFieldType: [id: string]
 }>()
 const { t } = useI18n()
 const search = ref('')
@@ -128,6 +132,14 @@ const sourceTableName = computed(() => {
   }
 })
 const hasPendingChanges = computed(() => fieldsLoaded.value && dirty.value)
+const getDrift = (field: Field) => {
+  if (!props.fieldTypeDrift) return null
+  const datasetTableId = (field as Field & { datasetTableId?: string }).datasetTableId
+  return props.fieldTypeDrift(
+    datasetTableId ? field : ({ ...field, datasetTableId: selectedNode.value?.id } as Field)
+  )
+}
+const driftCount = computed(() => fields.value.filter(field => getDrift(field) !== null).length)
 const resetFields = () => {
   const savedFields = selectedNode.value?.currentDsFields || []
   fields.value = fields.value.map(field => {
@@ -411,6 +423,12 @@ defineExpose({ commit, selectNode, hasPendingChanges })
           </el-input>
         </div>
         <div v-show="activeTab === 'fields'" class="node-fields">
+          <div v-if="driftCount" class="node-review" role="status">
+            <el-icon
+              ><Icon><icon_warning_colorful class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.type_change_pending', { count: driftCount }) }}</span>
+          </div>
           <el-button v-if="!fieldsLoaded && !loading" secondary @click="loadFields">{{
             t('data_set.refresh_data')
           }}</el-button>
@@ -444,15 +462,24 @@ defineExpose({ commit, selectNode, hasPendingChanges })
               </el-table-column>
               <el-table-column :label="t('dataset.dataset_field_type')" min-width="160">
                 <template #default="{ row }">
-                  <el-cascader
-                    class="field-editor field-type-editor"
-                    :model-value="getDatasetFieldType(row)"
-                    :disabled="applying"
-                    :aria-label="`${t('dataset.dataset_field_type')} ${row.originName}`"
-                    :options="getFieldTypeOptions(row)"
-                    :show-all-levels="false"
-                    @change="value => changeFieldType(row, value)"
-                  />
+                  <div class="field-type-cell">
+                    <el-cascader
+                      class="field-editor field-type-editor"
+                      :class="{ 'is-type-drift': getDrift(row) !== null }"
+                      :model-value="getDatasetFieldType(row)"
+                      :disabled="applying"
+                      :aria-label="`${t('dataset.dataset_field_type')} ${row.originName}`"
+                      :options="getFieldTypeOptions(row)"
+                      :show-all-levels="false"
+                      @change="value => changeFieldType(row, value)"
+                    />
+                    <field-type-drift-tip
+                      v-if="getDrift(row) !== null"
+                      :current-type="row.deType"
+                      :detected-type="getDrift(row)"
+                      @keep="emit('keepFieldType', row.id)"
+                    />
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column
@@ -610,6 +637,39 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   }
 }
 .node-fields {
+  .node-review {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    color: #8c5108;
+    font-size: 13px;
+  }
+  .field-type-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    :deep(.field-type-drift-tip) {
+      position: absolute;
+      right: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    :deep(.ed-cascader.is-type-drift) {
+      .ed-input__wrapper {
+        background: #fff7e9;
+        box-shadow: 0 0 0 1px #ebc383 inset;
+        &:hover,
+        &.is-focus {
+          box-shadow: 0 0 0 1px #ca8b36 inset;
+        }
+      }
+      .ed-input__inner,
+      .ed-input__suffix .ed-input__icon {
+        color: #8c5108;
+      }
+    }
+  }
   :deep(.header-cell) {
     padding: 10px 0;
     background-color: #f5f6ff !important;

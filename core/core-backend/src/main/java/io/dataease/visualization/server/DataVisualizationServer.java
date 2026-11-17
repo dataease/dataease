@@ -93,7 +93,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
     @Autowired
-    private org.springframework.beans.factory.ObjectProvider<io.dataease.api.material.MaterialBundleService> materialBundles;
+    private ImportedImageManage importedImages;
     @Resource
     private JPAQueryFactory queryFactory;
     @Resource
@@ -1021,14 +1021,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     DEException.throwException("Can't find the template's info from market,please check");
                 }
                 if (templateFileInfo.getMaterialBundle() != null) {
-                    var service = materialBundles.getIfAvailable();
-                    if (service == null) DEException.throwException(Translator.get("i18n_material_invalid"));
-                    service.validate(templateFileInfo.getMaterialBundle());
-                    Set<String> images = MaterialDocuments.images(templateFileInfo.getCanvasStyleData(), templateFileInfo.getComponentData());
-                    var entries = templateFileInfo.getMaterialBundle().getFiles();
-                    if (!images.equals(entries.stream().map(io.dataease.api.material.vo.MaterialBundleEntry::getReference).collect(Collectors.toSet()))) {
-                        DEException.throwException(Translator.get("i18n_material_invalid"));
-                    }
+                    importedImages.validatePreview(templateFileInfo.getMaterialBundle(),
+                            templateFileInfo.getCanvasStyleData(), templateFileInfo.getComponentData());
                     request.setMaterialBundle(templateFileInfo.getMaterialBundle());
                 }
                 templateStyle = templateFileInfo.getCanvasStyleData();
@@ -1206,7 +1200,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public VisualizationExport2AppVO export2AppCheck(VisualizationAppExportRequest appExportRequest) {
         List<Long> viewIds = appExportRequest.getViewIds();
-        List<Long> dsIds = appExportRequest.getDsIds();
+        List<Long> dsIds = CollectionUtils.emptyIfNull(appExportRequest.getDsIds()).stream()
+                .filter(Objects::nonNull)
+                .toList();
         Long dvId = appExportRequest.getDvId();
         List<AppCoreChartViewVO> chartViewVOInfo = null;
         List<AppCoreDatasetGroupVO> datasetGroupVOInfo = null;
@@ -1220,7 +1216,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 校验请求数据集均具备 READ 权限
         if (CollectionUtils.isNotEmpty(dsIds)) {
             for (Long dsId : dsIds) {
-                if (dsId == null || !corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
+                if (!corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
                     denyVisualizationRead();
                 }
             }

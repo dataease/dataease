@@ -571,10 +571,24 @@ const jumpClick = param => {
   }
   if (jumpInfo) {
     // 维度日期类型转换
-    viewFieldTimeTrans(chartRuntime.data, param)
+    if (jumpInfo.linkType === 'spreadsheet') {
+      // 电子表格取数需要联动日期元数据，保留原跳转操作类型。
+      const linkageParam = { ...param, option: 'linkage' }
+      viewFieldTimeTrans(chartRuntime.data, linkageParam)
+      param.dimensionList = linkageParam.dimensionList
+      param.quotaList = linkageParam.quotaList
+    } else {
+      viewFieldTimeTrans(chartRuntime.data, param)
+    }
     param.sourceDvId = dvInfo.value.id
     param.sourceViewId = param.viewId
     param.sourceFieldId = dimension.id
+    if (jumpInfo.linkType === 'spreadsheet') {
+      // 仅来源映射区分保存稿和发布版，目标电子表格始终读取发布版。
+      param.sourceResourceTable = ['canvas', 'edit-preview'].includes(showPosition.value)
+        ? 'snapshot'
+        : 'core'
+    }
     let embeddedBaseUrl = ''
     const divSelf = isDataEaseBi.value && jumpInfo.jumpType === '_self'
     const iframeSelf = isIframe.value && jumpInfo.jumpType === '_self'
@@ -586,8 +600,33 @@ const jumpClick = param => {
     )}`
 
     // 内部仪表板跳转
-    if (jumpInfo.linkType === 'inner') {
+    if (['inner', 'spreadsheet'].includes(jumpInfo.linkType)) {
       if (jumpInfo.targetDvId) {
+        if (jumpInfo.linkType === 'spreadsheet') {
+          if (!appStore.getXpackValid) {
+            ElMessage.warning(t('common.no_auth_tips'))
+            return
+          }
+          // 仪表板公共链接不代表具有目标电子表格的分享授权。
+          if (publicLinkStatus.value) {
+            ElMessage.warning(t('visualization.public_link_tips'))
+            return
+          }
+          if (divSelf || iframeSelf) {
+            embeddedStore.setSpreadsheetJump(
+              String(jumpInfo.targetDvId),
+              encodeURIComponent(Base64.encode(JSON.stringify(param)))
+            )
+            divEmbedded('Spreadsheet')
+            return
+          }
+          const url = `${embeddedBaseUrl}#/spreadsheet-preview?id=${encodeURIComponent(
+            jumpInfo.targetDvId
+          )}${jumpInfoParam}`
+          localStorage.setItem('beforeJumpUrl', window.location.href)
+          windowsJump(url, jumpInfo.jumpType, jumpInfo.windowSize)
+          return
+        }
         const editPreviewParams = ['canvas', 'edit-preview'].includes(showPosition.value)
           ? '&editPreview=true'
           : ''

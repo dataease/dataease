@@ -3,6 +3,7 @@ import request from '@/config/axios'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmbedded } from '@/store/modules/embedded'
 import { findOuterParams } from '../../../api/outer-params'
+import { getSpreadsheetPreviewParams } from '../../../utils/preview-params'
 
 const parseParams = (value: unknown): Record<string, unknown> => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -32,7 +33,7 @@ export const loadSpreadsheetOuterParams = async (
   spreadsheetId: string | number,
   signal: AbortSignal
 ) => {
-  const query = new URLSearchParams(window.location.hash.split('?')[1] || window.location.search)
+  const query = getSpreadsheetPreviewParams(spreadsheetId)
   if (query.get('ignoreParams') === 'true') return undefined
   const config = await findOuterParams(String(spreadsheetId), signal)
   if (!config.checked) return undefined

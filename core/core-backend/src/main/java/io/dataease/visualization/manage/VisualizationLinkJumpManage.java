@@ -438,7 +438,7 @@ public class VisualizationLinkJumpManage {
                 newDto.setJumpType(dto.getJumpType());
                 newDto.setWindowSize(dto.getWindowSize());
                 newDto.setTargetDvId(dto.getTargetDvId());
-                newDto.setTargetDvType(dto.getTargetDvType());
+                newDto.setTargetDvType("spreadsheet".equals(dto.getLinkType()) ? "spreadsheet" : dto.getTargetDvType());
                 newDto.setContent(dto.getContent());
                 newDto.setChecked(Boolean.TRUE.equals(dto.getChecked()));
                 newDto.setAttachParams(Boolean.TRUE.equals(dto.getAttachParams()));

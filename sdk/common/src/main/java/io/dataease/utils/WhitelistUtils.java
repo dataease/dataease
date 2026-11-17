@@ -115,11 +115,12 @@ public class WhitelistUtils {
         if (StringUtils.startsWith(requestURI, AuthConstant.DE_OIDCAPI_PREFIX)) {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_OIDCAPI_PREFIX, "");
         }
+        // Uploaded pictures require gateway authentication too: embedded credentials must be
+        // exchanged for the login token checked by the backend static-resource Filter.
         return WHITE_PATH.contains(requestURI)
                 || matchFrontendStaticResource(requestURI)
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
-                || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/contentPlugin/")
                 || matchSinglePathVariable(requestURI, "/xpackComponent/pluginStaticInfo/")

@@ -113,9 +113,7 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
       : null
     const staticResource = materialBundle
       ? {}
-      : await new Promise<Record<string, string>>((resolve, reject) => {
-          findStaticSource(resources => resolve(resources || {})).catch(reject)
-        })
+      : await findStaticSource(JSON.parse(canvasStyleResult), JSON.parse(canvasDataResult))
     const dataUrl = await withMapPictures(canvasDom, async () => {
       await waitForResourceImages(canvasDom)
       return domToPng(canvasDom, {
@@ -251,57 +249,56 @@ export function dataURLToBlob(dataUrl) {
   return new Blob([u8arr], { type: mime })
 }
 
-function findStaticSourceInner(componentDataInfo, staticResource) {
-  componentDataInfo?.forEach(item => {
-    if (
-      typeof item.commonBackground.outerImage === 'string' &&
-      item.commonBackground.outerImage.indexOf('static-resource') > -1
-    ) {
-      staticResource.push(item.commonBackground.outerImage)
-    }
-    if (
-      item.component === 'Picture' &&
-      item.propValue['url'] &&
-      typeof item.propValue['url'] === 'string' &&
-      item.propValue['url'].indexOf('static-resource') > -1
-    ) {
-      staticResource.push(item.propValue['url'])
-    } else if (
-      item.component === 'UserView' &&
-      item.innerType === 'picture-group' &&
-      item.propValue['urlList'] &&
-      item.propValue['urlList'].length > 0
-    ) {
-      item.propValue['urlList'].forEach(urlInfo => {
-        if (urlInfo.url.indexOf('static-resource') > -1) {
-          staticResource.push(urlInfo.url)
-        }
-      })
-    } else if (item.component === 'Group') {
-      findStaticSourceInner(item.propValue, staticResource)
-    } else if (item.component === 'DeTabs') {
-      item.propValue?.forEach(tabItem => {
-        findStaticSourceInner(tabItem.componentData, staticResource)
-      })
-    }
-  })
+interface StaticImageComponent {
+  component?: string
+  innerType?: string
+  commonBackground?: { outerImage?: string }
+  mCommonBackground?: { outerImage?: string }
+  propValue?: { url?: string; urlList?: { url?: string }[] } | StaticImageComponent[]
+  componentData?: StaticImageComponent[]
 }
 
-// 解析静态文件
-export function findStaticSource(callBack) {
-  const staticResource = []
-  // 系统背景文件
-  if (
-    typeof canvasStyleData.value.background === 'string' &&
-    canvasStyleData.value.background.indexOf('static-resource') > -1
-  ) {
-    staticResource.push(canvasStyleData.value.background)
+interface StaticImageCanvasStyle {
+  background?: string
+  mobileSetting?: { background?: string }
+  component?: { chartCommonStyle?: { outerImage?: string } }
+}
+
+async function findStaticSource(
+  style: StaticImageCanvasStyle,
+  components: StaticImageComponent[]
+): Promise<Record<string, string>> {
+  const paths = new Set<string>()
+  const add = (url?: string) => {
+    if (typeof url === 'string' && /(^|\/)static-resource\//.test(url)) paths.add(url)
   }
-  findStaticSourceInner(componentData.value, staticResource)
-  if (staticResource.length > 0) {
-    return findResourceAsBase64({ resourcePathList: staticResource }).then(rsp => {
-      callBack(rsp.data)
+
+  const collect = (items?: StaticImageComponent[]) => {
+    items?.forEach(item => {
+      add(item.commonBackground?.outerImage)
+      add(item.mCommonBackground?.outerImage)
+      const { propValue } = item
+      if (Array.isArray(propValue)) {
+        if (item.component === 'Group') collect(propValue)
+        if (item.component === 'DeTabs') propValue.forEach(tab => collect(tab.componentData))
+      } else if (item.component === 'Picture') {
+        add(propValue?.url)
+      } else if (item.component === 'UserView' && item.innerType === 'picture-group') {
+        propValue?.urlList?.forEach(image => add(image.url))
+      }
     })
   }
-  return Promise.resolve().then(() => callBack())
+
+  // 与 MaterialDocuments 使用相同的图片槽位，便于在没有素材库的环境再次导出。
+  add(style?.background)
+  add(style?.mobileSetting?.background)
+  add(style?.component?.chartCommonStyle?.outerImage)
+  collect(components)
+  if (!paths.size) return {}
+  const resourcePathList = [...paths]
+  const { data } = await findResourceAsBase64({ resourcePathList })
+  if (resourcePathList.some(path => typeof data?.[path] !== 'string' || !data[path])) {
+    throw new Error('Required static resource is unavailable')
+  }
+  return data
 }

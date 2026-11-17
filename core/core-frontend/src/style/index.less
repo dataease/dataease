@@ -9,7 +9,7 @@
   --ed-border-color: #d9dcdf !important;
   // 在根节点解析开关关闭色，避免受局部深色边框变量影响。
   --ed-switch-off-color: var(--ed-border-color);
-  --ed-color-primary-light-7: #d2f1e9 !important;
+  --ed-color-primary-light-7: #d6e2ff;
   --ed-border-color: #d9dcdf !important;
   --ed-disabled-border-color: #d9dcdf !important;
   --ed-border-color-light: #dee0e3 !important;
@@ -413,6 +413,12 @@ em {
 
 .ed-input-number .ed-input__inner {
   text-align: left !important;
+}
+
+body .ed-input__wrapper,
+body .ed-select__wrapper {
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .cell {
@@ -1236,7 +1242,7 @@ body:has(.proxy-warn-bar) {
   }
 
   .appearance-table__content {
-    height: calc(100vh - 196px) !important;
+    height: calc(100vh - 170px) !important;
   }
 
   .org-table__content {

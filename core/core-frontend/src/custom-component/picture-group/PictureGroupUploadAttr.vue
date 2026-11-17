@@ -207,6 +207,7 @@ const adaptation = computed({
       <el-button
         v-else
         class="picture-upload"
+        :class="{ 'is-dark': themes === 'dark' }"
         :aria-label="t('visualization.pic_upload_tips')"
         :disabled="uploading"
         :icon="Plus"
@@ -235,6 +236,7 @@ const adaptation = computed({
         <el-button
           v-if="images.length < limit"
           class="picture-upload"
+          :class="{ 'is-dark': themes === 'dark' }"
           :aria-label="t('visualization.pic_upload_tips')"
           :disabled="uploading"
           :icon="Plus"
@@ -320,6 +322,17 @@ const adaptation = computed({
   margin: 0;
   border-style: dashed;
   background: var(--ed-fill-color-light);
+
+  &.is-dark {
+    background: #373737;
+    border-color: #434343;
+    color: #ebebeb;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      color: var(--ed-color-primary);
+    }
+  }
 }
 .pic-adaptor {
   margin: 8px 0;

@@ -126,6 +126,13 @@ export const routes: AppRouteRecordRaw[] = [
     component: () => import('@/views/data-visualization/PreviewCanvas.vue')
   },
   {
+    path: '/spreadsheet-preview',
+    name: 'spreadsheet-preview',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/menu/spreadsheet/SpreadsheetPreviewPage.vue')
+  },
+  {
     path: '/de-link/:uuid',
     name: 'link',
     hidden: true,

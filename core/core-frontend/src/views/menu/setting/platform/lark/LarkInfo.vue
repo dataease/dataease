@@ -243,7 +243,9 @@ search();
   width: 100%;
   padding: 16px 0 0 0 !important;
   ::v-deep(.info-template-content) {
-    display: contents !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    margin-top: 0 !important;
   }
 }
 .platform-foot-container {

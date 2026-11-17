@@ -146,6 +146,15 @@ export const userStore = defineStore('embedded', {
     setJumpInfoParam(jumpInfoParam: string) {
       this.jumpInfoParam = jumpInfoParam
     },
+    setSpreadsheetJump(resourceId: string, jumpInfoParam: string) {
+      // 同页切换保留认证信息，但来源资源及其外参不能进入新的电子表格实例。
+      this.clearState()
+      this.setOuterParams('')
+      this.setType('Spreadsheet')
+      this.setBusiFlag('spreadsheet')
+      this.setResourceId(resourceId)
+      this.setJumpInfoParam(jumpInfoParam)
+    },
     setCreateType(createType: string) {
       this.createType = createType
     },

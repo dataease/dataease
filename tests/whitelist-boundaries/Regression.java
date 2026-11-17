@@ -78,7 +78,8 @@ public class Regression {
                     "/map/worldTreeOther", "/map/worldTree/other", "/map/admin", "/map/config.json",
                     "/map/156/", "/map/156/.json", "/map//156.json", "/map/156/156.json/other",
                     "/map/156/156.json.bak", "/map/156/156/config.json", "/map/156/config.yml",
-                    "/user/personInfo", "/sysParameter/basic/query", "/chart/getData");
+                    "/user/personInfo", "/sysParameter/basic/query", "/chart/getData",
+                    "/static-resource/test-background.png", "/static-resource/background.svg");
 
             for (String deployment : List.of("", "/tenant")) {
                 contextPath.set(null, deployment);
@@ -138,7 +139,8 @@ public class Regression {
                             path, null, true, null);
                 }
                 for (String path : List.of("/de2api/typeface/listFontOther", "/de2api/map/admin",
-                        "/de2api/share/validateOther", "/de2api/typeface/settings")) {
+                        "/de2api/share/validateOther", "/de2api/typeface/settings",
+                        "/de2api/static-resource/test-background.png")) {
                     filter("GET", path, null, false, null);
                     filter("GET", path, "invalid-test-token", false, null);
                     filter("GET", path, "valid-test-token", true, 42L);

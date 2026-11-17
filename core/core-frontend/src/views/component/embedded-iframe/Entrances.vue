@@ -16,12 +16,17 @@ import { ElMessage } from 'element-plus-secondary'
 const { wsCache } = useCache()
 const embeddedStore = () => useEmbedded()
 const appStore = () => useAppStoreWithOut()
-const emits = defineEmits(['initIframe'])
+const emits = defineEmits(['initIframe', 'authentication-failed'])
 const communicationCb = async event => {
   if (!event.data['de-embedded']) {
     return
   }
-  await ensureDekey()
+  try {
+    await ensureDekey()
+  } catch {
+    showError()
+    return
+  }
   const origin = event.origin
   if (origin === window.location.origin) {
     embeddedStore().setIframeData(event.data)
@@ -53,6 +58,7 @@ const showError = (messageKey?: string) => {
     grouping: true,
     showClose: true
   })
+  emits('authentication-failed')
 }
 const isInIframe = () => {
   try {
@@ -63,10 +69,10 @@ const isInIframe = () => {
   }
 }
 onBeforeMount(async () => {
-  if (
-    window.location.href.includes('#/preview?dvId=') &&
-    (wsCache.get('user.token') || !isInIframe())
-  ) {
+  const previewPage = ['#/preview?dvId=', '#/spreadsheet-preview?'].some(path =>
+    window.location.href.includes(path)
+  )
+  if (previewPage && (wsCache.get('user.token') || !isInIframe())) {
     emits('initIframe', false)
     return
   }
@@ -78,7 +84,12 @@ onBeforeMount(async () => {
     emits('initIframe', false)
     return
   }
-  await ensureDekey()
+  try {
+    await ensureDekey()
+  } catch {
+    showError()
+    return
+  }
   window.addEventListener('message', communicationCb)
   const readyData = {
     ready: true,

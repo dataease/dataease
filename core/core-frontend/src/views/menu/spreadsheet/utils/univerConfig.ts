@@ -31,6 +31,7 @@ import { DataEasePivotTablePlugin } from '../plugins/DataEasePivotTablePlugin'
 import { DataEaseTableClipboardPlugin } from '../plugins/DataEaseTableClipboardPlugin'
 import { DataEaseFilterPlugin } from '../plugins/DataEaseFilterPlugin'
 import { DataEaseOuterParamsPlugin } from '../plugins/DataEaseOuterParamsPlugin'
+import { DataEaseLinkJumpPlugin } from '../plugins/DataEaseLinkJumpPlugin'
 import { DataEaseDatasetReplacementPlugin } from '../plugins/DataEaseDatasetReplacementPlugin'
 import { DataEaseImagePlugin } from '../plugins/DataEaseImagePlugin'
 import { DataEaseSlashCellPlugin } from '../plugins/DataEaseSlashCellPlugin'
@@ -330,6 +331,7 @@ export function createUniverInstance(
     onReady: options.onReady,
     onError: options.onError
   })
+  univer.registerPlugin(DataEaseLinkJumpPlugin, { mode, spreadsheetId: options.spreadsheetId })
   univer.registerPlugin(DataEaseFilterPlugin)
   univer.registerPlugin(DataEaseSlashCellPlugin)
   univer.registerPlugin(DataEaseDetailTablePlugin)

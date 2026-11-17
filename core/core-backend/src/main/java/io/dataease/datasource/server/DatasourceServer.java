@@ -1054,8 +1054,7 @@ public class DatasourceServer implements DatasourceApi {
             throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter").causedBy(e);
         }
         String restored = restorePlainConfiguration(JsonUtil.toJSONString(remoteExcelRequest).toString(),
-                remoteExcelRequest.getDatasourceId() != null && remoteExcelRequest.getDatasourceId() > 0
-                        ? remoteExcelRequest.getDatasourceId() : remoteExcelRequest.getCopySourceId(), "ExcelRemote");
+                remoteExcelRequest.getDatasourceId(), "ExcelRemote");
         RemoteExcelRequest resolved = JsonUtil.parseObject(restored, RemoteExcelRequest.class);
         remoteExcelRequest.setPasswd(resolved.getPasswd());
         remoteExcelRequest.setUrl(resolved.getUrl());
@@ -1258,7 +1257,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private Long credentialSourceId(BusiDsRequest request) {
-        return request.getId() != null && request.getId() > 0 ? request.getId() : request.getCopySourceId();
+        // Only an existing resource may retain credentials; copies must supply new values.
+        return request.getId() != null && request.getId() > 0 ? request.getId() : null;
     }
 
     private String restoreConfiguration(String encoded, Long id, String type) {
@@ -1268,6 +1268,10 @@ public class DatasourceServer implements DatasourceApi {
 
     private String restorePlainConfiguration(String requested, Long id, String type) {
         DatasourceDTO stored = null;
+        if ((id == null || id <= 0)
+                && ConfigurationCredentials.containsMask(JsonUtil.parseObject(requested, JsonNode.class))) {
+            throw new DEException(ResultCode.PARAM_IS_INVALID.code(), Translator.get("i18n_configuration_credentials_reenter"));
+        }
         if (id != null && id > 0) {
             if (V3UserUtil.getLink() != null || !corePermissionManage.checkAuth(
                     new BusiPerCheckDTO(id, BusiResourceEnum.DATASOURCE, AuthEnum.MANAGE))) {

@@ -1839,7 +1839,9 @@ export function configTooltip(chart: Chart, option: S2Options) {
       minWidth: '0',
       textAlign: 'center',
       opacity: 0.95,
-      position: 'absolute'
+      position: 'absolute',
+      transition:
+        'visibility 0.4s cubic-bezier(0.23, 1, 0.32, 1), left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
     },
     adjustPosition: ({event}) => {
       return getTooltipPosition(event)

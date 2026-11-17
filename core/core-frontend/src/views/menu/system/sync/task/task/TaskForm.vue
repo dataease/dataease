@@ -282,7 +282,7 @@ const rules = reactive({
           callback(new Error(t('sync_task.please_choose_start_time')))
         } else {
           if (formState.value.stopTimeString) {
-            taskFormRef.value?.validateField('stopTime')
+            taskFormRef.value?.validateField('stopTimeString')
           }
           callback()
         }
@@ -290,7 +290,7 @@ const rules = reactive({
       trigger: 'change'
     }
   ],
-  stopTime: [
+  stopTimeString: [
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value !== '') {
@@ -781,9 +781,9 @@ defineExpose({ taskFormVisible })
                         size="default"
                       />
                     </el-form-item>
-                    <el-form-item :label="t('sync_datasource.end_time')" prop="stopTime">
+                    <el-form-item :label="t('sync_datasource.end_time')" prop="stopTimeString">
                       <el-date-picker
-                        v-model="formState.stopTime"
+                        v-model="formState.stopTimeString"
                         type="datetime"
                         :placeholder="t('sync_datasource.end_time')"
                         format="YYYY-MM-DD HH:mm"

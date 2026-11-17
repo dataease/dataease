@@ -468,7 +468,7 @@ export default {
     retry: '重試',
     preview_failed: '素材預覽失敗，請重試',
     choose: '从素材庫選擇',
-    import_hint: '包內素材將匯入全域素材庫，供編輯者選用。',
+    import_hint: '匯入後，包內圖片將用於還原畫布。',
     export_failed: '必要素材無法读取，匯出已終止。'
   },
   remote_transfer: {
@@ -2801,6 +2801,7 @@ export default {
     carousel_enable: '開啟輪播',
     carousel_stay_time: '停留時長（秒）',
     carousel_interval: '輪播間隔（秒）',
+    merged_cell_tooltip_tip: '已合併的儲存格只顯示儲存格值。',
     custom_tooltip_content_tip:
       "可以使用 ${'{'}fieldName{'}'} 的形式讀取欄位值（支援部分安全HTML標籤，不支援屬性和樣式）",
     legend_range_division: '圖例區間劃分',
@@ -3168,6 +3169,13 @@ export default {
       tip8: 'Calcite函數請參考文件：'
     },
     batch_manage: '批次管理',
+    type_change_pending: '{count} 個欄位類型待確認',
+    type_change_pending_title: '欄位類型待確認',
+    type_change_not_auto: '資料集欄位類型未自動修改',
+    current_field_type: '目前欄位類型',
+    sql_detected_type: 'SQL 檢測類型',
+    keep_current_type: '保留目前類型',
+    view_fields: '查看欄位',
     origin_name: '物理欄位名稱',
     origin_type: '物理字段類型',
     field_diff: '所選字段類型不一致，不支持轉換',
@@ -3777,6 +3785,9 @@ export default {
     text_decoration: '下劃線',
     select_target_resource: '請選擇目標資源',
     target_dashboard_dataV: '目標儀表板/數據大屏',
+    target_spreadsheet: '目標電子表格',
+    link_spreadsheet_field: '資料區域/查詢條件及欄位',
+    select_spreadsheet_target: '請選擇資料區域或查詢條件',
     dashboard_dataV: '儀表板/數據大屏',
     condition_style_set: '條件樣式設定',
     cell_merge_tips: '合併單元格後，行列凍結、自動換行將失效。',
@@ -5458,6 +5469,11 @@ export default {
       water_mask: '水印設置',
       show_water_mask: '顯示水印',
       format: '格式',
+      excel_header_mode: '表頭名稱',
+      excel_header_dataset: '資料集欄位名',
+      excel_header_display: '圖表欄位顯示名',
+      excel_header_hint:
+        '僅影響圖表資料 Excel 附件。例如：資料集欄位為「訂單金額」，圖表顯示名為「銷售額」。未設定圖表顯示名時，使用資料集欄位名。',
       view_data: '圖表數據',
       all_data: '全部數據',
       pixel: '儀表板分辨率',
@@ -5989,6 +6005,10 @@ export default {
   },
   spreadsheet: {
     title: '電子表格',
+    invalid_jump_params: '跳轉聯動參數已失效或格式不正確，請重新設定',
+    invalid_query_value: '查詢條件值格式不正確',
+    binding_ambiguous_targets: '工作簿包含重複的查詢條件或資料區域識別碼，無法設定綁定',
+    unsupported_jump_filter: '暫不支援攜帶分組自訂篩選跳轉至電子表格',
     outer_params_title: '外部參數設定',
     outer_params_enable: '啟用外部參數',
     outer_params_select_data_areas: '選擇關聯的資料區域',

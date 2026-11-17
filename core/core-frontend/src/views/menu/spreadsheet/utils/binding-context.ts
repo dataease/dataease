@@ -6,7 +6,7 @@ import type { SpreadsheetOuterParamsContext } from '../types/outer-params'
 import type { SpreadsheetFilterConfig, TablePluginConfig } from '../types/plugin'
 import { extractPluginInstancesFromWorkbook, FILTER_PLUGIN_RESOURCE_NAME } from './plugin-resource'
 
-interface OuterParamsTableConfig extends TablePluginConfig {
+interface BindingTableConfig extends TablePluginConfig {
   type: 'detail' | 'pivot'
   data: TablePluginConfig['data'] & {
     datasetName?: string
@@ -17,7 +17,7 @@ interface OuterParamsTableConfig extends TablePluginConfig {
   }
 }
 
-const getDataAreaName = (workbook: IWorkbookData, plugin: OuterParamsTableConfig): string => {
+const getDataAreaName = (workbook: IWorkbookData, plugin: BindingTableConfig): string => {
   const sheetId = plugin.placement?.sheetId
   const sheet = sheetId ? workbook.sheets?.[sheetId] : undefined
   // 使用保存稿中的当前工作表名，不沿用数据区域创建时记录的旧名称。
@@ -29,8 +29,9 @@ const getDataAreaName = (workbook: IWorkbookData, plugin: OuterParamsTableConfig
   return defaultName
 }
 
-export const loadSpreadsheetOuterParamsEditorContext = async (
-  workbook: IWorkbookData
+export const loadSpreadsheetBindingContext = async (
+  workbook: IWorkbookData,
+  strictFields = false
 ): Promise<SpreadsheetOuterParamsContext> => {
   const { t } = useI18n()
   // 查询栏资源保存的是单个配置对象，明细和透视资源才是实例数组。
@@ -39,18 +40,17 @@ export const loadSpreadsheetOuterParamsEditorContext = async (
     .flatMap(resource => {
       const config = JSON.parse(resource.data) as SpreadsheetFilterConfig
       if (!config || !Array.isArray(config.conditions)) {
-        throw new Error(t('spreadsheet.outer_params_load_error'))
+        throw new Error(t('spreadsheet.load_error'))
       }
       return config.conditions
     })
   const plugins = extractPluginInstancesFromWorkbook(workbook).filter(
-    (plugin): plugin is OuterParamsTableConfig =>
-      plugin.type === 'detail' || plugin.type === 'pivot'
+    (plugin): plugin is BindingTableConfig => plugin.type === 'detail' || plugin.type === 'pivot'
   )
   const conditionIds = new Set(conditions.map(condition => condition.id))
   const pluginIds = new Set(plugins.map(plugin => plugin.id))
   if (conditionIds.size !== conditions.length || pluginIds.size !== plugins.length) {
-    throw new Error(t('spreadsheet.outer_params_ambiguous_targets'))
+    throw new Error(t('spreadsheet.binding_ambiguous_targets'))
   }
 
   const datasetIds = plugins
@@ -62,7 +62,8 @@ export const loadSpreadsheetOuterParamsEditorContext = async (
     try {
       const details = await getDsDetailsWithPerm([...new Set(datasetIds)])
       details?.forEach(detail => datasetMap.set(String(detail.id), detail))
-    } catch {
+    } catch (error) {
+      if (strictFields) throw error
       // 字段读取失败仍保留数据区域，避免配置弹窗丢失已有绑定目标。
     }
   }
@@ -76,7 +77,9 @@ export const loadSpreadsheetOuterParamsEditorContext = async (
         try {
           // 实例字段副本由后端继续校验列权限，不从工作簿中直接取字段候选。
           datasetFields = await getFieldByDQ(datasetId, plugin.fieldOwnerId, {})
-        } catch {
+        } catch (error) {
+          // 跳转候选必须来自有效字段读取，不能把失败的副本查询降级为公共字段。
+          if (strictFields) throw error
           // 副本读取失败时保留已取得的公共字段，与查询栏配置保持一致。
         }
       }

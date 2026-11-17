@@ -119,6 +119,7 @@ onBeforeUnmount(() => eventBus.off('uploadPicture', onCanvasUpload))
         <el-button
           v-else
           class="picture-upload"
+          :class="{ 'is-dark': themes === 'dark' }"
           :aria-label="t('visualization.pic_upload_tips')"
           :disabled="uploading"
           :icon="Plus"
@@ -213,6 +214,17 @@ onBeforeUnmount(() => eventBus.off('uploadPicture', onCanvasUpload))
   height: 80px;
   border-style: dashed;
   background: var(--ed-fill-color-light);
+
+  &.is-dark {
+    background: #373737;
+    border-color: #434343;
+    color: #ebebeb;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      color: var(--ed-color-primary);
+    }
+  }
 }
 .image-hint {
   margin-top: 6px;

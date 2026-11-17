@@ -60,6 +60,14 @@ public class CoreVisualizationExportManage {
     }
 
     public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay, String filterJson) throws Exception {
+        return exportExcelWithHeaderMode(dvId, busiFlag, viewIdList, onlyDisplay, filterJson, "dataset");
+    }
+
+    public File exportExcelWithHeaderMode(Long dvId, String busiFlag, List<Long> viewIdList,
+                                         boolean onlyDisplay, String filterJson, String headerMode) throws Exception {
+        if (headerMode != null && !"dataset".equals(headerMode) && !"display".equals(headerMode)) {
+            DEException.throwException("Invalid Excel header mode");
+        }
         DataVisualizationVO visualization = coreVisualizationManage.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, CommonConstants.RESOURCE_TABLE.CORE);
@@ -100,13 +108,13 @@ public class CoreVisualizationExportManage {
             }
             view.getChartExtRequest().setUser(V3UserUtil.getUid());
             view.setTitle((i + 1) + "-" + view.getTitle());
-            sheets.addAll(exportViewData(view));
+            sheets.addAll(exportViewData(view, "display".equals(headerMode)));
         }
 
         return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString());
     }
 
-    private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title) {
+    private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title, boolean displayHeader) {
         ExcelSheetModel result = new ExcelSheetModel();
         Object objectFields = chart.get("fields");
         List<ChartViewFieldDTO> fields = (List<ChartViewFieldDTO>) objectFields;
@@ -119,7 +127,7 @@ public class CoreVisualizationExportManage {
                 Object dataeaseName = field.getDataeaseName();
                 Object deType = field.getDeType();
                 if (ObjectUtils.isNotEmpty(name) && ObjectUtils.isNotEmpty(dataeaseName)) {
-                    heads.add(name.toString());
+                    heads.add(displayHeader ? StringUtils.defaultIfBlank(field.getChartShowName(), name.toString()) : name.toString());
                     headKeys.add(dataeaseName.toString());
                     if (deType == null) {
                         field.setDeType(DeTypeConstants.DE_STRING);
@@ -157,7 +165,7 @@ public class CoreVisualizationExportManage {
         return result;
     }
 
-    private List<ExcelSheetModel> exportViewData(ChartViewDTO request) {
+    private List<ExcelSheetModel> exportViewData(ChartViewDTO request, boolean displayHeader) {
 
         ChartViewDTO chartViewDTO = null;
         request.setIsExcelExport(true);
@@ -181,16 +189,16 @@ public class CoreVisualizationExportManage {
         boolean leftExist = ObjectUtils.isNotEmpty(chart.get("left"));
         boolean rightExist = ObjectUtils.isNotEmpty(chart.get("right"));
         if (!leftExist && !rightExist) {
-            ExcelSheetModel sheetModel = exportSingleData(chart, title);
+            ExcelSheetModel sheetModel = exportSingleData(chart, title, displayHeader);
             resultList.add(sheetModel);
             return resultList;
         }
         if (leftExist) {
-            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("left"), title + "_left");
+            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("left"), title + "_left", displayHeader);
             resultList.add(sheetModel);
         }
         if (rightExist) {
-            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("right"), title + "_right");
+            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("right"), title + "_right", displayHeader);
             resultList.add(sheetModel);
         }
         return resultList;

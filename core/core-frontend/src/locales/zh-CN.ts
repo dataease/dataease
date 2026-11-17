@@ -468,7 +468,7 @@ export default {
     retry: '重试',
     preview_failed: '素材预览失败，请重试',
     choose: '从素材库选择',
-    import_hint: '包内素材将导入全局素材库，供编辑者选用。',
+    import_hint: '导入后，包内图片将用于还原画布。',
     export_failed: '必要素材无法读取，导出已终止。'
   },
   remote_transfer: {
@@ -2819,6 +2819,7 @@ export default {
     carousel_enable: '开启轮播',
     carousel_stay_time: '停留时长（秒）',
     carousel_interval: '轮播间隔（秒）',
+    merged_cell_tooltip_tip: '已合并的单元格只显示单元格值。',
     custom_tooltip_content_tip:
       "可以${'{'}fieldName{'}'}的形式读取字段值（支持部分安全HTML标签，不支持属性和样式）",
     legend_range_division: '图例区间划分',
@@ -3187,6 +3188,13 @@ export default {
       tip8: 'Calcite函数请参考文档：'
     },
     batch_manage: '批量管理',
+    type_change_pending: '{count} 个字段类型待确认',
+    type_change_pending_title: '字段类型待确认',
+    type_change_not_auto: '数据集字段类型未自动修改',
+    current_field_type: '当前字段类型',
+    sql_detected_type: 'SQL 检测类型',
+    keep_current_type: '保留当前类型',
+    view_fields: '查看字段',
     origin_name: '物理字段名',
     origin_type: '物理字段类型',
     field_diff: '所选字段类型不一致，不支持转换',
@@ -3796,6 +3804,9 @@ export default {
     text_decoration: '下滑线',
     select_target_resource: '请选择目标资源',
     target_dashboard_dataV: '目标仪表板/数据大屏',
+    target_spreadsheet: '目标电子表格',
+    link_spreadsheet_field: '数据区域/查询条件及字段',
+    select_spreadsheet_target: '请选择数据区域或查询条件',
     dashboard_dataV: '仪表板/数据大屏',
     effective_during_link: '公共链接生效',
     condition_style_set: '条件样式设置',
@@ -5475,6 +5486,11 @@ export default {
       water_mask: '水印设置',
       show_water_mask: '显示水印',
       format: '格式',
+      excel_header_mode: '表头名称',
+      excel_header_dataset: '数据集字段名',
+      excel_header_display: '图表字段显示名',
+      excel_header_hint:
+        '仅影响图表数据 Excel 附件。例如：数据集字段为“订单金额”，图表显示名为“销售额”。未设置图表显示名时，使用数据集字段名。',
       view_data: '图表数据',
       all_data: '全部数据',
       pixel: '仪表板分辨率',
@@ -6008,6 +6024,10 @@ export default {
   },
   spreadsheet: {
     title: '电子表格',
+    invalid_jump_params: '跳转联动参数已失效或格式不正确，请重新配置',
+    invalid_query_value: '查询条件值格式不正确',
+    binding_ambiguous_targets: '工作簿包含重复的查询条件或数据区域标识，无法配置绑定',
+    unsupported_jump_filter: '暂不支持携带分组自定义筛选跳转到电子表格',
     outer_params_title: '外部参数设置',
     outer_params_enable: '启用外部参数',
     outer_params_select_data_areas: '选择关联的数据区域',

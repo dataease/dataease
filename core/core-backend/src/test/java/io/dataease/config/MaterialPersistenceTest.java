@@ -1,20 +1,20 @@
 package io.dataease.config;
 
 import io.dataease.api.material.*;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
-import io.dataease.license.utils.LicenseUtil;
 import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.material.vo.MaterialBundle;
+import io.dataease.api.material.vo.MaterialBundleEntry;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.visualization.manage.CoreMaterialResourceAccess;
+import io.dataease.visualization.manage.ImportedImageManage;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.*;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.mock.web.*;
@@ -100,14 +100,12 @@ class MaterialPersistenceTest {
     }
 
     @Test void importRemapsDocumentsAndRejectsMissingManifestFiles() throws Throwable {
-        MaterialBundleService service = mock(MaterialBundleService.class);
-        when(service.restore(any())).thenReturn(Map.of("material-file://1", "material://789"));
-        StaticListableBeanFactory beans = new StaticListableBeanFactory();
-        beans.addBean("bundles", service);
-        var aspect = new MaterialImportAspect(beans.getBeanProvider(MaterialBundleService.class), manager);
+        ImportedImageManage images = mock(ImportedImageManage.class);
+        when(images.restore(any(), anySet())).thenReturn(Map.of("material-file://1", "/static-resource/imported.png"));
+        var aspect = new MaterialImportAspect(images, manager);
         var request = new DataVisualizationBaseRequest();
         MaterialBundle bundle = new MaterialBundle();
-        var file = new io.dataease.api.material.vo.MaterialBundleEntry();
+        var file = new MaterialBundleEntry();
         file.setReference("material-file://1");
         bundle.getFiles().add(file);
         request.setMaterialBundle(bundle);
@@ -120,7 +118,8 @@ class MaterialPersistenceTest {
         when(point.getArgs()).thenReturn(new Object[]{request});
         when(point.proceed()).thenReturn("101");
         assertEquals("101", aspect.restore(point));
-        assertTrue(request.getCanvasStyleData().contains("material://789"));
+        assertTrue(request.getCanvasStyleData().contains("/static-resource/imported.png"));
+        request.setMaterialBundle(bundle);
         request.setComponentData("[{\"component\":\"Picture\",\"propValue\":{\"url\":\"material-file://2\"}}]");
         assertThrows(io.dataease.exception.DEException.class, () -> aspect.restore(point));
     }
@@ -130,7 +129,7 @@ class MaterialPersistenceTest {
         var snapshots = mock(io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoRepository.class);
         var auth = mock(InteractiveAuthApi.class);
         var beans = new StaticListableBeanFactory();
-        beans.addBean("interactiveAuthApi", auth);
+        beans.addBean("auth", auth);
         var access = new CoreMaterialResourceAccess(beans.getBeanProvider(InteractiveAuthApi.class));
         org.springframework.test.util.ReflectionTestUtils.setField(access, "resources", resources);
         org.springframework.test.util.ReflectionTestUtils.setField(access, "snapshots", snapshots);
@@ -140,40 +139,32 @@ class MaterialPersistenceTest {
         var context = new io.dataease.api.material.dto.MaterialContext();
         context.setResourceId(101L);
         context.setResourceType("dashboard");
-        try (var application = new StaticApplicationContext();
-             var licenseBeans = mockStatic(io.dataease.license.utils.CommonBeanFactory.class)) {
-            application.refresh();
-            licenseBeans.when(io.dataease.license.utils.CommonBeanFactory::getApplicationContext).thenReturn(application);
-            try (var identity = mockStatic(io.dataease.permission.util.V3UserUtil.class);
-                 var license = mockStatic(LicenseUtil.class)) {
-                license.when(LicenseUtil::licenseValid).thenReturn(true);
-                identity.when(io.dataease.permission.util.V3UserUtil::getUid).thenReturn(11L);
-                assertEquals(Set.of(123L, 456L), access.authorize(context, false));
-                verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
-                        io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.READ));
-                var snapshot = new io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo();
-                snapshot.setCanvasStyleData(resource.getCanvasStyleData());
-                snapshot.setComponentData(resource.getComponentData());
-                when(snapshots.findById(101L)).thenReturn(Optional.of(snapshot));
-                context.setResourceTable("snapshot");
-                access.authorize(context, false);
-                verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
-                        io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.MANAGE));
-                doThrow(new io.dataease.exception.DEException(403, "Denied")).when(auth).checkAuth(any());
-                assertThrows(io.dataease.exception.DEException.class, () -> access.authorize(context, false));
-            }
+        try (var identity = mockStatic(io.dataease.permission.util.V3UserUtil.class);
+             var license = new MaterialTestLicense()) {
+            identity.when(io.dataease.permission.util.V3UserUtil::getUid).thenReturn(11L);
+            assertEquals(Set.of(123L, 456L), access.authorize(context, false));
+            verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
+                    io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.READ));
+            var snapshot = new io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo();
+            snapshot.setCanvasStyleData(resource.getCanvasStyleData());
+            snapshot.setComponentData(resource.getComponentData());
+            when(snapshots.findById(101L)).thenReturn(Optional.of(snapshot));
+            context.setResourceTable("snapshot");
+            access.authorize(context, false);
+            verify(auth).checkAuth(new io.dataease.api.permissions.auth.dto.BusiPerCheckDTO(101L,
+                    io.dataease.constant.BusiResourceEnum.SCREEN, io.dataease.constant.AuthEnum.MANAGE));
+            doThrow(new io.dataease.exception.DEException(403, "Denied")).when(auth).checkAuth(any());
+            assertThrows(io.dataease.exception.DEException.class, () -> access.authorize(context, false));
         }
     }
 
     @Test void editedImportDoesNotRestoreRemovedFilesOrRejectNormalSelections() throws Throwable {
-        MaterialBundleService service = mock(MaterialBundleService.class);
-        when(service.restore(any())).thenReturn(Map.of());
-        var beans = new StaticListableBeanFactory();
-        beans.addBean("bundles", service);
-        var aspect = new MaterialImportAspect(beans.getBeanProvider(MaterialBundleService.class), manager);
+        ImportedImageManage images = mock(ImportedImageManage.class);
+        when(images.restore(any(), anySet())).thenReturn(Map.of());
+        var aspect = new MaterialImportAspect(images, manager);
         var request = new DataVisualizationBaseRequest();
         var bundle = new MaterialBundle();
-        var file = new io.dataease.api.material.vo.MaterialBundleEntry();
+        var file = new MaterialBundleEntry();
         file.setReference("material-file://1");
         bundle.getFiles().add(file);
         request.setMaterialBundle(bundle);
@@ -185,10 +176,7 @@ class MaterialPersistenceTest {
         when(point.getSignature()).thenReturn(signature);
         when(point.getArgs()).thenReturn(new Object[]{request});
         aspect.restore(point);
-        verify(service).validate(bundle);
-        var captured = org.mockito.ArgumentCaptor.forClass(MaterialBundle.class);
-        verify(service).restore(captured.capture());
-        assertTrue(captured.getValue().getFiles().isEmpty());
+        verify(images).restore(eq(bundle), argThat(references -> !references.contains("material-file://1")));
         assertTrue(request.getCanvasStyleData().contains("material://123"));
     }
 }

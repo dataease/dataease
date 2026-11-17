@@ -37,11 +37,12 @@ DataEase 是开源的 BI 工具，帮助用户快速分析数据并洞察业务�
 
 **DataEase 支持的数据源：**
 
--   OLTP 数据库： MySQL、Oracle、SQL Server、PostgreSQL、MariaDB、Db2、TiDB、MongoDB-BI 等；
--   OLAP 数据库： ClickHouse、Apache Doris、Apache Impala、StarRocks 等；
+-   OLTP 数据库： MySQL、Oracle、SQL Server、PostgreSQL、MariaDB、Db2、TiDB、MongoDB-BI、人大金仓 KingbaseES、华为 GaussDB 等；
+-   OLAP 数据库： ClickHouse、Apache Doris、Apache Impala、StarRocks、Elasticsearch 等；
 -   数据仓库/数据湖： Amazon RedShift 等；
--   数据文件： Excel、CSV 等；
--   API 数据源。
+-   数据文件： 本地 Excel/CSV、远程 Excel/CSV 等；
+-   API 数据源;
+-   数据源插件： 达梦 DM、Apache Hive、飞书多维表格、SAP HANA、TDengine、Trino 等。
 
 如果您需要向团队介绍 DataEase，可以使用这个 [官方 PPT 材料](https://fit2cloud.com/dataease/download/introduce-dataease_202501.pdf)。
 

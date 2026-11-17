@@ -518,7 +518,7 @@ export default {
     retry: 'Retry',
     preview_failed: 'Could not preview this material. Please try again.',
     choose: 'Choose from material library',
-    import_hint: 'Materials in this package will be added to the shared library for editors.',
+    import_hint: 'Images in the package will be used to restore the canvas.',
     export_failed: 'A required material could not be read. Export cancelled.'
   },
   remote_transfer: {
@@ -2932,6 +2932,7 @@ export default {
     carousel_enable: 'Enable Carousel',
     carousel_stay_time: 'Stay Duration (seconds)',
     carousel_interval: 'Carousel Interval (seconds)',
+    merged_cell_tooltip_tip: 'Merged cells only show the cell value.',
     custom_tooltip_content_tip:
       "Can read field values in the form of ${'{'}fieldName{'}'} (Supports limited safe HTML tags without attributes or styles)",
     legend_range_division: 'Legend range division',
@@ -3311,6 +3312,13 @@ export default {
       tip8: 'For Calcite functions, please refer to the documentation:'
     },
     batch_manage: 'Batch management',
+    type_change_pending: '{count} field type(s) to confirm',
+    type_change_pending_title: 'Field type to confirm',
+    type_change_not_auto: 'dataset field types were not changed automatically',
+    current_field_type: 'Current field type',
+    sql_detected_type: 'SQL detected type',
+    keep_current_type: 'Keep current type',
+    view_fields: 'View fields',
     origin_name: 'Physical field name',
     origin_type: 'Physical field type',
     field_diff: 'The selected field types are inconsistent and do not support conversion',
@@ -3939,6 +3947,9 @@ export default {
     text_decoration: 'underline',
     select_target_resource: 'Please select the target resource',
     target_dashboard_dataV: 'Target Dashboard/Screen',
+    target_spreadsheet: 'Target Spreadsheet',
+    link_spreadsheet_field: 'Data Area/Query Condition and Field',
+    select_spreadsheet_target: 'Select a data area or query condition',
     dashboard_dataV: 'Dashboard/Data Screen',
     effective_during_link: 'Public link active',
     condition_style_set: 'Condition Style Settings',
@@ -5735,6 +5746,11 @@ export default {
       water_mask: 'Watermark Settings',
       show_water_mask: 'Show Watermark',
       format: 'Format',
+      excel_header_mode: 'Header Name',
+      excel_header_dataset: 'Dataset Field Name',
+      excel_header_display: 'Chart Field Display Name',
+      excel_header_hint:
+        'Only affects chart data Excel attachments. For example, “Order Amount” may be displayed as “Sales”. Falls back to the dataset field name when no display name is set.',
       view_data: 'Chart Data',
       all_data: 'All Data',
       pixel: 'Dashboard Resolution',
@@ -6292,6 +6308,13 @@ export default {
   },
   spreadsheet: {
     title: 'Spreadsheet',
+    invalid_jump_params:
+      'The jump linkage parameters are invalid or outdated. Configure them again.',
+    invalid_query_value: 'The query condition value has an invalid format',
+    binding_ambiguous_targets:
+      'The workbook contains duplicate query condition or data region IDs. Bindings cannot be configured.',
+    unsupported_jump_filter:
+      'Jumping to spreadsheets with custom group filters is not supported yet',
     outer_params_title: 'External parameter settings',
     outer_params_enable: 'Enable external parameters',
     outer_params_select_data_areas: 'Select linked data regions',

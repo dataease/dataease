@@ -94,13 +94,20 @@
                     class="larger-radio"
                     v-if="state.linkJumpInfo"
                     v-model="state.linkJumpInfo.linkType"
+                    @change="handleLinkTypeChange"
                   >
                     <el-radio value="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio value="inner">{{ t('visualization.dashboard_dataV') }}</el-radio>
+                    <el-radio v-if="appStore.getXpackValid" value="spreadsheet">
+                      {{ t('spreadsheet.title') }}
+                    </el-radio>
                   </el-radio-group>
                   <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
                     <el-radio value="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio value="inner">{{ resourceType }}</el-radio>
+                    <el-radio v-if="appStore.getXpackValid" value="spreadsheet">
+                      {{ t('spreadsheet.title') }}
+                    </el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item class="radio-group-box">
@@ -140,8 +147,8 @@
 
               <el-main class="settings-main">
                 <template v-if="state.linkJumpInfo">
-                  <template v-if="state.linkJumpInfo.linkType === 'inner'">
-                    <el-form label-position="top" class="main-form">
+                  <template v-if="isInternalTarget">
+                    <el-form label-position="top" class="main-form" v-loading="targetLoading">
                       <div class="m-row">
                         <div style="flex: 1">
                           <el-form-item>
@@ -173,12 +180,14 @@
                               {{ targetSource }}
                             </template>
                             <el-tree-select
+                              :key="state.linkJumpInfo.linkType"
                               v-model="state.linkJumpInfo.targetDvId"
                               :data="state.panelList"
                               :props="state.dvSelectProps"
                               :render-after-expand="false"
+                              :loading="targetTreeLoading"
                               filterable
-                              @node-click="dvNodeClick"
+                              @change="targetResourceChange"
                               class="dv-selector"
                             >
                               <template #default="{ node, data }">
@@ -191,6 +200,10 @@
                                     <Icon name="dv-dashboard-spine"
                                       ><dvDashboardSpine
                                         v-if="data.type === 'dashboard'"
+                                        class="svg-icon"
+                                      />
+                                      <iconSpreadsheet
+                                        v-else-if="isSpreadsheetTarget"
                                         class="svg-icon"
                                       />
                                       <dvScreenSpine v-else class="svg-icon"> </dvScreenSpine>
@@ -210,16 +223,23 @@
                           </el-form-item>
                         </div>
                       </div>
+                      <el-alert
+                        v-if="targetLoadError || hasInvalidSpreadsheetBinding"
+                        :title="targetLoadError || t('spreadsheet.outer_params_invalid_target')"
+                        type="warning"
+                        :closable="false"
+                      />
                       <template v-if="state.linkJumpInfo.targetDvId">
                         <div class="jump-com-list">
                           <el-tabs size="small" v-model="state.activeCollapse">
                             <el-tab-pane
-                              v-if="!isIndicator"
+                              v-if="!isIndicator || isSpreadsheetTarget"
                               :label="t('visualization.linkage_view')"
                               name="view"
                             >
                             </el-tab-pane>
                             <el-tab-pane
+                              v-if="!isSpreadsheetTarget"
                               :label="t('visualization.with_filter_params')"
                               name="filter"
                             >
@@ -231,7 +251,11 @@
                             <el-col :span="7"> {{ t('visualization.source_field') }} </el-col>
                             <el-col :span="2"></el-col>
                             <el-col :span="7" style="margin-left: -2.9%">
-                              {{ t('visualization.link_view_field') }}
+                              {{
+                                isSpreadsheetTarget
+                                  ? t('visualization.link_spreadsheet_field')
+                                  : t('visualization.link_view_field')
+                              }}
                             </el-col>
                             <el-col :span="8"></el-col>
                           </el-row>
@@ -264,7 +288,7 @@
                                     style="width: 100%"
                                   >
                                     <el-option
-                                      v-for="curViewField in state.linkJumpCurViewFieldArray"
+                                      v-for="curViewField in sourceFields"
                                       :key="curViewField.id"
                                       :label="curViewField.name"
                                       :value="curViewField.id"
@@ -297,7 +321,11 @@
                                   <el-select
                                     v-model="targetViewInfo.targetViewId"
                                     :disabled="!targetViewInfo.sourceFieldActiveId"
-                                    :placeholder="t('visualization.select_view')"
+                                    :placeholder="
+                                      isSpreadsheetTarget
+                                        ? t('visualization.select_spreadsheet_target')
+                                        : t('visualization.select_view')
+                                    "
                                     style="width: 100%"
                                     @change="viewInfoOnChange(targetViewInfo)"
                                   >
@@ -308,6 +336,7 @@
                                       :key="item.id"
                                       :label="item.title"
                                       :value="item.id"
+                                      :disabled="item.disabled"
                                     >
                                       <span class="custom-option">
                                         <Icon
@@ -383,7 +412,7 @@
                             </el-button>
                           </div>
                         </template>
-                        <template v-if="state.activeCollapse === 'filter'">
+                        <template v-if="!isSpreadsheetTarget && state.activeCollapse === 'filter'">
                           <template v-if="state.currentOutParams.length === 0">
                             <span
                               >{{ t('visualization.link_target_tips1')
@@ -623,6 +652,7 @@
 
 <script lang="ts" setup>
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { presentError } from '@/config/axios/errorPresenter'
 import { iconChartMap } from '@/components/icon-group/chart-list'
 import datasetOutline from '@/assets/svg/dataset-outline.svg'
 import dvLinkTarget from '@/assets/svg/dv-link-target.svg'
@@ -631,13 +661,27 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
+import iconSpreadsheet from '@/assets/svg/icon_spreadsheet.svg'
+import {
+  loadSpreadsheetJumpTree,
+  loadSpreadsheetJumpTargets,
+  type SpreadsheetJumpTarget
+} from './spreadsheet-jump-targets'
 import {
   queryVisualizationJumpInfo,
   queryWithViewId,
   updateJumpSet,
   viewTableDetailList
 } from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick, computed, watch, defineAsyncComponent } from 'vue'
+import {
+  reactive,
+  ref,
+  nextTick,
+  computed,
+  watch,
+  defineAsyncComponent,
+  onBeforeUnmount
+} from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { fieldType } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
@@ -675,7 +719,36 @@ const resourceType = computed(() =>
 
 const selectSourceTips = t('visualization.select_target_resource')
 
-const targetSource = t('visualization.target_dashboard_dataV')
+const isSpreadsheetTarget = computed(() => state.linkJumpInfo?.linkType === 'spreadsheet')
+const isInternalTarget = computed(() =>
+  ['inner', 'spreadsheet'].includes(state.linkJumpInfo?.linkType)
+)
+const targetSource = computed(() =>
+  isSpreadsheetTarget.value
+    ? t('visualization.target_spreadsheet')
+    : t('visualization.target_dashboard_dataV')
+)
+const sourceFields = computed(() =>
+  isSpreadsheetTarget.value ? state.spreadsheetSourceFields : state.linkJumpCurViewFieldArray
+)
+const targetLoading = ref(false)
+const targetTreeLoading = ref(false)
+const targetLoadError = ref('')
+const targetDetailsLoaded = ref(false)
+const hasInvalidSpreadsheetBinding = computed(
+  () =>
+    isSpreadsheetTarget.value &&
+    targetDetailsLoaded.value &&
+    state.linkJumpInfo?.targetViewInfoList.some(
+      binding =>
+        binding.targetViewId && !isSpreadsheetBindingValid(binding, state.currentLinkPanelViewArray)
+    )
+)
+let dialogVersion = 0
+let targetRequestVersion = 0
+let treeRequestVersion = 0
+let loadedTreeType: string | undefined
+let selectedTargetId: string | undefined
 
 const state = reactive({
   curDataVWeight: 0,
@@ -717,6 +790,7 @@ const state = reactive({
   linkJumpInfoArray: [],
   linkJumpInfoXArray: [],
   linkJumpCurViewFieldArray: [],
+  spreadsheetSourceFields: [],
   linkJumpCurFilterFieldArray: [], //当前过滤条件明细
   mapJumpInfoArray: {},
   panelList: [],
@@ -746,10 +820,19 @@ const { wsCache } = useCache()
 const outerContentEditor = ref(null)
 
 const resetParams = () => {
+  dialogVersion++
+  clearTargetContext()
+  treeRequestVersion++
+  loadedTreeType = undefined
+  selectedTargetId = undefined
+  state.panelList = []
+  state.loading = false
+  targetTreeLoading.value = false
   state.linkJump = null
   state.linkJumpInfoArray = []
   state.linkJumpInfoXArray = []
   state.linkJumpCurViewFieldArray = []
+  state.spreadsheetSourceFields = []
   state.linkJumpCurFilterFieldArray = []
   state.mapJumpInfoArray = {}
   state.linkJumpInfo = null
@@ -788,6 +871,8 @@ const initCurFilterFieldArray = componentDataCheck => {
 const isIndicator = computed(() => 'indicator' === state.viewType)
 
 const init = viewItem => {
+  const revision = dialogVersion
+  const isCurrent = () => dialogShow.value && revision === dialogVersion
   state.initState = false
   state.viewId = viewItem.id
   state.viewType = viewItem.type
@@ -833,19 +918,6 @@ const init = viewItem => {
     checkAllAxisStr += mixDimensionStr
     checkJumpStr += mixDimensionStr
   }
-  const request = { busiFlag: 'dashboard-dataV' } as BusiTreeRequest
-  // 获取可关联的仪表板
-  queryTreeApi(request).then(rsp => {
-    if (rsp && rsp[0]?.id === '0') {
-      state.panelList = rsp[0].children
-    } else {
-      state.panelList = rsp
-    }
-    state.panelList = filterEmptyFolderTree(state.panelList)
-    const curSortType = wsCache.get(`TreeSort-${dvInfo.value.type}`) || 'time_asc'
-    state.panelList = treeSort(state.panelList, curSortType)
-  })
-
   // 获取当前过滤条件明细 过滤原则：1.在当前仪表板或者大屏 2.作用于当前图表
   state.linkJumpCurFilterFieldArray = []
   initCurFilterFieldArray(componentData.value)
@@ -853,21 +925,28 @@ const init = viewItem => {
   if (chartDetails.tableId) {
     // 获取当前数据集信息
     getDatasetDetails(chartDetails.tableId).then(res => {
+      if (!isCurrent()) return
       state.curDatasetInfo = res || {}
     })
     // 获取当前图表的字段信息
     listFieldByDatasetGroup(chartDetails.tableId).then(rsp => {
+      if (!isCurrent()) return
       state.linkJumpCurViewFieldArray = []
+      state.spreadsheetSourceFields = []
       const sourceCurViewFieldArray = rsp.data
       sourceCurViewFieldArray.forEach(fieldItem => {
         if (checkAllAxisStr.indexOf(fieldItem.id) > -1) {
           state.linkJumpCurViewFieldArray.push(fieldItem)
+        }
+        if (checkAllAxisStr.includes(fieldItem.id) || checkJumpStr.includes(fieldItem.id)) {
+          state.spreadsheetSourceFields.push(fieldItem)
         }
       })
     })
 
     // 获取当前图表的关联信息
     queryWithViewId(dvInfo.value.id, state.viewId).then(rsp => {
+      if (!isCurrent()) return
       state.linkJump = rsp.data
       state.linkJumpInfoArray = []
       state.linkJumpInfoXArray = []
@@ -883,6 +962,7 @@ const init = viewItem => {
       const firstNode = state.linkJumpInfoArray[0]
       state.initState = true
       nextTick(() => {
+        if (!isCurrent()) return
         linkJumpInfoTree.value.setCurrentKey(firstNode?.sourceFieldId)
         nodeClick(firstNode)
       })
@@ -890,21 +970,44 @@ const init = viewItem => {
   }
 }
 
-const save = () => {
+const isSpreadsheetBindingValid = (
+  binding: { targetType: string; targetViewId: string; targetFieldId: string },
+  targets: SpreadsheetJumpTarget[]
+) => {
+  const target = targets.find(item => item.id === String(binding.targetViewId))
+  return (
+    binding.targetType === 'view' &&
+    !!target &&
+    !target.disabled &&
+    target.fields.some(field => field.id === String(binding.targetFieldId))
+  )
+}
+
+const save = async () => {
+  if (state.loading) return
   outerContentEditor.value?.syncContent?.()
   // 字段检查
   let subCheckCountAll = 0
   state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
     if (linkJumpInfo.checked) {
       let subCheckCount = 0
-      if (linkJumpInfo.linkType === 'inner') {
+      if (['inner', 'spreadsheet'].includes(linkJumpInfo.linkType)) {
         if (!linkJumpInfo.targetDvId) {
           subCheckCount++
           subCheckCountAll++
         }
         linkJumpInfo.targetViewInfoList &&
           linkJumpInfo.targetViewInfoList.forEach(function (link) {
-            if (!(link.sourceFieldActiveId && link.targetFieldId && link.targetViewId)) {
+            const invalidSpreadsheetSource =
+              linkJumpInfo.linkType === 'spreadsheet' &&
+              (link.targetType !== 'view' ||
+                !state.spreadsheetSourceFields.some(
+                  field => String(field.id) === String(link.sourceFieldActiveId)
+                ))
+            if (
+              !(link.sourceFieldActiveId && link.targetFieldId && link.targetViewId) ||
+              invalidSpreadsheetSource
+            ) {
               subCheckCount++
               subCheckCountAll++
             }
@@ -924,28 +1027,57 @@ const save = () => {
   if (subCheckCountAll) {
     return
   }
+  const jumpToSave = JSON.parse(JSON.stringify(state.linkJump))
+  const spreadsheetLinks = jumpToSave.linkJumpInfoArray.filter(
+    info => info.checked && info.linkType === 'spreadsheet'
+  )
+  if (spreadsheetLinks.length && !appStore.getXpackValid) {
+    ElMessage.error(t('common.no_auth_tips'))
+    return
+  }
+  const revision = dialogVersion
+  const isCurrent = () => dialogShow.value && revision === dialogVersion
   state.loading = true
-  updateJumpSet(state.linkJump)
-    .then(() => {
-      snapshotStore.recordSnapshotCache('updateJumpSet')
-      ElMessage.success(t('common.save_success'))
-      // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
-        dvMainStore.setNowPanelJumpInfo(rsp.data)
-        cancel()
-      })
-      state.loading = false
-    })
-    .catch(() => {
-      state.loading = false
-    })
+  try {
+    // 保存时重新核对所有电子表格目标，不能只校验当前源字段的候选缓存。
+    const targetIds = [...new Set<string>(spreadsheetLinks.map(info => String(info.targetDvId)))]
+    const entries = await Promise.all(
+      targetIds.map(async id => [id, await loadSpreadsheetJumpTargets(id)] as const)
+    )
+    if (!isCurrent()) return
+    const targetsById = new Map(entries)
+    const invalid = spreadsheetLinks.some(info =>
+      (info.targetViewInfoList || []).some(
+        binding =>
+          !isSpreadsheetBindingValid(binding, targetsById.get(String(info.targetDvId)) || [])
+      )
+    )
+    if (invalid) {
+      ElMessage.error(t('spreadsheet.outer_params_invalid_target'))
+      return
+    }
+    await updateJumpSet(jumpToSave)
+    if (!isCurrent()) return
+    snapshotStore.recordSnapshotCache('updateJumpSet')
+    ElMessage.success(t('common.save_success'))
+    const rsp = await queryVisualizationJumpInfo(dvInfo.value.id)
+    if (!isCurrent()) return
+    dvMainStore.setNowPanelJumpInfo(rsp.data)
+    cancel()
+  } catch (error) {
+    if (isCurrent()) presentError(error, t('spreadsheet.load_error'))
+  } finally {
+    if (revision === dialogVersion) state.loading = false
+  }
 }
 const nodeClick = data => {
   if (!data) {
     return
   }
   outerContentEditor.value?.syncContent?.()
+  clearTargetContext()
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
+  state.linkJumpInfo.targetViewInfoList ||= []
   if (!state.linkJumpInfo.windowSize) {
     state.linkJumpInfo.windowSize = 'middle'
   }
@@ -961,8 +1093,14 @@ const nodeClick = data => {
   if (!state.linkJumpInfo.attachParams) {
     state.linkJumpInfo.attachParams = false
   }
-  if (state.linkJumpInfo.targetDvId) {
-    getPanelViewList(state.linkJumpInfo.targetDvId)
+  selectedTargetId =
+    state.linkJumpInfo.targetDvId == null ? undefined : String(state.linkJumpInfo.targetDvId)
+  state.activeCollapse = isSpreadsheetTarget.value || !isIndicator.value ? 'view' : 'filter'
+  if (isInternalTarget.value) {
+    void loadTargetTree()
+    if (state.linkJumpInfo.targetDvId) {
+      void loadTargetDetails(state.linkJumpInfo.targetDvId)
+    }
   }
   codeMirrorContentSet(state.linkJumpInfo.content)
 }
@@ -973,28 +1111,106 @@ const codeMirrorContentSet = content => {
   })
 }
 
-// 获取当前图表字段 关联仪表板的图表信息列表
-const getPanelViewList = dvId => {
-  viewTableDetailList(dvId).then(rsp => {
-    state.viewIdFieldArrayMap = {}
-    state.currentLinkPanelViewArray = rsp.data.visualizationViewTables
-    if (state.currentLinkPanelViewArray) {
-      state.currentLinkPanelViewArray.forEach(view => {
-        state.viewIdFieldArrayMap[view.id] = view.tableFields
-      })
+const clearTargetContext = () => {
+  targetRequestVersion++
+  targetLoading.value = false
+  targetLoadError.value = ''
+  targetDetailsLoaded.value = false
+  state.currentOutParams = []
+  state.currentLinkPanelViewArray = []
+  state.viewIdFieldArrayMap = {}
+  state.curDataVWeight = 0
+}
+
+const findTargetNode = (id, nodes = state.panelList) => {
+  for (const node of nodes) {
+    if (String(node.id) === String(id)) return node
+    const child = node.children && findTargetNode(id, node.children)
+    if (child) return child
+  }
+}
+
+const loadTargetTree = async () => {
+  const linkInfo = state.linkJumpInfo
+  if (!linkInfo || !isInternalTarget.value) return
+  const linkType = linkInfo.linkType
+  if (loadedTreeType === linkType) {
+    state.curDataVWeight = findTargetNode(linkInfo.targetDvId)?.weight || 0
+    return
+  }
+  const requestVersion = ++treeRequestVersion
+  const revision = dialogVersion
+  const isCurrent = () =>
+    dialogShow.value &&
+    revision === dialogVersion &&
+    requestVersion === treeRequestVersion &&
+    state.linkJumpInfo?.linkType === linkType
+  targetTreeLoading.value = true
+  // 清空候选时同步失效缓存标记，快速切回旧类型也必须重新加载。
+  loadedTreeType = undefined
+  state.panelList = []
+  try {
+    if (linkType === 'spreadsheet' && !appStore.getXpackValid) return
+    const request = { busiFlag: 'dashboard-dataV' } as BusiTreeRequest
+    const result =
+      linkType === 'spreadsheet' ? await loadSpreadsheetJumpTree() : await queryTreeApi(request)
+    if (!isCurrent()) return
+    const nodes =
+      result?.[0] && String(result[0].id) === '0' ? result[0].children || [] : result || []
+    const sortType = linkType === 'spreadsheet' ? 'spreadsheet' : dvInfo.value.type
+    state.panelList = treeSort(
+      filterEmptyFolderTree(nodes),
+      wsCache.get(`TreeSort-${sortType}`) || 'time_asc'
+    )
+    loadedTreeType = linkType
+    state.curDataVWeight = findTargetNode(state.linkJumpInfo?.targetDvId)?.weight || 0
+  } catch (error) {
+    if (isCurrent()) presentError(error, t('spreadsheet.load_error'))
+  } finally {
+    if (isCurrent()) targetTreeLoading.value = false
+  }
+}
+
+const loadTargetDetails = async targetId => {
+  clearTargetContext()
+  const linkInfo = state.linkJumpInfo
+  const requestVersion = targetRequestVersion
+  const revision = dialogVersion
+  const linkType = linkInfo.linkType
+  const isCurrent = () =>
+    dialogShow.value &&
+    revision === dialogVersion &&
+    requestVersion === targetRequestVersion &&
+    state.linkJumpInfo === linkInfo &&
+    linkInfo.linkType === linkType &&
+    String(linkInfo.targetDvId) === String(targetId)
+  targetLoading.value = true
+  state.curDataVWeight = findTargetNode(targetId)?.weight || 0
+  try {
+    if (linkType === 'spreadsheet') {
+      if (!appStore.getXpackValid) throw new Error(t('common.no_auth_tips'))
+      const targets = await loadSpreadsheetJumpTargets(targetId)
+      if (!isCurrent()) return
+      state.currentLinkPanelViewArray = targets
+      state.viewIdFieldArrayMap = Object.fromEntries(
+        targets.map(target => [target.id, target.fields])
+      )
+      targetDetailsLoaded.value = true
+      return
     }
-    // 外部参数 currentLinkPanelViewArray 也加入
-    // 在图表侧进行隐藏 保存的时候直接保存currentLinkPanelViewArray 方便处理
+    const rsp = await viewTableDetailList(targetId)
+    if (!isCurrent()) return
+    state.currentLinkPanelViewArray = rsp.data.visualizationViewTables || []
+    state.currentLinkPanelViewArray.forEach(view => {
+      state.viewIdFieldArrayMap[view.id] = view.tableFields
+    })
     state.currentOutParams = rsp.data.outParamsJumpInfo || []
-    if (state.currentOutParams && state.currentOutParams.length > 0) {
-      state.currentOutParams.forEach(outerParamsItem => {
-        state.currentLinkPanelViewArray.push(outerParamsItem)
-        state.viewIdFieldArrayMap[outerParamsItem.id] = [
-          { id: '1000001', name: t('visualization.out_params_no_select') }
-        ]
-      })
-    }
-    // 增加过滤组件匹配
+    state.currentOutParams.forEach(outerParamsItem => {
+      state.currentLinkPanelViewArray.push(outerParamsItem)
+      state.viewIdFieldArrayMap[outerParamsItem.id] = [
+        { id: '1000001', name: t('visualization.out_params_no_select') }
+      ]
+    })
     JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
       if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
         componentItem.propValue.forEach(filterItem => {
@@ -1010,18 +1226,37 @@ const getPanelViewList = dvId => {
         })
       }
     })
-  })
+  } catch (error) {
+    if (isCurrent()) {
+      targetLoadError.value = error instanceof Error ? error.message : t('spreadsheet.load_error')
+    }
+  } finally {
+    if (isCurrent()) targetLoading.value = false
+  }
 }
 
-const dvNodeClick = data => {
-  if (data.leaf) {
-    state.curDataVWeight = data.weight
-    state.linkJumpInfo.targetViewInfoList = []
-    if (!isIndicator.value) {
-      addLinkJumpField()
-    }
-    getPanelViewList(data.id)
-  }
+const handleLinkTypeChange = () => {
+  // 仅用户切换目标类型时清空绑定；切换左侧源字段必须保留各自保存的配置。
+  clearTargetContext()
+  treeRequestVersion++
+  loadedTreeType = undefined
+  selectedTargetId = undefined
+  state.panelList = []
+  targetTreeLoading.value = false
+  state.linkJumpInfo.targetDvId = null
+  state.linkJumpInfo.targetViewInfoList = []
+  state.activeCollapse = isSpreadsheetTarget.value || !isIndicator.value ? 'view' : 'filter'
+  if (isInternalTarget.value) void loadTargetTree()
+}
+
+const targetResourceChange = targetId => {
+  if (selectedTargetId === String(targetId)) return
+  selectedTargetId = targetId == null ? undefined : String(targetId)
+  clearTargetContext()
+  state.linkJumpInfo.targetViewInfoList = []
+  if (!targetId) return
+  if (!isIndicator.value || isSpreadsheetTarget.value) addLinkJumpField()
+  void loadTargetDetails(targetId)
 }
 const addLinkJumpField = (type = 'view') => {
   state.linkJumpInfo.targetViewInfoList.push({
@@ -1097,6 +1332,25 @@ const resourceEdit = async resourceId => {
     ElMessage.error(t('visualization.no_edit_auth'))
     return
   }
+  if (isSpreadsheetTarget.value) {
+    if (!appStore.getXpackValid || state.curDataVWeight < 7) {
+      ElMessage.error(t('visualization.no_edit_auth'))
+      return
+    }
+    if (isEmbedded.value) {
+      embeddedStore.clearState()
+      embeddedStore.setResourceId(String(resourceId))
+      embeddedStore.setOpt('edit')
+      useEmitt().emitter.emit('changeCurrentComponent', 'SpreadsheetEditor')
+      return
+    }
+    const newWindow = window.open(
+      `#/spreadsheet-editor?id=${encodeURIComponent(resourceId)}&opt=edit`,
+      openType
+    )
+    initOpenHandler(newWindow)
+    return
+  }
   let busiFlagResult
   await findDvType(resourceId).then(res => {
     busiFlagResult = res.data
@@ -1125,6 +1379,20 @@ const initOpenHandler = newWindow => {
     openHandler.value.initOpenHandler(newWindow)
   }
 }
+
+watch(dialogShow, visible => {
+  if (visible) return
+  dialogVersion++
+  treeRequestVersion++
+  clearTargetContext()
+  targetTreeLoading.value = false
+})
+
+onBeforeUnmount(() => {
+  dialogVersion++
+  treeRequestVersion++
+  targetRequestVersion++
+})
 
 watch(
   () => state.showSelected,
