@@ -39,7 +39,9 @@ export class DataEaseOuterParamsPlugin extends Plugin {
       const valuesReady = this._injector
         .get(SpreadsheetFilterRuntimeService)
         .waitForValues(workbook.getUnitId())
-      const linkageReady = this._injector.get(SpreadsheetLinkJumpService).waitForReady()
+      const linkageReady = this._injector
+        .get(SpreadsheetLinkJumpService)
+        .activateFirstLinkedSheet(workbook.getUnitId())
       this._injector
         .get(SpreadsheetOuterParamsService)
         .completeInitialization(Promise.all([valuesReady, linkageReady]).then(() => undefined))

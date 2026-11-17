@@ -1,4 +1,12 @@
-import { Disposable, Inject, IUniverInstanceService, UniverInstanceType } from '@univerjs/core'
+import {
+  Disposable,
+  ICommandService,
+  Inject,
+  Injector,
+  IUniverInstanceService,
+  UniverInstanceType
+} from '@univerjs/core'
+import { SetWorksheetActiveOperation } from '@univerjs/sheets'
 import { cloneDeep } from 'lodash-es'
 import dayjs from 'dayjs'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -9,15 +17,19 @@ import type { SpreadsheetJumpField, SpreadsheetLinkageFilter } from '../../../ty
 import { getSpreadsheetPreviewParams } from '../../../utils/preview-params'
 import { applySpreadsheetQueryParamsToFilterConfig } from '../../DataEaseFilterPlugin/utils/query-params'
 import { normalizeSpreadsheetFilterTextSearchClauses } from '../../DataEaseFilterPlugin/utils/filter-condition-rules'
+import { DetailTableInstanceService } from '../../DataEaseDetailTablePlugin/services/detail-table-instance.service'
+import { PivotTableInstanceService } from '../../DataEasePivotTablePlugin/services/pivot-table-instance.service'
 import { invalidJumpParams, parseSpreadsheetJumpParams } from '../utils/jump-params'
 
 export class SpreadsheetLinkJumpService extends Disposable {
   private ready?: Promise<void>
   private abortController?: AbortController
+  private firstLinkedTableId?: string
   private readonly fieldFilters = new Map<string, Map<string, SpreadsheetLinkageFilter>>()
   private readonly queryFields = new Map<string, SpreadsheetJumpField>()
 
   constructor(
+    @Inject(Injector) private readonly injector: Injector,
     @Inject(IUniverInstanceService) private readonly univerInstanceService: IUniverInstanceService
   ) {
     super()
@@ -34,8 +46,28 @@ export class SpreadsheetLinkJumpService extends Disposable {
     void this.ready.catch(() => undefined)
   }
 
-  waitForReady(): Promise<void> | undefined {
-    return this.ready
+  async activateFirstLinkedSheet(unitId: string): Promise<void> {
+    await this.ready
+    if (this._disposed || !this.firstLinkedTableId) return
+    const workbook = this.univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET)
+    if (!workbook) return
+    // 表格实例在 onRendered 时载入，延迟读取以兼容跳转插件先注册的顺序。
+    const table = [
+      ...this.injector.get(DetailTableInstanceService).get(unitId),
+      ...this.injector.get(PivotTableInstanceService).get(unitId)
+    ].find(item => item.id === this.firstLinkedTableId)
+    const worksheet = table && workbook.getSheetBySheetId(table.placement.sheetId)
+    if (
+      !worksheet ||
+      worksheet.isSheetHidden() ||
+      workbook.getActiveSheet()?.getSheetId() === worksheet.getSheetId()
+    ) {
+      return
+    }
+    this.injector.get(ICommandService).syncExecuteCommand(SetWorksheetActiveOperation.id, {
+      unitId,
+      subUnitId: worksheet.getSheetId()
+    })
   }
 
   private async load(spreadsheetId: string | number, encoded: string, signal: AbortSignal) {
@@ -66,6 +98,10 @@ export class SpreadsheetLinkJumpService extends Disposable {
         const parts = target.split('#')
         if (parts.length !== 2 || !parts[0] || !parts[1]) throw invalidJumpParams()
         const [targetId, targetFieldId] = parts
+        // 按既有映射顺序定位首个表格；空值不参与筛选，但仍保留关联 Sheet 的定位。
+        if (targetFieldId !== '1000001' && !this.firstLinkedTableId) {
+          this.firstLinkedTableId = targetId
+        }
         const range = Array.isArray(field.timeValue) ? field.timeValue : undefined
         // 普通跳转沿用仪表板空值规则，不把 NULL 或空串解释为清除筛选。
         if (!range && (field.value == null || field.value === '')) continue
@@ -146,6 +182,7 @@ export class SpreadsheetLinkJumpService extends Disposable {
 
   override dispose(): void {
     this.abortController?.abort()
+    this.firstLinkedTableId = undefined
     this.fieldFilters.clear()
     this.queryFields.clear()
     super.dispose()
