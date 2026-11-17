@@ -33,9 +33,11 @@ public class DatasourceSemanticServer implements DatasourceSemanticApi {
     }
 
     @Override
-    public TableDetails detail(Long datasourceId, String tableName) {
-        requireText(tableName, 512);
-        return metadata.detail(datasourceId, tableName);
+    public TableDetails detail(Long datasourceId, TableDetailRequest request) {
+        if (request.tableId() == null) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_required"));
+        }
+        return metadata.detail(datasourceId, request.tableId());
     }
 
     @Override

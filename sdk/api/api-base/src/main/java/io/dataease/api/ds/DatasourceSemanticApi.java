@@ -1,6 +1,8 @@
 package io.dataease.api.ds;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,9 +24,9 @@ public interface DatasourceSemanticApi {
     Semantics list(@PathVariable("datasourceId") Long datasourceId);
 
     @DePermit({"#p0+':read'"})
-    @GetMapping("/{datasourceId}/semantics/detail")
+    @PostMapping("/{datasourceId}/semantics/detail")
     @Operation(summary = "查询单表字段语义及关联数量")
-    TableDetails detail(@PathVariable("datasourceId") Long datasourceId, @RequestParam("tableName") String tableName);
+    TableDetails detail(@PathVariable("datasourceId") Long datasourceId, @RequestBody TableDetailRequest request);
 
     @DePermit({"#p0+':manage'"})
     @PostMapping("/{datasourceId}/table")
@@ -67,8 +69,13 @@ public interface DatasourceSemanticApi {
             @Schema(description = "物理表名") String tableName
     ) {}
 
+    @Schema(description = "单表语义查询请求")
+    record TableDetailRequest(Long tableId) {}
+
     @Schema(description = "数据源表语义")
     record TableSemantic(
+            @JsonSerialize(using = ToStringSerializer.class)
+            @Schema(description = "语义表记录 ID", type = "string") Long id,
             @Schema(description = "物理表名") String tableName,
             @Schema(description = "表的业务说明") String description,
             @Schema(description = "数据粒度，例如一行代表一笔订单") String grain,

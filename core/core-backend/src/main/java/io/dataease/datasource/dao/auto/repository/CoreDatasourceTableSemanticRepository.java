@@ -10,4 +10,6 @@ public interface CoreDatasourceTableSemanticRepository extends JpaRepository<Cor
     List<CoreDatasourceTableSemantic> findByDatasource_IdOrderById(Long datasourceId);
 
     Optional<CoreDatasourceTableSemantic> findByDatasource_IdAndTableName(Long datasourceId, String tableName);
+
+    Optional<CoreDatasourceTableSemantic> findByIdAndDatasource_IdAndActiveTrue(Long id, Long datasourceId);
 }

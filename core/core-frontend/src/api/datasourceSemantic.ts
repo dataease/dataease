@@ -1,6 +1,7 @@
 import request from '@/config/axios'
 
 export interface TableSemantic {
+  id: string
   tableName: string
   description: string | null
   grain: string | null
@@ -37,10 +38,10 @@ const path = (id: string) => `/datasource/metadata/${id}`
 export const getDatasourceSemantics = (id: string) =>
   request.get<Promise<{ data: DatasourceSemantics }>>({ url: `${path(id)}/semantics` })
 
-export const getDatasourceSemanticDetails = (id: string, tableName: string) =>
-  request.get<Promise<{ data: TableSemanticDetails }>>({
+export const getDatasourceSemanticDetails = (id: string, tableId: string) =>
+  request.post<Promise<{ data: TableSemanticDetails }>>({
     url: `${path(id)}/semantics/detail`,
-    params: { tableName }
+    data: { tableId }
   })
 
 export const saveDatasourceTableSemantic = (id: string, data: TableSemantic) =>

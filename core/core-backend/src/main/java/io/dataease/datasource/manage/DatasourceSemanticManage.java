@@ -38,15 +38,16 @@ public class DatasourceSemanticManage {
     public Semantics list(Long datasourceId) {
         access.require(datasourceId);
         var tables = tableRepository.findByDatasource_IdOrderById(datasourceId).stream()
-                .map(t -> new TableSemantic(t.getTableName(), t.getDescription(), t.getGrain(), t.isActive(),
+                .map(t -> new TableSemantic(t.getId(), t.getTableName(), t.getDescription(), t.getGrain(), t.isActive(),
                         t.getPhysicalLabel(), t.isAvailable())).toList();
         return new Semantics(tables);
     }
 
     @Transactional(readOnly = true)
-    public TableDetails detail(Long datasourceId, String tableName) {
+    public TableDetails detail(Long datasourceId, Long tableId) {
         access.require(datasourceId);
-        var table = activeTable(datasourceId, tableName);
+        var table = tableRepository.findByIdAndDatasource_IdAndActiveTrue(tableId, datasourceId)
+                .orElseThrow(() -> DEException.getException(Translator.get("i18n_datasource_metadata_add_table_first")));
         var fields = fieldRepository.findByTableSemantic_IdOrderByPosition(table.getId()).stream()
                 .map(f -> new FieldSemantic(table.getTableName(), f.getFieldName(),
                         f.getBusinessName(), f.getDescription(), f.getAliases(), f.isConfirmed(),

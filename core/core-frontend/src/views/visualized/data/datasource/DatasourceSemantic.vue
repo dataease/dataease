@@ -107,13 +107,13 @@ let detailRequest = 0
 
 const loadDetail = async () => {
   const request = ++detailRequest
-  const tableName = currentTable.value?.tableName
+  const tableId = currentTable.value?.id
   detail.value = undefined
   detailFailed.value = false
-  detailLoading.value = !!tableName
-  if (!tableName) return
+  detailLoading.value = !!tableId
+  if (!tableId) return
   try {
-    const { data } = await getDatasourceSemanticDetails(props.datasourceId, tableName)
+    const { data } = await getDatasourceSemanticDetails(props.datasourceId, tableId)
     if (request === detailRequest) detail.value = data
   } catch {
     if (request === detailRequest) detailFailed.value = true
