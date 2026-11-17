@@ -6,6 +6,8 @@ export interface IGetTaskInfoReq {
 }
 
 export interface ITaskInfoInsertReq {
+  startTime?: number | null
+  stopTime?: number | null
   [key: string]: any
 }
 
@@ -172,8 +174,8 @@ export class ITaskInfoRes {
   target: ITarget
 
   status: string
-  startTime: string
-  stopTime: string
+  startTime: number | null
+  stopTime: number | null
 
   constructor(
     id: string,
@@ -187,8 +189,8 @@ export class ITaskInfoRes {
     source: ISource,
     target: ITarget,
     status: string,
-    startTime: string,
-    stopTime: string,
+    startTime: number | null,
+    stopTime: number | null,
     schedulerOption: ISchedulerOption
   ) {
     this.id = id
@@ -209,6 +211,8 @@ export class ITaskInfoRes {
 }
 
 export interface ITaskInfoUpdateReq {
+  startTime?: number | null
+  stopTime?: number | null
   [key: string]: any
 }
 
