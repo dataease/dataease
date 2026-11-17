@@ -16,7 +16,7 @@ import ExcelDs from "@/assets/svg/Excel-ds.svg";
 import dorisDs from "@/assets/svg/doris-ds.svg";
 import icon_close_outlined from "@/assets/svg/icon_close_outlined.svg";
 import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import {computed, nextTick, reactive, ref, watch} from "vue";
+import { computed, h, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import {ElIcon, ElMessage, ElMessageBox} from "element-plus-secondary";
 import {Icon} from "@/components/icon-custom";
 import DsTypeList from "./DsTypeList.vue";
@@ -36,6 +36,41 @@ import {Base64} from "js-base64";
 import EditorDetail from "./EditorDetail.vue";
 import Elasticsearch from "@/assets/svg/Elasticsearch.svg";
 import PluginComponent from "@/components/plugin/src/PluginComponent.vue";
+
+import ConnectionErrorNotice from './ConnectionErrorNotice.vue'
+import { errorBody, toDataEaseError } from '@/config/axios/error'
+import { wasErrorPresented } from '@/config/axios/errorPresenter'
+
+let formGeneration = 0
+let connectionErrorMessage: ReturnType<typeof ElMessage> | undefined
+const clearConnectionError = () => {
+  connectionErrorMessage?.close()
+  connectionErrorMessage = undefined
+}
+const captureConnectionError = (error: unknown, saving = false) => {
+  if (wasErrorPresented(error)) return
+  const failure = toDataEaseError(error)
+  if (failure.transportCode === 'ERR_CANCELED') return
+  const data = errorBody(failure.response?.data).data
+  if (!data || typeof data !== 'object' || !('connectionDiagnostic' in data)) return
+  if (typeof data.connectionDiagnostic !== 'string' || !data.connectionDiagnostic) return
+  clearConnectionError()
+  connectionErrorMessage = ElMessage({
+    type: 'error',
+    message: h(ConnectionErrorNotice, {
+      message: failure.message,
+      diagnostic: data.connectionDiagnostic,
+      saveFailed: saving
+    }),
+    showClose: true,
+    duration: 0
+  })
+  failure.presented = true
+}
+onBeforeUnmount(() => {
+  formGeneration++
+  clearConnectionError()
+})
 
 export interface Configuration {
   dataBase: string;
@@ -365,6 +400,7 @@ const ensurePluginReady = () => {
 }
 
 const validateDS = () => {
+  clearConnectionError()
   const request = buildDatasourceRequest()
   if (isPlugin.value) {
     if (!ensurePluginReady()) return
@@ -372,30 +408,23 @@ const validateDS = () => {
     try {
       xpack?.value?.invokeMethod({
         methodName: 'submitForm',
-        args: [{eventName: 'validateDs', args: request}]
+        args: [{ eventName: 'validateDs', args: request }]
       })
     } catch (error) {
       finishPluginAction()
     }
   } else {
-    loading.value = true;
-    const validateFrom = detail.value.submitForm();
-    validateFrom((val) => {
+    loading.value = true
+    const validateFrom = detail.value.submitForm()
+    validateFrom(val => {
       if (val) {
-        validateApi(request)
-            .then(() => {
-              loading.value = false;
-              ElMessage.success(t("sync_datasource.validate_success"));
-            })
-            .catch(() => {
-              loading.value = false;
-            });
+        doValidateDs(request)
       } else {
-        loading.value = false;
+        loading.value = false
       }
-    });
+    })
   }
-};
+}
 
 const typeTitle = computed(() => {
   if (!currentDsType.value) {
@@ -415,78 +444,88 @@ const typeTitle = computed(() => {
 });
 
 const saveDS = () => {
+  clearConnectionError()
   const request = buildDatasourceRequest()
   if (isPlugin.value) {
     if (!ensurePluginReady()) return
-    loading.value = true;
+    loading.value = true
     try {
       xpack?.value?.invokeMethod({
         methodName: 'submitForm',
-        args: [{eventName: 'saveDs', args: request}]
+        args: [{ eventName: 'saveDs', args: request }]
       })
     } catch (error) {
       finishPluginAction()
     }
   } else {
-    loading.value = true;
-    const validate = detail.value.submitForm();
-    validate((val) => {
+    loading.value = true
+    const validate = detail.value.submitForm()
+    validate(val => {
       if (val) {
         doSaveDs(request)
       } else {
-        loading.value = false;
+        loading.value = false
       }
-    });
+    })
   }
-};
+}
 
-const doSaveDs = (request) => {
+const doSaveDs = request => {
+  const generation = formGeneration
   if (editDs.value) {
-    updateApi(request)
-        .then((res) => {
-          if (res !== undefined) {
-            if (res.data["hasRunningTask"] === "true") {
-              ElMessage.warning(t("sync_datasource.has_running_task_msg"));
-            } else {
-              ElMessage.success(t("common.save_success"));
-            }
-            visible.value = false;
-            emits("refresh");
+    updateApi(request, true)
+      .then(res => {
+        if (generation !== formGeneration) return
+        if (res !== undefined) {
+          if (res.data['hasRunningTask'] === 'true') {
+            ElMessage.warning(t('sync_datasource.has_running_task_msg'))
+          } else {
+            ElMessage.success(t('common.save_success'))
           }
-        })
-        .catch(() => {
-          loading.value = false;
-        })
-        .finally(() => {
-          loading.value = false;
-        });
+          visible.value = false
+          emits('refresh')
+        }
+      })
+      .catch(error => {
+        if (generation === formGeneration) captureConnectionError(error, true)
+      })
+      .finally(() => {
+        if (generation === formGeneration) loading.value = false
+      })
   } else {
     saveApi(request)
-        .then((res) => {
-          if (res !== undefined) {
-            ElMessage.success(t("common.save_success"));
-            visible.value = false;
-            emits("refresh");
-          }
-        })
-        .catch(() => {
-          loading.value = false;
-        })
-        .finally(() => {
-          loading.value = false;
-        });
+      .then(res => {
+        if (generation !== formGeneration) return
+        if (res !== undefined) {
+          ElMessage.success(t('common.save_success'))
+          visible.value = false
+          emits('refresh')
+        }
+      })
+      .catch(() => {
+        if (generation === formGeneration) loading.value = false
+      })
+      .finally(() => {
+        if (generation === formGeneration) loading.value = false
+      })
   }
 }
 
 const doValidateDs = request => {
+  const generation = formGeneration
   loading.value = true
-  validateApi(request)
-      .then(() => {
-        ElMessage.success(t('sync_datasource.validate_success'))
-      })
-      .finally(() => {
-        loading.value = false
-      })
+  validateApi(request, true)
+    .then(() => {
+      if (generation !== formGeneration) return
+      clearConnectionError()
+      ElMessage.success(t('sync_datasource.validate_success'))
+    })
+    .catch(error => {
+      if (generation === formGeneration) captureConnectionError(error)
+    })
+    .finally(() => {
+      if (generation === formGeneration) loading.value = false
+    })
 }
 
 const iconMap = {
@@ -530,29 +569,31 @@ const form = reactive<Form>(cloneDeep(defaultForm));
 const visible = ref(false);
 const editDs = ref(false);
 const init = (dsInfo: Form, source: boolean) => {
-  loading.value = false;
-  editDs.value = !!dsInfo;
-  activeStep.value = Number(editDs.value);
-  visible.value = true;
-  sourceActive.value = source;
-  rebuildDatasourceTypes();
+  formGeneration++
+  clearConnectionError()
+  loading.value = false
+  editDs.value = !!dsInfo
+  activeStep.value = Number(editDs.value)
+  visible.value = true
+  sourceActive.value = source
+  rebuildDatasourceTypes()
   currentType.value = source ? 'OLTP' : 'OLAP'
-  currentDsType.value = dsInfo?.type || "";
+  currentDsType.value = dsInfo?.type || ''
   isPlugin.value = dsInfo?.isPlugin || false
   pluginIndex.value = isPlugin.value ? dsInfo?.staticMap?.index : null
   pluginReady.value = false
   pluginLoadFailed.value = false
-  getLatestUseTypes();
+  getLatestUseTypes()
   if (!!dsInfo) {
     nextTick(() => {
-      currentDsType.value = dsInfo.type;
-      activeStep.value = 1;
-      form.name = dsInfo.name;
-      form.id = dsInfo.id;
-      form.desc = dsInfo.desc;
-      form.type = dsInfo.type;
-      form.datasourceRole = dsInfo.datasourceRole;
-      form.configuration = dsInfo.configuration;
+      currentDsType.value = dsInfo.type
+      activeStep.value = 1
+      form.name = dsInfo.name
+      form.id = dsInfo.id
+      form.desc = dsInfo.desc
+      form.type = dsInfo.type
+      form.datasourceRole = dsInfo.datasourceRole
+      form.configuration = dsInfo.configuration
       nextTick(() => {
         detail.value.clearForm()
         xpack?.value?.invokeMethod({
@@ -560,12 +601,21 @@ const init = (dsInfo: Form, source: boolean) => {
           args: []
         })
       })
-    });
+    })
   } else {
-    defaultForm.datasourceRole = activeDatasourceRole.value;
-    Object.assign(form, cloneDeep(defaultForm));
+    defaultForm.datasourceRole = activeDatasourceRole.value
+    Object.assign(form, cloneDeep(defaultForm))
   }
-};
+}
+watch(
+  [visible, currentDsType],
+  () => {
+    formGeneration++
+    clearConnectionError()
+  },
+  { flush: 'sync' }
+)
+
 const handleCancel = () => {
   visible.value = false;
   currentDsType.value = "";

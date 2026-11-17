@@ -4213,6 +4213,9 @@ export default {
     ds_search_placeholder: '搜尋名稱,描述'
   },
   sync_datasource: {
+    changes_not_saved: '本次修改未儲存，原有設定和狀態保持不變',
+    show_error_details: '查看具體原因',
+    hide_error_details: '收起具體原因',
     title: '資料連線管理',
     source_ds: '來源資料來源',
     target_ds: '目標資料來源',

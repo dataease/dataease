@@ -4233,6 +4233,9 @@ export default {
     ds_search_placeholder: '搜索名称,描述'
   },
   sync_datasource: {
+    changes_not_saved: '本次修改未保存，原有配置和状态保持不变',
+    show_error_details: '查看具体原因',
+    hide_error_details: '收起具体原因',
     title: '数据连接管理',
     source_ds: '源数据源',
     target_ds: '目标数据源',

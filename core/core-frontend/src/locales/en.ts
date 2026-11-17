@@ -4377,6 +4377,10 @@ export default {
     ds_search_placeholder: 'Search name, description'
   },
   sync_datasource: {
+    changes_not_saved:
+      'Changes were not saved. The existing configuration and status are unchanged.',
+    show_error_details: 'View error details',
+    hide_error_details: 'Hide error details',
     title: 'Data Connection Management',
     source_ds: 'Source Data Source',
     target_ds: 'Target Data Source',
