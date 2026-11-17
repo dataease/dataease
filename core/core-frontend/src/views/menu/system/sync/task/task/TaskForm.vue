@@ -107,15 +107,16 @@ const getTaskInfo = (recheck = false) => {
         ...deepCopy(defaultFormState),
         ...res.data
       }
-      if (formState.value.stopTimeString != null) {
-        formState.value.stopTimeString = dayjs(formState.value.stopTimeString).format(
-          'YYYY-MM-DD HH:mm'
-        )
+      // 与列表统一按浏览器时区展示时间戳，兼容仅返回时间字符串的旧接口
+      if (res.data.stopTime != null || formState.value.stopTimeString) {
+        formState.value.stopTimeString = dayjs(
+          res.data.stopTime ?? formState.value.stopTimeString
+        ).format('YYYY-MM-DD HH:mm')
       }
-      if (formState.value.startTimeString != null) {
-        formState.value.startTimeString = dayjs(formState.value.startTimeString).format(
-          'YYYY-MM-DD HH:mm'
-        )
+      if (res.data.startTime != null || formState.value.startTimeString) {
+        formState.value.startTimeString = dayjs(
+          res.data.startTime ?? formState.value.startTimeString
+        ).format('YYYY-MM-DD HH:mm')
       }
       formState.value.target.property = JSON.parse(formState.value.target.targetProperty)
       if (formState.value.schedulerType === 'FIX_RATE' && formState.value.schedulerConf) {
@@ -434,6 +435,12 @@ const onSubmit = () => {
     desc: formState.value.desc,
     executorTimeout: formState.value.executorTimeout,
     executorFailRetryCount: formState.value.executorFailRetryCount,
+    startTime: formState.value.startTimeString
+      ? dayjs(formState.value.startTimeString).valueOf()
+      : null,
+    stopTime: formState.value.stopTimeString
+      ? dayjs(formState.value.stopTimeString).valueOf()
+      : null,
     startTimeString: formState.value.startTimeString,
     stopTimeString: formState.value.stopTimeString,
     source: deepCopy(formState.value.source),
