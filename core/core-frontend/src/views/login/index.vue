@@ -37,7 +37,9 @@ const loginImageUrl = ref(null)
 const loginImageRetry = ref(0)
 const loginImageSrc = computed(() => {
   const src = loginImageUrl.value || DeImage
-  return loginImageRetry.value ? `${src}${src.includes('?') ? '&' : '?'}retry=${loginImageRetry.value}` : src
+  return loginImageRetry.value
+    ? `${src}${src.includes('?') ? '&' : '?'}retry=${loginImageRetry.value}`
+    : src
 })
 const retryLoginImage = () => {
   if (loginImageRetry.value < 2) {
