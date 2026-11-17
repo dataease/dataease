@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
 import { iconCanvasMap } from '@/components/icon-group/canvas-icon-list'
 import DeDecoration from '@/custom-component/de-decoration/Component.vue'
@@ -9,6 +10,16 @@ import eventBus from '@/utils/eventBus'
 
 const { t } = useI18n()
 const activeGroup = shallowRef(CANVAS_MATERIAL[0])
+const previews = ref<HTMLElement[]>([])
+const { width, height } = useElementSize(computed(() => previews.value[0]))
+const decorationSize = { width: 530, height: 373 }
+const decorationScale = computed(() =>
+  Math.min(0.2, width.value / decorationSize.width, height.value / decorationSize.height)
+)
+const decorationStyle = computed(() => ({
+  width: decorationSize.width * decorationScale.value + 'px',
+  height: decorationSize.height * decorationScale.value + 'px'
+}))
 
 const insert = (innerType: string) => {
   eventBus.emit('handleNew', { componentName: activeGroup.value.category, innerType })
@@ -48,7 +59,7 @@ const startDrag = (event: DragEvent, innerType: string) => {
           @click="insert(item.value)"
           @dragstart="startDrag($event, item.value)"
         >
-          <span class="component-asset-preview">
+          <span ref="previews" class="component-asset-preview">
             <Icon v-if="['outer_svg', 'graphical'].includes(item.type)">
               <component
                 :is="item.icon"
@@ -58,9 +69,10 @@ const startDrag = (event: DragEvent, innerType: string) => {
             </Icon>
             <DeDecoration
               v-else-if="item.type === 'de_decoration'"
-              :cur-style="{ width: 530, height: 373 }"
+              :cur-style="decorationSize"
               :element="{ innerType: item.value }"
-              :scale="0.2"
+              :scale="decorationScale"
+              :style="decorationStyle"
             />
             <component
               :is="iconCanvasMap[item.value]"
