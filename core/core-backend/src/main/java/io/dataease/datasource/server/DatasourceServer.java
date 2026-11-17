@@ -21,9 +21,11 @@ import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
+import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.entity.CoreDsFinishPage;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDsFinishPageRepository;
 import io.dataease.datasource.dao.auto.repository.QrtzSchedulerStateRepository;
 import io.dataease.datasource.manage.DataSourceManage;
@@ -136,6 +138,8 @@ public class DatasourceServer implements DatasourceApi {
     private CoreDatasourceRepository coreDatasourceRepository;
     @Autowired
     private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
+    @Resource
+    private CoreDeEngineRepository coreDeEngineRepository;
     @Resource
     private DatabaseTimeManage databaseTimeManage;
     @Resource
@@ -1476,6 +1480,18 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 });
             }
+        });
+        coreDeEngineRepository.findAll().forEach(engine -> {
+            commonThreadPool.addTask(() -> {
+                try {
+                    LogUtil.info("Begin to check engine status: " + engine.getName());
+                    LicenseUtil.validate();
+                    engineManage.validate(engine, true);
+                    LogUtil.info("Finish to check engine status: " + engine.getName());
+                } catch (Exception e) {
+                    LogUtil.info("Error to check engine status: " + engine.getName() + ", error message: " + e.getMessage());
+                }
+            });
         });
     }
 
