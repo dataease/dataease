@@ -206,6 +206,10 @@ const quotaFields = ref<FieldItemData[]>([])
 // 选中的字段
 const selectedDimensionFields = ref<FieldItemData[]>([])
 const selectedQuotaFields = ref<FieldItemData[]>([])
+const dragPreview = ref<HTMLElement>()
+const dragPreviewFields = computed(() =>
+  selectedDimensionFields.value.length ? selectedDimensionFields.value : selectedQuotaFields.value
+)
 
 // 最后点击的字段索引（用于shift范围选择）
 const lastClickedDimensionIndex = ref(-1)
@@ -392,7 +396,8 @@ const handleFieldClick = (field: FieldItemData, index: number, event: MouseEvent
 // 拖拽开始 - 批量拖拽选中的字段
 const handleDragStart = (field: FieldItemData, index: number, event: DragEvent, type: 'dimension' | 'quota') => {
   // 如果没有选中任何字段，或当前拖拽的字段不在选中列表中，则单选当前字段
-  const selectedList = type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
+  const selectedList =
+    type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
   const isSelected = selectedList.some(f => f.id === field.id)
 
   if (!isSelected) {
@@ -400,95 +405,17 @@ const handleDragStart = (field: FieldItemData, index: number, event: DragEvent, 
   }
 
   // 设置拖拽数据为所有选中的字段
-  if (event.dataTransfer) {
-    const finalSelectedList = type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
-    event.dataTransfer.setData('application/json', JSON.stringify(finalSelectedList))
-    event.dataTransfer.effectAllowed = 'copy'
+  const { dataTransfer } = event
+  if (dataTransfer) {
+    const finalSelectedList =
+      type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
+    dataTransfer.setData('application/json', JSON.stringify(finalSelectedList))
+    dataTransfer.effectAllowed = 'copy'
+    if (finalSelectedList.length > 1 && dragPreview.value) {
+      // 浏览器在 dragstart 时同步截取预览，提前渲染选中的字段行。
+      dataTransfer.setDragImage(dragPreview.value, 10, 10)
+    }
   }
-}
-
-// 是否正在拖拽
-const isDrag = ref(false)
-const isDraggingItem = ref(false)
-
-// 创建拖拽图像
-const createDragImage = (fields: FieldItemData[], type: 'dimension' | 'quota') => {
-  const div = document.createElement('div')
-  div.style.cssText = `
-    position: fixed;
-    left: -9999px;
-    top: -9999px;
-    background: #fff;
-    border: 1px solid ${type === 'dimension' ? '#3370ff' : '#34c724'};
-    border-radius: 4px;
-    padding: 8px 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 160px;
-    max-width: 240px;
-    z-index: 9999;
-  `
-
-  fields.forEach(field => {
-    const item = document.createElement('div')
-    item.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-    `
-    const icon = document.createElement('span')
-    icon.style.cssText = `
-      font-size: 14px;
-      font-weight: 500;
-      width: 16px;
-      text-align: center;
-      color: ${type === 'dimension' ? '#3370ff' : '#34c724'};
-    `
-    icon.textContent = type === 'dimension' ? 'T' : '#'
-
-    const name = document.createElement('span')
-    name.style.cssText = `
-      font-size: 13px;
-      color: #1f2329;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    `
-    // 字段名可能来自导入文件或历史数据，必须按纯文本渲染，避免解析 HTML。
-    name.textContent = field.name
-    item.append(icon, name)
-    div.appendChild(item)
-  })
-
-  document.body.appendChild(div)
-  return div
-}
-
-// 拖拽开始
-const onDragStart = (type: 'dimension' | 'quota', event: DragEvent) => {
-  isDrag.value = true
-
-  // 创建自定义拖拽图像
-  const selectedFields = type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
-  if (selectedFields.length > 1) {
-    const dragImage = createDragImage(selectedFields, type)
-    event.dataTransfer?.setDragImage(dragImage, 10, 10)
-
-    // 拖拽结束后清理
-    setTimeout(() => {
-      document.body.removeChild(dragImage)
-    }, 100)
-  }
-
-  setTimeout(() => {
-    isDraggingItem.value = true
-  }, 0)
-}
-
-// 拖拽结束
-const onDragEnd = () => {
-  isDrag.value = false
-  isDraggingItem.value = false
 }
 
 // 过滤后的字段
@@ -782,8 +709,7 @@ const toggleCollapsed = () => {
                   @copy="copyField"
                   @delete="deleteField"
                   @click="(f, i, e) => handleFieldClick(f, i, e, 'dimension')"
-                  @dragstart="(f, i, e) => { handleDragStart(f, i, e, 'dimension'); onDragStart('dimension', e); }"
-                  @dragend="onDragEnd"
+                  @dragstart="(f, i, e) => handleDragStart(f, i, e, 'dimension')"
                 />
               </div>
             </div>
@@ -815,13 +741,20 @@ const toggleCollapsed = () => {
                   @copy="copyField"
                   @delete="deleteField"
                   @click="(f, i, e) => handleFieldClick(f, i, e, 'quota')"
-                  @dragstart="(f, i, e) => { handleDragStart(f, i, e, 'quota'); onDragStart('quota', e); }"
-                  @dragend="onDragEnd"
+                  @dragstart="(f, i, e) => handleDragStart(f, i, e, 'quota')"
                 />
               </div>
             </div>
           </el-scrollbar>
         </div>
+      </div>
+      <div
+        v-if="dragPreviewFields.length > 1"
+        ref="dragPreview"
+        class="field-drag-preview"
+        aria-hidden="true"
+      >
+        <FieldItem v-for="field in dragPreviewFields" :key="field.id" :field="field" selected />
       </div>
     </template>
     <div v-else class="collapsed-placeholder">
@@ -836,7 +769,7 @@ const toggleCollapsed = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 280px;
+  width: 180px;
   background: #fff;
   flex-shrink: 0;
   overflow: hidden;
@@ -854,7 +787,8 @@ const toggleCollapsed = () => {
     border-bottom: 1px solid #e5e7eb;
 
     .title {
-      font-size: 16px;
+      font-size: 14px;
+      line-height: 22px;
       font-weight: 500;
       color: #1f2329;
     }
@@ -878,6 +812,7 @@ const toggleCollapsed = () => {
 
     .dataset-select-wrapper {
       flex: 1;
+      min-width: 0;
 
       :deep(.dataset-select-trigger) {
         border-color: #3370ff;
@@ -925,10 +860,10 @@ const toggleCollapsed = () => {
   .collapsed-title {
     writing-mode: vertical-rl;
     text-orientation: upright;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1;
     letter-spacing: 2px;
-    font-weight: 700;
+    font-weight: 500;
     color: #1f2329;
   }
 
@@ -939,7 +874,8 @@ const toggleCollapsed = () => {
     padding: 8px 16px;
 
     .field-title {
-      font-size: 14px;
+      font-size: 12px;
+      line-height: 20px;
       font-weight: 500;
       color: #1f2329;
     }
@@ -995,6 +931,17 @@ const toggleCollapsed = () => {
         color: #8f959e;
       }
     }
+  }
+
+  .field-drag-preview {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 148px;
+    pointer-events: none;
   }
 
   .field-list {

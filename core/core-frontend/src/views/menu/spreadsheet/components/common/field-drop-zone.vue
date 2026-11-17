@@ -233,7 +233,11 @@ const isEmpty = computed(() => localFields.value.length === 0)
       @end="handleDragEnd"
     >
       <template #item="{ element, index }">
-        <div class="field-wrapper" :data-id="element.id">
+        <div
+          class="field-wrapper"
+          :class="{ 'is-quota': element.groupType === 'q' }"
+          :data-id="element.id"
+        >
           <component
             :is="fieldItemComponent"
             :field="getDisplayField(element)"
@@ -265,56 +269,51 @@ const isEmpty = computed(() => localFields.value.length === 0)
 
 <style lang="less" scoped>
 .field-drop-zone {
-  min-height: 40px;
-  padding: 0 4px;
-  border: 1px dashed #c9cdd4;
-  border-radius: 4px;
-  background: #f5f7fa;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
+  min-height: 32px;
+  border: 1px dashed #bbbfc4;
+  border-radius: 6px;
+
+  &.is-empty {
+    display: flex;
+    align-items: center;
+    background-color: rgba(31, 35, 41, 0.05);
+  }
 
   &.is-drag-over {
     border-color: var(--ed-color-primary, #3370ff);
     background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
 
-  &.is-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 40px;
-    height: 40px;
-  }
-
   .drop-placeholder {
-    color: #bbbfc4;
-    font-size: 13px;
-    text-align: center;
-    line-height: 40px;
+    padding: 0 15px;
+    color: #8d9199;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
   }
 
-    .field-list {
+  .field-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-height: 32px;
+    gap: 3px;
     width: 100%;
-    padding: 4px 0;
+    padding: 2px 0 3px;
 
-      .field-wrapper {
-        background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-        border: 1px solid var(--ed-color-primary, #3370ff);
-        border-radius: 4px;
-        overflow: hidden;
+    .field-wrapper {
+      --field-color: var(--ed-color-primary, #3370ff);
+
+      background-color: color-mix(in srgb, var(--field-color) 4%, transparent);
+      border: 1px solid var(--ed-color-primary, #3370ff);
+      border-radius: 6px;
+      overflow: hidden;
+
+      &.is-quota {
+        --field-color: #04b49c;
+      }
 
       :deep(.ed-dropdown) {
         display: block;
         width: 100%;
-      }
-
-      &:hover {
-        background: var(--ed-color-primary-33, rgba(51, 112, 255, 0.2));
       }
     }
   }

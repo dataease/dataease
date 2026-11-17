@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { Delete, Edit } from '@element-plus/icons-vue'
+import iconDownOutlined from '@/assets/svg/icon_down_outlined-1.svg'
+import { fieldDropdownPopperOptions } from './field-dropdown'
 import type { FieldItemData } from '../../types/plugin'
 
 const props = defineProps<{
@@ -30,7 +32,11 @@ const getFieldColor = (groupType: string) => {
 </script>
 
 <template>
-  <el-dropdown trigger="click" @command="handleCommand">
+  <el-dropdown
+    trigger="click"
+    :popper-options="fieldDropdownPopperOptions"
+    @command="handleCommand"
+  >
     <span class="drop-zone-field-item">
       <div class="field-content">
         <span class="field-icon" :style="{ color: getFieldColor(field.groupType) }">
@@ -50,6 +56,9 @@ const getFieldColor = (groupType: string) => {
         <span class="action-btn delete-btn" @click.stop="emit('remove', index)">
           <el-icon><Delete /></el-icon>
         </span>
+        <el-icon :size="14" color="#646a73" aria-hidden="true">
+          <iconDownOutlined class="svg-icon" />
+        </el-icon>
       </div>
     </span>
     <template #dropdown>

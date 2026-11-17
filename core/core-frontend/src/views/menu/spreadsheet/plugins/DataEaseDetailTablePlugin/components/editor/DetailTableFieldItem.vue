@@ -12,6 +12,8 @@ import {
   View
 } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
+import iconDownOutlined from '@/assets/svg/icon_down_outlined-1.svg'
+import { fieldDropdownPopperOptions } from '../../../../components/common/field-dropdown'
 import icon_security from '@/assets/svg/icon_security.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import type {
@@ -240,7 +242,11 @@ const getFieldColor = (groupType: string) => {
 </script>
 
 <template>
-  <el-dropdown trigger="click" @command="handleCommand">
+  <el-dropdown
+    trigger="click"
+    :popper-options="fieldDropdownPopperOptions"
+    @command="handleCommand"
+  >
     <span class="detail-table-field-item" :class="{ hidden: field.hidden }">
       <div class="field-content">
         <el-icon v-if="showSortIcon" class="sort-status-icon">
@@ -280,6 +286,9 @@ const getFieldColor = (groupType: string) => {
         <span class="action-btn delete-btn" @click.stop="emit('remove', index)">
           <el-icon><Delete /></el-icon>
         </span>
+        <el-icon :size="14" color="#646a73" aria-hidden="true">
+          <iconDownOutlined class="svg-icon" />
+        </el-icon>
       </div>
     </span>
     <template #dropdown>
@@ -512,7 +521,8 @@ const getFieldColor = (groupType: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 8px;
+  min-height: 26px;
+  padding: 1px 8px;
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
@@ -542,7 +552,7 @@ const getFieldColor = (groupType: string) => {
     }
 
     .field-name {
-      font-size: 13px;
+      font-size: 12px;
       color: #1f2329;
       overflow: hidden;
       text-overflow: ellipsis;
