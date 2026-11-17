@@ -145,7 +145,10 @@
                 </el-form-item>
               </el-header>
 
-              <el-main class="settings-main">
+              <el-main
+                class="settings-main"
+                :class="{ 'has-target-warning': targetLoadError || hasInvalidSpreadsheetBinding }"
+              >
                 <template v-if="state.linkJumpInfo">
                   <template v-if="isInternalTarget">
                     <el-form label-position="top" class="main-form" v-loading="targetLoading">
@@ -225,6 +228,7 @@
                       </div>
                       <el-alert
                         v-if="targetLoadError || hasInvalidSpreadsheetBinding"
+                        class="jump-target-alert"
                         :title="targetLoadError || t('spreadsheet.outer_params_invalid_target')"
                         type="warning"
                         :closable="false"
@@ -975,10 +979,10 @@ const isSpreadsheetBindingValid = (
   targets: SpreadsheetJumpTarget[]
 ) => {
   const target = targets.find(item => item.id === String(binding.targetViewId))
+  if (binding.targetType !== 'view' || !target || target.disabled) return false
+  // 尚未选择字段不代表绑定失效，已选择的字段才需要核对是否仍然可用。
   return (
-    binding.targetType === 'view' &&
-    !!target &&
-    !target.disabled &&
+    !binding.targetFieldId ||
     target.fields.some(field => field.id === String(binding.targetFieldId))
   )
 }
@@ -1677,6 +1681,11 @@ span {
   .settings-main {
     padding: 16px;
     overflow: hidden;
+
+    &.has-target-warning {
+      overflow-y: auto;
+    }
+
     .empty {
       width: 100%;
       height: 100%;
@@ -1877,6 +1886,10 @@ span {
   font-size: 14px;
   display: flex;
   align-items: center;
+}
+
+.jump-target-alert + .jump-com-list {
+  margin-top: 8px;
 }
 
 .jump-com-list {

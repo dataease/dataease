@@ -28,6 +28,7 @@ import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.exception.DEException;
 import io.dataease.exception.ErrorCategory;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -202,26 +203,20 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
                     .contains(request.getResourceTable())) {
                 throw invalidJump();
             }
+            // 跳转信息只读取映射，数据集权限和过滤字段有效性由各实例取数时校验。
+            InteractiveAuthApi auth = interactiveAuthApis.getIfAvailable();
+            if (!LicenseUtil.licenseValid() || auth == null) {
+                throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
+            }
             authorizeSpreadsheetJumpSource(request.getSourceDvId(),
                     CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable()) ? AuthEnum.MANAGE : AuthEnum.READ);
+            auth.checkAuth(new BusiPerCheckDTO(request.getTargetDvId(), BusiResourceEnum.SPREADSHEET, AuthEnum.READ));
         }
         List<VisualizationLinkJumpDTO> result = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
             QSnapshotVisualizationLinkJumpTargetViewInfo jtvi = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
             QSnapshotVisualizationLinkJumpInfo lji = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
             QSnapshotVisualizationLinkJump lj = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
-            QSnapshotCoreChartView sourceView = QSnapshotCoreChartView.snapshotCoreChartView;
-
-            // 区分合法的零映射和已经删除、停用或改目标的跳转，失效链接不能变成无条件预览。
-            // 跳转开关以图表 jumpActive 为准，旧的 linkJump.checked 不随开关更新。
-            if (spreadsheet && queryFactory.selectOne().from(lji).join(lj).on(lji.linkJumpId.eq(lj.id))
-                    .join(sourceView).on(sourceView.id.eq(lj.sourceViewId), sourceView.sceneId.eq(lj.sourceDvId))
-                    .where(sourceView.jumpActive.eq(true), lji.checked.eq(true), lji.linkType.eq("spreadsheet"),
-                            lj.sourceDvId.eq(request.getSourceDvId()), lj.sourceViewId.eq(request.getSourceViewId()),
-                            lji.sourceFieldId.eq(request.getSourceFieldId()), lji.targetDvId.eq(request.getTargetDvId()))
-                    .fetchFirst() == null) {
-                throw invalidJump();
-            }
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
                             Projections.fields(VisualizationLinkJumpDTO.class,
@@ -251,16 +246,6 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             QVisualizationLinkJumpTargetViewInfo jtvi = QVisualizationLinkJumpTargetViewInfo.visualizationLinkJumpTargetViewInfo;
             QVisualizationLinkJumpInfo lji = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
             QVisualizationLinkJump lj = QVisualizationLinkJump.visualizationLinkJump;
-            QCoreChartView sourceView = QCoreChartView.coreChartView;
-
-            if (spreadsheet && queryFactory.selectOne().from(lji).join(lj).on(lji.linkJumpId.eq(lj.id))
-                    .join(sourceView).on(sourceView.id.eq(lj.sourceViewId), sourceView.sceneId.eq(lj.sourceDvId))
-                    .where(sourceView.jumpActive.eq(true), lji.checked.eq(true), lji.linkType.eq("spreadsheet"),
-                            lj.sourceDvId.eq(request.getSourceDvId()), lj.sourceViewId.eq(request.getSourceViewId()),
-                            lji.sourceFieldId.eq(request.getSourceFieldId()), lji.targetDvId.eq(request.getTargetDvId()))
-                    .fetchFirst() == null) {
-                throw invalidJump();
-            }
 
             JPAQuery<VisualizationLinkJumpDTO> jpaQuery = queryFactory.select(
                             Projections.fields(VisualizationLinkJumpDTO.class,
@@ -285,25 +270,6 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
             }
             result = jpaQuery.fetch();
 
-        }
-        if (spreadsheet) {
-            List<VisualizationLinkJumpTargetViewInfoVO> targets = new ArrayList<>();
-            for (VisualizationLinkJumpDTO mapping : result) {
-                if (StringUtils.isBlank(mapping.getSourceInfo()) || StringUtils.isBlank(mapping.getTargetInfo())) {
-                    throw invalidJump();
-                }
-                String[] target = mapping.getTargetInfo().split("#", -1);
-                if (target.length != 2) {
-                    throw invalidJump();
-                }
-                VisualizationLinkJumpTargetViewInfoVO info = new VisualizationLinkJumpTargetViewInfoVO();
-                info.setTargetType("view");
-                info.setTargetViewId(target[0]);
-                info.setTargetFieldId(target[1]);
-                targets.add(info);
-            }
-            // resourceTable 只选择源跳转配置；目标区域和查询条件始终来自已发布工作簿。
-            requireSpreadsheetLinkJumpService().validateTargets(request.getTargetDvId(), targets);
         }
         // 按sourceInfo分组聚合targetInfo
         Map<String, List<String>> groupedResults = result.stream()
