@@ -317,6 +317,7 @@ const unsupportedKeyFieldTypes = computed(
       ?.unsupportedKeyFieldTypes
 )
 const isKeyFieldDisabled = (field: ITableField) =>
+  (form.value.target.type === 'doris' && field.fieldType?.startsWith('ARRAY<')) ||
   !unsupportedKeyFieldTypes.value ||
   unsupportedKeyFieldTypes.value.some(
     type => normalizeFieldType(type) === normalizeFieldType(field.fieldType)
