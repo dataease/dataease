@@ -3966,6 +3966,7 @@ export default {
     mobile_layout: '移動端布局',
     component_hidden: '隱藏的組件',
     public_link_tips: '當前是公共連結模式，目標儀表板未設置公共連結，無法跳轉',
+    public_link_spreadsheet_tips: '公共連結跳轉不支援電子表格',
     input_title: '請輸入標題',
     show_title: '標題',
     default_settings: '預設值設置',

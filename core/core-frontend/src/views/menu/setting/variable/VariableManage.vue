@@ -6,7 +6,7 @@ import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlin
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import {
@@ -61,6 +61,8 @@ const roleFormRef = ref(null)
 const { t } = useI18n()
 const loading = ref(false)
 const valueLoading = ref(false)
+const isScrolling = ref(false)
+let scrollTimer: ReturnType<typeof setTimeout> | undefined
 interface Tree {
   id: string
   name: string
@@ -533,7 +535,16 @@ const resetForm = (formEl: FormInstance | undefined) => {
   dialogVisible.value = false
 }
 
+const handleScroll = () => {
+  isScrolling.value = true
+  clearTimeout(scrollTimer)
+  scrollTimer = setTimeout(() => {
+    isScrolling.value = false
+  }, 150)
+}
+
 onMounted(() => {
+  window.addEventListener('scroll', handleScroll, true)
   const p = new Promise((resolve, reject) => {
     variableSearch(resolve, reject)
   })
@@ -542,6 +553,11 @@ onMounted(() => {
   }).catch(() => {
     loading.value = false
   })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll, true)
+  clearTimeout(scrollTimer)
 })
 </script>
 
@@ -615,8 +631,9 @@ onMounted(() => {
                   ></component
                 ></Icon>
               </el-icon>
-              <span v-if="role.colorName" v-dompurify-html="role.colorName"> </span>
-              <span v-else>
+              <span v-if="role.colorName" class="label-text" v-dompurify-html="role.colorName">
+              </span>
+              <span v-else class="label-text">
                 {{ role.name }}
               </span>
               <el-tooltip
@@ -625,6 +642,7 @@ onMounted(() => {
                 :content="t('system.system_built_in_variable')"
                 placement="top"
                 v-if="role.root"
+                :disabled="isScrolling"
               >
                 <span class="mark flex-center">{{ t('role.system') }}</span>
               </el-tooltip>
@@ -635,6 +653,7 @@ onMounted(() => {
                 effect="dark"
                 :content="role.root ? t('role.system_role_edit_tips') : t('common.edit')"
                 placement="top"
+                :disabled="isScrolling"
               >
                 <el-icon @click.stop="roleEdit(role)" class="hover-icon">
                   <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
@@ -646,6 +665,7 @@ onMounted(() => {
                 effect="dark"
                 :content="role.root ? t('role.system_role_del_tips') : t('common.delete')"
                 placement="top"
+                :disabled="isScrolling"
               >
                 <el-icon @click.stop="delHandler(role)" class="hover-icon">
                   <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
@@ -1046,6 +1066,15 @@ onMounted(() => {
 
         .label {
           line-height: 22px;
+          flex: 1;
+          min-width: 0;
+          width: auto;
+        }
+        .label-text {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .mark {
           height: 16px;
@@ -1072,15 +1101,17 @@ onMounted(() => {
           padding: 0 4px;
         }
         .btn-list {
-          display: none;
+          display: flex;
+          align-items: center;
+          flex: none;
+          visibility: hidden;
         }
         &:hover {
           cursor: pointer;
           color: #1f2329;
           background: #1f23291a;
           .btn-list {
-            display: flex;
-            align-items: center;
+            visibility: visible;
           }
           .de-disabled-btn {
             i {

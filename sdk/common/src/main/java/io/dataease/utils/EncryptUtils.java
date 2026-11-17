@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 
 public class EncryptUtils extends CodingUtil {
 
-    private static final String OLD_SECRET_KEY = "www.fit2cloud.co";
-    private static final String OLD_IV = "1234567890123456";
-
     private static volatile String secretKey;
     private static volatile String iv;
     private static volatile boolean initialized = false;
@@ -50,7 +47,7 @@ public class EncryptUtils extends CodingUtil {
             return null;
         }
         if (!initialized) {
-            return aesEncrypt(o.toString(), OLD_SECRET_KEY, OLD_IV);
+            throw new IllegalStateException("Per-install encryption key is not initialized; refusing to encrypt with the legacy key");
         }
         return aesEncrypt(o.toString(), secretKey, iv);
     }
@@ -61,19 +58,24 @@ public class EncryptUtils extends CodingUtil {
         }
         String str = o.toString();
 
-        if (initialized) {
-            String result = tryDecryptRaw(str, secretKey, iv);
-            if (result != null) {
-                return result;
-            }
-        }
-
-        String result = tryDecryptRaw(str, OLD_SECRET_KEY, OLD_IV);
+        String result = tryDecryptWithCurrentKey(str);
         if (result != null) {
             return result;
         }
 
+        if (!initialized) {
+            LogUtil.warn("Per-install encryption key is not initialized; returning the stored value unchanged");
+        } else {
+            LogUtil.warn("Configuration decryption failed with the per-install key; the stored value may be legacy, plaintext or corrupted");
+        }
         return str;
+    }
+
+    public static String tryDecryptWithCurrentKey(String src) {
+        if (!initialized || StringUtils.isBlank(src)) {
+            return null;
+        }
+        return tryDecryptRaw(src, secretKey, iv);
     }
 
     private static String tryDecryptRaw(String src, String key, String iv) {

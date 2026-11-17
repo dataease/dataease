@@ -4,6 +4,7 @@ import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
+import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.type.H2;
@@ -12,6 +13,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.ResultMessage;
 import io.dataease.template.dao.auto.entity.DeTemplateVersion;
@@ -109,8 +111,12 @@ public class EngineManage {
             DatasourceDTO datasource = new DatasourceDTO();
             BeanUtils.copyBean(datasource, engine);
             datasourceRequest.setDatasource(datasource);
-            ProviderFactory.getProvider(engine.getType()).checkStatus(datasourceRequest);
+            Provider provider = ProviderFactory.getProvider(engine.getType());
+            provider.checkStatus(datasourceRequest);
             status = "success";
+            if (provider instanceof CalciteProvider calciteProvider) {
+                calciteProvider.updateDsPoolAfterCheckStatus(datasource);
+            }
         } catch (Exception e) {
             status = "Error";
             DEException.throwException("校验失败：" + e.getMessage());

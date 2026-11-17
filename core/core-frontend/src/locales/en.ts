@@ -4106,6 +4106,7 @@ export default {
     component_hidden: 'Hidden Components',
     public_link_tips:
       'Currently in public link mode, the target dashboard has not set up public links, unable to jump',
+    public_link_spreadsheet_tips: 'Public links do not support jumping to spreadsheets',
     input_title: 'Please enter the title',
     show_title: 'Title',
     default_settings: 'Default Settings',
