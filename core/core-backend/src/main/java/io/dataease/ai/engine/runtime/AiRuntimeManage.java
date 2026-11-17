@@ -80,6 +80,9 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         return context;
     }
     @Override public AiExecutionContext task(String feature, String taskId, AiDataScope scope) {
+        return task(feature, taskId, scope, Long.MAX_VALUE);
+    }
+    public AiExecutionContext task(String feature, String taskId, AiDataScope scope, long deadline) {
         Objects.requireNonNull(scope);
         if (taskId == null || taskId.isBlank()) throw AiErrors.error("invalid");
         AiFeature.TaskIdentity identity = feature(feature).taskIdentity(taskId);
@@ -87,7 +90,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         AiDeploymentMode.State deployment = access.mode();
         access.verify(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment), false);
         return new Context(UUID.randomUUID().toString(), feature, identity.actorId(), identity.organizationId(), true,
-                System.currentTimeMillis() + configuration.setting().getRequestTimeoutSeconds() * 1000L,
+                Math.min(deadline, System.currentTimeMillis() + configuration.setting().getRequestTimeoutSeconds() * 1000L),
                 null, identity.actorId() + ":" + (identity.proxyOrganizationId() == null ? "none" : identity.proxyOrganizationId()), taskId, identity.identityVersion(), scope, deployment, usageRevision(new AiAccess.Identity(identity.actorId(), identity.organizationId(), identity.proxyOrganizationId(), deployment)), null);
     }
     @Override public ChatModel current(AiExecutionContext value) {

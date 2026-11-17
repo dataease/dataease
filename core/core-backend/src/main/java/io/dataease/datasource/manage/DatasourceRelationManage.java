@@ -41,6 +41,35 @@ public class DatasourceRelationManage {
 
     @Transactional
     public void saveRelation(Long datasourceId, Relation relation) {
+        saveRelation(datasourceId, relation, true);
+    }
+
+    @Transactional
+    public int addSuggestions(Long datasourceId, List<Relation> suggestions) {
+        access.lock(datasourceId);
+        var keys = new java.util.HashSet<RelationKey>();
+        repository.findWithConditions(datasourceId).stream().map(this::relationView).forEach(row -> keys.add(key(row)));
+        int added = 0;
+        for (var suggestion : suggestions) {
+            if (keys.add(key(suggestion))) {
+                saveRelation(datasourceId, suggestion, false);
+                added++;
+            }
+        }
+        return added;
+    }
+
+    private record RelationKey(String left, String right, Set<Condition> conditions) {}
+
+    private static RelationKey key(Relation relation) {
+        if (relation.leftTable().compareTo(relation.rightTable()) <= 0) {
+            return new RelationKey(relation.leftTable(), relation.rightTable(), Set.copyOf(relation.conditions()));
+        }
+        return new RelationKey(relation.rightTable(), relation.leftTable(), relation.conditions().stream()
+                .map(c -> new Condition(c.rightField(), c.leftField())).collect(java.util.stream.Collectors.toSet()));
+    }
+
+    private void saveRelation(Long datasourceId, Relation relation, boolean confirmed) {
         var datasource = access.lock(datasourceId);
         boolean create = relation.id() == null;
         var row = create ? new CoreDatasourceRelation() : relation(datasourceId, relation.id());
@@ -56,7 +85,7 @@ public class DatasourceRelationManage {
         row.setCardinality(relation.cardinality());
         row.setJoinType(relation.joinType());
         row.setDescription(relation.description());
-        row.setConfirmed(true);
+        row.setConfirmed(confirmed);
         row.setValid(true);
         row.setLeftTableMissing(false);
         row.setRightTableMissing(false);

@@ -50,8 +50,24 @@ public interface DatasourceSemanticApi {
 
     @DePermit({"#p0+':manage'"})
     @PostMapping("/{datasourceId}/field")
-    @Operation(summary = "保存字段语义")
+    @Operation(summary = "保存并确认字段语义")
     void saveField(@PathVariable("datasourceId") Long datasourceId, @RequestBody FieldSemantic field);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/table/confirmation")
+    @Operation(summary = "更新表语义确认状态")
+    void setTableConfirmed(@PathVariable("datasourceId") Long datasourceId,
+                           @RequestBody TableConfirmation confirmation);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/field/confirmation")
+    @Operation(summary = "更新字段语义确认状态")
+    void setFieldConfirmed(@PathVariable("datasourceId") Long datasourceId,
+                           @RequestBody FieldConfirmation confirmation);
+
+    record TableConfirmation(String tableName, boolean confirmed) {}
+
+    record FieldConfirmation(String tableName, String fieldName, boolean confirmed) {}
 
     @Schema(description = "数据源语义管理数据")
     record Semantics(
@@ -81,7 +97,8 @@ public interface DatasourceSemanticApi {
             @Schema(description = "数据粒度，例如一行代表一笔订单") String grain,
             @Schema(description = "语义表是否已添加，手工移除后为 false") boolean active,
             @Schema(description = "最近一次同步的物理表显示名称") String physicalLabel,
-            @Schema(description = "最近一次同步时物理表是否存在") boolean available
+            @Schema(description = "最近一次同步时物理表是否存在") boolean available,
+            boolean confirmed
     ) {}
 
     @Schema(description = "数据源字段语义")

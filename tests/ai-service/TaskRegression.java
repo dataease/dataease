@@ -7,6 +7,10 @@ import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.task.AiTaskManage;
+import io.dataease.ai.engine.task.AiBusinessTaskScene;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.bind.annotation.*;
 import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.security.identity.AiDeploymentMode;
 import io.dataease.ai.server.AiConversationServer;
@@ -38,6 +42,54 @@ public final class TaskRegression {
         current.set("recovery", json.valueToTree(Map.of("stepRetries", step, "attemptRetries", attempt, "initialDelayMillis", 100)));
         if (mvc.perform(post("/ai/settings").contentType("application/json").content(json.writeValueAsBytes(current))).andReturn().getResponse().getStatus() != 200) throw new AssertionError("recovery settings accepted through public configuration HTTP");
     }
+    @RestController
+    static final class BusinessTasks {
+        private final AiTaskManage tasks;
+
+        BusinessTasks(AiTaskManage tasks) { this.tasks = tasks; }
+
+        @PostMapping("/fixture/tasks/{scene}")
+        public AiTaskManage.BusinessStatus submit(@PathVariable("scene") String scene) {
+            return tasks.submitBusiness(scene, "11", List.of("orders"));
+        }
+
+        @GetMapping("/fixture/tasks/{scene}")
+        public AiTaskManage.BusinessStatus status(@PathVariable("scene") String scene,
+                                                   @RequestParam(name = "taskId", required = false) String id) {
+            return tasks.businessStatus(scene, "11", id);
+        }
+    }
+
+    private static AiBusinessTaskScene businessScene(String code) {
+        return new AiBusinessTaskScene() {
+            public String code() { return code; }
+
+            public void authorizeResource(String id) {
+                if (!"11".equals(id)) throw io.dataease.ai.support.AiErrors.error("forbidden");
+            }
+
+            public ResourceClaim resourceClaim(String id) { return new ResourceClaim(id, "*", code); }
+
+            public Context resolveTask(String id, String input, List<String> tables) {
+                authorizeResource(id);
+                return new Context(id, "fixture", "1", "", tables);
+            }
+
+            public void authorize(Context context) { authorizeResource(context.resourceId()); }
+
+            public void execute(Context context, Execution execution) {
+                String output = execution.call(new Prompt("Generate business metadata"));
+                execution.write(() -> {
+                    if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+                        throw new IllegalStateException("business write must share the summary transaction");
+                    }
+                    return Map.of("written", "business answer".equals(output) ? 1 : 0);
+                });
+                if ("fixture-semantic".equals(code)) throw io.dataease.ai.support.AiErrors.error("invalid");
+            }
+        };
+    }
+
     public static void run(EntityManager em, PlatformTransactionManager manager, AiAccess access, AiConfigurationManage configuration, io.dataease.ai.dao.repository.CoreAiOrgPolicyRepository policies, io.dataease.ai.security.credential.AiSecrets keys, io.dataease.ai.engine.runtime.AiAdmission admission) throws Exception {
         var sceneAllowed = new java.util.concurrent.atomic.AtomicBoolean(true);
         var toolsOn = new java.util.concurrent.atomic.AtomicBoolean();
@@ -45,6 +97,8 @@ public final class TaskRegression {
         var uncertain = new java.util.concurrent.atomic.AtomicBoolean();
         var toolFailures = new java.util.concurrent.atomic.AtomicInteger();
         var beans = new StaticListableBeanFactory();
+        beans.addBean("fixture-relation", businessScene("fixture-relation"));
+        beans.addBean("fixture-semantic", businessScene("fixture-semantic"));
         beans.addBean("scene", new AiConversationScene() {
             public String code() { return "sql"; }
             public List<Resource> resources() { return List.of(); }
@@ -81,8 +135,26 @@ public final class TaskRegression {
         var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access);
         beans.addBean("conversations", conversations);
         var chatMvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(conversations)).build();
+        var requestActor = new ThreadLocal<Long>();
+        var taskAccess = new SyntheticAccess(null, null) {
+            @Override
+            public Identity capture() {
+                var identity = access.capture();
+                Long actor = requestActor.get();
+                return actor == null ? identity
+                        : new Identity(actor, identity.organization(), identity.proxy(), identity.deployment());
+            }
+
+            @Override
+            public AiDeploymentMode.State mode() { return access.mode(); }
+
+            @Override
+            public void verify(Identity identity, boolean configurationAccess) {
+                access.verify(identity, configurationAccess);
+            }
+        };
         var tasks = new AiTaskManage(em, failingManager, beans.getBeanProvider(AiConversationScene.class),
-                beans.getBeanProvider(AiRuntimeManage.class), access, new ObjectMapper(), beans.getBeanProvider(AiConversationManage.class));
+                beans.getBeanProvider(AiRuntimeManage.class), taskAccess, new ObjectMapper(), beans.getBeanProvider(AiConversationManage.class));
         var json = new ObjectMapper();
         var transport = new io.dataease.ai.engine.runtime.AiTransport(new io.dataease.ai.engine.runtime.AiOutboundPolicy(), admission, json);
         var failAudit = new java.util.concurrent.atomic.AtomicBoolean();
@@ -103,6 +175,7 @@ public final class TaskRegression {
         beans.addBean("tasks", tasks);
         beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(io.dataease.api.ai.runtime.AiFeature.class), configuration, policies, keys, transport, json, access, audit));
         var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiAuditServer(audit)).build();
+        var businessMvc = MockMvcBuilders.standaloneSetup(new BusinessTasks(tasks)).build();
         String request = "{\"submissionKey\":\"same-submit\",\"scene\":\"sql\",\"capability\":\"sql.assist\",\"resourceId\":\"11\",\"editorId\":\"editor\",\"sql\":\"select 1\",\"text\":\"explain\"}";
         var first = mvc.perform(post("/ai/tasks").contentType("application/json").content(request)).andReturn().getResponse();
         if (first.getStatus() != 200) throw new AssertionError("task accepted");
@@ -151,6 +224,14 @@ public final class TaskRegression {
         var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v1/chat/completions", exchange -> {
             var modelRequest = json.readTree(exchange.getRequestBody());
+            if (modelRequest.path("messages").toString().contains("Generate business metadata")) {
+                byte[] body = "{\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"business answer\"},\"finish_reason\":\"stop\"}]}"
+                        .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, body.length);
+                try { exchange.getResponseBody().write(body); } finally { exchange.close(); }
+                return;
+            }
             if (modelRequest.path("messages").toString().contains("rolled-back-acceptance")) rollbackSends.incrementAndGet();
             if (modelRequest.path("messages").toString().contains("legacy-policy")) {
                 legacyPolicySends.incrementAndGet(); exchange.sendResponseHeaders(503, -1); exchange.close(); return;
@@ -199,7 +280,37 @@ public final class TaskRegression {
             new org.springframework.transaction.support.TransactionTemplate(manager).executeWithoutResult(status -> em.createQuery("update CoreAiTaskAttempt a set a.recoveryJson=null where a.id=:id")
                     .setParameter("id", Long.valueOf(legacyPolicyTask.path("attemptId").asText())).executeUpdate());
             recovery(configMvc, json, 2, 2);
+            String relationPath = "/fixture/tasks/fixture-relation";
+            String semanticPath = "/fixture/tasks/fixture-semantic";
+            var relationTask = json.readTree(businessMvc.perform(post(relationPath)).andReturn().getResponse().getContentAsString());
+            com.fasterxml.jackson.databind.JsonNode duplicateTask;
+            requestActor.set(2L);
+            try {
+                var visible = json.readTree(businessMvc.perform(get(relationPath)).andReturn().getResponse().getContentAsString());
+                if (!"QUEUED".equals(visible.path("status").asText()) || !relationTask.path("id").equals(visible.path("id"))) {
+                    throw new AssertionError("second datasource manager sees the active task on opening");
+                }
+                duplicateTask = json.readTree(businessMvc.perform(post(relationPath)).andReturn().getResponse().getContentAsString());
+            } finally {
+                requestActor.remove();
+            }
+            var semanticTask = json.readTree(businessMvc.perform(post(semanticPath)).andReturn().getResponse().getContentAsString());
+            if (!"QUEUED".equals(relationTask.path("status").asText()) || !relationTask.path("id").equals(duplicateTask.path("id"))
+                    || !"QUEUED".equals(semanticTask.path("status").asText()) || relationTask.path("id").equals(semanticTask.path("id"))) {
+                throw new AssertionError("same resource and operation share one claim; distinct operations queue independently");
+            }
+            if (json.readTree(mvc.perform(get("/ai/tasks")).andReturn().getResponse().getContentAsString()).size() != 2) {
+                throw new AssertionError("business tasks do not enter the conversation task list");
+            }
             tasks.start();
+            var relationDone = await(businessMvc, json, relationPath + "?taskId=" + relationTask.path("id").asText(), "COMPLETED");
+            var semanticDone = await(businessMvc, json, semanticPath + "?taskId=" + semanticTask.path("id").asText(), "FAILED");
+            if (json.readTree(relationDone.path("summary").asText()).path("written").asInt() != 1
+                    || json.readTree(semanticDone.path("summary").asText()).path("written").asInt() != 1
+                    || !businessMvc.perform(get(relationPath)).andReturn().getResponse().getContentAsString().isEmpty()) {
+                throw new AssertionError("synchronous business writes retain their summary on both terminal paths and release claims");
+            }
+            System.out.println("PASS datasource managers share active task status and claims; business execution persists summaries");
             var legacyPolicy = await(mvc, json, "/ai/tasks/" + legacyPolicyTask.path("taskId").asText(), "FAILED");
             if (legacyPolicy.path("recovery").path("technicalRetries").asInt() != 0 || legacyPolicySends.get() != 1) throw new AssertionError("legacy queued attempts without an acceptance snapshot cannot gain automatic retries: " + legacyPolicy);
             String policyPath = "/ai/tasks/" + policyTask.path("taskId").asText();

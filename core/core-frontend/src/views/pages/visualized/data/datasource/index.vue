@@ -1619,6 +1619,7 @@ const getMenuList = (val: boolean, data?: any) => {
           :key="`relations-${nodeInfo.id}`"
           v-model:table-filter="relationTableFilter"
           :datasource-id="String(nodeInfo.id)"
+          :datasource-name="nodeInfo.name"
           :can-manage="nodeInfo.weight >= 7"
         />
         <DatasourceSemantic
@@ -1626,6 +1627,7 @@ const getMenuList = (val: boolean, data?: any) => {
           :key="`semantics-${nodeInfo.id}`"
           v-model:selected-table="semanticSelectedTable"
           :datasource-id="String(nodeInfo.id)"
+          :datasource-name="nodeInfo.name"
           :can-manage="nodeInfo.weight >= 7"
           @show-relations="showTableRelations"
         />

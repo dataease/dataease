@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
+import DatasourceMetadataAi from './DatasourceMetadataAi.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   getTableField,
@@ -17,7 +18,7 @@ import {
   type Relation
 } from '@/api/datasourceRelation'
 
-const props = defineProps<{ datasourceId: string; canManage: boolean }>()
+const props = defineProps<{ datasourceId: string; datasourceName: string; canManage: boolean }>()
 const tableFilter = defineModel<string>('tableFilter', { required: true })
 const { t } = useI18n()
 const { t: tr } = useI18n('datasourceMetadata')
@@ -234,14 +235,15 @@ const fieldLabel = (field: PhysicalField) =>
           <el-option :label="tr('pending')" value="pending" />
         </el-select>
         <div v-if="canManage" class="metadata-actions">
-          <el-button>{{ tr('discover') }}</el-button>
-          <el-button
-            type="primary"
-            :disabled="saving"
-            :loading="loadingTables"
-            @click="openRelation()"
-            >{{ tr('addRelation') }}</el-button
-          >
+          <el-button :disabled="saving" :loading="loadingTables" @click="openRelation()">
+            {{ tr('addRelation') }}
+          </el-button>
+          <DatasourceMetadataAi
+            :datasource-id="datasourceId"
+            :datasource-name="datasourceName"
+            kind="RELATION"
+            @refresh="load"
+          />
         </div>
       </div>
       <grid-table
@@ -472,6 +474,14 @@ const fieldLabel = (field: PhysicalField) =>
   > .ed-select {
     width: 160px;
   }
+}
+
+.metadata-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-inline-start: auto;
 }
 
 .metadata-columns {

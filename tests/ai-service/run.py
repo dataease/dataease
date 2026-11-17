@@ -72,6 +72,7 @@ def main():
                         'org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/*.jar',
                         'org/springframework/retry/spring-retry/*/*.jar',
                         'org/springframework/spring-webflux/6.2.19/*.jar', 'io/projectreactor/reactor-core/3.7.19/*.jar',
+                        'com/github/victools/*/4.38.0/*.jar',
                         'org/antlr/ST4/*/*.jar', 'org/antlr/antlr-runtime/*/*.jar',
                         'com/knuddels/jtokkit/*/*.jar', 'org/reactivestreams/reactive-streams/*/*.jar',
                         'com/h2database/h2/2.2.220/*.jar']:
@@ -93,7 +94,11 @@ def main():
         classes = work / 'classes'
         classes.mkdir()
         classpath = os.pathsep.join(map(str, [classes, *[path for path in libraries if path.is_dir()], boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
-        sources = [file for file in (root/'core/core-backend/src/main/java/io/dataease/ai').rglob('*.java') if file.name != 'AiBaseService.java']
+        # The isolated task fixture supplies its own business scenes. The product datasource
+        # scene is compiled by the backend build together with the current datasource classes.
+        product_only = {'AiBaseService.java', 'AiDatasourceMetadataScenes.java'}
+        sources = [file for file in (root/'core/core-backend/src/main/java/io/dataease/ai').rglob('*.java')
+                   if file.name not in product_only]
         sources.extend((root/'sdk/api/api-base/src/main/java/io/dataease/api/ai').rglob('*.java'))
         sources.extend(root/path for path in [
             'sdk/common/src/main/java/io/dataease/result/ResultCode.java',

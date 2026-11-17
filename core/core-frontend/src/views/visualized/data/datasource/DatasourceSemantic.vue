@@ -4,6 +4,7 @@ import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import DatasourceMetadataAi from './DatasourceMetadataAi.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { listDatasourceTables, type PhysicalTable } from '@/api/datasource'
 import {
@@ -14,13 +15,15 @@ import {
   removeDatasourceSemanticTable,
   saveDatasourceFieldSemantic,
   saveDatasourceTableSemantic,
+  setDatasourceTableSemanticConfirmed,
+  setDatasourceFieldSemanticConfirmed,
   type DatasourceSemantics,
   type FieldSemantic,
   type TableSemantic,
   type TableSemanticDetails
 } from '@/api/datasourceSemantic'
 
-const props = defineProps<{ datasourceId: string; canManage: boolean }>()
+const props = defineProps<{ datasourceId: string; datasourceName: string; canManage: boolean }>()
 const emit = defineEmits<{ 'show-relations': [tableName: string] }>()
 const { t } = useI18n()
 const { t: tr } = useI18n('datasourceMetadata')
@@ -247,16 +250,31 @@ const openField = (semantic: TableSemanticDetails['fields'][number]) => {
 const saveField = (form: FieldSemantic) =>
   runSave(() => saveDatasourceFieldSemantic(props.datasourceId, form))
 
+const toggleTableConfirmation = (row: TableSemantic) =>
+  runSave(() =>
+    setDatasourceTableSemanticConfirmed(props.datasourceId, row.tableName, !row.confirmed)
+  )
+
+const toggleFieldConfirmation = (row: TableSemanticDetails['fields'][number]) =>
+  runSave(() =>
+    setDatasourceFieldSemanticConfirmed(
+      props.datasourceId,
+      row.tableName,
+      row.fieldName,
+      !row.confirmed
+    )
+  )
+
 const showRelations = () => emit('show-relations', selectedTable.value)
 
 const tableLabel = (table: TableSemantic) =>
-  table.physicalLabel !== table.tableName ? table.physicalLabel : ''
+  table.physicalLabel !== table.tableName ? table.physicalLabel?.trim() : ''
 const fieldColumns = computed(() => [
   { key: 'fieldName', title: tr('fieldAndType'), width: 135, flexGrow: 1 },
   { key: 'businessName', title: tr('businessName'), width: 120, flexGrow: 1 },
   { key: 'description', title: tr('description'), width: 190, flexGrow: 2 },
   { key: 'status', title: tr('status'), width: 100 },
-  ...(props.canManage ? [{ key: 'actions', title: tr('actions'), width: 80 }] : [])
+  ...(props.canManage ? [{ key: 'actions', title: tr('actions'), width: 180 }] : [])
 ])
 const tableList = ref<{ scrollToItem: (index: number) => void }>()
 watch(
@@ -313,7 +331,7 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                         class="metadata-secondary"
                         :title="tableLabel(activeTables[index]) || undefined"
                       >
-                        {{ tableLabel(activeTables[index]) }}
+                        {{ tableLabel(activeTables[index]) || '-' }}
                       </div>
                     </button>
                     <button
@@ -339,16 +357,32 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
       <div v-if="currentTable" class="metadata-detail metadata-field-pane">
         <div class="metadata-overview">
           <div class="metadata-heading metadata-detail-header">
-            <strong>{{ tableLabel(currentTable) || currentTable.tableName }}</strong>
+            <strong>{{ currentTable.tableName }}</strong>
             <span v-if="tableLabel(currentTable)" class="metadata-secondary">{{
-              currentTable.tableName
+              tableLabel(currentTable)
             }}</span>
-            <div v-if="canManage" class="metadata-actions metadata-table-actions">
+            <div v-if="canManage" class="metadata-table-actions">
               <el-button :disabled="saving" @click="openTable">{{ tr('edit') }}</el-button>
+              <el-button
+                :disabled="saving || (!currentTable.available && !currentTable.confirmed)"
+                @click="toggleTableConfirmation(currentTable)"
+              >
+                {{ tr(currentTable.confirmed ? 'unconfirm' : 'confirm') }}
+              </el-button>
               <el-button :disabled="saving" @click="refreshTable(currentTable.tableName)">
                 {{ tr('refreshTable') }}
               </el-button>
-              <el-button type="primary">{{ tr('complete') }}</el-button>
+              <DatasourceMetadataAi
+                :datasource-id="datasourceId"
+                :datasource-name="datasourceName"
+                kind="SEMANTIC"
+                :semantic-tables="
+                  activeTables
+                    .filter(table => table.available)
+                    .map(table => ({ tableName: table.tableName, name: table.physicalLabel }))
+                "
+                @refresh="load"
+              />
             </div>
           </div>
           <div class="metadata-secondary metadata-section">{{ tr('description') }}</div>
@@ -356,7 +390,10 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
             {{ currentTable.description || tr('noDescription') }}
           </div>
           <div class="metadata-secondary metadata-section">
-            {{ tr('grain') }} · {{ currentTable.grain || tr('pending') }}
+            {{ tr('grain') }} · {{ currentTable.grain?.trim() || tr('incomplete') }}
+            <el-tag :type="currentTable.confirmed ? 'success' : 'info'" size="small">
+              {{ tr(currentTable.confirmed ? 'confirmed' : 'pending') }}
+            </el-tag>
           </div>
           <div class="metadata-heading metadata-field-heading">
             <strong class="metadata-label"
@@ -398,7 +435,8 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                     <div class="metadata-secondary">{{ row.physicalType }}</div>
                   </div>
                   <div v-else-if="column.key === 'businessName'" class="metadata-description">
-                    {{ row.businessName || tr('incomplete') }}
+                    <div v-if="row.businessName?.trim()">{{ row.businessName }}</div>
+                    <div v-else class="metadata-physical-comment">{{ tr('incomplete') }}</div>
                   </div>
                   <div v-else-if="column.key === 'description'" class="metadata-description">
                     <div v-if="row.description?.trim()">{{ row.description }}</div>
@@ -411,17 +449,37 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                     v-else-if="column.key === 'status'"
                     :type="row.confirmed ? 'success' : 'info'"
                   >
-                    {{ tr(row.confirmed ? 'confirmed' : 'incomplete') }}
+                    {{
+                      tr(
+                        row.confirmed
+                          ? 'confirmed'
+                          : row.businessName || row.description || row.aliases
+                          ? 'pending'
+                          : 'incomplete'
+                      )
+                    }}
                   </el-tag>
-                  <el-button
-                    v-else
-                    text
-                    type="primary"
-                    :disabled="saving || !currentTable.available"
-                    @click="openField(row)"
-                  >
-                    {{ tr('edit') }}
-                  </el-button>
+                  <template v-else>
+                    <el-button
+                      text
+                      type="primary"
+                      :disabled="saving || !currentTable.available"
+                      @click="openField(row)"
+                    >
+                      {{ tr('edit') }}
+                    </el-button>
+                    <el-button
+                      text
+                      type="primary"
+                      :disabled="
+                        saving ||
+                        (!row.confirmed && (!currentTable.available || !row.businessName?.trim()))
+                      "
+                      @click="toggleFieldConfirmation(row)"
+                    >
+                      {{ tr(row.confirmed ? 'unconfirm' : 'confirm') }}
+                    </el-button>
+                  </template>
                 </template>
                 <template #empty>
                   <el-empty :description="tr('noFields')" :image-size="64" />
@@ -612,7 +670,7 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
           :loading="saving"
           @click="saveTable(tableForm)"
         >
-          {{ t('common.save') }}
+          {{ tr('saveConfirmed') }}
         </el-button>
         <el-button
           v-else-if="drawer === 'field' && fieldForm"
@@ -621,7 +679,7 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
           :loading="saving"
           @click="saveField(fieldForm)"
         >
-          {{ t('common.save') }}
+          {{ tr('saveConfirmed') }}
         </el-button>
       </template>
     </el-drawer>
@@ -742,8 +800,10 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
 
 .metadata-table-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  margin-inline-start: auto;
 
   > .ed-button + .ed-button {
     margin-left: 0;

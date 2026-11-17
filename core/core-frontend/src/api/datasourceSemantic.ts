@@ -8,6 +8,7 @@ export interface TableSemantic {
   active: boolean
   physicalLabel: string | null
   available: boolean
+  confirmed: boolean
 }
 
 export interface FieldSemantic {
@@ -49,6 +50,20 @@ export const saveDatasourceTableSemantic = (id: string, data: TableSemantic) =>
 
 export const saveDatasourceFieldSemantic = (id: string, data: FieldSemantic) =>
   request.post({ url: `${path(id)}/field`, data })
+
+export const setDatasourceTableSemanticConfirmed = (
+  id: string,
+  tableName: string,
+  confirmed: boolean
+) => request.post({ url: `${path(id)}/table/confirmation`, data: { tableName, confirmed } })
+
+export const setDatasourceFieldSemanticConfirmed = (
+  id: string,
+  tableName: string,
+  fieldName: string,
+  confirmed: boolean
+) =>
+  request.post({ url: `${path(id)}/field/confirmation`, data: { tableName, fieldName, confirmed } })
 
 export const addDatasourceSemanticTables = (id: string, data: string[]) =>
   request.post({ url: `${path(id)}/tables/add`, data })

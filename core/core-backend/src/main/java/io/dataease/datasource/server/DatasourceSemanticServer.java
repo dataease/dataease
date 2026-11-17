@@ -100,4 +100,17 @@ public class DatasourceSemanticServer implements DatasourceSemanticApi {
         limit(field.aliases(), 1000);
         metadata.saveField(datasourceId, field);
     }
+
+    @Override
+    public void setTableConfirmed(Long datasourceId, TableConfirmation confirmation) {
+        requireText(confirmation.tableName(), 512);
+        metadata.setTableConfirmed(datasourceId, confirmation.tableName(), confirmation.confirmed());
+    }
+
+    @Override
+    public void setFieldConfirmed(Long datasourceId, FieldConfirmation confirmation) {
+        requireText(confirmation.tableName(), 512);
+        requireText(confirmation.fieldName(), 512);
+        metadata.setFieldConfirmed(datasourceId, confirmation.tableName(), confirmation.fieldName(), confirmation.confirmed());
+    }
 }

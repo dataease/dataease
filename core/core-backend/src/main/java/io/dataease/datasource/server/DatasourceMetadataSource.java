@@ -1,5 +1,6 @@
 package io.dataease.datasource.server;
 
+import io.dataease.constant.AuthEnum;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceMetadataAccess;
@@ -7,15 +8,18 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.i18n.Translator;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-class DatasourceMetadataSource {
+public class DatasourceMetadataSource {
     private final DatasourceServer datasource;
     private final DataSourceManage dataSources;
 
@@ -24,16 +28,29 @@ class DatasourceMetadataSource {
         this.dataSources = dataSources;
     }
 
-    List<TableField> fields(CoreDatasource source, String tableName) {
+    public boolean visible(Long datasourceId) {
+        var request = new BusiNodeRequest();
+        request.setBusiFlag("datasource");
+        request.setWeight(AuthEnum.READ.getWeight());
+        return contains(datasource.tree(request), datasourceId);
+    }
+
+    private static boolean contains(List<BusiNodeVO> nodes, Long datasourceId) {
+        return nodes != null && nodes.stream().anyMatch(node ->
+                (!node.isOrgRoot() && Boolean.TRUE.equals(node.getLeaf()) && Objects.equals(node.getId(), datasourceId))
+                        || contains(node.getChildren(), datasourceId));
+    }
+
+    public List<TableField> fields(CoreDatasource source, String tableName) {
         return datasource.getFieldsForListedTable(source, tableName);
     }
 
-    Map<String, DatasetTableDTO> tables(Long datasourceId, CoreDatasource source) {
+    public Map<String, DatasetTableDTO> tables(Long datasourceId, CoreDatasource source) {
         return datasource.listPhysicalTables(datasourceId, source).stream().collect(Collectors.toMap(
                 DatasetTableDTO::getTableName, Function.identity(), (first, duplicate) -> first));
     }
 
-    static DatasetTableDTO listedTable(Map<String, DatasetTableDTO> tables, String tableName) {
+    public static DatasetTableDTO listedTable(Map<String, DatasetTableDTO> tables, String tableName) {
         var table = tables.get(tableName);
         if (table == null) {
             DEException.throwException(Translator.get("i18n_datasource_metadata_table_unavailable", tableName));
@@ -41,7 +58,7 @@ class DatasourceMetadataSource {
         return table;
     }
 
-    CoreDatasource datasource(Long datasourceId) {
+    public CoreDatasource datasource(Long datasourceId) {
         var source = dataSources.getCoreDatasource(datasourceId);
         DatasourceMetadataAccess.requirePhysicalDatasource(source);
         return source;

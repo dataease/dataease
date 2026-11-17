@@ -8,6 +8,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceTableSemanticRep
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.i18n.Translator;
+import org.springframework.util.StringUtils;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.IDUtils;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class DatasourceSemanticManage {
         access.require(datasourceId);
         var tables = tableRepository.findByDatasource_IdOrderById(datasourceId).stream()
                 .map(t -> new TableSemantic(t.getId(), t.getTableName(), t.getDescription(), t.getGrain(), t.isActive(),
-                        t.getPhysicalLabel(), t.isAvailable())).toList();
+                        t.getPhysicalLabel(), t.isAvailable(), t.isConfirmed())).toList();
         return new Semantics(tables);
     }
 
@@ -140,16 +141,42 @@ public class DatasourceSemanticManage {
     @Transactional
     public void saveField(Long datasourceId, FieldSemantic field) {
         access.lock(datasourceId);
-        var table = activeTable(datasourceId, field.tableName());
-        var row = fieldRepository.findByTableSemantic_IdAndFieldName(table.getId(), field.fieldName()).orElse(null);
-        if (row == null || !table.isAvailable()) {
-            DEException.throwException(Translator.get("i18n_datasource_metadata_field_unavailable"));
-        }
+        var row = requireField(datasourceId, field.tableName(), field.fieldName(), true);
         row.setBusinessName(field.businessName());
         String description = field.description();
         row.setDescription(description == null || description.isBlank() ? null : description);
         row.setAliases(field.aliases());
         row.setConfirmed(true);
+    }
+
+    @Transactional
+    public void setTableConfirmed(Long datasourceId, String tableName, boolean confirmed) {
+        access.lock(datasourceId);
+        var row = activeTable(datasourceId, tableName);
+        if (confirmed && !row.isAvailable()) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_table_unavailable", tableName));
+        }
+        row.setConfirmed(confirmed);
+    }
+
+    @Transactional
+    public void setFieldConfirmed(Long datasourceId, String tableName, String fieldName, boolean confirmed) {
+        access.lock(datasourceId);
+        var row = requireField(datasourceId, tableName, fieldName, confirmed);
+        if (confirmed && !StringUtils.hasText(row.getBusinessName())) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_required"));
+        }
+        row.setConfirmed(confirmed);
+    }
+
+    private CoreDatasourceFieldSemantic requireField(Long datasourceId, String tableName, String fieldName,
+                                                     boolean requireAvailable) {
+        var table = activeTable(datasourceId, tableName);
+        var row = fieldRepository.findByTableSemantic_IdAndFieldName(table.getId(), fieldName).orElse(null);
+        if (row == null || (requireAvailable && !table.isAvailable())) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_field_unavailable"));
+        }
+        return row;
     }
 
     private CoreDatasourceTableSemantic activeTable(Long datasourceId, String tableName) {
@@ -158,6 +185,60 @@ public class DatasourceSemanticManage {
             DEException.throwException(Translator.get("i18n_datasource_metadata_add_table_first"));
         }
         return row;
+    }
+
+    public record SemanticSuggestion(String description, String grain, List<FieldSuggestion> fields) {}
+
+    public record FieldSuggestion(String fieldName, String businessName, String description, String aliases) {}
+
+    @Transactional
+    public int applySuggestion(Long datasourceId, TableSemantic snapshot, SemanticSuggestion suggestion, java.util.Set<String> physicalFields) {
+        access.lock(datasourceId);
+        var table = table(datasourceId, snapshot.tableName());
+        if (table == null || !table.isActive() || !table.isAvailable() || !table.getId().equals(snapshot.id())) {
+            return 0;
+        }
+        int count = 0;
+        if (!table.isConfirmed()) {
+            String description = fill(table.getDescription(), suggestion.description(), 4000);
+            String grain = fill(table.getGrain(), suggestion.grain(), 512);
+            if (!Objects.equals(description, table.getDescription()) || !Objects.equals(grain, table.getGrain())) {
+                table.setDescription(description);
+                table.setGrain(grain);
+                count++;
+            }
+        }
+        var suggestions = new java.util.HashMap<String, FieldSuggestion>();
+        if (suggestion.fields() != null) {
+            for (var field : suggestion.fields()) {
+                if (field != null && physicalFields.contains(field.fieldName())) {
+                    suggestions.putIfAbsent(field.fieldName(), field);
+                }
+            }
+        }
+        for (var field : fieldRepository.findByTableSemantic_IdOrderByPosition(table.getId())) {
+            var candidate = suggestions.get(field.getFieldName());
+            if (candidate == null || field.isConfirmed()) continue;
+            String name = fill(field.getBusinessName(), candidate.businessName(), 255);
+            String description = fill(field.getDescription(), candidate.description(), 4000);
+            String aliases = fill(field.getAliases(), candidate.aliases(), 1000);
+            if (!Objects.equals(name, field.getBusinessName()) || !Objects.equals(description, field.getDescription())
+                    || !Objects.equals(aliases, field.getAliases())) {
+                field.setBusinessName(name);
+                field.setDescription(description);
+                field.setAliases(aliases);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static String fill(String current, String candidate, int limit) {
+        if ((current == null || current.isBlank()) && candidate != null && !candidate.isBlank()
+                && candidate.strip().length() <= limit) {
+            return candidate.strip();
+        }
+        return current;
     }
 
     public record TableSnapshot(String tableName, String label, List<TableField> fields) {}

@@ -52,6 +52,8 @@ public class AiTaskManage implements AiToolConversationFeature {
     private final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-heartbeat"));
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-dispatch"));
     private final ScheduledExecutorService monitor = Executors.newSingleThreadScheduledExecutor(r -> daemon(r, "de-ai-task-monitor"));
+    private final ExecutorService businessWorkers = new ThreadPoolExecutor(0, 20, 60, TimeUnit.SECONDS,
+            new SynchronousQueue<>(), work -> daemon(work, "de-ai-business-task"));
     private final Semaphore wakeup = new Semaphore(0);
     private long nextPolicyCheck;
     private long nextMaintenance;
@@ -91,7 +93,64 @@ public class AiTaskManage implements AiToolConversationFeature {
         this.scenes = scenes.stream().collect(Collectors.toUnmodifiableMap(AiConversationScene::code, scene -> scene));
     }
     public Task submit(Submit request) {
+        if (request != null && request.scene() != null && scenes.get(request.scene()) instanceof AiBusinessTaskScene) throw AiErrors.error("unsupported");
+        return submit(request, identity());
+    }
+
+    public record BusinessStatus(String id, String status, String summary) { }
+
+    public BusinessStatus submitBusiness(String code, String resourceId, List<String> tables) {
+        var scene = businessScene(code);
         var owner = identity();
+        var current = businessStatus(scene, resourceId, null, owner);
+        if (current != null) return current;
+        try {
+            var task = submit(new Submit(UUID.randomUUID().toString(), scene.capability(), code, resourceId,
+                    code, null, code, null, tables), owner);
+            return businessStatus(scene, resourceId, task.taskId().toString(), owner);
+        } catch (AiErrors.Failure failure) {
+            if ("task_resource_busy".equals(failure.safeCode())) {
+                var occupied = businessStatus(scene, resourceId, null, owner);
+                if (occupied != null) return occupied;
+            }
+            throw failure;
+        }
+    }
+
+    public BusinessStatus businessStatus(String code, String resourceId, String taskId) {
+        var scene = businessScene(code);
+        return businessStatus(scene, resourceId, taskId, access.capture());
+    }
+
+    private AiBusinessTaskScene businessScene(String code) {
+        if (scene(code) instanceof AiBusinessTaskScene business) return business;
+        throw AiErrors.error("unsupported");
+    }
+
+    private BusinessStatus businessStatus(AiBusinessTaskScene scene, String resourceId, String taskId,
+                                          AiAccess.Identity owner) {
+        return authorized(owner, () -> {
+            scene.authorizeResource(resourceId);
+            CoreAiTaskResource claim = taskId == null
+                    ? em.find(CoreAiTaskResource.class, resourceKey(scene.resourceClaim(resourceId))) : null;
+            if (taskId == null && claim == null) return null;
+            Long id;
+            try { id = claim == null ? Long.valueOf(taskId) : claim.getTaskId(); }
+            catch (NumberFormatException invalid) { return null; }
+            var task = em.find(CoreAiTask.class, id);
+            if (task == null || task.getInputJson() == null || task.getContextJson() == null
+                    || !scene.code().equals(input(task).scene()) || !resourceId.equals(context(task).resourceId())) return null;
+            var attempt = em.find(CoreAiTaskAttempt.class, claim == null ? task.getCurrentAttemptId() : claim.getAttemptId());
+            if (attempt == null) return null;
+            boolean active = Set.of("QUEUED", "RUNNING").contains(attempt.getStatus());
+            if (!active && (taskId == null || attempt.getFinishedAt() == null || attempt.getDeliveryPurgedAt() != null
+                    || System.currentTimeMillis() >= expires(attempt))) return null;
+            String summary = attempt.getResultJson() == null || active ? null : decode(attempt.getResultJson(), Result.class).text();
+            return new BusinessStatus(id.toString(), attempt.getStatus(), summary);
+        });
+    }
+
+    private Task submit(Submit request, AiAccess.Identity owner) {
         if (request == null || !key(request.submissionKey()) || request.editorId() == null || request.editorId().isBlank() || request.editorId().length() > 100
                 || request.text() == null || request.text().isBlank() || request.text().length() > 30000
                 || request.sql() != null && request.sql().length() > 30000
@@ -128,6 +187,8 @@ public class AiTaskManage implements AiToolConversationFeature {
                 task.setSubmissionHash(submission); task.setInputHash(fingerprint); task.setInputJson(input); task.setOwnerJson(encode(owner));
                 task.setContextJson(encode(context)); task.setCreatedAt(System.currentTimeMillis());
                 var attempt = attempt(task, 1, hash(task.getId() + ":initial"));
+                // Business summaries are delivered through the resource's own status endpoint.
+                if (scene instanceof AiBusinessTaskScene) attempt.setNoticeAckAt(attempt.getCreatedAt());
                 task.setCurrentAttemptId(attempt.getId()); em.persist(task); em.persist(attempt); claimResources(claims, task.getId(), attempt.getId()); em.flush(); wakeAfterCommit(); return view(task);
             });
             return checkedView(em.find(CoreAiTask.class, accepted.taskId()), owner);
@@ -161,10 +222,14 @@ public class AiTaskManage implements AiToolConversationFeature {
         for (var declaration : declarations) {
             if (declaration == null || declaration.datasourceId() == null || declaration.table() == null || declaration.operation() == null
                     || declaration.table().isBlank() || declaration.operation().isBlank()) throw AiErrors.error("invalid");
-            keys.add(hash(encode(declaration)));
+            keys.add(resourceKey(declaration));
         }
         return List.copyOf(keys);
     }
+    private String resourceKey(AiConversationScene.ResourceClaim declaration) {
+        return hash(encode(declaration));
+    }
+
     private void resourceConflict(List<String> keys, String ownerBinding) {
         if (!keys.isEmpty()) expireWaiting();
         for (var key : keys) {
@@ -217,7 +282,8 @@ public class AiTaskManage implements AiToolConversationFeature {
         var owner = identity();
         var rows = em.createQuery("select t from CoreAiTask t, CoreAiTaskAttempt a where t.currentAttemptId=a.id and t.ownerBinding=:owner and a.status in ('QUEUED','RUNNING') order by t.createdAt", CoreAiTask.class)
                 .setParameter("owner", AiAccess.binding(owner)).setMaxResults(10020).getResultList();
-        return rows.stream().map(task -> checkedView(task, owner)).toList();
+        return rows.stream().filter(task -> !(scene(input(task).scene()) instanceof AiBusinessTaskScene))
+                .map(task -> checkedView(task, owner)).toList();
     }
     /** Pending delivery only, never a task history or inbox. Re-authorize outside metadata transactions. */
     public List<Notice> notices() {
@@ -253,8 +319,9 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     void ended(CoreAiTaskAttempt attempt, String state, String code, String result) {
         long now = System.currentTimeMillis();
-        attempt.setStatus(state); attempt.setErrorCode(code); attempt.setResultJson(result); attempt.setFinishedAt(now);
-        attempt.setDeliveryExpiresAt(now + TimeUnit.DAYS.toMillis(em.find(CoreAiSetting.class, 1L).getDeliveryRetentionDays())); attempt.setNoticeAckAt(null);
+        attempt.setStatus(state); attempt.setErrorCode(code); attempt.setFinishedAt(now);
+        if (result != null || attempt.getNoticeAckAt() == null) attempt.setResultJson(result);
+        attempt.setDeliveryExpiresAt(now + TimeUnit.DAYS.toMillis(em.find(CoreAiSetting.class, 1L).getDeliveryRetentionDays()));
         attempt.setFence(null); attempt.setNodeId(null);
         // Persist the durable fence before releasing the exact owner, in this same terminal transaction.
         em.flush();
@@ -313,6 +380,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     public Task retry(Long id, Retry request) {
         var task = owned(id); var owner = identity();
+        if (scene(input(task).scene()) instanceof AiBusinessTaskScene) throw AiErrors.error("unsupported");
         checkedView(task, owner);
         if (request == null || !key(request.retryKey()) || request.expectedAttemptId() == null) throw AiErrors.error("invalid");
         String retry = hash(task.getId() + ":" + request.retryKey());
@@ -652,6 +720,10 @@ public class AiTaskManage implements AiToolConversationFeature {
     private void execute(Run run) {
         check(run);
         var work = run.work; var scene = scene(work.input().scene());
+        if (scene instanceof AiBusinessTaskScene business) {
+            businessWorkers.execute(() -> executeBusiness(run, business));
+            return;
+        }
         var definitions = scene.tools(work.context());
         String draft = AiPromptFingerprint.of(new Prompt(Objects.toString(work.input().sql(), "")));
         String version = work.attemptId() + ":" + work.fence();
@@ -684,6 +756,53 @@ public class AiTaskManage implements AiToolConversationFeature {
         if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), value -> append(run, value), step -> step(run, step), failure -> fail(run, failure));
         else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), value -> append(run, value), () -> complete(run, draft), failure -> fail(run, failure));
     }
+    private void executeBusiness(Run run, AiBusinessTaskScene scene) {
+        var work = run.work;
+        try {
+            authorized(work.owner(), () -> {
+                scene.execute(work.context(), new AiBusinessTaskScene.Execution() {
+                    @Override
+                    public void check() {
+                        AiTaskManage.this.check(run);
+                    }
+
+                    @Override
+                    public String call(Prompt prompt) {
+                        check();
+                        var engine = runtime.getObject();
+                        String version = work.attemptId() + ":" + work.fence();
+                        var scope = new AiDataScope(work.taskId().toString(), version,
+                                AiPromptFingerprint.of(prompt), false, null);
+                        var execution = engine.task(code(), work.taskId().toString(), scope, work.deadline());
+                        return engine.current(execution).call(prompt).getResult().getOutput().getText();
+                    }
+
+                    @Override
+                    public <T> T write(java.util.function.Supplier<T> operation) {
+                        check();
+                        return tx.execute(status -> {
+                            em.find(CoreAiTask.class, work.taskId(), LockModeType.PESSIMISTIC_WRITE);
+                            var attempt = em.find(CoreAiTaskAttempt.class, work.attemptId(), LockModeType.PESSIMISTIC_WRITE);
+                            em.refresh(attempt);
+                            active(run);
+                            T summary = operation.get();
+                            progress(run);
+                            attempt.setResultJson(encode(new Result("BUSINESS_SUMMARY", encode(summary), null,
+                                    work.context().resourceId(), work.context().resourceName(), work.context().revision(),
+                                    work.input().editorId(), null)));
+                            return summary;
+                        });
+                    }
+                });
+                check(run);
+                return null;
+            });
+            terminal(run, "COMPLETED", null, null);
+        } catch (RuntimeException failure) {
+            fail(run, failure);
+        }
+    }
+
     private void append(Run run, String value) {
         synchronized (run) {
             progress(run); if (run.text.length() + value.length() > 262144) throw AiErrors.error("output_limit"); run.text.append(value);
@@ -770,7 +889,7 @@ public class AiTaskManage implements AiToolConversationFeature {
     }
     @PreDestroy public void destroy() {
         synchronized (leaseLock) { stopped = true; }
-        scheduler.shutdownNow(); heartbeat.shutdownNow(); monitor.shutdownNow();
+        scheduler.shutdownNow(); heartbeat.shutdownNow(); monitor.shutdownNow(); businessWorkers.shutdownNow();
         if (started.get()) { try { interruptOwn(); } finally { running.values().forEach(this::close); running.clear(); } }
     }
 }
