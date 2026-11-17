@@ -96,8 +96,8 @@ watch(editing, value => {
   pointer-events: auto;
   max-width: calc(100vw - 32px);
   max-height: 86vh;
-  margin: 7vh auto 0;
-  overflow: auto;
+  margin: auto;
+  overflow: hidden;
   --ed-dialog-bg-color: #232323;
   --ed-bg-color: #232323;
   --ed-bg-color-overlay: #292929;
@@ -118,6 +118,11 @@ watch(editing, value => {
   opacity: 0.3;
 }
 .dv-material-tabs {
+  :deep(.component-assets-body),
+  :deep(.picker-body) {
+    height: min(520px, calc(86vh - 260px));
+    min-height: 0;
+  }
   :deep(.ed-tabs__header) {
     margin-bottom: 20px;
   }
