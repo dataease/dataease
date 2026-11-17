@@ -4213,6 +4213,9 @@ export default {
     ds_search_placeholder: '搜尋名稱,描述'
   },
   sync_datasource: {
+    connection_change_title: '確認修改連線設定？',
+    connection_change_warning:
+      '此資料來源關聯 {count} 個任務。儲存後，新執行使用新連線，已開始的執行及其重試、恢復繼續使用原連線。原有表、SQL、欄位映射和增量規則不變，可能導致執行失敗或同步結果變化，部分情況需要維護或新建任務。',
     changes_not_saved: '本次修改未儲存，原有設定和狀態保持不變',
     show_error_details: '查看具體原因',
     hide_error_details: '收起具體原因',
@@ -4233,8 +4236,6 @@ export default {
     confirm_batch_delete_target_ds: '確定刪除{0}個目標資料來源嗎？ ',
     confirm_batch_delete_source_ds: '確定刪除{0}個來源資料來源嗎？ ',
     recently_created: '最近創建',
-    has_running_task_msg:
-      '執行中的任務完成後，將繼續使用修改先前的配置進行同步，需手動對任務進行重新儲存。 ',
     edit_datasource: '編輯資料來源',
     add_datasource: '新資料來源',
     config_info: '設定資訊',

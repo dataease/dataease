@@ -22,6 +22,7 @@ import {Icon} from "@/components/icon-custom";
 import DsTypeList from "./DsTypeList.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 import {
+  connectionChangeConfirmation,
   getSchemaApi,
   latestUseApi,
   loadSyncPlugin,
@@ -470,24 +471,40 @@ const saveDS = () => {
   }
 }
 
-const doSaveDs = request => {
+const doSaveDs = (request): Promise<void> | undefined => {
   const generation = formGeneration
   if (editDs.value) {
-    updateApi(request, true)
+    return updateApi(request, true)
       .then(res => {
         if (generation !== formGeneration) return
         if (res !== undefined) {
-          if (res.data['hasRunningTask'] === 'true') {
-            ElMessage.warning(t('sync_datasource.has_running_task_msg'))
-          } else {
-            ElMessage.success(t('common.save_success'))
-          }
+          ElMessage.success(t('common.save_success'))
           visible.value = false
           emits('refresh')
         }
       })
-      .catch(error => {
-        if (generation === formGeneration) captureConnectionError(error, true)
+      .catch(async error => {
+        if (generation !== formGeneration) return
+        const count = connectionChangeConfirmation(toDataEaseError(error))
+        if (count !== undefined && !wasErrorPresented(error)) {
+          try {
+            await ElMessageBox.confirm(
+              t('sync_datasource.connection_change_warning', { count }),
+              t('sync_datasource.connection_change_title'),
+              {
+                type: 'warning',
+                confirmButtonText: t('commons.save'),
+                cancelButtonText: t('commons.cancel'),
+                closeOnClickModal: false
+              }
+            )
+          } catch {
+            return
+          }
+          if (generation !== formGeneration) return
+          return doSaveDs({ ...request, connectionChangeConfirmed: true })
+        }
+        captureConnectionError(error, true)
       })
       .finally(() => {
         if (generation === formGeneration) loading.value = false

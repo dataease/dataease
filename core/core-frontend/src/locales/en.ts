@@ -4377,6 +4377,9 @@ export default {
     ds_search_placeholder: 'Search name, description'
   },
   sync_datasource: {
+    connection_change_title: 'Change connection settings?',
+    connection_change_warning:
+      'This data source is used by {count} tasks. New executions will use the new connection. Existing executions, retries and recovery will keep their original connection. Tables, SQL, field mappings and incremental rules will remain unchanged. Tasks may fail or synchronize different data; maintenance or new tasks may be required.',
     changes_not_saved:
       'Changes were not saved. The existing configuration and status are unchanged.',
     show_error_details: 'View error details',
@@ -4398,8 +4401,6 @@ export default {
     confirm_batch_delete_target_ds: 'Are you sure you want to delete {0} target Datasources? ',
     confirm_batch_delete_source_ds: 'Are you sure you want to delete {0} source Datasources? ',
     recently_created: 'Recently created',
-    has_running_task_msg:
-      'After the task in progress is completed, the configuration before the modification will continue to be used for synchronization, and the task needs to be manually saved again. ',
     edit_datasource: 'Edit Datasource',
     add_datasource: 'Create a new Datasource',
     config_info: 'Configuration information',

@@ -4233,6 +4233,9 @@ export default {
     ds_search_placeholder: '搜索名称,描述'
   },
   sync_datasource: {
+    connection_change_title: '确认修改连接配置？',
+    connection_change_warning:
+      '该数据源关联 {count} 个任务。保存后，新执行使用新连接，已开始的执行及其重试、恢复继续使用原连接。原有表、SQL、字段映射和增量规则不变，可能导致执行失败或同步结果变化，部分情况需要维护或新建任务。',
     changes_not_saved: '本次修改未保存，原有配置和状态保持不变',
     show_error_details: '查看具体原因',
     hide_error_details: '收起具体原因',
@@ -4253,8 +4256,6 @@ export default {
     confirm_batch_delete_target_ds: '确定删除{0}个目标数据源吗？',
     confirm_batch_delete_source_ds: '确定删除{0}个源数据源吗？',
     recently_created: '最近创建',
-    has_running_task_msg:
-      '执行中的任务完成后，将继续使用修改之前的配置进行同步，需手动对任务进行重新保存。',
     edit_datasource: '编辑数据源',
     add_datasource: '新建数据源',
     config_info: '配置信息',

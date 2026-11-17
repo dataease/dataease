@@ -12,6 +12,10 @@ public class DatasourceRequest extends DatasourceDTO {
     private Integer fetchSize = 10000;
     private boolean tableExtract;
     private String targetDbId;
+    /**
+     * 修改关联数据源连接前，用户已确认后续任务执行的影响
+     */
+    private boolean connectionChangeConfirmed;
 
     public DatasourceRequest() {
 
