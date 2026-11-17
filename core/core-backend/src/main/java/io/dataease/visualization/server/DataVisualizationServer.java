@@ -33,6 +33,7 @@ import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.dao.auto.entity.*;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.manage.DatasetGroupManage;
@@ -50,6 +51,7 @@ import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.manage.CoreLicManage;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -102,6 +104,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
+
+    @Resource
+    private PerBusiResourceRepository perBusiResourceRepository;
 
     @Resource
     private ChartViewManege chartViewManege;
@@ -276,7 +281,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     private DataVisualizationInfo requireVisualizationPermission(Long id, AuthEnum permission) {
         DataVisualizationInfo resource = requireVisualizationResource(id);
-        checkVisualizationPermission(resource, permission, visualizationAuth());
+        checkVisualizationPermission(resource, permission, visualizationAuth(resource));
         return resource;
     }
 
@@ -292,12 +297,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return resource;
     }
 
-    private InteractiveAuthApi visualizationAuth() {
+    private InteractiveAuthApi visualizationAuth(DataVisualizationInfo resource) {
+        // XPack permission beans can be present in community mode, but require a valid license.
+        if (!LicenseUtil.licenseValid()) {
+            if (!Objects.equals(V3UserUtil.getUid(), 1L) || V3UserUtil.getProxy().isProxy()
+                    || !DataVisualizationConstants.NODE_TYPE.LEAF.equals(resource.getNodeType())
+                    || perBusiResourceRepository.existsById(resource.getId())) {
+                denyVisualizationRead();
+            }
+            return null;
+        }
         InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
-        if (auth == null && (!Objects.equals(V3UserUtil.getUid(), 1L)
-                || CommonBeanFactory.getBean("substituleLoginServer") == null
-                || CommonBeanFactory.getBean("loginServer") != null)) {
-            // Only the actual single-user community implementation may omit this service.
+        if (auth == null) {
             denyVisualizationRead();
         }
         return auth;
@@ -313,7 +324,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     private DataVisualizationInfo requireVisualizationDraftAccess(Long id) {
         DataVisualizationInfo resource = requireVisualizationResource(id);
-        InteractiveAuthApi auth = visualizationAuth();
+        InteractiveAuthApi auth = visualizationAuth(resource);
         if (Objects.equals(resource.getPid(), -1L)) {
             // Temporary copies are not registered in the permission tree; only their creator may open them.
             if (!Objects.equals(resource.getCreateBy(), String.valueOf(V3UserUtil.getUid()))
