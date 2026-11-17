@@ -1088,8 +1088,11 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
 
     let checkValue = value
     if (sourceField.dataeaseName) {
-      const rowVal =
-        rowData?.[sourceField.dataeaseName] ?? rowData?.query?.[sourceField.dataeaseName]
+      // 保留 null：仅在字段缺失(undefined)时回退到 query，避免「为空+整行」误用当前单元格值
+      let rowVal = rowData?.[sourceField.dataeaseName]
+      if (rowVal === undefined) {
+        rowVal = rowData?.query?.[sourceField.dataeaseName]
+      }
       // 汇总行缺失的维度按空值匹配，不能回退到目标单元格的值
       if (rowVal !== undefined || rowData?.SUMMARY) {
         checkValue = rowVal
