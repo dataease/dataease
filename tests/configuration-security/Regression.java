@@ -79,11 +79,12 @@ public class Regression {
         new RsaUtils().setRsaManage(new RsaManage() { @Override public CoreRsa query() { return rsa; } });
         check(RsaUtils.publicKey().equals(pair.getPublicKey()));
         check(!RsaUtils.publicKey().contains(rsa.getAesKey()));
-        // Retained historical storage formats, including the pre-deployment-key format.
+        // Pre-deployment-key ciphertext is no longer accepted by the runtime decrypt path;
+        // the one-time SqlBlock migration re-encrypts such rows before startup completes.
         String plain = "{\"password\":\"fixture-password\"}";
         String legacy = CodingUtil.aesEncrypt(plain, "www.fit2cloud.co", "1234567890123456");
         EncryptUtils.initKeys(rsa.getAesKey());
-        check(plain.equals(EncryptUtils.aesDecrypt(legacy)));
+        check(!plain.equals(EncryptUtils.aesDecrypt(legacy)));
         check(plain.equals(EncryptUtils.aesDecrypt(EncryptUtils.aesEncrypt(plain))));
         String original = "{\"host\":\"db.local\",\"password\":\"fixture-password\",\"sshKey\":\"fixture-key\"}";
         var originalTree = JSON.readTree(original);

@@ -68,6 +68,31 @@ public class Regression {
             verifyConnection(type, null, drivers.get(type.toLowerCase(Locale.ROOT)));
             verifyConnection(type, drivers.get(type.toLowerCase(Locale.ROOT)), drivers.get(type.toLowerCase(Locale.ROOT)));
         }
+        for (String type : new String[] {"pg", "kingbase", "redshift"}) {
+            String prefix;
+            if (type.equals("pg")) {
+                prefix = "jdbc:postgresql://127.0.0.1:1/db";
+            } else if (type.equals("kingbase")) {
+                prefix = "jdbc:kingbase8://127.0.0.1:1/db";
+            } else {
+                prefix = "jdbc:redshift://127.0.0.1:1/db";
+            }
+            String driver = drivers.get(type);
+            rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate(type, driver, prefix + "?loggerFile=/opt/apps/de_fw_proof.log", ""));
+            rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate(type, driver, prefix + "?loggerLevel=TRACE", ""));
+            rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate(type, driver, prefix + "?logger=off", ""));
+            rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate(type, driver, prefix + "?loggerFile=/opt/apps/de_fw_proof.log", "loggerFile=/tmp/other.log"));
+            equal(prefix + "?currentSchema=public", JdbcUrlSecurityPolicy.validate(type, driver, prefix + "?currentSchema=public", ""));
+        }
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("kingbase", drivers.get("kingbase"), "jdbc:postgresql://127.0.0.1:1/db", ""));
+        String windowsH2 = "jdbc:h2:C:\\Users\\75269/opt/dataease3.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE";
+        equal(windowsH2, JdbcUrlSecurityPolicy.validate("h2", drivers.get("h2"), windowsH2, ""));
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("h2", drivers.get("h2"),
+                "jdbc:h2:mem:pwn\\;CREATE ALIAS EXEC AS 'void x(String c){}'", ""));
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("h2", drivers.get("h2"),
+                "jdbc:h2:mem:pwn;LOCK_TIMEOUT=0\\;CREATE ALIAS EXEC AS 'void x(String c){}'", ""));
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("h2", drivers.get("h2"),
+                "jdbc:h2:mem:pwn%5c;CREATE ALIAS EXEC AS 'void x(String c){}'", ""));
         try (RecordingLoader loader = new RecordingLoader()) {
             DatasourceConfiguration configuration = configuration("mysql", "java.lang.Runtime");
             connectedUrl = null;
@@ -106,10 +131,27 @@ public class Regression {
         try {
             action.run();
         } catch (DEException exception) {
-            equal("invalid driver", exception.getMessage());
-            return;
+            String message = exception.getMessage();
+            if ("invalid driver".equals(message) || (message != null && message.startsWith("Illegal driver class"))) {
+                checks++;
+                return;
+            }
+            throw new AssertionError("Unexpected rejection message: " + message);
         }
         throw new AssertionError("Expected invalid driver rejection");
+    }
+
+    private static void rejectedIllegal(Runnable action) {
+        try {
+            action.run();
+        } catch (DEException exception) {
+            if (exception.getMessage() == null || !exception.getMessage().startsWith("Illegal")) {
+                throw new AssertionError("Unexpected rejection message: " + exception.getMessage());
+            }
+            checks++;
+            return;
+        }
+        throw new AssertionError("Expected illegal JDBC URL rejection");
     }
 
     private static final class RecordingLoader extends ExtendedJdbcClassLoader {
