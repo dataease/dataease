@@ -95,7 +95,7 @@ const loadManagePermission = async () => {
     })
     const permissions = res?.data?.permissions || []
     canManage.value = permissions.some(
-      item => String(item.id) === '16' && (item.weight === 9 || item.weight >= 7)
+      item => String(item.id) === '16' && (item.weight === 9 || item.weight >= 1)
     )
   } catch (e) {
     canManage.value = false
