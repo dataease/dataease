@@ -46,10 +46,16 @@ public class AiSqlConversationScene implements AiConversationScene {
         return execute(context, name, arguments, () -> { }, System.currentTimeMillis() + 750);
     }
     @Override public String execute(Context context, String name, Map<String, String> arguments, Runnable active, long deadline) {
-        if (context.resourceId().isBlank()) throw AiErrors.error("unsupported");
-        return AiTool.execute(tools, scope(context), name, arguments, active, deadline);
+        return beginTurn(context).execute(name, arguments, active, deadline);
     }
-    private AiDatasourceTools.Scope scope(Context context) {
+    @Override public ToolExecution beginTurn(Context context) {
+        var scope = scope(context);
+        return (name, arguments, active, deadline) -> {
+            if (context.resourceId().isBlank()) throw AiErrors.error("unsupported");
+            return AiTool.execute(tools, scope, name, arguments, active, deadline);
+        };
+    }
+    protected AiDatasourceTools.Scope scope(Context context) {
         return new AiDatasourceTools.Scope(context.resourceId(), context.revision(), context.isCross());
     }
     @Override public Context resolve(String resourceId, String sql) {

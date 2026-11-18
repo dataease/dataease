@@ -6,6 +6,9 @@ import io.dataease.ai.support.AiErrors;
 import io.dataease.ai.tool.AiTool;
 
 import io.dataease.api.ds.DatasourceApi;
+import io.dataease.datasource.provider.PhysicalTableCatalog;
+import io.dataease.datasource.server.DatasourceMetadataSource;
+import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.constant.AuthEnum;
@@ -26,8 +29,30 @@ import java.util.*;
 @Component
 public class AiDatasourceTools {
     public record Resource(String id, String name) { }
-    public record Scope(String resourceId, String revision, boolean isCross) {
+    public static final class Scope {
+        private final String resourceId, revision;
+        private final boolean isCross;
+        private final TurnCatalog turnCatalog;
+
         public Scope(String resourceId, String revision) { this(resourceId, revision, false); }
+        public Scope(String resourceId, String revision, boolean isCross) { this(resourceId, revision, isCross, null); }
+        private Scope(String resourceId, String revision, boolean isCross, TurnCatalog turnCatalog) {
+            this.resourceId = resourceId;
+            this.revision = revision;
+            this.isCross = isCross;
+            this.turnCatalog = turnCatalog;
+        }
+        public static Scope editor(String id, String revision, boolean cross) {
+            return new Scope(id, revision, cross, new TurnCatalog());
+        }
+        public String resourceId() { return resourceId; }
+        public String revision() { return revision; }
+        public boolean isCross() { return isCross; }
+    }
+
+    private static final class TurnCatalog {
+        private PhysicalTableCatalog directory;
+        private final Map<String, TableFields> fields = new HashMap<>();
     }
     public record Datasource(String id, String name, String revision, String type) { }
     public record Table(String name, String comment) { }
@@ -47,6 +72,25 @@ public class AiDatasourceTools {
     }
     @org.springframework.beans.factory.annotation.Autowired
     private io.dataease.datasource.manage.DatasourceSemanticManage semantics;
+    @org.springframework.beans.factory.annotation.Autowired
+    private DatasourceMetadataSource physical;
+    protected PhysicalTableCatalog openCatalog(long id) { return physical.openCatalog(id); }
+
+    private PhysicalTableCatalog directory(Scope scope) {
+        authorize(scope);
+        var turn = Objects.requireNonNull(scope.turnCatalog);
+        if (turn.directory == null) {
+            var catalog = openCatalog(Long.parseLong(scope.resourceId()));
+            authorize(scope);
+            turn.directory = catalog;
+        }
+        return turn.directory;
+    }
+
+    public boolean hasPhysicalTable(Scope scope, String table) {
+        return directory(scope).labels().containsKey(table);
+    }
+
     private final DatasourceApi datasources;
     private final ObjectProvider<InteractiveAuthApi> authorization;
     private final AiAccess access;
@@ -88,6 +132,8 @@ public class AiDatasourceTools {
         return result;
     }
     public List<Table> tables(Scope scope) {
+        if (scope.turnCatalog != null)
+            return directory(scope).labels().entrySet().stream().map(e -> new Table(e.getKey(), e.getValue())).toList();
         return authorizedTables(scope).stream().map(table -> new Table(safe(table.getTableName(), 256), safe(table.getName(), 512))).toList();
     }
     /** Preserve validator semantics: absent exact table is null; ambiguous case is an empty list. */
@@ -110,16 +156,31 @@ public class AiDatasourceTools {
         return fields(scope, table, false);
     }
     public TableFields fields(Scope scope, String table, boolean nativeType) {
+        if (scope.turnCatalog != null && nativeType) {
+            var catalog = directory(scope);
+            if (!catalog.labels().containsKey(table)) throw AiErrors.error("forbidden");
+            var current = scope.turnCatalog.fields.get(table);
+            if (current == null) {
+                current = projectFields(table, catalog.fields(table), true);
+                authorize(scope);
+                scope.turnCatalog.fields.put(table, current);
+            }
+            return current;
+        }
         if (table == null || table.length() > 256 || authorizedTables(scope).stream().noneMatch(value -> Objects.equals(table, value.getTableName())))
             throw AiErrors.error("forbidden");
         // authorizedTables already rechecked authority after metadata IO.
         var fields = datasources.getTableField(new DatasetTableFieldRequest(Long.valueOf(scope.resourceId()), table));
-        if (fields == null || fields.size() > 256) throw AiErrors.error("output_limit");
-        var projection = new TableFields(table, fields.stream().map(field -> new Field(
-                safe(field.getOriginName() == null ? field.getName() : field.getOriginName(), 256),
-                safe(nativeType && field.getFieldType() != null && !field.getFieldType().isBlank() ? field.getFieldType() : field.getType(), 128), safe(field.getName(), 512))).toList());
+        var projection = projectFields(table, fields, nativeType);
         authorize(scope);
         return projection;
+    }
+
+    private TableFields projectFields(String table, List<TableField> fields, boolean nativeType) {
+        if (fields == null || fields.size() > 256) throw AiErrors.error("output_limit");
+        return new TableFields(table, fields.stream().map(field -> new Field(
+                safe(field.getOriginName() == null ? field.getName() : field.getOriginName(), 256),
+                safe(nativeType && field.getFieldType() != null && !field.getFieldType().isBlank() ? field.getFieldType() : field.getType(), 128), safe(field.getName(), 512))).toList());
     }
     public String structures(Selection selection, Runnable active) {
         if (selection.tables().isEmpty() || selection.tables().size() > 32) throw AiErrors.error("invalid");

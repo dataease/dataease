@@ -4,6 +4,7 @@ import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.tool.AiTool;
 import io.dataease.ai.support.AiErrors;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
+import io.dataease.ai.tool.datasource.DatasetSqlTableSearch;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.api.ai.conversation.AiConversationDtos;
 import io.dataease.datasource.manage.EngineManage;
@@ -17,7 +18,11 @@ import java.util.Map;
 @Component
 public class AiDatasetSqlScene extends AiSqlConversationScene {
     public AiDatasetSqlScene(AiDatasourceTools metadata, EngineManage engines, DatasetSqlSemanticTools semantics) {
-        super(metadata, List.of(semantics.search(), metadata.listTables(), semantics.fields(), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
+        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
+    }
+
+    @Override protected AiDatasourceTools.Scope scope(Context context) {
+        return AiDatasourceTools.Scope.editor(context.resourceId(), context.revision(), context.isCross());
     }
 
     @Override public String code() { return "dataset-sql"; }
@@ -58,7 +63,11 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
                 + "Use the parameters topic for system variables and dashboard filter questions, including explanations. "
                 + "Even in cross-source mode, each SQL node reads only the selected source. For cross-database joins, "
                 + "give canvas instructions only: add separate nodes for each source, then configure their relationship. "
-                + "Prioritize exact tables the author names, then existing SQL references on a revision. Otherwise call search_semantics with business terms before listing physical tables. "
+                + "Prioritize exact tables the author names, then existing SQL references on a revision. Otherwise call search_semantics with business terms before searching physical tables. "
+                + "Retain an already selected table when a dimension is missing. Search only the gap with search_physical_tables using business terms and likely physical names. "
+                + "Offer only returned candidates, preserving their numbers, full physical names and the matched name or comment. Ask the author to choose before inspecting uncertain candidates. "
+                + "Resolve a numbered reply against the choices shown in that earlier message on the current datasource. If unclear, ask which table. An exact name copied from the editor can be inspected directly. "
+                + "Explain EMPTY_CATALOG, NO_MATCH and more accurately. If none fits, invite another business term or a copied exact name; never infer nonexistence from search misses. "
                 + "Inspect the selected table with get_table_fields before using business meanings, including previous turns' metadata. "
                 + "Only confirmed business names/descriptions and explicit value/meaning pairs establish a measure, unit or state. Aliases, samples and guesses cannot. "
                 + "If actual vs receivable or another meaning is unresolved, ask only for the missing choice. Apply personal corrections only within this conversation. "

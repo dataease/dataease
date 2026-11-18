@@ -80,6 +80,8 @@ public final class ToolConversationRegression {
     }
     public static void run(AiConfigurationManage config, CoreAiOrgPolicyRepository policies, AiSecrets keys, AiAdmission admission, AiAccess access) throws Exception {
         DatasetSqlSemanticRegression.main(new String[0]);
+        DatasetSqlPhysicalRegression.main(new String[0]);
+        DatasetSqlProviderRegression.main(new String[0]);
         var sent = new CopyOnWriteArrayList<JsonNode>();
         var reads = new CopyOnWriteArrayList<String>();
         var authorizations = new CopyOnWriteArrayList<String>();
@@ -133,6 +135,25 @@ public final class ToolConversationRegression {
                 } else if (mode.get().equals("dataset-guide") && sent.size() == 1) {
                     String topic = body.path("messages").toString().contains("monthly totals") ? "monthly" : "projection";
                     content = call("guide", "read_sql_guide", JSON.writeValueAsString(Map.of("topic", topic)));
+                } else if (mode.get().equals("dataset-channel")) {
+                    var messages = body.path("messages");
+                    var last = messages.get(messages.size() - 1);
+                    if ("tool".equals(last.path("role").asText())) {
+                        var data = JSON.readTree(last.path("content").asText());
+                        content = data.has("candidates") ? frame(Map.of("content", "保留 orders，选择渠道：" +
+                                data.path("candidates").get(0).path("table").asText() + " 或 " +
+                                data.path("candidates").get(1).path("table").asText()), "stop")
+                                : frame(Map.of("content", "已读取 " + data.path("table").asText()), "stop");
+                    } else if (last.path("content").asText().contains("第 2 个")) {
+                        String chosen = null;
+                        for (var message : messages) {
+                            if ("tool".equals(message.path("role").asText())) {
+                                var earlier = JSON.readTree(message.path("content").asText());
+                                if (earlier.has("candidates")) chosen = earlier.path("candidates").get(1).path("table").asText();
+                            }
+                        }
+                        content = call("choice", "get_table_fields", JSON.writeValueAsString(Map.of("table", chosen)));
+                    } else content = call("channels", "search_physical_tables", "{\"terms\":\"渠道\"}");
                 } else if (mode.get().startsWith("dataset-meaning")) {
                     var previous = body.path("messages").get(body.path("messages").size() - 1).path("content").asText();
                     content = switch (sent.size()) {
@@ -211,6 +232,12 @@ public final class ToolConversationRegression {
                     if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
+                    if (mode.get().equals("dataset-channel")) {
+                        for (String name : List.of("channel_archive", "channel_live", "orders")) {
+                            var t = new DatasetTableDTO(); t.setTableName(name); t.setName(name.startsWith("channel") ? "渠道" : "销售订单"); tables.add(t);
+                        }
+                        yield tables;
+                    }
                     if (mode.get().startsWith("dataset-meaning")) {
                         var orders = new DatasetTableDTO(); orders.setTableName("orders"); orders.setName("订单"); yield List.of(orders);
                     }
@@ -220,6 +247,10 @@ public final class ToolConversationRegression {
                     yield tables; }
                 case "getTableField" -> {
                     var request = (DatasetTableFieldRequest) args[0];
+                    if (mode.get().equals("dataset-channel") && request.getDatasourceId() == 11L && "channel_live".equals(request.getTableName())) {
+                        reads.add(request.getTableName());
+                        var f = new TableField(); f.setOriginName("channel_id"); f.setFieldType("BIGINT"); yield List.of(f);
+                    }
                     if (mode.get().startsWith("dataset-meaning") && Objects.equals(request.getDatasourceId(), 11L) && "orders".equals(request.getTableName())) {
                         reads.add("fields");
                         yield Map.of("pay_code", "CHAR", "actual_amt", "DECIMAL", "due_amt", "DECIMAL").entrySet().stream().map(entry -> {
@@ -265,7 +296,13 @@ public final class ToolConversationRegression {
                 public AiDeploymentMode.State mode() { return access.mode(); }
                 public Identity capture() { Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null; return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode()); }
             };
-            var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), dialogueAccess, new CorePermissionManage());
+            var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), dialogueAccess, new CorePermissionManage()) {
+                @Override protected io.dataease.datasource.provider.PhysicalTableCatalog openCatalog(long id) {
+                    var request = new DatasetTableDTO(); request.setDatasourceId(id);
+                    return new io.dataease.datasource.provider.PhysicalTableCatalog(datasource.getTables(request),
+                            table -> datasource.getTableField(new DatasetTableFieldRequest(id, table)));
+                }
+            };
             sqlTools = new AiSqlTools(metadata);
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
@@ -419,6 +456,17 @@ public final class ToolConversationRegression {
                 throw new AssertionError("a fresh authorized source must receive neither earlier preview SQL nor its repair");
             mvc.perform(delete("/ai/conversations/" + fresh.path("sessionId").asText()));
             mvc.perform(delete("/ai/conversations/" + successfulOpen.path("sessionId").asText()));
+            mode.set("dataset-channel"); sent.clear(); reads.clear();
+            var channelSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "channel-node",
+                            "sql", "SELECT oid FROM orders")))).andReturn().getResponse().getContentAsString());
+            var options = terminal(mvc, start(mvc, channelSession, "保留订单，补充销售渠道。")).path("result");
+            if (!reads.equals(List.of("tables")) || !options.path("text").asText().contains("channel_archive"))
+                throw new AssertionError("Finding candidates must leave fields unread: " + options);
+            var chosen = terminal(mvc, start(mvc, channelSession, "第 2 个")).path("result");
+            if (!reads.equals(List.of("tables", "tables", "channel_live")) || !chosen.path("text").asText().contains("channel_live"))
+                throw new AssertionError("Number must resolve against the earlier choices; reauthorize and read only that table: " + chosen);
+            mvc.perform(delete("/ai/conversations/" + channelSession.path("sessionId").asText()));
             for (var meaning : List.of("paid", "ambiguous")) {
                 mode.set("dataset-meaning-" + meaning);
                 sent.clear(); reads.clear();

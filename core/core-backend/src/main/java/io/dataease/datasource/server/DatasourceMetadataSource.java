@@ -1,6 +1,13 @@
 package io.dataease.datasource.server;
 
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.SQLConstants;
+import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.datasource.provider.PhysicalTableCatalog;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.utils.BeanUtils;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceMetadataAccess;
@@ -39,6 +46,19 @@ public class DatasourceMetadataSource {
         return nodes != null && nodes.stream().anyMatch(node ->
                 (!node.isOrgRoot() && Boolean.TRUE.equals(node.getLeaf()) && Objects.equals(node.getId(), datasourceId))
                         || contains(node.getChildren(), datasourceId));
+    }
+
+    public PhysicalTableCatalog openCatalog(long id) {
+        var source = datasource(id);
+        if (!DatasourceConfiguration.usesDeEngine(source.getType()) && ProviderFactory.getProvider(source.getType()) instanceof CalciteProvider provider) {
+            var schema = new DatasourceSchemaDTO();
+            BeanUtils.copyBean(schema, source);
+            schema.setSchemaAlias(String.format(SQLConstants.SCHEMA, id));
+            boolean oracle = "oracle".equalsIgnoreCase(source.getType());
+            return provider.openCatalog(schema, (name, label) -> !oracle
+                    || !(DatasourceServer.isOracleRecycleBinName(name) || DatasourceServer.isOracleRecycleBinName(label)));
+        }
+        return new PhysicalTableCatalog(datasource.listPhysicalTables(id, source), name -> fields(source, name));
     }
 
     public List<TableField> fields(CoreDatasource source, String tableName) {
