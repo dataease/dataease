@@ -80,6 +80,7 @@ async function backend(page, options = {}) {
           status: 403,
           json: { messageKey: "i18n_ai_forbidden" },
         });
+      if (state.onOpen) await state.onOpen();
       const id = "session-" + state.opens.length;
       const scope = {
         sessionId: id,
@@ -120,7 +121,10 @@ async function backend(page, options = {}) {
         : state.query || proposal,
       evidence: state.evidence,
     };
-    if (path.endsWith("/executions")) return reply(run);
+    if (path.endsWith("/executions")) {
+      state.starts = (state.starts ?? 0) + 1;
+      return reply(run);
+    }
     if (path.endsWith("/check-application")) {
       state.checks++;
       state.lastCheck = { id, target: body.targetResourceId };
@@ -810,4 +814,25 @@ test("old failed preview is repaired on its own source after switching the edito
   await ask(page, "解释当前草稿");
   await expect.poll(() => state.opens.length).toBe(2);
   expect(state.opens[1]).toMatchObject({ resourceId: "second", sql: "SELECT 2" });
+});
+
+test("stop during continuation keeps the new idle context for the following question", async ({ page }) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(1);
+  let release;
+  const pending = new Promise(resolve => release = resolve);
+  state.onOpen = () => pending;
+  await ask(page, "continue");
+  await expect.poll(() => state.opens.length).toBe(2);
+  await control(page, "stop").click();
+  release();
+  await expect(control(page, "send")).toBeVisible();
+  await ask(page, "which table did we use?");
+  await expect(control(page, "apply")).toHaveCount(2);
+  expect(state.opens[2].previousSessionId).toBe("session-2");
+  expect(state.starts).toBe(2);
+  expect(state.closes).toBe(0);
 });
