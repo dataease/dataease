@@ -123,6 +123,11 @@ public final class ToolConversationRegression {
                             : frame(Map.of("content", "结果与之前一致，共 151 张表"), "stop");
                 } else if (mode.get().equals("arguments-correction") && sent.size() <= 2) {
                     content = call("args-" + sent.size(), "get_table_fields", sent.size() == 1 ? "{\"table\":\"\"}" : "{\"table\":\"AI_PROBE\"}");
+                } else if (mode.get().equals("preview-duplicates")) {
+                    String basis = body.path("messages").get(0).path("content").asText();
+                    content = frame(Map.of("content", basis.contains("SUCCESS") && basis.contains("cardinality")
+                            ? "一对多关联可能使订单行重复。请手动按订单键分组计数核对。"
+                            : "请先提供预览上下文。"), "stop");
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
                 } else if (mode.get().equals("dataset-guide") && sent.size() == 1) {
@@ -347,6 +352,73 @@ public final class ToolConversationRegression {
                     throw denied;
             } finally { firstResourceAllowed.set(true); }
             mvc.perform(delete("/ai/conversations/" + editor.path("sessionId").asText()));
+            // The manual preview request carries a classified outcome; the server supplies its meaning.
+            editorProposal.set("SELECT ID FROM AI_PROBE");
+            mode.set("dataset-suggest");
+            sent.clear();
+            var failedPreview = Map.of("resourceId", "11", "isCross", false, "outcome", "UNKNOWN_COLUMN",
+                    "revision", 3, "currentRevision", 4);
+            var repairOpen = Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "preview-node",
+                    "sql", "SELECT typoo FROM AI_PROBE", "preview", failedPreview);
+            var repairSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(repairOpen))).andReturn().getResponse().getContentAsString());
+            var repair = terminal(mvc, start(mvc, repairSession, "刚才为什么报错"));
+            if (!repair.path("result").path("type").asText().equals("SQL_SUGGESTION") || sent.isEmpty()
+                    || !sent.getFirst().path("messages").toString().contains("UNKNOWN_COLUMN")
+                    || !sent.getFirst().path("messages").toString().contains("SELECT typoo FROM AI_PROBE")
+                    || !sent.getFirst().path("messages").toString().contains("revision 3")
+                    || !sent.getFirst().path("messages").toString().contains("revision 4"))
+                throw new AssertionError("a repair must bind the classified failure and exact earlier SQL to the model request");
+            var repairedSql = repair.path("result").path("sql").asText();
+            if (!"SELECT ID FROM AI_PROBE".equals(repairedSql)) throw new AssertionError("expected a separate repair suggestion");
+            mode.set("preview-duplicates");
+            sent.clear();
+            var success = Map.of("resourceId", "11", "isCross", false, "outcome", "SUCCESS", "revision", 5, "currentRevision", 5,
+                    "rows", List.of(Map.of("id", "private-row-value")), "expandedSql", "private-variable-value", "message", "private-driver-password");
+            var successfulOpen = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "preview-node",
+                            "sql", repairedSql, "preview", success, "previousSessionId", repairSession.path("sessionId").asText()))))
+                    .andReturn().getResponse().getContentAsString());
+            var explanation = terminal(mvc, start(mvc, successfulOpen, "为什么订单重复"));
+            String previewMessages = sent.getFirst().path("messages").toString();
+            if (!"EXPLANATION".equals(explanation.path("result").path("type").asText())
+                    || !explanation.path("result").path("text").asText().contains("可能")
+                    || previewMessages.contains("SQL basis for this request (not executed)")
+                    || !previewMessages.contains("SUCCESS") || !previewMessages.contains("cardinality") || !previewMessages.contains("hypotheses")
+                    || previewMessages.contains("private-row-value") || previewMessages.contains("private-variable-value") || previewMessages.contains("private-driver-password"))
+                throw new AssertionError("success explanation must distinguish evidence from hypotheses and exclude preview row, variables and raw driver errors");
+            int sentBeforeDenial = sent.size();
+            var rebound = new HashMap<String, Object>(repairOpen);
+            for (var mismatch : Map.of("source", Map.of("resourceId", "12"), "mode", Map.of("isCross", true)).values()) {
+                rebound.putAll(mismatch);
+                try {
+                    if (mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(JSON.writeValueAsBytes(rebound)))
+                            .andReturn().getResponse().getStatus() < 400) throw new AssertionError("preview accepted against wrong source or mode");
+                } catch (jakarta.servlet.ServletException denied) {
+                    if (!(denied.getCause() instanceof AiErrors.Failure failure) || !"invalid".equals(failure.safeCode())) throw denied;
+                }
+                rebound.clear();
+                rebound.putAll(repairOpen);
+            }
+            firstResourceAllowed.set(false);
+            try {
+                var follow = Map.of("scene", "dataset-sql", "resourceId", "12", "editorId", "preview-node",
+                        "sql", "SELECT 2", "previousSessionId", successfulOpen.path("sessionId").asText());
+                if (mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(JSON.writeValueAsBytes(follow)))
+                        .andReturn().getResponse().getStatus() < 400) throw new AssertionError("revoked preview history must never reach a new model request");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure failure) || !"forbidden".equals(failure.safeCode())) throw denied;
+            } finally { firstResourceAllowed.set(true); }
+            if (sent.size() != sentBeforeDenial) throw new AssertionError("out-of-scope preview made a model request");
+            sent.clear();
+            var fresh = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "12", "editorId", "preview-node", "sql", "SELECT 2"))))
+                    .andReturn().getResponse().getContentAsString());
+            terminal(mvc, start(mvc, fresh, "解释当前 SQL"));
+            if (sent.getFirst().path("messages").toString().contains("AI_PROBE"))
+                throw new AssertionError("a fresh authorized source must receive neither earlier preview SQL nor its repair");
+            mvc.perform(delete("/ai/conversations/" + fresh.path("sessionId").asText()));
+            mvc.perform(delete("/ai/conversations/" + successfulOpen.path("sessionId").asText()));
             for (var meaning : List.of("paid", "ambiguous")) {
                 mode.set("dataset-meaning-" + meaning);
                 sent.clear(); reads.clear();
