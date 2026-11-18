@@ -448,6 +448,17 @@ public final class ToolConversationRegression {
                     || !sent.getFirst().path("messages").toString().contains("revision 3")
                     || !sent.getFirst().path("messages").toString().contains("revision 4"))
                 throw new AssertionError("a repair must bind the classified failure and exact earlier SQL to the model request");
+            var crossFollowOpen = new HashMap<String, Object>(repairOpen);
+            crossFollowOpen.put("previousSessionId", repairSession.path("sessionId").asText());
+            repairSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(crossFollowOpen))).andReturn().getResponse().getContentAsString());
+            sent.clear();
+            terminal(mvc, start(mvc, repairSession, "再解释刚才的失败"));
+            var conversation = sent.getFirst().path("messages");
+            var target = JSON.readTree(conversation.get(conversation.size() - 1).path("content").asText()).path("currentTarget");
+            if (!"11".equals(target.path("resourceId").asText()) || !"12".equals(target.path("editorResourceId").asText())
+                    || !"MANUAL_PREVIEW".equals(target.path("basis").asText()))
+                throw new AssertionError("continuation must distinguish the preview target from the editor selection: " + target);
             var repairedSql = repair.path("result").path("sql").asText();
             if (!"SELECT ID FROM AI_PROBE".equals(repairedSql)) throw new AssertionError("expected a separate repair suggestion");
             mode.set("preview-duplicates");

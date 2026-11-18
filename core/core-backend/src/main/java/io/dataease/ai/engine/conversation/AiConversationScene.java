@@ -35,10 +35,10 @@ public interface AiConversationScene {
     }
     default List<AiToolProtocol.Definition> tools() { return List.of(); }
     default List<AiToolProtocol.Definition> tools(Context context) { return tools(); }
-    /** Trusted execution strategy; a task-only business cannot be invoked through foreground routes. */
     default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
     default boolean retainEveryTurn() { return false; }
     default void authorizeCopyTarget(String target) { throw AiErrors.error("invalid"); }
+    /** Trusted execution strategy; a task-only business cannot be invoked through foreground routes. */
     default boolean backgroundOnly() { return false; }
     default String capability() { return code() + ".assist"; }
     /** Pure business-result projection, reusable by execution lifecycles after their own authority check. */
