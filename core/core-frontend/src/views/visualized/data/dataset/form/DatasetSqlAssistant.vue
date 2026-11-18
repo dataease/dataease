@@ -335,7 +335,7 @@ const send = async () => {
         openKey: uuid.v4()
       })
     }
-    if (!current()) {
+    if (token !== version) {
       close(session.sessionId)
       return
     }
@@ -348,6 +348,8 @@ const send = async () => {
       expanded.value = wasExpanded
       failure.value = tr('history_unavailable')
     }, Math.max(0, session.expiresAt - Date.now()))
+    // Opening the continuation retires its predecessor even when the user stops before submission.
+    if (!current()) return
     const run = await startConversationExecution(
       session.sessionId,
       session.contextVersion,
@@ -355,7 +357,7 @@ const send = async () => {
       uuid.v4()
     )
     if (!current()) {
-      void stopConversationExecution(session.sessionId, run.executionId).catch(() => undefined)
+      await stopConversationExecution(session.sessionId, run.executionId).catch(() => undefined)
       return
     }
     turn.executionId = run.executionId
@@ -403,7 +405,7 @@ const send = async () => {
       fail(error)
     }
   } finally {
-    if (current()) {
+    if (current() || (token === version && request === read && !turn.executionId)) {
       busy.value = false
       request = undefined
     }
@@ -415,10 +417,10 @@ const stop = async () => {
   if (!turn) return
   request.abort()
   turn.status = 'CANCELLED'
+  if (!turn.session || !turn.executionId) return
   const token = version
   try {
-    if (turn.session && turn.executionId)
-      await stopConversationExecution(turn.session.sessionId, turn.executionId)
+    await stopConversationExecution(turn.session.sessionId, turn.executionId)
   } catch (error) {
     if (token === version) fail(error)
   } finally {
