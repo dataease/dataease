@@ -1,6 +1,6 @@
 # AI 对话助手开发说明
 
-本文描述 SQL Demo 的多轮会话、工具执行与增量输出，以及数据源详情页的[表关联与语义后台任务](#数据源表关联与语义后台任务)。同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
+本文描述数据集自定义 SQL 编辑器和开发 Demo 的多轮会话、工具执行与增量输出，以及数据源详情页的[表关联与语义后台任务](#数据源表关联与语义后台任务)。同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
 
 浏览器通过已认证的 JSON 轮询取得增量；下文 SSE 指服务端读取的上游模型协议，HTTP 输出仍遵循根规范的推送限制。
 
@@ -13,6 +13,18 @@ Demo 的可用性、后台任务和完成通知在页面可见且在线时同步
 前台保存仅由服务端成功校验后生成的使用资格凭据，随受控上下文/执行保存，不接受客户端传入。每次业务边界显式安装该凭据，同身份的嵌套使用资格检查复用受理结果；账号、空间、代理和部署版本必须精确匹配。资源 READ、资源版本和历史范围继续实时检查，配置管理权限不复用。部署模式及版本仍在作用域前后检查；线程局部状态在正常/异常退出时清理，嵌套退出恢复上一层，不自动传播到其他线程。新提问/手动重试即使处于旧作用域内，也强制重新读取使用资格。普通后台任务、原生 SDK 和管理员入口保持各自检查规则。
 
 固定执行配置不固定系统并发容量：每次实际模型 HTTP 请求仍通过当前全局容量准入，配置发布的短暂屏障最多等待 1 秒，持续阻断或容量已满仍拒绝。容量读取仅发生于发送前，不发生于吐字/轮询。持久后台任务及通用原生 SDK 的动态策略规则不变；它们的每次使用策略版本校验共享一次全局配置和一次适用空间策略读取，社区身份不读取空间策略。
+
+## 数据集自定义 SQL 编辑器
+
+新增自定义 SQL 节点和编辑已有节点都从 `DatasetUnion.vue` 打开 `AddSql.vue`。作者在弹框中展开「SQL 助手」后，可针对完整草稿提问。收起面板会保留本次对话，关闭弹框会结束编辑活动。身份、工作空间和资源读取权限沿用共享会话的检查。
+
+每条建议标明本轮采用的 SQL 版本。作者可沿用尚未应用的上一版、改写手动编辑后的草稿，或选回指定的建议。点击「应用」时，后端复核原建议的交付权限。草稿已有不同内容，或建议源与当前数据源不同时，编辑器会提示确认。应用只替换 CodeMirror 中的整段 SQL。作者手动点击「运行」才会预览，点击「保存」才会写回节点。
+
+正式入口的场景码为 `dataset-sql`。查找表时优先使用点名表、已有 SQL 引用和本地登记的语义。需要补充物理表时，按表名或备注搜索，一次最多展示五个候选。选定表后读取实时字段，再附上可核对的已确认业务含义和取值映射。每条建议可展开查看所用依据。单源模式使用实际执行引擎的方言，跨源模式使用 Calcite；一个 SQL 节点始终绑定一个选中数据源。跨库关联由作者在数据集画布上配置。
+
+编辑器将可用系统变量的显示名提供给助手，应用 SQL 后仍通过原参数设置配置类型和默认值。作者追问一次手动运行时，助手接收对应版本的 SQL、执行模式和结果状态。失败原因使用分类摘要，预览明细和变量实值留在原业务流程。修复建议也需要作者确认应用并手动重跑。
+
+正式抽屉的浏览器回归入口为 `npm --prefix tests/browser test -- --config=playwright.dataset-sql-assistant.config.cjs`。用例从数据集编辑界面打开真实抽屉，使用合成 API 响应。后端会话与工具行为通过 `tests/ai-service/run.py --recovery-tools` 的受控模型 HTTP 链路验证，依赖准备见下方 AI 服务验证说明。
 
 ## 目录与扩展位置
 
@@ -89,7 +101,7 @@ Demo 刷新后创建新会话，不恢复聊天历史；卸载前仅在当前标
 
 In the Vite development application, authenticated users can open `#/demo/ai-assistant` (no product navigation item). The page title explicitly identifies it as a demo. Select a readable datasource in the current workspace, enter SQL and ask successive questions. The page displays actual upstream text increments and execution IDs. Stop retains partial output as incomplete and keeps previously completed history for follow-up. Hiding the assistant keeps polling and does not cancel it. Changing SQL or datasource affects subsequent requests; active output retains its original target. Stopping or ending an active execution and route navigation require confirmation; cancelling the confirmation preserves the execution and draft. Leaving or refreshing uses the browser interruption confirmation. Identity changes end the activity; short offline loss uses bounded reads of the original execution. No candidate SQL is executed or saved. The registered metadata tools read actual authorized table/field structure through existing DE APIs. The registered `validate_sql` tool returns real PASS/INVALID/UNSUPPORTED static verdicts, and the model can correct and revalidate within the same bounded round. Suggestions cannot be applied automatically.
 
-The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/sql/`; its marked route block in `src/router/index.ts` is registered only in development. The `/demo` parent and `ai-assistant` child match the application's segment-based `pathValid` page admission check; registering the whole URL as a flat route would be rejected even though Vue Router resolves it. Browser regression covers that actual route table/permission-store check and renders the page through RouterView. After formal business integration, remove that route block and demo page, then adapt or remove their page-specific locale entries and browser fixture/tests. The shared conversation API, backend engine, SQL scene and Java behavior regressions have a separate lifecycle and can be reused by formal entry points.
+The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/sql/`; its marked route block in `src/router/index.ts` is registered only in development. The `/demo` parent and `ai-assistant` child match the application's segment-based `pathValid` page admission check; registering the whole URL as a flat route would be rejected even though Vue Router resolves it. Browser regression covers that actual route table/permission-store check and renders the page through RouterView. The dataset editor uses the separate dataset-sql scene. The development route and its tests continue to exercise the original Demo contract. The shared conversation API, backend engine, SQL scene and Java behavior regressions have a separate lifecycle and can be reused by formal entry points.
 
 连续读取失败只表示页面暂时无法确认执行状态。只要仍持有未确认终态的执行或受理结果未知的提交，停止、结束会话、路由离开及刷新仍要求中断确认；取消确认保留部分输出和原执行读取或同次提交核对入口。确认终态后解除此保护，不自动重新提交模型请求。
 
