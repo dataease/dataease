@@ -21,6 +21,7 @@ import {
 const props = defineProps<{
   host: HTMLElement
   isCross: boolean
+  systemVariableNames: string[]
   resourceId: string
   resourceLabel: string
   draftRevision: number
@@ -245,6 +246,13 @@ const send = async () => {
       scene: 'dataset-sql' as const,
       resourceId: source,
       isCross: props.isCross,
+      systemVariableNames: [...new Set(props.systemVariableNames)]
+        .sort(
+          (a, b) =>
+            Number(question.includes(b) || sql.includes(b)) -
+            Number(question.includes(a) || sql.includes(a))
+        )
+        .slice(0, 64),
       editorId,
       sql,
       openKey: uuid.v4(),

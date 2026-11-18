@@ -84,7 +84,7 @@ public final class ToolConversationRegression {
         var reads = new CopyOnWriteArrayList<String>();
         var authorizations = new CopyOnWriteArrayList<String>();
         var mode = new AtomicReference<String>("tables");
-        var editorProposal = new AtomicReference<>("SELECT COUNT(*) FROM AI_PROBE");
+        var editorProposal = new AtomicReference<>("SELECT COUNT(*) FROM AI_PROBE WHERE $DE_PARAM{ID = $[minimum]} AND $DE_PARAM{ID = $f2cde[订单租户]}");
         var operationAllowed = new AtomicBoolean(true);
         var userEnabled = new AtomicBoolean(true);
         var usageChecks = new AtomicInteger();
@@ -294,9 +294,13 @@ public final class ToolConversationRegression {
             mode.set("dataset-suggest");
             var editor = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "dataset-node",
-                            "sql", "SELECT ID FROM AI_PROBE")))).andReturn().getResponse().getContentAsString());
-            var editorRun = start(mvc, editor, "Count the rows");
+                            "sql", "SELECT ID FROM AI_PROBE", "systemVariableNames", List.of("账号", "订单租户"),
+                            "systemVariableValues", Map.of("订单租户", "private-fixture-value"))))).andReturn().getResponse().getContentAsString());
+            var editorRun = start(mvc, editor, "Count the rows using my tenant and a dashboard filter");
             var proposed = terminal(mvc, editorRun);
+            String modelRequest = sent.getFirst().path("messages").toString();
+            if (!modelRequest.contains("订单租户") || !modelRequest.contains("账号") || modelRequest.contains("private-fixture-value"))
+                throw new AssertionError("The formal model request needs editor-visible names only");
             var application = post(editorRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
                     .content(JSON.writeValueAsBytes(Map.of("contextVersion", editor.path("contextVersion").asText(),
                             "draftVersion", editor.path("draftVersion").asText())));

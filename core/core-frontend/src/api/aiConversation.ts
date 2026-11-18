@@ -35,6 +35,7 @@ export const openConversation = (value: {
   editorId: string
   sql: string
   isCross?: boolean
+  systemVariableNames?: string[]
   openKey?: string
   previousSessionId?: string
 }) => data<AiConversationSession>(request.post({ url: '/ai/conversations', data: value }))
