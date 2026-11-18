@@ -114,7 +114,7 @@ public class CoreVisualizationExportManage {
         return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString());
     }
 
-    private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title, boolean displayHeader) {
+    private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title, boolean displayHeader, boolean filterHidden) {
         ExcelSheetModel result = new ExcelSheetModel();
         Object objectFields = chart.get("fields");
         List<ChartViewFieldDTO> fields = (List<ChartViewFieldDTO>) objectFields;
@@ -123,6 +123,10 @@ public class CoreVisualizationExportManage {
         List<Integer> fieldTypes = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             fields.forEach(field -> {
+                // Keep headers, types and row values aligned through the same field keys.
+                if (filterHidden && field.isHide()) {
+                    return;
+                }
                 Object name = field.getName();
                 Object dataeaseName = field.getDataeaseName();
                 Object deType = field.getDeType();
@@ -183,22 +187,23 @@ public class CoreVisualizationExportManage {
                 throw new RuntimeException(e);
             }
         }
+        boolean filterHidden = StringUtils.equalsAnyIgnoreCase(type, "table-info", "table-normal");
         String title = chartViewDTO.getTitle();
         Map<String, Object> chart = chartViewDTO.getData();
         List<ExcelSheetModel> resultList = new ArrayList<>();
         boolean leftExist = ObjectUtils.isNotEmpty(chart.get("left"));
         boolean rightExist = ObjectUtils.isNotEmpty(chart.get("right"));
         if (!leftExist && !rightExist) {
-            ExcelSheetModel sheetModel = exportSingleData(chart, title, displayHeader);
+            ExcelSheetModel sheetModel = exportSingleData(chart, title, displayHeader, filterHidden);
             resultList.add(sheetModel);
             return resultList;
         }
         if (leftExist) {
-            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("left"), title + "_left", displayHeader);
+            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("left"), title + "_left", displayHeader, filterHidden);
             resultList.add(sheetModel);
         }
         if (rightExist) {
-            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("right"), title + "_right", displayHeader);
+            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("right"), title + "_right", displayHeader, filterHidden);
             resultList.add(sheetModel);
         }
         return resultList;
