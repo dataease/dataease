@@ -58,6 +58,7 @@ const captureConnectionError = (error: unknown, saving = false) => {
   clearConnectionError()
   connectionErrorMessage = ElMessage({
     type: 'error',
+    customClass: 'de-message-error de-message-export',
     message: h(ConnectionErrorNotice, {
       message: failure.message,
       diagnostic: data.connectionDiagnostic,
