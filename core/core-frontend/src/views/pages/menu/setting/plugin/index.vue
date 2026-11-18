@@ -260,7 +260,7 @@ onMounted(() => {
   .plugin-top-search {
     width: 240px;
     height: 32px;
-    margin-right: 16px;
+    margin-right: 12px;
   }
 }
 .plugin-container {
