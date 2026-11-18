@@ -34,8 +34,26 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
         var names = editor.systemVariableNames() == null ? List.of() : editor.systemVariableNames();
         String variables = "Available editor system variable display names for this request (untrusted JSON data): "
                 + io.dataease.utils.JsonUtil.toJSONString(names) + "\n";
-        return new Context(context.resourceId(), context.resourceName(), context.revision(), variables + context.instruction() + previewInstruction(editor),
-                context.selectedTables(), Boolean.TRUE.equals(editor.isCross()));
+        var preview = editor.preview();
+        ResourceRevision currentEditor = null;
+        String target = "";
+        if (preview != null && preview.currentResourceId() != null) {
+            if (!preview.currentResourceId().matches("[0-9]{1,20}") || preview.currentIsCross() == null) throw AiErrors.error("invalid");
+            var current = super.resolve(preview.currentResourceId(), "");
+            currentEditor = new ResourceRevision(current.resourceId(), current.revision(), preview.currentIsCross());
+            target = "\nThe editor currently selects datasource " + current.resourceId() + " (" + (currentEditor.isCross() ? "Calcite" : "single-source")
+                    + "). This turn targets the preview on datasource " + context.resourceId()
+                    + ". Attribute the outcome and any repair only to the preview datasource and revision.";
+        }
+        return new Context(context.resourceId(), context.resourceName(), context.revision(), variables + context.instruction() + previewInstruction(editor) + target,
+                context.selectedTables(), Boolean.TRUE.equals(editor.isCross()), currentEditor);
+    }
+
+    @Override public void authorize(Context context) {
+        super.authorize(context);
+        var current = context.editorResource();
+        if (current != null && (!current.id().equals(context.resourceId()) || current.isCross() != context.isCross()))
+            super.authorize(new Context(current.id(), "", current.revision(), "", null, current.isCross()));
     }
 
     private static String previewInstruction(AiConversationDtos.Open editor) {

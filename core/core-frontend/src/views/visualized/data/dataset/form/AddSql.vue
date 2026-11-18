@@ -543,7 +543,7 @@ const handleClose = () => {
 }
 
 const dataPreviewLoading = ref(false)
-const latestPreview = shallowRef<AiSqlPreview & { sql: string }>()
+const latestPreview = shallowRef<AiSqlPreview & { sql: string; sourceLabel: string }>()
 let previewSequence = 0
 let feedbackGeneration = 0
 const forgetFeedback = () => {
@@ -552,21 +552,17 @@ const forgetFeedback = () => {
 }
 const invalidatePreview = () => {
   previewSequence++
-  forgetFeedback()
   dataPreviewLoading.value = false
   state.plxTableData = []
   state.fields = []
 }
+watch(() => [sqlNode.value.datasourceId, isCross.value], invalidatePreview, { flush: 'sync' })
 watch(
-  () => [
-    sqlNode.value.id,
-    sqlNode.value.datasourceId,
-    isCross.value,
-    user.uid,
-    user.oid,
-    user.proxyInfo?.proxyOid
-  ],
-  invalidatePreview,
+  () => [sqlNode.value.id, user.uid, user.oid, user.proxyInfo?.proxyOid],
+  () => {
+    invalidatePreview()
+    forgetFeedback()
+  },
   { flush: 'sync' }
 )
 onBeforeUnmount(invalidatePreview)
@@ -600,6 +596,7 @@ const getSQLPreview = async () => {
   const sequence = ++previewSequence
   const snapshot = {
     sql: readDraft(),
+    sourceLabel: resourceLabel.value,
     revision: draftRevision.value,
     resourceId: String(sqlNode.value.datasourceId ?? ''),
     isCross: Boolean(isCross.value)

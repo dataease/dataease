@@ -716,7 +716,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         }
     }
     private String scopeKey(AiConversationScene.Context context) {
-        return fingerprint(context.resourceId(), context.revision(), context.selectedTables());
+        return fingerprint(context.resourceId(), context.revision(), context.selectedTables(), context.isCross(), context.editorResource());
     }
     private <T> T authorized(AiAccess.Identity owner, Supplier<T> operation) {
         return new AiIdentityScope(access).call(owner, operation);
