@@ -899,7 +899,7 @@ public class DatasourceServer implements DatasourceApi {
         return isOracleRecycleBinName(table.getTableName()) || isOracleRecycleBinName(table.getName());
     }
 
-    private boolean isOracleRecycleBinName(String tableName) {
+    static boolean isOracleRecycleBinName(String tableName) {
         if (StringUtils.isBlank(tableName)) {
             return false;
         }

@@ -93,6 +93,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         final AiRuntimeManage.StreamHandle stream;
         List<AiToolProtocol.Message> transcript = new ArrayList<>();
         final Set<String> toolIds = new HashSet<>(), toolRequests = new HashSet<>();
+        AiConversationScene.ToolExecution tools;
         int toolSteps;
         final Set<String> invalidRequests = new HashSet<>();
         List<Event> events = new ArrayList<>();
@@ -406,6 +407,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             AiRuntimeManage.StreamHandle stream = !task.toolConversation ? runtime.getObject().stream(code(), scope, task.prompt)
                     : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input);
             var run = new Run(state, task, stream);
+            run.tools = scene(state.view.scene()).beginTurn(state.context);
             stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
             if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(task.input.messages());
             for (Run old : state.runs.values()) {
@@ -618,8 +620,10 @@ public class AiConversationManage implements AiToolConversationFeature {
                 return;
             }
             String canonical = call.name() + ":" + new TreeMap<>(arguments);
+            AiConversationScene.ToolExecution tools;
             synchronized (run.state) {
                 progress(run);
+                tools = run.tools;
                 if (!run.toolIds.add(call.id()) || !run.toolRequests.add(canonical)) throw AiErrors.error("output_limit");
                 run.toolSteps++;
             }
@@ -630,7 +634,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                 java.util.function.Supplier<String> execute = () -> authorized(run.state, () -> {
                     progress(run); check(run.state); stream.verifyStep();
                     toolEvent(run, call, "RUNNING", arguments, null);
-                    String value = scene.execute(run.state.context, call.name(), arguments, () -> progress(run), run.stream.deadline());
+                    String value = tools.execute(call.name(), arguments, () -> progress(run), run.stream.deadline());
                     progress(run); check(run.state); stream.verifyStep(); return value;
                 });
                 result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
@@ -664,7 +668,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }
-        run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear();
+        run.tools = null; run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear();
         run.stream.finishAudit(status); run.stream.close();
     }
     private void invalidate(State state) {

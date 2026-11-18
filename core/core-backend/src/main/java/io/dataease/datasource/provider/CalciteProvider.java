@@ -415,8 +415,33 @@ public class CalciteProvider extends Provider {
         return map;
     }
 
+    /** The reader captures this source and schema; clients can only select an exact name actually returned here. */
+    public PhysicalTableCatalog openCatalog(DatasourceSchemaDTO datasource, java.util.function.BiPredicate<String, String> include) {
+        var schema = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(schema, datasource);
+        var listing = new DatasourceRequest();
+        listing.setDatasource(schema);
+        var tables = getTables(listing).stream().filter(t -> include.test(t.getTableName(), t.getName())).toList();
+        return new PhysicalTableCatalog(tables, name -> {
+            var request = new DatasourceRequest();
+            request.setDatasource(schema);
+            request.setDsList(Map.of(schema.getId(), schema));
+            request.setTable(name);
+            // PhysicalTableCatalog.fields verified the exact name in this source's enumeration.
+            return fetchFields(request);
+        });
+    }
+
     @Override
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
+        if (!Boolean.TRUE.equals(datasourceRequest.getIsCross()) && StringUtils.isNotBlank(datasourceRequest.getTable())) {
+            datasourceRequest.setDatasource(datasourceRequest.getDsList().values().iterator().next());
+            validateTable(datasourceRequest);
+        }
+        return fetchFields(datasourceRequest);
+    }
+
+    private List<TableField> fetchFields(DatasourceRequest datasourceRequest) {
         if (datasourceRequest.getIsCross() != null && datasourceRequest.getIsCross()) {
             synchronized (schemaMonitor) {
                 List<TableField> datasetTableFields = new ArrayList<>();
@@ -483,7 +508,7 @@ public class CalciteProvider extends Provider {
         } else {
             ResultSet resultSet = null;
             PreparedStatement preparedStatement = null;
-            validateTableAndSchema(datasourceRequest, datasourceConfiguration);
+            validateSchema(datasourceRequest, datasourceConfiguration);
             try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
@@ -1603,7 +1628,7 @@ public class CalciteProvider extends Provider {
         return FieldUtils.transType2DeType(type, datasource == null ? null : datasource.getType());
     }
 
-    private void validateTableAndSchema(DatasourceRequest datasourceRequest, DatasourceConfiguration configuration) {
+    private void validateTable(DatasourceRequest datasourceRequest) {
         String table = datasourceRequest.getTable();
         if (StringUtils.isNotBlank(table)) {
             List<String> realTables = getTables(datasourceRequest).stream()
@@ -1617,6 +1642,9 @@ public class CalciteProvider extends Provider {
                 DEException.throwException(Translator.get("i18n_invalid_table_name"));
             }
         }
+    }
+
+    private void validateSchema(DatasourceRequest datasourceRequest, DatasourceConfiguration configuration) {
         String schema = configuration.getSchema();
         if (StringUtils.isNotBlank(schema) && isSchemaValidatedType(datasourceRequest.getDatasource().getType())) {
             List<String> schemas = getSchema(datasourceRequest);
@@ -1885,7 +1913,7 @@ public class CalciteProvider extends Provider {
                 sql = "DESCRIBE " + quoteName(datasourceRequest.getTable(), '`');
                 break;
             case h2:
-                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s", bindParams, datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = CURRENT_SCHEMA AND TABLE_NAME = %s", bindParams, datasourceRequest.getTable());
                 break;
             default:
                 break;

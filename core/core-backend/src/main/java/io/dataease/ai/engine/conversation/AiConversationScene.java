@@ -43,6 +43,13 @@ public interface AiConversationScene {
         active.run();
         return execute(context, name, arguments);
     }
+    @FunctionalInterface
+    interface ToolExecution {
+        String execute(String name, Map<String, String> arguments, Runnable active, long deadline);
+    }
+    default ToolExecution beginTurn(Context context) {
+        return (name, arguments, active, deadline) -> execute(context, name, arguments, active, deadline);
+    }
     String code();
     List<Resource> resources();
     Context resolve(String resourceId, String input);
