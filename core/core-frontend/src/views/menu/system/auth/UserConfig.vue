@@ -926,9 +926,8 @@ const dynamicResourceClass = (param) => {
   }
   if (activeAuth.value === "resource" && row.disabled) {
     classes.push("de-row-disabled");
-  }
-  if (activeAuth.value === "menu" && !row.leaf) {
-    classes.push("de-row-disabled");
+  } else if (activeAuth.value === "menu" && !row.leaf) {
+    classes.push("de-menu-group");
   }
   return classes.join(" ");
 };
@@ -1069,13 +1068,6 @@ onMounted(() => {
 });
 const tableRef = ref();
 
-const tableHeight = computed(() => {
-  const treeTableEl = document.querySelector(".tree-table");
-  if (treeTableEl) {
-    return `${treeTableEl.clientHeight - 96}px`;
-  }
-  return "100%";
-});
 defineExpose({
   uncommittedTips,
 });
@@ -1254,131 +1246,169 @@ defineExpose({
           </template>
         </el-input>
 
-        <vxe-table
-          ref="tableRef"
-          :border="true"
-          auto-resize
-          :height="tableHeight"
-          show-overflow="title"
-          :column-config="{ resizable: true }"
-          :row-config="{ keyField: 'authRowKey' }"
-          :virtual-y-config="permissionVirtualYConfig"
-          :tree-config="permissionTreeConfig"
-          class="table-container ed-table--border"
-          v-if="!emptyDescription"
-          :data="tableRows"
-          style="width: 100%"
-          :row-class-name="dynamicResourceClass"
-          header-cell-class-name="header-cell"
-        >
-          <template #empty>
-            <empty-background
-              :description="t('data_set.no_data')"
-              img-type="tree"
-            />
-          </template>
-          <vxe-column
-            field="name"
-            show-overflow="tooltip"
-            :title="
-              activeAuth === 'menu'
-                ? t('auth.menu_name')
-                : t('auth.resource_name')
-            "
-            min-width="200"
-            fixed="left"
-            tree-node
+        <div v-if="!emptyDescription" class="permission-table-body">
+          <vxe-table
+            ref="tableRef"
+            :border="true"
+            auto-resize
+            height="100%"
+            show-overflow="title"
+            :column-config="{ resizable: true }"
+            :row-config="{ keyField: 'authRowKey' }"
+            :virtual-y-config="permissionVirtualYConfig"
+            :tree-config="permissionTreeConfig"
+            class="table-container ed-table--border"
+            :data="tableRows"
+            style="width: 100%"
+            :row-class-name="dynamicResourceClass"
+            header-cell-class-name="header-cell"
           >
-            <template v-slot:default="scope">
-              <span class="custom-tree-node f18">
-                <el-icon v-if="!scope.row.leaf">
-                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
-                </el-icon>
-
-                <el-icon
-                  v-else-if="
-                    activeAuth === 'resource' &&
-                    selectedResourceType === 'panel'
-                  "
-                >
-                  <Icon name="dv-dashboard-spine"
-                    ><dvDashboardSpine class="svg-icon"
-                  /></Icon>
-                </el-icon>
-                <el-icon
-                  v-else-if="
-                    activeAuth === 'resource' &&
-                    selectedResourceType === 'screen'
-                  "
-                >
-                  <Icon name="dv-screen-spine"
-                    ><dvScreenSpine class="svg-icon"
-                  /></Icon>
-                </el-icon>
-                <el-icon
-                  v-else-if="
-                    activeAuth === 'resource' &&
-                    selectedResourceType === 'dataset'
-                  "
-                >
-                  <Icon name="icon_dataset"
-                    ><icon_dataset class="svg-icon"
-                  /></Icon>
-                </el-icon>
-                <el-icon
-                  v-else-if="
-                    activeAuth === 'resource' &&
-                    selectedResourceType === 'datasource'
-                  "
-                >
-                  <Icon
-                    :static-content="
-                      getDsTypeIcon(scope.row.extraFlag).isPlugin
-                        ? getDsTypeIcon(scope.row.extraFlag).icon
-                        : undefined
-                    "
-                    ><component
-                      v-if="!getDsTypeIcon(scope.row.extraFlag).isPlugin"
-                      :is="getDsTypeIcon(scope.row.extraFlag).icon"
-                      class="svg-icon"
-                    ></component
-                  ></Icon>
-                </el-icon>
-                <span>
-                  <template
-                    v-for="(segment, index) in getHighlightSegments(scope.row.name, resourceKeyword)"
-                    :key="index"
-                  >
-                    <span v-if="segment.highlight" class="search-key-span">{{ segment.text }}</span>
-                    <template v-else>{{ segment.text }}</template>
-                  </template>
-                </span>
-              </span>
+            <template #empty>
+              <empty-background
+                :description="t('data_set.no_data')"
+                img-type="tree"
+              />
             </template>
-          </vxe-column>
-
-          <template v-for="item in state.tableColumn" :key="item.label">
-            <vxe-colgroup
-              v-if="item.children?.length"
-              :title="item.label"
-              :width="getStringWidth(item.label, 14) + 48"
-              :fixed="item.weightLevel >= 7 ? 'right' : ''"
+            <vxe-column
+              field="name"
+              show-overflow="tooltip"
+              :title="
+                activeAuth === 'menu'
+                  ? t('auth.menu_name')
+                  : t('auth.resource_name')
+              "
+              min-width="200"
+              fixed="left"
+              tree-node
             >
-              <template #header>
-                <div class="dynamic-table-header">
-                  <span>{{ item.label }}</span>
-                </div>
+              <template v-slot:default="scope">
+                <span class="custom-tree-node f18">
+                  <el-icon v-if="!scope.row.leaf">
+                    <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
+                  </el-icon>
+
+                  <el-icon
+                    v-else-if="
+                      activeAuth === 'resource' &&
+                      selectedResourceType === 'panel'
+                    "
+                  >
+                    <Icon name="dv-dashboard-spine"
+                      ><dvDashboardSpine class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                  <el-icon
+                    v-else-if="
+                      activeAuth === 'resource' &&
+                      selectedResourceType === 'screen'
+                    "
+                  >
+                    <Icon name="dv-screen-spine"
+                      ><dvScreenSpine class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                  <el-icon
+                    v-else-if="
+                      activeAuth === 'resource' &&
+                      selectedResourceType === 'dataset'
+                    "
+                  >
+                    <Icon name="icon_dataset"
+                      ><icon_dataset class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                  <el-icon
+                    v-else-if="
+                      activeAuth === 'resource' &&
+                      selectedResourceType === 'datasource'
+                    "
+                  >
+                    <Icon
+                      :static-content="
+                        getDsTypeIcon(scope.row.extraFlag).isPlugin
+                          ? getDsTypeIcon(scope.row.extraFlag).icon
+                          : undefined
+                      "
+                      ><component
+                        v-if="!getDsTypeIcon(scope.row.extraFlag).isPlugin"
+                        :is="getDsTypeIcon(scope.row.extraFlag).icon"
+                        class="svg-icon"
+                      ></component
+                    ></Icon>
+                  </el-icon>
+                  <span>
+                    <template
+                      v-for="(segment, index) in getHighlightSegments(scope.row.name, resourceKeyword)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="search-key-span">{{ segment.text }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template>
+                  </span>
+                </span>
               </template>
-              <vxe-column
-                v-for="kidItem in item.children"
-                :key="kidItem.label"
-                align="center"
-                :field="`field_${kidItem.label}`"
-                :width="getStringWidth(kidItem.label, 14) + 48"
-                :title="kidItem.label"
+            </vxe-column>
+
+            <template v-for="item in state.tableColumn" :key="item.label">
+              <vxe-colgroup
+                v-if="item.children?.length"
+                :title="item.label"
+                :width="getStringWidth(item.label, 14) + 48"
+                :fixed="item.weightLevel >= 7 ? 'right' : ''"
               >
                 <template #header>
-                  <div class="dynamic-table-header dynamic-child-header">
+                  <div class="dynamic-table-header">
+                    <span>{{ item.label }}</span>
+                  </div>
+                </template>
+                <vxe-column
+                  v-for="kidItem in item.children"
+                  :key="kidItem.label"
+                  align="center"
+                  :field="`field_${kidItem.label}`"
+                  :width="getStringWidth(kidItem.label, 14) + 48"
+                  :title="kidItem.label"
+                >
+                  <template #header>
+                    <div class="dynamic-table-header dynamic-child-header">
+                      <el-tooltip
+                        class="box-item"
+                        effect="dark"
+                        :content="t('component.allSelect')"
+                        placement="top"
+                      >
+                        <el-checkbox
+                          v-model="kidItem['checkAll']"
+                          @change="onCheckAll(kidItem)"
+                        />
+                      </el-tooltip>
+                      <span>{{ kidItem.label }}</span>
+                    </div>
+                  </template>
+                  <template #default="scope">
+                    <dynamic-column
+                      :active-auth="activeAuth"
+                      :root-role="rootRole"
+                      :exclude-menu-folder="excludeMenuFolder"
+                      :item="kidItem"
+                      :scope="scope"
+                      @independent-auth="independentAuth"
+                      @row-weight-changed="rowWeightChanged"
+                    />
+                  </template>
+                </vxe-column>
+              </vxe-colgroup>
+
+              <vxe-column
+                v-else
+                :field="`field_${item.label}`"
+                align="center"
+                :width="getStringWidth(item.label, 14) + 48"
+                :title="item.label"
+                :fixed="item.weightLevel >= 7 ? 'right' : ''"
+              >
+                <template #header>
+                  <div class="dynamic-table-header">
                     <el-tooltip
                       class="box-item"
                       effect="dark"
@@ -1386,11 +1416,11 @@ defineExpose({
                       placement="top"
                     >
                       <el-checkbox
-                        v-model="kidItem['checkAll']"
-                        @change="onCheckAll(kidItem)"
+                        v-model="item['checkAll']"
+                        @change="onCheckAll(item)"
                       />
                     </el-tooltip>
-                    <span>{{ kidItem.label }}</span>
+                    <span>{{ item.label }}</span>
                   </div>
                 </template>
                 <template #default="scope">
@@ -1398,53 +1428,16 @@ defineExpose({
                     :active-auth="activeAuth"
                     :root-role="rootRole"
                     :exclude-menu-folder="excludeMenuFolder"
-                    :item="kidItem"
+                    :item="item"
                     :scope="scope"
                     @independent-auth="independentAuth"
                     @row-weight-changed="rowWeightChanged"
                   />
                 </template>
               </vxe-column>
-            </vxe-colgroup>
-
-            <vxe-column
-              v-else
-              :field="`field_${item.label}`"
-              align="center"
-              :width="getStringWidth(item.label, 14) + 48"
-              :title="item.label"
-              :fixed="item.weightLevel >= 7 ? 'right' : ''"
-            >
-              <template #header>
-                <div class="dynamic-table-header">
-                  <el-tooltip
-                    class="box-item"
-                    effect="dark"
-                    :content="t('component.allSelect')"
-                    placement="top"
-                  >
-                    <el-checkbox
-                      v-model="item['checkAll']"
-                      @change="onCheckAll(item)"
-                    />
-                  </el-tooltip>
-                  <span>{{ item.label }}</span>
-                </div>
-              </template>
-              <template #default="scope">
-                <dynamic-column
-                  :active-auth="activeAuth"
-                  :root-role="rootRole"
-                  :exclude-menu-folder="excludeMenuFolder"
-                  :item="item"
-                  :scope="scope"
-                  @independent-auth="independentAuth"
-                  @row-weight-changed="rowWeightChanged"
-                />
-              </template>
-            </vxe-column>
-          </template>
-        </vxe-table>
+            </template>
+          </vxe-table>
+        </div>
         <div
           class="empty-img__search"
           v-if="!matchNum && resourceKeyword.length"
@@ -1477,13 +1470,12 @@ defineExpose({
     background: #fff;
 
     .filter-input {
-      margin: 16px 8px;
-      // width: 200px;
-      width: calc(100% - 16px);
+      margin: 16px;
+      width: calc(100% - 32px);
     }
     .tabs-mr {
-      .border-bottom-tab(30px);
-      margin: 0 30px;
+      .border-bottom-tab(16px);
+      margin: 0 16px;
     }
   }
   .role-tree-container {
@@ -1492,12 +1484,12 @@ defineExpose({
   .org-tree-container {
     height: calc(100% - 109px);
     width: 100%;
-    padding: 0px 8px;
+    padding: 0 16px;
   }
   .subject-tree-container {
     height: calc(100% - 109px);
     width: 100%;
-    padding: 0px 8px;
+    padding: 0 16px;
 
     .subject-tree-node.is-active {
       background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
@@ -1560,7 +1552,7 @@ defineExpose({
   float: right;
   border-left: 1px solid rgba(31, 35, 41, 0.15);
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
 
   .tab-search {
     height: 46px;
@@ -1573,8 +1565,8 @@ defineExpose({
       // width: 190px;
     }
     .tabs-mr {
-      .border-bottom-tab(30px);
-      margin: 0 30px;
+      .border-bottom-tab(16px);
+      margin: 0 16px;
     }
   }
 
@@ -1588,7 +1580,7 @@ defineExpose({
       padding-top: 12px;
       font-size: 14px;
       div {
-        margin: 0 8px;
+        margin: 0 16px;
         display: flex;
         align-items: center;
         span {
@@ -1599,10 +1591,11 @@ defineExpose({
     }
 
     .tree-table {
+      display: flex;
+      flex-direction: column;
       width: calc(100% - 180px);
       float: right;
       height: 100%;
-      border-left: 1px solid rgba(31, 35, 41, 0.15);
       padding: 16px 24px 24px;
       position: relative;
       .empty-img__search {
@@ -1612,10 +1605,15 @@ defineExpose({
         width: 100%;
       }
       .search-table-input {
+        flex-shrink: 0;
         margin-bottom: 16px;
       }
+      .permission-table-body {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
       .table-container {
-        height: calc(100% - 48px);
         .ed-empty {
           padding-top: 80px;
         }
@@ -1662,11 +1660,11 @@ defineExpose({
         padding: 0 10px;
       }
     }
+    .resource-type + .tree-table {
+      border-left: 1px solid rgba(31, 35, 41, 0.15);
+    }
     .full-tree-table {
       width: calc(100%) !important;
-      .table-container {
-        height: calc(100% - 25px);
-      }
     }
   }
 }
@@ -1717,6 +1715,10 @@ defineExpose({
   .custom-tree-node {
     color: var(--el-text-color-placeholder, #a8abb2);
   }
+}
+
+:deep(.de-menu-group .custom-tree-node > span) {
+  color: var(--ed-color-primary);
 }
 
 .role-tree-container {

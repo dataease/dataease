@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.utils.WhitelistUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.server.PathContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -24,6 +25,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!desktop")
 public class LinkTokenValidationManage implements LinkTokenVerifier {
     @Resource
     private XpackShareRepository shares;
@@ -72,8 +74,10 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
         String context = WhitelistUtils.getContextPath();
         if (context != null && !context.isBlank() && path.startsWith(context + "/")) path = path.substring(context.length());
         if (path.startsWith("/de2api/")) path = path.substring("/de2api".length());
+        // Both gateway and standalone requests still check resource scope in the material service.
+        if ("POST".equalsIgnoreCase(method) && path.matches("/material/(?:content/[1-9][0-9]{0,18}|export)")) return;
         if (Set.of("/user/ipInfo", "/datasetData/enumValue", "/datasetData/enumValueObj",
-                "/datasetData/getFieldTree", "/dekey", "/symmetricKey", "/share/validate",
+                "/datasetData/getFieldTree", "/dekey", "/share/validate",
                 "/sysParameter/queryOnlineMap", "/xpackComponent/viewPlugins").contains(path)) return;
         if (path.startsWith("/static-resource/") && method.equalsIgnoreCase("GET")) {
             checkStaticResource(V3UserUtil.getLink(), path);

@@ -111,6 +111,13 @@ const save = () => {
     label-width="80px"
     label-position="top"
   >
+    <el-alert
+      :title="t('user.initial_password_policy')"
+      type="info"
+      :closable="false"
+      show-icon
+      class="mb16"
+    />
     <el-form-item :label="t('system.original_password')" prop="pwd">
       <CustomPassword
         v-model="pwdForm.pwd"

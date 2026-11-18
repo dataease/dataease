@@ -20,7 +20,7 @@ public class VisualizationLinkJumpInfoVO {
     private Long linkJumpId;
 
     /**
-     * 关联类型 inner 内部仪表板，outer 外部链接
+     * 关联类型 inner 仪表板/大屏，outer 外部链接，spreadsheet 电子表格
      */
     private String linkType;
 

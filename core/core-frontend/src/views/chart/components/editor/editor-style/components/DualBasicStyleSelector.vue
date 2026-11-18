@@ -3,6 +3,7 @@ import { onMounted, PropType, reactive, watch, ref } from 'vue'
 import {
   COLOR_PANEL,
   DEFAULT_BASIC_STYLE,
+  CHART_MIX_DEFAULT_BASIC_STYLE,
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -10,10 +11,6 @@ import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import {
-  CHART_MIX_DEFAULT_BASIC_STYLE,
-  MixChartBasicStyle
-} from '@/views/chart/components/js/panel/charts/g2plot/others/chart-mix-common'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
@@ -353,6 +350,35 @@ onMounted(() => {
               {{ t('chart.line_smooth') }}
             </el-checkbox>
           </el-form-item>
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            v-if="showProperty('lineArea')"
+          >
+            <el-checkbox
+              size="small"
+              :effect="themes"
+              v-model="state.basicStyleForm.leftLineArea"
+              @change="changeBasicStyle('leftLineArea')"
+            >
+              {{ t('chart.show_area') }}
+            </el-checkbox>
+          </el-form-item>
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            v-if="showProperty('lineAreaGradient')"
+          >
+            <el-checkbox
+              size="small"
+              :effect="themes"
+              :disabled="!state.basicStyleForm.leftLineArea"
+              v-model="state.basicStyleForm.leftLineAreaGradient"
+              @change="changeBasicStyle('leftLineAreaGradient')"
+            >
+              {{ t('chart.gradient') }}{{ t('chart.color') }}
+            </el-checkbox>
+          </el-form-item>
         </template>
       </el-tab-pane>
       <el-tab-pane :label="t('chart.yAxisRight')" name="right">
@@ -472,6 +498,35 @@ onMounted(() => {
             @change="changeBasicStyle('lineSmooth')"
           >
             {{ t('chart.line_smooth') }}
+          </el-checkbox>
+        </el-form-item>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('lineArea')"
+        >
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            v-model="state.basicStyleForm.lineArea"
+            @change="changeBasicStyle('lineArea')"
+          >
+            {{ t('chart.show_area') }}
+          </el-checkbox>
+        </el-form-item>
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('lineAreaGradient')"
+        >
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            :disabled="!state.basicStyleForm.lineArea"
+            v-model="state.basicStyleForm.lineAreaGradient"
+            @change="changeBasicStyle('lineAreaGradient')"
+          >
+            {{ t('chart.gradient') }}{{ t('chart.color') }}
           </el-checkbox>
         </el-form-item>
       </el-tab-pane>

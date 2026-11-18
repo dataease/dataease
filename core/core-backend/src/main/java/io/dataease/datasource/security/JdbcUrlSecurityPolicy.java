@@ -20,6 +20,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("db2", "jdbc:db2"),
             Map.entry("gaussdb", "jdbc:gaussdb"),
             Map.entry("pg", "jdbc:postgresql"),
+            Map.entry("kingbase", "jdbc:kingbase"),
             Map.entry("redshift", "jdbc:redshift"),
             Map.entry("h2", "jdbc:h2"),
             Map.entry("ck", "jdbc:clickhouse"),
@@ -71,8 +72,9 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("oracle", Set.of()),
             Map.entry("db2", Set.of()),
             Map.entry("gaussdb", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger")),
-            Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname")),
-            Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile")),
+            Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
+            Map.entry("kingbase", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
+            Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile", "logger", "loggerfile", "loggerlevel")),
             Map.entry("h2", Set.of("init=", "runscript")),
             Map.entry("ck", Set.of())
     );
@@ -119,7 +121,7 @@ public final class JdbcUrlSecurityPolicy {
 
         }
         if (StringUtils.equals(normalizedType, "h2")) {
-            if (StringUtils.contains(jdbcUrl, '\\') || StringUtils.contains(extraParams, '\\')
+            if (hasH2BackslashEscape(jdbcUrl) || StringUtils.contains(extraParams, '\\')
                     || containsIgnoreCase(jdbcUrl, "%5c") || containsIgnoreCase(extraParams, "%5c")) {
                 DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
             }
@@ -193,44 +195,60 @@ public final class JdbcUrlSecurityPolicy {
         return false;
     }
 
+    /**
+     * H2 反斜杠转义检查。Windows 桌面版的 H2 文件路径允许包含盘符反斜杠，
+     * 但设置区（首个 ; 之后）不允许出现反斜杠，且任何位置的 \; 序列都拒绝，
+     * 避免反斜杠逃逸设置分隔符注入参数。
+     */
+    private static boolean hasH2BackslashEscape(String jdbcUrl) {
+        int settingsStart = jdbcUrl.indexOf(';');
+        String settings = settingsStart >= 0 ? jdbcUrl.substring(settingsStart + 1) : "";
+        if (StringUtils.contains(settings, '\\')) {
+            return true;
+        }
+        return StringUtils.contains(jdbcUrl, "\\;");
+    }
+
     private static void validateAllowLoadLocalInfile(String value) {
         if (StringUtils.isEmpty(value)) {
             return;
         }
-        String key = "allowloadlocalinfile";
-        int idx = 0;
-        while (true) {
-            int start = indexOfIgnoreCase(value, key, idx);
-            if (start < 0) {
-                return;
-            }
-            if (start > 0) {
-                char prev = value.charAt(start - 1);
-                if (prev != '?' && prev != '&' && prev != ';') {
-                    idx = start + key.length();
-                    continue;
+        // MariaDB Connector/J 只识别 allowLocalInfile；旧拼写 allowLoadLocalInfile 保留校验作为纵深防御。
+        for (String key : List.of("allowlocalinfile", "allowloadlocalinfile")) {
+            int idx = 0;
+            while (true) {
+                int start = indexOfIgnoreCase(value, key, idx);
+                if (start < 0) {
+                    break;
                 }
-            }
-            int pos = start + key.length();
-            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                if (start > 0) {
+                    char prev = value.charAt(start - 1);
+                    if (prev != '?' && prev != '&' && prev != ';') {
+                        idx = start + key.length();
+                        continue;
+                    }
+                }
+                int pos = start + key.length();
+                while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                    pos++;
+                }
+                if (pos >= value.length() || value.charAt(pos) != '=') {
+                    DEException.throwException("Illegal parameter: " + key);
+                }
                 pos++;
+                while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                    pos++;
+                }
+                int end = pos;
+                while (end < value.length() && value.charAt(end) != '&' && value.charAt(end) != ';') {
+                    end++;
+                }
+                String paramValue = value.substring(pos, end).trim();
+                if (!"false".equalsIgnoreCase(paramValue)) {
+                    DEException.throwException("Illegal parameter: " + key);
+                }
+                idx = Math.max(end, start + key.length());
             }
-            if (pos >= value.length() || value.charAt(pos) != '=') {
-                DEException.throwException("Illegal parameter: " + key);
-            }
-            pos++;
-            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
-                pos++;
-            }
-            int end = pos;
-            while (end < value.length() && value.charAt(end) != '&' && value.charAt(end) != ';') {
-                end++;
-            }
-            String paramValue = value.substring(pos, end).trim();
-            if (!"false".equalsIgnoreCase(paramValue)) {
-                DEException.throwException("Illegal parameter: " + key);
-            }
-            idx = Math.max(end, start + key.length());
         }
     }
 

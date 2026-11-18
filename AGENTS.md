@@ -19,6 +19,7 @@
 - 版本、脚本、Profile、端口以当前 `pom.xml`、`package.json` 和配置文件为准；旧文档中的版本、完整构建说明和默认分支不作为事实依据。
 - 不读取或输出与任务无关的密码、Token、密钥、真实连接信息；日志和交付说明中的敏感信息应脱敏。
 - 普通局部开发按既有模式自行推进；涉及破坏性数据变更、范围不明的外部操作时，先说明具体影响并取得必要授权。不得擅自执行安装器、发布或部署。
+- 安全约束：当前 Spring Framework 6.2.x 受 CVE-2026-47890 影响，且 6.2.x 无修复版本。在升级到 Spring Framework 7.0.9 / Spring Boot 4.x 前，禁止引入 `SseEmitter`、`ResponseBodyEmitter`、`StreamingResponseBody`、`ServerSentEvent` 或 `text/event-stream`。需要服务端推送时优先使用现有 WebSocket，或返回 JSON 由前端渲染。CI 会执行 `scripts/check-no-sse.sh` 兜底。
 
 ## 2. 项目地图与依赖边界
 
@@ -115,6 +116,16 @@
 
 先选择最小但有意义的验证，再根据依赖影响扩大范围。纯文档或低风险样式改动不要求新增测试；查询、权限、迁移、字段更新等行为改动应尽量增加能复现问题的回归验证。
 
+### 修改后的格式化与检查
+
+- Codex 完成修改后，交付前按文件类型执行项目已有的格式化与检查，仅处理本次任务修改的文件；不能依赖 VS Code 保存操作触发格式化。
+- JS、TS、JSX、TSX、Vue、CSS、SCSS、Less、HTML、JSON、JSONC、Markdown、YAML 等 Prettier 支持的文件，使用所属模块已安装的 Prettier，遵循该模块配置及忽略规则。缺少适用配置时沿用现有风格，不跨模块套用前端配置。
+- JS、TS、JSX、TSX、Vue 文件格式化后，执行定向 ESLint 检查；样式文件按所属模块现有 Stylelint 配置执行定向检查。
+- Java、XML、SQL、Shell、Python 等文件先确认所属模块是否已有格式化工具和配置；有则沿用，没有则遵循现有风格，不自行安装工具、增加插件或引入新的格式规范。
+- 不格式化生成文件、构建产物或第三方代码，不执行全仓库格式化或带全量自动修复的 lint 命令。文件包含用户已有修改时，检查差异，避免无关格式变动。
+- 只读分析、审查任务不执行格式化。完成后检查差异和 `git diff --check`，报告实际执行的检查；工具缺失、检查失败或未覆盖的文件类型应明确说明。
+- 主前端在 `core/core-frontend` 目录使用 `./node_modules/.bin/prettier --write <本次修改的文件路径>`，随后对适用文件执行 `./node_modules/.bin/eslint <本次修改的 JS、TS、JSX、TSX、Vue 文件路径>`；占位符替换为明确的文件列表，不使用全目录通配符。
+
 ### 前端
 
 以下命令在 `core/core-frontend` 执行，依赖需已安装：
@@ -176,6 +187,7 @@
 - 开发目标为 `dev-v3`，交付时使用任务分支创建 PR，不直接推送主仓库 `dev-v3`。
 - 任务分支沿用维护者命名：`pr@dev-v3@fix_something`、`pr@dev-v3@perf_something`、`pr@dev-v3@chore_something`，后缀描述实际任务。PR base 明确为 `dev-v3`。
 - 提交消息遵循 `.github/PULL_REQUEST_TEMPLATE.md` 要求的 Conventional Commits，例如 `fix(chart): 修复标签越界`。分支命名与提交消息格式是两个不同约定。
+- 处理关联 GitHub Issue 的任务时，提交消息必须以对应的 `#<Issue 编号>` 结尾，例如 `fix(threshold): 忽略已删除指标的空标签 #19649`。先核实关联仓库和 Issue 编号，不把 TAPD 缺陷 ID 当作 GitHub Issue 编号；没有关联 GitHub Issue 的任务不添加该后缀。
 - 在已有工作区准备 PR 时，保留用户未提交/已暂存的内容；按具体路径选择本次修改，不使用全量暂存把无关变更带入 PR。
 
 ### de-xpack：直接同步 dev-v3
@@ -202,3 +214,24 @@ git -C de-xpack push origin dev-v3
 - 仅在任务包含提交/交付要求时暂存、提交或推送，按本节约定执行；已获得的授权持续有效。用户已有暂存内容保持原状，不擅自改写远端历史。
 - 完成说明应包含：解决的问题、主要修改文件、已运行的验证及结果、未验证项与原因。涉及 SDK/XPack、历史数据或配置迁移时说明影响。
 - PR 按实际问题和最终行为描述，遵循仓库模板，目标分支为维护者指定的 `dev-v3`；不要把计划中的验证写成已完成。两仓库的提交、推送和 PR 状态分别报告。
+
+## Agent skills
+
+本仓库的代理开发规范以本文件为准。
+
+本节及 `docs/agents/` 配置仅在已安装并使用 Matt Pocock 工程技能时适用。
+安装状态以当前代理可用的技能为准，不以这些配置文件是否存在为依据。
+未安装相关技能的开发者和代理继续遵循本文件其余规范，无需安装技能或执行本节流程。
+
+### Issue tracker
+
+使用这些技能读取工作项，或创建、更新规格、任务、依赖及附件前，读取 [工作项路由](docs/agents/issue-tracker.md)；
+GitHub 与 TAPD 按任务来源选择，来源不明确时先确定跟踪位置。
+
+### Triage labels
+
+使用 triage 技能前，读取 `docs/agents/triage-labels.md`；采用技能默认的五类分诊标签。
+
+### Domain docs
+
+使用这些技能探索业务概念或架构决策前，读取 `docs/agents/domain.md`；采用 single-context 布局。

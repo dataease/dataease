@@ -221,14 +221,9 @@
 }
 
 // 仅在非外部网页链接（如工作表、单元格区域、命名区域等）时隐藏复制按钮，保留普通链接类型的复制
-.univer-max-w-80:not(:has(.univerjs-icon-link-icon, #link-icon)) .univer-size-6:has(.univerjs-icon-copy-icon, [id*="copy-icon"]) {
+.univer-max-w-80:not(:has(.univerjs-icon-link-icon, #link-icon))
+  [data-u-comp='cell-link-popup-copy'] {
   display: none !important;
-}
-
-// 隐藏旧分支但保留尺寸，供 Univer 定位和快速切回时复用。
-[data-u-context-menu-submenu].dataease-inactive-context-submenu {
-  visibility: hidden !important;
-  pointer-events: none !important;
 }
 
 // 仅覆盖格式刷启用时的表格画布；退出后恢复渲染引擎维护的光标。

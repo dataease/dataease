@@ -3228,7 +3228,6 @@ provide('scrollbarClick', scrollbarClick)
 .calc-field-edit-dialog {
   .ed-dialog__footer {
     padding-top: 24px;
-    border: 1px solid rgba(31, 35, 41, 0.15);
   }
 }
 

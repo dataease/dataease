@@ -3,6 +3,7 @@ package io.dataease.config;
 import io.dataease.api.material.*;
 import io.dataease.api.material.dto.MaterialContext;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.commons.constants.DataVisualizationConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.ObjectProvider;
@@ -29,15 +30,14 @@ public class MaterialInheritanceAspect {
         var request = (DataVisualizationBaseRequest) point.getArgs()[0];
         MaterialContext context = new MaterialContext();
         Set<Long> ids;
-        if (point.getSignature().getName().equals("copy")) {
+        // Copy finalization replaces the source draft, so a template ID cannot change its authorization.
+        if ("copy".equals(point.getSignature().getName())
+                || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             context.setResourceId(request.getId());
             ids = access.authorize(context, true);
         } else if (request.getMaterialSourceTemplateId() != null) {
             context.setTemplateId(request.getMaterialSourceTemplateId());
             ids = access.authorize(context, false);
-        } else if ("copy".equals(request.getOptType())) {
-            context.setResourceId(request.getId());
-            ids = access.authorize(context, true);
         } else return point.proceed();
         Object[] result = new Object[1];
         Throwable[] error = new Throwable[1];

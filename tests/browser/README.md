@@ -87,6 +87,8 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:7070 PLAYWRIGHT_STORAGE_STATE=.auth/local.j
 
 ## 参考
 
+HMAC 协议回归使用 `playwright.hmac.config.mjs`，夹具仅监听 `127.0.0.1:4197`。需通过 `HMAC_EXCHANGE_FIXTURE_CP` 指定提供合成响应的 Java 夹具 classpath；测试加载实际签名模块，分别在安全上下文和映射至本机的普通 HTTP 域名 hmac-http.test 下，校验跨语言封装互通、签名兼容、缓存及失败拒绝行为。设置 `HMAC_FIXTURE_BUILD_DIR` 可对已生成的独立生产混淆产物运行同一组测试；不连接业务数据库或真实网关。`hmac-errors.spec.mjs` 另加载实际 Axios service，使用合成网关响应验证签名失败提示、拒绝状态及登录/权限/网络错误区分，不替代真实网关验签验证。
+
 - [Playwright CLI](https://playwright.dev/docs/getting-started-cli)
 - [Playwright Test 配置](https://playwright.dev/docs/test-configuration)
 - [命令行运行测试](https://playwright.dev/docs/test-cli)
@@ -100,3 +102,32 @@ npm --prefix tests/browser test -- --config=playwright.mfa.config.mjs
 独立配置启动 `127.0.0.1:4190` 的 Vite 组件夹具，加载主工程真实 `MfaStep.vue`、Vue 和 Element Plus，复用主前端已安装依赖，不运行主应用构建插件。测试替换 API、路由、Store 和国际化边界，使用合成挑战与 Token，通过 Playwright 拦截响应并控制返回时机，不连接业务后端。
 
 覆盖一次回车、长按回车、同步连续点击、回车后点击、校验失败后重试、过期挑战拒绝、成功后页面卸载前的防重、移动端成功事件、个人资料绑定及卸载清理。修复前“一次回车”用例实测收到两条请求，修复后应为一条。全局和个人 MFA 策略由后端判定，进入本组件后使用相同提交路径；这里不验证真实全局配置、TOTP、缓存或实际 Token 鉴权。
+
+
+## 阈值告警接收对象标签字号回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.threshold-tags.config.mjs
+```
+
+独立配置启动 `127.0.0.1:4194` 的组件夹具，加载 V3 真实 `ThresholdWarnForm.vue`、接收人组件和 Element Plus。仅替换候选查询、国际化以及与本次字号检查无关的图标和富文本边界；候选数据均为合成数据，不连接业务后端、不发送或保存告警。
+
+覆盖 1440px 和 960px 视口下的接收人、邮件、飞书群、国际飞书群及 Webhook 选中标签字号，群组下拉候选字号、四项多选、长名称与删除标签。修复前两个用例均在期望 12px、实际 14px 的群组标签断言失败；修复后均通过。这是实际组件的浏览器回归，不代表完整登录、权限、后端群组连接或生产构建已验证。
+
+CLI 可先运行 `node tests/browser/fixtures/threshold-tags/server.mjs`，再从 `tests/browser` 使用独立会话打开上述地址。测试启动器默认要求端口未被占用；确需复用手动启动的本夹具时设置 `THRESHOLD_TAGS_SERVER=1`。
+
+## 预览工作表标签右键回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.preview-sheet-tab.config.mjs
+```
+
+独立配置启动 `127.0.0.1:4192` 的 Vite 夹具，复用主前端已安装的 Univer 和真实预览右键控制器，使用合成工作簿，不连接业务后端。覆盖非标签区域右键不进入控制器、预览标签右键禁用菜单、编辑模式保留菜单、左键切表及销毁重建后的监听清理。该回归验证事件范围与交互行为，不代表完整大屏回归或大数据量性能基准。
+
+## 水印间距回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.watermark-spacing.config.mjs
+```
+
+独立配置不启动应用服务，通过主前端已安装的 TypeScript 提取并执行真实水印 DOM 渲染函数，在浏览器内使用合成容器和水印文字。覆盖单行、单列、极小容器、普通画布和长仪表板的坐标有效性与覆盖范围，不连接业务后端，也不验证用户 API 或整页水印权限。

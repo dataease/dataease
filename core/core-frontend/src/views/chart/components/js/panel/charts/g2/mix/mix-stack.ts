@@ -1,5 +1,6 @@
 import { configureMixSeries, formatMixSeriesLegend, createMixSeriesTooltip } from './mix-series'
 import { resolveMixTooltipCategory, updateMixTooltipCrosshair } from './tooltip-category'
+import { createOrderedMixPathMark } from './path-order'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   flow,
@@ -39,6 +40,8 @@ import {
   getAssistLineAxisIndex,
   getMixAssistLineOptions,
   configMixLabel,
+  configMixAxisAlignment,
+  configMixLineArea,
   getMixColumnWidthOptions
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -56,6 +59,8 @@ import {
 const { t } = useI18n()
 
 const stackMixLibrary = stdlib() as Record<string, any>
+stackMixLibrary['mark.line'] = createOrderedMixPathMark(stackMixLibrary['mark.line'])
+stackMixLibrary['mark.area'] = createOrderedMixPathMark(stackMixLibrary['mark.area'])
 stackMixLibrary['interaction.elementHighlight'] = createMixElementHighlight(
   stackMixLibrary['interaction.elementHighlight']
 )
@@ -770,6 +775,7 @@ export class StackLineMix extends G2ChartView {
         }
       })
     }
+    configMixAxisAlignment(chart, [intervalMark], [lineMark, pointMark])
     // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
     if (!yAxis.show) {
       intervalMark.axis.y = false
@@ -991,7 +997,8 @@ export class StackLineMix extends G2ChartView {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configAssistLine
+      this.configAssistLine,
+      configMixLineArea
     )(chart, options, context, this)
   }
 

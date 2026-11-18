@@ -1,13 +1,4 @@
-import {
-  CellValueType,
-  Disposable,
-  Inject,
-  IUniverInstanceService,
-  isRealNum,
-  isTextFormat,
-  UniverInstanceType,
-  type Workbook
-} from '@univerjs/core'
+import { Disposable, Inject } from '@univerjs/core'
 import {
   IExclusiveRangeService,
   RangeProtectionPermissionEditPoint,
@@ -16,54 +7,49 @@ import {
   WorksheetEditPermission,
   WorksheetSetCellValuePermission
 } from '@univerjs/sheets'
-import { getCurrentRangeDisable$ } from '@univerjs/sheets-ui'
+import { getCurrentRangeDisable$, SheetsUIMenuSchema } from '@univerjs/sheets-ui'
 import {
   ContextMenuGroup,
   ContextMenuPosition,
-  getMenuHiddenObservable,
-  IMenuManagerService
+  IMenuManagerService,
+  type MenuSchemaType
 } from '@univerjs/ui'
-import { combineLatest, map, startWith } from 'rxjs'
+import { combineLatestWith, map, startWith } from 'rxjs'
 
 export class TableTextToNumberController extends Disposable {
   constructor(
     @IMenuManagerService menuManager: IMenuManagerService,
     @Inject(IExclusiveRangeService) exclusiveRanges: IExclusiveRangeService,
-    @Inject(SheetsSelectionsService) private readonly selections: SheetsSelectionsService,
-    @IUniverInstanceService private readonly instanceService: IUniverInstanceService
+    @Inject(SheetsSelectionsService) selections: SheetsSelectionsService
   ) {
     super()
-    // Univer 0.25 的菜单/区域标识未导出。只对原生结构化表格放开值转换。
+    // 独占区域中仅放行原生结构化表格，保留其他功能区域的限制。
     const menuId = 'sheet.contextMenu.text-to-number'
     for (const position of [
       ContextMenuPosition.MAIN_AREA,
       ContextMenuPosition.COL_HEADER,
       ContextMenuPosition.ROW_HEADER
     ]) {
-      const original = menuManager
-        .getMenuByPositionKey(position)
-        .find(group => group.key === ContextMenuGroup.FORMAT)
-        ?.children?.find(menu => menu.key === menuId)?.item
-      if (!original) continue
+      const menuSchema: MenuSchemaType | undefined =
+        SheetsUIMenuSchema[position]?.[ContextMenuGroup.FORMAT]?.[menuId]
+      const originalFactory = menuSchema?.menuItemFactory
+      if (typeof originalFactory !== 'function') continue
       menuManager.mergeMenu({
         [position]: {
           [ContextMenuGroup.FORMAT]: {
             [menuId]: {
               menuItemFactory: accessor => ({
-                ...original,
-                hidden$: combineLatest([
-                  getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
-                  selections.selectionChanged$.pipe(startWith(null))
-                ]).pipe(map(([hidden]) => hidden || !this.hasConvertibleCell())),
-                disabled$: combineLatest([
-                  getCurrentRangeDisable$(accessor, {
-                    workbookTypes: [WorkbookEditablePermission],
-                    worksheetTypes: [WorksheetEditPermission, WorksheetSetCellValuePermission],
-                    rangeTypes: [RangeProtectionPermissionEditPoint]
-                  }),
-                  selections.selectionChanged$.pipe(startWith(selections.getCurrentSelections())),
-                  exclusiveRanges.exclusiveRangesChange$.pipe(startWith(null))
-                ]).pipe(
+                // 每次创建菜单都调用原生工厂，避免 hidden$ 捕获旧工作表。
+                ...originalFactory(accessor),
+                disabled$: getCurrentRangeDisable$(accessor, {
+                  workbookTypes: [WorkbookEditablePermission],
+                  worksheetTypes: [WorksheetEditPermission, WorksheetSetCellValuePermission],
+                  rangeTypes: [RangeProtectionPermissionEditPoint]
+                }).pipe(
+                  combineLatestWith(
+                    selections.selectionChanged$.pipe(startWith(selections.getCurrentSelections())),
+                    exclusiveRanges.exclusiveRangesChange$.pipe(startWith(null))
+                  ),
                   map(
                     ([disabled, current]) =>
                       disabled ||
@@ -78,32 +64,5 @@ export class TableTextToNumberController extends Disposable {
         }
       })
     }
-  }
-
-  private hasConvertibleCell(): boolean {
-    // 原生 hidden$ 固定了菜单创建时的工作表；每次判断都读取当前工作表，避免切换后误隐藏。
-    const workbook = this.instanceService.getCurrentUnitOfType<Workbook>(
-      UniverInstanceType.UNIVER_SHEET
-    )
-    const worksheet = workbook?.getActiveSheet()
-    const currentSelections = this.selections.getCurrentSelections()
-    if (!worksheet || !currentSelections?.length) return false
-
-    for (const { range } of currentSelections) {
-      for (let row = range.startRow; row <= range.endRow; row++) {
-        for (let column = range.startColumn; column <= range.endColumn; column++) {
-          const cell = worksheet.getCellRaw(row, column)
-          if (!cell?.v || !isRealNum(cell.v)) continue
-
-          let style = cell.s
-          if (typeof style === 'string') {
-            style = worksheet.getStyleDataByHash(style)
-          }
-          // 与原生转换命令保持一致：数字文本或使用文本格式的数字才可转换。
-          if (cell.t !== CellValueType.NUMBER || isTextFormat(style?.n?.pattern)) return true
-        }
-      }
-    }
-    return false
   }
 }

@@ -1,12 +1,21 @@
 <script lang="ts" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import { ref, inject, computed, onMounted, type Ref } from 'vue'
-import { Delete, InfoFilled, Filter } from '@element-plus/icons-vue'
+import { Delete, InfoFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
+import Icon from '@/components/icon-custom/src/Icon.vue'
+import iconFilter from '@/assets/svg/icon-filter.svg'
 import FieldDropZone from '../common/field-drop-zone.vue'
 import FilterTree from './filter/FilterTree.vue'
-import type { FieldItemData, FilterTree as FilterTreeData, PluginConfig, TablePluginConfig } from '../../types/plugin'
+import type {
+  FieldItemData,
+  FilterTree as FilterTreeData,
+  PluginConfig,
+  TablePluginConfig
+} from '../../types/plugin'
 import { PluginAdapterManager, TablePluginAdapter } from '../../types/adapter'
 import {
   clampSpreadsheetResultLimit,
@@ -15,8 +24,8 @@ import {
 } from '../../utils/query-limit'
 
 const emit = defineEmits<{
-  'queryData': [config: PluginConfig]
-  'updateConfig': [key: string, value: any]
+  queryData: [config: PluginConfig]
+  updateConfig: [key: string, value: any]
 }>()
 
 const pluginConfig = inject<Ref<TablePluginConfig>>('pluginConfig')
@@ -31,7 +40,6 @@ const filterTree = ref<InstanceType<typeof FilterTree>>()
 const currentConfig = computed(() => pluginConfig.value)
 const resultLimitInput = ref<string | number>(currentConfig.value.data.resultLimit ?? 1000)
 const resultLimitMax = ref(DEFAULT_SPREADSHEET_QUERY_LIMIT)
-
 
 const zoneSchemas = computed(() => {
   if (!currentConfig.value?.type) {
@@ -80,14 +88,11 @@ onMounted(async () => {
   }
 })
 
-const handleZoneFieldAdd = (zoneId: string) => (field: FieldItemData) => {
-}
+const handleZoneFieldAdd = (zoneId: string) => (field: FieldItemData) => {}
 
-const handleZoneFieldRemove = (zoneId: string) => (field: FieldItemData, index: number) => {
-}
+const handleZoneFieldRemove = (zoneId: string) => (field: FieldItemData, index: number) => {}
 
-const handleZoneFieldConfig = (zoneId: string) => (field: FieldItemData, index: number) => {
-}
+const handleZoneFieldConfig = (zoneId: string) => (field: FieldItemData, index: number) => {}
 
 const handleClearFilters = () => {
   customFilter.value = {}
@@ -111,9 +116,7 @@ const countFilterItems = (items: any[] = []) => {
 }
 
 const hasFields = computed(() => {
-  return Object.values(currentConfig.value.data.zones).some(
-    fields => fields && fields.length > 0
-  )
+  return Object.values(currentConfig.value.data.zones).some(fields => fields && fields.length > 0)
 })
 
 const queryData = async () => {
@@ -148,22 +151,17 @@ const queryData = async () => {
       }
     })
   } catch (error) {
-    ElMessage.error(t('spreadsheet.query_data_error'))
+    presentError(error, t('spreadsheet.query_data_error'))
   } finally {
     loading.value = false
   }
 }
-
 </script>
 
 <template>
   <div class="data-tab">
     <div class="data-tab-content">
-      <div
-        v-for="schema in zoneSchemas"
-        :key="schema.id"
-        class="config-section"
-      >
+      <div v-for="schema in zoneSchemas" :key="schema.id" class="config-section">
         <div class="section-header">
           <div class="header-left">
             <span class="section-title">{{ schema.name }}</span>
@@ -189,36 +187,38 @@ const queryData = async () => {
           :placeholder="schema.placeholder"
           :accept-types="schema.acceptTypes"
           :validate-update="validateZoneUpdate(schema.id)"
-          @update:model-value="(val) => handleZoneUpdate(schema.id, val)"
+          @update:model-value="val => handleZoneUpdate(schema.id, val)"
           @field-add="handleZoneFieldAdd(schema.id)"
           @field-remove="handleZoneFieldRemove(schema.id)"
           @field-config="handleZoneFieldConfig(schema.id)"
         />
       </div>
 
+      <el-divider class="filter-divider" />
       <div class="config-section">
         <div class="section-header">
-          <span class="section-title">过滤器</span>
-          <el-icon
-            v-if="isFilterActive"
-            class="delete-icon"
-            @click="handleClearFilters"
-          >
+          <span class="section-title">{{ t('chart.result_filter') }}</span>
+          <el-icon v-if="isFilterActive" class="delete-icon" @click="handleClearFilters">
             <Delete />
           </el-icon>
         </div>
-        <div class="filter-content">
-          <div class="filter-btn" :class="{ active: isFilterActive }" @click="handleOpenFilter">
-            <el-icon><Filter /></el-icon>
-            <span>过滤</span>
-          </div>
-        </div>
+        <el-button
+          class="filter-btn"
+          :class="{ active: isFilterActive }"
+          secondary
+          @click="handleOpenFilter"
+        >
+          <template #icon>
+            <Icon><iconFilter class="svg-icon svg-background" /></Icon>
+          </template>
+          {{ t('chart.filter') }}
+        </el-button>
       </div>
     </div>
 
     <div class="data-tab-footer">
       <div class="footer-bar">
-        <div class="footer-label">结果展示</div>
+        <div class="footer-label">{{ t('chart.result_count') }}</div>
         <div class="footer-content">
           <el-input-number
             v-model="resultLimitInput"
@@ -240,7 +240,7 @@ const queryData = async () => {
           :disabled="loading"
           @click="queryData"
         >
-          <span>更新图表数据</span>
+          <span>{{ t('chart.update_chart_data') }}</span>
         </el-button>
       </div>
     </div>
@@ -260,19 +260,23 @@ const queryData = async () => {
     overflow: auto;
     padding: 0 0 16px;
 
-    .config-section {
-      padding: 14px 16px 18px;
-      border-bottom: 1px solid #e8eaef;
+    .filter-divider {
+      margin: 0;
+      border-top-color: rgba(31, 35, 41, 0.15);
+    }
 
-      &:last-child {
-        border-bottom: none;
+    .config-section {
+      padding: 8px 16px 16px;
+
+      & + .config-section {
+        border-top: 1px solid rgba(31, 35, 41, 0.15);
       }
 
       .section-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
 
         .header-left {
           display: flex;
@@ -281,28 +285,27 @@ const queryData = async () => {
         }
 
         .section-title {
-          font-size: 15px;
-          line-height: 22px;
-          font-weight: 700;
-          color: #1d2129;
+          font-size: 12px;
+          line-height: 18px;
+          font-weight: 400;
+          color: #1f2329;
         }
 
         .required {
-          color: #f54a45;
-          font-size: 14px;
-          margin-left: 2px;
+          color: var(--ed-color-danger);
+          font-size: 12px;
         }
 
         .info-icon {
           font-size: 14px;
-          color: #9ca3af;
+          color: #646a73;
           cursor: help;
           margin-left: 2px;
         }
 
         .delete-icon {
-          font-size: 18px;
-          color: #6b7280;
+          font-size: 14px;
+          color: #646a73;
           cursor: pointer;
 
           &:hover {
@@ -311,32 +314,19 @@ const queryData = async () => {
         }
       }
 
-      .filter-content {
-        .filter-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          height: 44px;
-          padding: 0 16px;
-          border: 1px solid #d8dde6;
-          border-radius: 10px;
-          cursor: pointer;
-          font-size: 15px;
-          font-weight: 600;
-          color: #1f2329;
-          background: #fff;
-          transition: all 0.2s;
+      .filter-btn {
+        width: 100%;
+        height: 28px;
+        line-height: 28px;
+        font-size: 12px;
 
-          &:hover {
-            border-color: #3370ff;
-            color: #3370ff;
-          }
+        :deep(.ed-icon + span) {
+          margin-left: 2px;
+        }
 
-          &.active {
-            border-color: #3370ff;
-            color: #3370ff;
-          }
+        &.active {
+          border-color: var(--ed-color-primary, #3370ff);
+          color: var(--ed-color-primary, #3370ff);
         }
       }
     }
@@ -355,9 +345,9 @@ const queryData = async () => {
       .footer-label {
         width: 88px;
         flex-shrink: 0;
-        font-size: 15px;
-        color: #1d2129;
-        font-weight: 700;
+        font-size: 12px;
+        color: #1f2329;
+        font-weight: 400;
       }
 
       .footer-content {
@@ -376,9 +366,10 @@ const queryData = async () => {
             padding: 0 10px;
           }
 
-          :deep(.el-input__inner) {
+          :deep(.ed-input__inner) {
             text-align: center;
-            font-size: 15px;
+            font-size: 12px;
+            font-weight: 400;
             color: #1f2329;
           }
         }
@@ -391,8 +382,8 @@ const queryData = async () => {
       :deep(.refresh-btn) {
         width: 100%;
         height: 52px;
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 400;
         border-radius: 0;
         margin: 0;
         background: #3370ff;

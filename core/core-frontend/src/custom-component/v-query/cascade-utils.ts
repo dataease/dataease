@@ -34,3 +34,7 @@ export const isCascadeParentCleared = (
     return isEmptyCascadeValue(getCascadeValue(cascadeItems[index - 1], isConfig))
   })
 }
+
+// 批量应用默认值（重置查询条件）期间，级联子级会随上级一起被重新赋值，
+// 此阶段不能把子级已选值当作失效值同步清空。
+export const cascadeResetState = { value: false }

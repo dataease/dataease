@@ -11,7 +11,7 @@ import { cloneDeep } from 'lodash-es'
 import { getDeEngine, getSchema } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
-import { symmetricDecryptJson } from '@/utils/encryption'
+import { parseConfigurationJson } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
 import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceEnableDataFilling = defineAsyncComponent(
@@ -243,7 +243,7 @@ const edit = () => {
         enableDataFill
       } = res.data
       if (configuration) {
-        configuration = await symmetricDecryptJson(configuration)
+        configuration = await parseConfigurationJson(configuration)
       }
       Object.assign(nodeInfo, {
         name,
@@ -264,9 +264,11 @@ const edit = () => {
       if (nodeInfo.type === 'oracle' && !nodeInfo.configuration?.connectionType) {
         nodeInfo.configuration.connectionType = 'sid'
       }
-    })
-    .finally(() => {
       dialogVisible.value = true
+    })
+    .catch(() => {
+      // 权限不足或请求失败时保持抽屉关闭，错误提示由请求拦截器统一处理
+      dialogVisible.value = false
     })
 }
 const basicForm = ref()
@@ -497,6 +499,8 @@ defineExpose({
       </el-form-item>
       <el-form-item :label="t('datasource.password')">
         <CustomPassword
+          :reveal-resource-id="nodeInfo.id"
+          reveal-secret-type="ENGINE_PASSWORD"
           :placeholder="t('common.inputText') + t('datasource.password')"
           show-password
           type="password"

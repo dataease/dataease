@@ -74,10 +74,9 @@ onBeforeUnmount(() => {
   scopeEventListener.stop()
 })
 const emits = defineEmits(['update:modelValue'])
-const HandleBeforeClose = () => {
+const close = (done: () => void) => {
   transform.value.scale = 1
-  modelValue.value = false
-  emits('update:modelValue', false)
+  done()
 }
 </script>
 
@@ -85,10 +84,12 @@ const HandleBeforeClose = () => {
   <el-dialog
     class="img-enlarge-dialog"
     append-to-body
-    :before-close="HandleBeforeClose"
+    :before-close="close"
     destroy-on-close
     close-on-click-modal
-    v-model="modelValue"
+    close-on-press-escape
+    :model-value="modelValue"
+    @update:model-value="emits('update:modelValue', $event)"
   >
     <div class="img-content 13">
       <img :style="imgStyle" :src="authenticatedImageUrl(imageUrl)" alt="Preview Image" />

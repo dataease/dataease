@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useQueryScope } from '@/hooks/web/useQueryScope'
+const queryScope = useQueryScope()
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
@@ -9,8 +11,8 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
 import { mixColor } from '@/utils/color'
-import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
-import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
+import { DynamicTimeError, evaluateRuntimeDynamicDefault } from './dynamic-default-time'
+import { normalizeFixedTimeConfig } from './fixed-time-value'
 import { infoFormat, splitConditionValues } from './options'
 import {
   onBeforeUnmount,
@@ -34,6 +36,7 @@ import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import StyleInject from './StyleInject.vue'
 import { getKeyList, reRenderAll } from '@/custom-component/v-query/QueryUtils'
+import { cascadeResetState } from '@/custom-component/v-query/cascade-utils'
 const props = defineProps({
   view: {
     type: Object,
@@ -169,8 +172,8 @@ const btnHoverStyle = computed(() => {
 
   return {
     rawColor: customStyle.btnColor ?? '#3370ff',
-    hoverColor: customStyle.btnColor ? mixColor('ffffff', btnColor, 0.15) : '#5285FF',
-    activeColor: customStyle.btnColor ? mixColor('000000', btnColor, 0.15) : '#2B5FD9'
+    hoverColor: customStyle.btnColor ? mixColor('ffffff', btnColor, 15) : '#5285FF',
+    activeColor: customStyle.btnColor ? mixColor('000000', btnColor, 15) : '#2B5FD9'
   }
 })
 
@@ -188,7 +191,7 @@ const btnPrimaryActiveColor = computed(() => {
 
 const tagColor = computed(() => {
   if (customStyle.background && !customStyle.background.toLowerCase().includes('#ffffff')) {
-    return mixColor('ffffff', customStyle.background.substr(1), 0.15)
+    return mixColor('ffffff', customStyle.background.substr(1), 15)
   }
   return '#f0f2f5'
 })
@@ -309,13 +312,15 @@ let oldList = []
 let isResetData = false
 watch(
   () => props.element.propValue,
-  () => {
-    list.value = [...props.element.propValue]
+  value => {
+    const conditions = Array.isArray(value) ? value : []
+    conditions.forEach(normalizeFixedTimeConfig)
+    list.value = [...conditions]
     if (isResetData) {
       isResetData = false
       return
     }
-    oldList = cloneDeep(props.element.propValue)
+    oldList = cloneDeep(conditions)
   },
   {
     immediate: true
@@ -479,7 +484,8 @@ const queryDataForId = id => {
   }
   fillRequireVal(emitterList)
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    queryScope?.loadedCharts.add(ele)
+    emitter.emit(`query-data-${ele}`, { scopeId: queryScope?.scopeId })
   })
 }
 const getQueryConditionWidth = () => {
@@ -552,7 +558,8 @@ const isConfirmSearchNoRequiredName = id => {
   }
   fillRequireVal(emitterList)
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    queryScope?.loadedCharts.add(ele)
+    emitter.emit(`query-data-${ele}`, { scopeId: queryScope?.scopeId })
   })
 }
 
@@ -685,103 +692,85 @@ const delQueryConfig = index => {
   list.value.splice(index, 1)
   element.value.propValue = [...list.value]
   snapshotStore.recordSnapshotCache('delQueryConfig')
-  reRenderAll(com, cloneDeep(unref(list)))
+  reRenderAll(com, cloneDeep(unref(list)), queryScope?.scopeId)
 }
 
 const resetData = () => {
+  const previous = cloneDeep(element.value.propValue)
   isResetData = true
   element.value.propValue = []
   nextTick(() => {
     element.value.propValue = cloneDeep(oldList)
-    ;(element.value.propValue || []).reduce((pre, next) => {
-      next.conditionValueF = next.defaultConditionValueF
-      next.conditionValueOperatorF = next.defaultConditionValueOperatorF
-      next.conditionValueS = next.defaultConditionValueS
-      next.conditionValueOperatorS = next.defaultConditionValueOperatorS
-
-      if (next.displayType === '22') {
-        next.numValueEnd = next.defaultNumValueEnd
-        next.numValueStart = next.defaultNumValueStart
-      }
-
-      if (!next.defaultValueCheck) {
-        next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
-      }
-      next.selectValue = Array.isArray(next.defaultValue)
-        ? [...next.defaultValue]
-        : next.defaultValue
-      if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
-        next.mapValue = Array.isArray(next.defaultMapValue)
-          ? [...next.defaultMapValue]
-          : next.defaultMapValue
-      }
-
-      if (
-        next.defaultValueCheck &&
-        [1, 7].includes(+next.displayType) &&
-        next.timeType === 'dynamic'
-      ) {
-        if (+next.displayType === 1) {
-          let selectValue = getDynamicRange(next) || []
-          next.defaultValue = new Date(selectValue[0])
-          next.selectValue = new Date(selectValue[0])
-        } else {
-          const {
-            timeNum,
-            relativeToCurrentType,
-            around,
-            relativeToCurrentRange,
-            arbitraryTime,
-            timeGranularity,
-            timeNumRange,
-            relativeToCurrentTypeRange,
-            aroundRange,
-            timeGranularityMultiple,
-            arbitraryTimeRange
-          } = next
-
-          let startTime = getCustomTime(
-            timeNum,
-            relativeToCurrentType,
-            timeGranularity,
-            around,
-            arbitraryTime,
-            timeGranularityMultiple,
-            'start-panel'
-          )
-          let endTime = getCustomTime(
-            timeNumRange,
-            relativeToCurrentTypeRange,
-            timeGranularity,
-            aroundRange,
-            arbitraryTimeRange,
-            timeGranularityMultiple,
-            'end-panel'
-          )
-
-          if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
-            ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
-          }
-          next.defaultValue = [startTime, endTime]
-          next.selectValue = [startTime, endTime]
+    cascadeResetState.value = true
+    try {
+      const dynamicDefaults = new Map()
+      const baseline = new Date()
+      for (const next of element.value.propValue || []) {
+        if (
+          next.defaultValueCheck &&
+          [1, 7].includes(+next.displayType) &&
+          next.timeType === 'dynamic'
+        ) {
+          dynamicDefaults.set(next, evaluateRuntimeDynamicDefault(next, baseline))
         }
       }
+      ;(element.value.propValue || []).reduce((pre, next) => {
+        next.conditionValueF = next.defaultConditionValueF
+        next.conditionValueOperatorF = next.defaultConditionValueOperatorF
+        next.conditionValueS = next.defaultConditionValueS
+        next.conditionValueOperatorS = next.defaultConditionValueOperatorS
 
-      ;(props.element.cascade || []).forEach(ele => {
-        ele.forEach(item => {
-          const comId = item.datasetId.split('--')[1]
-          if (next.id === comId) {
-            item.currentSelectValue = Array.isArray(next.selectValue)
-              ? next.selectValue
-              : [next.selectValue].filter(itx => ![null, undefined].includes(itx))
-            useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
-          }
+        if (next.displayType === '22') {
+          next.numValueEnd = next.defaultNumValueEnd
+          next.numValueStart = next.defaultNumValueStart
+        }
+
+        if (!next.defaultValueCheck) {
+          next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
+        }
+        next.selectValue = Array.isArray(next.defaultValue)
+          ? [...next.defaultValue]
+          : next.defaultValue
+        if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
+          next.mapValue = Array.isArray(next.defaultMapValue)
+            ? [...next.defaultMapValue]
+            : next.defaultMapValue
+        }
+
+        if (
+          next.defaultValueCheck &&
+          [1, 7].includes(+next.displayType) &&
+          next.timeType === 'dynamic'
+        ) {
+          const value = dynamicDefaults.get(next)
+          next.defaultValue = value
+          next.selectValue = Array.isArray(value) ? [...value] : value
+        }
+
+        ;(props.element.cascade || []).forEach(ele => {
+          ele.forEach(item => {
+            const comId = item.datasetId.split('--')[1]
+            if (next.id === comId) {
+              item.currentSelectValue = Array.isArray(next.selectValue)
+                ? next.selectValue
+                : [next.selectValue].filter(itx => ![null, undefined].includes(itx))
+              useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
+            }
+          })
         })
-      })
-      const keyList = getKeyList(next)
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
+        const keyList = getKeyList(next)
+        pre = [...new Set([...keyList, ...pre])]
+        return pre
+      }, [])
+    } catch (error) {
+      element.value.propValue = previous
+      isResetData = false
+      if (!(error instanceof DynamicTimeError)) throw error
+      ElMessage.error({ message: t(error.key), grouping: true })
+      return
+    } finally {
+      cascadeResetState.value = false
+    }
     !componentWithSure.value && queryData()
   })
 }
@@ -925,7 +914,8 @@ const queryData = () => {
     dvMainStore.setFirstLoadMap([...new Set([...emitterList, ...firstLoadMap.value])])
   }
   emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
+    queryScope?.loadedCharts.add(ele)
+    emitter.emit(`query-data-${ele}`, { scopeId: queryScope?.scopeId })
   })
 }
 const titleStyle = computed(() => {

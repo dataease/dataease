@@ -33,6 +33,8 @@ import {
   getAssistLineAxisIndex,
   getMixAssistLineOptions,
   configMixLabel,
+  configMixAxisAlignment,
+  configMixLineArea,
   MixG2Chart
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -766,6 +768,7 @@ export class GroupLineMix extends G2ChartView {
     }
     this.configManualYAxisLineRange(yAxis, view, leftLineMark, leftPointMark)
     this.configManualYAxisLineRange(yAxisExt, view, lineMark, pointMark)
+    configMixAxisAlignment(chart, [leftLineMark, leftPointMark], [lineMark, pointMark])
     // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
     if (!yAxis.show) {
       leftLineMark.axis.y = false
@@ -999,7 +1002,8 @@ export class GroupLineMix extends G2ChartView {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configAssistLine
+      this.configAssistLine,
+      configMixLineArea
     )(chart, options, context, this)
   }
 

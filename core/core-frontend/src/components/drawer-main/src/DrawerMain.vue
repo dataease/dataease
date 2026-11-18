@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, computed } from 'vue'
+import type { PropType } from 'vue'
 import { ElDrawer, ElButton } from 'element-plus-secondary'
 import { propTypes } from '@/utils/propTypes'
 import DrawerFilter from '@/components/drawer-filter/src/DrawerFilter.vue'
@@ -18,7 +19,11 @@ const props = defineProps({
       property: propTypes.shape({})
     })
   ),
-  title: propTypes.string
+  title: propTypes.string,
+  initialConditions: {
+    type: Array as PropType<{ field: string; value: (string | number)[]; operator?: string }[]>,
+    default: () => []
+  }
 })
 const myRefs = ref([])
 const componentList = computed(() => {
@@ -26,7 +31,10 @@ const componentList = computed(() => {
 })
 
 const state = reactive({
-  conditions: []
+  conditions: props.initialConditions.map(condition => ({
+    ...condition,
+    value: [...condition.value]
+  }))
 })
 const userDrawer = ref(false)
 
@@ -157,6 +165,9 @@ defineExpose({
         :ref="el => (myRefs[index] = el)"
         v-if="component.type === 'enum'"
         :option-list="component.option"
+        :model-value="
+          state.conditions.find(condition => condition.field === component.field)?.value
+        "
         :title="component.title"
         @filter-change="v => filterChange(v, component.field, 'in')"
       />

@@ -2,16 +2,20 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import Log from '@/views/menu/system/sync/task/log/index.vue'
 import Task from '@/views/menu/system/sync/task/task/index.vue'
+import type { TaskLogType } from '@/api/sync/syncTaskLog'
 import { ref } from 'vue'
 
 const { t } = useI18n()
 const activeName = ref('task')
 const taskId = ref('')
+const taskType = ref<TaskLogType>()
 const handleClick = () => {
   taskId.value = ''
+  taskType.value = undefined
 }
-const showTaskLog = tId => {
+const showTaskLog = (tId: string, type?: TaskLogType) => {
   taskId.value = tId
+  taskType.value = type
   activeName.value = 'log'
 }
 </script>
@@ -28,7 +32,12 @@ const showTaskLog = tId => {
     ></task>
   </div>
   <div style="margin-top: 12px" v-if="activeName === 'log'">
-    <log :active-name="activeName" :job-id="taskId"></log>
+    <log
+      :key="`${taskId}:${taskType || ''}`"
+      :active-name="activeName"
+      :job-id="taskId"
+      :initial-task-type="taskType"
+    ></log>
   </div>
 </template>
 <style lang="less">

@@ -2,7 +2,7 @@ import router from './router'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import type { RouteRecordRaw } from 'vue-router_2'
-import { getDefaultSettings } from '@/api/common'
+import { getCachedDefaultSettings } from '@/api/common'
 import { useNProgress } from '@/hooks/web/useNProgress'
 import { usePermissionStoreWithOut, pathValid, getFirstAuthMenu } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
@@ -25,7 +25,13 @@ const { open } = useLoading()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view', '/admin-login', '/401'] // 不重定向白名单
-const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview', '/dataset-embedded-form']
+const embeddedWindowWhiteList = [
+  '/dvCanvas',
+  '/dashboard',
+  '/preview',
+  '/spreadsheet-preview',
+  '/dataset-embedded-form'
+]
 const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
   const appearanceStore = useAppearanceStoreWithOut()
@@ -76,19 +82,27 @@ router.beforeEach(async (to, from, next) => {
       let pathname = window.location.pathname
       pathname = pathname.substring(0, pathname.length - 1)
       let url = window.origin + pathname + '/mobile.html#/index'
-      if (location.hash?.startsWith('#/preview')) {
+      if (
+        location.hash?.startsWith('#/preview') ||
+        location.hash?.startsWith('#/spreadsheet-preview')
+      ) {
         url = window.origin + pathname + '/mobile.html' + location.hash
       }
       if (window.location.search) {
-        url += window.location.search
+        // 新窗口认证信息位于 search，重定向后仍须放在 hash 前，不能混入跳转参数。
+        const hashIndex = url.indexOf('#')
+        url = `${url.slice(0, hashIndex)}${window.location.search}${url.slice(hashIndex)}`
       }
       window.location.href = url
     }
   }
-  await appearanceStore.setAppearance()
-  await appearanceStore.setFontList()
-  await appStore.setXpackValid()
-  const defaultSort = await getDefaultSettings()
+  // 运行模式已确定；这些配置互不依赖，全部加载完成后再继续路由初始化。
+  const [, , , defaultSort] = await Promise.all([
+    appearanceStore.setAppearance(),
+    appearanceStore.setFontList(),
+    appStore.setXpackValid(),
+    getCachedDefaultSettings()
+  ])
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')
   wsCache.set('embeddedExportMode-backend', defaultSort['basic.embeddedExportMode'] ?? 'sync')

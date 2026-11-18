@@ -19,6 +19,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.HtmlUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -278,7 +279,7 @@ public class ChartViewThresholdManage {
             if (CollectionUtils.isEmpty(rows)) {
                 return new ThresholdCheckVO(false, null, null, null);
             }
-            String regex = "<span[^>]*id=\"changeText-(-?\\d+)(?!0$)(?!1$)\"[^>]*>.*?</span>";
+            String regex = "<span[^>]*id=\"changeText-(-?\\d+)(?!0$)(?!1$)\"[^>]*>(.*?)</span>";
             Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
             Matcher matcher = pattern.matcher(thresholdTemplate);
             StringBuilder sb = new StringBuilder();
@@ -293,6 +294,12 @@ public class ChartViewThresholdManage {
                 // 根据id从map中获取替换文本
                 DatasetTableFieldDTO fieldDTO = fieldMap.get(id);
                 if (ObjectUtils.isEmpty(fieldDTO)) continue;
+                // 删除指标后可能留下空的样式标签，不能让它触发告警数据条数限制。
+                String fieldText = HtmlUtils.htmlUnescape(matcher.group(2).replaceAll("<[^>]*>", ""));
+                if (fieldText.codePoints().allMatch(c -> Character.isWhitespace(c)
+                        || Character.isSpaceChar(c) || c == '\u200B' || c == '\uFEFF')) {
+                    continue;
+                }
                 String dataeaseName = fieldDTO.getDataeaseName();
                 String fieldDTOName = fieldDTO.getName();
 

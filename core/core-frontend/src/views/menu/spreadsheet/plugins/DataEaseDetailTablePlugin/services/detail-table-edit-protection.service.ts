@@ -57,6 +57,7 @@ import {
   Inject,
   type ICommandInfo,
   type IRange,
+  type Workbook,
   UniverInstanceType
 } from '@univerjs/core'
 import { ElMessage } from 'element-plus-secondary'
@@ -86,7 +87,7 @@ const REMOVE_TABLE_COL_COMMAND_ID = 'sheet.command.table-remove-col'
 const SORT_RANGE_COMMAND_ID = 'sheet.command.sort-range'
 
 export class DetailTableEditProtectionService {
-  // 格式刷和“清除全部”由共享白名单策略收敛为纯用户样式写入，不再作为内容编辑拦截。
+  // 格式刷、清除格式及清除全部由共享服务保护表格样式边界，普通内容编辑仍需拦截。
   private readonly valueCommandIds = new Set([
     SetRangeValuesCommand.id,
     SetRangeValuesMutation.id,
@@ -520,7 +521,7 @@ export class DetailTableEditProtectionService {
     sheetId: string
   ): ProtectedRange {
     const workbook = unitId
-      ? this.univerInstanceService.getUniverSheetInstance(unitId)
+      ? this.univerInstanceService.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
       : undefined
     const worksheet = workbook?.getSheetBySheetId?.(sheetId)
     const expanded: ProtectedRange = { ...range, sheetId }
@@ -599,7 +600,7 @@ export class DetailTableEditProtectionService {
     const unitId = params.unitId || this.getCurrentUnitId()
     const sheetId = params.subUnitId || this.getCurrentSheetId(unitId)
     const workbook = unitId
-      ? this.univerInstanceService.getUniverSheetInstance(unitId)
+      ? this.univerInstanceService.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
       : undefined
     const worksheet = sheetId ? workbook?.getSheetBySheetId?.(sheetId) : undefined
     if (!worksheet) {
@@ -622,7 +623,7 @@ export class DetailTableEditProtectionService {
 
   private getCurrentSheetId(unitId?: string): string | undefined {
     const workbook = unitId
-      ? this.univerInstanceService.getUniverSheetInstance(unitId)
+      ? this.univerInstanceService.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
       : this.univerInstanceService.getCurrentUnitOfType<any>(UniverInstanceType.UNIVER_SHEET)
     return workbook?.getActiveSheet?.()?.getSheetId?.()
   }

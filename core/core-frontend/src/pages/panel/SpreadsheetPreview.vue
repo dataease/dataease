@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onBeforeMount, ref, shallowRef } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, shallowRef } from 'vue'
 import { useResizeObserver } from '@vueuse/core'
 import type { IWorkbookData } from '@univerjs/core'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -12,8 +12,9 @@ import PluginRenderIndicator from '@/views/menu/spreadsheet/components/PluginRen
 import { findById, SpreadsheetPublishStatus } from '@/views/menu/spreadsheet/api'
 import { parseSheetData } from '@/views/menu/spreadsheet/utils/univerConfig'
 
+const props = defineProps<{ resourceId?: string | number }>()
 const { t } = useI18n()
-const resourceId = useEmbedded().resourceId
+const resourceId = props.resourceId ?? useEmbedded().resourceId
 const localeStore = useLocaleStoreWithOut()
 const currentLang = computed(() => localeStore.getCurrentLocale.lang)
 const previewRootRef = ref<HTMLElement>()
@@ -21,6 +22,11 @@ const spreadsheetRef = ref<InstanceType<typeof UniverSheet>>()
 const workbookData = shallowRef<Partial<IWorkbookData>>()
 const loading = ref(true)
 const emptyDescription = ref(t('spreadsheet.no_data'))
+let disposed = false
+
+onBeforeUnmount(() => {
+  disposed = true
+})
 
 // DIV 容器尺寸可能独立变化，直接复用电子表格已有的尺寸刷新入口。
 useResizeObserver(previewRootRef, () => spreadsheetRef.value?.resize())
@@ -31,7 +37,7 @@ onBeforeMount(async () => {
       return
     }
     const spreadsheet = await findById(resourceId)
-    if (!spreadsheet) {
+    if (disposed || !spreadsheet) {
       return
     }
     // 嵌入预览与管理页保持一致，只展示已发布版本。
@@ -42,10 +48,11 @@ onBeforeMount(async () => {
     }
     workbookData.value = parseSheetData(spreadsheet.sheetData) || undefined
   } catch (error) {
+    if (disposed) return
     console.error(error)
     emptyDescription.value = t('spreadsheet.load_error')
   } finally {
-    loading.value = false
+    if (!disposed) loading.value = false
   }
 })
 </script>
@@ -56,6 +63,7 @@ onBeforeMount(async () => {
       <UniverSheet
         ref="spreadsheetRef"
         :model-value="workbookData"
+        :spreadsheet-id="resourceId"
         :locale="currentLang"
         mode="preview"
         @ready="onInitReady({ resourceId })"

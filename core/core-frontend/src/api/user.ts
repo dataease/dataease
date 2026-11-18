@@ -1,4 +1,6 @@
 import request from '@/config/axios'
+import { requireSwitchLanguage } from '@/utils/languageSwitch'
+import { useI18n } from '@/hooks/web/useI18n'
 
 export const mountedOrg = (keyword?: string) =>
   request.post({ url: '/org/mounted', data: { keyword } })
@@ -8,8 +10,6 @@ export const switchOrg = (id: number | string) => request.post({ url: `/user/swi
 export const userInfo = () => request.get({ url: '/user/info' })
 
 export const searchRoleApi = () => request.get({ url: '/role/query' })
-
-export const searchRoleByOidApi = (oid: number) => request.get({ url: `/role/queryWithOid/${oid}` })
 
 export const userOptionForRoleApi = data => request.post({ url: '/user/role/option', data })
 
@@ -21,9 +21,6 @@ export const userPageApi = (page: number, limit: number, data) =>
 
 export const memberPageApi = (page: number, limit: number, data) =>
   request.post({ url: `/user/mumberPager/${page}/${limit}`, data })
-
-export const personSysVariableInfoApi = uid =>
-  request.get({ url: `/user/personSysVariableInfo/${uid}` })
 
 export const userCreateApi = data => request.post({ url: '/user/create', data })
 
@@ -49,8 +46,6 @@ export const roleDetailApi = rid => request.get({ url: `/role/detail/${rid}` })
 
 export const roleDelApi = rid => request.post({ url: `/role/delete/${rid}` })
 
-export const beforeUnmountInfoApi = data => request.post({ url: '/role/beforeUnmountInfo', data })
-
 export const unMountUserApi = data => request.post({ url: '/role/unMountUser', data })
 
 export const mountUserApi = data => request.post({ url: '/role/mountUser', data })
@@ -60,7 +55,18 @@ export const searchExternalUserApi = keyword =>
 
 export const mountExternalUserApi = data => request.post({ url: '/role/mountExternalUser', data })
 
-export const switchLangApi = data => request.post({ url: '/user/switchLanguage', data })
+export const switchLangApi = async (data: { lang?: unknown }) => {
+  const lang = await requireSwitchLanguage(data?.lang)
+  const response = await request.post({
+    url: '/user/switchLanguage',
+    data: { lang },
+    handleErrorLocally: true
+  })
+  if (response?.code !== 0) {
+    throw new Error(response?.msg || useI18n().t('common.language_switch_failed'))
+  }
+  return response
+}
 
 export const downExcelTemplateApi = () =>
   request.post({ url: '/user/excelTemplate', responseType: 'blob' })

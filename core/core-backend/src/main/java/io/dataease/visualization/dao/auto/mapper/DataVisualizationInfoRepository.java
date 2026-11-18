@@ -53,6 +53,10 @@ public interface DataVisualizationInfoRepository extends JpaRepository<DataVisua
                 .toList();
     }
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT v FROM DataVisualizationInfo v WHERE v.id = :id")
+    Optional<DataVisualizationInfo> lockForSave(@Param("id") Long id);
+
     default Integer findDvInfoStats(@Param("dvId") Long dvId) {
         return findById(dvId)
                 .map(DataVisualizationInfo::getStatus)

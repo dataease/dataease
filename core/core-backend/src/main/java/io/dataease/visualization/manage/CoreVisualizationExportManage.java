@@ -10,6 +10,7 @@ import io.dataease.constant.DeTypeConstants;
 import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.util.ExportCenterUtils;
+import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -53,6 +54,9 @@ public class CoreVisualizationExportManage {
     @Resource
     private DatasetFieldServer datasetFieldServer;
 
+    @Resource
+    private ExportCenterDownLoadManage exportCenterDownLoadManage;
+
     public String getResourceName(Long dvId, String busiFlag) {
         DataVisualizationVO visualization = coreVisualizationManage.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
@@ -60,6 +64,20 @@ public class CoreVisualizationExportManage {
     }
 
     public File exportExcel(Long dvId, String busiFlag, List<Long> viewIdList, boolean onlyDisplay, String filterJson) throws Exception {
+        return exportExcelWithHeaderMode(dvId, busiFlag, viewIdList, onlyDisplay, filterJson, "dataset");
+    }
+
+    public File exportExcelWithHeaderMode(Long dvId, String busiFlag, List<Long> viewIdList,
+                                         boolean onlyDisplay, String filterJson, String headerMode) throws Exception {
+        return exportExcelWithWatermark(dvId, busiFlag, viewIdList, onlyDisplay, filterJson, headerMode, false);
+    }
+
+    public File exportExcelWithWatermark(Long dvId, String busiFlag, List<Long> viewIdList,
+                                         boolean onlyDisplay, String filterJson, String headerMode,
+                                         boolean showWatermark) throws Exception {
+        if (headerMode != null && !"dataset".equals(headerMode) && !"display".equals(headerMode)) {
+            DEException.throwException("Invalid Excel header mode");
+        }
         DataVisualizationVO visualization = coreVisualizationManage.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
         List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, CommonConstants.RESOURCE_TABLE.CORE);
@@ -100,13 +118,14 @@ public class CoreVisualizationExportManage {
             }
             view.getChartExtRequest().setUser(V3UserUtil.getUid());
             view.setTitle((i + 1) + "-" + view.getTitle());
-            sheets.addAll(exportViewData(view));
+            sheets.addAll(exportViewData(view, "display".equals(headerMode)));
         }
 
-        return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString());
+        return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString(),
+                showWatermark ? exportCenterDownLoadManage::addWatermarkTools : null);
     }
 
-    private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title) {
+    private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title, boolean displayHeader, boolean filterHidden) {
         ExcelSheetModel result = new ExcelSheetModel();
         Object objectFields = chart.get("fields");
         List<ChartViewFieldDTO> fields = (List<ChartViewFieldDTO>) objectFields;
@@ -115,11 +134,15 @@ public class CoreVisualizationExportManage {
         List<Integer> fieldTypes = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             fields.forEach(field -> {
+                // Keep headers, types and row values aligned through the same field keys.
+                if (filterHidden && field.isHide()) {
+                    return;
+                }
                 Object name = field.getName();
                 Object dataeaseName = field.getDataeaseName();
                 Object deType = field.getDeType();
                 if (ObjectUtils.isNotEmpty(name) && ObjectUtils.isNotEmpty(dataeaseName)) {
-                    heads.add(name.toString());
+                    heads.add(displayHeader ? StringUtils.defaultIfBlank(field.getChartShowName(), name.toString()) : name.toString());
                     headKeys.add(dataeaseName.toString());
                     if (deType == null) {
                         field.setDeType(DeTypeConstants.DE_STRING);
@@ -157,7 +180,7 @@ public class CoreVisualizationExportManage {
         return result;
     }
 
-    private List<ExcelSheetModel> exportViewData(ChartViewDTO request) {
+    private List<ExcelSheetModel> exportViewData(ChartViewDTO request, boolean displayHeader) {
 
         ChartViewDTO chartViewDTO = null;
         request.setIsExcelExport(true);
@@ -175,22 +198,23 @@ public class CoreVisualizationExportManage {
                 throw new RuntimeException(e);
             }
         }
+        boolean filterHidden = StringUtils.equalsAnyIgnoreCase(type, "table-info", "table-normal");
         String title = chartViewDTO.getTitle();
         Map<String, Object> chart = chartViewDTO.getData();
         List<ExcelSheetModel> resultList = new ArrayList<>();
         boolean leftExist = ObjectUtils.isNotEmpty(chart.get("left"));
         boolean rightExist = ObjectUtils.isNotEmpty(chart.get("right"));
         if (!leftExist && !rightExist) {
-            ExcelSheetModel sheetModel = exportSingleData(chart, title);
+            ExcelSheetModel sheetModel = exportSingleData(chart, title, displayHeader, filterHidden);
             resultList.add(sheetModel);
             return resultList;
         }
         if (leftExist) {
-            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("left"), title + "_left");
+            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("left"), title + "_left", displayHeader, filterHidden);
             resultList.add(sheetModel);
         }
         if (rightExist) {
-            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("right"), title + "_right");
+            ExcelSheetModel sheetModel = exportSingleData((Map<String, Object>) chart.get("right"), title + "_right", displayHeader, filterHidden);
             resultList.add(sheetModel);
         }
         return resultList;

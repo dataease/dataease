@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 箱线图有界 Java 回退使用的统计工具。
- * 空值、空字符串和非数值不参与统计，重复值按实际明细条数保留。
- * 四分位数使用 Type 7 线性插值，异常值使用 Tukey 1.5 倍四分位距规则识别。
+ * 箱线图统计摘要与有界 Java 回退使用的统计工具
+ * 空值、空字符串和非数值不参与统计，重复值按实际明细条数保留
+ * 四分位数使用 Type 7 线性插值，异常值使用 Tukey 1.5 倍四分位距规则识别
  */
 final class BoxPlotStatistics {
 
@@ -59,9 +59,11 @@ final class BoxPlotStatistics {
         BigDecimal upperFence = q3.add(iqr.multiply(TUKEY_OUTLIER_FACTOR, MATH_CONTEXT), MATH_CONTEXT);
 
         List<BigDecimal> outliers = new ArrayList<>();
+        BigDecimal sampleSum = BigDecimal.ZERO;
         BigDecimal low = null;
         BigDecimal high = null;
         for (BigDecimal value : values) {
+            sampleSum = sampleSum.add(value);
             if (value.compareTo(lowerFence) < 0 || value.compareTo(upperFence) > 0) {
                 outliers.add(value);
                 continue;
@@ -71,7 +73,10 @@ final class BoxPlotStatistics {
             }
             high = value;
         }
-        return new BoxPlotSummary(dimensions, low, q1, median, q3, high, outliers, outliers.size(), values.size());
+        return new BoxPlotSummary(
+                dimensions, low, q1, median, q3, high, outliers, outliers.size(), values.size(),
+                sampleSum, values.getFirst(), values.getLast()
+        );
     }
 
     /**
@@ -104,7 +109,7 @@ final class BoxPlotStatistics {
     }
 
     /**
-     * outlierCount 表示真实异常值总数，outliers 只保存受展示上限约束后返回前端的异常点。
+     * 原始样本总和与极值包含异常值，不随异常点的展示设置变化
      */
     record BoxPlotSummary(
             List<String> dimensions,
@@ -115,10 +120,23 @@ final class BoxPlotStatistics {
             BigDecimal high,
             List<BigDecimal> outliers,
             long outlierCount,
-            long count
+            long count,
+            BigDecimal sampleSum,
+            BigDecimal sampleMin,
+            BigDecimal sampleMax
     ) {
+        /**
+         * SQL 下推与 Java 回退使用相同的十进制除法计算均值
+         */
+        BigDecimal mean() {
+            return sampleSum.divide(BigDecimal.valueOf(count), MATH_CONTEXT);
+        }
+
         BoxPlotSummary withDisplayedOutliers(List<BigDecimal> displayedOutliers) {
-            return new BoxPlotSummary(dimensions, low, q1, median, q3, high, displayedOutliers, outlierCount, count);
+            return new BoxPlotSummary(
+                    dimensions, low, q1, median, q3, high, displayedOutliers, outlierCount, count,
+                    sampleSum, sampleMin, sampleMax
+            );
         }
     }
 }

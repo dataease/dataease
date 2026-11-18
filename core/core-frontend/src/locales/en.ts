@@ -1,5 +1,28 @@
 export default {
+  sensitive_reveal: {
+    action: 'View saved value',
+    datasource_title: 'View datasource credentials',
+    datasource_hint:
+      'Enter your current password to view the saved credential for this datasource.',
+    engine_title: 'View engine credentials',
+    engine_hint: 'Enter your current password to view the saved engine connection password.',
+    sync_title: 'View sync connection credentials',
+    sync_hint: 'Enter your current password to view the saved credential for this sync connection.',
+    remote_title: 'View remote file password',
+    remote_hint: 'Enter your current password to view the saved remote file access password.',
+    current_password: 'Current password',
+    verify: 'Verify and view',
+    failed:
+      'Unable to view. Check your password and permissions or try again later. External authentication is not supported.',
+    auto_hide:
+      'This saved value closes automatically after {seconds} seconds. The form will not be changed.',
+    result: 'Saved credential',
+    close: 'Close'
+  },
   material: {
+    component_assets: 'Component Assets',
+    image_library: 'Image Library',
+    component_hint: 'Add a border, decoration, shape, or icon to the canvas.',
     package_size_hint: 'Packages must be under 300MiB, with at most 200MiB of material files.',
     title: 'Material library',
     description: 'Shared system library · Library managers can manage all custom materials',
@@ -23,8 +46,16 @@ export default {
     download: 'Download',
     move: 'Move to category',
     delete_hint:
-      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed. Delete this material?',
+      'The material will be hidden and unavailable for new selections. Existing dashboards, screens and other references remain usable. Files are automatically cleaned up after all references are removed.',
     deleted: 'Deleted successfully',
+    batch_delete: 'Delete selected',
+    batch_selected_count: '{count} selected',
+    batch_select_item: 'Select material {name}',
+    batch_delete_confirm:
+      'Delete {count} selected materials? They will be hidden from the library. Existing references will remain usable. Files are cleaned up after all references are removed.',
+    batch_delete_result: 'Deleted: {success}. Failed: {failed}.',
+    batch_delete_failure_detail: '{name}: {reason}',
+    batch_delete_unknown_error: 'Deletion failed. Please try again.',
     empty: 'No materials',
     file_hint: 'PNG, JPG/JPEG, GIF and safe SVG only. Maximum file size: 15 MiB.',
     confirm: 'Confirm selection',
@@ -52,7 +83,7 @@ export default {
     retry: 'Retry',
     preview_failed: 'Could not preview this material. Please try again.',
     choose: 'Choose from material library',
-    import_hint: 'Materials in this package will be added to the shared library for editors.',
+    import_hint: 'Images in the package will be used to restore the canvas.',
     export_failed: 'A required material could not be read. Export cancelled.'
   },
   remote_transfer: {
@@ -78,6 +109,17 @@ export default {
     save_copy: 'Save and copy link'
   },
   common: {
+    embedded_origin_mismatch:
+      'Embedded origin validation failed. Contact your administrator to check the allowed domain and DataEase access address.',
+    embedded_token_expired:
+      'The embedded credential has expired. Obtain a new credential and retry.',
+    embedded_token_invalid:
+      'The embedded credential is invalid. Obtain a new credential and retry.',
+    embedded_auth_failed: 'Embedded authentication failed. Contact your administrator.',
+
+    language_required: 'Language is required',
+    language_unsupported: 'The selected language is not supported',
+    language_switch_failed: 'Unable to switch language. Please try again.',
     display_formats: 'Display Formats',
     dropdown_display: 'Drop-down Display',
     tile_display: 'Tile Display',
@@ -278,8 +320,9 @@ export default {
     confirm_the_deletion:
       'Not checked, the associated calculated fields will be deleted, confirm the deletion? ',
     confirm_to_delete: 'Are you sure you want to delete {a}?',
-    also_be_deleted:
-      'After deletion, the associated table or sql fragment will be deleted, and the associated calculated fields will also be deleted. ',
+    delete_node_join_tip:
+      'This node’s joins will be removed. Any downstream nodes will also be deleted.',
+    also_be_deleted: 'Calculated fields that depend on the deleted nodes will also be deleted.',
     deleted_confirm_deletion:
       'If the field is deleted, the associated calculated fields will be deleted, confirm the deletion? ',
     delete_field_a: 'Are you sure you want to delete field {a}?',
@@ -320,6 +363,10 @@ export default {
     run: 'Run',
     parameter_settings: 'Parameter settings',
     save: 'Save',
+    example_sql: 'Example SQL',
+    example_sql_original: 'Original SQL',
+    example_sql_type_changed: 'Field type changed',
+    example_sql_type_changed_empty: 'Field type changed · 0 rows',
     current_data_source: 'Current Datasource',
     relevant_content_found: 'No relevant content found',
     physical_field_name: 'Physical field name',
@@ -479,6 +526,19 @@ export default {
     api_data: 'API data'
   },
   dynamic_time: {
+    date_offset: 'Date offset',
+    clock: 'Time of day',
+    fixed_clock: 'Fixed time',
+    clock_offset: 'Time offset',
+    hours: 'h',
+    minutes: 'm',
+    seconds: 's',
+    clock_direction: 'Time offset direction',
+    offset_hint: 'Based on the current time; day changes are handled automatically.',
+    baseline: 'Current time: ',
+    invalid_offset:
+      'Enter valid non-negative integers; minutes and seconds must be 0–59 and the result must be within the supported date range.',
+
     set_default: 'Default value',
     fix: 'Fixed time',
     dynamic: 'Dynamic time',
@@ -503,6 +563,7 @@ export default {
     cquarter: 'This quarter',
     tquarter: 'This quarter',
     lquarter: 'Last quarter',
+    last_quarter: 'Last quarter',
     cyear: 'This year'
   },
   dynamic_year: {
@@ -660,6 +721,9 @@ export default {
     upload_json_files: 'Only json files can be uploaded',
     maximum_upload_200m: 'Maximum upload size 200M',
     geographic_information: 'Geographic information',
+    unsupported_geo_parent:
+      'This region does not support subregions. Select another parent region.',
+    geo_suffix_length: 'Please enter a {0}-digit suffix',
     superior_region_first: 'Please select the superior region first',
     region_name: 'Region name',
     appearance_configuration: 'Appearance Configuration',
@@ -912,6 +976,8 @@ export default {
     switch_success: 'Switch successful',
     user_name_pattern_error:
       "Only numbers and letters and {'@'}._- are allowed, and must start with a number or letter",
+    initial_password_policy:
+      'When the initial password is disabled, your new password must be different from it.',
     pwd_pattern_error:
       '6-20 characters and at least one uppercase letter, lowercase letter, number, special character',
     special_characters_are_not_supported: 'Special characters are not allowed',
@@ -968,6 +1034,7 @@ export default {
     success: 'Import successful',
     placeholder: 'Click to select a file',
     defaultTip: 'Only supports xlsx and xls format files',
+    emptyOrgTip: 'When the organization is blank, no organization or roles are assigned.',
     errorTip:
       'Upload failed: There is non-compliant data in the file, if you need to view details,',
     downTip: 'Download template',
@@ -1437,6 +1504,7 @@ export default {
     latitude: 'Latitude',
     longitude_and_latitude: 'Longitude and latitude',
     gradient: 'Gradient',
+    show_area: 'Show area',
     layer_controller: 'Indicator switch',
     show_zoom: 'Show zoom button',
     button_color: 'Button color',
@@ -1698,6 +1766,17 @@ export default {
     box_plot_low: 'Lower whisker (lowest non-outlier)',
     box_plot_q1: 'First quartile (Q1)',
     box_plot_median: 'Median',
+    box_plot_mean: 'Mean',
+    box_plot_mean_symbol: 'Mean marker shape',
+    box_plot_mean_cross: 'Cross (×)',
+    box_plot_show_mean: 'Show mean',
+    box_plot_show_mean_label: 'Show mean label',
+    box_plot_mean_tip:
+      'The mean includes all valid samples in each box, including outliers; hiding outlier points does not change the mean',
+    box_plot_assist_summary_unsupported:
+      'Box plot reference lines support only mean, maximum, and minimum. Please select one of these options',
+    box_plot_assist_axis_unsupported:
+      'Box plot reference lines support only the primary axis. Switch to the primary axis or delete this line',
     box_plot_quartile_range: 'Quartile range (Q1–Q3)',
     box_plot_q3: 'Third quartile (Q3)',
     box_plot_high: 'Upper whisker (highest non-outlier)',
@@ -2016,6 +2095,7 @@ export default {
     value_can_not_empty: 'Value cannot be empty',
     value_error: 'Value must be a numeric value',
     threshold: 'Conditional style',
+    condition_style_apply_to_total_row: 'Apply conditional style to total row',
     threshold_range: 'Threshold range',
     gauge_threshold_format_error: 'Format error',
     total_cfg: 'Total configuration',
@@ -2335,6 +2415,7 @@ export default {
     carousel_enable: 'Enable Carousel',
     carousel_stay_time: 'Stay Duration (seconds)',
     carousel_interval: 'Carousel Interval (seconds)',
+    merged_cell_tooltip_tip: 'Merged cells only show the cell value.',
     custom_tooltip_content_tip:
       "Can read field values in the form of ${'{'}fieldName{'}'} (Supports limited safe HTML tags without attributes or styles)",
     legend_range_division: 'Legend range division',
@@ -2416,6 +2497,15 @@ export default {
     liquid_border_distance: 'Border Distance'
   },
   dataset: {
+    field_details: 'Field details',
+    dataset_field_name: 'Dataset field name',
+    dataset_field_type: 'Dataset field type',
+    source_physical_table: 'Source table',
+    field_remark: 'Remarks',
+    canvas_fullscreen: 'Expand canvas',
+    node_details_fullscreen: 'Expand node details',
+    next_data_processing: 'Next: Data processing',
+    table_relationship: 'Table relationships',
     field_value: 'Field Value',
     scope_edit: 'Only effective when editing',
     scope_all: 'Globally effective when previewing datasets',
@@ -2614,7 +2704,7 @@ export default {
     edit_calc_field: 'Edit calculated field',
     calc_field: 'Calculate fields',
     show_sql: 'Show SQL',
-    ple_select_excel: 'Please re-upload the Excel to be imported.',
+    ple_select_excel: 'Please re-upload the file to be imported.',
     merge: 'Merge',
     no_merge: 'Do not merge',
     merge_msg:
@@ -2705,6 +2795,14 @@ export default {
       tip8: 'For Calcite functions, please refer to the documentation:'
     },
     batch_manage: 'Batch management',
+    type_change_pending: '{count} field type(s) to confirm',
+    type_change_pending_title: 'Field type to confirm',
+    only_type_change_pending: 'Only pending',
+    type_change_not_auto: 'dataset field types were not changed automatically',
+    current_field_type: 'Current field type',
+    sql_detected_type: 'SQL detected type',
+    keep_current_type: 'Keep current type',
+    view_fields: 'View fields',
     origin_name: 'Physical field name',
     origin_type: 'Physical field type',
     field_diff: 'The selected field types are inconsistent and do not support conversion',
@@ -3177,6 +3275,8 @@ export default {
     cannot_be_empty_de: 'The query condition is required and the default value cannot be empty',
     the_start_time: 'The end time must be greater than the start time!',
     and_end_time: 'The time parameter configuration must configure the start time and end time',
+    fixed_time_invalid:
+      'The fixed time format is invalid or the day/month order is ambiguous. Please select the date again.',
     cannot_be_empty_time: 'The default time cannot be empty!',
     range_please_reset: 'The default value exceeds the date filter range, please reset it! ',
     cannot_be_empty_input: 'Manual input - option value cannot be empty',
@@ -3251,6 +3351,9 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    canvas_load_failed:
+      'Unable to load this visualization. Reopen it, or contact an administrator to check its configuration.',
+    template_load_failed: 'Failed to load the template. Check it and reopen, or try again later.',
     hover_button_tips: 'Display chart action buttons',
     preview_effect: 'Takes effect in preview mode',
     img_can_not_null: 'Image cannot be empty',
@@ -3328,6 +3431,9 @@ export default {
     text_decoration: 'underline',
     select_target_resource: 'Please select the target resource',
     target_dashboard_dataV: 'Target Dashboard/Screen',
+    target_spreadsheet: 'Target Spreadsheet',
+    link_spreadsheet_field: 'Data Area/Query Condition and Field',
+    select_spreadsheet_target: 'Select a data area or query condition',
     dashboard_dataV: 'Dashboard/Data Screen',
     effective_during_link: 'Public link active',
     condition_style_set: 'Condition Style Settings',
@@ -3486,6 +3592,11 @@ export default {
     pic_upload_tips: 'Please upload an image...',
     pic_group: 'Image Group',
     pic_upload_tips2: 'Supports JPG, PNG, GIF, SVG',
+    pic_group_upload_hint: 'Add one image at a time from the library, or upload multiple files.',
+    pic_group_limit: 'You can add up to {limit} images',
+    pic_group_carousel_hint:
+      'Preview cycles through images in order. Editing shows the first image.',
+    pic_condition_images: 'Images for conditional styling',
     pic_adaptor_type: 'Image Adaptation Method',
     pop_area_tips:
       'Click or drag the query component to this position, click preview to view the pop-up area',
@@ -3523,6 +3634,10 @@ export default {
     keep_size: 'Adjust size & keeping inner',
     no_save_tips: 'There are unsaved {0}',
     no_save_tips2: 'There are unsaved changes, restore now?',
+    canvas_draft_outdated:
+      'This local draft is based on an older or unknown version. Restore it? Restoring does not save to the server; version conflicts will still be checked when saving.',
+    canvas_draft_storage_failed:
+      'The browser draft could not be saved. Editing and undo are still available. Please save your changes to the server.',
     locate_tips: 'Locate to Center',
     new_tab: 'New Tab',
     pop_area: 'Pop Up Area',
@@ -3594,6 +3709,10 @@ export default {
     current_chart_source_field: 'Current Chart Source Field',
     add_linkage_dependency_fields: 'Add Linkage Dependency Fields',
     select_linkage_tips: 'Please first select the charts that need linkage',
+    time_only_query_linkage_unsupported:
+      'Time-only dimensions cannot link to date query components. Use a dimension format that includes a date.',
+    month_day_query_linkage_unsupported:
+      'Month/day dimensions cannot link to date query components. Use a dimension format that includes a year.',
     linkage_option_tips1:
       'If the linkage dimension has been configured for drilling, clicking the dimension will',
     linkage_option1: 'Pop up a floating box for the user to choose linkage or drilling',
@@ -3992,6 +4111,7 @@ export default {
     component_hidden: 'Hidden Components',
     public_link_tips:
       'Currently in public link mode, the target dashboard has not set up public links, unable to jump',
+    public_link_spreadsheet_tips: 'Public links do not support jumping to spreadsheets',
     input_title: 'Please enter the title',
     show_title: 'Title',
     default_settings: 'Default Settings',
@@ -4263,6 +4383,13 @@ export default {
     ds_search_placeholder: 'Search name, description'
   },
   sync_datasource: {
+    connection_change_title: 'Change connection settings?',
+    connection_change_warning:
+      'This data source is used by {count} tasks. New executions will use the new connection. Existing executions, retries and recovery will keep their original connection. Tables, SQL, field mappings and incremental rules will remain unchanged. Tasks may fail or synchronize different data; maintenance or new tasks may be required.',
+    changes_not_saved:
+      'Changes were not saved. The existing configuration and status are unchanged.',
+    show_error_details: 'View error details',
+    hide_error_details: 'Hide error details',
     title: 'Data Connection Management',
     source_ds: 'Source Data Source',
     target_ds: 'Target Data Source',
@@ -4280,8 +4407,6 @@ export default {
     confirm_batch_delete_target_ds: 'Are you sure you want to delete {0} target Datasources? ',
     confirm_batch_delete_source_ds: 'Are you sure you want to delete {0} source Datasources? ',
     recently_created: 'Recently created',
-    has_running_task_msg:
-      'After the task in progress is completed, the configuration before the modification will continue to be used for synchronization, and the task needs to be manually saved again. ',
     edit_datasource: 'Edit Datasource',
     add_datasource: 'Create a new Datasource',
     config_info: 'Configuration information',
@@ -4401,7 +4526,370 @@ export default {
     execution_results_in_the_past_7_days: 'Executions in the past 7 days',
     sync_status_distribution: 'Sync status distribution'
   },
+  sync_task_log: {
+    view_more: 'View more logs',
+    task_type: 'Task type',
+    data_sync: 'Data synchronization',
+    field_change: 'Field change',
+    details: 'Field change log',
+    operator: 'Operator',
+    target_table: 'Target table',
+    unknown: 'Unknown',
+    planned_changes:
+      'Submitted changes for this operation. Check the execution results to see what took effect.',
+    planned_after: 'Planned value',
+    partial: 'Partially completed',
+    pending_initialization: 'Awaiting initialization',
+    recovery_required: 'Verification required',
+    superseded: 'Continued by a later change',
+    successor: 'View the subsequent field change',
+    initialization_result: 'Related initialization result',
+    read_failed: 'Unable to read the field change log. Refresh to try again.',
+    cleanup_scope:
+      'Clear data synchronization and field change logs in the selected time range. Records in progress or needed for recovery are retained.'
+  },
+  sync_maintenance: {
+    confirm_precision_alignment:
+      'I confirm the actual column capacity meets business needs and agree to update the task configuration to match',
+    precision_unspecified: 'precision unspecified',
+    saved_definition: 'Saved task configuration',
+    actual_definition: 'Actual database schema',
+    actual_column_missing: 'Column not found',
+    align_precision: 'Align precision with database',
+    precision_alignment_help:
+      'Only fill unspecified numeric precision in the task configuration using actual database values. This does not alter the table, increase capacity, or synchronize data. Confirm that the current capacity meets your business needs',
+    menu: 'Field adjustment',
+    title: 'Adjust target fields',
+    task_name: 'Task',
+    source_connection: 'Source connection',
+    target_connection: 'Target connection',
+    target_datasource: 'Target datasource',
+    database_type: 'Database type',
+    database_version: 'Version',
+    source_table: 'Source table',
+    target_table: 'Target table',
+    edit_source_query: 'Edit source SQL',
+    source_query_draft: 'Source SQL draft',
+    query_edit_help:
+      'Edit SQL using the existing source connection. Read its fields, review mappings and confirm the adjustment. SQL changes require a full reload that replaces target data',
+    cancel_query_edit: 'Cancel SQL edit',
+    read_query_fields: 'Read query fields',
+    query_read_failed_help:
+      'Restore the missing source field, or edit the source SQL and read its fields again. Deleting a target field alone does not repair the query',
+    query_pending:
+      'The source SQL draft has been read but is not yet applied. A full reinitialization is required',
+    query_pending_count: 'The query change and {0} field changes have not been applied',
+    source_query_changed: 'Source SQL change',
+    source_missing_status: 'Source field missing',
+    source_missing_field:
+      'Source field {0} no longer exists. Restore it or use DE to delete the corresponding ordinary target field and mapping',
+    source_missing_help:
+      'Some target fields refer to missing source fields. Restore the source fields or delete the corresponding ordinary target fields and mappings below. Deleting a target column removes its historical values; protected fields require valid sources',
+    query_source: 'Source: query result',
+    view_query: 'View query',
+    hide_query: 'Hide query',
+    query_readonly:
+      'Read only. This does not execute the query. Fields come from the query result, which may span multiple tables.',
+    current_fields: 'Current task field configuration',
+    editing_fields: 'Edited fields take effect only after you confirm the adjustment',
+    source_field_type: 'Source field / type',
+    target_field_type: 'Target field / type',
+    generated_field: 'System generated',
+    standard_type: 'Standard type: {0}',
+    saved_type: 'Saved: {0} (not currently verified)',
+    type_unavailable: 'Type unavailable',
+    unverified:
+      'The target schema has not been verified. Only saved task configuration is shown below.',
+    no_configured_fields: 'This task has no saved field configuration. Check its field mappings.',
+    only_protected_fields:
+      'Only protected fields are configured. Expand the section below to view them.',
+    protected_fields: 'Protected fields ({0})',
+    special: 'Protected fields cannot be adjusted',
+    start_adjustment: 'Edit fields',
+    reload: 'Reload',
+    confirm_field: 'Confirm changes',
+    draft_saved: 'Draft updated. Changes take effect only after you confirm the adjustment.',
+    added: 'To be added',
+    modified: 'To be modified',
+    deleted: 'To be deleted',
+    change: 'Change',
+    undo: 'Undo deletion',
+    restore_conflict:
+      'The restored field conflicts with the current configuration. Check field names and source mappings.',
+    pending_count: 'Changes to {0} fields have not taken effect',
+    no_changes: 'No field changes',
+    check_all: 'Check and confirm',
+    check_failed: 'Checks failed. No changes have been executed.',
+    check_failed_help:
+      'Resolve the highlighted field errors and issues below, then check again. All edits are retained.',
+    locate_issue: 'Locate field error',
+    discard_draft: 'Cancel editing',
+    cancel_editing_title: 'Cancel these edits?',
+    discard:
+      'Discard all unsubmitted edits and restore the current field configuration. Changes that have already taken effect are retained.',
+    discard_changes: 'Discard all edits',
+    continue_editing: 'Continue editing',
+    close: 'Close',
+    back_edit: 'Back to editing',
+    back_fields: 'Back to fields',
+    back_result: 'Back to results',
+    view_current_configuration: 'View current configuration',
+    confirm: 'Confirm field adjustment',
+    apply: 'Confirm adjustment',
+    apply_reinit: 'Confirm and initialize',
+    confirm_init_title: 'Full initialization is required',
+    confirm_impact_title: 'Impact of this adjustment',
+    history_replace:
+      'Target data will be replaced with a fresh full read of the source. Content that exists only in the target may be lost.',
+    history_preserve:
+      'No full initialization is planned. Type changes affect existing target data; changing a source mapping does not automatically backfill historical values.',
+    confirm_delete_impact:
+      'Selected target columns and their historical values will be deleted. Data in other columns is retained.',
+    confirm_preserve_impact:
+      'No full source read is planned. Existing data in retained columns is preserved, subject to the database conversion results.',
+    confirm_init_schedule:
+      'Subsequent synchronization is paused until the adjustment and initialization succeed. Previously disabled tasks remain disabled.',
+    confirm_adjust_schedule:
+      'Subsequent synchronization is paused until the schema and task configuration are verified as consistent. Previously disabled tasks remain disabled.',
+    confirm_more_impact: 'Execution flow and impact',
+    confirm_execution_flow:
+      'Adjust and verify target schema → Save task configuration → Complete required initialization → Verify completion',
+    downstream_help:
+      'Renaming or deleting fields may affect datasets, charts and SQL. Check downstream references; this operation does not automatically detect or update them.',
+    failure_help:
+      'Edits can be discarded before submission. Submitted changes are not automatically rolled back. After partial completion, a lost response or a restart, recorded results and the actual schema are checked before unfinished work is handled.',
+    exclusive:
+      'I confirm that no other task or program will write to the target table during this operation',
+    delete_confirm: 'I confirm deletion of the selected fields and their historical values',
+    confirm_initialization:
+      'I understand that full initialization reads the source again and replaces target data',
+    confirm_conversion_short: 'I understand the conversion and data write risks described above',
+    confirm_pending: 'Confirm {0} remaining items',
+    confirm_ready: 'Confirm to start this adjustment',
+    confirm_blocked: 'Return to editing to resolve {0} issues',
+    changes_title: 'Changes in this adjustment',
+    change_summary: '{0} fields · {1} changes',
+    field_change_count: '{0} changes',
+    changed_attribute: 'Attribute',
+    before: 'Before',
+    after: 'After',
+    deleted_field_effect:
+      'The target column and its historical values will be deleted. The source field is unaffected.',
+    comment_modified: 'Modified',
+    view_comparison: 'Show comparison',
+    hide_comparison: 'Hide comparison',
+    index_enabled: 'Index configured',
+    index_none: 'No index configured',
+    index_add: 'Add index',
+    index_remove: 'Remove index',
+    view_changes: 'View changes',
+    applying: 'Adjusting target fields. Subsequent synchronization is paused.',
+    collapse: 'Close; continue in background',
+    collapse_help:
+      'You can close this window while execution continues. Reopen the same adjustment from the task list without submitting it again.',
+    current_stage: 'Current stage',
+    schema_stage: 'Target schema adjustment',
+    configuration_stage: 'Task field configuration update',
+    initialization_stage: 'Full initialization',
+    execution_pending_title: 'This adjustment has not completed',
+    structure_incomplete_help:
+      'Completed changes are retained and subsequent synchronization remains restricted. Review the cause, then return to editing or keep the completed changes and end the adjustment.',
+    configuration_pending_title: 'Schema adjustment completed; updating task configuration',
+    configuration_pending_help:
+      'The target schema has been verified, but task configuration has not been saved. Restrictions remain until it is saved successfully.',
+    configuration_init_help:
+      'The target schema has been verified. Task configuration must be saved and full initialization completed before subsequent synchronization can resume.',
+    config_save_failed_title: 'Schema changes completed; task configuration not saved',
+    config_updated: 'Updated',
+    config_not_updated: 'Not updated',
+    not_completed: 'Not fully completed',
+    save_configuration: 'Save task configuration',
+    retry_configuration: 'Retry saving configuration',
+    save_and_initialize: 'Save configuration and initialize',
+    schema_failed_title: 'Field adjustment failed; no changes have taken effect',
+    partial_apply_title: 'Adjustment incomplete; some changes have taken effect',
+    unknown_result_title: 'Some adjustment results need verification',
+    response_unknown: 'Submission result unconfirmed; checking recorded results',
+    response_unknown_help:
+      'An interrupted request does not mean the adjustment failed. Check again so the system can verify recorded results and the actual schema without repeating changes.',
+    recovery_required_title:
+      'Task configuration needs recovery; subsequent synchronization is paused',
+    recovery_required_help:
+      'Completed changes are retained. The actual schema must be verified and consistent configuration saved before editing can continue or the adjustment can end.',
+    check_result: 'Check again',
+    check_status: 'Check again',
+    resume: 'Continue remaining steps',
+    resume_original: 'Continue original adjustment',
+    resume_original_help:
+      'Continue unfinished work from the original plan. New page edits are not used, and completed steps are not repeated.',
+    keep_completed: 'Keep completed changes and end',
+    finish_title: 'Keep completed changes and end?',
+    finish_help:
+      'Keep verified completed changes and discard unfinished changes. The system verifies the schema and saves consistent configuration before ending. Synchronization remains restricted if initialization is still required.',
+    keep_and_finish: 'Keep and end',
+    return_editing_title: 'Return to unfinished changes?',
+    edit_remaining_help:
+      'Completed changes are retained. The system verifies the schema and restores consistent configuration before reopening unfinished edits. Recovery errors remain available for resolution.',
+    continue_viewing: 'Continue viewing',
+    initialization_pending_title:
+      'Field configuration updated; full initialization is still required',
+    initialization_pending_help:
+      'Subsequent synchronization remains paused until initialization succeeds. View the current configuration or resolve the cause and retry initialization.',
+    initialization_running_title:
+      'Full initialization is running; synchronization cannot resume yet',
+    initialization_failed_title:
+      'Full initialization did not succeed; synchronization remains restricted',
+    initialization_failed_help:
+      'The schema and task configuration have been updated, but initialization has not succeeded. Review the task log, resolve the cause and retry initialization.',
+    initialization_unknown_title:
+      'Full initialization results need verification; synchronization remains restricted',
+    initialization_unknown_help:
+      'The executor or table replacement result is unconfirmed. Review the task log and verify the actual result before retrying; synchronization remains restricted.',
+    retry_initialization: 'Retry this full initialization',
+    init_not_required: 'Not required',
+    init_pending: 'Pending initialization',
+    init_running: 'Running',
+    init_success: 'Succeeded and verified',
+    init_failed: 'Not successful',
+    init_unknown: 'Result needs verification',
+    success_title: 'Field schema and task configuration updated',
+    applied_count: 'Applied changes to {0} fields',
+    applied_brief: 'Field adjustment completed',
+    last_completed: 'Previous field adjustment completed',
+    ended_summary: 'Adjustment ended; completed changes were retained',
+    adjustment_without_sync:
+      'This status confirms field adjustment only. Check task logs for data synchronization results.',
+    initialization_completed:
+      'Full initialization succeeded. Check task logs for subsequent synchronization results.',
+    initialization_not_verified:
+      'The initialization result record is currently unavailable. Check task logs for synchronization results.',
+    sync_result_logs:
+      'This status confirms the previous field adjustment only. Check task logs for synchronization results.',
+    no_record: 'No field adjustment record',
+    operation_record: 'Adjustment record',
+    technical_details: 'Technical details',
+    adjustment_step: 'Field adjustment step',
+    execution_result: 'Execution result',
+    failure_reason: 'Failure or verification reason',
+    full_once: 'Run full synchronization once',
+    full_warning:
+      'Read all data within the current source scope again. On completion, target data reflects this source read; data that exists only in the target may be lost.',
+    full_mode:
+      'Run a full synchronization using the current saved configuration. Unsubmitted field edits are not applied, and the original synchronization mode and schedule are retained.',
+    full_exclusive:
+      'I confirm that no other task or program will write to the target table during this synchronization',
+    full_submitted: 'Full synchronization submitted. Check task logs for execution results.',
+    full_submit_error_help:
+      'Check this task’s execution logs to confirm whether synchronization started and its result before retrying.',
+    full_request_id:
+      'Request ID: {0}. Provide this ID to an administrator to locate the server error.',
+    full_unsupported:
+      'Target connection {0} ({1}) does not currently support one-time full synchronization',
+    rules_entry: 'Modification rules',
+    rules_expand_hint: 'Expand to view supported changes, restrictions and official documentation.',
+    rules_effect_brief:
+      'This window shows modification rules. Specific changes and data impact are shown when you confirm.',
+    rule_source_database: 'Official restriction',
+    rule_source_plugin: 'Plugin support scope',
+    rule_source_task: 'Task execution rule',
+    rule_supported: 'Supported',
+    rule_restricted: 'Restrictions / unsupported',
+    official_excerpt: 'Official documentation excerpt',
+    official_documentation: 'View official documentation',
+    rules_unavailable: 'The target plugin does not provide field adjustment rules',
+    plugin_rules_help:
+      'Available capabilities depend on the target plugin checks. Changes without declared support cannot be applied.',
+    name_help: 'Up to {0} characters. Duplicate names and case-only renames are not allowed.',
+    use_source_name: 'Use source field name',
+    conversion_unavailable: 'Unsupported',
+    conversion_risk: 'Risk confirmation required',
+    recommended_type: 'Recommended type: {0}',
+    use_recommended_type: 'Use recommendation',
+    no_recommended_type:
+      'No recommended type is available for this source field. Select a type supported by the target database.',
+    recommendation_blocked:
+      'The current target column cannot be converted to the recommended type. Keep its current type or choose an allowed type.',
+    existing_type_help:
+      'The current target type is retained. Recommended or manual changes still require target database conversion checks.',
+    new_type_help:
+      'New fields use recommendations from source type and target plugin mappings. You can select another supported type.',
+    decimal_help:
+      'Length is the total number of digits; precision is the number of decimal places. Existing integer and fractional capacity must not be reduced.',
+    minimum_size: 'The field length must be at least {0}',
+    size_range: 'Allowed range: {0}–{1}',
+    needs_attention: 'Field adjustment needs attention',
+    initializing_short: 'Full initialization running',
+    blocked:
+      'An adjustment or run is unfinished. Review and resolve the field adjustment result first.',
+    backend_unavailable:
+      'Field maintenance endpoints are unavailable. Check that frontend and backend versions match and restart the backend.',
+    read_failed: 'Unable to load data. Reopen the window or retry.',
+    completed_count: '{0} completed',
+    failed_count: '{0} failed',
+    not_executed_count: '{0} not executed',
+    unconfirmed_count: '{0} awaiting verification',
+    state_ready: 'No adjustment',
+    state_applying: 'Adjusting fields',
+    state_recovery_required: 'Configuration recovery required',
+    state_reinit_required: 'Full initialization required',
+    state_done: 'Fields adjusted',
+    step_planned: 'Not executed',
+    step_submitting: 'Submitting',
+    step_waiting: 'Running',
+    step_done: 'Completed',
+    step_failed: 'Failed',
+    step_unknown: 'Result needs verification',
+    step_skipped: 'Not executed',
+    step_partial: 'Partially completed',
+    action_add: 'Add',
+    action_delete: 'Delete',
+    action_update: 'Modify',
+    action_drop: 'Drop column',
+    action_rename: 'Rename',
+    action_type: 'Change type, length or precision',
+    action_comment: 'Change comment',
+    action_add_index: 'Add index',
+    action_drop_index: 'Drop index',
+    recovery_checking:
+      'The table replacement result is unverified. Automatic verification is in progress.',
+    recovery_manual_required:
+      'The table replacement result requires manual verification. Automatic checks have stopped.',
+    recovery_recheck: 'Check again',
+    recovery_manual: 'Verify table replacement manually',
+    recovery_last_checked: 'Last checked: {0} · Checks: {1}',
+    recovery_never_checked: 'Not checked yet',
+    recovery_manual_help:
+      'Verify that related database operations have ended and check the actual target data first. Manual verification records the confirmed result. It does not repeat table replacement or undo completed database changes.',
+    recovery_success: 'Table replacement succeeded and the target data has been verified',
+    recovery_failed: 'Table replacement did not complete; end this run as failed',
+    recovery_note:
+      'Provide supporting details, such as database jobs, target data, and the resolution',
+    recovery_confirm:
+      'I have confirmed that related tasks and database operations have ended and checked the actual data result',
+    recovery_record: 'Confirm and record result',
+    recovery_context: 'Task: {0} · Target table: {1}',
+    recovery_log: 'Run record: {0}',
+    recovery_execution_manual: 'Verify execution manually',
+    recovery_execution_help:
+      'Confirm that all related tasks and database operations have ended first. This action only ends this run as failed. It does not undo data already written or remove any outstanding initialization requirement.',
+    recovery_execution_required:
+      'The execution result requires manual verification. Automatic checks have stopped.',
+    recovery_execution_pending: 'Verifying the latest attempt; subsequent syncs remain restricted',
+    recovery_execution_failed: 'Related operations have ended; end this run as failed'
+  },
   sync_task: {
+    field_name_rules_unavailable:
+      'Target column naming rules are unavailable. Reload the field information.',
+    field_name_control:
+      'Sync column names cannot contain control characters such as line breaks or tabs.',
+    field_name_characters:
+      'The name contains characters unsupported by the target version. Check special characters or Unicode settings ({0}).',
+    field_name_reserved: 'The name uses a database-reserved prefix.',
+    field_name_protected: 'The name uses a DataEase sync-reserved prefix.',
+    decimal_precision_required:
+      'Field {0} (source type {1}) has no explicit precision for target type {2}. Set precision and scale based on the actual data instead of relying on database defaults',
+    decimal_parameters_invalid:
+      'Invalid parameters for target type {2} of field {0}: precision must be an integer from 1 to 38, and scale an integer from 0 to precision',
     cleanup_result: 'Cleanup result',
     cleanup_submitted:
       'Background cleanup submitted. You can close this window and continue working.',
@@ -4504,6 +4992,22 @@ export default {
     target_database_status_is_abnormal: 'Target database status abnormal',
     editable_check_failed:
       'Unable to confirm the target table status. Editing the sync structure is temporarily disabled. Check the target datasource configuration',
+    connection_unavailable: 'Deleted or inaccessible',
+    connection_not_recorded: 'No connection recorded',
+    source_connection_missing:
+      'The original source database connection has been deleted or is inaccessible',
+    target_connection_missing:
+      'The original target database connection has been deleted or is inaccessible',
+    target_table_missing:
+      'The original target table does not exist. Check the table name and target database',
+    target_table_check_failed: 'Unable to verify the original target table. View the check details',
+    original_target: 'Original target: {0} · Table: {1}',
+    target_check_readonly:
+      'The original task configuration is preserved. Sync structure changes and saving are temporarily disabled. Resolve the issue and check again',
+    check_error_details: 'View check details',
+    recheck_target: 'Check again',
+    existing_table_readonly:
+      'The target table contains data. Only basic information and scheduling can be edited here. Use Field adjustment to change fields',
     edit_task: 'Edit task',
     basic_information: 'Basic information',
     source_database: 'Source database',
@@ -4538,7 +5042,7 @@ export default {
     field_mapping_unknown_detail:
       'The target type has not been confirmed. Select a field type supported by the target database',
     field_mapping_blocking_save_tip:
-      '{0} target field types are still unresolved: {1}. Resolve them before saving',
+      'Target types or parameters need attention for {0} fields: {1}. Resolve them before saving',
     field_mapping_warning_title:
       '{0} fields have synchronization risks (you can confirm and continue saving)',
     field_mapping_warning_item: '{0}: {1}',
@@ -4561,6 +5065,8 @@ export default {
     field_index: 'Index',
     field_comment: 'Comment',
     confirm_delete_field: 'Are you sure you want to delete the {0} field? ',
+    source_field_required:
+      'Keep at least one source field (which may be a source primary key). The system-generated primary key depends on source fields and cannot be kept alone.',
     msg_field_list_empty_tip:
       'Field list cannot be empty, and data with empty name or field type of UNKNOWN cannot exist, please check',
     next_week: 'Next week',
@@ -4730,6 +5236,11 @@ export default {
       water_mask: 'Watermark Settings',
       show_water_mask: 'Show Watermark',
       format: 'Format',
+      excel_header_mode: 'Header Name',
+      excel_header_dataset: 'Dataset Field Name',
+      excel_header_display: 'Chart Field Display Name',
+      excel_header_hint:
+        'Only affects chart data Excel attachments. For example, “Order Amount” may be displayed as “Sales”. Falls back to the dataset field name when no display name is set.',
       view_data: 'Chart Data',
       all_data: 'All Data',
       pixel: 'Dashboard Resolution',
@@ -4747,7 +5258,11 @@ export default {
       data_permission_tips:
         "If the recipient is a system user, the data permission rules will be applied; otherwise, the creator's permission will be used"
     },
+    run_confirm:
+      'Generate and send a new report using the current settings? When this execution completes, previous report copies expire and cannot be resent.',
     filter: {
+      snapshot_unrecorded: 'Not recorded',
+      snapshot_not_applied: 'No filter applied',
       title: 'Set Query Component Default Values',
       reset: 'Restore Default Values',
       reset_all: 'Restore All Query Condition Default Values',
@@ -5207,6 +5722,15 @@ export default {
     title: 'Security Settings'
   },
   setting_hmac: {
+    signature_missing:
+      'The request is missing an HMAC signature. Refresh and try again. If it persists, ask your administrator to check the backend and gateway HMAC switches and header forwarding.',
+    authentication_failed:
+      'Request signature verification failed. Refresh and try again. If it persists, ask your administrator to check the HMAC configuration and client clock.',
+    clock_skew_failed:
+      'Request signature verification failed: the client and server clocks differ too much. Correct the system clock and try again.',
+    initialization_failed: 'HMAC initialization failed. Refresh the page and try again.',
+    random_source_required:
+      'HMAC signing requires a browser with a secure random number generator.',
     title: 'HMAC Settings',
     enable: 'Enable HMAC Authentication',
     clock_skew: 'Clock skew',
@@ -5274,6 +5798,30 @@ export default {
   },
   spreadsheet: {
     title: 'Spreadsheet',
+    invalid_jump_params:
+      'The jump linkage parameters are invalid or outdated. Configure them again.',
+    invalid_query_value: 'The query condition value has an invalid format',
+    binding_ambiguous_targets:
+      'The workbook contains duplicate query condition or data region IDs. Bindings cannot be configured.',
+    unsupported_jump_filter:
+      'Jumping to spreadsheets with custom group filters is not supported yet',
+    outer_params_title: 'External parameter settings',
+    outer_params_enable: 'Enable external parameters',
+    outer_params_select_data_areas: 'Select linked data regions',
+    outer_params_filter_tips:
+      'Filtering is supported only for text dropdown, number dropdown, and tree query conditions',
+    outer_params_invalid_target: 'The binding target is no longer valid. Select it again.',
+    outer_params_duplicate_target:
+      'Each target and binding mode can only be bound to one external parameter',
+    outer_params_ambiguous_targets:
+      'The workbook contains duplicate query condition or data region IDs. External parameters cannot be configured.',
+    outer_params_invalid_name: 'Parameter names must be nonempty and unique',
+    outer_params_invalid_default: 'The default value must be a JSON array',
+    outer_params_default_tips:
+      'Use a JSON array, for example ["name1"] for one value or ["name1","name2"] for multiple values',
+    outer_params_load_error: 'Failed to load external parameter settings',
+    outer_params_save_error: 'Failed to save external parameters',
+    outer_params_fix_errors: 'Correct the parameter settings before saving',
     new_folder: 'New Folder',
     root_folder: 'Root folder',
     new_sheet: 'New Spreadsheet',

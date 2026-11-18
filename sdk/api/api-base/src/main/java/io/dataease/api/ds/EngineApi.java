@@ -2,6 +2,7 @@ package io.dataease.api.ds;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.ConfigurationSecurity;
 import io.dataease.auth.DePermit;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,16 +19,19 @@ public interface EngineApi {
     @Operation(summary = "查询")
     @DePermit("m:read")
     @GetMapping("/getEngine")
+    @ConfigurationSecurity(maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO getEngine();
 
     @Operation(summary = "保存")
     @DePermit("m:manage")
     @PostMapping("/save")
+    @ConfigurationSecurity(encryptedRequest = true)
     void save(@RequestBody DatasourceDTO datasourceDTO);
 
     @Operation(summary = "校验")
     @DePermit("m:manage")
     @PostMapping("/validate")
+    @ConfigurationSecurity(encryptedRequest = true)
     void validate(@RequestBody DatasourceDTO datasourceDTO) throws Exception;
 
     @Operation(summary = "根据ID校验")

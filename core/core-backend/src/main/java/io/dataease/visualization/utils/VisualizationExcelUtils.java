@@ -16,28 +16,35 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class VisualizationExcelUtils {
 
     private static final String suffix = ".xlsx";
     private static final String BASE_ROOT = getBaseRoot();
-    private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
-    private static final Map<Workbook, CellStyle> INTEGER_STYLE_CACHE = new HashMap<>();
+    // POI 在 createSheet 时会直接抛 IllegalArgumentException：除已有的非法字符外，[ 和 ] 同样不被接受
+    private static final Pattern SHEET_NAME_PATTERN = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|\\[\\]]");
+    // POI 与工作表规范的名字长度上限，超出会被静默截断
+    private static final int SHEET_NAME_MAX_LENGTH = 31;
+    private static final String FALLBACK_SHEET_NAME = "Sheet";
 
-    private static CellStyle getNumericCellStyle(Workbook workbook) {
-        return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+    private static CellStyle getNumericCellStyle(Workbook workbook, Map<Workbook, CellStyle> cache) {
+        return cache.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
             style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
             return style;
         });
     }
 
-    private static CellStyle getIntegerCellStyle(Workbook workbook) {
-        return INTEGER_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+    private static CellStyle getIntegerCellStyle(Workbook workbook, Map<Workbook, CellStyle> cache) {
+        return cache.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
             style.setDataFormat(wb.createDataFormat().getFormat("0"));
             return style;
@@ -52,22 +59,79 @@ public class VisualizationExcelUtils {
         }
     }
 
+    /**
+     * 图表标题会直接作为工作表名，POI 校验不通过时整份导出都会失败。
+     * 除替换非法字符外，首尾的单引号也必须去掉，清洗后为空或重名时还要兜底。
+     */
+    private static String toSheetName(String rawName, Set<String> usedNames) {
+        String sheetName = StringUtils.isBlank(rawName) ? null : SHEET_NAME_PATTERN.matcher(rawName).replaceAll("-");
+        sheetName = stripOuterApostrophes(sheetName);
+        if (StringUtils.isBlank(sheetName)) {
+            sheetName = FALLBACK_SHEET_NAME;
+        } else if (sheetName.length() > SHEET_NAME_MAX_LENGTH) {
+            // 自己按上限截断，后面的重名判断才和 POI 实际写入的名字一致
+            sheetName = stripOuterApostrophes(sheetName.substring(0, SHEET_NAME_MAX_LENGTH));
+        }
+        return nextUniqueSheetName(sheetName, usedNames);
+    }
+
+    private static String stripOuterApostrophes(String source) {
+        if (source == null) {
+            return null;
+        }
+        int start = 0;
+        int end = source.length();
+        while (start < end && source.charAt(start) == '\'') {
+            start++;
+        }
+        while (end > start && source.charAt(end - 1) == '\'') {
+            end--;
+        }
+        return source.substring(start, end);
+    }
+
+    /**
+     * POI 按大小写不敏感校验工作表名唯一，不同标题清洗成同一个名字后会抛出
+     * "The workbook already contains a sheet named ..."，所以追加序号，并让序号落在长度上限以内。
+     */
+    private static String nextUniqueSheetName(String sheetName, Set<String> usedNames) {
+        String candidate = sheetName;
+        for (int seq = 1; !usedNames.add(candidate.toLowerCase(Locale.ROOT)); seq++) {
+            String marker = "-" + seq;
+            int keep = Math.max(SHEET_NAME_MAX_LENGTH - marker.length(), 0);
+            candidate = sheetName.substring(0, Math.min(sheetName.length(), keep)) + marker;
+        }
+        return candidate;
+    }
+
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
+        return exportExcel(sheets, fileName, folderId, null);
+    }
+
+    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId,
+                                   BiConsumer<Workbook, Map<Sheet, int[]>> watermarkWriter) throws Exception {
         Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>.\\|]");
-        Pattern sheetNamePattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
         if (StringUtils.isNotBlank(fileName)) {
             realFileName.set(pattern.matcher(StringUtils.removeEnd(fileName, suffix)).replaceAll("-"));
         }
         SXSSFWorkbook wb = new SXSSFWorkbook();
+        Map<Sheet, int[]> sheetBounds = new HashMap<>();
+        Set<String> usedSheetNames = new HashSet<>();
+        // 样式缓存跟随本次导出的 workbook，函数返回后即可回收；放在静态字段上会让每次导出都永久留住已经 close() 的 Workbook
+        Map<Workbook, CellStyle> numericStyleCache = new HashMap<>();
+        Map<Workbook, CellStyle> integerStyleCache = new HashMap<>();
 
         sheets.forEach(sheet -> {
 
             List<List<String>> details = sheet.getData();
             List<Integer> fieldTypes = sheet.getFiledTypes();
             details.add(0, sheet.getHeads());
-            String sheetName = sheetNamePattern.matcher(sheet.getSheetName()).replaceAll("-");
+            String sheetName = toSheetName(sheet.getSheetName(), usedSheetNames);
             Sheet curSheet = wb.createSheet(sheetName);
+            // SXSSF 会刷出旧行；在写入前记录完整范围，水印无需回读或驻留全部单元格。
+            int columns = details.stream().filter(java.util.Objects::nonNull).mapToInt(List::size).max().orElse(0);
+            sheetBounds.put(curSheet, new int[]{Math.max(0, details.size() - 1), columns});
             if (StringUtils.isBlank(fileName)) {
                 String cName = pattern.matcher(sheetName).replaceAll("-");
                 realFileName.set(cName);
@@ -92,9 +156,9 @@ public class VisualizationExcelUtils {
                             if (i > 0 && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
                                 BigDecimal decimal = new BigDecimal(rowData.get(j)).stripTrailingZeros();
                                 if (decimal.scale() <= 0) {
-                                    cell.setCellStyle(getIntegerCellStyle(wb));
+                                    cell.setCellStyle(getIntegerCellStyle(wb, integerStyleCache));
                                 } else {
-                                    cell.setCellStyle(getNumericCellStyle(wb));
+                                    cell.setCellStyle(getNumericCellStyle(wb, numericStyleCache));
                                 }
                                 cell.setCellValue(decimal.doubleValue());
                             } else {
@@ -110,6 +174,15 @@ public class VisualizationExcelUtils {
                 }
             }
         });
+        if (watermarkWriter != null) {
+            try {
+                watermarkWriter.accept(wb, sheetBounds);
+            } catch (RuntimeException | Error e) {
+                wb.dispose();
+                wb.close();
+                throw e;
+            }
+        }
         realFileName.set(realFileName.get() + suffix);
         String folderPath = BASE_ROOT;
         if (StringUtils.isNotBlank(folderId)) {

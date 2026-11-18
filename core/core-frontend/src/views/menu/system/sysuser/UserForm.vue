@@ -645,7 +645,9 @@ onBeforeUnmount(() => {
                 <el-select
                   v-model="scope.row.variableValueIds"
                   multiple
+                  filterable
                   collapse-tags
+                  collapse-tags-tooltip
                   v-if="scope.row.sysVariableDto.type === 'text'"
                   :placeholder="t('auth.select')"
                   style="width: 100%"

@@ -2,6 +2,7 @@ package io.dataease.font.manage;
 
 import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
+import io.dataease.result.ResultCode;
 import io.dataease.i18n.Translator;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
@@ -75,8 +76,14 @@ public class FontManage {
 
     public FontDto edit(FontDto fontDto) {
         fontSettingsManage.checkMenuPermission();
+        if (fontDto.getName() == null) {
+            DEException.throwException(ResultCode.PARAM_IS_BLANK.code(), ResultCode.PARAM_IS_BLANK.message());
+        }
         if (ObjectUtils.isEmpty(fontDto.getId())) {
             return create(fontDto);
+        }
+        if (fontDto == null || fontDto.getIsDefault() == null || fontDto.getId() == null || fontDto.getName() == null) {
+            DEException.throwException(ResultCode.PARAM_IS_BLANK.code(), ResultCode.PARAM_IS_BLANK.message());
         }
         if (fontDto.getIsDefault()) {
             coreFontRepository.resetDefaultById(fontDto.getId());
@@ -194,7 +201,7 @@ public class FontManage {
             Files.createDirectories(directory);
             // 同一字体目录可能被多个实例共享，配额检查和写入必须持有同一把锁。
             try (FileChannel channel = FileChannel.open(directory.resolve(".upload.lock"),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                StandardOpenOption.CREATE, StandardOpenOption.WRITE);
                  FileLock lock = channel.tryLock()) {
                 if (lock == null) {
                     DEException.throwException(Translator.get("i18n_font_upload_busy"));
@@ -226,7 +233,7 @@ public class FontManage {
     }
 
     private FontDto storeValidatedFont(MultipartFile file, Path directory, String uuid,
-                                      long fileLimit, long remaining) throws IOException {
+                                       long fileLimit, long remaining) throws IOException {
         Path temporary = Files.createTempFile(directory, ".font-upload-", ".tmp");
         try {
             long length = 0;

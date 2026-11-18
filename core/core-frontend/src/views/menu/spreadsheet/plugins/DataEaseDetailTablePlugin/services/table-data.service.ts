@@ -1,4 +1,6 @@
 import { queryData } from '../../../api/data'
+import type { SpreadsheetQueryFilterItem } from '../../../types/plugin'
+import type { SpreadsheetLinkageFilter } from '../../../types/link-jump'
 import type {
   DetailTableConfig,
   DetailTableQueryConfig,
@@ -12,7 +14,11 @@ import {
 } from '../utils/field-format'
 
 export class TableDataService {
-  async queryData(config: DetailTableConfig): Promise<TableDataResult> {
+  async queryData(
+    config: DetailTableConfig,
+    outerParamsFilter: SpreadsheetQueryFilterItem[] = [],
+    linkageFilters: SpreadsheetLinkageFilter[] = []
+  ): Promise<TableDataResult> {
     const fields = config.data?.zones?.fields || []
 
     if (fields.length === 0) {
@@ -23,6 +29,9 @@ export class TableDataService {
       ...config,
       data: {
         ...config.data,
+        // 空数组也覆盖旧值，避免复用临时查询配置时残留外部条件。
+        outerParamsFilter,
+        linkageFilters,
         zones: {
           ...config.data.zones,
           fields: fields.map(field => {

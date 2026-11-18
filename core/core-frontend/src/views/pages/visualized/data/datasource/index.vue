@@ -6,6 +6,7 @@ import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
 import { throttle } from 'lodash-es'
+import { clearCopiedCredentials } from '@/utils/copiedCredentials'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_warning_colorful_red from '@/assets/svg/icon_warning_colorful_red.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
@@ -99,7 +100,6 @@ import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
-import { symmetricDecrypt, ensureDekey } from '@/utils/encryption'
 import { isFreeFolder } from '@/utils/utils'
 import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
 const DatasourceDataFillingInfo = defineAsyncComponent(
@@ -611,7 +611,6 @@ const handleNodeClick = data => {
     method = getSimpleDs
   }
   return method(data.id).then(async res => {
-    await ensureDekey()
     let {
       name,
       createBy,
@@ -631,13 +630,13 @@ const handleNodeClick = data => {
       enableDataFill
     } = res.data
     if (configuration) {
-      configuration = JSON.parse(symmetricDecrypt(configuration))
+      configuration = JSON.parse(configuration)
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(symmetricDecrypt(paramsStr))
+      paramsStr = JSON.parse(paramsStr)
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr))
+      apiConfigurationStr = JSON.parse(apiConfigurationStr)
     }
     Object.assign(nodeInfo, {
       name,
@@ -754,7 +753,6 @@ const editDatasource = (editType?: number) => {
     nodeInfo.editType = editType
   }
   return getById(nodeInfo.id).then(async res => {
-    await ensureDekey()
     let arr = pluginDs.value.filter(ele => {
       return ele.type == res.data.type
     })
@@ -777,13 +775,13 @@ const editDatasource = (editType?: number) => {
       enableDataFill
     } = res.data
     if (configuration) {
-      configuration = JSON.parse(symmetricDecrypt(configuration))
+      configuration = JSON.parse(configuration)
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(symmetricDecrypt(paramsStr))
+      paramsStr = JSON.parse(paramsStr)
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr))
+      apiConfigurationStr = JSON.parse(apiConfigurationStr)
     }
     let datasource = reactive<Node>(cloneDeep(defaultInfo))
     Object.assign(datasource, {
@@ -830,7 +828,6 @@ const allowDrag = (node: any) => {
 
 const handleCopy = async data => {
   getById(data.id).then(async res => {
-    await ensureDekey()
     let {
       name,
       createBy,
@@ -853,13 +850,13 @@ const handleCopy = async data => {
       return ele.type == res.data.type
     })
     if (configuration) {
-      configuration = JSON.parse(symmetricDecrypt(configuration))
+      configuration = clearCopiedCredentials(JSON.parse(configuration))
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(symmetricDecrypt(paramsStr))
+      paramsStr = clearCopiedCredentials(JSON.parse(paramsStr))
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr))
+      apiConfigurationStr = clearCopiedCredentials(JSON.parse(apiConfigurationStr))
     }
     let datasource = reactive<Node>(cloneDeep(defaultInfo))
     Object.assign(datasource, {
@@ -1634,14 +1631,20 @@ const getMenuList = (val: boolean, data?: any) => {
                   nodeInfo.weight >= 7
                 "
               >
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType !== 'jdbcUrl' && nodeInfo.type !== 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.host')">{{
                       nodeInfo.configuration.host
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType !== 'jdbcUrl' && nodeInfo.type !== 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.port')">{{
                       nodeInfo.configuration.port
@@ -1653,7 +1656,10 @@ const getMenuList = (val: boolean, data?: any) => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType !== 'jdbcUrl' && nodeInfo.type !== 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.user_name')">{{
                       nodeInfo.configuration.username
@@ -1665,14 +1671,20 @@ const getMenuList = (val: boolean, data?: any) => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType === 'jdbcUrl' || nodeInfo.type === 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.jdbcUrl')">{{
-                      nodeInfo.configuration.jdbcUrl
+                      nodeInfo.configuration.jdbcUrl || nodeInfo.configuration.jdbc
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'jdbcUrl'">
+                <el-row
+                  :gutter="24"
+                  v-show="nodeInfo.configuration.urlType === 'jdbcUrl' || nodeInfo.type === 'h2'"
+                >
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.user_name')">{{
                       nodeInfo.configuration.username
@@ -2126,7 +2138,7 @@ const getMenuList = (val: boolean, data?: any) => {
     height: 100%;
     width: 279px;
     padding: 0;
-    border-right: 1px solid #d7d7d7;
+    border-right: 1px solid #1f232926;
     overflow: visible;
     &.retract {
       display: none;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component("StarRocks")
 public class StarRocks extends Mysql {
     private String driver = "org.mariadb.jdbc.Driver";
-    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true";
+    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&allowLocalInfile=false";
     private Integer fePort = 8030;
     private String beIp = "";
     private Integer bePort = 8040;

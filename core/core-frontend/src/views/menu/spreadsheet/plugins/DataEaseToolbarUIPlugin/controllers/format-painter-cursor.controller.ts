@@ -20,7 +20,7 @@ export class FormatPainterCursorController extends Disposable {
       if (status === FormatPainterStatus.OFF) return
       const target = getSheetCommandTarget(instanceService)
       if (!target) return
-      canvas = renderManager.getRenderById(target.unitId)?.engine.getCanvasElement()
+      canvas = renderManager.getRenderUnitById(target.unitId)?.engine.getCanvasElement()
       canvas?.classList.add('dataease-format-painter-cursor')
     }
     update(formatPainterService.getStatus())

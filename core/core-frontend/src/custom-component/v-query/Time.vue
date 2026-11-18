@@ -4,7 +4,8 @@ import { type DatePickType } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import type { ManipulateType } from 'dayjs'
 import { type TimeRange } from './time-format'
-import dayjs from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
+import { FixedTimeError, readFixedTimeValue } from './fixed-time-value'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useShortcuts } from './shortcuts'
 import {
@@ -85,6 +86,15 @@ const selectValue = ref()
 const multiple = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const { config } = toRefs(props)
+const toPickerValue = (value: unknown) => {
+  try {
+    const resolved = readFixedTimeValue(value)
+    return Array.isArray(resolved) ? [...resolved] : resolved
+  } catch (error) {
+    if (!(error instanceof FixedTimeError)) throw error
+    return config.value.displayType === '7' ? [] : undefined
+  }
+}
 const minDate = new Date('1970/1/1')
 const maxDate = new Date('2100/1/1')
 watch(
@@ -95,7 +105,7 @@ watch(
     if (isMultiple) {
       multiple.value = isMultiple
     }
-    selectValue.value = Array.isArray(val) ? [...val] : val
+    selectValue.value = toPickerValue(val)
     nextTick(() => {
       multiple.value = isMultiple
     })
@@ -132,14 +142,12 @@ watch(
   val => {
     if (props.isConfig) return
     if (config.value.displayType === '7') {
-      selectValue.value = Array.isArray(val) ? [...val] : val
+      selectValue.value = toPickerValue(val)
     }
     nextTick(() => {
       multiple.value = config.value.displayType === '7'
       if (!multiple.value) {
-        selectValue.value = Array.isArray(config.value.selectValue)
-          ? [...config.value.selectValue]
-          : config.value.selectValue
+        selectValue.value = toPickerValue(config.value.selectValue)
       }
     })
   }
@@ -167,9 +175,7 @@ const handleValueChange = () => {
     config.value.defaultValue = undefined
     return
   }
-  config.value.defaultValue = Array.isArray(value)
-    ? value.map(ele => new Date(ele).toLocaleString())
-    : new Date(value).toLocaleString()
+  config.value.defaultValue = value
 }
 
 const init = () => {
@@ -177,7 +183,7 @@ const init = () => {
   const plus = displayType === '7'
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
-    selectValue.value = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
+    selectValue.value = toPickerValue(defaultValue)
   } else {
     config.value.selectValue = plus ? [] : undefined
     selectValue.value = plus ? [] : undefined
@@ -395,6 +401,92 @@ const disabledDate = val => {
   }
 }
 
+const PASTE_DATE_PATTERN =
+  /^(\d{4})(?:[-/.](\d{1,2}))?(?:[-/.](\d{1,2}))?(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/
+
+const parsePastedDate = (text: string) => {
+  const matched = PASTE_DATE_PATTERN.exec(text)
+  if (!matched) return null
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText] = matched
+  const year = Number(yearText)
+  const month = Number(monthText ?? 1)
+  const day = Number(dayText ?? 1)
+  const date = dayjs(
+    new Date(
+      year,
+      month - 1,
+      day,
+      Number(hourText ?? 0),
+      Number(minuteText ?? 0),
+      Number(secondText ?? 0)
+    )
+  )
+  const valid =
+    date.isValid() &&
+    date.year() === year &&
+    date.month() === month - 1 &&
+    date.date() === day &&
+    date.toDate() >= minDate &&
+    date.toDate() < maxDate
+  return valid ? { date, hasTime: hourText !== undefined } : null
+}
+
+const normalizePastedDate = (date: Dayjs, hasTime: boolean, isEnd: boolean) => {
+  const type = config.value.timeGranularityMultiple
+  if (type === 'datetimerange') {
+    if (hasTime) return date
+    return isEnd ? date.endOf('day') : date.startOf('day')
+  }
+  const unit: 'year' | 'month' | 'day' =
+    type === 'yearrange' ? 'year' : type === 'monthrange' ? 'month' : 'day'
+  return isEnd ? date.endOf(unit) : date.startOf(unit)
+}
+
+const exceedsQueryWindow = (other: Dayjs, value: Dayjs) => {
+  const { dynamicWindow, maximumSingleQuery } = config.value.timeRange || {}
+  if (!dynamicWindow || !maximumSingleQuery) return false
+  const unit = queryTimeType.value
+  const upper = other.clone().add(maximumSingleQuery, unit).startOf(unit).valueOf()
+  const lower = other.clone().subtract(maximumSingleQuery, unit).startOf(unit).valueOf()
+  const timestamp = value.valueOf()
+  return timestamp > upper || timestamp < lower
+}
+
+const handleRangePaste = (event: ClipboardEvent) => {
+  const target = event.target
+  if (!(target instanceof HTMLInputElement)) return
+  const container = target.closest('.ed-date-editor')
+  const inputs = Array.from(
+    container?.querySelectorAll<HTMLInputElement>('input.ed-range-input') || []
+  )
+  const index = inputs.indexOf(target)
+  if (index < 0) return
+  const text = event.clipboardData?.getData('text')?.trim()
+  if (!text) return
+  const parsed = parsePastedDate(text)
+  if (!parsed) return
+  const isEnd = index === 1
+  const value = normalizePastedDate(parsed.date, parsed.hasTime, isEnd)
+  if (disabledDate(value.toDate())) return
+  const current = Array.isArray(selectValue.value) ? [...selectValue.value] : [null, null]
+  const otherRaw = current[isEnd ? 0 : 1]
+  const other = otherRaw ? dayjs(otherRaw) : null
+  if (other?.isValid() && (isEnd ? value.isBefore(other) : value.isAfter(other))) return
+  if (other?.isValid() && exceedsQueryWindow(other, value)) return
+  current[isEnd ? 1 : 0] = value.format('YYYY/MM/DD HH:mm:ss')
+  selectValue.value = current
+  if (current[0] && current[1]) {
+    handleValueChange()
+  }
+}
+
+const handleRangeKeydown = (event: KeyboardEvent) => {
+  if (event.metaKey || event.ctrlKey || event.altKey) return
+  if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
+    event.preventDefault()
+  }
+}
+
 const showPopup = () => {
   if (isRange.value) {
     const [start] = selectValue.value || []
@@ -491,26 +583,33 @@ const formatDate = computed(() => {
 </script>
 
 <template>
-  <el-date-picker
-    v-model="selectValue"
+  <div
     v-if="multiple"
-    :key="config.timeGranularityMultiple"
-    :type="config.timeGranularityMultiple"
-    :style="selectStyle"
-    ref="datePicker"
-    @visible-change="visibleChange"
-    :disabled-date="disabledDate"
-    @calendar-change="calendarChange"
-    :format="formatDate"
-    :shortcuts="
-      ['datetimerange', 'daterange'].includes(config.timeGranularityMultiple) ? shortcuts : []
-    "
-    @change="handleValueChange"
-    :editable="false"
-    :range-separator="$t('cron.to')"
-    :start-placeholder="placeholderText"
-    :end-placeholder="placeholderText"
-  />
+    class="range-paste-editor"
+    @paste.prevent="handleRangePaste"
+    @keydown="handleRangeKeydown"
+  >
+    <!-- 保持可编辑以接收 paste 事件，键盘输入由 handleRangeKeydown 拦截 -->
+    <el-date-picker
+      v-model="selectValue"
+      :key="config.timeGranularityMultiple"
+      :type="config.timeGranularityMultiple"
+      :style="selectStyle"
+      ref="datePicker"
+      @visible-change="visibleChange"
+      :disabled-date="disabledDate"
+      @calendar-change="calendarChange"
+      :format="formatDate"
+      :shortcuts="
+        ['datetimerange', 'daterange'].includes(config.timeGranularityMultiple) ? shortcuts : []
+      "
+      @change="handleValueChange"
+      :editable="true"
+      :range-separator="$t('cron.to')"
+      :start-placeholder="placeholderText"
+      :end-placeholder="placeholderText"
+    />
+  </div>
   <el-date-picker
     v-else
     :key="config.timeGranularity + 1"
@@ -587,6 +686,9 @@ const formatDate = computed(() => {
 </template>
 
 <style lang="less">
+.range-paste-editor {
+  display: contents;
+}
 .vant-mobile {
   position: absolute;
   top: 0;

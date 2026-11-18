@@ -2,7 +2,7 @@
 import icon_info_filled from '@/assets/svg/icon_info_filled.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { PropType, reactive } from 'vue'
+import { computed, PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
@@ -32,6 +32,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['onTableThresholdChange'])
+const imageOptions = computed(() => {
+  const seen = new Set<string>()
+  return props.element.propValue.urlList.filter(({ url }: { url: string }) => {
+    if (!url || seen.has(url)) return false
+    seen.add(url)
+    return true
+  })
+})
 
 const thresholdCondition = {
   term: 'eq',
@@ -448,7 +456,7 @@ init()
                     <picture-option-prefix :url="item.url"></picture-option-prefix>
                   </template>
                   <el-option
-                    v-for="urlInfo in element.propValue.urlList"
+                    v-for="urlInfo in imageOptions"
                     :key="urlInfo.url"
                     :label="urlInfo.name"
                     :value="urlInfo.url"

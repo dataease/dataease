@@ -2,6 +2,7 @@
 import type { Options } from '@popperjs/core'
 import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import { debounce, isEqual } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
 import type {
   SpreadsheetFilterCondition,
   SpreadsheetFilterTreePath
@@ -11,6 +12,7 @@ import {
   normalizeSpreadsheetFilterTreePath,
   resolveSpreadsheetFilterTreeLevelValue
 } from '../../utils/filter-tree-values'
+import { filterSpreadsheetOuterParamTree } from '../../utils/outer-param-options'
 
 interface SourceTreeNode {
   id: string | number
@@ -34,6 +36,14 @@ const props = defineProps<{
   popperOptions?: Partial<Options>
 }>()
 
+const { t } = useI18n()
+const defaultPlaceholder = computed(() => {
+  const mode = props.condition.multiple
+    ? 'visualization.multiple_choice'
+    : 'visualization.single_choice'
+  return `${t('common.please_select').trim()}（${t(mode)}）`
+})
+
 const emit = defineEmits<{
   'update:modelValue': [value: SpreadsheetFilterTreePath | SpreadsheetFilterTreePath[] | undefined]
   'options-ready': []
@@ -44,7 +54,9 @@ const options = ref<TreeOption[]>([])
 let pathMap = new Map<string, SpreadsheetFilterTreePath>()
 
 const makeKey = (path: SpreadsheetFilterTreePath) =>
-  path.map(item => `${String(item.treeFieldId)}:${encodeURIComponent(String(item.value))}`).join('/')
+  path
+    .map(item => `${String(item.treeFieldId)}:${encodeURIComponent(String(item.value))}`)
+    .join('/')
 
 const mapOptions = (
   nodes: SourceTreeNode[],
@@ -74,9 +86,10 @@ const mapOptions = (
 const normalizePaths = (value: unknown): SpreadsheetFilterTreePath[] => {
   if (!Array.isArray(value) || !value.length) return []
   const first = value[0] as Record<string, unknown> | unknown[]
-  const paths = !Array.isArray(first) && first && 'treeFieldId' in first
-    ? [value as SpreadsheetFilterTreePath]
-    : value as SpreadsheetFilterTreePath[]
+  const paths =
+    !Array.isArray(first) && first && 'treeFieldId' in first
+      ? [value as SpreadsheetFilterTreePath]
+      : (value as SpreadsheetFilterTreePath[])
   return paths.map(normalizeSpreadsheetFilterTreePath)
 }
 
@@ -87,7 +100,9 @@ const selectedKeys = computed({
   },
   set: value => {
     const keys = Array.isArray(value) ? value : value ? [value] : []
-    const paths = keys.map(key => pathMap.get(String(key))).filter((path): path is SpreadsheetFilterTreePath => !!path)
+    const paths = keys
+      .map(key => pathMap.get(String(key)))
+      .filter((path): path is SpreadsheetFilterTreePath => !!path)
     emit('update:modelValue', props.condition.multiple ? paths : paths[0])
   }
 })
@@ -106,16 +121,16 @@ const emitFirstItem = () => {
   }
 }
 
-const optionRequestKey = computed(() => JSON.stringify([
-  props.condition.treeFields.map(field => field.fieldId).filter(Boolean),
-  props.condition.optionCountMode === 'all' ? 1 : 0
-]))
+const optionRequestKey = computed(() =>
+  JSON.stringify([
+    props.condition.treeFields.map(field => field.fieldId).filter(Boolean),
+    props.condition.optionCountMode === 'all' ? 1 : 0,
+    props.condition.optionFilter
+  ])
+)
 
 const syncDefaultFirstItem = () => {
-  if (
-    props.condition.defaultValueEnabled &&
-    props.condition.defaultValueFirstItem
-  ) {
+  if (props.condition.defaultValueEnabled && props.condition.defaultValueFirstItem) {
     emitFirstItem()
   }
 }
@@ -144,7 +159,11 @@ const loadOptions = async () => {
       return
     }
     const nextPathMap = new Map<string, SpreadsheetFilterTreePath>()
-    options.value = mapOptions((values || []) as SourceTreeNode[], nextPathMap)
+    const filteredOptions = filterSpreadsheetOuterParamTree(
+      (values || []) as SourceTreeNode[],
+      props.condition.optionFilter
+    )
+    options.value = mapOptions(filteredOptions, nextPathMap)
     pathMap = nextPathMap
     // 默认首项属于初始化结果，父组件会等待所有候选项就绪后再放行实例首次查询。
     syncDefaultFirstItem()
@@ -170,10 +189,7 @@ onBeforeUnmount(() => {
   loadSequence += 1
 })
 
-watch(
-  optionRequestKey,
-  () => debounceLoadOptions()
-)
+watch(optionRequestKey, () => debounceLoadOptions())
 
 watch(
   [
@@ -196,7 +212,7 @@ watch(
     :show-checkbox="condition.multiple"
     :check-strictly="!condition.multiple"
     :render-after-expand="false"
-    :placeholder="placeholder || '请选择'"
+    :placeholder="placeholder || defaultPlaceholder"
     :append-to="popperAppendTo"
     popper-class="spreadsheet-filter-runtime-popper"
     :popper-options="popperOptions"

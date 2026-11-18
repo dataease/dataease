@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires -- Node 回归入口。 */
 // Run: node --test tests/query-cascade-default/regression.cjs
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -7,15 +8,15 @@ const { test } = require('node:test')
 const ts = require('typescript')
 const { parse } = require('@vue/compiler-sfc')
 const { cloneDeep } = require('lodash')
+const configBindings = require('../query-config-bindings/load.cjs')
 const { nextTick, unref } = require('vue')
 
 const filename = path.resolve(
   __dirname,
   '../../src/custom-component/v-query/QueryConditionConfiguration.vue'
 )
-const source = parse(
-  fs.readFileSync(process.env.QUERY_CONFIGURATION_SOURCE || filename, 'utf8')
-).descriptor.scriptSetup.content
+const source = parse(fs.readFileSync(process.env.QUERY_CONFIGURATION_SOURCE || filename, 'utf8'))
+  .descriptor.scriptSetup.content
 const ast = ts.createSourceFile(filename + '.ts', source, ts.ScriptTarget.Latest, true)
 const functions = ['validate', 'confirmClick', 'multipleChange'].map(name => {
   const statement = ast.statements.find(
@@ -55,6 +56,7 @@ const save = async (conditions, cascade, invalid = false) => {
   const events = []
   const snapshots = []
   const context = {
+    ...configBindings,
     conditions: { value: cloneDeep(conditions) },
     cascadeArr: cloneDeep(cascade),
     queryElement: { value: element },
@@ -64,9 +66,17 @@ const save = async (conditions, cascade, invalid = false) => {
     dialogVisible: { value: true },
     fields: { value: [] },
     duplicateRemoval: values => [...new Set(values)],
+    // 动态日期规则由专项测试覆盖；本夹具只验证关闭默认值后的保存与级联同步。
+    validateDynamicDefault: () => undefined,
     t: key => key,
-    ElMessage: { error() {} },
-    handleDialogClick() {},
+    ElMessage: {
+      error() {
+        return undefined
+      }
+    },
+    handleDialogClick() {
+      return undefined
+    },
     cloneDeep,
     unref,
     nextTick,
@@ -97,7 +107,10 @@ test('saving disabled defaults clears mapped filters in every cascade occurrence
     assert.equal(node.selectValue.length, 0)
     assert.equal(node.currentSelectValue.length, 0)
   })
-  assert.deepEqual(events.map(event => event[0]), ['reRenderAll', 'queryData'])
+  assert.deepEqual(
+    events.map(event => event[0]),
+    ['reRenderAll', 'queryData']
+  )
   assert.deepEqual(snapshots, ['confirmClick'])
   assert.equal(configs[0].defaultValue, 'old-label')
 })

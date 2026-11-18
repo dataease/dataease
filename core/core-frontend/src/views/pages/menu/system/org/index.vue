@@ -317,11 +317,9 @@ onMounted(async () => {
     <div class="org-tree-panel">
       <div class="org-tree-header">
         <span class="org-tree-title">{{ t('org.org_title') }}</span>
-        <el-button text @click="handleAddOrg" type="primary">
-          <template #icon>
-            <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-          </template>
-        </el-button>
+        <el-icon class="hover-icon_primary" @click="handleAddOrg">
+          <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
+        </el-icon>
       </div>
       <div class="org-tree-search">
         <el-input
@@ -403,14 +401,16 @@ onMounted(async () => {
     <div class="org-member-panel">
       <template v-if="currentOrgId">
         <div class="member-header">
-          <div class="member-header-left">
-            <span class="member-org-name">{{ currentOrgName }}</span>
-            <span class="member-count">{{ memberPage.total }} {{ t('org.members') }}</span>
-          </div>
-          <div class="member-header-right">
+          <span class="member-org-name">{{ currentOrgName }}</span>
+          <span class="member-count">{{ memberPage.total }} {{ t('org.members') }}</span>
+        </div>
+        <el-row class="member-actions">
+          <el-col :span="12">
             <el-button type="primary" @click="handleAddMember">
               {{ t('org.add_member') }}
             </el-button>
+          </el-col>
+          <el-col :span="12" class="member-search">
             <el-input
               v-model="memberKeyword"
               clearable
@@ -426,8 +426,8 @@ onMounted(async () => {
                 </el-icon>
               </template>
             </el-input>
-          </div>
-        </div>
+          </el-col>
+        </el-row>
         <div class="member-table-wrap">
           <GridTable
             :table-data="memberList"
@@ -572,6 +572,28 @@ onMounted(async () => {
       font-size: 16px;
       font-weight: 500;
     }
+
+    .hover-icon_primary {
+      font-weight: 500;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: pointer;
+      height: 24px !important;
+      width: 24px !important;
+      border-radius: 4px;
+      line-height: 1em;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      color: rgb(51, 112, 255) !important;
+      font-size: 20px !important;
+
+      &:hover,
+      &:active {
+        background: #3370ff1a;
+      }
+    }
   }
 
   .org-tree-search {
@@ -642,36 +664,33 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   padding: 16px;
+  border-left: 1px solid #d9dcdf;
   overflow: hidden;
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
 
   .member-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
     margin-bottom: 16px;
 
-    .member-header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      .member-org-name {
-        font-size: 16px;
-        font-weight: 500;
-      }
-
-      .member-count {
-        font-size: 13px;
-        color: #646a73;
-      }
+    .member-org-name {
+      font-size: 16px;
+      font-weight: 500;
     }
 
-    .member-header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .member-count {
+      font-size: 13px;
+      color: #646a73;
+    }
+  }
+
+  .member-actions {
+    margin-bottom: 16px;
+
+    .member-search {
+      text-align: right;
     }
   }
 

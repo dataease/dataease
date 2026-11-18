@@ -38,6 +38,12 @@ declare global {
     code: string | number
     data: T extends any ? T : T & any
     msg: string
+    requestId?: string
+    messageKey?: string
+    category?: string
+    args?: unknown[]
+    fieldErrors?: { field: string; message: string; messageKey?: string }[]
+    retryable?: boolean
   }
 
   type DeepPartial<T> = {

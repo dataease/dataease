@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { getData } from '@/api/chart'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { provideChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
 import { ref, reactive, shallowRef, computed, CSSProperties, toRefs, PropType } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
@@ -17,6 +19,7 @@ import { isDashboard, isTabCanvas, trackBarStyleCheck } from '@/utils/canvasUtil
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 import { ElMessage } from 'element-plus-secondary'
+import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 
 const props = defineProps({
   // 公共参数集
@@ -392,30 +395,49 @@ const renderChart = async view => {
   }
 }
 
-const calcData = (view, callback) => {
-  if (view.tableId || view['dataFrom'] === 'template') {
-    state.loading = true
-    isError.value = false
-    const v = JSON.parse(JSON.stringify(view))
-    getData(v)
-      .then(res => {
-        if (res.code && res.code !== 0) {
-          isError.value = true
-          errMsg.value = res.msg
-        } else {
-          chartData.value = res?.data as Partial<Chart['data']>
-          emit('onDrillFilters', res?.drillFilters)
+const chartRuntime = provideChartRuntimeCache(
+  () => props.view as Chart,
+  () => props.showPosition
+)
+const dataQuery = useLatestQuery('chart-data')
+const invalidateQuery = () => dataQuery.invalidate()
 
-          dvMainStore.setViewDataDetails(view.id, res)
-          renderChart(res)
-        }
-        callback?.()
-      })
-      .catch(() => {
-        callback?.()
-      })
-  } else {
-    callback?.()
+const calcData = (view, callback) => {
+  const request = dataQuery.start()
+  try {
+    if (view.tableId || view['dataFrom'] === 'template') {
+      state.loading = true
+      isError.value = false
+      const v = JSON.parse(JSON.stringify(view))
+      return getData(v, request)
+        .then(res => {
+          if (!request.isCurrent()) return
+          if (res.code && res.code !== 0) {
+            isError.value = true
+            errMsg.value = res.msg
+          } else {
+            chartData.value = res?.data as Partial<Chart['data']>
+            emit('onDrillFilters', res?.drillFilters)
+
+            chartRuntime.setDetails(res)
+
+            if (chartRuntime.publishToStore) dvMainStore.setViewDataDetails(view.id, res)
+            renderChart(res)
+          }
+          callback?.()
+        })
+        .catch(() => {
+          if (!request.isCurrent()) return
+          callback?.()
+        })
+        .finally(request.finish)
+    } else {
+      callback?.()
+    }
+    request.finish()
+  } catch (error) {
+    request.finish()
+    throw error
   }
 }
 
@@ -458,14 +480,14 @@ const trackClick = trackAction => {
       emit('onPointClick', clickParams)
       break
     case 'linkageAndDrill':
-      dvMainStore.addViewTrackFilter(linkageParam)
+      dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
       emit('onChartClick', param)
       break
     case 'drill':
       emit('onChartClick', param)
       break
     case 'linkage':
-      dvMainStore.addViewTrackFilter(linkageParam)
+      dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
       break
     case 'jump':
       if (mobileInPc.value && !inMobile.value) return
@@ -547,6 +569,8 @@ const action = param => {
     trackClick(trackMenu.value[0])
   } else {
     setTimeout(() => {
+      // 取数失败或组件卸载后，菜单实例可能已失效
+      if (!viewTrack.value) return
       const barStyleTemp = {
         left: param.x - 50,
         top: param.y + 10
@@ -595,6 +619,7 @@ const onPointClick = event => {
 }
 
 defineExpose({
+  invalidateQuery,
   calcData,
   renderChart,
   // 暴露给父级标题层展示联动/跳转标识
@@ -603,7 +628,9 @@ defineExpose({
 </script>
 
 <template>
+  <chart-error v-if="isError" :err-msg="errMsg" />
   <div
+    v-else
     ref="indicatorRef"
     :class="{ 'menu-point': showCursor, 'mobile-indicator': mobileResponsive }"
     :style="contentStyle"

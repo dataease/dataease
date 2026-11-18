@@ -17,6 +17,8 @@ public class BusiDsRequest implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    private Long copySourceId;
+
     @JsonSerialize(using= ToStringSerializer.class)
     @Schema(description = "父ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long pid;

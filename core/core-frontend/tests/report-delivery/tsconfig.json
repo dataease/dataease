@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": false,
+    "paths": {
+      "@/hooks/web/useI18n": ["./ui-mock.ts"],
+      "@/plugins/vue-i18n": ["./ui-mock.ts"],
+      "@/config/axios": ["./ui-mock.ts"],
+      "@/*": ["../../src/*"],
+      "*": ["../../node_modules/*"]
+    },
+    "types": ["../../node_modules/vite/client", "../../node_modules/element-plus-secondary/global"]
+  },
+  "include": [
+    "../../src/views/menu/system/report/ReportDeliveryDetails.vue",
+    "../../src/views/menu/system/report/RecipientAddress.vue",
+    "../../src/views/menu/system/report/deliveryLocale.ts",
+    "../../src/views/menu/system/report/LogDetails.vue",
+    "../../src/utils/queryDefaultSnapshot.ts",
+    "../../types/**/*.d.ts",
+    "ui-mock.ts"
+  ],
+  "exclude": ["**/node_modules/**"]
+}

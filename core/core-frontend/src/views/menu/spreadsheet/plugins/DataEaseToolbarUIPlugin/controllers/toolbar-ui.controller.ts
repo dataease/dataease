@@ -3,11 +3,11 @@ import {
   Disposable,
   ICommandService,
   Inject,
+  LocaleService,
   type ICommandInfo,
   type IMutationInfo,
   ObjectMatrix
 } from '@univerjs/core'
-import { LinkIcon } from '@univerjs/icons'
 import {
   type ISetRangeValuesMutationParams,
   SetRangeValuesMutation,
@@ -21,6 +21,7 @@ import {
 import {
   BuiltInUIPart,
   ComponentManager,
+  IconManager,
   IMenuManagerService,
   IShortcutService,
   IUIPartsService,
@@ -69,6 +70,8 @@ export class DataEaseToolbarUIController extends Disposable {
     @IUIPartsService private readonly uiPartsService: IUIPartsService,
     @IFormatPainterService private readonly formatPainterService: IFormatPainterService,
     @Inject(ComponentManager) private readonly componentManager: ComponentManager,
+    @Inject(IconManager) private readonly iconManager: IconManager,
+    @Inject(LocaleService) private readonly localeService: LocaleService,
     @Inject(TableUserStyleService)
     private readonly tableUserStyleService: TableUserStyleService,
     @Inject(SpreadsheetModeService)
@@ -168,11 +171,21 @@ export class DataEaseToolbarUIController extends Disposable {
   }
 
   private initComponents(): void {
-    this.disposeWithMe(this.componentManager.register('LinkIcon', LinkIcon))
     this.disposeWithMe(
       this.componentManager.register('DataEaseInsertIcon', DataEaseInsertIcon, {
         framework: 'vue3'
       })
+    )
+    const insertIcon = this.componentManager.get('DataEaseInsertIcon')
+    const { createElement } = this.componentManager.reactUtils
+    // 复用 Vue 适配器，并由当前 Univer 实例提供语言，避免与页面语言状态分离。
+    this.disposeWithMe(
+      this.iconManager.register('DataEaseInsertIcon', props =>
+        createElement(insertIcon, {
+          ...props,
+          label: this.localeService.t('dataease-spreadsheet.menu.insert')
+        })
+      )
     )
     this.disposeWithMe(
       this.componentManager.register(DATAEASE_INSERT_DROPDOWN_COMPONENT, DataEaseInsertDropdown, {

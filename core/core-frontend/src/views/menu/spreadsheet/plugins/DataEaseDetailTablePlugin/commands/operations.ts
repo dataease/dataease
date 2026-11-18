@@ -1,3 +1,4 @@
+import { presentError } from '@/config/axios/errorPresenter'
 import { CommandType } from '@univerjs/core'
 import type { ICommand, IAccessor } from '@univerjs/core'
 import type { DetailTableConfig } from '../types'
@@ -24,7 +25,10 @@ export const ApplyDetailTableOperation: ICommand = {
 
       return result !== false
     } catch (error) {
-      ElMessage.error(`Update failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      presentError(
+        error,
+        `Update failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
       return false
     }
   }
@@ -73,7 +77,10 @@ export const ApplyDetailTableStyleOperation: ICommand = {
       await fillService.applyStyleOnly(univerApi, config)
       return true
     } catch (error) {
-      ElMessage.error(`Update style failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      presentError(
+        error,
+        `Update style failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
       return false
     }
   }

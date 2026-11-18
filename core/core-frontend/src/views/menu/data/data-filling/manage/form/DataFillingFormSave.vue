@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { presentError } from '@/config/axios/errorPresenter'
+
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
@@ -623,7 +625,7 @@ function listTables(callback?: any) {
           }
         })
         .catch(e => {
-          ElMessage.error(e)
+          presentError(e)
         })
     } else {
       listDatasourceTables({ datasourceId: formData.value.datasource })
@@ -634,7 +636,7 @@ function listTables(callback?: any) {
           }
         })
         .catch(e => {
-          ElMessage.error(e)
+          presentError(e)
         })
     }
   }

@@ -745,7 +745,7 @@ onMounted(() => {
 
   .added-user-list {
     flex: 1;
-    border-left: 2px solid var(--MainBG, #f5f6f7);
+    border-left: 1px solid #d9dcdf;
     padding: 24px;
 
     .ed-input {

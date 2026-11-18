@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
+
+provideQueryScope(true)
+const refreshQuery = useLatestQuery('canvas-refresh')
 import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import {
@@ -12,6 +16,7 @@ import $ from 'jquery'
 import { _$ } from '@/utils/utils'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
+import type { Handler } from 'mitt'
 import { changeStyleWithScale } from '@/utils/translate'
 import {
   ref,
@@ -45,6 +50,7 @@ import {
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { flushCanvasDraft, hasPendingCanvasDraft } from '@/utils/canvasDraftCache'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 
@@ -255,7 +261,9 @@ useChartRefreshTimer(
     previewSearchCount.value++
     // 非图表组件的刷新通知只由主画布发送，避免组合或 Tab 子画布重复通知
     if (isMainCanvas(canvasId.value)) {
-      refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
+      refreshOtherComponent(dvInfo.value.id, dvInfo.value.type, {
+        queryRequest: refreshQuery.start()
+      })
     }
   }
 )
@@ -1500,7 +1508,7 @@ const getMoveItem = () => {
   return infoBox.value.moveItem
 }
 const userViewEnlarge = ref()
-const userViewEnlargeOpen = (opt, item) => {
+const userViewEnlargeOpen = (opt, item, runtime?) => {
   import('@/components/visualization/UserViewEnlarge.vue').then(res => {
     userViewEnlarge.value = res.default
     nextTick(() => {
@@ -1509,7 +1517,7 @@ const userViewEnlargeOpen = (opt, item) => {
         canvasViewInfo.value[item.id],
         item,
         opt,
-        { scale: curBaseScale.value }
+        { scale: curBaseScale.value, runtime }
       )
     })
   })
@@ -1526,6 +1534,28 @@ const initSnapshotTimer = () => {
   snapshotTimer.value = setInterval(() => {
     snapshotStore.snapshotCatchToStore()
   }, 1000)
+}
+
+const flushEditorDraft = () => {
+  snapshotStore.snapshotCatchToStore()
+  void flushCanvasDraft()
+}
+
+const flushHiddenEditorDraft = () => {
+  if (document.visibilityState === 'hidden') flushEditorDraft()
+}
+
+const confirmPendingDraft = (event: BeforeUnloadEvent) => {
+  flushEditorDraft()
+  // 关闭页面不会等待 IndexedDB 完成，未落盘时保留浏览器的离开确认。
+  if (
+    hasPendingCanvasDraft() ||
+    snapshotStore.snapshotCacheTimes > 0 ||
+    (!dvInfo.value.id && snapshotStore.styleChangeTimes > 0)
+  ) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
 }
 
 const linkJumpSetOpen = item => {
@@ -1632,39 +1662,46 @@ const popAreaAvailable = computed(
   () => canvasStyleData.value?.popupAvailable && isMainCanvas(canvasId.value)
 )
 
+const canvasEventCleanups: Array<() => void> = []
+
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
+    document.addEventListener('visibilitychange', flushHiddenEditorDraft)
+    window.addEventListener('pagehide', flushEditorDraft)
+    window.addEventListener('beforeunload', confirmPendingDraft)
     initWatermark()
     dvMainStore.setEditMode('edit')
   }
   // 获取编辑器元素
   composeStore.getEditor(canvasId.value)
-  eventBus.on('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
-  eventBus.on('handleDragEnd-' + canvasId.value, handleDragEnd)
-  eventBus.on('hideArea-' + canvasId.value, hideArea)
-  eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
-  eventBus.on('removeMatrixItemPosition-' + canvasId.value, removeItemComponent)
-  eventBus.on('removeMatrixItemById-' + canvasId.value, removeItemById)
-  eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
-  eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
-  eventBus.on('doCanvasInit-' + canvasId.value, canvasInit)
+  const subscribe = (name: string, handler: Handler) => {
+    const eventName = `${name}-${canvasId.value}`
+    eventBus.on(eventName, handler)
+    canvasEventCleanups.push(() => eventBus.off(eventName, handler))
+  }
+  subscribe('handleDragStartMoveIn', handleDragStartMoveIn)
+  subscribe('handleDragEnd', handleDragEnd)
+  subscribe('hideArea', hideArea)
+  subscribe('removeMatrixItem', removeItem)
+  subscribe('removeMatrixItemPosition', removeItemComponent)
+  subscribe('removeMatrixItemById', removeItemById)
+  subscribe('addDashboardItem', addItemBox)
+  subscribe('snapshotChange', canvasInit)
+  subscribe('doCanvasInit', canvasInit)
 })
 
 onBeforeUnmount(() => {
   if (snapshotTimer.value) {
     clearInterval(snapshotTimer.value)
     snapshotTimer.value = null
+    flushEditorDraft()
+    document.removeEventListener('visibilitychange', flushHiddenEditorDraft)
+    window.removeEventListener('pagehide', flushEditorDraft)
+    window.removeEventListener('beforeunload', confirmPendingDraft)
   }
-  eventBus.off('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
-  eventBus.off('handleDragEnd-' + canvasId.value, handleDragEnd)
-  eventBus.off('hideArea-' + canvasId.value, hideArea)
-  eventBus.off('removeMatrixItem-' + canvasId.value, removeItem)
-  eventBus.off('removeMatrixItemPosition-' + canvasId.value, removeItemComponent)
-  eventBus.off('removeMatrixItemById-' + canvasId.value, removeItemById)
-  eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
-  eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
-  eventBus.off('doCanvasInit' + canvasId.value, canvasInit)
+  canvasEventCleanups.forEach(unsubscribe => unsubscribe())
+  canvasEventCleanups.length = 0
 })
 
 defineExpose({
@@ -1761,7 +1798,7 @@ defineExpose({
         @onMouseUp="onMouseUp($event)"
         @onDragging="onDragging($event, item)"
         @onResizing="onResizing($event, item)"
-        @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+        @userViewEnlargeOpen="(opt, runtime) => userViewEnlargeOpen(opt, item, runtime)"
         @datasetParamsInit="datasetParamsInit(item)"
         @linkJumpSetOpen="linkJumpSetOpen(item)"
         @linkageSetOpen="linkageSetOpen(item)"

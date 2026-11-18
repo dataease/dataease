@@ -187,7 +187,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Webhook" prop="webhook">
+        <el-form-item v-if="hasOrgContext" label="Webhook" prop="webhook">
           <el-select 
             v-model="formState.webhookList"
             class="custom-clear-class"
@@ -220,7 +220,7 @@
 <script lang="ts" setup>
 import { CircleCloseFilled } from '@element-plus/icons-vue'
 import peoples from "@/assets/svg/peoples.svg";
-import { ref, reactive, nextTick } from "vue";
+import { ref, reactive, nextTick, computed } from 'vue'
 import { useI18n } from "@/hooks/web/useI18n";
 import {
   queryCategoryStatusApi,
@@ -236,6 +236,11 @@ import {
 import { ElMessage } from "element-plus-secondary";
 import { thresholdBatchReciApi, webhookOptionsApi } from "../api";
 import ReciSelect from '../../reci-select/index.vue'
+
+import { useUserStoreWithOut } from '@/store/modules/user'
+
+const userStore = useUserStoreWithOut()
+const hasOrgContext = computed(() => !!userStore.getOid || !!userStore.getProxyInfo?.proxyOid)
 
 const { t } = useI18n();
 const title = ref(t('threshold.recipient_setting'));
@@ -335,6 +340,11 @@ const removeLarksuiteGroupTag = (val) => {
 };
 
 const loadWebhookOptions = () => {
+  if (!hasOrgContext.value) {
+    state.webhookOptions = []
+    return
+  }
+
   webhookOptionsApi().then(res => {
     state.webhookOptions = res.data
   })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
 const props = defineProps({
   optionList: propTypes.arrayOf(
@@ -9,13 +9,21 @@ const props = defineProps({
       name: propTypes.string
     })
   ),
-  title: propTypes.string
+  title: propTypes.string,
+  modelValue: propTypes.arrayOf(propTypes.oneOfType([propTypes.string, propTypes.number])).def([])
 })
 
 const state = reactive({
   activeStatus: [],
   optionList: []
 })
+watch(
+  () => props.modelValue,
+  value => {
+    state.activeStatus = [...value]
+  },
+  { immediate: true }
+)
 
 const nodeChange = (id: string | number) => {
   const len = state.activeStatus.indexOf(id)

@@ -32,7 +32,7 @@ const onSettingChange = () => {
     carouselInfo.value.time = 1
   }
   if (carouselInfo.value.enable) {
-    useEmitt().emitter.emit('carouselValueChange')
+    useEmitt().emitter.emit('carouselValueChange-' + element.value.id)
   }
 
   nextTick(() => {
@@ -84,7 +84,9 @@ const handleInput = value => {
             </el-icon>
           </el-tooltip>
 
+          <!-- 数字输入框只在挂载时同步 aria-disabled。 -->
           <el-input-number
+            :key="String(carouselInfo.enable)"
             v-model="carouselInfo.time"
             :effect="themes"
             :min="1"
@@ -100,7 +102,17 @@ const handleInput = value => {
         </el-form-item>
       </el-form>
     </el-row>
+    <p v-if="element.innerType === 'picture-group'" class="carousel-hint">
+      {{ t('visualization.pic_group_carousel_hint') }}
+    </p>
   </collapse-switch-item>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.carousel-hint {
+  margin: 8px 0 0;
+  color: var(--ed-text-color-secondary);
+  font-size: 12px;
+  line-height: 20px;
+}
+</style>

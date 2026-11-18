@@ -1,8 +1,4 @@
 <script lang="ts" setup>
-import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
-import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
-import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_fullAssociation from '@/assets/svg/icon_full-association.svg'
 import icon_intersect from '@/assets/svg/icon_intersect.svg'
 import icon_leftAssociation from '@/assets/svg/icon_left-association.svg'
@@ -10,16 +6,14 @@ import icon_rightAssociation from '@/assets/svg/icon_right-association.svg'
 import icon_sql_outlined from '@/assets/svg/icon_sql_outlined.svg'
 import { getCSSVariable } from '@/utils/color'
 import referenceTable from '@/assets/svg/reference-table.svg'
-import icon_moreVertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import { reactive, computed, ref, nextTick, inject, type Ref, watch, unref } from 'vue'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
 import { ElMessageBox, type Action } from 'element-plus-secondary'
 import { guid } from './util'
-import { HandleMore } from '@/components/handle-more'
+import DatasetNodeMenu from './DatasetNodeMenu.vue'
 import { propTypes } from '@/utils/propTypes'
-import UnionFieldList from './UnionFieldList.vue'
 import { type Node, type Field, num } from './util'
 import { getTableField } from '@/api/dataset'
 import type { SqlNode } from './AddSql.vue'
@@ -55,31 +49,11 @@ const iconName = {
 const { t } = useI18n()
 const editSqlField = ref(false)
 
-const nodeField = ref<Field[]>([])
-
 const currentNode = ref<Node>()
 
 const sqlNode = ref<SqlNode>()
 
 const allfields = inject('allfields') as Ref
-
-const getNodeField = ({ datasourceId, id, info, tableName, type, currentDsFields }) => {
-  return getTableField({ datasourceId, id, info, tableName, type, isCross: isCross.value })
-    .then(res => {
-      const idOriginNameMap = allfields.value.reduce((pre, next) => {
-        pre[`${next.datasetTableId}${next.originName}`] = next.id
-        return pre
-      }, {})
-      nodeField.value = res as unknown as Field[]
-      nodeField.value.forEach(ele => {
-        ele.id = idOriginNameMap[`${id}${ele.originName}`]
-        ele.checked = currentDsFields.map(ele => ele.originName).includes(ele.originName)
-      })
-    })
-    .finally(() => {
-      editUnion.value = true
-    })
-}
 
 const nodeNameList = computed(() => {
   const arr = []
@@ -158,11 +132,9 @@ const initState = nodeList => {
   Object.assign(state.nodeList, nodeList)
   nextTick(() => {
     isUpdate = true
-    emits('addComplete')
+    emits('addComplete', true)
   })
 }
-
-const editUnion = ref(false)
 
 const svgWidth = ref('200px')
 const svgHeight = ref('260px')
@@ -205,6 +177,66 @@ const delNodeFake = (id, arr) => {
 
 const changeSqlId = ref([])
 const changedNodeId = ref([])
+const fieldTypeDetectVersions = new Map<string, number>()
+const emitFieldTypeDetection = (
+  nodeId: string,
+  fields: Field[],
+  saved: { originName: string; deExtractType: number }[]
+) => {
+  emits('fieldTypeDetected', {
+    nodeId,
+    saved,
+    fields: (fields || []).map(ele => ({
+      originName: ele.originName,
+      deExtractType: ele.deExtractType,
+      deType: ele.deType
+    }))
+  })
+}
+// Snapshot the node's field types before its new SQL runs: once the save completes, the merged
+// field list already carries the new types and can no longer tell us they changed.
+const snapshotNodeFields = (nodeId: string) => {
+  let snapshot: {
+    originName: string
+    deExtractType: number
+    deType: number
+    deTypeArr?: (number | string)[]
+  }[] = []
+  const walk = list => {
+    ;(list || []).forEach(ele => {
+      if (ele.id === nodeId) {
+        snapshot = (ele.currentDsFields || []).map(field => ({
+          originName: field.originName,
+          deExtractType: field.deExtractType,
+          deType: field.deType,
+          deTypeArr: field.deTypeArr
+        }))
+      } else if (ele.children?.length) {
+        walk(ele.children)
+      }
+    })
+  }
+  walk(state.nodeList)
+  return snapshot
+}
+const detectNodeFieldTypes = (node, saved) => {
+  const request = (fieldTypeDetectVersions.get(node.id) || 0) + 1
+  fieldTypeDetectVersions.set(node.id, request)
+  getTableField({
+    datasourceId: node.datasourceId,
+    id: node.id,
+    info: node.info,
+    tableName: node.tableName,
+    type: 'sql',
+    isCross: isCross.value,
+    sqlVariableDetails: node.sqlVariableDetails
+  })
+    .then(res => {
+      if (fieldTypeDetectVersions.get(node.id) !== request) return
+      emitFieldTypeDetection(node.id, res as unknown as Field[], saved)
+    })
+    .catch(() => null) // The shared request interceptor reports field lookup failures.
+}
 const saveSqlNode = (val: SqlNode, cb) => {
   const { tableName, id, sql, datasourceId, sqlVariableDetails = null, changeFlag = false } = val
   if (changeFlag) {
@@ -236,8 +268,8 @@ const saveSqlNode = (val: SqlNode, cb) => {
         state.visualNode.confirm = true
         state.nodeList.push(state.visualNode)
         currentNode.value = state.nodeList[0]
-        nodeField.value = res as unknown as Field[]
-        nodeField.value.forEach(ele => {
+        const fields = res as unknown as Field[]
+        fields.forEach(ele => {
           ele.checked = true
         })
         state.nodeList[0].currentDsFields = cloneDeep(res)
@@ -268,7 +300,9 @@ const saveSqlNode = (val: SqlNode, cb) => {
     tableName,
     sqlVariableDetails
   }
+  const savedFields = snapshotNodeFields(id)
   dfsNodeBack([obj], [id], state.nodeList)
+  detectNodeFieldTypes(obj, savedFields)
   cb?.()
   emits('reGetName')
 }
@@ -278,14 +312,19 @@ const setChangeStatus = (to, from) => {
   changedNodeId.value.push({ from, to })
 }
 
+const fieldEditVersions = new Map<Node['id'], number>()
+let sqlFieldRequest = 0
 const closeSqlNode = () => {
   if (
     state.nodeList.length === 1 &&
     !state.nodeList[0].children?.length &&
     changeSqlId.value.length === 1
   ) {
-    currentNode.value = state.nodeList[0]
-    const { datasourceId, id, info, tableName, sqlVariableDetails } = currentNode.value
+    const request = ++sqlFieldRequest
+    const pendingNode = state.nodeList[0]
+    const pendingEditVersion = fieldEditVersions.get(pendingNode.id)
+    const pendingFields = pendingNode.currentDsFields
+    const { datasourceId, id, info, tableName, sqlVariableDetails } = pendingNode
     getTableField({
       datasourceId,
       id,
@@ -294,19 +333,31 @@ const closeSqlNode = () => {
       type: 'sql',
       isCross: isCross.value,
       sqlVariableDetails: sqlVariableDetails
-    }).then(res => {
-      const idOriginNameMap = allfields.value.reduce((pre, next) => {
-        pre[`${next.datasetTableId}${next.originName}`] = next.id
-        return pre
-      }, {})
-      nodeField.value = res as unknown as Field[]
-      nodeField.value.forEach(ele => {
-        ele.id = idOriginNameMap[`${id}${ele.originName}`]
-        ele.checked = true
-      })
-      state.nodeList[0].currentDsFields = cloneDeep(res)
-      editUnion.value = true
     })
+      .catch(() => null) // The shared request interceptor reports field lookup failures.
+      .then(res => {
+        if (
+          !res ||
+          request !== sqlFieldRequest ||
+          fieldEditVersions.get(id) !== pendingEditVersion ||
+          state.nodeList[0] !== pendingNode ||
+          pendingNode.info !== info ||
+          pendingNode.sqlVariableDetails !== sqlVariableDetails ||
+          pendingNode.currentDsFields !== pendingFields
+        )
+          return
+        const idOriginNameMap = allfields.value.reduce((pre, next) => {
+          pre[`${next.datasetTableId}${next.originName}`] = next.id
+          return pre
+        }, {})
+        const fields = res as unknown as Field[]
+        fields.forEach(ele => {
+          ele.id = idOriginNameMap[`${id}${ele.originName}`]
+          ele.checked = true
+        })
+        // Keep the old fields intact until dependency deletion has been confirmed.
+        return applyNodeFields(pendingNode, fields)
+      })
     changeSqlId.value = []
   }
   if (state.visualNode?.confirm) {
@@ -331,20 +382,14 @@ const closeSqlNode = () => {
   confirm()
 }
 
-const changeNodeFields = val => {
-  currentNode.value.currentDsFields = val
-}
-
 const closeEditUnion = () => {
-  nodeField.value = []
   currentNode.value = null
   const [fir] = state.nodeList
-  if (fir.isShadow) {
+  if (fir?.isShadow) {
     delete fir.isShadow
     state.nodeList = []
     emits('addComplete')
   }
-  editUnion.value = false
 }
 
 const setGuid = (arr, id, datasourceId) => {
@@ -381,9 +426,11 @@ const delUpdateDsFieldsFake = (id, arr: Node[]) => {
   })
 }
 
-const confirmEditUnion = () => {
-  delUpdateDsFieldsFake(currentNode.value.id, state.nodeList)
-  const currentIds = currentNode.value.currentDsFields.map(ele => ele.id)
+const confirmEditUnion = async () => {
+  const target = currentNode.value
+  if (!target) return false
+  delUpdateDsFieldsFake(target.id, state.nodeList)
+  const currentIds = target.currentDsFields.map(ele => ele.id)
   let ids = fakeDelId.filter(ele => !currentIds.includes(ele))
   fakeDelId = []
   if (!!ids.length) {
@@ -406,53 +453,53 @@ const confirmEditUnion = () => {
     }, [])
 
     if (!!idArr.length) {
-      ElMessageBox.confirm(t('data_set.field_selection'), {
-        confirmButtonText: t('dataset.confirm'),
-        cancelButtonText: t('common.cancel'),
-        showCancelButton: true,
-        tip: `${t('data_set.field')}: ${allfields.value
-          .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
-          .map(ele => ele.name)
-          .join(',')}, ${t('data_set.confirm_the_deletion')}`,
-        confirmButtonType: 'danger',
-        type: 'warning',
-        autofocus: false,
-        showClose: false,
-        callback: (action: Action) => {
-          if (action === 'confirm') {
-            delUpdateDsFields(currentNode.value.id, state.nodeList)
-            const [fir] = state.nodeList
-            if (fir.isShadow) {
-              delete fir.isShadow
-            }
-            closeEditUnion()
-            nextTick(() => {
-              emits('updateAllfields')
-            })
-          }
-        }
-      })
-      return
+      try {
+        await ElMessageBox.confirm(t('data_set.field_selection'), {
+          confirmButtonText: t('dataset.confirm'),
+          cancelButtonText: t('common.cancel'),
+          showCancelButton: true,
+          tip: `${t('data_set.field')}: ${allfields.value
+            .filter(ele => [...new Set(idArr)].includes(ele.id) && ele.extField !== 2)
+            .map(ele => ele.name)
+            .join(',')}, ${t('data_set.confirm_the_deletion')}`,
+          confirmButtonType: 'danger',
+          type: 'warning',
+          autofocus: false,
+          showClose: false
+        })
+      } catch {
+        return false
+      }
     }
   }
 
-  delUpdateDsFields(currentNode.value.id, state.nodeList)
+  if (currentNode.value !== target) return false
+  delUpdateDsFields(target.id, state.nodeList)
   const [fir] = state.nodeList
-  if (fir.isShadow) {
+  if (fir?.isShadow) {
     delete fir.isShadow
   }
   closeEditUnion()
   nextTick(() => {
     emits('updateAllfields')
   })
+  return true
+}
+
+const applyNodeFields = async (node: Node, fields: Field[]) => {
+  // Invalidate older SQL lookups before a dependency confirmation can suspend this edit.
+  fieldEditVersions.set(node.id, (fieldEditVersions.get(node.id) || 0) + 1)
+  currentNode.value = cloneDeep(node)
+  currentNode.value.currentDsFields = cloneDeep(fields)
+  return confirmEditUnion()
+}
+
+const selectNode = (node: Node) => {
+  activeNodeId.value = node.id
+  emits('selectNode', node.id)
 }
 
 const handleCommand = (ele, command) => {
-  if (command === 'editorField') {
-    getNodeField(ele)
-    currentNode.value = cloneDeep(ele)
-  }
-
   if (command === 'rename') {
     tableRename({ name: ele.tableName, id: ele.id })
   }
@@ -474,51 +521,44 @@ const handleCommand = (ele, command) => {
 
   if (command === 'del') {
     delNodeFake(ele.id, state.nodeList)
-    if (!!fakeDelId.length) {
-      const idArr = allfields.value.reduce((pre, next) => {
-        if (next.extField === 2) {
-          const idMap = next.originName.match(/\[(.+?)\]/g) || []
-          const result = idMap.map(itm => {
-            return itm.slice(1, -1)
-          })
-          result.forEach(ele => {
-            if (fakeDelId.includes(ele)) {
-              pre.push(ele)
-            }
-          })
-        }
-        return pre
-      }, [])
-      fakeDelId = []
-      if (!!idArr.length) {
-        ElMessageBox.confirm(t('data_set.confirm_to_delete', { a: ele.tableName }), {
-          confirmButtonText: t('dataset.confirm'),
-          cancelButtonText: t('common.cancel'),
-          showCancelButton: true,
-          tip: t('data_set.also_be_deleted'),
-          confirmButtonType: 'danger',
-          type: 'warning',
-          autofocus: false,
-          showClose: false,
-          callback: (action: Action) => {
-            if (action === 'confirm') {
-              delNode(ele.id, state.nodeList)
-              nextTick(() => {
-                emits('addComplete')
-                emits('updateAllfields')
-              })
-            }
-          }
-        })
-        return
-      }
+    const removedFieldIds = new Set(fakeDelId)
+    fakeDelId = []
+    const hasCalculatedFields = allfields.value.some(
+      field =>
+        field.extField === 2 &&
+        field.originName.match(/\[(.+?)\]/g)?.some(id => removedFieldIds.has(id.slice(1, -1)))
+    )
+    const hasJoin =
+      !state.nodeList.some(node => node.id === ele.id) || ele.children?.some(node => !node.isShadow)
+    const remove = () => {
+      delNode(ele.id, state.nodeList)
+      nextTick(() => {
+        emits('addComplete')
+        emits('updateAllfields')
+      })
     }
 
-    delNode(ele.id, state.nodeList)
-    nextTick(() => {
-      emits('addComplete')
-      emits('updateAllfields')
-    })
+    if (hasJoin || hasCalculatedFields) {
+      const tips = []
+      if (hasJoin) tips.push(t('data_set.delete_node_join_tip'))
+      if (hasCalculatedFields) tips.push(t('data_set.also_be_deleted'))
+      ElMessageBox.confirm(t('data_set.confirm_to_delete', { a: ele.tableName }), {
+        confirmButtonText: t('dataset.confirm'),
+        cancelButtonText: t('common.cancel'),
+        showCancelButton: true,
+        tip: tips.join(' '),
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false,
+        callback: (action: Action) => {
+          if (action === 'confirm') remove()
+        }
+      })
+      return
+    }
+
+    remove()
   }
 }
 
@@ -569,32 +609,6 @@ const dfsNodeFieldBack = (list, { originName, datasetTableId }) => {
 const dfsNodeFieldBackReal = ele => {
   dfsNodeFieldBack(state.nodeList, ele)
 }
-
-const menuList = [
-  {
-    svgName: icon_textBox_outlined,
-    label: t('data_set.field_selection'),
-    command: 'editorField'
-  },
-  {
-    svgName: icon_deleteTrash_outlined,
-    label: t('data_set.delete'),
-    command: 'del'
-  }
-]
-
-const sqlMenu = [
-  {
-    svgName: icon_edit_outlined,
-    label: t('data_set.edit_sql'),
-    command: 'editorSql'
-  },
-  {
-    svgName: icon_rename_outlined,
-    label: t('datasource.field_rename'),
-    command: 'rename'
-  }
-]
 
 const dragOffsetX = ref(0)
 const dragOffsetY = ref(0)
@@ -926,7 +940,8 @@ const drop_handler = ev => {
       ...extraData
     })
 
-    currentNode.value = state.nodeList[0]
+    const pendingNode = state.nodeList[0]
+    currentNode.value = pendingNode
 
     getTableField({
       datasourceId,
@@ -937,14 +952,17 @@ const drop_handler = ev => {
       type
     })
       .then(res => {
-        nodeField.value = res as unknown as Field[]
-        nodeField.value.forEach(ele => {
+        if (state.nodeList[0] !== pendingNode) return
+        currentNode.value = pendingNode
+        const fields = res as unknown as Field[]
+        fields.forEach(ele => {
           ele.checked = true
         })
-        state.nodeList[0].currentDsFields = cloneDeep(res)
+        pendingNode.currentDsFields = cloneDeep(res)
+        void confirmEditUnion()
       })
-      .finally(() => {
-        editUnion.value = true
+      .catch(() => {
+        if (state.nodeList[0] === pendingNode && pendingNode.isShadow) closeEditUnion()
       })
     nextTick(() => {
       emits('addComplete')
@@ -1058,12 +1076,16 @@ defineExpose({
   dfsNodeFieldBackReal,
   initState,
   setChangeStatus,
-  crossDatasources
+  crossDatasources,
+  applyNodeFields,
+  handleCommand,
+  setActiveNode: (id: string) => {
+    activeNodeId.value = id
+  }
 })
 
 const handleActiveNode = ele => {
-  activeNodeId.value = ele.id
-  handleCommand(ele, 'editorField')
+  selectNode(ele)
 }
 
 const emits = defineEmits([
@@ -1071,7 +1093,9 @@ const emits = defineEmits([
   'joinEditor',
   'updateAllfields',
   'changeUpdate',
-  'reGetName'
+  'reGetName',
+  'selectNode',
+  'fieldTypeDetected'
 ])
 </script>
 
@@ -1132,12 +1156,11 @@ const emits = defineEmits([
           </el-icon>
           <span class="tableName">{{ ele.tableName }}</span>
           <span class="placeholder">{{ t('data_set.custom_sql_here') }}</span>
-          <handle-more
+          <dataset-node-menu
             style="margin-left: auto"
-            :iconName="icon_moreVertical_outlined"
-            :menuList="ele.type === 'sql' ? [...sqlMenu, ...menuList] : menuList"
-            @handle-command="command => handleCommand(ele, command)"
-          ></handle-more>
+            :node-type="ele.type"
+            @command="command => handleCommand(ele, command)"
+          />
         </div>
       </foreignObject>
 
@@ -1177,6 +1200,7 @@ const emits = defineEmits([
     </div>
   </div>
   <el-dialog
+    append-to-body
     v-model="dialogRename"
     :close-on-press-escape="false"
     :close-on-click-modal="false"
@@ -1188,6 +1212,7 @@ const emits = defineEmits([
       require-asterisk-position="right"
       :model="renameParam"
       label-position="top"
+      @submit.prevent
     >
       <el-form-item
         prop="name"
@@ -1214,46 +1239,7 @@ const emits = defineEmits([
     </template>
   </el-dialog>
   <el-drawer
-    :before-close="closeEditUnion"
-    v-model="editUnion"
-    modal-class="union-item-drawer"
-    size="600px"
-    direction="rtl"
-  >
-    <template #header v-if="currentNode">
-      <div style="width: 100%">
-        <div class="info">
-          <span :title="currentNode.tableName" class="label ellipsis">{{
-            currentNode.tableName
-          }}</span>
-        </div>
-        <div class="info" style="margin-top: 4px">
-          <span
-            :title="getDsName(currentNode.datasourceId)"
-            style="max-width: 550px"
-            class="name ellipsis"
-            >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
-          >
-        </div>
-        <div class="info" style="margin-top: 4px">
-          <span :title="currentNode.noteName" style="max-width: 500px" class="name ellipsis"
-            >{{ t('data_set.table_remarks') }}:{{ currentNode.noteName || '-' }}</span
-          >
-        </div>
-      </div>
-    </template>
-    <union-field-list
-      :field-list="nodeField"
-      :node="currentNode"
-      v-if="nodeField.length"
-      @checkedFields="changeNodeFields"
-    />
-    <template #footer>
-      <el-button secondary @click="closeEditUnion">{{ t('dataset.cancel') }} </el-button>
-      <el-button type="primary" @click="confirmEditUnion">{{ t('dataset.confirm') }} </el-button>
-    </template>
-  </el-drawer>
-  <el-drawer
+    append-to-body
     direction="btt"
     :close-on-click-modal="false"
     size="calc(100% - 100px)"
@@ -1274,37 +1260,6 @@ const emits = defineEmits([
 .sql-drawer-fullscreen {
   .ed-drawer.btt > .ed-drawer__body {
     padding: 0;
-  }
-}
-
-.union-item-drawer {
-  .ed-drawer__header {
-    height: auto;
-    font-family: var(--de-custom_font, 'PingFang');
-
-    .ed-drawer__close-btn {
-      top: 40.5px;
-    }
-
-    .info {
-      width: 100%;
-      display: flex;
-      .label {
-        font-weight: 500;
-        font-size: 16px;
-        color: #1f2329;
-        max-width: 500px;
-      }
-      .name {
-        font-weight: 400;
-        font-size: 14px;
-        color: #646a73;
-        line-height: 22px;
-      }
-    }
-  }
-  .field-block-body {
-    height: calc(100% - 70px) !important;
   }
 }
 

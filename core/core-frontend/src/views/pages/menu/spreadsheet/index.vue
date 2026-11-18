@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import { presentError } from '@/config/axios/errorPresenter'
+
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
@@ -357,6 +359,14 @@ const handleNodeClick = (data: SpreadsheetTreeNode, node: { disabled?: boolean }
     spreadsheetListTree.value.setCurrentKey(null)
     return
   }
+  if (!isEmbedded.value) {
+    // 替换当前地址并同步路由状态，刷新后仍定位到选中的电子表格。
+    void router.replace({
+      path: '/spreadsheet/index',
+      query: { ...route.query, id: String(data.id) },
+      hash: route.hash
+    })
+  }
   loadSpreadsheetPreview(data.id as number, data.weight)
 }
 
@@ -401,14 +411,17 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
         void loadFavoriteStatus(data.id, currentPreviewRequestVersion)
       }
       if (spreadsheetRef.value) {
-        spreadsheetRef.value.loadSheetData(previewWorkbookData.value)
+        // 等待当前资源 ID 同步到子组件，再加载选中的工作簿。
+        await nextTick()
+        if (currentPreviewRequestVersion !== previewRequestVersion) return
+        spreadsheetRef.value?.loadSheetData(previewWorkbookData.value)
       }
     } catch (e) {
       if (currentPreviewRequestVersion !== previewRequestVersion) {
         return
       }
       console.error(e)
-      ElMessage.error(t('spreadsheet.load_error'))
+      presentError(e, t('spreadsheet.load_error'))
       favoriteLoading.value = false
     } finally {
       if (currentPreviewRequestVersion === previewRequestVersion) {
@@ -598,7 +611,7 @@ const operation = async (cmd: string, data: SpreadsheetTreeNode, nodeType: 'fold
       ElMessage.success(t('spreadsheet.cancel_publish_success'))
     } catch (error) {
       console.error(error)
-      ElMessage.error(t('spreadsheet.cancel_publish_error'))
+      presentError(error, t('spreadsheet.cancel_publish_error'))
     }
     return
   } else if (cmd === 'delete') {
@@ -1050,6 +1063,7 @@ onBeforeUnmount(() => {
             <UniverSheet
               ref="spreadsheetRef"
               :model-value="previewWorkbookData"
+              :spreadsheet-id="selectedNodeInfo.id"
               :data-key="previewDataKey"
               :locale="currentLang"
               mode="preview"
@@ -1176,7 +1190,7 @@ onBeforeUnmount(() => {
     height: 100%;
     width: 279px;
     padding: 0;
-    border-right: 1px solid #d7d7d7;
+    border-right: 1px solid #1f232926;
     overflow: visible;
     &.retract {
       display: none;

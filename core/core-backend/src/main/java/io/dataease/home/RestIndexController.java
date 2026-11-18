@@ -23,13 +23,6 @@ public class RestIndexController {
         return RsaUtils.publicKey();
     }
 
-    @GetMapping("/symmetricKey")
-    @ResponseBody
-    public String symmetricKey() {
-        return RsaUtils.generateSymmetricKey();
-    }
-
-
     @GetMapping("/model")
     @ResponseBody
     public boolean model() {

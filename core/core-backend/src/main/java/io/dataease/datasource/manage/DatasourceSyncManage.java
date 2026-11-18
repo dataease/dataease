@@ -292,8 +292,6 @@ public class DatasourceSyncManage {
     }
 
     private void extractExcelData(DatasourceRequest request, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
-        ExcelUtils excelUtils = new ExcelUtils();
-        List<String[]> dataList = excelUtils.fetchDataList(request);
         CoreDeEngine engine = engineManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -301,25 +299,36 @@ public class DatasourceSyncManage {
         BeanUtils.copyBean(coreDatasource, engine);
         datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        if (engine.getType().equalsIgnoreCase("StarRocks")) {
-            ((StarRocksEngineProvider) engineProvider).streamLoadInsert(request.getTable(), extractType, dataList, tableFields, engine);
-            return;
-        }
-        int pageNumber = 1000;
-        if (engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name())) {
-            pageNumber = 1;
-        }
-        int totalPage;
-        if (dataList.size() % pageNumber > 0) {
-            totalPage = dataList.size() / pageNumber + 1;
-        } else {
-            totalPage = dataList.size() / pageNumber;
-        }
-        for (int page = 1; page <= totalPage; page++) {
-            datasourceRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), request.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
+        boolean starRocks = engine.getType().equalsIgnoreCase("StarRocks");
+        final int pageNumber = engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name()) ? 1 : 1000;
+        final List<Integer> includeColumnIndexes = buildSelectedColumnIndexes(tableFields);
+        ExcelUtils excelUtils = new ExcelUtils();
+        excelUtils.consumeDataByBatch(request, tableFields.size(), pageNumber, includeColumnIndexes, batch -> {
+            if (starRocks) {
+                ((StarRocksEngineProvider) engineProvider).streamLoadInsert(request.getTable(), extractType, batch, tableFields, engine);
+                return;
+            }
+            datasourceRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), request.getTable(), extractType, batch, 1, pageNumber, tableFields, engine));
             LogUtil.debug(datasourceRequest.getQuery());
             provider.execDDL(datasourceRequest);
+        });
+    }
+
+    private List<Integer> buildSelectedColumnIndexes(List<TableField> tableFields) {
+        if (tableFields == null || tableFields.isEmpty()) {
+            return null;
         }
+        List<Integer> selectedIndexes = new ArrayList<>();
+        for (int i = 0; i < tableFields.size(); i++) {
+            if (tableFields.get(i).isChecked()) {
+                selectedIndexes.add(i);
+            }
+        }
+        // 全选或全不选时走原全量读取路径，保持既有行为。
+        if (selectedIndexes.isEmpty() || selectedIndexes.size() == tableFields.size()) {
+            return null;
+        }
+        return selectedIndexes;
     }
 
     private void replaceTable(String tableName) throws Exception {

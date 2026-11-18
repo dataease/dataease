@@ -8,6 +8,7 @@
     }"
     ref="shapeInnerRef"
     :id="domId"
+    :data-chart-runtime="chartRuntime.id"
     v-loading="downLoading"
     :element-loading-text="$t('visualization.export_loading')"
     element-loading-background="rgba(255, 255, 255, 1)"
@@ -129,6 +130,7 @@
 </template>
 
 <script setup lang="ts">
+import { provideChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
 import mobileCheckbox from '@/assets/svg/mobile-checkbox.svg'
 import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 import dvLock from '@/assets/svg/dv-lock.svg'
@@ -179,7 +181,9 @@ const shapeInnerRef = ref(null)
 const componentInnerRef = ref(null)
 const componentEditBarRef = ref(null)
 const downLoading = ref(false)
-const viewDemoInnerId = computed(() => 'enlarge-inner-shape-' + element.value.id)
+const viewDemoInnerId = computed(
+  () => 'enlarge-inner-shape-' + element.value.id + '-' + chartRuntime.id
+)
 
 const {
   curComponent,
@@ -324,6 +328,11 @@ const {
   scale,
   canvasActive
 } = toRefs(props)
+const chartRuntime = provideChartRuntimeCache(
+  () => dvMainStore.canvasViewInfo[props.element.id] as Chart,
+  () => showPosition.value,
+  () => dvMainStore.dvInfo
+)
 
 const pTabGroupFlag = itemCanvasPathCheck(element.value, 'pTabGroup')
 const pJoinTab = checkJoinTab(element.value)
@@ -430,7 +439,7 @@ const isActive = () => {
 }
 
 const userViewEnlargeOpen = opt => {
-  emit('userViewEnlargeOpen', opt)
+  emit('userViewEnlargeOpen', opt, chartRuntime.snapshot())
 }
 
 const datasetParamsInit = opt => {
@@ -538,7 +547,7 @@ const handleDbClick = () => {
 }
 
 const hasChartMouseEvent = () => {
-  const chartContainer = document.getElementById(`container-canvas-${element.value.id}-common`)
+  const chartContainer = shapeInnerRef.value?.querySelector('[id^="container-canvas-"]')
   return chartContainer && window.getComputedStyle(chartContainer).cursor !== 'default'
 }
 

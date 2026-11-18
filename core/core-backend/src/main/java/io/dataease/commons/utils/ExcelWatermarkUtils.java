@@ -17,12 +17,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExcelWatermarkUtils {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final int MAX_TEXT_LENGTH = 100;
+    private static final int MIN_IMAGE_SIZE = 1;
     private static final int MAX_IMAGE_WIDTH = 4096;
     private static final int MAX_IMAGE_HEIGHT = 4096;
     private static final Pattern IP_PATTERN = Pattern.compile(
@@ -60,8 +62,6 @@ public class ExcelWatermarkUtils {
     }
 
     public static void addWatermarkToSheet(Sheet sheet, Integer pictureIdx) {
-        Drawing<?> drawing = sheet.createDrawingPatriarch();
-        CreationHelper helper = sheet.getWorkbook().getCreationHelper();
         // 获取工作表的总列数和行数
         int lastRowNum = sheet.getLastRowNum();
         int totalColumns = 0;
@@ -77,6 +77,12 @@ public class ExcelWatermarkUtils {
             lastRowNum = 100;
             totalColumns = 50;
         }
+        addWatermarkToSheet(sheet, pictureIdx, lastRowNum, totalColumns);
+    }
+
+    public static void addWatermarkToSheet(Sheet sheet, Integer pictureIdx, int lastRowNum, int totalColumns) {
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        CreationHelper helper = sheet.getWorkbook().getCreationHelper();
         int picCount = 0;
         // 根据总行列数循环绘制水印
         for (int row = 0; row <= lastRowNum; row += 15) { // 每15行绘制一行水印
@@ -102,6 +108,10 @@ public class ExcelWatermarkUtils {
 
     private static final int MIN_FONT_SIZE = 12;
     private static final int MAX_FONT_SIZE = 100;
+    // 取色器在 rgb 模式下会把 "rgb(217, 203, 203)" / "rgba(217, 203, 203, 0.5)" 原样存进水印配置
+    private static final Pattern RGB_COLOR_PATTERN = Pattern.compile(
+            "^rgba?\\(\\s*(\\d{1,3})[\\s,]+(\\d{1,3})[\\s,]+(\\d{1,3})[^)]*\\)$", Pattern.CASE_INSENSITIVE);
+    private static final Color DEFAULT_WATERMARK_COLOR = new Color(0xDD, 0x10, 0x10);
 
     public static byte[] createTextImage(String text, WatermarkContentDTO watermarkContent) {
         if (text.length() > MAX_TEXT_LENGTH) {
@@ -109,9 +119,12 @@ public class ExcelWatermarkUtils {
         }
         int fontSize = Math.max(MIN_FONT_SIZE, Math.min(watermarkContent.getWatermark_fontsize(), MAX_FONT_SIZE));
         double radians = Math.toRadians(15);
-        int width = Math.min(fontSize * text.length(), MAX_IMAGE_WIDTH);
-        int height = Math.min((int) Math.round(fontSize + width * Math.sin(radians)), MAX_IMAGE_HEIGHT);
-        Color baseColor = Color.decode(watermarkContent.getWatermark_color());
+        // 水印文案可能为空（自定义内容为空、用户昵称为空等），此时按文本长度算出的宽度为 0，
+        // BufferedImage 不接受 0 宽高会直接抛 IllegalArgumentException，导致整个 Excel 导出任务失败，
+        // 因此宽高统一兜底为最小 1 像素，保证仅生成一张空白水印图。
+        int width = Math.max(MIN_IMAGE_SIZE, Math.min(fontSize * text.length(), MAX_IMAGE_WIDTH));
+        int height = Math.max(MIN_IMAGE_SIZE, Math.min((int) Math.round(fontSize + width * Math.sin(radians)), MAX_IMAGE_HEIGHT));
+        Color baseColor = parseWatermarkColor(watermarkContent.getWatermark_color());
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
@@ -145,5 +158,30 @@ public class ExcelWatermarkUtils {
             LogUtil.error(e);
         }
         return baos.toByteArray();
+    }
+
+    /**
+     * 解析水印颜色配置，支持 #hex 与 rgb()/rgba() 两种写法。
+     * Color.decode 只认十六进制，遇到 "rgb(217, 203, 203)" 会抛 NumberFormatException，
+     * 让整条 Excel 导出任务失败，所以这里按取色器实际产出的格式先做一次识别。
+     */
+    private static Color parseWatermarkColor(String colorStr) {
+        if (colorStr == null || colorStr.isBlank()) {
+            return DEFAULT_WATERMARK_COLOR;
+        }
+        String value = colorStr.trim();
+        Matcher matcher = RGB_COLOR_PATTERN.matcher(value);
+        if (matcher.matches()) {
+            return new Color(
+                    Math.min(255, Integer.parseInt(matcher.group(1))),
+                    Math.min(255, Integer.parseInt(matcher.group(2))),
+                    Math.min(255, Integer.parseInt(matcher.group(3))));
+        }
+        try {
+            return Color.decode(value);
+        } catch (NumberFormatException e) {
+            LogUtil.error("Unsupported watermark color: " + value, e);
+            return DEFAULT_WATERMARK_COLOR;
+        }
     }
 }

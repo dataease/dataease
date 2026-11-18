@@ -1,4 +1,6 @@
 <script lang="tsx" setup>
+import { wasErrorPresented } from '@/config/axios/errorPresenter'
+
 import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
 import { Icon } from '@/components/icon-custom'
 import { ElIcon } from 'element-plus-secondary'
@@ -28,6 +30,7 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
 
 export interface Param {
+  copySourceId?: string | number
   editType: number
   pid?: string
   type?: string
@@ -265,7 +268,7 @@ const saveExcelDs = (params, successCb, finallyCb) => {
           return
         }
       }
-      selectedSheet.push(selectNode[i])
+      selectedSheet.push(cloneDeep(selectNode[i]))
       sheetFileMd5.push(selectNode[i].fieldsMd5)
     }
   }
@@ -406,7 +409,7 @@ const uploadExcel = () => {
       activeTab.value = ''
       tabList.value = []
       Object.assign(sheetObj, cloneDeep(defaultSheetObj))
-      if (error.code === 'ECONNABORTED') {
+      if (!wasErrorPresented(error) && error.code === 'ECONNABORTED') {
         ElMessage({
           type: 'error',
           message: error.message,

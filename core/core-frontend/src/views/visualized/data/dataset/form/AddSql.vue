@@ -9,8 +9,6 @@ import referenceTable from '@/assets/svg/reference-table.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_form_outlined from '@/assets/svg/icon_form_outlined.svg'
 import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
-import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
-import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
 import { searchVariableApi } from '@/api/variable'
@@ -31,8 +29,6 @@ import {
 import { debounce } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
-import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
-import { useWindowSize } from '@vueuse/core'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -44,6 +40,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
+import { removeSqlComments } from '@/utils/sqlUtil'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { isDesktop } from '@/utils/ModelUtil'
 import field_text from '@/assets/svg/field_text.svg'
@@ -111,12 +108,6 @@ const paginationConfig = reactive({
   pageSize: 10,
   total: 0
 })
-
-const setActiveName = ({ name, enableCheck }) => {
-  if (!enableCheck) return
-  activeName.value = name
-}
-const { height: windowHeight } = useWindowSize()
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
@@ -210,6 +201,38 @@ const sysParams = () => {
   handleSearchVariableApi()
 }
 
+const exampleSql = [
+  'SELECT',
+  '  id,',
+  '  order_no,',
+  '  CAST(amount AS DECIMAL(18, 2)) AS amount,',
+  '  CAST(discount_rate AS DECIMAL(8, 2)) AS discount_rate',
+  'FROM sales_amount'
+].join('\n')
+
+const exampleSqlTypeChanged = exampleSql
+  .replace('DECIMAL(18, 2)', 'CHAR')
+  .replace('DECIMAL(8, 2)', 'CHAR')
+
+const exampleSqlList = [
+  { label: 'data_set.example_sql_original', value: exampleSql },
+  { label: 'data_set.example_sql_type_changed', value: exampleSqlTypeChanged },
+  {
+    label: 'data_set.example_sql_type_changed_empty',
+    value: `${exampleSqlTypeChanged}\nWHERE 1 = 0`
+  }
+]
+
+const applyExampleSql = (value: string) => {
+  const view = codeCom.value
+  if (!view) return
+  view.dispatch({
+    changes: { from: 0, to: view.state.doc.length, insert: value },
+    selection: { anchor: value.length }
+  })
+  view.focus()
+}
+
 const insertFieldToCodeMirror = (value: string) => {
   codeCom.value.dispatch({
     changes: { from: codeCom.value.viewState.state.selection.ranges[0].from, insert: value },
@@ -269,28 +292,97 @@ onBeforeUnmount(() => {
   codeCom.value.destroy?.()
 })
 
-const gridData = ref([])
-const gridDataLoading = ref(false)
+const tableTreeData = shallowRef([])
+const tableTreeProps = {
+  children: 'children',
+  label: 'label',
+  isLeaf: data => data.nodeType === 'field'
+}
 
-const getNodeField = ({ datasourceId, tableName }) => {
-  gridDataLoading.value = true
-  let info = {
-    table: tableName,
-    sql: ''
+const syncTableTreeData = () => {
+  tableTreeData.value = datasourceTableData.value.map(table => ({
+    ...table,
+    key: table.tableName,
+    label: table.tableName,
+    nodeType: 'table'
+  }))
+}
+
+watch(datasourceTableData, syncTableTreeData, { immediate: true })
+
+// 源库表备注可能在页面停留期间被修改，打开详情时重新获取，避免沿用进入页面时的旧备注
+const tableComments = ref<Record<string, string>>({})
+const tableDisplayName = (source: { tableName: string; name?: string }) =>
+  tableComments.value[source.tableName] || source.name || source.tableName
+
+const refreshTableComment = (source: { datasourceId: string; tableName: string }) => {
+  getTables({ datasourceId: source.datasourceId }).then(res => {
+    const latest = (res || []).find(table => table.tableName === source.tableName)
+    if (latest) {
+      tableComments.value[source.tableName] = latest.name
+    }
+  })
+}
+
+const loadTableFields = (node, resolve) => {
+  const table = node.data
+  if (!table?.tableName) {
+    resolve([])
+    return
   }
+  refreshTableComment(table)
   getTableField({
-    datasourceId,
-    info: JSON.stringify(info),
-    tableName,
+    datasourceId: table.datasourceId,
+    info: JSON.stringify({ table: table.tableName, sql: '' }),
+    tableName: table.tableName,
     type: 'db',
     isCross: isCross.value
   })
     .then(res => {
-      gridData.value = res as unknown as Field[]
+      const fields = (res as unknown as Field[]) || []
+      resolve(
+        fields.map(field => ({
+          key: `${table.tableName}.${field.originName}`,
+          label: field.originName,
+          nodeType: 'field',
+          field
+        }))
+      )
     })
-    .finally(() => {
-      gridDataLoading.value = false
-    })
+    .catch(() => resolve([]))
+}
+
+const handleTableTreeNodeClick = data => {
+  if (data.nodeType === 'table') {
+    activeName.value = data.tableName
+  }
+}
+
+// 复制提示的 reference 只在 hover 时参与布局，鼠标移出节点时主动关闭，
+// 并在关闭动画期间保持图标可见，避免 tooltip 被重新定位到页面左上角
+const copyTipOpenName = ref('')
+const copyTooltipRefs = new Map<string, { hide: () => void }>()
+
+const setCopyTooltipRef = (key: string) => (instance: { hide: () => void } | null) => {
+  if (instance) {
+    copyTooltipRefs.set(key, instance)
+  } else {
+    copyTooltipRefs.delete(key)
+  }
+}
+
+const openCopyTip = (key: string) => {
+  copyTipOpenName.value = key
+}
+
+const closeCopyTip = (key: string) => {
+  if (copyTipOpenName.value === key) {
+    copyTipOpenName.value = ''
+  }
+}
+
+const hideCopyTooltip = (key: string) => {
+  copyTooltipRefs.get(key)?.hide()
 }
 
 const getDatasource = () => {
@@ -532,7 +624,7 @@ const mouseupDrag = () => {
 }
 
 const validateVariableNames = () => {
-  const sql = codeCom.value.state.doc.toString()
+  const sql = removeSqlComments(codeCom.value.state.doc.toString())
   const hasEmptyVariable = /\$\{\s*}/.test(sql)
   const hasEmptyDeParamVariable = /\$DE_PARAM\{[\s\S]*?\$\[\s*][\s\S]*?\}/.test(sql)
   if (hasEmptyVariable || hasEmptyDeParamVariable) {
@@ -544,8 +636,9 @@ const validateVariableNames = () => {
 
 const parseVariable = () => {
   state.variablesTmp = []
+  const sql = removeSqlComments(codeCom.value.state.doc.toString())
   const variableReg = new RegExp('\\$DE_PARAM{(.*?)}', 'gim')
-  const variableMatch = codeCom.value.state.doc.toString().match(variableReg)
+  const variableMatch = sql.match(variableReg)
   if (variableMatch !== null) {
     const names = []
     const reg = new RegExp('\\$\\[[^\\]]+\\]', 'gim')
@@ -585,7 +678,7 @@ const parseVariable = () => {
     }
   } else {
     const reg = new RegExp('\\${(.*?)}', 'gim')
-    const match = codeCom.value.state.doc.toString().match(reg)
+    const match = sql.match(reg)
     const names = []
     if (match !== null) {
       for (let index = 0; index < match.length; index++) {
@@ -660,6 +753,28 @@ const mousedownDrag = () => {
         </template>
         {{ t('auth.sysParams') }}
       </el-button>
+      <el-dropdown class="example-sql-dropdown" trigger="click" @command="applyExampleSql">
+        <el-button>
+          <svg class="example-sql-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 15.8639L20.1317 7.7322C20.327 7.53694 20.6436 7.53694 20.8388 7.7322L21.5459 8.43931C21.7412 8.63457 21.7412 8.95115 21.5459 9.14641L12.7071 17.9852C12.3166 18.3758 11.6834 18.3758 11.2929 17.9852L2.45406 9.14641C2.2588 8.95115 2.2588 8.63457 2.45406 8.43931L3.16117 7.7322C3.35643 7.53694 3.67302 7.53694 3.86828 7.7322L12 15.8639Z"
+              fill="currentColor"
+            />
+          </svg>
+          {{ t('data_set.example_sql') }}
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item
+              v-for="item in exampleSqlList"
+              :key="item.label"
+              :command="item.value"
+            >
+              {{ t(item.label) }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <el-button :disabled="!changeFlagCode" @click="save" type="primary">
         {{ t('data_set.save') }}</el-button
       >
@@ -742,127 +857,81 @@ const mousedownDrag = () => {
         </div>
       </div>
       <div v-else class="table-checkbox-list">
-        <FixedSizeList
-          :itemSize="40"
-          :data="datasourceTableData"
-          :total="datasourceTableData.length"
-          :width="LeftWidth - 17"
-          :height="windowHeight - 350"
-          :scrollbarAlwaysOn="false"
-          class-name="el-select-dropdown__list"
-          layout="vertical"
+        <el-tree
+          class="table-tree"
+          :data="tableTreeData"
+          :props="tableTreeProps"
+          node-key="key"
+          lazy
+          :load="loadTableFields"
+          highlight-current
+          :current-node-key="activeName"
+          @node-click="handleTableTreeNodeClick"
         >
-          <template #default="{ index, style }">
+          <template #default="{ data }">
             <div
-              :class="[{ active: activeName === datasourceTableData[index].tableName }]"
-              class="list-item_primary"
-              :style="style"
-              :title="datasourceTableData[index].tableName"
-              @click="setActiveName(datasourceTableData[index])"
+              v-if="data.nodeType === 'table'"
+              class="table-tree-node"
+              :class="{
+                active: activeName === data.tableName,
+                'copy-tip-open': copyTipOpenName === data.key
+              }"
+              :title="tableDisplayName(data)"
+              @mouseleave="hideCopyTooltip(data.key)"
             >
               <el-icon class="icon-color">
                 <Icon name="icon_form_outlined"><icon_form_outlined class="svg-icon" /></Icon>
               </el-icon>
-              <span class="label">{{ datasourceTableData[index].tableName }}</span>
+              <span class="label">{{ tableDisplayName(data) }}</span>
               <span class="name-copy">
-                <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
-                  <el-icon
-                    class="hover-icon"
-                    @click="copyInfo(datasourceTableData[index].tableName)"
-                  >
+                <el-tooltip
+                  :ref="setCopyTooltipRef(data.key)"
+                  effect="dark"
+                  :content="t('common.copy')"
+                  placement="top"
+                  @show="openCopyTip(data.key)"
+                  @hide="closeCopyTip(data.key)"
+                >
+                  <el-icon class="hover-icon" @click.stop="copyInfo(data.tableName)">
                     <Icon name="icon_copy_outlined"><icon_copy_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </el-tooltip>
-
-                <el-popover
-                  popper-class="sql-table-info"
-                  placement="right"
-                  :width="502"
-                  :persistent="false"
-                  @show="getNodeField(datasourceTableData[index])"
-                  trigger="click"
+              </span>
+            </div>
+            <div
+              v-else
+              class="table-tree-field"
+              :class="{ 'copy-tip-open': copyTipOpenName === data.key }"
+              :title="data.field.description || data.field.originName"
+              @mouseleave="hideCopyTooltip(data.key)"
+            >
+              <el-icon>
+                <Icon
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[data.field.deType]}`"
+                    :is="iconFieldMap[fieldType[data.field.deType]]"
+                  ></component
+                ></Icon>
+              </el-icon>
+              <span class="label">{{ data.field.originName }}</span>
+              <span class="name-copy">
+                <el-tooltip
+                  :ref="setCopyTooltipRef(data.key)"
+                  effect="dark"
+                  :content="t('common.copy')"
+                  placement="top"
+                  @show="openCopyTip(data.key)"
+                  @hide="closeCopyTip(data.key)"
                 >
-                  <template #reference>
-                    <el-icon class="hover-icon">
-                      <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
-                    </el-icon>
-                  </template>
-                  <div class="table-filed" v-loading="gridDataLoading">
-                    <div class="top flex-align-center">
-                      <div class="title ellipsis">
-                        {{
-                          datasourceTableData[index].name || datasourceTableData[index].tableName
-                        }}
-                      </div>
-                      <el-icon
-                        class="hover-icon de-hover-icon-primary"
-                        @click.stop="
-                          copyInfo(
-                            datasourceTableData[index].name || datasourceTableData[index].tableName
-                          )
-                        "
-                      >
-                        <Icon name="icon_copy_outlined"
-                          ><icon_copy_outlined class="svg-icon"
-                        /></Icon>
-                      </el-icon>
-                      <div class="num flex-align-center">
-                        <el-icon>
-                          <Icon name="icon_text-box_outlined"
-                            ><icon_textBox_outlined class="svg-icon"
-                          /></Icon>
-                        </el-icon>
-                        {{ gridData.length }}
-                      </div>
-                    </div>
-                    <div class="table-grid">
-                      <el-table
-                        height="405"
-                        style="width: 100%"
-                        header-cell-class-name="header-cell"
-                        :data="gridData"
-                      >
-                        <el-table-column :label="t('data_set.physical_field_name')">
-                          <template #default="scope">
-                            <div class="flex-align-center icon">
-                              <el-icon>
-                                <Icon
-                                  ><component
-                                    class="svg-icon"
-                                    :class="`field-icon-${fieldType[scope.row.deType]}`"
-                                    :is="iconFieldMap[fieldType[scope.row.deType]]"
-                                  ></component
-                                ></Icon>
-                              </el-icon>
-                              {{ scope.row.originName }}
-                            </div>
-                          </template>
-                        </el-table-column>
-                        <el-table-column :label="t('common.label')">
-                          <template #default="scope">
-                            {{ scope.row.description || '-' }}
-                          </template>
-                        </el-table-column>
-                        <el-table-column :label="t('common.operate')">
-                          <template #default="scope">
-                            <el-icon
-                              class="hover-icon de-hover-icon-primary"
-                              @click.stop="copyInfo(scope.row.originName)"
-                            >
-                              <Icon name="icon_copy_outlined"
-                                ><icon_copy_outlined class="svg-icon"
-                              /></Icon>
-                            </el-icon>
-                          </template>
-                        </el-table-column>
-                      </el-table>
-                    </div>
-                  </div>
-                </el-popover>
+                  <el-icon class="hover-icon" @click.stop="copyInfo(data.field.originName)">
+                    <Icon name="icon_copy_outlined"><icon_copy_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </el-tooltip>
               </span>
             </div>
           </template>
-        </FixedSizeList>
+        </el-tree>
       </div>
     </div>
     <div
@@ -1238,9 +1307,6 @@ const mousedownDrag = () => {
     font-family: var(--de-custom_font, 'PingFang');
     border-right: 1px solid rgba(31, 35, 41, 0.15);
 
-    .list-item_primary {
-      padding: 8px;
-    }
     .table-list-top {
       padding: 16px;
       padding-bottom: 0;
@@ -1316,33 +1382,71 @@ const mousedownDrag = () => {
       overflow-y: auto;
       padding: 0 8px;
 
-      .list-item_primary {
-        padding-right: 4px;
+      .table-tree {
+        padding-bottom: 8px;
+
+        :deep(.el-tree-node__content) {
+          height: 40px;
+          border-radius: 6px;
+        }
+
+        :deep(.el-tree-node__content:hover) {
+          background: rgba(31, 35, 41, 0.1);
+        }
+
+        :deep(.el-tree-node.is-current > .el-tree-node__content) {
+          background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+        }
+      }
+
+      .table-tree-node,
+      .table-tree-field {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        height: 40px;
+        padding-right: 12px;
+        color: var(--deTextPrimary, #1f2329);
+        cursor: pointer;
+
         .label {
-          width: calc(100% - 4px);
+          flex: 1;
+          min-width: 0;
+          margin-left: 5.33px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 14px;
         }
-        &:hover {
-          .label {
-            width: calc(100% - 74px);
-          }
-        }
+      }
+
+      .table-tree-field {
+        color: #646a73;
+      }
+
+      .table-tree-node.active {
+        color: var(--ed-color-primary, #3370ff);
+      }
+
+      .name-copy {
+        display: none;
+        flex-shrink: 0;
+        align-items: center;
+        line-height: 24px;
+        margin-left: 4px;
+      }
+
+      .table-tree-node:hover .name-copy,
+      .table-tree-node.copy-tip-open .name-copy,
+      .table-tree-field:hover .name-copy,
+      .table-tree-field.copy-tip-open .name-copy {
+        display: flex;
       }
 
       .not-allow {
         cursor: not-allowed;
         color: var(--deTextDisable, #bbbfc4);
-      }
-
-      .name-copy {
-        display: none;
-        line-height: 24px;
-        margin-left: 4px;
-      }
-
-      .list-item_primary:hover {
-        .name-copy {
-          display: inline;
-        }
       }
     }
   }
@@ -1557,6 +1661,28 @@ const mousedownDrag = () => {
   .save-or-cancel {
     margin-left: auto;
 
+    .example-sql-dropdown {
+      margin: 0 12px;
+
+      .ed-button {
+        background-color: #fff;
+
+        &:hover,
+        &:focus,
+        &:focus-visible,
+        &:active {
+          background-color: #fff;
+        }
+      }
+
+      .example-sql-arrow {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        flex: none;
+      }
+    }
+
     .ed-button--primary:focus {
       color: var(--ed-button-hover-text-color);
       border-color: var(--ed-color-primary);
@@ -1630,40 +1756,6 @@ const mousedownDrag = () => {
     margin: 0 4px;
   }
 }
-.sql-table-info {
-  padding: 0 !important;
-  height: 480px;
-  .table-filed {
-    height: 480px;
-    .top {
-      padding: 16px;
-      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
-      .title {
-        max-width: 50%;
-      }
-      .num {
-        margin-left: auto;
-        color: #646a73;
-        font-family: var(--de-custom_font, 'PingFang');
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 22px;
-        .ed-icon {
-          margin-right: 4px;
-          font-size: 16px;
-        }
-      }
-    }
-
-    .table-grid {
-      padding: 16px;
-      height: 423px;
-      padding-bottom: 0;
-      overflow-y: auto;
-    }
-  }
-}
 .tree-select-ds_popper {
   .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
     display: none !important;
@@ -1690,6 +1782,12 @@ const mousedownDrag = () => {
   .ed-input-group__prepend {
     padding: 0 11px;
     width: 163px;
+    // 下拉框需铺满 prepend，否则左侧留白露出内外两层边框
+    .ed-select {
+      flex: none;
+      width: calc(100% + 22px);
+      margin: 0 -11px;
+    }
   }
   .de-group__prepend {
     .ed-date-editor {

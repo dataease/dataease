@@ -8,7 +8,7 @@ export function PastePluginTableMenuFactory(): IMenuButtonItem<string> {
   return {
     id: PastePluginTableOperation.id,
     type: MenuItemType.BUTTON,
-    title: '粘贴表格',
+    title: 'dataease-spreadsheet.menu.pasteTable',
     icon: TABLE_PASTE_ICON_COMPONENT
   }
 }

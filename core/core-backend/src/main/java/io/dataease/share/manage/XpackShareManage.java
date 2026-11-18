@@ -40,6 +40,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +61,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component("xpackShareManage")
+@Profile("!desktop")
 public class XpackShareManage {
 
     @Resource

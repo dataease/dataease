@@ -3,7 +3,6 @@ import { Inject, Injector, Plugin, touchDependencies, UniverInstanceType } from 
 import { DataEaseToolbarUIController } from './controllers/toolbar-ui.controller'
 import { SheetMenuLayoutController } from './controllers/sheet-menu-layout.controller'
 import { DecimalCommandController } from './controllers/decimal-command.controller'
-import { ContextMenuLayoutController } from './controllers/context-menu-layout.controller'
 import { FindReplaceLayoutController } from './controllers/find-replace-layout.controller'
 import { FreezeCommandController } from './controllers/freeze-command.controller'
 import { FormatPainterCursorController } from './controllers/format-painter-cursor.controller'
@@ -31,7 +30,6 @@ export class DataEaseToolbarUIPlugin extends Plugin {
     const dependencies: Dependency[] = [
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
-      [ContextMenuLayoutController],
       [FindReplaceLayoutController],
       [DecimalCommandController],
       [FreezeCommandController],
@@ -53,7 +51,6 @@ export class DataEaseToolbarUIPlugin extends Plugin {
     touchDependencies(this._injector, [
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
-      [ContextMenuLayoutController],
       [FindReplaceLayoutController],
       [DecimalCommandController],
       [FreezeCommandController],

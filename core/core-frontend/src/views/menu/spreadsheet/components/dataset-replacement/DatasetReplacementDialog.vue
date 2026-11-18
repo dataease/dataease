@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { presentError } from '@/config/axios/errorPresenter'
+
 import { computed, watch } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -12,15 +14,18 @@ import GlobalDatasetReplacement from './GlobalDatasetReplacement.vue'
 import ComponentDatasetReplacement from './ComponentDatasetReplacement.vue'
 import { useDatasetReplacementDraft } from './useDatasetReplacementDraft'
 
-const props = withDefaults(defineProps<{
-  modelValue: boolean
-  univerInstance?: any
-  univerApi?: any
-  scope?: DatasetReplacementScope
-  componentId?: string
-}>(), {
-  scope: 'workbook'
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean
+    univerInstance?: any
+    univerApi?: any
+    scope?: DatasetReplacementScope
+    componentId?: string
+  }>(),
+  {
+    scope: 'workbook'
+  }
+)
 
 const emit = defineEmits<{
   'update:modelValue': [visible: boolean]
@@ -58,12 +63,7 @@ watch(
   () => props.modelValue,
   value => {
     if (value) {
-      initialize(
-        props.univerInstance,
-        props.univerApi,
-        props.scope,
-        props.componentId
-      )
+      initialize(props.univerInstance, props.univerApi, props.scope, props.componentId)
     }
   }
 )
@@ -77,11 +77,7 @@ const handleSelectDataset = (
   selectTargetDataset(mapping, dataset, fields)
 }
 
-const handleSelectField = (
-  mapping: DatasetMapping,
-  fieldKey: string,
-  target: ReplacementField
-) => {
+const handleSelectField = (mapping: DatasetMapping, fieldKey: string, target: ReplacementField) => {
   if (submitting.value) return
   selectTargetField(mapping, fieldKey, target)
 }
@@ -111,9 +107,7 @@ const handleSubmit = async () => {
       ElMessage.success(t('spreadsheet.dataset_replacement.success'))
     }
   } catch (e) {
-    ElMessage.error(
-      e instanceof Error ? e.message : t('spreadsheet.dataset_replacement.failed')
-    )
+    presentError(e, e instanceof Error ? e.message : t('spreadsheet.dataset_replacement.failed'))
   }
 }
 </script>
@@ -137,12 +131,7 @@ const handleSubmit = async () => {
     ]"
   >
     <div v-loading="loading || submitting" class="dialog-content">
-      <el-alert
-        v-if="error"
-        type="error"
-        :closable="false"
-        :title="error"
-      />
+      <el-alert v-if="error" type="error" :closable="false" :title="error" />
       <el-empty
         v-else-if="!loading && !draft?.mappings.length"
         :description="t('spreadsheet.dataset_replacement.no_used_dataset')"
@@ -168,12 +157,7 @@ const handleSubmit = async () => {
       <el-button :disabled="submitting" @click="visible = false">
         {{ t('common.cancel') }}
       </el-button>
-      <el-button
-        type="primary"
-        :disabled="!complete"
-        :loading="submitting"
-        @click="handleSubmit"
-      >
+      <el-button type="primary" :disabled="!complete" :loading="submitting" @click="handleSubmit">
         {{ t('spreadsheet.dataset_replacement.confirm') }}
       </el-button>
     </template>
@@ -247,7 +231,6 @@ const handleSubmit = async () => {
       height: 32px;
       border-radius: 6px;
     }
-
   }
 }
 </style>

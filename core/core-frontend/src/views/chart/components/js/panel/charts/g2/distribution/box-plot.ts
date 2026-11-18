@@ -24,7 +24,12 @@ import {
   tooltipCss,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { DEFAULT_BASIC_STYLE, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
+import {
+  DEFAULT_BASIC_STYLE,
+  DEFAULT_LABEL,
+  DEFAULT_TOOLTIP,
+  DEFAULT_YAXIS_STYLE
+} from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -34,10 +39,28 @@ const DETAIL_TOOLTIP_ITEM_MARKER_SIZE = 4
 const BOX_SERIES_FIELD = '__boxPlotSeries'
 const BOX_CATEGORY_FIELD = '__boxPlotCategory'
 const BOX_SUMMARY_FIELD = '__boxPlotSummary'
+const BOX_MEAN_FIELD = '__boxPlotMean'
+const BOX_MEAN_MARK_KEY = '__boxPlotMeanMark'
 const BOX_TOOLTIP_HIT_MARK_KEY = '__boxPlotTooltipHitMark'
 const BOX_DIMENSION_HIT_MARK_KEY = '__boxPlotDimensionHitMark'
 const BOX_DIMENSION_HIT_FIELD = '__boxPlotDimensionHit'
 type BoxPlotSeriesColor = ChartBasicStyle['seriesColor'][number] & { boxPlotSeries?: true }
+
+/**
+ * 自动标签最多保留两位小数并去掉尾零，显式数值和百分比格式继续遵循公共规则
+ */
+const formatBoxPlotValue = (value: number, config: Partial<BaseFormatter> = {}): string => {
+  const formatter = { ...DEFAULT_YAXIS_STYLE.axisLabelFormatter, ...config }
+  if (formatter.type !== 'auto') {
+    return valueFormatter(value, formatter)
+  }
+  const formatted = valueFormatter(value, { ...formatter, type: 'value', decimalCount: 2 })
+  // 只处理数值部分的两位小数，不修改单位和用户自定义后缀中的数字
+  return formatted.replace(/^(-?[\d,]+)\.(\d{2})/, (_, integer, decimals) => {
+    const fraction = decimals.replace(/0+$/, '')
+    return fraction ? `${integer}.${fraction}` : integer
+  })
+}
 
 // 编码仅供 G2 分类域使用，原始维度仍用于联动，避免 null、空字符串和文字 NULL 混为一组
 const dimensionKey = (value: unknown): string => JSON.stringify([value ?? null])
@@ -98,6 +121,7 @@ export class BoxPlot extends Bar {
     'y-axis-selector',
     'title-selector',
     'legend-selector',
+    'assist-line',
     'jump-set',
     'linkage'
   ]
@@ -108,6 +132,9 @@ export class BoxPlot extends Bar {
       'colors',
       'alpha',
       'seriesColor',
+      'showMean',
+      'meanSymbol',
+      'showMeanLabel',
       'showOutliers',
       'outlierColorMode',
       'outlierColor',
@@ -281,6 +308,36 @@ export class BoxPlot extends Bar {
         series: { type: 'band', domain: seriesDomain }
       }
     }
+    const meanMark: ChildSpec = {
+      key: BOX_MEAN_MARK_KEY,
+      type: 'point',
+      // 旧缓存未返回均值时不以中位数等统计量替代
+      data: boxData
+        .filter(datum => datum.mean !== null && datum.mean !== undefined)
+        .map(datum => ({
+          ...datum,
+          [BOX_MEAN_FIELD]: true,
+          [BOX_SUMMARY_FIELD]: datum
+        })),
+      encode: {
+        x: BOX_CATEGORY_FIELD,
+        y: 'mean',
+        color: BOX_SERIES_FIELD,
+        series: dodgeBySeries ? BOX_SERIES_FIELD : undefined,
+        size: 5
+      },
+      style: {
+        fillOpacity: 1
+      },
+      // 高亮背景不能截获均值点点击，否则会回退到箱体并传递中位数
+      state: {
+        active: { backgroundPointerEvents: 'none' }
+      },
+      transform: [layoutTransform, ...(dodgeBySeries ? [{ type: 'dodgeX' }] : [])],
+      scale: {
+        series: { type: 'band', domain: seriesDomain }
+      }
+    }
     const tooltipHitMark: ChildSpec = {
       key: BOX_TOOLTIP_HIT_MARK_KEY,
       type: 'line',
@@ -333,7 +390,7 @@ export class BoxPlot extends Bar {
         color: { domain: seriesDomain }
       },
       // 透明 line 复用 seriesTooltip 的最近 X 命中，避免 tooltip 受 box 几何边界限制
-      children: [boxMark, pointMark, tooltipHitMark, dimensionHitMark]
+      children: [boxMark, pointMark, meanMark, tooltipHitMark, dimensionHitMark]
     }
     const options = this.setupOptions(chart, baseOptions)
     const newChart = new G2Chart({
@@ -361,7 +418,7 @@ export class BoxPlot extends Bar {
           data: {
             // 联动会补充日期范围和指标值，独立载荷避免修改箱体与异常点共享的数据
             ...cloneDeep(summary),
-            value: datum.outlier ?? summary.median
+            value: datum[BOX_MEAN_FIELD] ? summary.mean : datum.outlier ?? summary.median
           }
         }
       })
@@ -407,7 +464,7 @@ export class BoxPlot extends Bar {
 
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
     const basicStyle = parseJson(chart.customAttr).basicStyle
-    const [boxMark, pointMark, ...interactionMarks] = options.children
+    const [boxMark, pointMark, meanMark, ...interactionMarks] = options.children
     const strokeColor =
       basicStyle.themeContrastColor ?? parseJson(chart.customAttr).label?.color ?? '#000000'
     const stroke = hexColorToRGBA(getColorFormAlphaColor(strokeColor), basicStyle.alpha)
@@ -425,6 +482,36 @@ export class BoxPlot extends Bar {
       style: configuredPointColor
         ? { ...pointMark.style, fill: configuredPointColor, stroke: configuredPointColor }
         : pointMark.style
+    }
+    const yAxis = parseJson(chart.customStyle)?.yAxis
+    const meanFormatter = yAxis?.axisLabelFormatter
+    const nextMeanMark = {
+      ...meanMark,
+      style: {
+        ...meanMark.style,
+        shape: basicStyle.meanSymbol,
+        stroke,
+        lineWidth: basicStyle.meanSymbol === 'cross' ? 2 : 1
+      },
+      labels: basicStyle.showMeanLabel
+        ? [
+            {
+              text: 'mean',
+              formatter: value => formatBoxPlotValue(Number(value), meanFormatter),
+              position: 'top',
+              dy: -5,
+              textBaseline: 'bottom',
+              fill:
+                basicStyle.themeContrastColor ??
+                yAxis?.axisLabel?.color ??
+                DEFAULT_YAXIS_STYLE.axisLabel.color,
+              fillOpacity: 1,
+              fontSize: DEFAULT_LABEL.fontSize,
+              pointerEvents: 'none',
+              transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
+            }
+          ]
+        : []
     }
     return {
       ...options,
@@ -444,13 +531,14 @@ export class BoxPlot extends Bar {
         },
         // 隐藏异常点只改变展示，不改变后端计算得到的四分位数和真实异常值数量。
         ...(basicStyle.showOutliers === false ? [] : [nextPointMark]),
+        ...(basicStyle.showMean ? [nextMeanMark] : []),
         ...interactionMarks
       ]
     }
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
-    const tooltipAttr = parseJson(chart.customAttr).tooltip
+    const { tooltip: tooltipAttr, basicStyle } = parseJson(chart.customAttr)
     if (!tooltipAttr?.show) {
       return {
         ...options,
@@ -551,6 +639,13 @@ export class BoxPlot extends Bar {
                   marker
                 }
               )
+            }
+            if (basicStyle.showMean && sourceData.mean !== null && sourceData.mean !== undefined) {
+              rows.push({
+                label: t('chart.box_plot_mean'),
+                value: formatBoxPlotValue(Number(sourceData.mean), tooltipAttr.tooltipFormatter),
+                marker
+              })
             }
             const outliers = Array.isArray(sourceData.outliers) ? sourceData.outliers : []
             const displayedOutliers = outliers.slice(0, MAX_TOOLTIP_OUTLIER_VALUES).map(formatValue)
@@ -700,6 +795,31 @@ export class BoxPlot extends Bar {
     }
   }
 
+  protected configAnalyse(chart: Chart, options: ViewSpec): ViewSpec {
+    const yAxis = parseJson(chart.customStyle)?.yAxis
+    const assistLines = this.getAssistLineStyle(chart, options)
+      .filter(mark => {
+        const line = mark.data[0]
+        // 箱线图仅支持主轴；手动范围外的辅助线及标签不绘制，配置保留
+        return (
+          line.yAxisType !== 'right' &&
+          (yAxis?.axisValue?.auto !== false ||
+            (line.value >= yAxis.axisValue.min && line.value <= yAxis.axisValue.max))
+        )
+      })
+      .map(mark => ({
+        ...mark,
+        labels: mark.labels.map(label => ({
+          ...label,
+          text: `${mark.data[0].name} : ${formatBoxPlotValue(
+            mark.data[0].value,
+            yAxis?.axisLabelFormatter
+          )}`
+        }))
+      }))
+    return { ...options, children: [...options.children, ...assistLines] }
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     // 使用项目 flow 保留原始 chart 参数，避免继承的柱状图配置方法收到 G2 options
     return flow(
@@ -709,7 +829,8 @@ export class BoxPlot extends Bar {
       this.configTooltip,
       this.configLegend,
       this.configXAxis,
-      this.configYAxis
+      this.configYAxis,
+      this.configAnalyse
     )(chart, options, {}, this)
   }
 

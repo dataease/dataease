@@ -71,9 +71,8 @@ const initBaseStyle = () => {
   const mergeCell = props.config?.style?.base?.mergeCell ?? false
   baseStyle.value = {
     customBlockName,
-    blockName: customBlockName
-      ? props.config?.style?.base?.blockName || defaultBlockName.value
-      : defaultBlockName.value,
+    // 关闭自定义名称时，禁用的输入框仍回显已保存的名称。
+    blockName: props.config?.style?.base?.blockName || defaultBlockName.value,
     hideHeader: props.config?.style?.base?.hideHeader ?? false,
     mergeCell
   }

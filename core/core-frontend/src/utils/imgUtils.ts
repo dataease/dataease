@@ -1,4 +1,7 @@
+import { presentError } from '@/config/axios/errorPresenter'
+import { collectChartRuntimeCaches, getCanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
 import { withMapPictures } from './mapExport'
+import { prepareViewportChartsForExport } from '@/hooks/web/useChartViewportLoad'
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -27,8 +30,13 @@ export function imgUrlTrans(url: string) {
   return authenticatedImageUrl(formatterUrl(url.replace('com//', 'com/')))
 }
 
-function prePareTemplateBaseData(dvId, callback) {
-  if (dvInfo.value.type === 'dataV' && canvasStyleData.value.screenAdaptor === 'full') {
+function prePareTemplateBaseData(dvId, callback, context?) {
+  const current = context || {
+    dvInfo: dvInfo.value,
+    canvasStyleData: canvasStyleData.value,
+    componentData: componentData.value
+  }
+  if (current.dvInfo.type === 'dataV' && current.canvasStyleData.screenAdaptor === 'full') {
     initCanvasDataPrepare(
       dvId,
       { busiFlag: 'dataV', resourceTable: 'core' },
@@ -41,48 +49,71 @@ function prePareTemplateBaseData(dvId, callback) {
     )
   } else {
     callback({
-      canvasDataResult: JSON.stringify(componentData.value),
-      canvasStyleResult: JSON.stringify(canvasStyleData.value)
+      canvasDataResult: JSON.stringify(current.componentData),
+      canvasStyleResult: JSON.stringify(current.canvasStyleData)
     })
   }
 }
 
 export async function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
-  const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
-  Object.keys(canvasViewDataTemplate).forEach(viewId => {
-    canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
-  })
-  const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
-    const view = canvasViewDataTemplate[viewId]
-    const needsData =
-      view.type !== 'VQuery' &&
-      (view.tableId ||
-        (view['dataFrom'] === 'template' && !['rich-text', 'picture-group'].includes(view.type)))
-    return needsData && view.data == null
-  })
-  if (missingDataId) {
-    const { t } = useI18n()
-    ElMessage.warning(
-      t('visualization.template_data_not_ready', [
-        canvasViewDataTemplate[missingDataId].title || missingDataId
-      ])
-    )
-    callBack?.()
-    return
-  }
   try {
+    await prepareViewportChartsForExport(canvasDom)
+    const localCanvas = getCanvasRuntime(canvasDom)
+    const localCharts = collectChartRuntimeCaches(canvasDom)
+    const canvasViewDataTemplate = deepCopy(localCanvas?.canvasViewInfo || canvasViewInfo.value)
+    Object.keys(canvasViewDataTemplate).forEach(viewId => {
+      const cache = localCharts.find(cache => cache.view?.id === viewId)
+      // 有运行时上下文时不回退另一个画布的共享缓存；缺数据仍由既有校验提示。
+      canvasViewDataTemplate[viewId].data = deepCopy(
+        cache && !cache.legacy
+          ? cache.data
+          : cache?.legacy || !localCanvas
+          ? canvasViewDataInfo.value[viewId]
+          : undefined
+      )
+    })
+    const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
+      const view = canvasViewDataTemplate[viewId]
+      const needsData =
+        view.type !== 'VQuery' &&
+        (view.tableId ||
+          (view['dataFrom'] === 'template' && !['rich-text', 'picture-group'].includes(view.type)))
+      return needsData && view.data == null
+    })
+    if (missingDataId) {
+      const { t } = useI18n()
+      ElMessage.warning(
+        t('visualization.template_data_not_ready', [
+          canvasViewDataTemplate[missingDataId].title || missingDataId
+        ])
+      )
+      return
+    }
     const { canvasDataResult, canvasStyleResult } = await new Promise<{
       canvasDataResult: string
       canvasStyleResult: string
-    }>(resolve => prePareTemplateBaseData(dvInfo.value.id, resolve))
+    }>(resolve => {
+      if (
+        localCanvas &&
+        !(
+          localCanvas.dvInfo.type === 'dataV' &&
+          localCanvas.canvasStyleData.screenAdaptor === 'full'
+        )
+      ) {
+        resolve({
+          canvasDataResult: JSON.stringify(localCanvas.componentData),
+          canvasStyleResult: JSON.stringify(localCanvas.canvasStyleData)
+        })
+      } else {
+        prePareTemplateBaseData(localCanvas?.dvInfo.id || dvInfo.value.id, resolve, localCanvas)
+      }
+    })
     const materialBundle = useAppStoreWithOut().getXpackValid
       ? (await exportMaterialBundle(canvasStyleResult, canvasDataResult)).data
       : null
     const staticResource = materialBundle
       ? {}
-      : await new Promise<Record<string, string>>((resolve, reject) => {
-          findStaticSource(resources => resolve(resources || {})).catch(reject)
-        })
+      : await findStaticSource(JSON.parse(canvasStyleResult), JSON.parse(canvasDataResult))
     const dataUrl = await withMapPictures(canvasDom, async () => {
       await waitForResourceImages(canvasDom)
       return domToPng(canvasDom, {
@@ -97,7 +128,7 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
       name: templateName,
       templateType: 'self',
       snapshot: dataUrl,
-      dvType: dvInfo.value.type,
+      dvType: localCanvas?.dvInfo.type || dvInfo.value.type,
       nodeType: downloadType,
       version: 3,
       canvasStyleData: remapMaterialDocument(canvasStyleResult, materialBundle?.referenceMap),
@@ -117,7 +148,7 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
     else if (downloadType === 'app') FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
   } catch (e) {
     const { t } = useI18n()
-    ElMessage.error(t('material.export_failed'))
+    presentError(e, t('material.export_failed'))
     console.error(e)
   } finally {
     callBack?.()
@@ -126,7 +157,8 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
 
 export function downloadCanvas(type, canvasDom, name, callBack?) {
   if (canvasDom) {
-    waitForResourceImages(canvasDom)
+    prepareViewportChartsForExport(canvasDom)
+      .then(() => waitForResourceImages(canvasDom))
       .then(() => html2canvas(canvasDom))
       .then(canvas => {
         const dom = document.body.appendChild(canvas)
@@ -153,6 +185,7 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
         }
       })
       .catch(error => {
+        presentError(error, useI18n().t('material.export_failed'))
         console.error('oops, something went wrong!', error)
         if (callBack) {
           callBack()
@@ -162,15 +195,18 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
 }
 
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
-  withMapPictures(canvasDom, async () => {
-    await waitForResourceImages(canvasDom)
-    return domToPng(canvasDom, {
-      width: canvasDom.offsetWidth,
-      height: canvasDom.offsetHeight,
-      // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
-      scale: Math.max(3, window.devicePixelRatio || 1)
-    })
-  })
+  prepareViewportChartsForExport(canvasDom)
+    .then(() =>
+      withMapPictures(canvasDom, async () => {
+        await waitForResourceImages(canvasDom)
+        return domToPng(canvasDom, {
+          width: canvasDom.offsetWidth,
+          height: canvasDom.offsetHeight,
+          // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
+          scale: Math.max(3, window.devicePixelRatio || 1)
+        })
+      })
+    )
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')
@@ -192,6 +228,7 @@ export function downloadCanvas2(type, canvasDom, name, callBack?) {
       }
     })
     .catch(error => {
+      presentError(error, useI18n().t('material.export_failed'))
       if (callBack) {
         callBack()
       }
@@ -212,57 +249,56 @@ export function dataURLToBlob(dataUrl) {
   return new Blob([u8arr], { type: mime })
 }
 
-function findStaticSourceInner(componentDataInfo, staticResource) {
-  componentDataInfo?.forEach(item => {
-    if (
-      typeof item.commonBackground.outerImage === 'string' &&
-      item.commonBackground.outerImage.indexOf('static-resource') > -1
-    ) {
-      staticResource.push(item.commonBackground.outerImage)
-    }
-    if (
-      item.component === 'Picture' &&
-      item.propValue['url'] &&
-      typeof item.propValue['url'] === 'string' &&
-      item.propValue['url'].indexOf('static-resource') > -1
-    ) {
-      staticResource.push(item.propValue['url'])
-    } else if (
-      item.component === 'UserView' &&
-      item.innerType === 'picture-group' &&
-      item.propValue['urlList'] &&
-      item.propValue['urlList'].length > 0
-    ) {
-      item.propValue['urlList'].forEach(urlInfo => {
-        if (urlInfo.url.indexOf('static-resource') > -1) {
-          staticResource.push(urlInfo.url)
-        }
-      })
-    } else if (item.component === 'Group') {
-      findStaticSourceInner(item.propValue, staticResource)
-    } else if (item.component === 'DeTabs') {
-      item.propValue?.forEach(tabItem => {
-        findStaticSourceInner(tabItem.componentData, staticResource)
-      })
-    }
-  })
+interface StaticImageComponent {
+  component?: string
+  innerType?: string
+  commonBackground?: { outerImage?: string }
+  mCommonBackground?: { outerImage?: string }
+  propValue?: { url?: string; urlList?: { url?: string }[] } | StaticImageComponent[]
+  componentData?: StaticImageComponent[]
 }
 
-// 解析静态文件
-export function findStaticSource(callBack) {
-  const staticResource = []
-  // 系统背景文件
-  if (
-    typeof canvasStyleData.value.background === 'string' &&
-    canvasStyleData.value.background.indexOf('static-resource') > -1
-  ) {
-    staticResource.push(canvasStyleData.value.background)
+interface StaticImageCanvasStyle {
+  background?: string
+  mobileSetting?: { background?: string }
+  component?: { chartCommonStyle?: { outerImage?: string } }
+}
+
+async function findStaticSource(
+  style: StaticImageCanvasStyle,
+  components: StaticImageComponent[]
+): Promise<Record<string, string>> {
+  const paths = new Set<string>()
+  const add = (url?: string) => {
+    if (typeof url === 'string' && /(^|\/)static-resource\//.test(url)) paths.add(url)
   }
-  findStaticSourceInner(componentData.value, staticResource)
-  if (staticResource.length > 0) {
-    return findResourceAsBase64({ resourcePathList: staticResource }).then(rsp => {
-      callBack(rsp.data)
+
+  const collect = (items?: StaticImageComponent[]) => {
+    items?.forEach(item => {
+      add(item.commonBackground?.outerImage)
+      add(item.mCommonBackground?.outerImage)
+      const { propValue } = item
+      if (Array.isArray(propValue)) {
+        if (item.component === 'Group') collect(propValue)
+        if (item.component === 'DeTabs') propValue.forEach(tab => collect(tab.componentData))
+      } else if (item.component === 'Picture') {
+        add(propValue?.url)
+      } else if (item.component === 'UserView' && item.innerType === 'picture-group') {
+        propValue?.urlList?.forEach(image => add(image.url))
+      }
     })
   }
-  return Promise.resolve().then(() => callBack())
+
+  // 与 MaterialDocuments 使用相同的图片槽位，便于在没有素材库的环境再次导出。
+  add(style?.background)
+  add(style?.mobileSetting?.background)
+  add(style?.component?.chartCommonStyle?.outerImage)
+  collect(components)
+  if (!paths.size) return {}
+  const resourcePathList = [...paths]
+  const { data } = await findResourceAsBase64({ resourcePathList })
+  if (resourcePathList.some(path => typeof data?.[path] !== 'string' || !data[path])) {
+    throw new Error('Required static resource is unavailable')
+  }
+  return data
 }

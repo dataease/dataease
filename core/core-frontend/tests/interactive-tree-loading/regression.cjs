@@ -122,3 +122,159 @@ test('refresh retains one batched request and replaces existing trees', async ()
     assert.equal(store.data[index].treeNodes[0].children[0].id, flag)
   })
 })
+
+test('invalidated batched responses cannot restore cleared trees or permission weights', async () => {
+  const { store, requests, cache } = setup()
+  let current = true
+  const loading = store.initInteractive(true, () => current)
+  current = false
+  store.clear()
+  requests[0].resolve(Object.fromEntries(flags.map(flag => [flag, tree('stale-' + flag)])))
+  await loading
+  assert.equal(Object.keys(store.data).length, 0)
+  assert.equal(Object.keys(cache.get('panel-weight')).length, 0)
+  assert.equal(Object.keys(cache.get('screen-weight')).length, 0)
+})
+
+test('non-refresh initialization also discards invalidated individual responses', async () => {
+  const { store, requests, cache } = setup()
+  let current = true
+  const loading = store.initInteractive(false, () => current)
+  current = false
+  store.clear()
+  requests.forEach(request => request.resolve(tree(request.param.busiFlag)))
+  await loading
+  assert.equal(Object.keys(store.data).length, 0)
+  assert.equal(Object.keys(cache.get('panel-weight')).length, 0)
+  assert.equal(Object.keys(cache.get('screen-weight')).length, 0)
+})
+
+test('already invalidated initialization and direct updates have no side effects', async () => {
+  const { store, requests, cache } = setup({ allowed: false })
+  await store.initInteractive(true, () => false)
+  await store.initInteractive(false, () => false)
+  await store.loadBusiInteractive(() => false)
+  await store.setInteractive({ busiFlag: 'dashboard' }, tree('stale'), () => false)
+  assert.equal(requests.length, 0)
+  assert.equal(Object.keys(store.data).length, 0)
+  assert.equal(cache.size, 0)
+})
+
+const setupMobileInitialization = interactiveStore => {
+  const source = fs.readFileSync(path.resolve(__dirname, '../../src/permissionMobile.ts'), 'utf8')
+  const methods = source.slice(
+    source.indexOf('let initPermissionPromise:'),
+    source.indexOf('router.beforeEach(')
+  )
+  const menus = []
+  const permission = { ready: false, routes: [] }
+  const context = {
+    interactiveStore,
+    getRoleRouters: () => new Promise((resolve, reject) => menus.push({ resolve, reject })),
+    permissionStore: {
+      get getIsAddRouters() {
+        return permission.ready
+      },
+      generateRoutes: async routes => {
+        permission.routes = routes
+      },
+      setIsAddRouters: value => {
+        permission.ready = value
+      }
+    }
+  }
+  vm.runInNewContext(
+    ts.transpileModule(methods, { compilerOptions: { target: ts.ScriptTarget.ES2020 } })
+      .outputText +
+      ';this.api = { ensurePermissionInitialized, invalidatePermissionInitialization }',
+    context
+  )
+  return { ...context.api, menus, permission }
+}
+
+const flush = async () => {
+  for (let i = 0; i < 10; i++) await Promise.resolve()
+}
+const resolveTrees = (request, prefix) =>
+  request.resolve(Object.fromEntries(flags.map(flag => [flag, tree(prefix + flag)])))
+
+test('late previous-session batch cannot overwrite new-session trees or caches', async () => {
+  const { store, requests, cache } = setup()
+  const mobile = setupMobileInitialization(store)
+  const old = mobile.ensurePermissionInitialized()
+  mobile.menus[0].resolve([{ name: 'old-menu' }])
+  await flush()
+  assert.equal(requests.length, 1)
+  store.clear()
+  mobile.invalidatePermissionInitialization()
+  const current = mobile.ensurePermissionInitialized()
+  mobile.menus[1].resolve([{ name: 'new-menu' }])
+  await flush()
+  resolveTrees(requests[1], 'new-')
+  await current
+  resolveTrees(requests[0], 'old-')
+  await old
+  assert.equal(mobile.permission.ready, true)
+  assert.equal(mobile.permission.routes[0].name, 'new-menu')
+  flags.forEach((flag, index) => {
+    assert.equal(store.data[index].treeNodes[0].children[0].id, 'new-' + flag)
+  })
+  assert.equal(cache.get('panel-weight')['new-dashboard'], 7)
+  assert.equal(cache.get('panel-weight')['old-dashboard'], undefined)
+  assert.equal(cache.get('screen-weight')['new-dataV'], 7)
+  await mobile.ensurePermissionInitialized()
+  assert.equal(mobile.menus.length, 2)
+})
+
+test('obsolete menu response cannot write routes or clear the current shared task', async () => {
+  const { store, requests } = setup()
+  const mobile = setupMobileInitialization(store)
+  const old = mobile.ensurePermissionInitialized()
+  mobile.invalidatePermissionInitialization()
+  const current = mobile.ensurePermissionInitialized()
+  mobile.menus[0].resolve([{ name: 'old-menu' }])
+  await old
+  assert.equal(mobile.permission.routes.length, 0)
+  assert.equal(requests.length, 0)
+  assert.equal(mobile.ensurePermissionInitialized(), current)
+  mobile.menus[1].resolve([{ name: 'new-menu' }])
+  await flush()
+  resolveTrees(requests[0], 'new-')
+  await current
+  assert.equal(mobile.permission.ready, true)
+  assert.equal(mobile.menus.length, 2)
+})
+
+test('obsolete failure cannot clear the current shared task', async () => {
+  const { store, requests } = setup()
+  const mobile = setupMobileInitialization(store)
+  const old = mobile.ensurePermissionInitialized()
+  const rejected = assert.rejects(old, /old failed/)
+  mobile.invalidatePermissionInitialization()
+  const current = mobile.ensurePermissionInitialized()
+  mobile.menus[0].reject(new Error('old failed'))
+  await rejected
+  assert.equal(mobile.ensurePermissionInitialized(), current)
+  mobile.menus[1].resolve([{ name: 'new-menu' }])
+  await flush()
+  resolveTrees(requests[0], 'new-')
+  await current
+})
+
+test('failed current initialization can retry and complete normally', async () => {
+  const { store, requests } = setup()
+  const mobile = setupMobileInitialization(store)
+  const first = mobile.ensurePermissionInitialized()
+  mobile.menus[0].resolve([{ name: 'menu' }])
+  await flush()
+  const rejected = assert.rejects(first, /tree failed/)
+  requests[0].reject(new Error('tree failed'))
+  await rejected
+  assert.equal(mobile.permission.ready, false)
+  const retry = mobile.ensurePermissionInitialized()
+  mobile.menus[1].resolve([{ name: 'menu' }])
+  await flush()
+  resolveTrees(requests[1], 'retry-')
+  await retry
+  assert.equal(mobile.permission.ready, true)
+})

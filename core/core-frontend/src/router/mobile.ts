@@ -60,6 +60,13 @@ export const routes: AppRouteRecordRaw[] = [
     component: () => import('@/views/mobile/panel/DashboardEmpty.vue')
   },
   {
+    path: '/spreadsheet-preview',
+    name: 'spreadsheet-preview',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/menu/spreadsheet/SpreadsheetPreviewPage.vue')
+  },
+  {
     path: '/preview',
     name: 'preview',
     hidden: true,

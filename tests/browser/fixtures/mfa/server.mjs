@@ -8,6 +8,7 @@ const { createServer } = await import(require.resolve('vite'))
 const { default: vue } = await import(require.resolve('@vitejs/plugin-vue'))
 const bridge = path.join(root, 'bridge.js')
 const server = await createServer({
+  cacheDir: path.join(root, 'node_modules/.vite'),
   configFile: false, root, plugins: [vue(), {
     name: 'fixture-svg',
     load(id) { if (id.endsWith('.svg')) return 'export default { render() { return null } }' }

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { EditPen } from '@element-plus/icons-vue'
-import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
+import DvMaterialPanel from '@/components/material/DvMaterialPanel.vue'
 import dvFilter from '@/assets/svg/dv-filter.svg'
-import dvMaterial from '@/assets/svg/dv-material.svg'
 import dvMedia from '@/assets/svg/dv-media.svg'
 import dvMoreCom from '@/assets/svg/dv-more-com.svg'
 import dvTab from '@/assets/svg/dv-tab.svg'
@@ -36,7 +35,6 @@ import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
-import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import {
   canvasSave,
@@ -203,7 +201,6 @@ const saveResource = (checkParams?) => {
     nextTick(() => {
       canvasSaveWithParams(checkParams, async () => {
         snapshotStore.resetStyleChangeTimes()
-        wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         if (!embeddedStore.baseUrl) {
           // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前大屏
           try {
@@ -231,6 +228,9 @@ const saveResource = (checkParams?) => {
         } else {
           ElMessage.success(t('commons.save_success'))
         }
+      }).catch(() => {
+        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
+        if (checkParams.withPublish) tryHideLoading(loadingKey)
       })
     })
   }
@@ -271,7 +271,7 @@ const backToMain = () => {
 const embeddedStore = useEmbedded()
 const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
-const backHandler = (url: string) => {
+const backHandler = async (url: string) => {
   if (isEmbedded.value) {
     wsCache.set(`dv-info-id`, dvInfo.value.id)
     embeddedStore.clearState()
@@ -286,8 +286,10 @@ const backHandler = (url: string) => {
     return
   }
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-  wsCache.set('dv-info-id', dvInfo.value.id)
+  const resourceId = dvInfo.value.id
+  await snapshotStore.clearCanvasDraft(resourceId)
+  if (String(dvInfo.value.id) !== String(resourceId)) return
+  wsCache.set('dv-info-id', resourceId)
   if (!!history.state.back) {
     history.back()
   } else {
@@ -461,27 +463,7 @@ const fullScreenPreview = () => {
           >
             <more-com-group></more-com-group>
           </component-group>
-          <MaterialPickerButton
-            toolbar
-            :themes="'dark'"
-            @select="
-              reference =>
-                eventBus.emit('handleNew', {
-                  componentName: 'Picture',
-                  innerType: 'Picture',
-                  materialReference: reference
-                })
-            "
-          />
-          <component-group
-            is-label
-            :base-width="410"
-            :icon-name="dvMaterial"
-            :show-split-line="true"
-            :title="t('visualization.source_material')"
-          >
-            <common-group></common-group>
-          </component-group>
+          <DvMaterialPanel />
           <component-button-label
             :icon-name="icon_copy_filled"
             :title="t('visualization.multiplexing')"

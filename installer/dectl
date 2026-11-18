@@ -221,10 +221,17 @@ function status() {
 }
 function start() {
    echo
+   source "$DE_RUNNING_BASE/bin/sync-auth.sh" || {
+      echo "同步鉴权准备组件缺失，请从配套安装包恢复 bin/sync-auth.sh 后重试" >&2
+      return 1
+   }
+   if sync_auth_enabled; then
+      sync_auth_validate || return 1
+   fi
    _check_apisix_init || return 1
    _generate_compose_file_args
    cd ${DE_RUNNING_BASE}
-   ${compose_cmd} ${compose_files} up -d
+   ${compose_cmd} ${compose_files} up -d || return 1
    _healthcheck
 }
 function stop() {
@@ -291,7 +298,7 @@ function upgrade() {
    fi
 
    cd ${installer_file%.tar.gz}
-   /bin/bash install.sh
+   /bin/bash install.sh || return 1
 
    cd ..
    rm -rf /tmp/${installer_file%.*}

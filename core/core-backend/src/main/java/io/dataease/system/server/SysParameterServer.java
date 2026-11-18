@@ -6,8 +6,8 @@ import io.dataease.api.system.request.SQLBotConfigCreator;
 import io.dataease.api.system.vo.SQLBotConfigVO;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
-import io.dataease.constant.StaticResourceConstants;
 import io.dataease.constant.XpackSettingConstants;
+import io.dataease.i18n.LanguageUtils;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +84,13 @@ public class SysParameterServer implements SysParameterApi {
                 map.put(XpackSettingConstants.DEFAULT_SORT, settingItemVO.getPval());
             }
             if (StringUtils.isNotBlank(settingItemVO.getPkey()) && settingItemVO.getPkey().equalsIgnoreCase(XpackSettingConstants.DEFAULT_OPEN) && StringUtils.isNotBlank(settingItemVO.getPval())) {
-                map.put(XpackSettingConstants.DEFAULT_OPEN, settingItemVO.getPval());
+                // Older installs seeded this setting with boolean strings.
+                String defaultOpen = switch (settingItemVO.getPval()) {
+                    case "true" -> "1";
+                    case "false" -> "0";
+                    default -> settingItemVO.getPval();
+                };
+                map.put(XpackSettingConstants.DEFAULT_OPEN, defaultOpen);
             }
             if (StringUtils.isNotBlank(settingItemVO.getPkey()) && settingItemVO.getPkey().equalsIgnoreCase(XpackSettingConstants.EMBEDDED_EXPORT_MODE) && StringUtils.isNotBlank(settingItemVO.getPval())) {
                 map.put(XpackSettingConstants.EMBEDDED_EXPORT_MODE, settingItemVO.getPval());
@@ -111,21 +116,7 @@ public class SysParameterServer implements SysParameterApi {
 
     @Override
     public Map<String, String> i18nOptions() {
-        File dir = new File(StaticResourceConstants.I18N_DIR);
-        File[] files = null;
-        if (!dir.exists() || ObjectUtils.isEmpty(files = dir.listFiles())) {
-            return null;
-        }
-        Map<String, String> result = new HashMap<>();
-        for (File file : files) {
-            String name = file.getName();
-            int start = name.indexOf("custom_") + 7;
-            int end = name.indexOf("front");
-            String i18nName = name.substring(start, end - 1).replace("_", "-");
-            String languageName = name.substring(end + 6, name.lastIndexOf("."));
-            result.put(i18nName, languageName);
-        }
-        return result;
+        return LanguageUtils.customOptions();
     }
 
     @Override

@@ -10,7 +10,7 @@ export interface Page {
 function readPages(srcDir: string): Page[] {
   const pagesDir = path.resolve(srcDir, 'pages')
   let pages: Page[] = readdirSync(pagesDir, { withFileTypes: true })
-    .filter(o => o.isDirectory() && !/^[._]/.test(o.name) && !/^lib/.test(o.name))
+    .filter(o => o.isDirectory() && !/^[._]/.test(o.name))
     .map(o => ({ name: o.name, path: path.join('pages', o.name) }))
   if (!pages.length) {
     pages = [

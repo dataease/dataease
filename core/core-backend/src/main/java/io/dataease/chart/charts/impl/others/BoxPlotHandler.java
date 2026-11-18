@@ -17,6 +17,8 @@ import io.dataease.extensions.view.dto.ChartAxis;
 import io.dataease.extensions.view.dto.ChartCalcDataResult;
 import io.dataease.extensions.view.dto.ChartDimensionDTO;
 import io.dataease.extensions.view.dto.ChartQuotaDTO;
+import io.dataease.extensions.view.dto.ChartSeniorAssistCfgDTO;
+import io.dataease.extensions.view.dto.ChartSeniorAssistDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.extensions.view.dto.CustomFilterResult;
@@ -24,6 +26,7 @@ import io.dataease.extensions.view.dto.FieldSource;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
 import io.dataease.i18n.Translator;
+import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +34,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -153,6 +158,7 @@ public class BoxPlotHandler extends DefaultChartHandler {
         result.setQuerySql(summarySql);
         result.setData(buildBoxPlotResult(filterResult, xAxis, xAxisExt, yAxis, summaries));
         result.setOriginData(buildSummaryRows(summaries));
+        fillDynamicAssistLines(result, view, yAxis, summaries);
         return result;
     }
 
@@ -191,7 +197,62 @@ public class BoxPlotHandler extends DefaultChartHandler {
         result.setQuerySql(querySql);
         result.setData(buildBoxPlotResult(filterResult, xAxis, xAxisExt, yAxis.getFirst(), summaries));
         result.setOriginData(buildSummaryRows(summaries));
+        fillDynamicAssistLines(result, view, yAxis.getFirst(), summaries);
         return result;
+    }
+
+    /**
+     * 动态辅助线只统计当前展示箱体的有效原始样本，绑定到已通过权限校验的当前指标
+     */
+    private void fillDynamicAssistLines(
+            ChartCalcDataResult result,
+            ChartViewDTO view,
+            ChartViewFieldDTO valueField,
+            List<BoxPlotStatistics.BoxPlotSummary> summaries
+    ) {
+        if (summaries.isEmpty() || view.getSenior() == null) {
+            return;
+        }
+        ChartSeniorAssistCfgDTO config = JsonUtil.parseObject(
+                (String) JsonUtil.toJSONString(view.getSenior().get("assistLineCfg")), ChartSeniorAssistCfgDTO.class
+        );
+        if (config == null || !config.isEnable() || CollectionUtils.isEmpty(config.getAssistLine())) {
+            return;
+        }
+        List<ChartSeniorAssistDTO> fields = config.getAssistLine().stream()
+                .filter(line -> StringUtils.equals(line.getField(), "1")
+                        && Objects.equals(line.getFieldId(), valueField.getId())
+                        && !StringUtils.equalsIgnoreCase(line.getYAxisType(), "right")
+                        && StringUtils.equalsAnyIgnoreCase(line.getSummary(), "avg", "min", "max"))
+                .toList();
+        if (fields.isEmpty()) {
+            return;
+        }
+
+        BigDecimal sampleSum = BigDecimal.ZERO;
+        long sampleCount = 0;
+        BigDecimal sampleMin = summaries.getFirst().sampleMin();
+        BigDecimal sampleMax = summaries.getFirst().sampleMax();
+        for (BoxPlotStatistics.BoxPlotSummary summary : summaries) {
+            sampleSum = sampleSum.add(summary.sampleSum());
+            sampleCount += summary.count();
+            sampleMin = sampleMin.min(summary.sampleMin());
+            sampleMax = sampleMax.max(summary.sampleMax());
+        }
+        // 按样本总数加权，不能对箱体均值再次求平均，也不能用上下须替代真实极值
+        BigDecimal average = sampleSum.divide(BigDecimal.valueOf(sampleCount), MathContext.DECIMAL128);
+        String[] values = new String[fields.size()];
+        for (int i = 0; i < fields.size(); i++) {
+            BigDecimal value = switch (fields.get(i).getSummary().toLowerCase(Locale.ROOT)) {
+                case "avg" -> average;
+                case "min" -> sampleMin;
+                case "max" -> sampleMax;
+                default -> throw new IllegalArgumentException("箱线图不支持此辅助线聚合方式");
+            };
+            values[i] = toPlainString(value);
+        }
+        result.setDynamicAssistFields(fields);
+        result.setAssistData(Collections.singletonList(values));
     }
 
     private List<String[]> fetch(
@@ -210,7 +271,7 @@ public class BoxPlotHandler extends DefaultChartHandler {
     private LinkedHashMap<List<String>, BoxPlotStatistics.BoxPlotSummary> parseSummaryRows(List<String[]> rows, int dimensionCount) {
         LinkedHashMap<List<String>, BoxPlotStatistics.BoxPlotSummary> result = new LinkedHashMap<>();
         for (String[] row : rows) {
-            if (row == null || row.length < dimensionCount + 9) {
+            if (row == null || row.length < dimensionCount + 12) {
                 continue;
             }
             List<String> dimensions = new ArrayList<>(dimensionCount);
@@ -226,7 +287,10 @@ public class BoxPlotHandler extends DefaultChartHandler {
                     toBigDecimal(row[dimensionCount + 6]),
                     new ArrayList<>(),
                     toLong(row[dimensionCount + 8]),
-                    toLong(row[dimensionCount + 7])
+                    toLong(row[dimensionCount + 7]),
+                    toBigDecimal(row[dimensionCount + 9]),
+                    toBigDecimal(row[dimensionCount + 10]),
+                    toBigDecimal(row[dimensionCount + 11])
             );
             result.put(summary.dimensions(), summary);
         }
@@ -325,6 +389,7 @@ public class BoxPlotHandler extends DefaultChartHandler {
             item.put("low", summary.low());
             item.put("q1", summary.q1());
             item.put("median", summary.median());
+            item.put("mean", summary.mean());
             item.put("q3", summary.q3());
             item.put("high", summary.high());
             item.put("outliers", summary.outliers());

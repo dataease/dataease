@@ -754,15 +754,16 @@ public class ChartDataManage {
 
         // get all fields
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);
+        Map<Long, ChartViewFieldDTO> datasetFields = datasetFieldMap(allFields);
 
         // 针对分组切换堆叠时会遇到的问题
         if (StringUtils.equalsIgnoreCase(view.getType(), "bar-stack") || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix-stack")) {
             view.setXAxisExt(new ArrayList<>());
         }
 
-        List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
-        List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
-        List<ChartViewFieldDTO> xAxisExt = new ArrayList<>(view.getXAxisExt());
+        List<ChartViewFieldDTO> xAxisBase = bindDatasetFields(view.getXAxis(), datasetFields);
+        List<ChartViewFieldDTO> xAxis = new ArrayList<>(xAxisBase);
+        List<ChartViewFieldDTO> xAxisExt = bindDatasetFields(view.getXAxisExt(), datasetFields);
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
                 || StringUtils.containsIgnoreCase(view.getType(), "group")
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
@@ -773,17 +774,17 @@ public class ChartDataManage {
         ) {
             xAxis.addAll(xAxisExt);
         }
-        List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
+        List<ChartViewFieldDTO> yAxis = bindDatasetFields(view.getYAxis(), datasetFields);
         if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
-            List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
+            List<ChartViewFieldDTO> yAxisExt = bindDatasetFields(view.getYAxisExt(), datasetFields);
             yAxis.addAll(yAxisExt);
         }
         if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge", "liquid")) {
-            List<ChartViewFieldDTO> sizeField = getSizeField(view);
+            List<ChartViewFieldDTO> sizeField = bindDatasetFields(getSizeField(view), datasetFields);
             yAxis.addAll(sizeField);
         }
-        List<ChartViewFieldDTO> extStack = new ArrayList<>(view.getExtStack());
-        List<ChartViewFieldDTO> extBubble = new ArrayList<>(view.getExtBubble());
+        List<ChartViewFieldDTO> extStack = bindDatasetFields(view.getExtStack(), datasetFields);
+        List<ChartViewFieldDTO> extBubble = bindDatasetFields(view.getExtBubble(), datasetFields);
         FilterTreeObj fieldCustomFilter = view.getCustomFilter();
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
@@ -920,6 +921,42 @@ public class ChartDataManage {
         return allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
     }
 
+    private Map<Long, ChartViewFieldDTO> datasetFieldMap(List<ChartViewFieldDTO> allFields) {
+        if (CollectionUtils.isEmpty(allFields)) {
+            return Collections.emptyMap();
+        }
+        return allFields.stream().collect(Collectors.toMap(ChartViewFieldDTO::getId, field -> field, (a, b) -> a));
+    }
+
+    /**
+     * 将请求体中的字段绑定到数据集元数据白名单：仅允许使用白名单字段的 dataeaseName / originName，
+     * 其余展示属性仍保留请求值（如 customSort）。未命中白名单时返回 null。
+     */
+    private ChartViewFieldDTO bindDatasetField(ChartViewFieldDTO field, Map<Long, ChartViewFieldDTO> datasetFields) {
+        if (field == null || field.getId() == null || datasetFields == null) {
+            return null;
+        }
+        ChartViewFieldDTO trusted = datasetFields.get(field.getId());
+        if (trusted == null) {
+            return null;
+        }
+        ChartViewFieldDTO bound = new ChartViewFieldDTO();
+        BeanUtils.copyBean(bound, field);
+        bound.setOriginName(trusted.getOriginName());
+        bound.setDataeaseName(trusted.getDataeaseName());
+        return bound;
+    }
+
+    private List<ChartViewFieldDTO> bindDatasetFields(List<ChartViewFieldDTO> fields, Map<Long, ChartViewFieldDTO> datasetFields) {
+        if (CollectionUtils.isEmpty(fields) || datasetFields == null) {
+            return new ArrayList<>();
+        }
+        return fields.stream()
+                .map(field -> bindDatasetField(field, datasetFields))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
     public void saveChartViewFromVisualization(String checkData, Long sceneId, Map<Long, ChartViewDTO> chartViewsInfo) {
         if (!MapUtils.isEmpty(chartViewsInfo)) {
             List<Long> disuseChartIdList = new ArrayList<>();
@@ -941,21 +978,26 @@ public class ChartDataManage {
 
     public List<String> getDrillFieldData(ChartViewDTO view, Long fieldId) throws Exception {
         List<ChartViewFieldDTO> drillField = view.getDrillFields();
+        if (CollectionUtils.isEmpty(drillField)) {
+            return Collections.emptyList();
+        }
+        Map<Long, ChartViewFieldDTO> datasetFields = datasetFieldMap(getAllChartFields(view));
         ChartViewFieldDTO targetField = null;
         for (int i = 0; i < drillField.size(); i++) {
             ChartViewFieldDTO tmp = drillField.get(i);
-            if (tmp.getId().equals(fieldId)) {
+            if (tmp != null && tmp.getId() != null && tmp.getId().equals(fieldId)) {
                 targetField = tmp;
                 break;
             }
         }
-        if (targetField == null) {
+        ChartViewFieldDTO boundField = bindDatasetField(targetField, datasetFields);
+        if (boundField == null) {
             return Collections.emptyList();
         }
-        view.setXAxis(Collections.singletonList(targetField));
+        view.setXAxis(Collections.singletonList(boundField));
 
         List<String[]> sqlData = sqlData(view, view.getChartExtRequest(), fieldId);
-        List<String[]> result = customSort(Optional.ofNullable(targetField.getCustomSort()).orElse(new ArrayList<>()), sqlData, 0);
+        List<String[]> result = customSort(Optional.ofNullable(boundField.getCustomSort()).orElse(new ArrayList<>()), sqlData, 0);
         return result.stream().map(i -> i[0]).distinct().collect(Collectors.toList());
     }
 

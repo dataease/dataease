@@ -82,7 +82,9 @@ export const createDefaultFilterStyle = (): SpreadsheetFilterStyle => ({
   }
 })
 
-const normalizeFilterStyle = (style?: Partial<SpreadsheetFilterStyle> | null): SpreadsheetFilterStyle => {
+const normalizeFilterStyle = (
+  style?: Partial<SpreadsheetFilterStyle> | null
+): SpreadsheetFilterStyle => {
   const defaultStyle = createDefaultFilterStyle()
 
   return {
@@ -130,6 +132,7 @@ const normalizeCondition = (
   sortType: condition.sortType,
   sortList: Array.isArray(condition.sortList) ? [...condition.sortList] : undefined,
   manualOptions: Array.isArray(condition.manualOptions) ? condition.manualOptions : [],
+  optionFilter: condition.optionFilter,
   displayForm: condition.displayForm || 'dropdown',
   optionCountMode: condition.optionCountMode || 'default',
   queryMode: condition.queryMode || 'click',
@@ -144,17 +147,15 @@ const normalizeCondition = (
   textSearchDefaultClauses: condition.textSearchDefaultClauses?.length
     ? condition.textSearchDefaultClauses.slice(0, 2)
     : [
-      { operator: 'eq', value: '' },
-      { operator: 'like', value: '' }
-    ],
+        { operator: 'eq', value: '' },
+        { operator: 'like', value: '' }
+      ],
   treeDatasetId: condition.treeDatasetId,
   treeDatasetName: condition.treeDatasetName,
   treeFields: Array.isArray(condition.treeFields)
     ? condition.treeFields.slice(0, 5).map((field, order) => ({ ...field, order }))
     : [],
-  treeLevelMappings: Array.isArray(condition.treeLevelMappings)
-    ? condition.treeLevelMappings
-    : [],
+  treeLevelMappings: Array.isArray(condition.treeLevelMappings) ? condition.treeLevelMappings : [],
   timeGranularity: condition.timeGranularity || 'date',
   timeRangeGranularity: condition.timeRangeGranularity || 'daterange',
   timeDefaultType: condition.timeDefaultType === 'dynamic' ? 'dynamic' : 'fixed',
@@ -244,7 +245,7 @@ export class FilterInstanceService {
     this._configsByUnitId.clear()
   }
 
-  private normalize(config?: Partial<SpreadsheetFilterConfig> | null): SpreadsheetFilterConfig {
+  normalize(config?: Partial<SpreadsheetFilterConfig> | null): SpreadsheetFilterConfig {
     const defaultConfig = createDefaultFilterConfig()
     const conditions = Array.isArray(config?.conditions) ? config.conditions : []
 

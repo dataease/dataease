@@ -89,6 +89,8 @@ const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
   overflow-x: auto;
 
   .layout-container {
+    min-height: 0;
+
     .layout-sidebar {
       height: calc(100vh - 106px);
     }

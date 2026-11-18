@@ -10,13 +10,8 @@ body:has(.univer-sheet-container.dataease-univer-preview) {
   }
 
   // 预览态链接浮层只保留跳转和允许展示的复制操作，不暴露编辑、取消链接入口。
-  .univer-max-w-80
-    .univer-size-6:has(
-      .univerjs-icon-write-icon,
-      [id*='write-icon'],
-      .univerjs-icon-unlink-icon,
-      [id*='unlink-icon']
-    ) {
+  [data-u-comp='cell-link-popup-edit'],
+  [data-u-comp='cell-link-popup-remove'] {
     display: none !important;
   }
 }

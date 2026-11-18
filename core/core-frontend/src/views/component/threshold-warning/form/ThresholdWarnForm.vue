@@ -104,9 +104,7 @@
                         style="width: 14px; height: 14px"
                         ><peoples class="svg-icon"
                       /></Icon>
-                      <span
-                        style="float: left; margin-left: 4px; font-size: 14px"
-                      >
+                      <span style="float: left; margin-left: 4px">
                         {{ state.larkGroupMap.get(id)?.name }}
                       </span>
                     </span>
@@ -172,9 +170,7 @@
                         style="width: 14px; height: 14px"
                         ><peoples class="svg-icon"
                       /></Icon>
-                      <span
-                        style="float: left; margin-left: 4px; font-size: 14px"
-                      >
+                      <span style="float: left; margin-left: 4px">
                         {{ state.larksuiteGroupMap.get(id)?.name }}
                       </span>
                     </span>
@@ -186,7 +182,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Webhook" prop="webhook">
+      <el-form-item v-if="hasOrgContext" label="Webhook" prop="webhook">
         <el-select
           v-model="formState.webhookList"
           class="custom-clear-class"
@@ -297,6 +293,11 @@ import { ElMessage } from "element-plus-secondary";
 import { contentTemplate, quotaTemplate } from "./FormPage";
 import { thresholdPreviewApi, webhookOptionsApi } from "../api";
 import ReciSelect from "../../reci-select/index.vue";
+
+import { useUserStoreWithOut } from '@/store/modules/user'
+
+const userStore = useUserStoreWithOut()
+const hasOrgContext = computed(() => !!userStore.getOid || !!userStore.getProxyInfo?.proxyOid)
 
 const { t } = useI18n();
 
@@ -495,6 +496,11 @@ const formatReci2Form = () => {
   }
 };
 const loadWebhookOptions = () => {
+  if (!hasOrgContext.value) {
+    state.webhookOptions = []
+    return
+  }
+
   webhookOptionsApi().then((res) => {
     state.webhookOptions = res.data;
   });
@@ -786,6 +792,9 @@ onMounted(() => {
 }
 
 .ed-select__tags {
+  .custom-option {
+    font-size: inherit;
+  }
   .ed-select-tags-wrapper {
     display: flex;
     flex-wrap: wrap;

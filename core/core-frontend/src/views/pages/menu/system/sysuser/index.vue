@@ -42,6 +42,7 @@ const { t } = useI18n()
 const drawerMainRef = ref(null)
 const userFormDialog = ref(null)
 const loading = ref(false)
+const queryLoading = ref(false)
 const multipleTableRef = ref(null)
 const defaultPwd = ref(null)
 interface FieldSort {
@@ -197,32 +198,40 @@ const buildParam = () => {
   }
   return param
 }
+let searchRequestId = 0
 const search = () => {
-  loading.value = true
-  userPageApi(
+  const requestId = ++searchRequestId
+  queryLoading.value = true
+  return userPageApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
     buildParam()
-  ).then(res => {
-    const records = res.data.records
-    records.forEach(item => {
-      setColorName(item, keyword.value)
-      setColorName(item, keyword.value, 'account', 'colorAccount')
-      setColorName(item, keyword.value, 'email', 'colorEmail')
+  )
+    .then(res => {
+      if (requestId !== searchRequestId) return
+      const records = res.data.records
+      records.forEach(item => {
+        setColorName(item, keyword.value)
+        setColorName(item, keyword.value, 'account', 'colorAccount')
+        setColorName(item, keyword.value, 'email', 'colorEmail')
+      })
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
+      state.userList = records
+      state.paginationConfig.total = res.data.total
+      if (
+        state.paginationConfig.currentPage > 1 &&
+        res.data?.pages < state.paginationConfig.currentPage &&
+        !records?.length
+      ) {
+        pageChange(1)
+      }
     })
-    imgType.value = getEmptyImg()
-    emptyDesc.value = getEmptyDesc()
-    state.userList = records
-    state.paginationConfig.total = res.data.total
-    if (
-      state.paginationConfig.currentPage > 1 &&
-      res.data?.pages < state.paginationConfig.currentPage &&
-      !records?.length
-    ) {
-      pageChange(1)
-    }
-    loading.value = false
-  })
+    .finally(() => {
+      if (requestId === searchRequestId) {
+        queryLoading.value = false
+      }
+    })
 }
 const filterRoles = cellValue => {
   if (!cellValue) return '-'
@@ -496,7 +505,7 @@ const unlockHandler = row => {
     class="user-table de-search-table"
   >
     <el-row class="user-table__filter top-operate">
-      <el-col :span="12">
+      <el-col :span="12" class="left-filter">
         <el-button @click="addUser" type="primary">
           {{ t('system.addUser') }}
         </el-button>
@@ -542,6 +551,7 @@ const unlockHandler = row => {
         ref="multipleTableRef"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
+        :data-loading="queryLoading"
         :empty-desc="emptyDesc"
         :empty-img="imgType"
         class="popper-max-width"
@@ -549,7 +559,7 @@ const unlockHandler = row => {
         @size-change="sizeChange"
         @sort-change="sortChange"
         @selection-change="handleSelectionChange"
-        :show-empty-img="!loading"
+        :show-empty-img="!queryLoading"
       >
         <el-table-column type="selection" width="30" :selectable="rowCheckStatus" />
         <el-table-column
@@ -796,24 +806,27 @@ const unlockHandler = row => {
   margin-top: 8px;
   border-radius: 4px;
 
-  .user-table__content {
-    height: calc(100vh - 186px);
+  display: flex;
+  flex-direction: column;
+
+  .user-table__filter {
+    flex-shrink: 0;
   }
 
+  .left-filter {
+    display: flex;
+    align-items: center;
+  }
+
+  .user-table__content,
   .is-in-filter {
-    height: calc(100vh - 236px);
+    flex: 1;
+    min-height: 0;
   }
 }
 
 .user-table-selection {
   height: calc(100% - 38px);
-  .user-table__content {
-    height: calc(100vh - 225px);
-  }
-
-  .is-in-filter {
-    height: calc(100vh - 275px);
-  }
 }
 
 .operate-icon-container {

@@ -64,6 +64,14 @@ public abstract class Provider {
     public abstract ConnectionObj getConnection(DatasourceDTO coreDatasource) throws Exception;
 
     /**
+     * Opens a connection with the same configuration/session setup used for writes.
+     * Used by optional preflight checks. Existing plugins retain their connection behavior.
+     */
+    public ConnectionObj getWriteConnection(DatasourceDTO datasource) throws Exception {
+        return getConnection(datasource);
+    }
+
+    /**
      * 检测数据源状态是否有效
      *
      * @param datasourceRequest

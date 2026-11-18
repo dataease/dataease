@@ -3,6 +3,7 @@ import {
   ComponentManager,
   ContextMenuGroup,
   ContextMenuPosition,
+  IconManager,
   IMenuManagerService
 } from '@univerjs/ui'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -23,6 +24,7 @@ export class DataEaseTableClipboardController extends Disposable {
     @ICommandService private readonly commandService: ICommandService,
     @IMenuManagerService private readonly menuManagerService: IMenuManagerService,
     @Inject(ComponentManager) private readonly componentManager: ComponentManager,
+    @Inject(IconManager) private readonly iconManager: IconManager,
     @Inject(TableClipboardService)
     private readonly tableClipboardService: TableClipboardService
   ) {
@@ -39,6 +41,13 @@ export class DataEaseTableClipboardController extends Disposable {
       this.componentManager.register(TABLE_PASTE_ICON_COMPONENT, TablePasteIcon, {
         framework: 'vue3'
       })
+    )
+    // IconManager 接收 React 组件，复用 ComponentManager 的 Vue 适配结果。
+    this.disposeWithMe(
+      this.iconManager.register(
+        TABLE_PASTE_ICON_COMPONENT,
+        this.componentManager.get(TABLE_PASTE_ICON_COMPONENT)
+      )
     )
   }
 

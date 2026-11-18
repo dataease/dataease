@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const treeQuery = useLatestQuery('resource-tree')
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
 import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
@@ -49,7 +51,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { storeToRefs } from 'pinia'
 import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
-import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { type InnerInteractive, interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useShareStoreWithOut } from '@/store/modules/share'
 const shareStore = useShareStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
@@ -59,7 +61,6 @@ import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive, onInitReady } from '@/utils/canvasUtils'
 import treeSort from '@/utils/treeSortUtils'
 import router from '@/router'
-import { cancelRequestBatch } from '@/config/axios/service'
 import { isFreeFolder } from '@/utils/utils'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
@@ -247,14 +248,6 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
-//取消之前请求
-const cancelPreRequest = () => {
-  cancelRequestBatch('/dataVisualization/findById')
-  cancelRequestBatch('/chartData/getData')
-  cancelRequestBatch('/linkage/getVisualizationAllLinkageInfo/**')
-  cancelRequestBatch('/linkJump/queryVisualizationJumpInfo/**')
-}
-
 const nodeClick = (data: BusiTreeNode, node) => {
   dvMainStore.setCurComponent({ component: null, index: null })
   if (showPosition.value !== 'multiplexing') {
@@ -270,7 +263,6 @@ const nodeClick = (data: BusiTreeNode, node) => {
       return // 阻止后续逻辑
     })
   } else {
-    cancelPreRequest()
     selectedNodeKey.value = data.id
     if (data.leaf) {
       if (!embeddedStore.baseUrl) {
@@ -308,31 +300,42 @@ const getTree = async (notOpen = false) => {
     busiFlag: curCanvasType.value,
     resourceTable: props.resourceTable
   } as BusiTreeRequest
-  const isDashboard = curCanvasType.value == 'dashboard'
-  await interactiveStore.setInteractive(request)
-  const interactiveData = isDashboard ? interactiveStore.getPanel : interactiveStore.getScreen
-  const nodeData = interactiveData.treeNodes
-  rootManage.value = interactiveData.rootManage
-  anyManage.value = interactiveData.anyManage
-  if (
-    dvInfo.value &&
-    dvInfo.value.id &&
-    !JSON.stringify(nodeData).includes(dvInfo.value.id) &&
-    showPosition.value !== 'multiplexing'
-  ) {
-    dvMainStore.resetDvInfo()
-  }
-  let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1].value
-  curSortType = wsCache.get(`TreeSort-${curCanvasType.value}`) ?? curSortType
-  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-    state.originResourceTree = nodeData[0]['children'] || []
+  const query = treeQuery.start()
+  try {
+    const interactiveData = (await interactiveStore.setInteractive(
+      request,
+      undefined,
+      query.isCurrent,
+      query
+    )) as InnerInteractive
+    if (!query.isCurrent()) return
+    const nodeData = interactiveData.treeNodes
+    rootManage.value = interactiveData.rootManage
+    anyManage.value = interactiveData.anyManage
+    if (
+      dvInfo.value &&
+      dvInfo.value.id &&
+      !JSON.stringify(nodeData).includes(dvInfo.value.id) &&
+      showPosition.value !== 'multiplexing'
+    ) {
+      dvMainStore.resetDvInfo()
+    }
+    let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1].value
+    curSortType = wsCache.get(`TreeSort-${curCanvasType.value}`) ?? curSortType
+    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+      state.originResourceTree = nodeData[0]['children'] || []
+      sortTypeChange(curSortType)
+      afterTreeInit(notOpen, query.isCurrent)
+      return
+    }
+    state.originResourceTree = nodeData
     sortTypeChange(curSortType)
-    afterTreeInit(notOpen)
-    return
+    afterTreeInit(notOpen, query.isCurrent)
+  } catch (error) {
+    if (query.isCurrent()) throw error
+  } finally {
+    query.finish()
   }
-  state.originResourceTree = nodeData
-  sortTypeChange(curSortType)
-  afterTreeInit(notOpen)
 }
 
 const flattedTree = computed<BusiTreeNode[]>(() => {
@@ -351,7 +354,7 @@ function flatTree(tree: BusiTreeNode[]) {
   return result
 }
 
-const afterTreeInit = (notOpen = false) => {
+const afterTreeInit = (notOpen = false, isCurrent = () => true) => {
   mounted.value = true
   if (selectedNodeKey.value && returnMounted.value) {
     expandedArray.value = getDefaultExpandedKeys()
@@ -359,11 +362,13 @@ const afterTreeInit = (notOpen = false) => {
   }
   onInitReady({ type: curCanvasType.value }, 'resource_tree_init_ready')
   nextTick(() => {
+    if (!isCurrent()) return
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
     resourceListTree.value.filter(filterText.value)
     if (notOpen) return
     nextTick(() => {
-      document.querySelector('.is-current')?.firstChild?.click()
+      if (!isCurrent()) return
+      resourceListTree.value?.$el.querySelector('.is-current')?.firstChild?.click()
     })
   })
 }

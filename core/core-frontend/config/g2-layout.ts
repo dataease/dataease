@@ -114,13 +114,20 @@ const isG2LayoutImport = (source: string, importer = '') =>
   source === G2_LAYOUT_IMPORT && isG2RuntimePlot(importer)
 const resolveG2LayoutAdapter = (root: string) => path.resolve(root, G2_LAYOUT_ADAPTER)
 
+const getG2LayoutSources = (adapter: string) => [
+  adapter,
+  path.resolve(path.dirname(adapter), '../../charts/g2/mix/axis-alignment.ts')
+]
+
 /**
- * 将布局适配器的内容摘要放进 Vite 与 esbuild 插件名
+ * 将布局适配器及轴对齐模块的内容摘要放进 Vite 与 esbuild 插件名
  * Vite optimizeDeps 只把插件名写入缓存键，适配器源码变化本身不会触发重新预构建
  * 适配器每次变化都会在下次启动时重建 G2 依赖，增加一次开发环境启动耗时
  */
 const getG2LayoutPluginName = (adapter: string) => {
-  const version = createHash('sha256').update(readFileSync(adapter)).digest('hex').slice(0, 8)
+  const hash = createHash('sha256')
+  getG2LayoutSources(adapter).forEach(file => hash.update(readFileSync(file)))
+  const version = hash.digest('hex').slice(0, 8)
   return `dataease-g2-layout-${version}`
 }
 
@@ -138,6 +145,14 @@ export const createG2LayoutPlugin = (root: string): VitePlugin => {
   return {
     name,
     enforce: 'pre',
+    handleHotUpdate({ file, server }) {
+      // 这些源码被打进 G2 预构建模块，普通热更新无法替换模块内部的布局逻辑
+      if (getG2LayoutSources(adapter).includes(normalizeModuleId(file))) {
+        // 当前热更新结束后再重启，避免 Vite 继续访问已销毁的模块环境
+        setTimeout(() => server.restart(), 0)
+        return []
+      }
+    },
     configResolved(config) {
       productionBuild = config.command === 'build'
       verifyG2Version(root, config.command, config.logger)

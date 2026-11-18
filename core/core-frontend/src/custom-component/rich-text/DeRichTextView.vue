@@ -63,6 +63,8 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import eventBus from '@/utils/eventBus'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { getData } from '@/api/chart'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { provideChartRuntimeCache } from '@/hooks/web/useChartRuntimeCache'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
@@ -75,7 +77,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
 const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo, mobileInPc } = storeToRefs(dvMainStore)
+const { mobileInPc } = storeToRefs(dvMainStore)
 const isError = ref(false)
 const appearanceStore = useAppearanceStoreWithOut()
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -83,6 +85,7 @@ const userStore = useUserStoreWithOut()
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const props = defineProps({
+  view: { type: Object, required: false },
   scale: {
     type: Number,
     required: false,
@@ -147,8 +150,19 @@ const initReady = ref(false)
 const editShow = ref(true)
 const canEdit = ref(false)
 // 初始化配置
+const chartRuntime = provideChartRuntimeCache(
+  () => props.view as Chart,
+  () => props.showPosition
+)
 const tinymceId =
-  'tinymce-view-' + element.value.id + '-' + suffixId.value + '-' + showPosition.value
+  'tinymce-view-' +
+  element.value.id +
+  '-' +
+  suffixId.value +
+  '-' +
+  showPosition.value +
+  '-' +
+  chartRuntime.id
 const myValue = ref('')
 
 const systemFontFamily = appearanceStore.fontList.map(item => item.name)
@@ -394,27 +408,22 @@ const assignment = content => {
   if (content) {
     // data-mce-content 属性内的占位符只是 tinymce 元数据，展示时无需处理，先移除避免重复匹配
     content = content.replace(/\sdata-mce-content="[^"]*"/g, '')
-    const on = content?.match(/\[(.+?)\]/g) || []
-    if (on) {
-      const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
-      on.forEach(itm => {
-        if (dataRowFiledName.value.includes(decodeHTMLEntities(itm))) {
-          const ele = itm.slice(1, -1)
-          let value =
-            dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
-          let targetValue = !!value ? value : state.emptyValue
-          if (thresholdStyleInfo && thresholdStyleInfo[ele]) {
-            const thresholdStyle = thresholdStyleInfo[ele]
-            targetValue = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${targetValue}</span>`
-          }
-          if (initReady.value) {
-            content = content.replace(itm, targetValue)
-          } else {
-            content = content.replace(itm, !!value ? targetValue : '[获取中...]')
-          }
-        }
-      })
-    }
+    const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
+    content = content.replace(/\[(.+?)\]/g, itm => {
+      const fieldToken = decodeHTMLEntities(itm)
+      if (!dataRowFiledName.value.includes(fieldToken)) return itm
+
+      const fieldName = fieldToken.slice(1, -1)
+      const value = dataRowNameSelect.value[fieldName]
+      let targetValue = encodeHTMLEntities(value ? value : state.emptyValue)
+      if (thresholdStyleInfo && thresholdStyleInfo[fieldName]) {
+        const thresholdStyle = thresholdStyleInfo[fieldName]
+        const color = encodeHTMLEntities(thresholdStyle.color)
+        const backgroundColor = encodeHTMLEntities(thresholdStyle.backgroundColor)
+        targetValue = `<span style="color:${color};background-color: ${backgroundColor}">${targetValue}</span>`
+      }
+      return initReady.value || value ? targetValue : '[获取中...]'
+    })
     content = content.replace('class="base-selected"', '')
     //De 本地跳转失效问题
     content = content.replace(/href="#\//g, 'href="/#/')
@@ -436,13 +445,13 @@ const decodeHTMLEntities = text => {
   return textarea.value
 }
 
-const encodeHTMLEntities = text => {
-  if (!text) return text
-
-  const textarea = document.createElement('textarea')
-  textarea.textContent = text
-  return textarea.innerHTML
-}
+const encodeHTMLEntities = (text: unknown): string =>
+  String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 const initFontFamily = htmlText => {
   const regex = /font-family:\s*([^;"]+);/g
   let match
@@ -460,7 +469,7 @@ const fieldSelect = field => {
     '<span id="' +
     fieldId +
     '"><span class="mceNonEditable" contenteditable="false">[' +
-    field.name +
+    encodeHTMLEntities(field.name) +
     ']</span></span>'
   const attachValue = '<span id="attachValue">&nbsp;</span>'
   ed.insertContent(value)
@@ -596,65 +605,85 @@ const checkCompareCalc = view => {
   return compareCount > 0
 }
 
+const dataQuery = useLatestQuery('chart-data')
+const invalidateQuery = () => dataQuery.invalidate()
+
 const calcData = (view: Chart, callback) => {
-  isError.value = false
-  updateEmptyValue(view)
-  if (view.tableId || view['dataFrom'] === 'template') {
-    const v = JSON.parse(JSON.stringify(view))
-    if (!checkCompareCalc(view)) {
-      v.resultCount = 1
-      v.resultMode = 'custom'
-    }
-    getData(v)
-      .then(res => {
-        if (res.code && res.code !== 0) {
-          isError.value = true
-          errMsg.value = res.msg
-        } else {
-          state.data = res?.data
-          state.viewDataInfo = res
-          state.totalItems = res?.totalItems
-          const curViewInfo = canvasViewInfo.value[element.value.id]
-          // 此处是编辑时使用，多仪表板嵌入 canvasViewInfo 会被覆盖可能出现无法读取情况
-          if (res.data && curViewInfo) {
-            curViewInfo['curFields'] = res.data.fields
+  const request = dataQuery.start()
+  try {
+    isError.value = false
+    updateEmptyValue(view)
+    if (view.tableId || view['dataFrom'] === 'template') {
+      const v = JSON.parse(JSON.stringify(view))
+      if (!checkCompareCalc(view)) {
+        v.resultCount = 1
+        v.resultMode = 'custom'
+      }
+      return getData(v, request)
+        .then(res => {
+          if (!request.isCurrent()) return
+          if (res.code && res.code !== 0) {
+            isError.value = true
+            errMsg.value = res.msg
+          } else {
+            state.data = res?.data
+            state.viewDataInfo = res
+            state.totalItems = res?.totalItems
+            const curViewInfo = chartRuntime.view
+            // 此处是编辑时使用，多仪表板嵌入 canvasViewInfo 会被覆盖可能出现无法读取情况
+            if (res.data && curViewInfo) {
+              curViewInfo['curFields'] = res.data.fields
+            }
+            chartRuntime.setDetails(res)
+            if (chartRuntime.publishToStore) dvMainStore.setViewDataDetails(element.value.id, res)
+            initReady.value = true
+            initCurFields(res)
           }
-          dvMainStore.setViewDataDetails(element.value.id, res)
-          initReady.value = true
-          initCurFields(res)
-        }
-        callback?.()
-        nextTick(() => {
-          initReady.value = true
+          callback?.()
+          nextTick(() => {
+            if (!request.isCurrent()) return
+            initReady.value = true
+          })
         })
-      })
-      .catch(() => {
-        nextTick(() => {
-          initReady.value = true
+        .catch(() => {
+          if (!request.isCurrent()) return
+          nextTick(() => {
+            if (!request.isCurrent()) return
+            initReady.value = true
+          })
+          callback?.()
         })
-        callback?.()
-      })
-  } else if (!view.tableId) {
-    state.data = []
-    state.viewDataInfo = {}
-    state.totalItems = 0
-    const curViewInfo = canvasViewInfo.value[element.value.id]
-    if (curViewInfo) {
-      curViewInfo['curFields'] = []
-      dvMainStore.setViewDataDetails(element.value.id, state.viewDataInfo)
+        .finally(request.finish)
+    } else if (!view.tableId) {
+      state.data = []
+      state.viewDataInfo = {}
+      state.totalItems = 0
+      const curViewInfo = chartRuntime.view
+      if (curViewInfo) {
+        curViewInfo['curFields'] = []
+        chartRuntime.setDetails(state.viewDataInfo)
+        if (chartRuntime.publishToStore)
+          dvMainStore.setViewDataDetails(element.value.id, state.viewDataInfo)
+        initReady.value = true
+        initCurFields(curViewInfo)
+      }
       initReady.value = true
-      initCurFields(curViewInfo)
+      callback?.()
+      nextTick(() => {
+        if (!request.isCurrent()) return
+        initReady.value = true
+      })
+    } else {
+      nextTick(() => {
+        if (!request.isCurrent()) return
+        initReady.value = true
+      })
+      callback?.()
     }
-    initReady.value = true
-    callback?.()
-    nextTick(() => {
-      initReady.value = true
-    })
-  } else {
-    nextTick(() => {
-      initReady.value = true
-    })
-    callback?.()
+    request.finish()
+  } catch (error) {
+    request.finish()
+    throw error
   }
 }
 
@@ -783,6 +812,7 @@ onMounted(() => {
 })
 
 defineExpose({
+  invalidateQuery,
   calcData,
   renderChart
 })

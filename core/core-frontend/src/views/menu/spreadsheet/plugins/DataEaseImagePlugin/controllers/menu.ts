@@ -12,7 +12,7 @@ export function DataEaseImageDropdownMenuFactory(): IMenuSelectorItem<string> {
     id: DATAEASE_IMAGE_DROPDOWN_MENU_ID,
     type: MenuItemType.SELECTOR,
     icon: 'AddImageIcon',
-    tooltip: '插入图片'
+    tooltip: 'dataease-spreadsheet.menu.insertImage'
   }
 }
 
@@ -21,7 +21,7 @@ export function DataEaseFloatingImageMenuFactory(): IMenuButtonItem<string> {
     id: DATAEASE_INSERT_FLOATING_IMAGE_COMMAND_ID,
     type: MenuItemType.BUTTON,
     icon: 'AddImageIcon',
-    title: '浮动图片'
+    title: 'dataease-spreadsheet.menu.floatingImage'
   }
 }
 
@@ -30,6 +30,6 @@ export function DataEaseCellImageMenuFactory(): IMenuButtonItem<string> {
     id: DATAEASE_INSERT_CELL_IMAGE_COMMAND_ID,
     type: MenuItemType.BUTTON,
     icon: 'AddImageIcon',
-    title: '单元格图片'
+    title: 'dataease-spreadsheet.menu.cellImage'
   }
 }

@@ -36,6 +36,8 @@ import {
   getAssistLineAxisIndex,
   getMixAssistLineOptions,
   configMixLabel,
+  configMixAxisAlignment,
+  configMixLineArea,
   getMixColumnWidthOptions,
   MixG2Chart
 } from './common'
@@ -674,6 +676,7 @@ export class GroupLineMix extends G2ChartView {
         }
       })
     }
+    configMixAxisAlignment(chart, [intervalMark], [lineMark, pointMark])
     // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
     if (!yAxis.show) {
       intervalMark.axis.y = false
@@ -865,6 +868,8 @@ export class GroupLineMix extends G2ChartView {
     const multiDimension = chart.extBubble?.length > 0
     switch (emptyDataStrategy) {
       case 'breakLine': {
+        // 空柱仅使用零高度绘制，保留原始空值及分组占位供标签、提示和交互使用
+        intervalMark.encode.y = d => d.value ?? 0
         if (multiDimension) {
           handleBreakLineMultiDimension(rightData)
         }
@@ -895,7 +900,8 @@ export class GroupLineMix extends G2ChartView {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configAssistLine
+      this.configAssistLine,
+      configMixLineArea
     )(chart, options, context, this)
   }
 

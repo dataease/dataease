@@ -2,7 +2,8 @@
   <InfoTemplate
     ref="infoTemplate"
     setting-key="basic"
-    showValidate
+    :show-validate="canManage"
+    :show-edit="canManage"
     style="padding-bottom: 0"
     :setting-title="t('system.engine_settings')"
     :setting-data="templateList"
@@ -48,14 +49,18 @@ import { useI18n } from '@/hooks/web/useI18n'
 import InfoTemplate from '@/views/system/common/InfoTemplate.vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import { getDeEngine } from '@/api/datasource'
+import { subjectPermissionApi } from '@/api/auth'
 import request from '@/config/axios'
-import { symmetricDecryptJson } from '@/utils/encryption'
+import { parseConfigurationJson } from '@/utils/encryption'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useUserStoreWithOut } from '@/store/modules/user'
 const DatasourceDataFillingInfo = defineAsyncComponent(
   () => import('@/views/component/data-filling/DatasourceDataFillingInfo.vue')
 )
 const { t } = useI18n()
 const appStore = useAppStoreWithOut()
+const userStore = useUserStoreWithOut()
+const canManage = ref(!appStore.getXpackValid)
 const typeMap = dsTypes.reduce((pre, next) => {
   pre[next.type] = next.name
   return pre
@@ -76,13 +81,34 @@ const infoTemplateTime = ref()
 const templateList = ref<SettingRecord[]>([])
 const templateListTime = ref<SettingRecord[]>([])
 const xPackInfo = ref({ enableDataFill: false, type: undefined })
+const loadManagePermission = async () => {
+  if (!appStore.getXpackValid || userStore.uid === '1') {
+    canManage.value = true
+    return
+  }
+  try {
+    const res = await subjectPermissionApi({
+      id: userStore.uid,
+      type: 0,
+      flag: 'menu',
+      system: true
+    })
+    const permissions = res?.data?.permissions || []
+    canManage.value = permissions.some(
+      item => String(item.id) === '16' && (item.weight === 9 || item.weight >= 1)
+    )
+  } catch (e) {
+    canManage.value = false
+  }
+}
 const getEngine = () => {
+  loadManagePermission()
   getDeEngine().then(async res => {
     let { id, type, configuration } = res.data
     xPackInfo.value.enableDataFill = !!res.data.enableDataFill
     xPackInfo.value.type = type
     if (configuration) {
-      configuration = await symmetricDecryptJson(configuration)
+      configuration = await parseConfigurationJson(configuration)
     }
     nodeInfoId = id
     templateListTime.value = [
@@ -119,18 +145,29 @@ const getEngine = () => {
         type: '',
         sort: 0
       },
-      {
-        pkey: type === 'StarRocks' ? 'FE ' + t('datasource.host') : 'datasource.host',
-        pval: configuration?.host,
-        type: '',
-        sort: 0
-      },
-      {
-        pkey: 'datasource.port',
-        pval: configuration?.port,
-        type: '',
-        sort: 0
-      },
+      ...(type === 'h2'
+        ? [
+            {
+              pkey: t('data_source.jdbc_connection_string'),
+              pval: configuration?.jdbc || configuration?.jdbcUrl,
+              type: '',
+              sort: 0
+            }
+          ]
+        : [
+            {
+              pkey: type === 'StarRocks' ? 'FE ' + t('datasource.host') : 'datasource.host',
+              pval: configuration?.host,
+              type: '',
+              sort: 0
+            },
+            {
+              pkey: 'datasource.port',
+              pval: configuration?.port,
+              type: '',
+              sort: 0
+            }
+          ]),
       ...(type === 'StarRocks'
         ? [
             {

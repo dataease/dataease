@@ -108,14 +108,13 @@
               </el-tooltip>
 
               <el-tooltip class="item" effect="dark" :content="t('commons.delete')" placement="top">
-                <el-icon
-                  style="margin-left: 8px; color: #646a73; cursor: pointer"
-                  @click.stop="deleteTicket(scope.row)"
-                >
-                  <Icon name="icon_delete-trash_outlined"
-                    ><icon_deleteTrash_outlined class="svg-icon"
-                  /></Icon>
-                </el-icon>
+                <el-button text @click.stop="deleteTicket(scope.row)">
+                  <template #icon>
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
+                    /></Icon>
+                  </template>
+                </el-button>
               </el-tooltip>
             </div>
           </template>

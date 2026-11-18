@@ -208,6 +208,14 @@ declare interface ChartBasicStyle {
    */
   lineSmooth: boolean
   /**
+   * 组合图右轴折线显示面积
+   */
+  lineArea: boolean
+  /**
+   * 组合图右轴折线面积使用渐变颜色
+   */
+  lineAreaGradient: boolean
+  /**
    * 自适应
    */
   barDefault: boolean
@@ -255,6 +263,18 @@ declare interface ChartBasicStyle {
    * 箱线图是否显示异常值点
    */
   showOutliers: boolean
+  /**
+   * 箱线图是否显示全部有效样本的平均值，默认关闭
+   */
+  showMean: boolean
+  /**
+   * 箱线图平均值标记形状，旧配置默认使用菱形
+   */
+  meanSymbol: 'cross' | 'diamond' | 'triangle' | 'square'
+  /**
+   * 箱线图是否显示平均值标签，仅显示平均值时生效，默认关闭
+   */
+  showMeanLabel: boolean
   /**
    * 箱线图异常点颜色模式，默认跟随所属箱体或分组系列
    */
@@ -485,6 +505,14 @@ declare interface ChartBasicStyle {
    */
   leftLineSmooth: boolean
   /**
+   * 双折线组合图左轴显示面积
+   */
+  leftLineArea: boolean
+  /**
+   * 双折线组合图左轴面积使用渐变颜色
+   */
+  leftLineAreaGradient: boolean
+  /**
    * 主题反色，浅色主题黑色，深色主题白色
    */
   themeContrastColor?: string
@@ -492,6 +520,28 @@ declare interface ChartBasicStyle {
    * 表格空数据提示字体颜色
    */
   tableEmptyFontColor: string
+}
+
+/**
+ * 混合图基础样式
+ */
+declare interface MixChartBasicStyle extends ChartBasicStyle {
+  subAlpha: number
+  subColors: string[]
+  subSeriesColor: {
+    /**
+     * 序列识别id，多指标就是轴id，分组或者堆叠就是类别值
+     */
+    id: string
+    /**
+     * 显示名称
+     */
+    name: string
+    /**
+     * 序列颜色
+     */
+    color: string
+  }[]
 }
 /**
  * 表头属性
@@ -1215,6 +1265,7 @@ declare interface ChartLabelAttr {
  * 提示设置
  */
 declare interface ChartTooltipAttr {
+  tableDisplayFields?: string[]
   /**
    * 显隐
    */

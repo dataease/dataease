@@ -91,7 +91,7 @@ const multipleSelectionAll = computed(() => [
   ...props.multipleSelection
 ])
 watch(
-  props.pagination,
+  () => props.pagination,
   () => {
     state.paginationDefault = {
       ...state.paginationDefault,
@@ -102,7 +102,7 @@ watch(
 )
 
 watch(
-  props.tableData,
+  () => props.tableData,
   () => {
     nextTick(() => {
       table.value.doLayout()

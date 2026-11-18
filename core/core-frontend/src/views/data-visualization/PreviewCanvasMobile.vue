@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { onMounted, onUnmounted, reactive, defineAsyncComponent, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
@@ -111,7 +113,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   const req = dvType === 'dashboard' ? initCanvasDataMobile : initCanvasData
   await req(
     dvId,
-    { busiFlag: dvType, awaitLoad: props.publicLinkStatus },
+    { busiFlag: dvType, awaitLoad: props.publicLinkStatus, queryRequest: canvasQuery.start() },
     async function ({
       canvasDataResult,
       canvasStyleResult,

@@ -33,6 +33,14 @@ export class DetailTableRenderStyleService {
   private readonly _ranges = new Map<string, DetailTableRenderStyleRange>()
   private readonly _styleService = new TableStyleService()
 
+  getRange(
+    unitId: string,
+    sheetId: string,
+    pluginId: string
+  ): DetailTableRenderStyleRange | undefined {
+    return this._ranges.get(this.getRangeKey(unitId, sheetId, pluginId))
+  }
+
   setRange(range: DetailTableRenderStyleRange): void {
     this._ranges.set(this.getRangeKey(range.unitId, range.sheetId, range.pluginId), range)
   }

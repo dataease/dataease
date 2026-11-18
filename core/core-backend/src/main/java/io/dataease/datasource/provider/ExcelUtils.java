@@ -1,13 +1,6 @@
 package io.dataease.datasource.provider;
 
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelReader;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.enums.CellDataTypeEnum;
-import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.metadata.data.ReadCellData;
-import com.alibaba.excel.read.metadata.ReadSheet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +9,15 @@ import io.dataease.api.ds.vo.ExcelSheetData;
 import io.dataease.api.ds.vo.RemoteExcelRequest;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
+import io.dataease.excel.ExcelCell;
+import io.dataease.excel.ExcelCellType;
+import io.dataease.excel.ExcelIO;
+import io.dataease.excel.ExcelReadHandler;
+import io.dataease.excel.ExcelReadOptions;
+import io.dataease.excel.ExcelReadSession;
+import io.dataease.excel.ExcelReadStopException;
+import io.dataease.excel.ExcelSheetInfo;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -23,7 +25,6 @@ import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.api.ds.vo.ExcelConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +49,9 @@ public class ExcelUtils {
     // Worksheet XML can be much larger than the compressed XLSX, even at ordinary compression ratios.
     private static final long REMOTE_WORKBOOK_ENTRY_BYTES = 256L * 1024 * 1024;
     private static final long REMOTE_WORKBOOK_TOTAL_BYTES = 512L * 1024 * 1024;
+    private static final int CSV_ROW_LENGTH_LIMIT = 1024 * 1024;
+    private static final int CSV_COLUMN_LIMIT = 16384;
+    private static final int CSV_CELL_LENGTH_LIMIT = 32767;
     private static String path = getExcelPath();
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -198,7 +202,7 @@ public class ExcelUtils {
                         try (InputStream inputStream = new FileInputStream(path + fileNames.get("tranName"))) {
                             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                                 BufferedReader reader = csvReader(inputStream);
-                                readCsvLine(reader);//去掉表头
+                                readCsvRecord(reader);//去掉表头
                                 dataList = csvData(reader, false, tableFields.size());
                             } else {
                                 dataList = fetchExcelDataList(sheet.getTableName(), inputStream);
@@ -221,7 +225,7 @@ public class ExcelUtils {
                         try (InputStream inputStream = ExcelFileGuard.open(java.nio.file.Path.of(path), rootNode.get(i).get("path").asText())) {
                             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                                 BufferedReader reader = csvReader(inputStream);
-                                readCsvLine(reader);//去掉表头
+                                readCsvRecord(reader);//去掉表头
                                 dataList = csvData(reader, false, tableFields.size());
                             } else {
                                 dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
@@ -237,28 +241,239 @@ public class ExcelUtils {
     }
 
     private List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream) {
-        NoModelDataListener noModelDataListener = new NoModelDataListener();
-        try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
-            List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
-            for (ReadSheet readSheet : sheets) {
-                if (!sheetName.equalsIgnoreCase(readSheet.getSheetName())) {
+        SheetDataCollector collector = new SheetDataCollector();
+        try (ExcelReadSession session = ExcelIO.openRead(inputStream, new ExcelReadOptions())) {
+            for (ExcelSheetInfo sheet : session.getSheets()) {
+                if (!sheetName.equalsIgnoreCase(sheet.getSheetName())) {
                     continue;
                 }
-                noModelDataListener.clear();
-                List<TableField> fields = new ArrayList<>();
-                excelReader.read(readSheet);
-                for (String s : noModelDataListener.getHeader()) {
-                    TableField tableFiled = new TableField();
-                    tableFiled.setFieldType("TEXT");
-                    tableFiled.setName(s);
-                    tableFiled.setOriginName(s);
-                    fields.add(tableFiled);
+                collector.clear();
+                session.read(sheet, collector);
+            }
+        }
+        return collector.getData();
+    }
+
+    /**
+     * 正式导入按批读取回调：每攒满一批就交给调用方写入，返回后本方法会清空该批数据。
+     */
+    @FunctionalInterface
+    public interface ExcelBatchConsumer {
+        void accept(List<String[]> batch) throws Exception;
+    }
+
+    /**
+     * 按批读取目标 Sheet/CSV，不累计完整 Sheet 数据。CSV 按 columnCount 截断多余列，
+     * 与既有全量读取行为保持一致。
+     */
+    public void consumeDataByBatch(DatasourceRequest datasourceRequest, int columnCount, int batchSize, ExcelBatchConsumer consumer) throws Exception {
+        consumeDataByBatch(datasourceRequest, columnCount, batchSize, null, consumer);
+    }
+
+    /**
+     * 按批读取目标 Sheet/CSV，不累计完整 Sheet 数据。
+     * includeColumnIndexes 为需要读取的原始列索引（0 基，按全量字段顺序）；null/空表示读取全部列。
+     */
+    public void consumeDataByBatch(DatasourceRequest datasourceRequest, int columnCount, int batchSize, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) throws Exception {
+        if (batchSize <= 0) {
+            throw new IllegalArgumentException("batchSize must be positive");
+        }
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ExcelRemote")) {
+            ExcelConfiguration excelConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), ExcelConfiguration.class);
+            Map<String, String> fileNames = downLoadRemoteExcel(excelConfiguration);
+            try {
+                for (ExcelSheetData sheet : excelConfiguration.getSheets()) {
+                    if (sheet.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable())) {
+                        String suffix = fileNames.get("fileName").substring(fileNames.get("fileName").lastIndexOf(".") + 1);
+                        try (InputStream inputStream = new FileInputStream(path + fileNames.get("tranName"))) {
+                            consumeSheetBatches(sheet.getTableName(), suffix, inputStream, columnCount, batchSize, includeColumnIndexes, consumer);
+                        }
+                    }
+                }
+            } finally {
+                if (StringUtils.isNotEmpty(fileNames.get("tranName"))) {
+                    FileUtils.deleteFile(path + fileNames.get("tranName"));
                 }
             }
-        } finally {
-            CommonExcelUtils.clearThreadLocalCache();
+        } else {
+            JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
+            for (int i = 0; i < rootNode.size(); i++) {
+                if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
+                    String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
+                    try (InputStream inputStream = ExcelFileGuard.open(java.nio.file.Path.of(path), rootNode.get(i).get("path").asText())) {
+                        consumeSheetBatches(rootNode.get(i).get("tableName").asText(), suffix, inputStream, columnCount, batchSize, includeColumnIndexes, consumer);
+                    }
+                }
+            }
         }
-        return noModelDataListener.getData();
+    }
+
+    private void consumeSheetBatches(String sheetName, String suffix, InputStream inputStream, int columnCount, int batchSize, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) throws Exception {
+        if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+            BufferedReader reader = csvReader(inputStream);
+            readCsvRecord(reader);//去掉表头
+            consumeCsvBatches(reader, columnCount, batchSize, consumer);
+        } else {
+            consumeExcelBatches(sheetName, inputStream, columnCount, batchSize, includeColumnIndexes, consumer);
+        }
+    }
+
+    private void consumeExcelBatches(String sheetName, InputStream inputStream, int columnCount, int batchSize, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) throws Exception {
+        BatchSheetHandler handler = new BatchSheetHandler(batchSize, columnCount, includeColumnIndexes, consumer);
+        ExcelReadOptions readOptions = new ExcelReadOptions();
+        if (includeColumnIndexes != null && !includeColumnIndexes.isEmpty()) {
+            readOptions.setIncludeColumnIndexes(includeColumnIndexes);
+        }
+        try (ExcelReadSession session = ExcelIO.openRead(inputStream, readOptions)) {
+            for (ExcelSheetInfo sheet : session.getSheets()) {
+                if (!sheetName.equalsIgnoreCase(sheet.getSheetName())) {
+                    continue;
+                }
+                session.read(sheet, handler);
+                handler.throwIfEmptyHeaderHasData(sheet.getSheetName());
+                break;
+            }
+        }
+        handler.flush();
+    }
+
+    private void consumeCsvBatches(BufferedReader reader, int columnCount, int batchSize, ExcelBatchConsumer consumer) throws Exception {
+        List<String[]> batch = new ArrayList<>(batchSize);
+        String line;
+        while ((line = readCsvRecord(reader)) != null) {
+            List<String> cells = parseCsvRecord(line);
+            if (isEmpty(cells)) {
+                continue;
+            }
+            if (cells.size() > columnCount) {
+                cells = cells.subList(0, columnCount);
+            }
+            batch.add(cells.toArray(new String[0]));
+            if (batch.size() >= batchSize) {
+                consumer.accept(batch);
+                batch.clear();
+            }
+        }
+        if (!batch.isEmpty()) {
+            consumer.accept(batch);
+            batch.clear();
+        }
+    }
+
+    private static class BatchSheetHandler implements ExcelReadHandler {
+        private final int batchSize;
+        private final int columnCount;
+        private final List<Integer> includeColumnIndexes;
+        private final ExcelBatchConsumer consumer;
+        private final List<String> header = new ArrayList<>();
+        private final List<Integer> headerKey = new ArrayList<>();
+        private final List<Integer> emptyHeaderKeys = new ArrayList<>();
+        private final Set<Integer> emptyHeaderColumnsWithData = new LinkedHashSet<>();
+        private final List<String[]> batch = new ArrayList<>();
+
+        BatchSheetHandler(int batchSize, int columnCount, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) {
+            this.batchSize = batchSize;
+            this.columnCount = columnCount;
+            this.includeColumnIndexes = includeColumnIndexes == null || includeColumnIndexes.isEmpty() ? null : includeColumnIndexes;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void onHeader(Map<Integer, ExcelCell> headMap) {
+            if (includeColumnIndexes != null) {
+                return;
+            }
+            for (Integer key : headMap.keySet()) {
+                ExcelCell cellData = headMap.get(key);
+                String value = null;
+                if (cellData.getType() == ExcelCellType.STRING) {
+                    value = cellData.getStringValue();
+                }
+                if (cellData.getType() == ExcelCellType.NUMBER) {
+                    value = cellData.getNumberValue() == null ? null : cellData.getNumberValue().toString();
+                }
+                if (StringUtils.isEmpty(value)) {
+                    emptyHeaderKeys.add(key);
+                    continue;
+                }
+                headerKey.add(key);
+                header.add(value);
+            }
+        }
+
+        @Override
+        public void onRow(int rowIndex, Map<Integer, ExcelCell> dataMap) {
+            if (includeColumnIndexes != null) {
+                addSelectedRow(dataMap);
+            } else {
+                addFullRow(dataMap);
+            }
+            if (batch.size() >= batchSize) {
+                flush();
+            }
+        }
+
+        private void addSelectedRow(Map<Integer, ExcelCell> dataMap) {
+            String[] row = new String[columnCount];
+            for (int relativeIndex = 0; relativeIndex < includeColumnIndexes.size(); relativeIndex++) {
+                Integer originalIndex = includeColumnIndexes.get(relativeIndex);
+                if (originalIndex == null || originalIndex < 0 || originalIndex >= columnCount) {
+                    continue;
+                }
+                ExcelCell cellData = dataMap.get(relativeIndex);
+                String value = cellData == null ? null : cellData.getStringValue();
+                if (StringUtils.isEmpty(value)) {
+                    value = null;
+                }
+                row[originalIndex] = value;
+            }
+            batch.add(row);
+        }
+
+        private void addFullRow(Map<Integer, ExcelCell> dataMap) {
+            for (Integer key : emptyHeaderKeys) {
+                ExcelCell cellData = dataMap.get(key);
+                if (cellData != null && StringUtils.isNotEmpty(cellData.getStringValue())) {
+                    emptyHeaderColumnsWithData.add(key);
+                }
+            }
+            List<String> line = new ArrayList<>();
+            for (Integer key : headerKey) {
+                ExcelCell cellData = dataMap.get(key);
+                String value = cellData == null ? null : cellData.getStringValue();
+                if (StringUtils.isEmpty(value)) {
+                    value = null;
+                }
+                line.add(value);
+            }
+            int size = line.size();
+            if (size < header.size()) {
+                for (int i = 0; i < header.size() - size; i++) {
+                    line.add(null);
+                }
+            }
+            batch.add(line.toArray(new String[line.size()]));
+        }
+
+        private void throwIfEmptyHeaderHasData(String sheetName) {
+            if (!emptyHeaderColumnsWithData.isEmpty()) {
+                Integer emptyHeaderColumn = emptyHeaderColumnsWithData.iterator().next();
+                DEException.throwException(Translator.get("i18n_excel_empty_header_with_data", sheetName, emptyHeaderColumn + 1));
+            }
+        }
+
+        private void flush() {
+            if (batch.isEmpty()) {
+                return;
+            }
+            try {
+                consumer.accept(new ArrayList<>(batch));
+            } catch (Exception e) {
+                DEException.throwException(e);
+            } finally {
+                batch.clear();
+            }
+        }
     }
 
     public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws DEException {
@@ -288,17 +503,20 @@ public class ExcelUtils {
         String filename = file.getOriginalFilename();
         FileUtils.validateUploadFilename(filename);
         List<ExcelSheetData> excelSheetDataList = null;
-        try {
-            excelSheetDataList = parseExcel(filename, file.getInputStream(), true, filename);
+        try (InputStream inputStream = file.getInputStream()) {
+            excelSheetDataList = parseExcel(filename, inputStream, true, filename);
+        } catch (DEException e) {
+            throw e;
         } catch (Exception e) {
-            DEException.throwException(e);
+            throw io.dataease.exception.RemoteFileErrors.parse(e);
         }
-        List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
-        returnSheetDataList = excelSheetDataList;
-        returnSheetDataList = returnSheetDataList.stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
+        List<ExcelSheetData> returnSheetDataList = excelSheetDataList.stream()
+                .filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields()))
+                .collect(Collectors.toList());
         // save file
         String excelId = UUID.randomUUID().toString();
         String filePath = saveFile(file, excelId, createBy);
+        long fileSize = file.getSize();
 
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
@@ -333,15 +551,15 @@ public class ExcelUtils {
             }
             long size = 0;
             String unit = "B";
-            if (file.getSize() / 1024 == 0) {
-                size = file.getSize();
+            if (fileSize / 1024 == 0) {
+                size = fileSize;
             }
-            if (0 < file.getSize() / 1024 && file.getSize() / 1024 < 1024) {
-                size = file.getSize() / 1024;
+            if (0 < fileSize / 1024 && fileSize / 1024 < 1024) {
+                size = fileSize / 1024;
                 unit = "KB";
             }
-            if (1024 <= file.getSize() / 1024) {
-                size = file.getSize() / 1024 / 1024;
+            if (1024 <= fileSize / 1024) {
+                size = fileSize / 1024 / 1024;
                 unit = "MB";
             }
             excelSheetData.setSize(size + " " + unit);
@@ -370,13 +588,25 @@ public class ExcelUtils {
     }
 
     public ExcelFileData parseRemoteExcel(RemoteExcelRequest remoteExcelRequest) throws DEException, FileNotFoundException {
-        Map<String, String> fileNames = downLoadRemoteExcel(remoteExcelRequest);
+        Map<String, String> fileNames;
+        try {
+            fileNames = downLoadRemoteExcel(remoteExcelRequest);
+        } catch (DEException e) {
+            if (e.getCategory() != null) throw e;
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
+        } catch (RuntimeException | FileNotFoundException e) {
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
+        }
         try (FileInputStream fileInputStream = new FileInputStream(path + fileNames.get("tranName"))) {
+            String remoteName = fileNames.get("tranName").toLowerCase(Locale.ROOT);
+            if (!remoteName.endsWith(".csv") && !remoteName.endsWith(".xls") && !remoteName.endsWith(".xlsx")) {
+                throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_unsupported_file_format");
+            }
             List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
             try {
                 returnSheetDataList = parseExcel(fileNames.get("tranName"), fileInputStream, true, fileNames.get("fileName")).stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
             } catch (Exception e) {
-                DEException.throwException(e);
+                throw io.dataease.exception.RemoteFileErrors.parse(e);
             }
             for (ExcelSheetData excelSheetData : returnSheetDataList) {
                 excelSheetData.setLastUpdateTime(System.currentTimeMillis());
@@ -461,13 +691,13 @@ public class ExcelUtils {
         } else if (remoteExcelRequest.getUrl().trim().startsWith("ftp")) {
             fileNames = downLoadFromFtp(remoteExcelRequest);
         } else {
-            DEException.throwException(Translator.get("i18n_unsupported_protocol"));
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_unsupported_protocol");
         }
         try {
             validateRemoteWorkbook(java.nio.file.Path.of(path, fileNames.get("tranName")));
         } catch (IOException e) {
             FileUtils.deleteFile(path + fileNames.get("tranName"));
-            DEException.throwException(e);
+            throw io.dataease.exception.RemoteFileErrors.parse(e);
         }
         return fileNames;
     }
@@ -482,7 +712,7 @@ public class ExcelUtils {
             byte[] buffer = new byte[8192];
             while (items.hasMoreElements()) {
                 var entry = items.nextElement();
-                if (++entries > 10000) throw new IOException(Translator.get("i18n_remote_zip_entries"));
+                if (++entries > 10000) throw new RemoteTransfer.LimitExceededException(Translator.get("i18n_remote_zip_entries"));
                 long entryBytes = 0;
                 try (InputStream input = zip.getInputStream(entry)) {
                     int n;
@@ -490,7 +720,7 @@ public class ExcelUtils {
                         entryBytes += n; total += n;
                         validateRemoteWorkbookSize(entryBytes, total, entry.getCompressedSize());
                         if (System.nanoTime() >= deadline || Thread.currentThread().isInterrupted()) {
-                            throw new IOException(Translator.get("i18n_remote_transfer_timeout"));
+                            throw new RemoteTransfer.LimitExceededException(Translator.get("i18n_remote_transfer_timeout"));
                         }
                     }
                 }
@@ -501,7 +731,7 @@ public class ExcelUtils {
     static void validateRemoteWorkbookSize(long entryBytes, long totalBytes, long compressedBytes) throws IOException {
         if (entryBytes > REMOTE_WORKBOOK_ENTRY_BYTES || totalBytes > REMOTE_WORKBOOK_TOTAL_BYTES
                 || (entryBytes > 1024 * 1024 && entryBytes > 100 * Math.max(1, compressedBytes))) {
-            throw new IOException(Translator.get("i18n_remote_zip_size"));
+            throw new RemoteTransfer.LimitExceededException(Translator.get("i18n_remote_zip_size"));
         }
     }
 
@@ -516,6 +746,32 @@ public class ExcelUtils {
             filePath = target.toString();
             boolean created = false;
             try (InputStream input = file.getInputStream();
+                 OutputStream output = java.nio.file.Files.newOutputStream(target,
+                         java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)) {
+                created = true;
+                input.transferTo(output);
+            } catch (Exception e) {
+                if (created) {
+                    java.nio.file.Files.deleteIfExists(target);
+                }
+                throw e;
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        return filePath;
+    }
+
+    private static String saveFile(byte[] content, String filename, String fileNameUUID, String owner) throws DEException {
+        String filePath = null;
+        try {
+            FileUtils.validateUploadFilename(filename);
+            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+            java.nio.file.Path directory = ExcelFileGuard.uploadDirectory(java.nio.file.Path.of(path), owner);
+            java.nio.file.Path target = directory.resolve(fileNameUUID + "." + suffix);
+            filePath = target.toString();
+            boolean created = false;
+            try (InputStream input = new ByteArrayInputStream(content);
                  OutputStream output = java.nio.file.Files.newOutputStream(target,
                          java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)) {
                 created = true;
@@ -574,23 +830,55 @@ public class ExcelUtils {
         return new BufferedReader(new InputStreamReader(stream, charset));
     }
 
-    private static String readCsvLine(BufferedReader reader) throws IOException {
-        StringBuilder line = new StringBuilder();
+    private static String readCsvRecord(BufferedReader reader) throws IOException {
+        StringBuilder record = new StringBuilder();
+        boolean inQuotes = false;
+        int lineNumber = 1;
         int c;
         while ((c = reader.read()) != -1) {
-            if (c == '\n') break;
-            if (c == '\r') {
+            if (c == '"') {
                 reader.mark(1);
-                if (reader.read() != '\n') reader.reset();
-                break;
+                int next = reader.read();
+                if (next == '"') {
+                    record.append("\"\"");
+                    continue;
+                }
+                if (next != -1) {
+                    reader.reset();
+                }
+                record.append('"');
+                inQuotes = !inQuotes;
+            } else {
+                if (c == '\n' && !inQuotes) {
+                    break;
+                }
+                if (c == '\n') {
+                    lineNumber++;
+                }
+                if (c == '\r' && !inQuotes) {
+                    reader.mark(1);
+                    int next = reader.read();
+                    if (next != '\n' && next != -1) {
+                        reader.reset();
+                    }
+                    break;
+                }
+                record.append((char) c);
             }
-            if (line.length() >= 1024 * 1024) throw new IOException(Translator.get("i18n_csv_row_limit"));
-            line.append((char) c);
+            if (record.length() > CSV_ROW_LENGTH_LIMIT) {
+                throw new IOException(Translator.get("i18n_csv_row_limit"));
+            }
         }
-        return c == -1 && line.isEmpty() ? null : line.toString();
+        if (c == -1 && inQuotes) {
+            throw new IOException("CSV unclosed quote before line " + lineNumber);
+        }
+        if (record.isEmpty() && c == -1) {
+            return null;
+        }
+        return record.toString();
     }
 
-    private static List<String> parseCsvLine(String line) throws IOException {
+    private static List<String> parseCsvRecord(String line) throws IOException {
         List<String> cells = new ArrayList<>();
         StringBuilder cell = new StringBuilder();
         boolean quoted = false;
@@ -602,9 +890,9 @@ public class ExcelUtils {
                 } else quoted = !quoted;
             } else if (c == ',' && !quoted) {
                 cells.add(cell.toString()); cell.setLength(0);
-                if (cells.size() >= 16384) throw new IOException(Translator.get("i18n_csv_column_limit"));
+                if (cells.size() >= CSV_COLUMN_LIMIT) throw new IOException(Translator.get("i18n_csv_column_limit"));
             } else cell.append(c);
-            if (cell.length() > 32767) throw new IOException(Translator.get("i18n_csv_cell_limit"));
+            if (cell.length() > CSV_CELL_LENGTH_LIMIT) throw new IOException(Translator.get("i18n_csv_cell_limit"));
         }
         cells.add(cell.toString());
         return cells;
@@ -613,16 +901,14 @@ public class ExcelUtils {
     public static List<String[]> csvData(BufferedReader reader, boolean isPreview, int size) throws DEException {
         List<String[]> data = new ArrayList<>();
         try {
-            int num = 1;
             String line;
-            while ((!isPreview || data.size() < 100) && (line = readCsvLine(reader)) != null) {
-                List<String> cells = parseCsvLine(line);
+            while ((!isPreview || data.size() < 100) && (line = readCsvRecord(reader)) != null) {
+                List<String> cells = parseCsvRecord(line);
                 if (!isEmpty(cells)) {
                     if (cells.size() > size) {
                         cells = cells.subList(0, size);
                     }
-                    data.add(cells.toArray(new String[]{}));
-                    num++;
+                    data.add(cells.toArray(new String[0]));
                 }
             }
         } catch (Exception e) {
@@ -677,29 +963,30 @@ public class ExcelUtils {
 
     }
 
-    @Data
-    public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    public class SheetDataCollector implements ExcelReadHandler {
         private final boolean preview;
-        public NoModelDataListener() { this(false); }
-        public NoModelDataListener(boolean preview) { this.preview = preview; }
+        public SheetDataCollector() { this(false); }
+        public SheetDataCollector(boolean preview) { this.preview = preview; }
 
         private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
         private List<Integer> headerKey = new ArrayList<>();
+        private List<Integer> emptyHeaderKeys = new ArrayList<>();
+        private Set<Integer> emptyHeaderColumnsWithData = new LinkedHashSet<>();
 
         @Override
-        public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
-            super.invokeHead(headMap, context);
+        public void onHeader(Map<Integer, ExcelCell> headMap) {
             for (Integer key : headMap.keySet()) {
-                ReadCellData<?> cellData = headMap.get(key);
+                ExcelCell cellData = headMap.get(key);
                 String value = null;
-                if (cellData.getType().equals(CellDataTypeEnum.STRING)) {
+                if (cellData.getType() == ExcelCellType.STRING) {
                     value = cellData.getStringValue();
                 }
-                if (cellData.getType().equals(CellDataTypeEnum.NUMBER)) {
-                    value = cellData.getNumberValue().toString();
+                if (cellData.getType() == ExcelCellType.NUMBER) {
+                    value = cellData.getNumberValue() == null ? null : cellData.getNumberValue().toString();
                 }
                 if (StringUtils.isEmpty(value)) {
+                    emptyHeaderKeys.add(key);
                     continue;
                 }
                 headerKey.add(key);
@@ -708,17 +995,26 @@ public class ExcelUtils {
         }
 
         @Override
-        public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
-            if (preview && data.size() >= 100) throw new com.alibaba.excel.exception.ExcelAnalysisStopSheetException();
+        public void onRow(int rowIndex, Map<Integer, ExcelCell> dataMap) {
+            if (preview && data.size() >= 100) throw new ExcelReadStopException();
+            for (Integer key : emptyHeaderKeys) {
+                ExcelCell cellData = dataMap.get(key);
+                if (cellData != null && StringUtils.isNotEmpty(cellData.getStringValue())) {
+                    emptyHeaderColumnsWithData.add(key);
+                }
+            }
             List<String> line = new ArrayList<>();
-            for (Integer key : dataMap.keySet()) {
-                String value = dataMap.get(key);
+            for (Integer key : headerKey) {
+                ExcelCell cellData = dataMap.get(key);
+                String value = cellData == null ? null : cellData.getStringValue();
+                if (preview && cellData != null && cellData.isFormula()
+                        && (StringUtils.isEmpty(value) || "null".equals(value) || value.startsWith("#"))) {
+                    DEException.throwException(Translator.get("i18n_excel_formula_cache_missing"));
+                }
                 if (StringUtils.isEmpty(value)) {
                     value = null;
                 }
-                if (headerKey.contains(key)) {
-                    line.add(value);
-                }
+                line.add(value);
             }
             int size = line.size();
             if (size < header.size()) {
@@ -729,14 +1025,24 @@ public class ExcelUtils {
             data.add(line.toArray(new String[line.size()]));
         }
 
-        @Override
-        public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        }
-
         public void clear() {
             data.clear();
             header.clear();
             headerKey.clear();
+            emptyHeaderKeys.clear();
+            emptyHeaderColumnsWithData.clear();
+        }
+
+        public List<String[]> getData() {
+            return data;
+        }
+
+        public List<String> getHeader() {
+            return header;
+        }
+
+        public Set<Integer> getEmptyHeaderColumnsWithData() {
+            return emptyHeaderColumnsWithData;
         }
     }
 
@@ -746,18 +1052,22 @@ public class ExcelUtils {
             List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
             if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
-                NoModelDataListener noModelDataListener = new NoModelDataListener(isPreview);
-                try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
-                    List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
-                    if (sheets.size() > 100) throw new IOException(Translator.get("i18n_excel_sheet_limit"));
-                    for (ReadSheet readSheet : sheets) {
-                        noModelDataListener.clear();
+                SheetDataCollector collector = new SheetDataCollector(isPreview);
+                try (ExcelReadSession session = ExcelIO.openRead(inputStream, new ExcelReadOptions())) {
+                    List<ExcelSheetInfo> sheets = session.getSheets();
+                    if (sheets.size() > 100) throw DEException.of(ErrorCategory.VALIDATION, "i18n_excel_sheet_limit");
+                    for (ExcelSheetInfo sheet : sheets) {
+                        collector.clear();
                         List<TableField> fields = new ArrayList<>();
-                        excelReader.read(readSheet);
-                        if (CollectionUtils.isEmpty(noModelDataListener.getHeader())) {
-                            DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
+                        session.read(sheet, collector);
+                        if (CollectionUtils.isEmpty(collector.getHeader())) {
+                            DEException.throwException(sheet.getSheetName() + "首行不能为空！");
                         }
-                        for (String s : noModelDataListener.getHeader()) {
+                        if (!collector.getEmptyHeaderColumnsWithData().isEmpty()) {
+                            Integer emptyHeaderColumn = collector.getEmptyHeaderColumnsWithData().iterator().next();
+                            DEException.throwException(Translator.get("i18n_excel_empty_header_with_data", sheet.getSheetName(), emptyHeaderColumn + 1));
+                        }
+                        for (String s : collector.getHeader()) {
                             EngineProvider.validateIdentifier(s);
                             TableField tableFiled = new TableField();
                             tableFiled.setFieldType(null);
@@ -766,7 +1076,7 @@ public class ExcelUtils {
                             tableFiled.setChecked(true);
                             fields.add(tableFiled);
                         }
-                        List<String[]> data = new ArrayList<>(noModelDataListener.getData());
+                        List<String[]> data = new ArrayList<>(collector.getData());
                         if (isPreview) {
                             for (int i = 0; i < data.size(); i++) {
                                 for (int j = 0; j < data.get(i).length; j++) {
@@ -790,38 +1100,36 @@ public class ExcelUtils {
                         excelSheetData.setFields(fields);
                         excelSheetData.setData(data);
                         excelSheetData.setFileName(filename);
-                        excelSheetData.setExcelLabel(readSheet.getSheetName());
+                        excelSheetData.setExcelLabel(sheet.getSheetName());
                         excelSheetDataList.add(excelSheetData);
                     }
-                } finally {
-                    CommonExcelUtils.clearThreadLocalCache();
                 }
             }
 
             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                 List<TableField> fields = new ArrayList<>();
                 BufferedReader reader = csvReader(inputStream);
-                String s = readCsvLine(reader);// first line
-                if (StringUtils.isNotEmpty(s)) {
-                    String[] split = s.split(",");
-                    for (int i = 0; i < split.length; i++) {
-                        String filedName = split[i];
-                        if (StringUtils.isEmpty(filedName)) {
-                            DEException.throwException(Translator.get("i18n_excel_error_first_row"));
-                        }
-                        if (filedName.startsWith(UFEFF)) {
-                            filedName = filedName.replace(UFEFF, "");
-                        }
-                        EngineProvider.validateIdentifier(filedName);
-                        TableField tableFiled = new TableField();
-                        tableFiled.setName(filedName);
-                        tableFiled.setOriginName(filedName);
-                        tableFiled.setFieldType(null);
-                        tableFiled.setChecked(true);
-                        fields.add(tableFiled);
-                    }
+                String s = readCsvRecord(reader);// first logical record
+                if (StringUtils.isEmpty(s)) {
+                    DEException.throwException(Translator.get("i18n_excel_first_row_empty"));
                 }
-
+                List<String> headerCells = parseCsvRecord(s);
+                for (int i = 0; i < headerCells.size(); i++) {
+                    String filedName = headerCells.get(i);
+                    if (StringUtils.isEmpty(filedName)) {
+                        DEException.throwException(Translator.get("i18n_excel_error_first_row"));
+                    }
+                    if (filedName.startsWith(UFEFF)) {
+                        filedName = filedName.replace(UFEFF, "");
+                    }
+                    EngineProvider.validateIdentifier(filedName);
+                    TableField tableFiled = new TableField();
+                    tableFiled.setName(filedName);
+                    tableFiled.setOriginName(filedName);
+                    tableFiled.setFieldType(null);
+                    tableFiled.setChecked(true);
+                    fields.add(tableFiled);
+                }
                 List<String[]> data = csvData(reader, isPreview, fields.size());
                 if (isPreview) {
                     for (int i = 0; i < data.size(); i++) {
@@ -947,7 +1255,10 @@ public class ExcelUtils {
         } catch (IOException e) {
             try { java.nio.file.Files.deleteIfExists(java.nio.file.Path.of(localFilePath)); }
             catch (IOException cleanup) { e.addSuppressed(cleanup); }
-            DEException.throwException(Translator.get("i18n_file_download_failed") + ", " + e.getMessage());
+            if (StringUtils.containsIgnoreCase(e.getMessage(), "Invalid username/password")) {
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_ftp_invalid_credentials").causedBy(e);
+            }
+            throw io.dataease.exception.RemoteFileErrors.classify(e);
         }
         return fileNames;
     }

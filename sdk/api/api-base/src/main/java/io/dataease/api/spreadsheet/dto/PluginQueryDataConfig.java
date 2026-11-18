@@ -15,4 +15,8 @@ public class PluginQueryDataConfig {
     private Long resultLimit;
     private FilterTreeObj customFilter;
     private List<ChartExtFilterDTO> queryFilter;
+    // 跳转联动仅作用于当前数据区域，不混入查询组件或外部参数配置。
+    private List<ChartExtFilterDTO> linkageFilters;
+    // 外部参数字段绑定独立传入，不与查询组件条件混用。
+    private List<ChartExtFilterDTO> outerParamsFilter;
 }

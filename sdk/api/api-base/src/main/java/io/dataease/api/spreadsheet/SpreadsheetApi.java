@@ -3,6 +3,7 @@ package io.dataease.api.spreadsheet;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.spreadsheet.dto.SpreadsheetCreator;
 import io.dataease.api.spreadsheet.dto.SpreadsheetEditor;
+import io.dataease.api.spreadsheet.dto.SpreadsheetOuterParamsDTO;
 import io.dataease.api.spreadsheet.vo.SpreadsheetTreeVO;
 import io.dataease.api.spreadsheet.vo.SpreadsheetVO;
 import io.dataease.auth.DeApiPath;
@@ -11,6 +12,7 @@ import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.ResourceDeleteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -87,5 +89,20 @@ public interface SpreadsheetApi {
     @DePermit({"#p0.id+':manage'"})
     @PostMapping("/recoverToPublished")
     SpreadsheetVO recoverToPublished(@RequestBody SpreadsheetEditor editor);
+
+    @Operation(summary = "获取电子表格已发布外部参数配置")
+    @DePermit({"#p0+':read'"})
+    @GetMapping("/outerParams/{id}")
+    SpreadsheetOuterParamsDTO getOuterParams(@PathVariable("id") Long id);
+
+    @Operation(summary = "获取电子表格外部参数编辑稿")
+    @DePermit({"#p0+':manage'"})
+    @GetMapping("/outerParams/snapshot/{id}")
+    SpreadsheetOuterParamsDTO getOuterParamsSnapshot(@PathVariable("id") Long id);
+
+    @Operation(summary = "保存电子表格外部参数编辑稿")
+    @DePermit({"#p0.spreadsheetId+':manage'"})
+    @PostMapping("/outerParams/save")
+    SpreadsheetOuterParamsDTO saveOuterParams(@Valid @RequestBody SpreadsheetOuterParamsDTO request);
 
 }

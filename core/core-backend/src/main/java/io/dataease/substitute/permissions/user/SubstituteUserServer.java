@@ -4,8 +4,8 @@ package io.dataease.substitute.permissions.user;
 import io.dataease.api.permissions.user.dto.LangSwitchRequest;
 import io.dataease.api.permissions.user.vo.CurIpVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
-import io.dataease.exception.DEException;
-import io.dataease.i18n.Lang;
+import io.dataease.i18n.LanguageUtils;
+import jakarta.validation.Valid;
 import io.dataease.utils.CacheUtils;
 import io.dataease.utils.IPUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -61,15 +61,8 @@ public class SubstituteUserServer {
     }
 
     @PostMapping("/switchLanguage")
-    public void switchLanguage(@RequestBody LangSwitchRequest request) {
-        String lang = request.getLang();
-        if (StringUtils.equalsIgnoreCase(Lang.zh_CN.getDesc(), lang)) {
-            lang = Lang.zh_CN.getDesc();
-        } else if (StringUtils.equalsAnyIgnoreCase(lang, "en", "tw")) {
-            lang = lang.toLowerCase();
-        } else {
-            DEException.throwException("无效language");
-        }
+    public void switchLanguage(@Valid @RequestBody LangSwitchRequest request) {
+        String lang = LanguageUtils.requireSupported(request == null ? null : request.getLang());
         CacheUtils.put(USER_COMMUNITY_LANGUAGE, "de", lang);
     }
 }

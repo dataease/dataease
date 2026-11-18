@@ -1,3 +1,6 @@
+import { hasErrorContract } from '@/config/axios/error'
+import { saveWithConflict } from '@/utils/canvasSaveConflict'
+import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
 import componentList, {
@@ -553,45 +556,53 @@ export function historyAdaptor(
 }
 
 // 重置仪表板、大屏中的其他组件
-export function refreshOtherComponent(dvId, busiFlag) {
+export function refreshOtherComponent(dvId, busiFlag, context?) {
+  const currentComponents = context?.componentData || componentData.value
   // 富文本 跑马灯组件进行刷新
-  const refreshComponentList = componentData.value.filter(
+  const refreshComponentList = currentComponents.filter(
     ele => ['ScrollText'].includes(ele.component) || ele.innerType === 'rich-text'
   )
   if (refreshComponentList && refreshComponentList.length > 0) {
     const refreshIdList = refreshComponentList.map(ele => ele.id)
-    findById(dvId, busiFlag, {}).then(rsp => {
-      const canvasInfo = rsp.data
-      const canvasDataResult = JSON.parse(canvasInfo.componentData)
-      const canvasDataResultMap = canvasDataResult.reduce((acc, comp) => {
-        acc[comp.id] = comp
-        return acc
-      }, {})
-      // 遍历数组并替换
-      for (let i = 0; i < componentData.value.length; i++) {
-        const component = componentData.value[i]
-        if (refreshIdList.includes(component.id) && canvasDataResultMap[component.id]) {
-          if (inMobile.value) {
-            componentData.value[i].propValue = canvasDataResultMap[component.id].propValue
-          } else {
-            const { top, left, height, width, fontSize } = componentData.value[i].style
-            const { linkageFilters, outerParamsFilters, webParamsFilters } = componentData.value[i]
-            canvasDataResultMap[component.id].style.top = top
-            canvasDataResultMap[component.id].style.left = left
-            canvasDataResultMap[component.id].style.height = height
-            canvasDataResultMap[component.id].style.width = width
-            canvasDataResultMap[component.id]['linkageFilters'] = linkageFilters
-            canvasDataResultMap[component.id]['outerParamsFilters'] = outerParamsFilters
-            canvasDataResultMap[component.id]['webParamsFilters'] = webParamsFilters
-            if (fontSize) {
-              canvasDataResultMap[component.id].style.fontSize = fontSize
+    return findById(dvId, busiFlag, {}, context?.queryRequest)
+      .then(rsp => {
+        if (context?.queryRequest && !context.queryRequest.isCurrent()) return
+        const canvasInfo = rsp.data
+        const canvasDataResult = JSON.parse(canvasInfo.componentData)
+        const canvasDataResultMap = canvasDataResult.reduce((acc, comp) => {
+          acc[comp.id] = comp
+          return acc
+        }, {})
+        // 遍历数组并替换
+        for (let i = 0; i < currentComponents.length; i++) {
+          const component = currentComponents[i]
+          if (refreshIdList.includes(component.id) && canvasDataResultMap[component.id]) {
+            if (inMobile.value) {
+              currentComponents[i].propValue = canvasDataResultMap[component.id].propValue
+            } else {
+              const { top, left, height, width, fontSize } = currentComponents[i].style
+              const { linkageFilters, outerParamsFilters, webParamsFilters } = currentComponents[i]
+              canvasDataResultMap[component.id].style.top = top
+              canvasDataResultMap[component.id].style.left = left
+              canvasDataResultMap[component.id].style.height = height
+              canvasDataResultMap[component.id].style.width = width
+              canvasDataResultMap[component.id]['linkageFilters'] = linkageFilters
+              canvasDataResultMap[component.id]['outerParamsFilters'] = outerParamsFilters
+              canvasDataResultMap[component.id]['webParamsFilters'] = webParamsFilters
+              if (fontSize) {
+                canvasDataResultMap[component.id].style.fontSize = fontSize
+              }
+              currentComponents[i] = canvasDataResultMap[component.id]
             }
-            componentData.value[i] = canvasDataResultMap[component.id]
           }
         }
-      }
-    })
+      })
+      .catch(error => {
+        if (!context?.queryRequest || context.queryRequest.isCurrent()) console.error(error)
+      })
+      .finally(() => context?.queryRequest?.finish())
   }
+  context?.queryRequest?.finish()
 }
 
 export function initCanvasDataPrepare(dvId, params, callBack) {
@@ -612,57 +623,55 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
     }
   }
   attachInfo['resourceTable'] = params.resourceTable ? params.resourceTable : 'core'
-  return method(dvId, busiFlagCustom, attachInfo).then(res => {
-    const canvasInfo = res.data
-    const watermarkInfo = {
-      ...canvasInfo.watermarkInfo,
-      settingContent: canvasInfo.watermarkInfo?.settingContent
-        ? JSON.parse(canvasInfo.watermarkInfo.settingContent)
-        : {}
-    }
+  return method(dvId, busiFlagCustom, attachInfo, params.queryRequest)
+    .then(res => {
+      if (params.queryRequest && !params.queryRequest.isCurrent()) return
+      const canvasInfo = res.data
+      const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
 
-    const dvInfo = {
-      id: canvasInfo.id,
-      name: canvasInfo.name,
-      pid: canvasInfo.pid,
-      status: canvasInfo.status,
-      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-      type: canvasInfo.type,
-      creatorName: canvasInfo.creatorName,
-      updateName: canvasInfo.updateName,
-      createTime: canvasInfo.createTime,
-      updateTime: canvasInfo.updateTime,
-      watermarkInfo: watermarkInfo,
-      weight: canvasInfo.weight,
-      ext: canvasInfo.ext,
-      contentId: canvasInfo.contentId,
-      mobileLayout: canvasInfo.mobileLayout || false
-    }
-    attachInfo['dvType'] = canvasInfo.type
-    const canvasVersion = canvasInfo.version
+      const dvInfo = {
+        id: canvasInfo.id,
+        name: canvasInfo.name,
+        pid: canvasInfo.pid,
+        status: canvasInfo.status,
+        selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
+        type: canvasInfo.type,
+        creatorName: canvasInfo.creatorName,
+        updateName: canvasInfo.updateName,
+        createTime: canvasInfo.createTime,
+        updateTime: canvasInfo.updateTime,
+        watermarkInfo: watermarkInfo,
+        weight: canvasInfo.weight,
+        ext: canvasInfo.ext,
+        contentId: canvasInfo.contentId,
+        mobileLayout: canvasInfo.mobileLayout || false
+      }
+      attachInfo['dvType'] = canvasInfo.type
+      const canvasVersion = canvasInfo.version
 
-    const canvasDataResult = JSON.parse(canvasInfo.componentData)
-    const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
-    const canvasViewInfoPreview = canvasInfo.canvasViewInfo
-    historyAdaptor(canvasStyleResult, canvasDataResult, canvasInfo, attachInfo, canvasVersion)
-    const curPreviewGap =
-      dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
-        ? canvasStyleResult['dashboard'].gapSize
-        : 0
-    const appearanceStore = useAppearanceStoreWithOut()
-    appearanceStore.setCurrentFont(canvasStyleResult.fontFamily)
-    document.documentElement.style.setProperty(
-      '--de-canvas_custom_font',
-      `${canvasStyleResult.fontFamily}`
-    )
-    return callBack({
-      canvasDataResult,
-      canvasStyleResult,
-      dvInfo,
-      canvasViewInfoPreview,
-      curPreviewGap
+      const canvasDataResult = JSON.parse(canvasInfo.componentData)
+      const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
+      const canvasViewInfoPreview = canvasInfo.canvasViewInfo
+      historyAdaptor(canvasStyleResult, canvasDataResult, canvasInfo, attachInfo, canvasVersion)
+      const curPreviewGap =
+        dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
+          ? canvasStyleResult['dashboard'].gapSize
+          : 0
+      const appearanceStore = useAppearanceStoreWithOut()
+      appearanceStore.setCurrentFont(canvasStyleResult.fontFamily)
+      document.documentElement.style.setProperty(
+        '--de-canvas_custom_font',
+        `${canvasStyleResult.fontFamily}`
+      )
+      return callBack({
+        canvasDataResult,
+        canvasStyleResult,
+        dvInfo,
+        canvasViewInfoPreview,
+        curPreviewGap
+      })
     })
-  })
+    .finally(() => params.queryRequest?.finish())
 }
 
 export async function initCanvasData(dvId, params, callBack) {
@@ -676,19 +685,36 @@ export async function initCanvasData(dvId, params, callBack) {
         dvMainStore.updateCurDvInfo(dvInfo)
         dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
         // 刷新联动信息
-        getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
-          dvMainStore.setNowPanelTrackInfo(rsp.data)
-        })
+        getPanelAllLinkageInfo(
+          dvInfo.id,
+          params.resourceTable,
+          params.queryRequest?.fork('linkage')
+        )
+          .then(rsp => {
+            if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            dvMainStore.setNowPanelTrackInfo(rsp.data)
+          })
+          .catch(() => undefined)
         // 刷新跳转信息
-        queryVisualizationJumpInfo(dvInfo.id, params.resourceTable).then(rsp => {
-          dvMainStore.setNowPanelJumpInfo(rsp.data)
-        })
+        queryVisualizationJumpInfo(
+          dvInfo.id,
+          params.resourceTable,
+          params.queryRequest?.fork('jump')
+        )
+          .then(rsp => {
+            if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            dvMainStore.setNowPanelJumpInfo(rsp.data)
+          })
+          .catch(() => undefined)
       }
       return callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )
   // Share pages await initialization to render a persistent error; other callers keep their timing.
   if (params.awaitLoad) return loading
+  void loading.catch(error => {
+    if (!params.queryRequest || params.queryRequest.isCurrent()) console.error(error)
+  })
 }
 
 export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
@@ -799,13 +825,19 @@ export function initCanvasDataMobile(dvId, params, callBack) {
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable).then(rsp => {
-        dvMainStore.setNowPanelTrackInfo(rsp.data)
-      })
+      getPanelAllLinkageInfo(dvInfo.id, params.resourceTable, params.queryRequest?.fork('linkage'))
+        .then(rsp => {
+          if (params.queryRequest && !params.queryRequest.isCurrent()) return
+          dvMainStore.setNowPanelTrackInfo(rsp.data)
+        })
+        .catch(() => undefined)
       // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
-        dvMainStore.setNowPanelJumpInfo(rsp.data)
-      })
+      queryVisualizationJumpInfo(dvInfo.id, 'snapshot', params.queryRequest?.fork('jump'))
+        .then(rsp => {
+          if (params.queryRequest && !params.queryRequest.isCurrent()) return
+          dvMainStore.setNowPanelJumpInfo(rsp.data)
+        })
+        .catch(() => undefined)
       return callBack({
         canvasDataResult: componentData,
         canvasStyleResult,
@@ -816,6 +848,9 @@ export function initCanvasDataMobile(dvId, params, callBack) {
   )
   // Share pages await initialization to render a persistent error; other callers keep their timing.
   if (params.awaitLoad) return loading
+  void loading.catch(error => {
+    if (!params.queryRequest || params.queryRequest.isCurrent()) console.error(error)
+  })
 }
 
 export function checkCanvasChangePre(callBack) {
@@ -829,6 +864,11 @@ export function checkCanvasChangePre(callBack) {
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
+      if (hasErrorContract(rsp)) {
+        // New servers check under a lock at save time. Old servers keep their original precheck.
+        callBack()
+        return
+      }
       if (rsp && rsp.data === 'Repeat') {
         ElMessageBox.confirm(tips, {
           confirmButtonType: 'danger',
@@ -852,6 +892,8 @@ export async function canvasSave(callBack) {
 }
 
 export async function canvasSaveWithParams(params, callBack) {
+  const savingDvInfo = curDvInfo.value
+  const sourceResourceId = savingDvInfo.id
   dvMainStore.removeGroupArea()
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
@@ -878,6 +920,8 @@ export async function canvasSaveWithParams(params, callBack) {
     ...curDvInfo.value,
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
+    checkHistory: !isDesktop(),
+    expectedContentId: curDvInfo.value.contentId ?? null,
     watermarkInfo: null
   }
 
@@ -906,7 +950,34 @@ export async function canvasSaveWithParams(params, callBack) {
       id: curDvInfo.value.id
     })
   }
-  return method(canvasInfo).then(async res => {
+  return saveWithConflict(canvasInfo, method, () =>
+    ElMessageBox.confirm(
+      (curDvInfo.value.type === 'dashboard'
+        ? t('work_branch.dashboard')
+        : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips'),
+      { confirmButtonType: 'danger', type: 'warning', autofocus: false, showClose: false }
+    )
+  ).then(async res => {
+    // 保存成功后先取消旧资源的待写任务，再更新 ID，避免草稿被延迟任务恢复。
+    // 新资源还没有 ID 时不能传 undefined，否则会触发清理当前资源的默认参数。
+    if (sourceResourceId !== undefined && sourceResourceId !== null && sourceResourceId !== '') {
+      await snapshotStore.clearCanvasDraft(sourceResourceId)
+    }
+    if (
+      method === saveCanvas &&
+      res.data !== undefined &&
+      res.data !== null &&
+      res.data !== '' &&
+      String(res.data) !== String(sourceResourceId)
+    ) {
+      await snapshotStore.clearCanvasDraft(res.data)
+    }
+    if (
+      curDvInfo.value !== savingDvInfo ||
+      String(curDvInfo.value.id) !== String(sourceResourceId)
+    ) {
+      return res
+    }
     if (method === updateCanvas) {
       // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
       const status = params?.status ? params?.status : res.data?.status
@@ -930,7 +1001,7 @@ export async function canvasSaveWithParams(params, callBack) {
       snapshotStore.resetSnapshot()
     }
     snapshotStore.resetStyleChangeTimes()
-    callBack(res)
+    await callBack(res)
   })
 }
 
@@ -1248,44 +1319,37 @@ export function findParentIdByChildIdRecursive(tree, targetChildId) {
 }
 
 export async function decompressionPre(params, callBack) {
-  let deTemplateData
-  await decompression(params)
-    .then(response => {
-      const deTemplateDataTemp = response.data
-      registerMaterialPreviews(deTemplateDataTemp.materialBundle)
-      const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
-      const appData = deTemplateDataTemp['appData']
-      const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
-      sourceComponentData.forEach(componentItem => {
-        // 2 为基础版本 此处需要增加仪表板矩阵密度
-        if (
-          (!deTemplateDataTemp.version || deTemplateDataTemp.version === 2) &&
-          deTemplateDataTemp.type === 'dashboard'
-        ) {
-          matrixAdaptor(componentItem)
-        }
-      })
-      //历史字段适配
-      sourceCanvasStyle.component['seniorStyleSetting'] =
-        sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
-      sourceCanvasStyle['scaleWidth'] = sourceCanvasStyle['scale']
-      sourceCanvasStyle['scaleHeight'] = sourceCanvasStyle['scaleHeight']
-      deTemplateData = {
-        canvasStyleData: sourceCanvasStyle,
-        componentData: sourceComponentData,
-        canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
-        appData: appData,
-        materialBundle: deTemplateDataTemp.materialBundle,
-        materialSourceTemplateId: deTemplateDataTemp.materialSourceTemplateId,
-        baseInfo: {
-          preName: deTemplateDataTemp.name,
-          dvType: deTemplateDataTemp.type
-        }
-      }
-    })
-    .catch(e => {
-      console.error(e)
-    })
+  const response = await decompression(params)
+  const deTemplateDataTemp = response.data
+  const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
+  const appData = deTemplateDataTemp['appData']
+  const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
+  sourceComponentData.forEach(componentItem => {
+    // 2 为基础版本 此处需要增加仪表板矩阵密度
+    if (
+      (!deTemplateDataTemp.version || deTemplateDataTemp.version === 2) &&
+      deTemplateDataTemp.type === 'dashboard'
+    ) {
+      matrixAdaptor(componentItem)
+    }
+  })
+  //历史字段适配
+  sourceCanvasStyle.component['seniorStyleSetting'] =
+    sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+  sourceCanvasStyle['scaleWidth'] = sourceCanvasStyle['scale']
+  sourceCanvasStyle['scaleHeight'] = sourceCanvasStyle['scaleHeight']
+  const deTemplateData = {
+    canvasStyleData: sourceCanvasStyle,
+    componentData: sourceComponentData,
+    canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
+    appData: appData,
+    materialBundle: deTemplateDataTemp.materialBundle,
+    materialSourceTemplateId: deTemplateDataTemp.materialSourceTemplateId,
+    baseInfo: {
+      preName: deTemplateDataTemp.name,
+      dvType: deTemplateDataTemp.type
+    }
+  }
   historyAdaptor(
     deTemplateData.canvasStyleData,
     deTemplateData.componentData,
@@ -1293,7 +1357,8 @@ export async function decompressionPre(params, callBack) {
     { resourceTable: 'snapshot', dvType: deTemplateData.baseInfo.dvType },
     null
   )
-  callBack(deTemplateData)
+  registerMaterialPreviews(deTemplateData.materialBundle)
+  return callBack(deTemplateData)
 }
 
 export function isDashboard() {

@@ -28,7 +28,12 @@ import { enumValueObj } from '@/api/dataset'
 import { getFieldByDQ, type Field } from '@/api/chart'
 import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig, attributes, splitConditionValues } from './options'
-import { getCustomTime } from './time-format'
+import {
+  evaluateDynamicDefault,
+  isCustomClockDefault,
+  validateDynamicDefault
+} from './dynamic-default-time'
+import { hasUnresolvedFixedTimeValue, normalizeFixedTimeConfig } from './fixed-time-value'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
   getThisStart,
@@ -57,7 +62,16 @@ import { iconChartMap } from '@/components/icon-group/chart-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
-import { cancelAllRequest } from '@/config/axios/service'
+import {
+  createDatasetSourcePatch,
+  createFieldSourcePatch,
+  createOptionSourcePatch,
+  createRangeParameterPatch,
+  createRangeSelectionPatch,
+  getSourceBindingError,
+  hasQueryBindings,
+  readRangeBinding
+} from './config-bindings'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -205,13 +219,9 @@ const { queryElement } = toRefs(props)
 const getDetype = (id, arr) => {
   return arr.flat().find(ele => ele.id === id)?.deType
 }
-const showConfiguration = computed(() => {
-  if (!curComponent.value) return false
-  if (!curComponent.value.checkedFields?.length) return false
-  return curComponent.value.checkedFields.some(ele => {
-    return !!curComponent.value.checkedFieldsMap[ele]
-  })
-})
+const showConfiguration = computed(() =>
+  curComponent.value ? hasQueryBindings(curComponent.value, 'some') : false
+)
 
 const showTypeError = computed(() => {
   if (!curComponent.value) return false
@@ -372,61 +382,27 @@ const isParametersDisable = item => {
 }
 
 const setParametersArrNum = (val, componentId) => {
-  if (curComponent.value.checkedFieldsMapArr?.[componentId]?.length) {
-    curComponent.value.checkedFieldsMapArr[componentId] = []
-    curComponent.value.checkedFieldsMapEnd[componentId] = ''
-    curComponent.value.checkedFieldsMapStart[componentId] = ''
-  }
-  const timeStartId = curComponent.value.checkedFieldsMapStartNum[componentId]
-  const timeEndId = curComponent.value.checkedFieldsMapEndNum[componentId]
-  if (timeStartId) {
-    curComponent.value.checkedFieldsMapEndNum[componentId] = val.find(ele => ele !== timeStartId)
-  }
-
-  if (timeEndId) {
-    curComponent.value.checkedFieldsMapStartNum[componentId] = val.find(ele => ele !== timeEndId)
-  }
-
-  if (!val.length) {
-    curComponent.value.checkedFieldsMap[componentId] = ''
-    curComponent.value.checkedFieldsMapEndNum[componentId] = ''
-    curComponent.value.checkedFieldsMapStartNum[componentId] = ''
-    curComponent.value.parametersArr[componentId] = []
-  }
-
-  if (curComponent.value.checkedFieldsMapArrNum[componentId].length) {
+  Object.assign(
+    curComponent.value,
+    createRangeSelectionPatch(curComponent.value, componentId, 'number', val)
+  )
+  if (readRangeBinding(curComponent.value, componentId, 'number').fieldIds.length) {
     setParametersNumType(componentId)
   }
   setTypeChange()
 }
 
 const setParametersArr = (val, componentId) => {
-  if (curComponent.value.checkedFieldsMapArrNum?.[componentId]?.length) {
-    curComponent.value.checkedFieldsMapArrNum[componentId] = []
-    curComponent.value.checkedFieldsMapEndNum[componentId] = ''
-    curComponent.value.checkedFieldsMapStartNum[componentId] = ''
-  }
-  const timeStartId = curComponent.value.checkedFieldsMapStart[componentId]
-  const timeEndId = curComponent.value.checkedFieldsMapEnd[componentId]
-  if (timeStartId) {
-    curComponent.value.checkedFieldsMapEnd[componentId] = val.find(ele => ele !== timeStartId)
-  }
-
-  if (timeEndId) {
-    curComponent.value.checkedFieldsMapStart[componentId] = val.find(ele => ele !== timeEndId)
-  }
-
+  Object.assign(
+    curComponent.value,
+    createRangeSelectionPatch(curComponent.value, componentId, 'time', val)
+  )
   if (!val.length) {
-    curComponent.value.checkedFieldsMap[componentId] = ''
-    curComponent.value.checkedFieldsMapEnd[componentId] = ''
-    curComponent.value.checkedFieldsMapStart[componentId] = ''
     curComponent.value.displayType = '1'
-    curComponent.value.parametersArr[componentId] = []
     curComponent.value.timeGranularity = ''
     curComponent.value.timeGranularityMultiple = ''
   }
-
-  if (curComponent.value.checkedFieldsMapArr[componentId].length) {
+  if (readRangeBinding(curComponent.value, componentId, 'time').fieldIds.length) {
     setParametersTimeType(componentId)
   }
   setTypeChange()
@@ -435,76 +411,32 @@ const setParametersArr = (val, componentId) => {
 let currentComponentId = ''
 let currentParameterId = ''
 const timeDialogShow = ref(false)
-const timeParameterType = ref(0)
+const timeParameterType = ref<0 | 1 | 2>(0)
 const timeName = ref('')
 
 const numDialogShow = ref(false)
-const numParameterType = ref(0)
+const numParameterType = ref<0 | 1 | 2>(0)
 const numName = ref('')
 
 const timeTypeChange = () => {
-  if (!curComponent.value.checkedFieldsMapArr[currentComponentId]) {
-    curComponent.value.checkedFieldsMapArr[currentComponentId] = []
-  }
-
-  if (timeParameterType.value === 0) {
-    curComponent.value.checkedFieldsMap[currentComponentId] = currentParameterId
-    curComponent.value.checkedFieldsMapArr[currentComponentId] = []
-    curComponent.value.checkedFieldsMapStart[currentComponentId] = ''
-    curComponent.value.checkedFieldsMapEnd[currentComponentId] = ''
-  }
-
-  if (timeParameterType.value === 1) {
-    curComponent.value.checkedFieldsMapStart[currentComponentId] = currentParameterId
-    curComponent.value.checkedFieldsMapArr[currentComponentId] = [
-      ...new Set([
-        ...curComponent.value.checkedFieldsMapArr[currentComponentId],
-        currentParameterId
-      ])
-    ]
-
-    if (curComponent.value.checkedFieldsMapArr[currentComponentId].length === 1) {
-      curComponent.value.checkedFieldsMapEnd[currentComponentId] = ''
-    } else {
-      curComponent.value.checkedFieldsMapEnd[currentComponentId] =
-        curComponent.value.checkedFieldsMapArr[currentComponentId].length === 2
-          ? curComponent.value.checkedFieldsMapArr[currentComponentId].find(
-              ele => ele !== currentParameterId
-            )
-          : currentParameterId
-    }
-  }
-
-  if (timeParameterType.value === 2) {
-    curComponent.value.checkedFieldsMapArr[currentComponentId] = [
-      ...new Set([
-        ...curComponent.value.checkedFieldsMapArr[currentComponentId],
-        currentParameterId
-      ])
-    ]
-
-    curComponent.value.checkedFieldsMapEnd[currentComponentId] = currentParameterId
-
-    if (curComponent.value.checkedFieldsMapArr[currentComponentId].length === 1) {
-      curComponent.value.checkedFieldsMapStart[currentComponentId] = ''
-    } else {
-      curComponent.value.checkedFieldsMapStart[currentComponentId] =
-        curComponent.value.checkedFieldsMapArr[currentComponentId].length === 2
-          ? curComponent.value.checkedFieldsMapArr[currentComponentId].find(
-              ele => ele !== currentParameterId
-            )
-          : currentParameterId
-    }
-  }
-
-  curComponent.value.displayType = curComponent.value.checkedFieldsMapArr[currentComponentId].length
+  Object.assign(
+    curComponent.value,
+    createRangeParameterPatch(
+      curComponent.value,
+      currentComponentId,
+      'time',
+      currentParameterId,
+      timeParameterType.value
+    )
+  )
+  curComponent.value.displayType = readRangeBinding(curComponent.value, currentComponentId, 'time')
+    .fieldIds.length
     ? '7'
     : '1'
   setParametersTimeType(currentComponentId)
   setTypeChange()
   timeDialogShow.value = false
 }
-
 const setTreeDefault = () => {
   if (curComponent.value.displayType !== '9' || relationshipChartIndex.value !== 0) return
   if (!!curComponent.value.checkedFields.length) {
@@ -525,88 +457,46 @@ const setTreeDefault = () => {
   }
 }
 
-const setTreeDefaultBatch = ele => {
-  if (!!ele.checkedFields.length) {
+const setTreeDefaultBatch = condition => {
+  if (!!condition.checkedFields.length) {
     let tableId = ''
-    fields.value.forEach(ele => {
+    fields.value.forEach(chart => {
       if (
-        ele.checkedFields.includes(ele.componentId) &&
-        ele.checkedFieldsMap[ele.componentId] &&
+        condition.checkedFields.includes(chart.componentId) &&
+        condition.checkedFieldsMap[chart.componentId] &&
         !tableId
       ) {
-        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
+        tableId = datasetFieldList.value.find(itx => itx.id === chart.componentId)?.tableId
       }
     })
-    if (tableId && !ele.treeDatasetId) {
-      ele.treeDatasetId = tableId
+    if (tableId && !condition.treeDatasetId) {
+      condition.treeDatasetId = tableId
     }
   }
 }
 
 const numTypeChange = () => {
-  if (!curComponent.value.checkedFieldsMapArrNum[currentComponentId]) {
-    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = []
-  }
-
-  if (numParameterType.value === 0) {
-    curComponent.value.checkedFieldsMap[currentComponentId] = currentParameterId
-    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = []
-    curComponent.value.checkedFieldsMapStartNum[currentComponentId] = ''
-    curComponent.value.checkedFieldsMapEndNum[currentComponentId] = ''
-  }
-
-  if (numParameterType.value === 1) {
-    curComponent.value.checkedFieldsMapStartNum[currentComponentId] = currentParameterId
-    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = [
-      ...new Set([
-        ...curComponent.value.checkedFieldsMapArrNum[currentComponentId],
-        currentParameterId
-      ])
-    ]
-
-    if (curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 1) {
-      curComponent.value.checkedFieldsMapEndNum[currentComponentId] = ''
-    } else {
-      curComponent.value.checkedFieldsMapEndNum[currentComponentId] =
-        curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 2
-          ? curComponent.value.checkedFieldsMapArrNum[currentComponentId].find(
-              ele => ele !== currentParameterId
-            )
-          : currentParameterId
-    }
-  }
-
-  if (numParameterType.value === 2) {
-    curComponent.value.checkedFieldsMapArrNum[currentComponentId] = [
-      ...new Set([
-        ...curComponent.value.checkedFieldsMapArrNum[currentComponentId],
-        currentParameterId
-      ])
-    ]
-
-    curComponent.value.checkedFieldsMapEndNum[currentComponentId] = currentParameterId
-
-    if (curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 1) {
-      curComponent.value.checkedFieldsMapStartNum[currentComponentId] = ''
-    } else {
-      curComponent.value.checkedFieldsMapStartNum[currentComponentId] =
-        curComponent.value.checkedFieldsMapArrNum[currentComponentId].length === 2
-          ? curComponent.value.checkedFieldsMapArrNum[currentComponentId].find(
-              ele => ele !== currentParameterId
-            )
-          : currentParameterId
-    }
-  }
-
-  curComponent.value.displayType = curComponent.value.checkedFieldsMapArrNum[currentComponentId]
-    .length
+  Object.assign(
+    curComponent.value,
+    createRangeParameterPatch(
+      curComponent.value,
+      currentComponentId,
+      'number',
+      currentParameterId,
+      numParameterType.value
+    )
+  )
+  curComponent.value.displayType = readRangeBinding(
+    curComponent.value,
+    currentComponentId,
+    'number'
+  ).fieldIds.length
     ? '22'
     : '2'
   setParametersNumType(currentComponentId)
   setTypeChange()
   numDialogShow.value = false
 }
-
 const setParametersNumType = componentId => {
   curComponent.value.parametersArr[componentId] = duplicateRemoval(
     unref(fields)
@@ -1013,10 +903,7 @@ const handleDatasetChange = () => {
     })
     return
   }
-  curComponent.value.field.id = ''
-  curComponent.value.field.chartId = undefined
-  curComponent.value.displayId = ''
-  curComponent.value.sortId = ''
+  Object.assign(curComponent.value, createDatasetSourcePatch(curComponent.value))
   getOptions(curComponent.value.dataset.id, curComponent.value)
 }
 
@@ -1029,19 +916,14 @@ const handleDatasetTreeChange = () => {
 }
 
 const handleFieldChange = () => {
-  curComponent.value.field.chartId = curComponent.value.dataset.fields.find(
+  const chartId = curComponent.value.dataset.fields.find(
     field => field.id === curComponent.value.field.id
   )?.chartId
-  if (!curComponent.value.defaultValueCheck) return
-  curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
-  if (!curComponent.value.displayId) {
-    curComponent.value.displayId = curComponent.value.field.id
-  }
+  Object.assign(curComponent.value, createFieldSourcePatch(curComponent.value, chartId))
 }
 
 const handleValueSourceChange = () => {
-  curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
-  multipleChange(curComponent.value.multiple)
+  Object.assign(curComponent.value, createOptionSourcePatch(curComponent.value))
   if (curComponent.value.optionValueSource === 1 && !curComponent.value.dataset.id) {
     let id = ''
     let comId = ''
@@ -1288,8 +1170,17 @@ const setParams = ele => {
   ele.conditionValueS = defaultConditionValueS
 }
 
-const validate = () => {
+const validate = (baseline: Date) => {
   return conditions.value.some(ele => {
+    if (
+      ['1', '7'].includes(ele.displayType) &&
+      ele.timeType !== 'dynamic' &&
+      ele.defaultValueCheck &&
+      hasUnresolvedFixedTimeValue(ele.defaultValue)
+    ) {
+      ElMessage.error(t('v_query.fixed_time_invalid'))
+      return true
+    }
     if (
       ele.displayType === '8' &&
       ele.conditionType === 3 &&
@@ -1299,8 +1190,15 @@ const validate = () => {
       ElMessage.error(t('v_query.custom_separator_required'))
       return true
     }
+    if (['1', '7'].includes(ele.displayType)) {
+      const error = validateDynamicDefault(ele, baseline)
+      if (error) {
+        ElMessage.error(t(error))
+        return true
+      }
+    }
     if (ele.auto) return false
-    if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
+    if (!hasQueryBindings(ele, 'every')) {
       ElMessage.error(t('v_query.be_linked_first'))
       return true
     }
@@ -1333,8 +1231,8 @@ const validate = () => {
         setTreeDefaultBatch(ele)
         if (!ele.treeDatasetId) {
           ElMessage.error(t('data_set.dataset_cannot_be'))
+          return true
         }
-        return true
       }
 
       if (!ele.treeFieldList?.length) {
@@ -1344,11 +1242,7 @@ const validate = () => {
       if (
         ele.treeCheckedList
           ?.slice(0, ele.treeFieldList.length)
-          .some(
-            item =>
-              !item.checkedFields?.length ||
-              item.checkedFields.some(itx => !item.checkedFieldsMap[itx])
-          )
+          .some(item => !hasQueryBindings(item, 'every'))
       ) {
         ElMessage.error(t('v_query.be_linked_first'))
         return true
@@ -1505,7 +1399,7 @@ const validate = () => {
     }
 
     if (ele.displayType === '2') {
-      if (ele.optionValueSource === 1 && !ele.field.id) {
+      if (getSourceBindingError(ele) === 'missing-field') {
         ElMessage.error(
           !ele.dataset?.id ? t('v_query.option_value_field') : t('v_query.the_data_set')
         )
@@ -1530,48 +1424,11 @@ const validate = () => {
           return true
         }
       }
-      const {
-        timeNum,
-        relativeToCurrentType,
-        around,
-        relativeToCurrentRange,
-        timeGranularityMultiple,
-        arbitraryTime,
-        timeGranularity,
-        timeNumRange,
-        relativeToCurrentTypeRange,
-        aroundRange,
-        arbitraryTimeRange,
-        timeType
-      } = ele
-
-      let startTime =
-        timeType === 'dynamic'
-          ? getCustomTime(
-              timeNum,
-              relativeToCurrentType,
-              timeGranularity,
-              around,
-              arbitraryTime,
-              timeGranularityMultiple,
-              'start-config'
-            )
-          : new Date(ele.defaultValue[0])
-      let endTime =
-        timeType === 'dynamic'
-          ? getCustomTime(
-              timeNumRange,
-              relativeToCurrentTypeRange,
-              timeGranularity,
-              aroundRange,
-              arbitraryTimeRange,
-              timeGranularityMultiple,
-              'end-config'
-            )
-          : new Date(ele.defaultValue[1])
-      if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
-        ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
-      }
+      const { timeGranularityMultiple } = ele
+      const [startTime, endTime] =
+        ele.timeType === 'dynamic'
+          ? (evaluateDynamicDefault(ele, baseline, 'config') as [Date, Date])
+          : ele.defaultValue.map(value => new Date(value))
       if (+startTime > +endTime) {
         ElMessage.error(t('v_query.the_start_time'))
         return true
@@ -1597,8 +1454,7 @@ const validate = () => {
 
     if (
       ele.displayType !== '9' &&
-      ele.optionValueSource === 2 &&
-      !ele.valueSource?.filter(ele => !!ele).length
+      getSourceBindingError(ele, 'nonempty') === 'missing-manual-values'
     ) {
       ElMessage.error(t('v_query.cannot_be_empty_input'))
       return true
@@ -1606,8 +1462,7 @@ const validate = () => {
 
     if (
       !['9', '22', '1', '7'].includes(ele.displayType) &&
-      ele.optionValueSource === 1 &&
-      !ele.field.id
+      getSourceBindingError(ele) === 'missing-field'
     ) {
       ElMessage.error(
         !ele.dataset?.id ? t('v_query.option_value_field') : t('v_query.the_data_set')
@@ -1629,7 +1484,8 @@ const handleBeforeClose = () => {
 }
 const emits = defineEmits(['queryData', 'reRenderAll'])
 const confirmClick = () => {
-  if (validate()) return
+  const baseline = new Date()
+  if (validate(baseline)) return
   defaultConfigurationRef.value?.mult()
   defaultConfigurationRef.value?.single()
   handleDialogClick()
@@ -1651,6 +1507,16 @@ const confirmClick = () => {
   queryElement.value.propValue = []
   nextTick(() => {
     conditions.value.forEach(itx => {
+      if (
+        ['1', '7'].includes(itx.displayType) &&
+        itx.defaultValueCheck &&
+        itx.timeType === 'dynamic' &&
+        isCustomClockDefault(itx)
+      ) {
+        const value = evaluateDynamicDefault(itx, baseline, 'config')
+        itx.defaultValue = value
+        itx.selectValue = value
+      }
       cascadeArr.forEach(ele => {
         ele.forEach(item => {
           if (item.datasetId.split('--')[1] === itx.id) {
@@ -1836,6 +1702,7 @@ const weightlessness = () => {
 }
 
 const parameterCompletion = ele => {
+  normalizeFixedTimeConfig(ele)
   Object.entries(attributes).forEach(([key, val]) => {
     ele[key] ?? (ele[key] = val)
   })
@@ -1877,7 +1744,6 @@ const handleFastClick = (item, idx = 0) => {
     }
     clearTimeout(fastClickId)
     fastClickLoading.value = true
-    cancelAllRequest()
     handleCondition(item, idx)
     fastClickId = setTimeout(() => {
       fastClickLoading.value = false
@@ -2010,16 +1876,21 @@ const isQueryField = (field: Field) =>
   String(field.id) !== '-1' && !field.agg && !field.params?.length
 
 const getOptions = (id, component) => {
+  const isTree = component.displayType === '9'
   const chartId = component.field.chartId
+  const isCurrentRequest = () =>
+    (component.displayType === '9') === isTree &&
+    (isTree ? component.treeDatasetId : component.dataset.id) === id &&
+    component.field.chartId === chartId
   if (chartId) {
     getFieldByDQ(id, chartId, {}).then(res => {
-      if (component.dataset.id !== id || component.field.chartId !== chartId) return
+      if (!isCurrentRequest()) return
       component.dataset.fields = [...res.dimensionList, ...res.quotaList].filter(isQueryField)
     })
     return
   }
   listFieldsWithPermissions(id).then(res => {
-    if (component.dataset.id !== id || component.field.chartId !== chartId) return
+    if (!isCurrentRequest()) return
     component.dataset.fields = res.data
   })
 }
@@ -2100,38 +1971,20 @@ const setSameField = () => {
 
 const showError = computed(() => {
   if (!curComponent.value) return false
-  const {
-    optionValueSource,
-    checkedFieldsMap,
-    checkedFields,
-    field,
-    valueSource,
-    displayType,
-    treeCheckedList,
-    treeFieldList
-  } = curComponent.value
-  const arr = checkedFields.filter(ele => !!checkedFieldsMap[ele])
-  if (!checkedFields.length || !arr.length) {
-    return true
-  }
+  const { displayType, treeCheckedList, treeFieldList } = curComponent.value
+  if (!hasQueryBindings(curComponent.value, 'some')) return true
 
   if (9 === +displayType) {
     for (const key in treeCheckedList) {
       if (key > treeFieldList.length) continue
-      const treeArr = treeCheckedList[key].checkedFields.filter(
-        ele => !!treeCheckedList[key].checkedFieldsMap[ele]
-      )
-      if (!treeCheckedList[key].checkedFields.length || !treeArr.length) {
-        return true
-      }
+      if (!hasQueryBindings(treeCheckedList[key], 'some')) return true
     }
   }
 
-  if ([1, 7, 8, 22, 9].includes(+displayType)) {
-    return false
-  }
-  return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
+  if ([1, 7, 8, 22, 9].includes(+displayType)) return false
+  return !!getSourceBindingError(curComponent.value)
 })
+
 const handleDialogClick = () => {
   defaultConfigurationRef.value?.handleDialogClick()
 }
@@ -2253,6 +2106,14 @@ const relativeToCurrentListRange = computed(() => {
           value: 'lastMonth'
         },
         {
+          label: t('dynamic_time.tquarter'),
+          value: 'thisQuarter'
+        },
+        {
+          label: t('dynamic_time.last_quarter'),
+          value: 'lastQuarter'
+        },
+        {
           label: t('v_query.last_3_months'),
           value: 'LastThreeMonths'
         },
@@ -2284,6 +2145,14 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('dynamic_time.yesterday'),
           value: 'yesterday'
+        },
+        {
+          label: t('dynamic_time.tquarter'),
+          value: 'thisQuarter'
+        },
+        {
+          label: t('dynamic_time.last_quarter'),
+          value: 'lastQuarter'
         },
         {
           label: t('v_query.last_3_days'),
@@ -3976,7 +3845,7 @@ defineExpose({
       position: relative;
       overflow: hidden;
 
-      .ed-scrollbar {
+      > .ed-scrollbar {
         padding: 16px;
       }
 
@@ -4269,7 +4138,7 @@ defineExpose({
               width: 100%;
               padding-left: 24px;
               .ed-date-editor {
-                width: 325px !important;
+                width: 322px !important;
               }
             }
             margin-left: auto;
@@ -4286,7 +4155,7 @@ defineExpose({
               &.select {
                 margin-top: 0;
                 .ed-select {
-                  width: 325px;
+                  width: 322px;
                 }
               }
             }
@@ -4379,6 +4248,18 @@ defineExpose({
   }
 }
 .dataset-tree {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  .ed-select-dropdown {
+    padding: 0;
+  }
+  .ed-select-dropdown__list {
+    padding: 4px 0;
+  }
+  .ed-tree-node__content {
+    height: 28px;
+  }
   .content {
     display: flex;
     align-items: center;
@@ -4388,7 +4269,6 @@ defineExpose({
       width: calc(100% - 45px);
     }
   }
-  max-width: 321px;
   .ed-select-dropdown__item.selected {
     font-weight: 400;
   }

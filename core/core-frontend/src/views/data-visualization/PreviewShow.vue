@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
@@ -34,6 +36,8 @@ const dvPreviewRef = ref(null)
 const slideShow = ref(true)
 const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
+const loadError = ref(false)
+let loadSequence = 0
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
 const appExportFormRef = ref(null)
@@ -78,10 +82,13 @@ function createNew() {
 
 const loadCanvasData = (dvId, weight?, ext?) => {
   const initMethod = props.showPosition === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
+  const sequence = ++loadSequence
+  const query = canvasQuery.start()
   dataInitState.value = false
+  loadError.value = false
   initMethod(
     dvId,
-    { busiFlag: 'dataV', resourceTable: 'core' },
+    { busiFlag: 'dataV', resourceTable: 'core', awaitLoad: true, queryRequest: query },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -89,6 +96,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      if (sequence !== loadSequence || !query.isCurrent()) return
       dvInfo['weight'] = weight
       dvInfo['ext'] = ext || 0
       state.canvasDataPreview = canvasDataResult
@@ -108,6 +116,12 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       })
     }
   )
+    .catch(() => {
+      if (sequence !== loadSequence || !query.isCurrent()) return
+      loadError.value = true
+      dataInitState.value = true
+    })
+    .finally(query.finish)
 }
 
 const download = type => {
@@ -269,7 +283,10 @@ onBeforeMount(() => {
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
-      <template v-if="dvInfo.name">
+      <div v-if="loadError" class="canvas-load-error" role="alert">
+        {{ t('visualization.canvas_load_failed') }}
+      </div>
+      <template v-else-if="dvInfo.name">
         <preview-head
           v-if="showPosition === 'preview'"
           @reload="reload"
@@ -339,6 +356,12 @@ onBeforeMount(() => {
 </template>
 
 <style lang="less">
+.canvas-load-error {
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+  color: var(--ed-text-color-secondary);
+}
 .dv-preview {
   width: 100%;
   height: 100%;
@@ -352,7 +375,7 @@ onBeforeMount(() => {
     width: 279px;
     padding: 0;
     overflow: visible;
-    border-right: 1px solid #d7d7d7;
+    border-right: 1px solid #1f232926;
 
     &.retract {
       display: none;
@@ -398,9 +421,9 @@ onBeforeMount(() => {
   z-index: 10;
   display: flex;
   align-items: center;
-  border-top: 1px solid #d7d7d7;
-  border-right: 1px solid #d7d7d7;
-  border-bottom: 1px solid #d7d7d7;
+  border-top: 1px solid #1f232926;
+  border-right: 1px solid #1f232926;
+  border-bottom: 1px solid #1f232926;
 }
 
 .multiplexing-content {

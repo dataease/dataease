@@ -13,7 +13,7 @@ export interface Menu {
 
 withDefaults(
   defineProps<{
-    menuList: Array<Menu[]>
+    menuList: Menu[]
     placement?: Placement
     iconName?: any
     iconSize?: string

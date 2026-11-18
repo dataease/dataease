@@ -155,8 +155,11 @@ export const findById = async (id: number | string): Promise<SpreadsheetVO> => {
   return res?.data
 }
 
-export const findEditById = async (id: number | string): Promise<SpreadsheetVO> => {
-  const res = await request.post({ url: '/spreadsheet/findEditById', data: { id } })
+export const findEditById = async (
+  id: number | string,
+  signal?: AbortSignal
+): Promise<SpreadsheetVO> => {
+  const res = await request.post({ url: '/spreadsheet/findEditById', data: { id }, signal })
   return res?.data
 }
 
@@ -185,7 +188,10 @@ export const rename = async (data: SpreadsheetEditor): Promise<void> => {
 /**
  * 删除资源
  */
-export const deleteResource = async (data: { id: number | string; rootOrgNode?: boolean }): Promise<void> => {
+export const deleteResource = async (data: {
+  id: number | string
+  rootOrgNode?: boolean
+}): Promise<void> => {
   return request.post({ url: `/spreadsheet/delete`, data })
 }
 

@@ -804,7 +804,7 @@ onUnmounted(() => {
 .appearance-table__content {
   width: 100%;
   min-width: 840px;
-  height: calc(100vh - 172px);
+  height: calc(100vh - 146px);
   overflow: hidden;
   margin-top: 8px;
 
@@ -1141,6 +1141,9 @@ onUnmounted(() => {
               :deep(label) {
                 height: 22px;
                 margin-right: 24px;
+              }
+              :deep(.ed-radio) {
+                font-weight: 400;
               }
             }
           }

@@ -21,6 +21,7 @@ import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 @Component
+@Profile("!desktop")
 public class ShareTicketManage {
 
     @Resource

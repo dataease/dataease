@@ -33,6 +33,19 @@ const showSlogan = ref(true)
 const loginLogoUrl = ref(null)
 const msg = ref(null)
 const loginImageUrl = ref(null)
+// 网络抖动（如 HTTP/2 流中断）会让宣传图永久停在加载失败，重试两次自愈
+const loginImageRetry = ref(0)
+const loginImageSrc = computed(() => {
+  const src = loginImageUrl.value || DeImage
+  return loginImageRetry.value
+    ? `${src}${src.includes('?') ? '&' : '?'}retry=${loginImageRetry.value}`
+    : src
+})
+const retryLoginImage = () => {
+  if (loginImageRetry.value < 2) {
+    loginImageRetry.value++
+  }
+}
 const slogan = ref(null)
 const footContent = ref(null)
 const loginErrorMsg = ref('')
@@ -274,7 +287,8 @@ onMounted(async () => {
           v-if="axiosFinished"
           class="login-image"
           fit="cover"
-          :src="loginImageUrl || DeImage"
+          :src="loginImageSrc"
+          @error="retryLoginImage"
         />
       </div>
       <div class="login-form-content" v-loading="loading">

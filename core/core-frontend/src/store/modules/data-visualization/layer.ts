@@ -6,6 +6,19 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { getComponentById, getCurInfo } from '@/store/modules/data-visualization/common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
+const isValidCurInfo = curInfo => {
+  if (!curInfo?.targetComponent) {
+    return false
+  }
+  const { index, componentData, targetComponent } = curInfo
+  return (
+    Array.isArray(componentData) &&
+    index >= 0 &&
+    index < componentData.length &&
+    componentData[index] === targetComponent
+  )
+}
+
 const dvMainStore = dvMainStoreWithOut()
 const { curComponentIndex, curComponent } = storeToRefs(dvMainStore)
 
@@ -13,51 +26,55 @@ export const layerStore = defineStore('layer', {
   actions: {
     upComponent(componentId?) {
       const curInfo = getCurInfo(componentId)
-      if (curInfo) {
-        const { index, componentData } = curInfo
-        // 上移图层 index，表示元素在数组中越往后
-        if (index < componentData.length - 1) {
-          swap(componentData, index, index + 1)
-          curComponentIndex.value = index + 1
-        }
+      if (!isValidCurInfo(curInfo)) {
+        return
+      }
+      const { index, componentData } = curInfo
+      // 上移图层 index，表示元素在数组中越往后
+      if (index < componentData.length - 1) {
+        swap(componentData, index, index + 1)
+        curComponentIndex.value = index + 1
       }
     },
 
     downComponent(componentId?) {
       const curInfo = getCurInfo(componentId)
-      if (curInfo) {
-        const { index, componentData } = curInfo
-        // 下移图层 index，表示元素在数组中越往前
-        if (index > 0) {
-          swap(componentData, index, index - 1)
-          curComponentIndex.value = index - 1
-        }
+      if (!isValidCurInfo(curInfo)) {
+        return
+      }
+      const { index, componentData } = curInfo
+      // 下移图层 index，表示元素在数组中越往前
+      if (index > 0) {
+        swap(componentData, index, index - 1)
+        curComponentIndex.value = index - 1
       }
     },
 
     topComponent(componentId?) {
       // 置顶
       const curInfo = getCurInfo(componentId)
-      if (curInfo) {
-        const { index, componentData, targetComponent } = curInfo
-        if (index < componentData.length - 1) {
-          componentData.splice(index, 1)
-          componentData.push(targetComponent)
-          curComponentIndex.value = componentData.length - 1
-        }
+      if (!isValidCurInfo(curInfo)) {
+        return
+      }
+      const { index, componentData, targetComponent } = curInfo
+      if (index < componentData.length - 1) {
+        componentData.splice(index, 1)
+        componentData.push(targetComponent)
+        curComponentIndex.value = componentData.length - 1
       }
     },
 
     bottomComponent(componentId?) {
       // 置底
       const curInfo = getCurInfo(componentId)
-      if (curInfo) {
-        const { index, componentData, targetComponent } = curInfo
-        if (index > 0) {
-          componentData.splice(index, 1)
-          componentData.unshift(targetComponent)
-          curComponentIndex.value = 0
-        }
+      if (!isValidCurInfo(curInfo)) {
+        return
+      }
+      const { index, componentData, targetComponent } = curInfo
+      if (index > 0) {
+        componentData.splice(index, 1)
+        componentData.unshift(targetComponent)
+        curComponentIndex.value = 0
       }
     },
 

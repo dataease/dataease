@@ -35,6 +35,13 @@ public class TaskInfoVO {
     private boolean editing;
     private boolean editable;
     private boolean editableCheckFailed;
+    /**
+     * 连接可用性和目标表检查分别展示，避免把连接改名或目标表缺失误认为绑定了其他数据库
+     */
+    private boolean sourceDatasourceMissing;
+    private boolean targetDatasourceMissing;
+    private String targetTableCheckStatus;
+    private String targetTableCheckError;
 
     private String userName;
     private String lastExecuteStatus;
@@ -52,5 +59,10 @@ public class TaskInfoVO {
     private Long executorEndTime;
     private String executorMsg;
     private String logStatus;
+    /**
+     * 当前维护摘要独立于原任务启停和运行状态，供列表展示处理入口，不携带恢复快照
+     */
+    private String maintenanceState;
+    private boolean maintenanceNeedsAttention;
 
 }

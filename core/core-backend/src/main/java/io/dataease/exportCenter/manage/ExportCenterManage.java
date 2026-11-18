@@ -8,9 +8,7 @@ import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.export.BaseExportApi;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
-import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dao.auto.entity.CoreExportTask;
@@ -31,8 +29,6 @@ import io.dataease.result.PageResult;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
-import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
-import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 
 import io.dataease.visualization.server.DataVisualizationServer;
 import jakarta.annotation.Resource;
@@ -41,7 +37,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,8 +48,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import io.dataease.visualization.dto.WatermarkContentDTO;
-import io.dataease.api.permissions.user.vo.UserFormVO;
 
 import java.net.InetAddress;
 import java.nio.file.FileVisitResult;
@@ -82,8 +75,6 @@ public class ExportCenterManage implements BaseExportApi {
     private SysParameterManage sysParameterManage;
     @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
-    @Resource
-    private VisualizationWatermarkRepository visualizationWatermarkRepository;
     @Autowired
     private CoreExportDownloadTaskRepository coreExportDownloadTaskRepository;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
@@ -327,16 +318,7 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void addWatermarkTools(Workbook wb) {
-        VisualizationWatermark watermark = visualizationWatermarkRepository.findById("system_default").orElse(null);
-        WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
-        if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
-            // 在主逻辑中添加水印
-            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
-            for (Sheet sheet : wb) {
-                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
-            }
-        }
+        exportCenterDownLoadManage.addWatermarkTools(wb);
     }
 
     @DeLog(id = "#p0", ot = LogOT.DOWNLOAD, st = LogST.DATA)

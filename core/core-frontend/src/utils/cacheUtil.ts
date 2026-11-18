@@ -1,7 +1,9 @@
+import { clearConfigRequestCaches } from '@/utils/configRequestCache'
 import { clearResourceImages } from '@/utils/resourceImageCache'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 export const clearCache = () => {
+  clearConfigRequestCaches()
   const keys = [
     'DataEaseKey',
     'TreeSort-backend',

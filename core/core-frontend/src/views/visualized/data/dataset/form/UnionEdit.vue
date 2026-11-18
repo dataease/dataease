@@ -110,7 +110,7 @@ defineExpose({
 </script>
 
 <template>
-  <div style="height: 100%; overflow-y: auto">
+  <div>
     <div class="field-style">
       <div class="fields" v-loading="loading">
         <p :title="parent.tableName">

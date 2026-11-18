@@ -16,7 +16,7 @@ import {
   Ref
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
-import { cloneDeep, debounce } from 'lodash-es'
+import { cloneDeep, debounce, isEqual } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import Flat from './Flat.vue'
 import eventBus from '@/utils/eventBus'
@@ -25,9 +25,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
 import { mixColor } from '@/utils/color'
-import { isCascadeParentCleared } from './cascade-utils'
+import { isCascadeParentCleared, isEmptyCascadeValue, cascadeResetState } from './cascade-utils'
 import { ElMessage } from 'element-plus-secondary'
 import { filterValueEquals } from '@/utils/componentUtils'
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { createCandidateLoader } from './candidate-loader'
 
 interface SelectConfig {
   selectValue: any
@@ -124,7 +126,14 @@ const VanPopupSelect = defineAsyncComponent(() => import('./VanPopupSelect.vue')
 const cascade = computed(() => {
   return cascadeList() || []
 })
-let time
+let time: ReturnType<typeof setTimeout>
+const optionsQuery = useLatestQuery('options')
+const candidateLoader = createCandidateLoader(optionsQuery, loading)
+let disposed = false
+const invalidateOptionsRequest = () => {
+  candidateLoader.invalidate()
+  clearTimeout(time)
+}
 const disabledFirstItem = computed(() => {
   const { defaultValueFirstItem, optionValueSource } = props.config
   return defaultValueFirstItem && optionValueSource === 1
@@ -280,45 +289,55 @@ const displayTypeChange = () => {
   config.value.defaultValueFirstItem = false
 }
 
-const handleFieldIdDefaultChange = (val: string[]) => {
-  loading.value = true
-  getEnumValue({
-    fieldIds: val,
-    resultMode: config.value.resultMode || 0
-  })
-    .then(res => {
-      options.value = (res || [])
-        .filter(ele => {
-          return (
-            ele !== null &&
-            ((config.value.optionFilter &&
-              config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
-              !config.value.optionFilter ||
-              config.value.optionFilter.length === 0)
-          )
+const handleFieldIdDefaultChange = (val: string[], delay = 0) => {
+  clearTimeout(time)
+  return candidateLoader.run(
+    { kind: 'fields', val, resultMode: config.value.resultMode || 0, id: config.value.id },
+    async ({ signal, isCurrent }) => {
+      await getEnumValue(
+        {
+          fieldIds: val,
+          resultMode: config.value.resultMode || 0
+        },
+        signal
+      )
+        .then(res => {
+          if (!isCurrent()) return
+          options.value = (res || [])
+            .filter(ele => {
+              return (
+                ele !== null &&
+                ((config.value.optionFilter &&
+                  config.value.optionFilter.length > 0 &&
+                  config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
+                  !config.value.optionFilter ||
+                  config.value.optionFilter.length === 0)
+              )
+            })
+            .map(ele => {
+              return {
+                label: `${ele}`,
+                value: `${ele}`
+              }
+            })
         })
-        .map(ele => {
-          return {
-            label: `${ele}`,
-            value: `${ele}`
+        .then(() => {
+          if (!isCurrent()) return
+          if (config.value.defaultValueCheck) {
+            selectValue.value = Array.isArray(config.value.defaultValue)
+              ? [...config.value.defaultValue]
+              : config.value.defaultValue
+          } else {
+            selectValue.value = Array.isArray(selectValue.value)
+              ? [...selectValue.value]
+              : selectValue.value
           }
+          requiredComp()
+          if (options.value) setEmptyData()
         })
-    })
-    .finally(() => {
-      loading.value = false
-      if (config.value.defaultValueCheck) {
-        selectValue.value = Array.isArray(config.value.defaultValue)
-          ? [...config.value.defaultValue]
-          : config.value.defaultValue
-      } else {
-        selectValue.value = Array.isArray(selectValue.value)
-          ? [...selectValue.value]
-          : selectValue.value
-      }
-      requiredComp()
-      if (options.value) setEmptyData()
-    })
+    },
+    delay
+  )
 }
 
 const customSort = () => {
@@ -340,134 +359,150 @@ const customSort = () => {
   }
 }
 
-const handleFieldIdChange = (val: EnumValue) => {
+const handleFieldIdChange = (val: EnumValue, delay = 0) => {
+  clearTimeout(time)
   let change = false
-  loading.value = true
-  enumValueObj(val)
-    .then(res => {
-      let oldArr = []
-      if (selectValue.value?.length && config.value.multiple) {
-        oldArr = [...selectValue.value]
-      }
-      enumValueArr = [...(res || [])] || []
-      options.value = [
-        ...new Set(
-          (res || []).map(ele => {
-            return `${ele[val.displayId || val.queryId]}`
-          })
-        )
-      ]
-        .filter(ele => {
-          return (
-            (config.value.optionFilter &&
-              config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
-            !config.value.optionFilter ||
-            config.value.optionFilter.length === 0
-          )
-        })
-        .map(ele => {
-          return {
-            label: `${ele}`,
-            value: `${ele}`,
-            checked: oldArr.includes(ele)
+  return candidateLoader.run(
+    { kind: 'field', val, id: config.value.id },
+    async ({ signal, isCurrent }) => {
+      await enumValueObj(val, signal)
+        .then(res => {
+          if (!isCurrent()) return
+          let oldArr = []
+          if (selectValue.value?.length && config.value.multiple) {
+            oldArr = [...selectValue.value]
           }
-        })
-      customSort()
-      if (!res?.length) {
-        options.value = []
-        selectValue.value = config.value.multiple ? [] : undefined
-        config.value.defaultValue = selectValue.value
-      }
+          enumValueArr = [...(res || [])] || []
+          options.value = [
+            ...new Set(
+              (res || []).map(ele => {
+                return `${ele[val.displayId || val.queryId]}`
+              })
+            )
+          ]
+            .filter(ele => {
+              return (
+                (config.value.optionFilter &&
+                  config.value.optionFilter.length > 0 &&
+                  config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
+                !config.value.optionFilter ||
+                config.value.optionFilter.length === 0
+              )
+            })
+            .map(ele => {
+              return {
+                label: `${ele}`,
+                value: `${ele}`,
+                checked: oldArr.includes(ele)
+              }
+            })
+          customSort()
+          if (!res?.length) {
+            options.value = []
+            change =
+              !isEmptyCascadeValue(selectValue.value) ||
+              !isEmptyCascadeValue(config.value.selectValue) ||
+              !!config.value.mapValue?.length
+            selectValue.value = config.value.multiple ? [] : undefined
+            config.value.defaultValue = selectValue.value
+          }
 
-      const valArr = options.value.map(ele => ele.value)
+          const valArr = options.value.map(ele => ele.value)
 
-      if (
-        config.value.multiple &&
-        Array.isArray(selectValue.value) &&
-        selectValue.value.length &&
-        !selectValue.value.every(ele => valArr.includes(ele))
-      ) {
-        const delArr = selectValue.value.filter(ele => !valArr.includes(ele))
-        selectValue.value = selectValue.value.filter(ele => valArr.includes(ele))
-        options.value = options.value.filter(ele => !delArr.includes(ele.value))
-        config.value.defaultValue = selectValue.value
-        change = true
-      }
+          if (
+            config.value.multiple &&
+            Array.isArray(selectValue.value) &&
+            selectValue.value.length &&
+            !selectValue.value.every(ele => valArr.includes(ele))
+          ) {
+            const delArr = selectValue.value.filter(ele => !valArr.includes(ele))
+            selectValue.value = selectValue.value.filter(ele => valArr.includes(ele))
+            options.value = options.value.filter(ele => !delArr.includes(ele.value))
+            config.value.defaultValue = selectValue.value
+            change = true
+          }
 
-      if (!config.value.multiple && selectValue.value && !valArr.includes(selectValue.value)) {
-        options.value = options.value.filter(ele => selectValue.value !== ele.value)
-        selectValue.value = undefined
-        config.value.defaultValue = selectValue.value
-        change = true
-      }
+          if (!config.value.multiple && selectValue.value && !valArr.includes(selectValue.value)) {
+            options.value = options.value.filter(ele => selectValue.value !== ele.value)
+            selectValue.value = undefined
+            config.value.defaultValue = selectValue.value
+            change = true
+          }
 
-      if (change) {
-        config.value.mapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
-        config.value.defaultMapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
-        setCascadeValueBack(config.value.mapValue)
-      }
-    })
-    .finally(() => {
-      let changeAuth = change
-      change = false
-      loading.value = false
-      if (disabledFirstItem.value && config.value.defaultValueCheck) {
-        time = setTimeout(() => {
-          clearTimeout(time)
-          setDefaultValueFirstItem()
-        }, 300)
-        return
-      }
-
-      if (config.value.defaultValueCheck && !isFromRemote.value) {
-        selectValue.value = Array.isArray(config.value.defaultValue)
-          ? [...config.value.defaultValue]
-          : config.value.defaultValue
-        let shouldReSearch = false
-        if (unMountSelect?.value.includes(config.value.id)) {
           const mapValue = setDefaultMapValue(
             Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
           )
-          if (mapValue?.length !== config.value.defaultMapValue?.length) {
-            shouldReSearch = true
-          } else if (!mapValue.every(value => config.value.defaultMapValue.includes(value))) {
-            shouldReSearch = true
+          if (!props.isConfig && !isEqual(config.value.mapValue || [], mapValue)) {
+            change = true
           }
-          releaseSelect(config.value.id)
-        }
-        config.value.mapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
+          if (change) {
+            config.value.defaultMapValue = cloneDeep(mapValue)
+            // 与用户改选走同一路径，同步查询值、下级级联及查询按钮规则。
+            handleValueChange()
+            // 运行态已安排查询，避免后续默认值分支重复查询或绕过查询按钮。
+            if (!props.isConfig) change = false
+          }
+        })
+        .then(() => {
+          if (!isCurrent()) return
+          let changeAuth = change
+          change = false
+          loading.value = false
+          if (disabledFirstItem.value && config.value.defaultValueCheck) {
+            time = setTimeout(() => {
+              clearTimeout(time)
+              if (isCurrent()) setDefaultValueFirstItem()
+            }, 300)
+            return
+          }
 
-        if (shouldReSearch || changeAuth) {
-          queryDataForId(config.value.id)
-        }
-      } else {
-        selectValue.value = Array.isArray(selectValue.value)
-          ? [...selectValue.value]
-          : selectValue.value
-      }
-      if (config.value?.required && config.value?.optionFilter?.length > 0) {
-        const isValid = selectValue.value?.some(value =>
-          options.value?.some(option => option.value === value)
-        )
-        if (!isValid) {
-          config.value.selectValue = null
-          ElMessage({
-            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
-            type: 'error',
-            duration: 3000
-          })
-        }
-      }
-      setCascadeValueBack(config.value.mapValue)
-      isFromRemote.value = false
-    })
+          if (config.value.defaultValueCheck && !isFromRemote.value) {
+            selectValue.value = Array.isArray(config.value.defaultValue)
+              ? [...config.value.defaultValue]
+              : config.value.defaultValue
+            let shouldReSearch = false
+            if (unMountSelect?.value.includes(config.value.id)) {
+              const mapValue = setDefaultMapValue(
+                Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+              )
+              if (mapValue?.length !== config.value.defaultMapValue?.length) {
+                shouldReSearch = true
+              } else if (!mapValue.every(value => config.value.defaultMapValue.includes(value))) {
+                shouldReSearch = true
+              }
+              releaseSelect(config.value.id)
+            }
+            config.value.mapValue = setDefaultMapValue(
+              Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+            )
+
+            if (shouldReSearch || changeAuth) {
+              queryDataForId(config.value.id)
+            }
+          } else {
+            selectValue.value = Array.isArray(selectValue.value)
+              ? [...selectValue.value]
+              : selectValue.value
+          }
+          if (config.value?.required && config.value?.optionFilter?.length > 0) {
+            const isValid = selectValue.value?.some(value =>
+              options.value?.some(option => option.value === value)
+            )
+            if (!isValid) {
+              config.value.selectValue = null
+              ElMessage({
+                message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+                type: 'error',
+                duration: 3000
+              })
+            }
+          }
+          setCascadeValueBack(config.value.mapValue)
+          isFromRemote.value = false
+        })
+    },
+    delay
+  )
 }
 
 const visible = ref(false)
@@ -675,7 +710,7 @@ const hasIntersection = (options, selectValue) => {
 }
 
 const setOptions = (num: number) => {
-  if (num !== config.value.optionValueSource) return
+  if (disposed || num !== config.value.optionValueSource) return
   const {
     optionValueSource,
     checkedFieldsMap,
@@ -691,28 +726,35 @@ const setOptions = (num: number) => {
       const arr = Object.values(checkedFieldsMap).filter(ele => !!ele) as string[]
       if (!!checkedFields.length && !!arr.length) {
         handleFieldIdDefaultChange(
-          checkedFields.map(ele => checkedFieldsMap[ele]).filter(ele => !!ele)
+          checkedFields.map(ele => checkedFieldsMap[ele]).filter(ele => !!ele),
+          300
         )
       } else {
+        invalidateOptionsRequest()
         options.value = []
       }
       break
     case 1:
       if (field.id) {
-        handleFieldIdChange({
-          queryId: field.id,
-          displayId: displayId || field.id,
-          sort: sort === 'customSort' ? 'asc' : sort,
-          sortId: sort === 'customSort' ? '' : sortId,
-          resultMode: config.value.resultMode || 0,
-          searchText: searchText.value,
-          filter: getCascadeFieldId()
-        })
+        handleFieldIdChange(
+          {
+            queryId: field.id,
+            displayId: displayId || field.id,
+            sort: sort === 'customSort' ? 'asc' : sort,
+            sortId: sort === 'customSort' ? '' : sortId,
+            resultMode: config.value.resultMode || 0,
+            searchText: searchText.value,
+            filter: getCascadeFieldId()
+          },
+          300
+        )
       } else {
+        invalidateOptionsRequest()
         options.value = []
       }
       break
     case 2:
+      invalidateOptionsRequest()
       options.value = cloneDeep(
         (valueSource || [])
           .filter(ele => {
@@ -743,7 +785,17 @@ const setOptions = (num: number) => {
   }
 }
 
-const debounceOptions = debounce(setOptions, 300)
+const pendingOptions = debounce(setOptions, 300)
+const debounceOptions = (num: number) => {
+  if (disposed) return
+  pendingOptions.cancel()
+  if (num === 2) {
+    invalidateOptionsRequest()
+    pendingOptions(num)
+  } else {
+    setOptions(num)
+  }
+}
 
 const init = () => {
   const { defaultValueCheck, multiple: plus, defaultValue, optionValueSource } = config.value
@@ -783,9 +835,22 @@ const single = ref()
 
 const getOptionFromCascade = () => {
   if (config.value.optionValueSource !== 1 || ![0, 2, 5].includes(+config.value.displayType)) return
-  if (isCascadeParentCleared(cascade.value, config.value.id, props.isConfig)) {
+  // 上级级联值一旦变化（含清空），本级已选值即失效：同步清空并向下级传播，
+  // 避免上级触发的即时查询仍携带旧的本级值；批量应用默认值的重置过程中保留原值。
+  const parentCleared = isCascadeParentCleared(cascade.value, config.value.id, props.isConfig)
+  if (!cascadeResetState.value || parentCleared) {
+    const hadValue =
+      !isEmptyCascadeValue(selectValue.value) ||
+      !isEmptyCascadeValue(config.value.selectValue) ||
+      !!config.value.mapValue?.length
     clearCascadeSelectValue()
     emitCascade()
+    // 本级可能关联不同于上级的图表，清空条件后也需按查询按钮规则通知刷新。
+    if (!props.isConfig && hadValue) {
+      nextTick(() => {
+        if (!disposed) isConfirmSearch(config.value.id)
+      })
+    }
   }
   isFromFromCascade = true
   isFromRemote.value = true
@@ -845,7 +910,7 @@ const tagColor = computed(() => {
     ? customStyle.background
     : colorStringToHex(customStyle.background)
 
-  return mixColor('ffffff', hexColor.substr(1), 0.2)
+  return mixColor('ffffff', hexColor.substr(1), 20)
 })
 
 const tagWidth = computed(() => {
@@ -883,6 +948,10 @@ onMounted(() => {
   eventBus.on('componentClick', componentClick)
 })
 onBeforeUnmount(() => {
+  disposed = true
+  pendingOptions.cancel()
+  invalidateOptionsRequest()
+  candidateLoader.dispose()
   eventBus.off('componentClick', componentClick)
 })
 

@@ -6,6 +6,7 @@ import en from 'element-plus-secondary/es/locale/lang/en'
 import tw from 'element-plus-secondary/es/locale/lang/zh-tw'
 import { getLocale } from '@/utils/utils'
 import request from '@/config/axios'
+import { setSupportedLocales } from '@/utils/locale'
 const elLocaleMap = {
   'zh-CN': zhCn,
   en: en,
@@ -54,26 +55,12 @@ export const useLocaleStore = defineStore('locales', {
         const res = await request.get({ url: '/sysParameter/i18nOptions' })
         this.customLoaded = true
         const customMap = res.data
-        let match = false
         for (const key in customMap) {
-          const item = {
-            lang: key,
-            name: customMap[key],
-            custom: true
-          }
-          this.localeMap.push(item)
-          if (this.currentLocale?.lang === key) {
-            match = true
+          if (!this.localeMap.some(item => item.lang === key)) {
+            this.localeMap.push({ lang: key, name: customMap[key], custom: true })
           }
         }
-        if (this.currentLocale?.lang && !match) {
-          const matchItem = this.localeMap.find(item =>
-            item.lang.startsWith(this.currentLocale.lang)
-          )
-          if (matchItem) {
-            this.currentLocale['lang'] = matchItem.lang
-          }
-        }
+        setSupportedLocales(this.localeMap.map(item => item.lang))
         return this.localeMap
       } catch (error) {
         this.customLoaded = true
@@ -84,11 +71,11 @@ export const useLocaleStore = defineStore('locales', {
   actions: {
     setCurrentLocale(localeMap: LocaleDropdownType) {
       this.currentLocale.lang = localeMap?.lang
-      this.currentLocale.elLocale = elLocaleMap[localeMap?.lang]
+      this.currentLocale.elLocale = elLocaleMap[localeMap?.lang] || zhCn
     },
     setLang(language: string) {
       this.currentLocale.lang = language
-      this.currentLocale.elLocale = elLocaleMap[language]
+      this.currentLocale.elLocale = elLocaleMap[language] || zhCn
     }
   }
 })

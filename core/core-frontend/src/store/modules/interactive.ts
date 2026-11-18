@@ -1,3 +1,4 @@
+import type { QueryRequest } from '@/config/axios/queryScope'
 import { defineStore } from 'pinia'
 import { store } from '@/store'
 import { queryTreeApi, queryBusiTreeApi } from '@/api/visualization/dataVisualization'
@@ -47,7 +48,13 @@ export const interactiveStore = defineStore('interactive', {
     }
   },
   actions: {
-    async setInteractive(param: BusiTreeRequest, resParam?: object) {
+    async setInteractive(
+      param: BusiTreeRequest,
+      resParam?: object,
+      isCurrent: () => boolean = () => true,
+      queryRequest?: QueryRequest
+    ) {
+      if (!isCurrent()) return
       const flag = busiFlagMap.findIndex(item => item === param.busiFlag)
       if (!hasMenuAuth(flag) && !window.DataEaseBi && !appStore.getIsIframe) {
         const tempData: InnerInteractive = {
@@ -64,25 +71,30 @@ export const interactiveStore = defineStore('interactive', {
         if (flag === 1) {
           wsCache.set('screen-weight', {})
         }
-        return []
+        return queryRequest ? tempData : []
       }
       let res = resParam
       if (!resParam) {
         const method = apiMap[flag]
-        res = await method(param)
+        res =
+          queryRequest && flag < 2 ? await queryTreeApi(param, queryRequest) : await method(param)
       }
-      this.data[flag] = convertInteractive(res)
+      // 请求返回时会话可能已经变化，树节点和权限权重必须一起拒绝过期写入。
+      if (!isCurrent()) return
+      const result = convertInteractive(res)
+      this.data[flag] = result
       if (flag === 0) {
         wsCache.set('panel-weight', convertLocalStorage(this.data[flag]))
       }
       if (flag === 1) {
         wsCache.set('screen-weight', convertLocalStorage(this.data[flag]))
       }
-      return res
+      return queryRequest ? result : res
     },
-    async initInteractive(refresh?: boolean) {
+    async initInteractive(refresh?: boolean, isCurrent: () => boolean = () => true) {
+      if (!isCurrent()) return
       if (refresh) {
-        await this.loadBusiInteractive()
+        await this.loadBusiInteractive(isCurrent)
         return
       }
       const tasks: Promise<unknown>[] = []
@@ -92,12 +104,13 @@ export const interactiveStore = defineStore('interactive', {
           const param: BusiTreeRequest = {
             busiFlag: busiFlagMap[index]
           }
-          tasks.push(this.setInteractive(param))
+          tasks.push(this.setInteractive(param, undefined, isCurrent))
         }
       }
       await Promise.all(tasks)
     },
-    async loadBusiInteractive() {
+    async loadBusiInteractive(isCurrent: () => boolean = () => true) {
+      if (!isCurrent()) return
       const param = {}
       for (let i = 0; i < busiFlagMap.length; i++) {
         const key = busiFlagMap[i]
@@ -106,9 +119,10 @@ export const interactiveStore = defineStore('interactive', {
         }
       }
       const data = await queryBusiTreeApi(param)
+      if (!isCurrent()) return
       for (const busiKey in data) {
         const res = data[busiKey]
-        this.setInteractive(param[busiKey], res)
+        this.setInteractive(param[busiKey], res, isCurrent)
       }
     },
     clear() {

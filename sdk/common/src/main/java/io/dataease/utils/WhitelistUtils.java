@@ -27,6 +27,7 @@ public class WhitelistUtils {
             "/apisix/check",
             "/dekey",
             "/index.html",
+            "/dataease.svg",
             "/model",
             "/xpackModel",
             "/swagger-resources",
@@ -50,9 +51,18 @@ public class WhitelistUtils {
             "/sysParameter/i18nOptions",
             "/login/modifyInvalidPwd",
             "/perSetting/hmac/info",
+            "/perSetting/hmac/exchange",
+            "/share/proxyInfo",
+            "/share/validate",
+            "/typeface/defaultFont",
+            "/typeface/listFont",
+            // Public reference data used by existing clients; do not expose the entire map controller.
+            "/map/worldTree",
             "/");
 
-    private static final String[] FRONTEND_STATIC_PREFIXES = {"/js/", "/assets/"};
+    // TinyMCE loads its language and skin files through browser tags without authentication headers.
+    private static final String[] FRONTEND_STATIC_PREFIXES = {
+            "/js/", "/assets/", "/tinymce-dataease-private/"};
 
     private static final String[] FRONTEND_STATIC_SUFFIXES = {
             ".js", ".css", ".svg", ".png", ".jpg", ".ico", ".js.map", ".otf", ".ttf", ".woff2"};
@@ -70,8 +80,29 @@ public class WhitelistUtils {
                 && StringUtils.endsWithAny(path, WEBJARS_STATIC_SUFFIXES));
     }
 
+    private static boolean matchSinglePathVariable(String path, String prefix) {
+        if (!path.startsWith(prefix)) {
+            return false;
+        }
+        String value = path.substring(prefix.length());
+        return !value.isEmpty() && value.indexOf('/') < 0;
+    }
+
+    private static boolean matchMapResource(String path) {
+        // Built-in maps use /map/{country}/{area}.json; custom maps retain their /geo/ rule.
+        if (!path.startsWith("/map/") || !path.endsWith(".json")) {
+            return false;
+        }
+        int separator = path.indexOf('/', "/map/".length());
+        return separator > "/map/".length()
+                && path.length() > separator + "/.json".length()
+                && path.indexOf('/', separator + 1) < 0;
+    }
+
     public static boolean match(String requestURI) {
         invalidUrl(requestURI);
+        // APISIX passes the original URI, including download tickets and other query parameters.
+        requestURI = StringUtils.substringBefore(requestURI, "?");
         if (StringUtils.startsWith(requestURI, getContextPath())) {
             requestURI = StringUtils.replaceOnce(requestURI, getContextPath(), "");
         }
@@ -84,26 +115,24 @@ public class WhitelistUtils {
         if (StringUtils.startsWith(requestURI, AuthConstant.DE_OIDCAPI_PREFIX)) {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_OIDCAPI_PREFIX, "");
         }
+        // Uploaded pictures require gateway authentication too: embedded credentials must be
+        // exchanged for the login token checked by the backend static-resource Filter.
         return WHITE_PATH.contains(requestURI)
                 || matchFrontendStaticResource(requestURI)
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
-                || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
-                || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
-                || StringUtils.startsWithAny(requestURI, "/share/validate")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/contentPlugin/")
-                || StringUtils.startsWithAny(requestURI, "/xpackComponent/pluginStaticInfo")
+                || matchSinglePathVariable(requestURI, "/xpackComponent/pluginStaticInfo/")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
-                || StringUtils.startsWithAny(requestURI, "/websocket")
-                || StringUtils.startsWithAny(requestURI, "/map/")
+                || StringUtils.equals(requestURI, "/websocket")
+                || StringUtils.startsWith(requestURI, "/websocket/")
+                || matchMapResource(requestURI)
                 || StringUtils.startsWithAny(requestURI, "/oauth2/")
                 || StringUtils.startsWithAny(requestURI, "/mfa/qr/")
                 || StringUtils.equals(requestURI, "/mfa/login")
-                || StringUtils.startsWithAny(requestURI, "/typeface/download")
-                || StringUtils.startsWithAny(requestURI, "/typeface/defaultFont")
-                || StringUtils.startsWithAny(requestURI, "/typeface/listFont")
-                || StringUtils.startsWithAny(requestURI, "/exportCenter/download")
+                || matchSinglePathVariable(requestURI, "/typeface/download/")
+                || matchSinglePathVariable(requestURI, "/exportCenter/download/")
                 || StringUtils.startsWithAny(requestURI, "/i18n/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/saml/")

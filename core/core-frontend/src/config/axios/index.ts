@@ -1,10 +1,11 @@
 import { service } from './service'
+import { needsConfigurationEncryption, sealConfiguration } from './configurationTransport'
 
 import { config } from './config'
 
 const { default_headers } = config
 
-const request = (option: any) => {
+const request = async (option: any): Promise<any> => {
   const {
     url,
     method,
@@ -14,19 +15,30 @@ const request = (option: any) => {
     responseType,
     loading,
     signal,
+    queryRequest,
     handleErrorLocally,
     onUploadProgress,
     headers = {}
   } = option
-  return service({
+  let requestData = data
+  if (needsConfigurationEncryption(url, method)) {
+    const challenge = await request({
+      url: '/configurationKey',
+      method: 'get',
+      params: { path: url }
+    })
+    requestData = await sealConfiguration(data, url, challenge.data)
+  }
+  const result = service({
     url: url,
     method,
     loading,
     signal,
+    queryRequest,
     handleErrorLocally,
     onUploadProgress,
     params,
-    data,
+    data: requestData,
     responseType: responseType,
     headers: {
       'Content-Type': headersType || default_headers,
@@ -37,6 +49,7 @@ const request = (option: any) => {
       ...headers
     }
   })
+  return queryRequest ? result.finally(queryRequest.finish) : result
 }
 
 export default {

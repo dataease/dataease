@@ -12,6 +12,11 @@ import {
 } from '../../../api/filter-option'
 import { normalizeSpreadsheetFilterTextSearchClauses } from './filter-condition-rules'
 import { resolveDynamicTimeDefault } from './time-filter'
+import {
+  filterSpreadsheetOuterParamTree,
+  matchesSpreadsheetOuterParamOption,
+  type SpreadsheetOuterParamTreeNode
+} from './outer-param-options'
 
 export type SpreadsheetFilterValueMap = Record<string, unknown>
 
@@ -70,9 +75,7 @@ export const getSpreadsheetFilterTextSearchValue = (
   )
 })
 
-export const getSpreadsheetFilterEmptyValue = (
-  condition: SpreadsheetFilterCondition
-): unknown => {
+export const getSpreadsheetFilterEmptyValue = (condition: SpreadsheetFilterCondition): unknown => {
   if (condition.displayType === 'textSearch') {
     return getSpreadsheetFilterTextSearchValue(condition, false)
   }
@@ -132,18 +135,22 @@ export const getSpreadsheetFilterSelectedValues = (
 ): SpreadsheetFilterValueMap => {
   const values: SpreadsheetFilterValueMap = {}
   config?.conditions.forEach(condition => {
-    values[condition.id] = condition.selectValue !== undefined && condition.selectValue !== null
-      ? cloneDeep(condition.selectValue)
-      : getSpreadsheetFilterDefaultValue(condition)
+    values[condition.id] =
+      condition.selectValue !== undefined && condition.selectValue !== null
+        ? cloneDeep(condition.selectValue)
+        : getSpreadsheetFilterDefaultValue(condition)
   })
   return values
 }
 
-const resolveSelectFirstItem = async (
-  condition: SpreadsheetFilterCondition
-): Promise<unknown> => {
+const resolveSelectFirstItem = async (condition: SpreadsheetFilterCondition): Promise<unknown> => {
   if (condition.optionSource === 'manual') {
-    const first = condition.manualOptions.find(value => value !== undefined && value !== null)
+    const first = condition.manualOptions.find(
+      value =>
+        value !== undefined &&
+        value !== null &&
+        matchesSpreadsheetOuterParamOption(value, condition.optionFilter)
+    )
     return first === undefined ? getSpreadsheetFilterEmptyValue(condition) : String(first)
   }
 
@@ -166,7 +173,11 @@ const resolveSelectFirstItem = async (
     const sortedRows = sortSpreadsheetFilterDatasetRows(rows, condition)
     const first = sortedRows.find(row => {
       const value = row[queryId]
-      return value !== undefined && value !== null
+      return (
+        value !== undefined &&
+        value !== null &&
+        matchesSpreadsheetOuterParamOption(row[displayId], condition.optionFilter)
+      )
     })
     return first ? String(first[queryId]) : getSpreadsheetFilterEmptyValue(condition)
   }
@@ -178,13 +189,16 @@ const resolveSelectFirstItem = async (
     return getSpreadsheetFilterEmptyValue(condition)
   }
   const values = await getSpreadsheetFilterEnumValue({ fieldIds, resultMode })
-  const first = values.find(value => value !== undefined && value !== null)
+  const first = values.find(
+    value =>
+      value !== undefined &&
+      value !== null &&
+      matchesSpreadsheetOuterParamOption(value, condition.optionFilter)
+  )
   return first === undefined ? getSpreadsheetFilterEmptyValue(condition) : String(first)
 }
 
-const resolveTreeFirstItem = async (
-  condition: SpreadsheetFilterCondition
-): Promise<unknown> => {
+const resolveTreeFirstItem = async (condition: SpreadsheetFilterCondition): Promise<unknown> => {
   const fieldIds = condition.treeFields
     .map(field => field.fieldId)
     .filter(fieldId => fieldId !== undefined && fieldId !== null && fieldId !== '')
@@ -195,15 +209,21 @@ const resolveTreeFirstItem = async (
     fieldIds,
     resultMode: condition.optionCountMode === 'all' ? 1 : 0
   })
-  const first = rows[0]
-  const value = first?.id ?? first?.value ?? first?.text ?? first?.label
+  const filteredRows = filterSpreadsheetOuterParamTree(
+    rows as unknown as SpreadsheetOuterParamTreeNode[],
+    condition.optionFilter
+  )
+  const first = filteredRows[0]
+  const value = first?.id
   if (value === undefined || value === null || value === '') {
     return getSpreadsheetFilterEmptyValue(condition)
   }
-  const path: SpreadsheetFilterTreePath = [{
-    treeFieldId: condition.treeFields[0].fieldId,
-    value: value as string | number
-  }]
+  const path: SpreadsheetFilterTreePath = [
+    {
+      treeFieldId: condition.treeFields[0].fieldId,
+      value: value as string | number
+    }
+  ]
   return condition.multiple ? [path] : path
 }
 
@@ -228,22 +248,24 @@ export const resolveSpreadsheetFilterValues = async (
   currentValues: SpreadsheetFilterValueMap = {},
   useStoredSelection = true
 ): Promise<SpreadsheetFilterValueMap> => {
-  const entries = await Promise.all(config.conditions.map(async condition => {
-    if (condition.displayType === 'textSearch' || condition.defaultValueEnabled) {
-      try {
-        return [condition.id, await resolveConditionDefaultValue(condition)] as const
-      } catch (error) {
-        return [condition.id, getSpreadsheetFilterDefaultValue(condition)] as const
+  const entries = await Promise.all(
+    config.conditions.map(async condition => {
+      if (condition.displayType === 'textSearch' || condition.defaultValueEnabled) {
+        try {
+          return [condition.id, await resolveConditionDefaultValue(condition)] as const
+        } catch (error) {
+          return [condition.id, getSpreadsheetFilterDefaultValue(condition)] as const
+        }
       }
-    }
-    if (hasOwnValue(currentValues, condition.id)) {
-      return [condition.id, cloneDeep(currentValues[condition.id])] as const
-    }
-    if (useStoredSelection && !isSpreadsheetFilterEmptyValue(condition.selectValue)) {
-      return [condition.id, cloneDeep(condition.selectValue)] as const
-    }
-    return [condition.id, getSpreadsheetFilterEmptyValue(condition)] as const
-  }))
+      if (hasOwnValue(currentValues, condition.id)) {
+        return [condition.id, cloneDeep(currentValues[condition.id])] as const
+      }
+      if (useStoredSelection && !isSpreadsheetFilterEmptyValue(condition.selectValue)) {
+        return [condition.id, cloneDeep(condition.selectValue)] as const
+      }
+      return [condition.id, getSpreadsheetFilterEmptyValue(condition)] as const
+    })
+  )
   return Object.fromEntries(entries)
 }
 
@@ -251,45 +273,48 @@ export const getSpreadsheetFilterValidationIssue = (
   config: SpreadsheetFilterConfig | undefined,
   values: SpreadsheetFilterValueMap
 ): SpreadsheetFilterValidationIssue | undefined => {
-  return config?.conditions.reduce<SpreadsheetFilterValidationIssue | undefined>((issue, condition) => {
-    if (issue) return issue
-    const value = values[condition.id]
-    if (condition.displayType === 'textSearch') {
-      const textValue = value as Partial<SpreadsheetFilterTextSearchValue> | undefined
-      const clauses = normalizeSpreadsheetFilterTextSearchClauses(
-        textValue?.clauses,
-        condition.textSearchConditionType
-      )
-      const filledCount = clauses.filter(clause => !!clause.value.trim()).length
-      if (filledCount > 0 && filledCount < clauses.length) {
-        return { condition, type: 'incomplete-text' }
+  return config?.conditions.reduce<SpreadsheetFilterValidationIssue | undefined>(
+    (issue, condition) => {
+      if (issue) return issue
+      const value = values[condition.id]
+      if (condition.displayType === 'textSearch') {
+        const textValue = value as Partial<SpreadsheetFilterTextSearchValue> | undefined
+        const clauses = normalizeSpreadsheetFilterTextSearchClauses(
+          textValue?.clauses,
+          condition.textSearchConditionType
+        )
+        const filledCount = clauses.filter(clause => !!clause.value.trim()).length
+        if (filledCount > 0 && filledCount < clauses.length) {
+          return { condition, type: 'incomplete-text' }
+        }
+        if (condition.required && filledCount !== clauses.length) {
+          return { condition, type: 'required' }
+        }
+        return undefined
       }
-      if (condition.required && filledCount !== clauses.length) {
+      if (['numberRange', 'timeRange'].includes(condition.displayType)) {
+        const range = Array.isArray(value) ? value.slice(0, 2) : []
+        const filledCount = range.filter(item => !isSpreadsheetFilterEmptyValue(item)).length
+        if (filledCount === 1) {
+          return { condition, type: 'incomplete-range' }
+        }
+        if (condition.required && filledCount !== 2) {
+          return { condition, type: 'required' }
+        }
+        if (
+          condition.displayType === 'numberRange' &&
+          filledCount === 2 &&
+          Number(range[0]) > Number(range[1])
+        ) {
+          return { condition, type: 'invalid-number-range' }
+        }
+        return undefined
+      }
+      if (condition.required && isSpreadsheetFilterEmptyValue(value)) {
         return { condition, type: 'required' }
       }
       return undefined
-    }
-    if (['numberRange', 'timeRange'].includes(condition.displayType)) {
-      const range = Array.isArray(value) ? value.slice(0, 2) : []
-      const filledCount = range.filter(item => !isSpreadsheetFilterEmptyValue(item)).length
-      if (filledCount === 1) {
-        return { condition, type: 'incomplete-range' }
-      }
-      if (condition.required && filledCount !== 2) {
-        return { condition, type: 'required' }
-      }
-      if (
-        condition.displayType === 'numberRange' &&
-        filledCount === 2 &&
-        Number(range[0]) > Number(range[1])
-      ) {
-        return { condition, type: 'invalid-number-range' }
-      }
-      return undefined
-    }
-    if (condition.required && isSpreadsheetFilterEmptyValue(value)) {
-      return { condition, type: 'required' }
-    }
-    return undefined
-  }, undefined)
+    },
+    undefined
+  )
 }

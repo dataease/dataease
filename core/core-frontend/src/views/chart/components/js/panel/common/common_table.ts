@@ -889,32 +889,42 @@ export function getConditions(
       res.text.push({
         field: targetName,
         mapping(value, rowData, cell) {
-          if (value === undefined && !rowData) {
+          if (
+            (value === undefined && !rowData) ||
+            (rowData?.SUMMARY && !threshold.applyToTotalRow)
+          ) {
             return null
           }
-          return {
-            fill: mappingRulesColor(
-              value,
-              valueColor,
-              getCellRules(cell),
-              'color',
-              filedValueMap,
-              rowData,
-              targetName,
-              getTableConditionRows(value, rowData, cell)
-            )
-          }
+          // 总计行未命中规则时保留自身样式，不回退到普通单元格颜色。
+          const defaultColor = rowData?.SUMMARY ? null : valueColor
+          const fill = mappingRulesColor(
+            value,
+            defaultColor,
+            getCellRules(cell),
+            'color',
+            filedValueMap,
+            rowData,
+            targetName,
+            getTableConditionRows(value, rowData, cell)
+          )
+          if (!fill) return null
+          return { fill }
         }
       })
       res.background.push({
         field: targetName,
         mapping(value, rowData, cell) {
-          if (value === undefined && !rowData) {
+          if (
+            (value === undefined && !rowData) ||
+            (rowData?.SUMMARY && !threshold.applyToTotalRow)
+          ) {
             return null
           }
+          // 总计行未命中规则时保留自身背景，不回退到普通单元格颜色。
+          const defaultColor = rowData?.SUMMARY ? null : valueBgColor
           const fill = mappingRulesColor(
             value,
-            valueBgColor,
+            defaultColor,
             getCellRules(cell),
             'backgroundColor',
             filedValueMap,
@@ -922,10 +932,10 @@ export function getConditions(
             targetName,
             getTableConditionRows(value, rowData, cell)
           )
-          if (isTransparent(fill)) {
+          if (!fill || isTransparent(fill)) {
             return null
           }
-          return {fill}
+          return { fill }
         }
       })
     }
@@ -1676,7 +1686,10 @@ export class SortTooltip extends BaseTooltip {
     const container = this['getContainer']()
     // 排序菜单复用内容提示容器，在测量位置前恢复菜单布局
     Object.assign(container.style, {
-      width: 'auto', minWidth: '80px', textAlign: 'left'
+      width: 'auto',
+      minWidth: '80px',
+      textAlign: 'left',
+      padding: this.spreadsheet.options.tooltip.style?.padding
     })
     // 用 vue 手动 patch
     const vNode = createVNode(TableTooltip, {
@@ -1808,6 +1821,8 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
   ]
 }
 
+const TABLE_TOOLTIP_PADDING = 12
+
 export function configTooltip(chart: Chart, option: S2Options) {
   const {tooltip} = parseJson(chart.customAttr)
   const textFontFamily = chart.fontFamily ? chart.fontFamily : FONT_FAMILY
@@ -1820,13 +1835,15 @@ export function configTooltip(chart: Chart, option: S2Options) {
       color: tooltip.color,
       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
       borderRadius: '3px',
-      padding: '4px 12px',
+      padding: `${TABLE_TOOLTIP_PADDING}px`,
       // 先按内容确定宽度再校正位置，避免靠近右边界时被剩余空间挤压换行
       width: 'max-content',
       minWidth: '0',
       textAlign: 'center',
       opacity: 0.95,
-      position: 'absolute'
+      position: 'absolute',
+      transition:
+        'visibility 0.4s cubic-bezier(0.23, 1, 0.32, 1), left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
     },
     adjustPosition: ({event}) => {
       return getTooltipPosition(event)
@@ -1943,7 +1960,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
   }
 }
 
-function getTooltipPosition(event) {
+export function getTooltipPosition(event) {
   const s2Instance = event.s2Instance
   if (!s2Instance) {
     return {x: event.x + 15, y: event.y}
@@ -1961,6 +1978,36 @@ function getTooltipPosition(event) {
   const y = Number.isFinite(event.clientY)
     ? (event.clientY - canvasRect.top) / scaleY
     : event.y
+  const tableContent: HTMLElement | undefined = event.tableTooltipContent
+  if (tableContent) {
+    // 只使用当前可见的画布区域，兼容大屏缩放和移动端的窄视口。
+    const viewport = window.visualViewport
+    const viewportLeft = viewport?.offsetLeft ?? 0
+    const viewportTop = viewport?.offsetTop ?? 0
+    const left = Math.max(0, (viewportLeft - canvasRect.left) / scaleX)
+    const top = Math.max(0, (viewportTop - canvasRect.top) / scaleY)
+    const right = Math.min(
+      width,
+      (viewportLeft + (viewport?.width ?? window.innerWidth) - canvasRect.left) / scaleX
+    )
+    const bottom = Math.min(
+      height,
+      (viewportTop + (viewport?.height ?? window.innerHeight) - canvasRect.top) / scaleY
+    )
+    const container = s2Instance.tooltip.getContainer()
+    // 给外框两侧的内边距留出空间，避免窄画布裁掉最右侧的字段值。
+    const contentWidth = right - left - 2 * TABLE_TOOLTIP_PADDING
+    tableContent.style.maxWidth = `${Math.max(0, Math.min(400, contentWidth))}px`
+    // 高度最多占可见区一半，确保提示能贴在触点上方或下方，不遮住触点。
+    tableContent.style.maxHeight = `${Math.max(0, (bottom - top) / 2 - 1)}px`
+    const { offsetWidth, offsetHeight } = container
+    const anchorY = Math.max(top, Math.min(y, bottom))
+    const tooltipY = anchorY + offsetHeight < bottom ? anchorY + 1 : anchorY - offsetHeight
+    return {
+      x: Math.max(left, Math.min(x, right - offsetWidth)),
+      y: Math.max(top, tooltipY)
+    }
+  }
   const result = {x: x + 15, y}
   const {offsetHeight, offsetWidth} = s2Instance.tooltip.getContainer()
   if (offsetWidth > width) {
@@ -3228,12 +3275,14 @@ export class SummaryCell extends CustomDataCell {
     } else {
       textStyle.textAlign = this.theme.dataCell.text.textAlign
     }
-    return textStyle
+    // 保留总计文字外观，并应用 S2 的条件文字颜色及背景反色规则。
+    return this.getContainConditionMappingResultTextStyle(textStyle)
   }
 
   getBackgroundColor() {
-    const {backgroundColor, backgroundColorOpacity, } = this.theme.colCell.cell
-    return {backgroundColor, backgroundColorOpacity, intelligentReverseTextColor: false}
+    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    // 未命中条件时沿用总计背景，命中后由 S2 应用条件背景。
+    return { backgroundColor, backgroundColorOpacity, ...this.getBackgroundConditionFill() }
   }
 }
 

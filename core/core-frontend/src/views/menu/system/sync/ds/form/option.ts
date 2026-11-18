@@ -11,14 +11,7 @@ export const SYNC_DATASOURCE_ROLE = {
     TARGET: 2
 } as const
 
-export type DsType =
-    | "OLTP"
-    | "OLAP"
-    | "DL"
-    | "OTHER"
-    | "LOCAL"
-    | "latestUse"
-    | "all";
+export type DsType = 'OLTP' | 'OLAP' | 'latestUse' | 'all'
 
 export const dsTypes = [
     {
@@ -34,6 +27,14 @@ export const dsTypes = [
         name: 'Apache Doris',
         catalog: 'OLAP',
         datasourceRole: SYNC_DATASOURCE_ROLE.TARGET,
+        extraParams:
+            'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+    },
+    {
+        type: 'doris',
+        name: 'Apache Doris',
+        catalog: 'OLAP',
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
         extraParams:
             'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
@@ -79,14 +80,11 @@ export const dsTypes = [
     }
 ]
 
-export const typeList = ['OLTP', 'OLAP', 'DL', 'OTHER', 'LOCAL']
+export const typeList = ['OLTP', 'OLAP']
 
 export const nameMap = {
-    OLTP: 'OLTP',
-    OLAP: 'OLAP',
-    DL: t('datasource.dl'),
-    OTHER: t('data_source.api_data'),
-    LOCAL: t('datasource.local_file')
+  OLTP: 'OLTP',
+  OLAP: 'OLAP'
 }
 
 export const filterOption = [

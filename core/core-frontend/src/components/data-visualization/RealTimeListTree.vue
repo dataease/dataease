@@ -268,6 +268,43 @@ const popComponentData = computed(() =>
   componentData.value.filter(ele => ele.category && ele.category === 'hidden')
 )
 
+let pendingPopComponentData: typeof componentData.value | null = null
+const updatePopComponentData = components => {
+  pendingPopComponentData = null
+  const currentPopComponents = new Map(
+    popComponentData.value.map(component => [component.id, component])
+  )
+  const currentPopIds = new Set(currentPopComponents.keys())
+  if (
+    components.length !== currentPopIds.size ||
+    components.some(component => !currentPopIds.delete(component.id))
+  ) {
+    return
+  }
+  let popIndex = 0
+  const nextComponentData = componentData.value.map(component =>
+    component.category === 'hidden'
+      ? currentPopComponents.get(components[popIndex++].id)
+      : component
+  )
+  dvMainStore.setComponentData(nextComponentData)
+  pendingPopComponentData = componentData.value
+}
+
+const popDragOnChange = ({ moved }) => {
+  const updateAccepted = pendingPopComponentData === componentData.value
+  pendingPopComponentData = null
+  if (!updateAccepted || !moved || moved.oldIndex === moved.newIndex) {
+    return
+  }
+  const index = componentData.value.findIndex(component => component.id === moved.element.id)
+  if (index === -1) {
+    return
+  }
+  dvMainStore.setCurComponent({ component: componentData.value[index], index })
+  snapshotStore.recordSnapshotCache('popDragOnChange')
+}
+
 const baseComponentData = computed(() =>
   componentData.value.filter(ele => ele?.category !== 'hidden' && ele.component !== 'GroupArea')
 )
@@ -434,8 +471,9 @@ const canvasChange = () => {
     <el-row class="list-wrap">
       <div class="list-container" @contextmenu="handleContextMenu">
         <draggable
-          @end="dragOnEnd"
-          :list="popComponentData"
+          :model-value="popComponentData"
+          @update:model-value="updatePopComponentData"
+          @change="popDragOnChange"
           animation="100"
           class="drag-list"
           item-key="id"

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { CopyDocument, Delete, EditPen } from '@element-plus/icons-vue'
-import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import dvBatch from '@/assets/svg/dv-batch.svg'
 import dvDashboard from '@/assets/svg/dv-dashboard.svg'
 import dvHidden from '@/assets/svg/dv-hidden.svg'
@@ -271,7 +270,6 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
 }
 
 const saveResource = (checkParams?) => {
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     dvMainStore.matrixSizeAdaptor()
     queryList.value.forEach(ele => {
@@ -319,6 +317,9 @@ const saveResource = (checkParams?) => {
         } else {
           ElMessage.success(t('commons.save_success'))
         }
+      }).catch(() => {
+        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
+        if (checkParams.withPublish) tryHideLoading(loadingKey)
       })
     } catch (e) {
       console.error(e)
@@ -355,7 +356,7 @@ const backToMain = () => {
 }
 const embeddedStore = useEmbedded()
 
-const backHandler = (url: string) => {
+const backHandler = async (url: string) => {
   if (isEmbedded.value) {
     wsCache.set(`db-info-id`, dvInfo.value.id)
     embeddedStore.clearState()
@@ -369,8 +370,10 @@ const backHandler = (url: string) => {
     })
     return
   }
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-  wsCache.set('db-info-id', dvInfo.value.id)
+  const resourceId = dvInfo.value.id
+  await snapshotStore.clearCanvasDraft(resourceId)
+  if (String(dvInfo.value.id) !== String(resourceId)) return
+  wsCache.set('db-info-id', resourceId)
   if (!!history.state.back) {
     history.back()
   } else {
@@ -665,18 +668,6 @@ const userGroupShow = ref(false)
           >
             <db-more-com-group themes="light" :dv-model="dvModel"></db-more-com-group>
           </component-group>
-          <MaterialPickerButton
-            toolbar
-            :themes="'light'"
-            @select="
-              reference =>
-                eventBus.emit('handleNew', {
-                  componentName: 'Picture',
-                  innerType: 'Picture',
-                  materialReference: reference
-                })
-            "
-          />
           <component-button-label
             :icon-name="icon_copy_filled"
             :title="t('visualization.multiplexing')"

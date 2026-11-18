@@ -417,7 +417,7 @@ initFunction()
           ></code-mirror>
         </div>
       </div>
-      <div class="padding-lr">
+      <div class="padding-lr field-ref">
         <span class="mb8">
           {{ t('dataset.click_ref_field') }}
           <el-tooltip class="item" effect="dark" placement="bottom">
@@ -444,31 +444,29 @@ initFunction()
             </template>
           </el-input>
           <div class="field-height">
-            <el-scrollbar>
-              <span>{{ t('chart.dimension') }}</span>
-              <div v-if="state.dimensionData.length" class="field-list">
-                <span
-                  v-for="item in state.dimensionData"
-                  :key="item.id"
-                  class="item-dimension flex-align-center"
-                  :title="item.name"
-                  @click="insertFieldToCodeMirror('[' + item.name + ']')"
-                >
-                  <el-icon>
-                    <Icon
-                      ><component
-                        class="svg-icon"
-                        :class="`field-icon-${fieldType[item.deType]}`"
-                        :is="iconFieldMap[fieldType[item.deType]]"
-                      ></component
-                    ></Icon>
-                  </el-icon>
-                  <span class="ellipsis" :title="item.name">{{ item.name }}</span>
-                </span>
-              </div>
+            <span>{{ t('chart.dimension') }}</span>
+            <div v-if="state.dimensionData.length" class="field-list">
+              <span
+                v-for="item in state.dimensionData"
+                :key="item.id"
+                class="item-dimension flex-align-center"
+                :title="item.name"
+                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+              >
+                <el-icon>
+                  <Icon
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[item.deType]}`"
+                      :is="iconFieldMap[fieldType[item.deType]]"
+                    ></component
+                  ></Icon>
+                </el-icon>
+                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
+              </span>
+            </div>
 
-              <div v-else class="class-na">{{ t('dataset.na') }}</div>
-            </el-scrollbar>
+            <div v-else class="class-na">{{ t('dataset.na') }}</div>
           </div>
           <div class="quota-btn_de">
             <span>{{ t('chart.quota') }}</span>
@@ -492,43 +490,41 @@ initFunction()
             </el-tooltip>
           </div>
           <div class="field-height">
-            <el-scrollbar>
-              <div v-if="state.quotaData.length" class="field-list">
-                <span
-                  v-for="item in state.quotaData"
-                  :key="item.id"
-                  class="item-quota flex-align-center"
-                  @click="insertFieldToCodeMirror('[' + item.name + ']')"
-                >
-                  <el-icon v-if="!item.groupType">
-                    <Icon name="icon_adjustment_outlined"
-                      ><icon_adjustment_outlined class="svg-icon"
+            <div v-if="state.quotaData.length" class="field-list">
+              <span
+                v-for="item in state.quotaData"
+                :key="item.id"
+                class="item-quota flex-align-center"
+                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+              >
+                <el-icon v-if="!item.groupType">
+                  <Icon name="icon_adjustment_outlined"
+                    ><icon_adjustment_outlined class="svg-icon"
+                  /></Icon>
+                </el-icon>
+                <el-icon v-else>
+                  <Icon
+                    ><component
+                      class="svg-icon"
+                      :class="`field-icon-${fieldType[item.deType]}`"
+                      :is="iconFieldMap[fieldType[item.deType]]"
+                    ></component
+                  ></Icon>
+                </el-icon>
+                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
+                <div v-if="!item.groupType" class="icon-right">
+                  <el-icon @click.stop="updateParamsToQuota" class="hover-icon">
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                  <el-icon @click.stop="delParamsToQuota" class="hover-icon">
+                    <Icon name="icon_delete-trash_outlined"
+                      ><icon_deleteTrash_outlined class="svg-icon"
                     /></Icon>
                   </el-icon>
-                  <el-icon v-else>
-                    <Icon
-                      ><component
-                        class="svg-icon"
-                        :class="`field-icon-${fieldType[item.deType]}`"
-                        :is="iconFieldMap[fieldType[item.deType]]"
-                      ></component
-                    ></Icon>
-                  </el-icon>
-                  <span class="ellipsis" :title="item.name">{{ item.name }}</span>
-                  <div v-if="!item.groupType" class="icon-right">
-                    <el-icon @click.stop="updateParamsToQuota" class="hover-icon">
-                      <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
-                    </el-icon>
-                    <el-icon @click.stop="delParamsToQuota" class="hover-icon">
-                      <Icon name="icon_delete-trash_outlined"
-                        ><icon_deleteTrash_outlined class="svg-icon"
-                      /></Icon>
-                    </el-icon>
-                  </div>
-                </span>
-              </div>
-              <div v-else class="class-na">{{ t('dataset.na') }}</div>
-            </el-scrollbar>
+                </div>
+              </span>
+            </div>
+            <div v-else class="class-na">{{ t('dataset.na') }}</div>
           </div>
         </div>
       </div>
@@ -713,11 +709,21 @@ initFunction()
   width: 214px;
   overflow-y: hidden;
   .padding-lr-content {
-    padding: 12px;
+    padding: 11px;
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
     box-sizing: border-box;
     height: 500px;
     border-radius: 6px;
+  }
+
+  &.field-ref .padding-lr-content {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 2px;
+
+    > .ed-input {
+      flex: none;
+    }
   }
 }
 .hover-icon_quota {
@@ -773,13 +779,41 @@ initFunction()
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: -12px;
+  margin-top: 16px;
+  margin-bottom: 3px;
+  line-height: 22px;
   color: #1f2329;
 }
 .field-height {
-  height: calc(50% - 41px);
-  margin-top: 12px;
-  overflow-y: auto;
+  flex: none;
+  height: 209px;
+  margin-top: 16px;
+  margin-right: -9px;
+  padding-right: 1px;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+
+  &:last-child {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    margin-top: 3px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background: #1f23294d;
+  }
+
   & > :nth-child(1) {
     color: #1f2329;
   }

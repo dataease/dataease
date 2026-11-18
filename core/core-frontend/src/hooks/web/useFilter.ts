@@ -1,9 +1,14 @@
+import { rememberQueryDefault } from '@/utils/queryDefaultSnapshot'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import type { ManipulateType } from 'dayjs'
 import { storeToRefs } from 'pinia'
 import dayjs from 'dayjs'
-import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
-import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
+import { getCustomTime, getDynamicRange } from '@/custom-component/v-query/time-format'
+import {
+  evaluateRuntimeDynamicDefault,
+  isCustomClockDefault
+} from '@/custom-component/v-query/dynamic-default-time'
+import { readFixedTimeValue } from '@/custom-component/v-query/fixed-time-value'
 import { splitConditionValues } from '@/custom-component/v-query/condition-utils'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, componentDataMultiply } = storeToRefs(dvMainStore)
@@ -55,6 +60,7 @@ const forMatterValue = (
   if (![1, 7].includes(type)) {
     return Array.isArray(selectValue) ? selectValue : [selectValue]
   }
+  selectValue = readFixedTimeValue(selectValue)
   return Array.isArray(selectValue)
     ? getDynamicRangeTime(type, selectValue, timeGranularityMultiple)
     : getRange(selectValue, timeGranularity)
@@ -156,12 +162,20 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   return selectValue ? selectValue : multiple ? [] : ''
 }
 
-export const useFilter = (curComponentId: string, firstLoad = false, showPosition: any) => {
+export const useFilter = (
+  curComponentId: string,
+  firstLoad = false,
+  showPosition: any,
+  context?: { componentData: object; canvasStyleData: { popupAvailable?: boolean } }
+) => {
   // 弹窗区域过滤组件是否生效
-  const popupAvailable = canvasStyleData.value.popupAvailable
+  const popupAvailable = (context?.canvasStyleData || canvasStyleData.value).popupAvailable
   const filter = []
-  const componentDataCustom =
-    showPosition === 'multiplexing' ? componentDataMultiply.value : componentData.value
+  const componentDataCustom = context?.componentData
+    ? (context.componentData as typeof componentData.value)
+    : showPosition === 'multiplexing'
+    ? componentDataMultiply.value
+    : componentData.value
   const queryComponentList = componentDataCustom.filter(
     ele =>
       ele.component === 'VQuery' &&
@@ -412,50 +426,16 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             firstLoad &&
             defaultValueCheck
           ) {
-            if (+displayType === 1) {
+            if (+displayType === 1 && !isCustomClockDefault(item)) {
+              // A single year/month/day selection still filters the entire period.
               selectValue = getDynamicRange(item)
               item.defaultValue = new Date(selectValue[0])
               item.selectValue = new Date(selectValue[0])
             } else {
-              const {
-                timeNum,
-                relativeToCurrentType,
-                around,
-                relativeToCurrentRange,
-                arbitraryTime,
-                timeGranularity,
-                timeNumRange,
-                relativeToCurrentTypeRange,
-                aroundRange,
-                timeGranularityMultiple,
-                arbitraryTimeRange
-              } = item
-
-              let startTime = getCustomTime(
-                timeNum,
-                relativeToCurrentType,
-                timeGranularity,
-                around,
-                arbitraryTime,
-                timeGranularityMultiple,
-                'start-panel'
-              )
-              let endTime = getCustomTime(
-                timeNumRange,
-                relativeToCurrentTypeRange,
-                timeGranularity,
-                aroundRange,
-                arbitraryTimeRange,
-                timeGranularityMultiple,
-                'end-panel'
-              )
-
-              if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
-                ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
-              }
-              item.defaultValue = [startTime, endTime]
-              item.selectValue = [startTime, endTime]
-              selectValue = [startTime, endTime]
+              const result = evaluateRuntimeDynamicDefault(item)
+              item.defaultValue = result
+              item.selectValue = Array.isArray(result) ? [...result] : result
+              selectValue = Array.isArray(result) ? result : [+result, +result]
             }
           } else if (displayType === '8') {
             selectValue = getResult(
@@ -490,6 +470,13 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               displayId
             )
+          }
+          if (
+            dvMainStore.canvasAttachInfo &&
+            'taskId' in dvMainStore.canvasAttachInfo &&
+            dvMainStore.canvasAttachInfo.taskId
+          ) {
+            rememberQueryDefault(item, selectValue, firstLoad)
           }
           if (
             !!selectValue?.length ||

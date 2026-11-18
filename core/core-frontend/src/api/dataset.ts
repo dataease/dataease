@@ -1,3 +1,4 @@
+import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
 import {
   originNameHandle,
@@ -6,8 +7,8 @@ import {
 } from '@/utils/CalculateFields'
 import { type Field } from '@/api/chart'
 import { cloneDeep } from 'lodash-es'
-import type { BusiTreeRequest } from '@/models/tree/TreeNode'
-import { nameTrim } from '@/utils/utils'
+import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
+import { filterFreeFolder, nameTrim } from '@/utils/utils'
 export interface DatasetOrFolder {
   name: string
   action?: string
@@ -111,8 +112,11 @@ export const renameDatasetTree = async (data: DatasetOrFolder): Promise<IRespons
   })
 }
 
-export const enumValueObj = async (data: EnumValue): Promise<Record<string, string>[]> => {
-  return request.post({ url: '/datasetData/enumValueObj', data }).then(res => {
+export const enumValueObj = async (
+  data: EnumValue,
+  signal?: AbortSignal
+): Promise<Record<string, string>[]> => {
+  return request.post({ url: '/datasetData/enumValueObj', data, signal }).then(res => {
     return res?.data
   })
 }
@@ -136,8 +140,15 @@ export const getDatasetTree = async (data: BusiTreeRequest): Promise<IResponse> 
   })
 }
 
-export const barInfoApi = async (id): Promise<IResponse> => {
-  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {} }).then(res => {
+export const getDatasetCreationFolders = async (): Promise<BusiTreeNode[]> => {
+  const res = await getDatasetTree({ leaf: false, weight: 7 })
+  const folders = (res ?? []) as unknown as BusiTreeNode[]
+  filterFreeFolder(folders, 'dataset')
+  return folders
+}
+
+export const barInfoApi = async (id, signal?: AbortSignal): Promise<IResponse> => {
+  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {}, signal }).then(res => {
     return res?.data
   })
 }
@@ -189,37 +200,41 @@ export const getTables = async (data): Promise<Table[]> => {
   })
 }
 
-export const getTableField = async (data): Promise<IResponse> => {
-  return request.post({ url: '/datasetData/tableField', data }).then(res => {
+export const getTableField = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
+  return request.post({ url: '/datasetData/tableField', data, queryRequest }).then(res => {
     return res?.data
   })
 }
 
-export const getPreviewData = async (data): Promise<IResponse> => {
+export const getPreviewData = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
   const copyData = cloneDeep(data)
   originNameHandle(copyData.allFields)
-  return request.post({ url: '/datasetData/previewData', data: copyData }).then(res => {
-    if (res?.data?.allFields?.length) {
-      originNameHandleBack(res?.data?.allFields)
-    }
+  return request
+    .post({ url: '/datasetData/previewData', data: copyData, queryRequest })
+    .then(res => {
+      if (res?.data?.allFields?.length) {
+        originNameHandleBack(res?.data?.allFields)
+      }
 
-    if (res?.data?.data?.fields?.length) {
-      originNameHandleBack(res?.data?.data?.fields)
-    }
+      if (res?.data?.data?.fields?.length) {
+        originNameHandleBack(res?.data?.data?.fields)
+      }
+      return res?.data
+    })
+}
+
+export const getDatasetPreview = async (id, signal?: AbortSignal): Promise<FieldData> => {
+  return request.post({ url: `/datasetTree/get/${id}`, data: {}, signal }).then(res => {
     return res?.data
   })
 }
 
-export const getDatasetPreview = async (id): Promise<FieldData> => {
-  return request.post({ url: `/datasetTree/get/${id}`, data: {} }).then(res => {
-    return res?.data
-  })
-}
-
-export const getDatasetTotal = async (id): Promise<FieldData> => {
-  return request.post({ url: `/datasetData/getDatasetTotal`, data: { id: id } }).then(res => {
-    return res?.data
-  })
+export const getDatasetTotal = async (id, signal?: AbortSignal): Promise<FieldData> => {
+  return request
+    .post({ url: `/datasetData/getDatasetTotal`, data: { id: id }, signal })
+    .then(res => {
+      return res?.data
+    })
 }
 
 export const getDatasetDetails = async (id): Promise<Dataset> => {
@@ -231,23 +246,12 @@ export const getDatasetDetails = async (id): Promise<Dataset> => {
   })
 }
 
-export const tableUpdate = async (data): Promise<IResponse> => {
-  return request.post({ url: '/dataset/table/update', data }).then(res => {
-    return res?.data
-  })
-}
-
 export const getPreviewSql = async (data): Promise<IResponse> => {
   return request.post({ url: '/datasetData/previewSql', data }).then(res => {
     return res?.data
   })
 }
 
-export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
-  return request.post({ url: '/datasetTree/dsDetails', data }).then(res => {
-    return res?.data
-  })
-}
 export const getDsDetailsWithPerm = async (data): Promise<DatasetDetail[]> => {
   return request.post({ url: '/datasetTree/detailWithPerm', data }).then(res => {
     ;(res?.data || []).forEach(ele => {
@@ -266,9 +270,6 @@ export const rowPermissionList = (page: number, limit: number, datasetId: number
 
 export const columnPermissionList = (page: number, limit: number, datasetId: number) =>
   request.get({ url: '/dataset/columnPermissions/pager/' + datasetId + '/' + page + '/' + limit })
-
-export const rowPermissionTargetObjList = (datasetId: number, type: string) =>
-  request.get({ url: '/dataset/rowPermissions/authObjs/' + datasetId + '/' + type })
 
 export const listFieldByDatasetGroup = (datasetId: number) => {
   return request.post({ url: '/datasetField/listByDatasetGroup/' + datasetId }).then(res => {
@@ -334,8 +335,8 @@ export const deleteFieldByChartId = async (id): Promise<DatasetDetail[]> => {
   })
 }
 
-export const getEnumValue = async (data): Promise<DatasetDetail[]> => {
-  return request.post({ url: '/datasetData/enumValue', data }).then(res => {
+export const getEnumValue = async (data, signal?: AbortSignal): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetData/enumValue', data, signal }).then(res => {
     return res?.data
   })
 }
@@ -396,26 +397,8 @@ export const listByDsIds = async (data): Promise<IResponse> => {
   })
 }
 
-export const getFieldTree = async (data): Promise<IResponse> => {
-  return request.post({ url: 'datasetData/getFieldTree', data }).then(res => {
-    return res?.data
-  })
-}
-
-export const copilotChat = async (data): Promise<IResponse> => {
-  return request.post({ url: '/copilot/chat', data }).then(res => {
-    return res?.data
-  })
-}
-
-export const getListCopilot = async (): Promise<IResponse> => {
-  return request.post({ url: '/copilot/getList' }).then(res => {
-    return res?.data
-  })
-}
-
-export const clearAllCopilot = async (): Promise<IResponse> => {
-  return request.post({ url: '/copilot/clearAll' }).then(res => {
+export const getFieldTree = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
+  return request.post({ url: 'datasetData/getFieldTree', data, queryRequest }).then(res => {
     return res?.data
   })
 }

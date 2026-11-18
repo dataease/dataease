@@ -3,6 +3,8 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import referenceTable from '@/assets/svg/reference-table.svg'
+import iconCalculatedField from '@/assets/svg/icon_calculated-field_outlined.svg'
+import dvFilter from '@/assets/svg/dv-filter.svg'
 import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
@@ -57,10 +59,15 @@ import {
   getFieldName,
   timeTypes,
   num,
-  type DataSource
+  type DataSource,
+  type Node as DatasetNode,
+  type Field as DatasetField
 } from '@/views/visualized/data/dataset/form/util'
 import { fieldType } from '@/utils/attr'
-import { cancelMap } from '@/config/axios/service'
+import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
+
+provideQueryScope()
+const previewQuery = useLatestQuery('dataset-preview')
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import {
@@ -73,6 +80,10 @@ import {
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from '@/views/visualized/data/dataset/form/DatasetUnion.vue'
+import DatasetTableDetails from '@/views/visualized/data/dataset/form/DatasetTableDetails.vue'
+import DatasetNodeDetails from '@/views/visualized/data/dataset/form/DatasetNodeDetails.vue'
+import FieldTypeDriftTip from '@/views/visualized/data/dataset/form/FieldTypeDriftTip.vue'
+import DatasetPanelFullscreen from '@/views/visualized/data/dataset/form/DatasetPanelFullscreen.vue'
 import { cloneDeep, debounce } from 'lodash-es'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
@@ -112,8 +123,146 @@ const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref(t('data_set.unnamed_dataset'))
+let datasetNameBeforeEdit = ''
 const tabActive = ref('preview')
-const activeName = ref('')
+const editorStep = ref<'relation' | 'process'>('relation')
+const expandedPanel = ref<'canvas' | 'details' | null>(null)
+const toggleExpandedPanel = (panel: 'canvas' | 'details') => {
+  expandedPanel.value = expandedPanel.value === panel ? null : panel
+}
+const nodeDetails = ref<InstanceType<typeof DatasetNodeDetails>>()
+const canvasNodes = computed<DatasetNode[]>(() => datasetDrag.value?.getNodeList() || [])
+const applyNodeFields = (node: DatasetNode, fields: DatasetField[]) =>
+  datasetDrag.value.applyNodeFields(node, fields)
+const selectCanvasNode = (id: string) => nodeDetails.value?.selectNode(id)
+const activateCanvasNode = (id: string) => datasetDrag.value?.setActiveNode(id)
+const handleNodeCommand = (node: DatasetNode, command: string) =>
+  datasetDrag.value?.handleCommand(node, command)
+const changeNodeFieldName = (id: string, value: string) => {
+  const field = allfields.value.find(field => field.id === id)
+  if (!field || field.name === value) return
+  field.name = value
+  changeUpdate()
+}
+const changeNodeFieldType = (id: string, value: (number | string)[]) => {
+  const field = allfields.value.find(field => field.id === id)
+  if (!field) return
+  const current = field.deTypeArr?.length ? field.deTypeArr : [field.deType]
+  if (JSON.stringify(current) === JSON.stringify(value)) return
+  field.deTypeArr = [...value]
+  confirmFieldTypeDrift(field)
+  cascaderChange(field, value)
+  changeUpdate()
+}
+
+type FieldTypeDrift = { detected: number; configured?: number; confirmed: boolean }
+const sqlFieldTypeDrift = ref<Record<string, FieldTypeDrift>>({})
+const fieldTypeDriftKey = (nodeId: string | number, originName: string) =>
+  `${nodeId}::${originName}`
+const handleFieldTypeDetected = ({
+  nodeId,
+  fields,
+  saved
+}: {
+  nodeId: string
+  fields: { originName: string; deExtractType: number }[]
+  saved: {
+    originName: string
+    deExtractType: number
+    deType: number
+    deTypeArr?: (number | string)[]
+  }[]
+}) => {
+  const prefix = `${nodeId}::`
+  const next: Record<string, FieldTypeDrift> = {}
+  Object.entries(sqlFieldTypeDrift.value).forEach(([key, value]) => {
+    if (!key.startsWith(prefix)) next[key] = value
+  })
+  // `saved` is the node's metadata before this SQL ran: by now allfields may already carry the new
+  // types, so it is the only reliable baseline for "the physical type of an existing field moved".
+  const savedMap = new Map((saved || []).map(item => [item.originName, item]))
+  // The configured type lives on the dataset field and is not replaced when the SQL re-runs; the
+  // node row's type is the freshly detected one. Restoring the original SQL must therefore compare
+  // the detected type against the configured one, not against the previous SQL's detected type.
+  const configuredMap = new Map(
+    allfields.value
+      .filter(field => (field.extField ?? 0) === 0 && `${field.datasetTableId}` === `${nodeId}`)
+      .map(field => [field.originName, field.deTypeArr?.length ? field.deTypeArr[0] : field.deType])
+  )
+  fields.forEach(detected => {
+    const previous = savedMap.get(detected.originName)
+    if (!previous || previous.deExtractType === detected.deExtractType) return
+    const configured = configuredMap.get(detected.originName)
+    if (configured != null && configured === detected.deExtractType) return
+    const key = fieldTypeDriftKey(nodeId, detected.originName)
+    const prev = sqlFieldTypeDrift.value[key]
+    next[key] = {
+      detected: detected.deExtractType,
+      configured:
+        configured ?? (previous.deTypeArr?.length ? previous.deTypeArr[0] : previous.deType),
+      confirmed: !!prev && prev.detected === detected.deExtractType && prev.confirmed
+    }
+  })
+  sqlFieldTypeDrift.value = next
+}
+// Returns the SQL-detected type when it differs from the configured one and was not confirmed.
+const getFieldTypeDrift = field => {
+  if (!field || (field.extField ?? 0) !== 0) return null
+  // Rows reloaded after an SQL save carry the freshly detected deType; the configured type still
+  // lives on the dataset field, so compare against that rather than the row's own type.
+  const saved = (field.id && allfields.value.find(item => item.id === field.id)) || field
+  const state =
+    sqlFieldTypeDrift.value[
+      fieldTypeDriftKey(saved.datasetTableId ?? field.datasetTableId, saved.originName)
+    ]
+  if (!state || state.confirmed) return null
+  const configured =
+    state.configured ?? (saved.deTypeArr?.length ? saved.deTypeArr[0] : saved.deType)
+  if (state.detected === configured) return null
+  return state.detected
+}
+const pendingTypeDriftCount = computed(
+  () => allfields.value.filter(field => getFieldTypeDrift(field) !== null).length
+)
+const typeDriftBarHeight = computed(() =>
+  editorStep.value === 'process' && pendingTypeDriftCount.value ? 48 : 0
+)
+const confirmFieldTypeDrift = field => {
+  const key = fieldTypeDriftKey(field.datasetTableId, field.originName)
+  const state = sqlFieldTypeDrift.value[key]
+  if (!state) return
+  sqlFieldTypeDrift.value = { ...sqlFieldTypeDrift.value, [key]: { ...state, confirmed: true } }
+}
+const confirmFieldTypeDriftById = (id: string) => {
+  const field = allfields.value.find(field => field.id === id)
+  if (field) confirmFieldTypeDrift(field)
+}
+const changeEditorStep = async (step: 'relation' | 'process') => {
+  if (step === 'process') {
+    if (!(await nodeDetails.value?.commit())) return
+    const unnamedField = allfields.value.find(field => field.extField === 0 && !field.name?.trim())
+    if (unnamedField) {
+      expandedPanel.value = null
+      await selectCanvasNode(unnamedField.datasetTableId)
+      ElMessage.warning(t('dataset.input_edit_name'))
+      return
+    }
+  }
+  if (step === 'relation') {
+    ++datasetPreviewRequest
+    previewQuery.invalidate()
+    datasetPreviewLoading.value = false
+  }
+  expandedPanel.value = null
+  editorStep.value = step
+  await nextTick()
+  quotaTableHeight.value =
+    (step === 'process' ? document.documentElement.clientHeight - 56 : sqlResultHeight.value) -
+    242 -
+    typeDriftBarHeight.value
+  if (step === 'process' && allfields.value.length) datasetPreview()
+}
+const tableDetails = ref<InstanceType<typeof DatasetTableDetails>>()
 const dataSource = ref('')
 const searchTable = ref('')
 const showInput = ref(false)
@@ -260,6 +409,17 @@ const dfsName = (arr, id) => {
 }
 
 const { height } = useWindowSize()
+const canvasHeight = computed(() =>
+  expandedPanel.value === 'canvas'
+    ? Math.max(64, height.value - 56 - (crossDatasources.value ? 40 : 0))
+    : dragHeight.value
+)
+const detailsHeight = computed(
+  () =>
+    `calc(100% - ${
+      (expandedPanel.value === 'details' ? 0 : dragHeight.value) + (crossDatasources.value ? 40 : 0)
+    }px)`
+)
 
 const dfsChild = arr => {
   return arr.filter(ele => {
@@ -298,7 +458,7 @@ const pushDataset = () => {
 }
 
 const backToMain = () => {
-  if (isUpdate) {
+  if (isUpdate || nodeDetails.value?.hasPendingChanges) {
     ElMessageBox.confirm(t('data_set.want_to_exit'), {
       confirmButtonText: t('dataset.confirm'),
       cancelButtonText: t('common.cancel'),
@@ -307,9 +467,10 @@ const backToMain = () => {
       type: 'warning',
       autofocus: false,
       showClose: false
-    }).then(() => {
-      pushDataset()
-    })
+    }).then(
+      () => pushDataset(),
+      () => undefined
+    )
   } else {
     pushDataset()
   }
@@ -356,6 +517,7 @@ const confirmCustomTime = () => {
     delete currentField.value.name
     recoverSelection()
     updateCustomTime.value = false
+    changeUpdate()
   } else {
     ruleFormRef.value.validate(valid => {
       if (valid) {
@@ -369,6 +531,7 @@ const confirmCustomTime = () => {
           return false
         })
         updateCustomTime.value = false
+        changeUpdate()
       }
     })
   }
@@ -379,7 +542,7 @@ watch(searchTable, val => {
     ele.tableName.toLowerCase().includes(val.toLowerCase())
   )
 })
-const editeSave = () => {
+const editeSave = (returnAfterSave: boolean) => {
   const union = []
   loading.value = true
   dfsNodeList(union, datasetDrag.value.getNodeList())
@@ -394,7 +557,7 @@ const editeSave = () => {
     .then(() => {
       isUpdate = false
       ElMessage.success(t('data_set.saved_successfully'))
-      if (willBack) {
+      if (returnAfterSave) {
         pushDataset()
       }
     })
@@ -404,24 +567,30 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
-  changeUpdate()
   if (tabActive.value === 'manage') {
     dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
     quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
   }
   const arr = ['text', 'time', 'value', 'float', 'value', 'location', 'binary', 'url']
   if (arr.includes(type as string)) {
-    ele.deType = arr.indexOf(type)
-    ele.dateFormat = ''
+    const deType = arr.indexOf(type)
+    if (ele.deType !== deType) {
+      ele.deType = deType
+      ele.dateFormat = ''
+      changeUpdate()
+    }
     return
   }
   if (timeTypes.includes(type as string)) {
     currentField.value.dateFormat = ele.dateFormat
     currentField.value.dateFormatType = ele.dateFormatType
 
-    ele.deType = 1
-    ele.dateFormatType = type
-    ele.dateFormat = type
+    if (ele.deType !== 1 || ele.dateFormatType !== type) {
+      ele.deType = 1
+      ele.dateFormatType = type
+      ele.dateFormat = type
+      changeUpdate()
+    }
   }
   switch (type) {
     case 'copy':
@@ -430,12 +599,14 @@ const handleFieldMore = (ele, type) => {
       } else {
         copyField(ele)
       }
+      changeUpdate()
       break
     case 'delete':
       deleteField(ele)
       break
     case 'translate':
       dqTrans(ele.id)
+      changeUpdate()
       break
     case 'editor':
       if (ele.extField === 3) {
@@ -472,6 +643,7 @@ const dqTransArr = groupType => {
       ele.groupType = groupType
     }
   })
+  changeUpdate()
   recoverSelection()
 }
 
@@ -583,6 +755,7 @@ const deleteField = item => {
       if (action === 'confirm') {
         delFieldById([item.id])
         datasetDrag.value.dfsNodeFieldBackReal(item)
+        changeUpdate()
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -649,6 +822,7 @@ const confirmNormalField = () => {
         }
         return false
       })
+      changeUpdate()
       closeNormalField()
     }
   })
@@ -677,6 +851,7 @@ const confirmEditCalc = () => {
       } else {
         allfields.value.push(obj)
       }
+      changeUpdate()
       editCalcField.value = false
     }
   })
@@ -736,23 +911,21 @@ const initEdite = async () => {
     copyId = embeddedStore.datasetCopyId || copyId
   }
   isEdit.value = false
-  if (copyId || id) {
-    const barRes = await barInfoApi(copyId || id)
-    if (!barRes || !barRes['id']) {
+  try {
+    if (copyId || id) {
+      const barRes = await barInfoApi(copyId || id)
+      if (!barRes || !barRes['id']) {
+        return
+      }
+      isEdit.value = true
+    }
+    if (datasourceId) {
+      dataSource.value = datasourceId as string
+      getTableName(datasourceId as string, tableName)
+    }
+    if (!id && !copyId) {
       return
     }
-    isEdit.value = true
-  }
-  if (datasourceId) {
-    dataSource.value = datasourceId as string
-    getTableName(datasourceId as string, tableName)
-  }
-  if (!id && !copyId) {
-    loading.value = false
-    return
-  }
-
-  try {
     const res = await getDatasetDetails(copyId || id)
     let arr = []
     const { pid, name } = res || {}
@@ -772,9 +945,14 @@ const initEdite = async () => {
     dataSource.value = fir?.currentDs?.datasourceId
     dsChange(dataSource.value)
     datasetDrag.value.initState(arr)
-    loading.value = false
+    if (id && !copyId) {
+      editorStep.value = 'process'
+      await nextTick()
+      if (allfields.value.length) datasetPreview()
+    }
   } catch (error) {
     console.error(error)
+  } finally {
     loading.value = false
   }
 }
@@ -796,6 +974,18 @@ const quota = computed(() => {
 const dimensions = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'd')
 })
+
+const onlyPendingDrift = ref(false)
+const batchDimensions = computed(() =>
+  onlyPendingDrift.value
+    ? dimensions.value.filter(field => getFieldTypeDrift(field) !== null)
+    : dimensions.value
+)
+const batchQuota = computed(() =>
+  onlyPendingDrift.value
+    ? quota.value.filter(field => getFieldTypeDrift(field) !== null)
+    : quota.value
+)
 
 const dfsGetName = (list, name) => {
   list.forEach(ele => {
@@ -824,14 +1014,15 @@ const tabChange = val => {
   })
 }
 
-const addComplete = () => {
+const addComplete = (isInit = false) => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
-  changeUpdate()
+  if (!isInit) changeUpdate()
   if (!state.nodeNameList?.length) {
     columns.value = []
     tableData.value = []
   }
-  cancelMap['/datasetData/previewData']?.()
+  ++datasetPreviewRequest
+  previewQuery.invalidate()
   datasetPreviewLoading.value = false
   reGetName()
 }
@@ -873,6 +1064,10 @@ const allfields = ref([])
 provide('allfields', allfields)
 provide('isCross', isCross)
 
+watch(pendingTypeDriftCount, count => {
+  if (!count) onlyPendingDrift.value = false
+})
+
 const expandedD = ref(true)
 const expandedQ = ref(true)
 const setGuid = (arr, id, datasourceId, oldArr) => {
@@ -887,11 +1082,11 @@ const setGuid = (arr, id, datasourceId, oldArr) => {
 
 const dfsFields = (arr, list) => {
   list.forEach(ele => {
+    const { currentDsFields } = ele
+    arr.push(...cloneDeep(currentDsFields))
     if (ele.children?.length) {
       dfsFields(arr, ele.children)
     }
-    const { currentDsFields } = ele
-    arr.push(...cloneDeep(currentDsFields))
   })
 }
 
@@ -906,13 +1101,10 @@ const getDelIdArr = (newArr, oldArr) => {
 }
 
 const diffArr = (newArr, oldArr) => {
-  const idMapNew = newArr.map(ele => ele.id)
-  const idMapOld = oldArr.map(ele => ele.id)
-  const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
+  const oldFields = new Map(oldArr.map(ele => [ele.id, ele]))
   return cloneDeep([
     ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
-    ...arr,
-    ...oldArr.filter(ele => idMapNew.includes(ele.id))
+    ...newArr.map(ele => oldFields.get(ele.id) || ele)
   ])
 }
 
@@ -1221,6 +1413,7 @@ const confirmGroupField = () => {
         } else {
           allfields.value.push({ ...currentGroupField, groupList })
         }
+        changeUpdate()
         editGroupField.value = false
       }
     }, 1000)
@@ -1254,9 +1447,9 @@ const dragstart = (e: DragEvent, ele) => {
   e.dataTransfer.setData('text/plain', JSON.stringify(ele))
   maskShow.value = true
 }
-const setActiveName = (data: Table) => {
+const openTableDetails = (data: Table) => {
   if (data.unableCheck) return
-  activeName.value = data.tableName
+  if (data.type !== 'sql') tableDetails.value?.open(data)
 }
 
 const verify = () => {
@@ -1283,11 +1476,15 @@ const verify = () => {
       const arr = []
       dfsNodeList(arr, datasetDrag.value.getNodeList())
       datasetPreviewLoading.value = true
-      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value })
+      const query = previewQuery.start()
+      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value }, query)
         .then(() => {
-          ElMessage.success(t('data_set.validation_succeeded'))
+          if (query.isCurrent()) ElMessage.success(t('data_set.validation_succeeded'))
         })
+        .catch(() => undefined)
         .finally(() => {
+          query.finish()
+          if (!query.isCurrent()) return
           datasetPreviewLoading.value = false
         })
     }
@@ -1341,7 +1538,7 @@ const calculateHeight = (e: MouseEvent) => {
   }
   dragHeight.value = e.pageY - 56
   sqlResultHeight.value = clientHeight - dragHeight.value - 56
-  quotaTableHeight.value = sqlResultHeight.value - 242
+  quotaTableHeight.value = sqlResultHeight.value - 242 - typeDriftBarHeight.value
 }
 
 const sqlResultHeight = ref(0)
@@ -1353,13 +1550,11 @@ const handleResize = debounce(() => {
     return
   }
   dragHeight.value = clientHeight - sqlResultHeight.value - 56
+  quotaTableHeight.value =
+    (editorStep.value === 'process' ? clientHeight - 56 : sqlResultHeight.value) -
+    242 -
+    typeDriftBarHeight.value
 }, 60)
-let willBack = false
-const saveAndBack = () => {
-  if (!willBack) return
-  pushDataset()
-}
-
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
@@ -1372,7 +1567,12 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize)
   getSingleVal()
   getSqlResultHeight()
-  quotaTableHeight.value = sqlResultHeight.value - 242
+  quotaTableHeight.value =
+    (editorStep.value === 'process'
+      ? document.documentElement.clientHeight - 56
+      : sqlResultHeight.value) -
+    242 -
+    typeDriftBarHeight.value
 })
 
 const getSingleVal = () => {
@@ -1385,7 +1585,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
 })
 const getSqlResultHeight = () => {
-  sqlResultHeight.value = (document.querySelector('.sql-result') as HTMLElement).offsetHeight
+  sqlResultHeight.value = document.documentElement.clientHeight - dragHeight.value - 56
 }
 const getDatasource = (weight?: number) => {
   getDatasourceList(weight).then(res => {
@@ -1438,9 +1638,9 @@ const resetAllfieldsUnionId = (arr, idMap) => {
   return JSON.parse(strUnion)
 }
 
-const datasetSave = () => {
+const datasetSave = (returnAfterSave = false) => {
   if (nodeInfo.id) {
-    editeSave()
+    editeSave(returnAfterSave)
     return
   }
   let union = []
@@ -1458,27 +1658,31 @@ const datasetSave = () => {
     'dataset',
     { id: pid || '0', union, allfields: allfields.value, isCross: isCross.value },
     '',
-    datasetName.value
+    datasetName.value,
+    returnAfterSave ? pushDataset : undefined
   )
-}
-const datasetSaveAndBack = () => {
-  willBack = true
-  datasetSave()
 }
 
 const datasetPreviewLoading = ref(false)
+let datasetPreviewRequest = 0
 
 const datasetPreview = () => {
   if (datasetPreviewLoading.value) return
   const arr = []
   dfsNodeList(arr, datasetDrag.value.getNodeList())
+  const request = ++datasetPreviewRequest
+  const query = previewQuery.start()
   datasetPreviewLoading.value = true
-  getPreviewData({ union: arr, allFields: allfields.value, isCross: isCross.value })
+  getPreviewData({ union: arr, allFields: allfields.value, isCross: isCross.value }, query)
     .then(res => {
+      if (request !== datasetPreviewRequest || !query.isCurrent()) return
       columns.value = generateColumns((res.data.fields as Field[]) || [])
       tableData.value = (res.data.data as Array<{}>) || []
     })
+    .catch(() => undefined)
     .finally(() => {
+      query.finish()
+      if (request !== datasetPreviewRequest || !query.isCurrent()) return
       datasetPreviewLoading.value = false
     })
 }
@@ -1529,7 +1733,8 @@ const deTypeSelection = ref([])
 const fieldSelection = ref([])
 
 const showCascaderBatch = computed(() => {
-  return !!deTypeSelection.value.length && Array.from(new Set(deTypeSelection.value)).length === 1
+  const deTypes = fieldSelection.value.map(ele => ele.deType)
+  return !!deTypes.length && new Set(deTypes).size === 1
 })
 
 const clearSelection = () => {
@@ -1545,7 +1750,7 @@ const setDeTypeSelection = () => {
   ]
 
   deTypeSelection.value = fieldSelection.value.map(ele => {
-    if (ele.extField === 2 && ele.deExtractType === undefined) {
+    if (ele.extField === 2 && (ele.deExtractType === undefined || ele.deExtractType === null)) {
       return ele.deType
     }
     return ele.deExtractType
@@ -1600,6 +1805,7 @@ const cascaderChangeArr = val => {
       ele.deTypeArr = deType === 1 && ele.deExtractType === 0 ? [deType, dateFormat] : [deType]
     }
   })
+  changeUpdate()
   recoverSelection()
 }
 
@@ -1634,9 +1840,11 @@ const cascaderChange = (row, val) => {
     updateCustomTime.value = true
     return
   }
+  confirmFieldTypeDrift(row)
   row.deType = deType
   row.dateFormat = deType === 1 ? dateFormat : ''
   row.dateFormatType = deType === 1 ? dateFormat : ''
+  changeUpdate()
 }
 
 const dfsUnion = (arr, list) => {
@@ -1663,6 +1871,7 @@ const dfsUnion = (arr, list) => {
   })
 }
 const handleClick = () => {
+  datasetNameBeforeEdit = datasetName.value
   showInput.value = true
   nextTick(() => {
     editorName.value.focus()
@@ -1697,6 +1906,7 @@ const finish = res => {
     name
   }
   allfields.value = res.allFields || []
+  tabChange(tabActive.value)
 }
 
 const errorTips = ref('')
@@ -1704,13 +1914,10 @@ const errorTips = ref('')
 const handleDatasetName = () => {
   errorTips.value = ''
   if (!datasetName.value.trim()) {
-    errorTips.value = t('commons.input_content')
-  }
-
-  if (datasetName.value.trim().length < 1) {
-    errorTips.value = t('datasource.input_limit_1_64', [1, 64])
+    errorTips.value = t('data_set.the_dataset_name')
   }
   showInput.value = !!errorTips.value
+  if (!errorTips.value && datasetName.value !== datasetNameBeforeEdit) changeUpdate()
 }
 
 const treeProps = {
@@ -1775,23 +1982,69 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           }}</span>
         </template>
       </span>
+      <nav v-if="editorStep === 'process'" class="editor-tools">
+        <el-button text @click="changeEditorStep('relation')">
+          <span class="editor-tool-content">
+            <el-icon
+              ><Icon><icon_organization_outlined class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.table_relationship') }}</span>
+          </span>
+        </el-button>
+        <el-button text :disabled="!allfields.length" @click="addCalcField('q')">
+          <span class="editor-tool-content">
+            <el-icon
+              ><Icon><iconCalculatedField class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.add_calc_field') }}</span>
+          </span>
+        </el-button>
+        <el-button text :disabled="!allfields.length" @click="addGroupField">
+          <span class="editor-tool-content">
+            <el-icon
+              ><Icon><dvFilter class="svg-icon" /></Icon
+            ></el-icon>
+            <span>{{ t('dataset.create_grouping_field') }}</span>
+          </span>
+        </el-button>
+      </nav>
       <span class="operate">
-        <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack">{{
-          t('data_set.save_and_return')
-        }}</el-button>
-        <el-button :disabled="showInput" type="primary" @click="datasetSave">{{
-          t('data_set.save')
-        }}</el-button>
+        <el-button
+          v-if="editorStep === 'relation'"
+          type="primary"
+          :disabled="showInput || !allfields.length"
+          @click="changeEditorStep('process')"
+          >{{ t('dataset.next_data_processing') }}</el-button
+        >
+        <el-button
+          v-if="editorStep === 'process'"
+          :disabled="showInput"
+          type="primary"
+          @click="datasetSave(true)"
+          >{{ t('data_set.save_and_return') }}</el-button
+        >
+        <el-button
+          v-if="editorStep === 'process'"
+          :disabled="showInput"
+          type="primary"
+          @click="datasetSave()"
+          >{{ t('data_set.save') }}</el-button
+        >
       </span>
     </div>
+    <dataset-table-details ref="tableDetails" />
     <div class="container dataset-db" @mouseup="mouseupDrag">
-      <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+      <p
+        v-show="editorStep === 'relation' && !showLeft"
+        class="arrow-right"
+        @click="showLeft = true"
+      >
         <el-icon>
           <Icon><icon_right_outlined class="svg-icon" /></Icon>
         </el-icon>
       </p>
       <div
-        v-show="showLeft"
+        v-show="editorStep === 'relation' && showLeft"
         :style="{ left: LeftWidth + 'px' }"
         class="drag-left"
         :class="isDragging && 'is-dragging'"
@@ -1799,13 +2052,13 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       />
       <div
         v-loading="dsLoading"
-        v-show="showLeft"
+        v-show="editorStep === 'relation' && showLeft"
         class="table-list"
         :style="{ width: LeftWidth + 'px' }"
       >
         <div class="table-list-top">
           <el-switch
-            style="margin-bottom: 8px"
+            style="margin-bottom: 16px"
             v-model="isCross"
             v-if="!singleValData"
             @change="sourceChange"
@@ -1893,7 +2146,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             @dragstart="$event => dragstart($event, sqlNode)"
             @dragend="dragEnd"
             :draggable="true"
-            @click="setActiveName(sqlNode)"
           >
             <el-icon class="icon-color">
               <Icon name="icon_sql_outlined_1"><icon_sql_outlined_1 class="svg-icon" /></Icon>
@@ -1924,7 +2176,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     currentDsId &&
                     datasourceTableData[index].datasourceId === currentDsId)
                 "
-                @click="setActiveName(datasourceTableData[index])"
+                @click="openTableDetails(datasourceTableData[index])"
               >
                 <el-icon class="icon-color">
                   <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
@@ -1935,53 +2187,71 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           </FixedSizeList>
         </div>
       </div>
-      <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
-        <div v-if="crossDatasources" class="different-datasource">
+      <div
+        class="drag-right"
+        :style="{
+          width: `calc(100% - ${editorStep === 'relation' && showLeft ? LeftWidth : 0}px)`
+        }"
+      >
+        <div v-if="crossDatasources && editorStep === 'relation'" class="different-datasource">
           <el-icon>
             <Icon name="icon_warning_colorful"><icon_warning_colorful class="svg-icon" /></Icon>
           </el-icon>
           {{ t('data_set.be_reported_incorrectly') }}
         </div>
-        <dataset-union
-          @reGetName="reGetName"
-          @join-editor="joinEditor"
-          @changeUpdate="changeUpdate"
-          :maskShow="maskShow"
-          :dragHeight="dragHeight"
-          :getDsName="getDsName"
-          :offsetX="offsetX"
-          :offsetY="offsetY"
-          ref="datasetDrag"
-          @updateAllfields="updateAllfields"
-          @addComplete="addComplete"
-        ></dataset-union>
         <div
-          class="sql-result"
-          :style="{
-            height: sqlResultHeight
-              ? `${crossDatasources ? sqlResultHeight - 40 : sqlResultHeight}px`
-              : `calc(100% - ${crossDatasources ? dragHeight + 40 : dragHeight}px)`
-          }"
+          v-show="editorStep === 'relation' && expandedPanel !== 'details'"
+          class="dataset-canvas-region"
         >
+          <dataset-panel-fullscreen
+            class="canvas-fullscreen"
+            :fullscreen="expandedPanel === 'canvas'"
+            :label="t('dataset.canvas_fullscreen')"
+            @toggle="toggleExpandedPanel('canvas')"
+          />
+          <dataset-union
+            @select-node="selectCanvasNode"
+            @reGetName="reGetName"
+            @join-editor="joinEditor"
+            @changeUpdate="changeUpdate"
+            :maskShow="maskShow"
+            :dragHeight="canvasHeight"
+            :getDsName="getDsName"
+            :offsetX="offsetX"
+            :offsetY="offsetY"
+            ref="datasetDrag"
+            @updateAllfields="updateAllfields"
+            @addComplete="addComplete"
+            @field-type-detected="handleFieldTypeDetected"
+          ></dataset-union>
+        </div>
+        <div
+          v-show="editorStep === 'relation' && expandedPanel !== 'canvas'"
+          class="node-details-region"
+          :style="{ height: detailsHeight }"
+        >
+          <span v-show="!expandedPanel" class="drag" @mousedown="mousedownDragH" />
+          <dataset-node-details
+            ref="nodeDetails"
+            :nodes="canvasNodes"
+            :is-cross="isCross"
+            :apply-fields="applyNodeFields"
+            :all-fields="allfields"
+            :field-options="fieldOptions"
+            :field-options-text="fieldOptionsText"
+            :field-type-drift="getFieldTypeDrift"
+            @field-name="changeNodeFieldName"
+            @field-type="changeNodeFieldType"
+            @keep-field-type="confirmFieldTypeDriftById"
+            :fullscreen="expandedPanel === 'details'"
+            @toggle-fullscreen="toggleExpandedPanel('details')"
+            @select="activateCanvasNode"
+            @command="handleNodeCommand"
+          />
+        </div>
+        <div v-show="editorStep === 'process'" class="sql-result" style="height: 100%">
           <div class="sql-title">
-            <span class="drag" @mousedown="mousedownDragH" />
             <div class="field-data">
-              <el-button :disabled="!allfields.length" @click="addCalcField('q')" secondary>
-                <template #icon>
-                  <el-icon>
-                    <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                </template>
-                {{ t('dataset.add_calc_field') }}
-              </el-button>
-              <el-button :disabled="!allfields.length" @click="addGroupField" secondary>
-                <template #icon>
-                  <el-icon>
-                    <Icon><icon_organization_outlined class="svg-icon" /></Icon>
-                  </el-icon>
-                </template>
-                {{ t('dataset.create_grouping_field') }}
-              </el-button>
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
@@ -2002,8 +2272,38 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           </div>
           <el-tabs class="padding-24" v-model="tabActive" @tab-change="tabChange">
             <el-tab-pane :label="t('chart.data_preview')" name="preview" />
-            <el-tab-pane :label="t('dataset.batch_manage')" name="manage" />
+            <el-tab-pane name="manage">
+              <template #label>
+                <span class="batch-manage-tab">
+                  {{ t('dataset.batch_manage') }}
+                  <span v-if="pendingTypeDriftCount" class="batch-manage-count">{{
+                    pendingTypeDriftCount
+                  }}</span>
+                </span>
+              </template>
+            </el-tab-pane>
           </el-tabs>
+          <div
+            v-if="pendingTypeDriftCount"
+            class="field-type-drift-bar"
+            :class="{ 'is-full-width': tabActive === 'preview' }"
+            role="status"
+          >
+            <span class="field-type-drift-bar-text">
+              <el-icon
+                ><Icon><icon_warning_colorful class="svg-icon" /></Icon
+              ></el-icon>
+              <span>{{ t('dataset.type_change_pending', { count: pendingTypeDriftCount }) }}</span>
+              <span>{{ t('dataset.type_change_not_auto') }}</span>
+            </span>
+            <el-button
+              v-if="tabActive === 'preview'"
+              link
+              type="primary"
+              @click="tabActive = 'manage'"
+              >{{ t('dataset.view_fields') }}</el-button
+            >
+          </div>
           <div v-show="tabActive === 'preview' && !!allfields.length" class="table-preview">
             <div class="preview-field">
               <div :class="['field-d', { open: expandedD }]">
@@ -2121,16 +2421,27 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           </div>
           <div v-show="tabActive !== 'preview' && !!allfields.length" class="batch-area">
             <div class="manage-container">
+              <div v-if="pendingTypeDriftCount" class="field-type-drift-filter">
+                <el-checkbox v-model="onlyPendingDrift">{{
+                  t('dataset.only_type_change_pending')
+                }}</el-checkbox>
+              </div>
               <el-collapse v-model="state.fieldCollapse" class="style-collapse">
                 <el-collapse-item
+                  v-if="!onlyPendingDrift || batchDimensions.length"
                   name="dimension"
-                  :title="t('chart.dimension')"
                   class="dimension-manage-header manage-header"
                 >
+                  <template #title>
+                    <span class="manage-group-title">
+                      {{ t('chart.dimension') }}
+                      <span class="manage-group-count">{{ batchDimensions.length }}</span>
+                    </span>
+                  </template>
                   <el-table
                     @selection-change="setDeTypeSelection"
                     ref="dimensionsTable"
-                    :data="dimensions"
+                    :data="batchDimensions"
                     :height="quotaTableHeight"
                     style="width: 100%"
                   >
@@ -2142,6 +2453,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             v-model="scope.row.name"
                             maxlength="100"
                             :placeholder="t('commons.input_content')"
+                            @change="changeUpdate"
                           />
                         </div>
                       </template>
@@ -2188,32 +2500,47 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     </el-table-column>
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
-                        <el-cascader
-                          :class="
-                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
-                          "
-                          v-if="scope.row.extField !== 3"
-                          popper-class="cascader-panel"
-                          v-model="scope.row.deTypeArr"
-                          @change="val => cascaderChange(scope.row, val)"
-                          :options="scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText"
-                        >
-                          <template v-slot="{ data }">
-                            <el-icon>
-                              <Icon
-                                ><component
-                                  class="svg-icon"
-                                  :class="`field-icon-${
-                                    fieldType[[2, 3].includes(data.value) ? 2 : 0]
-                                  }`"
-                                  :is="iconFieldMap[getIconName(data.value)]"
-                                ></component
-                              ></Icon>
-                            </el-icon>
-                            <span>{{ data.label }}</span>
-                          </template>
-                        </el-cascader>
-                        <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
+                        <div class="field-type-cell">
+                          <div class="field-type-control">
+                            <el-cascader
+                              :class="[
+                                !!scope.row.deTypeArr &&
+                                  !!scope.row.deTypeArr.length &&
+                                  'select-type',
+                                { 'is-type-drift': getFieldTypeDrift(scope.row) !== null }
+                              ]"
+                              v-if="scope.row.extField !== 3"
+                              popper-class="cascader-panel"
+                              v-model="scope.row.deTypeArr"
+                              @change="val => cascaderChange(scope.row, val)"
+                              :options="
+                                scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText
+                              "
+                            >
+                              <template v-slot="{ data }">
+                                <el-icon>
+                                  <Icon
+                                    ><component
+                                      class="svg-icon"
+                                      :class="`field-icon-${
+                                        fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                      }`"
+                                      :is="iconFieldMap[getIconName(data.value)]"
+                                    ></component
+                                  ></Icon>
+                                </el-icon>
+                                <span>{{ data.label }}</span>
+                              </template>
+                            </el-cascader>
+                            <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
+                            <field-type-drift-tip
+                              v-if="getFieldTypeDrift(scope.row) !== null"
+                              :current-type="scope.row.deType"
+                              :detected-type="getFieldTypeDrift(scope.row)"
+                              @keep="confirmFieldTypeDrift(scope.row)"
+                            />
+                          </div>
+                        </div>
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
@@ -2334,15 +2661,21 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                   </el-table>
                 </el-collapse-item>
                 <el-collapse-item
+                  v-if="!onlyPendingDrift || batchQuota.length"
                   name="quota"
-                  :title="t('chart.quota')"
                   class="quota-manage-header manage-header"
                 >
+                  <template #title>
+                    <span class="manage-group-title">
+                      {{ t('chart.quota') }}
+                      <span class="manage-group-count">{{ batchQuota.length }}</span>
+                    </span>
+                  </template>
                   <el-table
                     @selection-change="setDeTypeSelection"
                     ref="quotaTable"
                     :height="quotaTableHeight"
-                    :data="quota"
+                    :data="batchQuota"
                     style="width: 100%"
                   >
                     <el-table-column type="selection" width="40" />
@@ -2352,6 +2685,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                           <el-input
                             v-model="scope.row.name"
                             :placeholder="t('commons.input_content')"
+                            @change="changeUpdate"
                           />
                         </div>
                       </template>
@@ -2395,30 +2729,45 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
-                        <el-cascader
-                          :class="
-                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
-                          "
-                          popper-class="cascader-panel"
-                          v-model="scope.row.deTypeArr"
-                          @change="val => cascaderChange(scope.row, val)"
-                          :options="scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText"
-                        >
-                          <template v-slot="{ data }">
-                            <el-icon>
-                              <Icon
-                                ><component
-                                  class="svg-icon"
-                                  :class="`field-icon-${
-                                    fieldType[[2, 3].includes(data.value) ? 2 : 0]
-                                  }`"
-                                  :is="iconFieldMap[getIconName(data.value)]"
-                                ></component
-                              ></Icon>
-                            </el-icon>
-                            <span>{{ data.label }}</span>
-                          </template>
-                        </el-cascader>
+                        <div class="field-type-cell">
+                          <div class="field-type-control">
+                            <el-cascader
+                              :class="[
+                                !!scope.row.deTypeArr &&
+                                  !!scope.row.deTypeArr.length &&
+                                  'select-type',
+                                { 'is-type-drift': getFieldTypeDrift(scope.row) !== null }
+                              ]"
+                              popper-class="cascader-panel"
+                              v-model="scope.row.deTypeArr"
+                              @change="val => cascaderChange(scope.row, val)"
+                              :options="
+                                scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText
+                              "
+                            >
+                              <template v-slot="{ data }">
+                                <el-icon>
+                                  <Icon
+                                    ><component
+                                      class="svg-icon"
+                                      :class="`field-icon-${
+                                        fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                      }`"
+                                      :is="iconFieldMap[getIconName(data.value)]"
+                                    ></component
+                                  ></Icon>
+                                </el-icon>
+                                <span>{{ data.label }}</span>
+                              </template>
+                            </el-cascader>
+                            <field-type-drift-tip
+                              v-if="getFieldTypeDrift(scope.row) !== null"
+                              :current-type="scope.row.deType"
+                              :detected-type="getFieldTypeDrift(scope.row)"
+                              @keep="confirmFieldTypeDrift(scope.row)"
+                            />
+                          </div>
+                        </div>
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
@@ -2627,11 +2976,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       </template>
     </el-drawer>
   </div>
-  <creat-ds-group
-    @finish="finish"
-    @onDatasetSave="saveAndBack"
-    ref="creatDsFolder"
-  ></creat-ds-group>
+  <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
   <el-dialog
     modal-class="calc-field-edit-dialog"
     v-model="editCalcField"
@@ -2934,12 +3279,53 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   --ed-border-color-lighter: #1f232926 !important;
   .top {
     height: 56px;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     padding: 0 24px;
     background: #050e21;
     box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
+
+    .operate {
+      grid-column: 3;
+      justify-self: end;
+      white-space: nowrap;
+    }
+
+    .editor-tools {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+
+      .editor-tool-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .ed-button {
+        height: 48px;
+        margin: 0;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 12px;
+
+        &:hover {
+          background: #ffffff1a;
+        }
+
+        &.is-disabled {
+          color: #ffffff66;
+        }
+
+        .ed-icon {
+          font-size: 18px;
+          transform: translateY(2px);
+        }
+      }
+    }
 
     .name {
       color: #fff;
@@ -2948,7 +3334,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       font-weight: 400;
       display: flex;
       align-items: center;
-      width: 50%;
+      min-width: 0;
       position: relative;
 
       .ed-form-item__error {
@@ -2984,6 +3370,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     width: 100%;
     height: calc(100vh - 56px);
     position: relative;
+    overflow: hidden;
     .drag-left {
       position: absolute;
       height: calc(100vh - 56px);
@@ -3045,6 +3432,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 
       height: 100%;
       width: 240px;
+      flex-shrink: 0;
       padding-bottom: 16px;
 
       font-family: var(--de-custom_font, 'PingFang');
@@ -3117,8 +3505,8 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       }
 
       .table-checkbox-list {
-        height: calc(100% - 190px);
-        overflow-y: auto;
+        height: calc(100% - 194px);
+        overflow-y: hidden;
         padding: 0 8px;
 
         .not-allow {
@@ -3148,6 +3536,28 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         .ed-icon {
           font-size: 16px;
           margin-right: 8px;
+        }
+      }
+      .dataset-canvas-region {
+        position: relative;
+        .canvas-fullscreen {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          z-index: 5;
+        }
+      }
+      .node-details-region {
+        position: relative;
+        min-height: 0;
+        > .drag {
+          position: absolute;
+          top: -3px;
+          left: 0;
+          width: 100%;
+          height: 6px;
+          cursor: row-resize;
+          z-index: 5;
         }
       }
       .sql-result {
@@ -3274,9 +3684,11 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               padding: 0 8px;
               position: relative;
               height: 49px;
+              overflow-y: hidden;
 
               &.open {
                 height: 50%;
+                overflow-y: auto;
               }
               .title {
                 cursor: pointer;
@@ -3312,7 +3724,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                   }
                 }
               }
-              overflow-y: auto;
             }
 
             .field-d {
@@ -3391,6 +3802,104 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   height: 14px;
   transform: translateY(-50%);
   line-height: 14px;
+}
+
+.field-type-drift-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 24px;
+  padding: 7px 10px;
+  border: 1px solid #ebc383;
+  border-radius: 4px;
+  background: #fff7e9;
+  color: #8c5108;
+  font-size: 13px;
+  &.is-full-width {
+    margin-inline: 0;
+  }
+  .field-type-drift-bar-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+}
+
+.field-type-drift-filter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 34px;
+}
+
+.batch-manage-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  .batch-manage-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 4px;
+    background: #fff1da;
+    color: #8c5108;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+}
+
+.manage-group-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  .manage-group-count {
+    color: #8d9199;
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
+.field-type-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  .field-type-control {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .ed-cascader {
+    width: 100%;
+  }
+  :deep(.field-type-drift-tip) {
+    position: absolute;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+:deep(.el-cascader.is-type-drift),
+:deep(.ed-cascader.is-type-drift) {
+  .ed-input__wrapper {
+    background: #fff7e9;
+    box-shadow: 0 0 0 1px #ebc383 inset;
+    &:hover,
+    &.is-focus {
+      box-shadow: 0 0 0 1px #ca8b36 inset;
+    }
+  }
+  .ed-input__inner,
+  .ed-input__suffix .ed-input__icon {
+    color: #8c5108;
+  }
 }
 
 .batch-operate {
@@ -3494,7 +4003,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 .calc-field-edit-dialog {
   .ed-dialog__footer {
     padding-top: 24px;
-    border: 1px solid rgba(31, 35, 41, 0.15);
   }
 }
 .group-fields_dialog {

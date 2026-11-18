@@ -10,7 +10,7 @@ import {
   PIE_AXIS_TYPE,
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
-} from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
+} from './common'
 import { configSingleSectorScale, createCircularLabelLayout } from './common'
 import { CircularLabelOverflow } from './text-overflow'
 import {

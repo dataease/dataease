@@ -153,6 +153,25 @@ public class Utils {
         return "AND";
     }
 
+    /**
+     * 过滤树逻辑连接符白名单校验，仅允许 and/or，输出固定 SQL 关键字。
+     * 防止 customFilter.logic 等外部输入被直接拼接进 SQL。
+     */
+    public static String transLogic(String logic) {
+        if (StringUtils.isBlank(logic)) {
+            return "AND";
+        }
+        switch (logic.trim().toLowerCase(Locale.ROOT)) {
+            case "and":
+                return "AND";
+            case "or":
+                return "OR";
+            default:
+                DEException.throwException("Illegal filter logic");
+        }
+        return "AND";
+    }
+
     public static String transDateFormat(String dateStyle, String datePattern) {
         String split = "-";
         if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
@@ -613,7 +632,14 @@ public class Utils {
     }
 
     public static String transValue(String value) {
-        return value.replace("\\", "\\\\").replace("'", "''").replace("\n", "\\n");
+        return transValue(value, true);
+    }
+
+    public static String transValue(String value, boolean backslashEscapes) {
+        if (backslashEscapes) {
+            return value.replace("\\", "\\\\").replace("'", "''").replace("\n", "\\n");
+        }
+        return value.replace("'", "''");
     }
 
     /**

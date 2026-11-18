@@ -1,3 +1,4 @@
+import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
 import { nameTrim } from '@/utils/utils'
 
@@ -43,11 +44,6 @@ export const listDatasources = data => {
     })
 }
 
-export const listDatasourceType = async (data = {}): Promise<IResponse> => {
-  return request.post({ url: '/datasource/types', data }).then(res => {
-    return res?.data
-  })
-}
 export const getTableField = (data = {}) => request.post({ url: '/datasource/getTableField', data })
 
 export const syncApiTable = (data = {}) => request.post({ url: '/datasource/syncApiTable', data })
@@ -144,8 +140,8 @@ export const checkRepeat = async (data = {}): Promise<Dataset> => {
   })
 }
 
-export const checkApiItem = async (data = {}): Promise<IResponse> => {
-  return request.post({ url: '/datasource/checkApiDatasource', data }).then(res => {
+export const checkApiItem = async (data = {}, queryRequest?: QueryRequest): Promise<IResponse> => {
+  return request.post({ url: '/datasource/checkApiDatasource', data, queryRequest }).then(res => {
     return res
   })
 }

@@ -76,6 +76,14 @@ public interface ReportApi {
     @PostMapping("/deleteLog")
     void deleteInstance(@RequestBody ReportInstanceDelRequest request);
 
+    @Operation(summary = "接收人与补发明细")
+    @PostMapping("/delivery")
+    io.dataease.api.report.vo.ReportDeliveryVO delivery(@RequestBody ReportInstanceMsgRequest request);
+
+    @Operation(summary = "补发原报告")
+    @PostMapping("/resend")
+    void resend(@RequestBody ReportResendRequest request);
+
     @Operation(summary = "日志错误信息")
     @PostMapping("/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);

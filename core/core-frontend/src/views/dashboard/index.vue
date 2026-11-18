@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLatestQuery } from '@/hooks/web/useQueryScope'
+const canvasQuery = useLatestQuery('canvas-load')
 import {
   computed,
   nextTick,
@@ -31,12 +33,18 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { Base64 } from 'js-base64'
 import { deepCopy } from '@/utils/utils'
+import { getCanvasDraft } from '@/utils/canvasDraftCache'
 const interactiveStore = interactiveStoreWithOut()
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
-import { recoverToPublished } from '@/api/visualization/dataVisualization'
+import {
+  checkCanvasChange,
+  findCopyResource,
+  recoverToPublished
+} from '@/api/visualization/dataVisualization'
+import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
 const NewWindowHandler = defineAsyncComponent(
@@ -51,12 +59,15 @@ const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
 const canvasCacheOutRefShow = ref(false)
 const deCanvasRef = ref(null)
-const eventCheck = e => {
+const eventCheck = async e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
-    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-    if (!(opt && opt === 'create')) {
-      check(wsCache.get('panel-weight'), resourceId as string, 4)
+    const { resourceId, opt } = state
+    if (resourceId) {
+      const allowed =
+        opt === 'copy'
+          ? await checkPer(resourceId, opt)
+          : check(wsCache.get('panel-weight') || {}, resourceId, 7)
+      if (!allowed) revokeEditorAccess()
     }
   }
 }
@@ -77,6 +88,7 @@ const {
   dvInfo
 } = storeToRefs(dvMainStore)
 const dataInitState = ref(false)
+const templateLoadError = ref(false)
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const { t } = useI18n()
@@ -104,10 +116,6 @@ const ChartStyleBatchSet = defineAsyncComponent(
 
 const MobileConfigPanel = defineAsyncComponent(() => import('./MobileConfigPanel.vue'))
 
-const CanvasCacheDialog = defineAsyncComponent(
-  () => import('@/components/visualization/CanvasCacheDialog.vue')
-)
-
 const DashboardHiddenComponent = defineAsyncComponent(
   () => import('@/components/dashboard/DashboardHiddenComponent.vue')
 )
@@ -122,20 +130,16 @@ const otherEditorShow = computed(() => {
   )
 })
 
-watch(
-  () => otherEditorShow.value,
-  val => {
-    if (val && curComponent.value) {
-      findComponentAttr(curComponent.value)
-    }
+const resolveComponentAttr = ref<typeof import('@/utils/componentsAttr').findComponentAttr>()
+watch(otherEditorShow, async visible => {
+  if (visible && !resolveComponentAttr.value) {
+    const { findComponentAttr } = await import('@/utils/componentsAttr')
+    resolveComponentAttr.value = findComponentAttr
   }
+})
+const currentAttr = computed(() =>
+  otherEditorShow.value ? resolveComponentAttr.value?.(curComponent.value) : undefined
 )
-const currentAttr = ref()
-const findComponentAttr = type => {
-  import('../../utils/componentsAttr').then(res => {
-    currentAttr.value = res.findComponentAttr(type)
-  })
-}
 
 const otherEditorTitle = computed(() => {
   return curComponent.value?.component === 'UserView'
@@ -152,13 +156,23 @@ const viewEditorShow = computed(() => {
       !hiddenListStatus.value
   )
 })
-const checkPer = async resourceId => {
-  if (!window.DataEaseBi || !resourceId) {
-    return true
+const checkPer = async (resourceId, opt) => {
+  if (!resourceId) {
+    return opt === 'create'
   }
-  const request = { busiFlag: 'dashboard', resourceTable: 'core' }
-  await interactiveStore.setInteractive(request)
-  return check(wsCache.get('panel-weight'), resourceId, 4)
+  try {
+    if (opt === 'copy') {
+      // 临时副本不在资源树中，由后端校验创建者后才允许恢复本地草稿。
+      const response = await findCopyResource(resourceId, 'dashboard')
+      return !!response.data
+    }
+    const request = { busiFlag: 'dashboard', resourceTable: 'core' }
+    await interactiveStore.setInteractive(request, undefined, () => !editorAccessRevoked)
+    return check(wsCache.get('panel-weight') || {}, resourceId, 7)
+  } catch (error) {
+    console.error(error)
+    return false
+  }
 }
 
 const mobileConfig = ref(false)
@@ -182,14 +196,57 @@ const onMobileConfig = () => {
 }
 
 const loadFinish = ref(false)
+let editorAccessRevoked = false
+const revokeEditorAccess = () => {
+  pendingCanvasDraft = undefined
+  editorAccessRevoked = true
+  loadFinish.value = false
+  canvasCacheOutRefShow.value = false
+  canvasQuery.invalidate()
+}
+watch(
+  () => [dvInfo.value.id, dvInfo.value.optType],
+  () => {
+    if (loadFinish.value && dvInfo.value.id && dvInfo.value.optType !== 'copy') {
+      state.resourceId = dvInfo.value.id
+      state.opt = null
+    }
+  }
+)
 const newWindowFromDiv = ref(false)
 let p = null
+const xpackReadyPromise = new Promise(r => (p = r))
 const XpackLoaded = () => p(true)
 
-const doUseCache = flag => {
-  const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
-  if (flag && canvasCache) {
-    const canvasCacheSeries = deepCopy(canvasCache)
+let pendingCanvasDraft:
+  | {
+      resourceId: Parameters<typeof getCanvasDraft>[0]
+      data: Awaited<ReturnType<typeof getCanvasDraft>>
+    }
+  | undefined
+const isCurrentDraftResource = resourceId =>
+  loadFinish.value && !editorAccessRevoked && String(state.resourceId) === String(resourceId)
+
+const prepareCanvasDraft = async resourceId => {
+  const draft = await getCanvasDraft(resourceId)
+  if (!isCurrentDraftResource(resourceId) || !draft) return
+  let draftOutdated = !draft.dvInfo?.contentId
+  if (state.opt !== 'copy' && !draftOutdated) {
+    const response = await checkCanvasChange({ id: resourceId, contentId: draft.dvInfo.contentId })
+    if (!isCurrentDraftResource(resourceId)) return
+    if (response?.data !== 'Success' && response?.data !== 'Repeat') return
+    draftOutdated = response.data === 'Repeat'
+  }
+  pendingCanvasDraft = { resourceId, data: draft }
+  return { canvasType: 'dashboard', resourceId, draftOutdated }
+}
+
+const doUseCache = async flag => {
+  const pending = pendingCanvasDraft
+  if (!pending || !isCurrentDraftResource(pending.resourceId)) return
+  pendingCanvasDraft = undefined
+  if (flag && pending.data) {
+    const canvasCacheSeries = deepCopy(pending.data)
     snapshotStore.snapshotPublish(canvasCacheSeries)
     dataInitState.value = true
     setTimeout(() => {
@@ -198,31 +255,46 @@ const doUseCache = flag => {
       snapshotStore.recordSnapshotCache('renderChart')
     }, 1500)
   } else {
-    initLocalCanvasData()
-    wsCache.delete('DE-DV-CATCH-' + state.resourceId)
+    await snapshotStore.clearCanvasDraft(pending.resourceId)
+    if (!isCurrentDraftResource(pending.resourceId)) return
+    await initLocalCanvasData()
   }
 }
 
-const initLocalCanvasData = callBack => {
+const initLocalCanvasData = async callBack => {
+  if (!loadFinish.value) return
   const { resourceId, opt, sourcePid } = state
   const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
-  initCanvasData(
-    resourceId,
-    { busiFlag, resourceTable: 'snapshot', source: 'main-edit' },
-    function () {
-      dataInitState.value = true
-      if (dvInfo.value && opt === 'copy') {
-        dvInfo.value.dataState = 'prepare'
-        dvInfo.value.optType = 'copy'
-        dvInfo.value.pid = sourcePid
-        setTimeout(() => {
-          snapshotStore.recordSnapshotCache('initLocalCanvasData')
-        }, 1500)
+  const queryRequest = canvasQuery.start()
+  try {
+    await initCanvasData(
+      resourceId,
+      {
+        busiFlag,
+        resourceTable: 'snapshot',
+        source: 'main-edit',
+        awaitLoad: true,
+        queryRequest
+      },
+      function () {
+        dataInitState.value = true
+        if (dvInfo.value && opt === 'copy') {
+          dvInfo.value.dataState = 'prepare'
+          dvInfo.value.optType = 'copy'
+          dvInfo.value.pid = sourcePid
+          setTimeout(() => {
+            snapshotStore.recordSnapshotCache('initLocalCanvasData')
+          }, 1500)
+        }
+        onInitReady({ resourceId: resourceId })
+        callBack && callBack()
       }
-      onInitReady({ resourceId: resourceId })
-      callBack && callBack()
-    }
-  )
+    )
+  } catch (error) {
+    if (!queryRequest.isCurrent()) return
+    revokeEditorAccess()
+    console.error(error)
+  }
 }
 onMounted(async () => {
   document.body.style.overflow = 'hidden'
@@ -234,9 +306,8 @@ onMounted(async () => {
     newWindowFromDiv.value = true
   }
   if (appStore.getXpackValid) {
-    await new Promise(r => (p = r))
+    await xpackReadyPromise
   }
-  loadFinish.value = true
   useEmitt({
     name: 'mobileConfig',
     callback: () => {
@@ -251,28 +322,32 @@ onMounted(async () => {
   const createType = embeddedStore.createType || router.currentRoute.value.query.createType
   const templateParams =
     embeddedStore.templateParams || router.currentRoute.value.query.templateParams
-  const checkResourceId = opt && opt === 'copy' ? null : resourceId
-  const checkResult = await checkPer(checkResourceId as string)
-  if (!checkResult) {
-    return
-  }
-  initDataset()
-
   state.sourcePid = pid
   state.opt = opt
   state.resourceId = resourceId
+  const checkResult = await checkPer(resourceId, opt)
+  if (!checkResult || editorAccessRevoked) {
+    return
+  }
+  loadFinish.value = true
+  await nextTick()
+  if (editorAccessRevoked) return
+  initDataset()
   if (resourceId) {
     dataInitState.value = false
-    const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
-    if (canvasCache) {
+    let draftInfo
+    try {
+      draftInfo = await prepareCanvasDraft(resourceId)
+    } catch (error) {
+      // 校验失败时保留本地草稿，先加载服务器版本，避免未经确认恢复旧内容。
+      console.error(error)
+    }
+    if (!isCurrentDraftResource(resourceId)) return
+    if (draftInfo) {
       canvasCacheOutRefShow.value = true
-      nextTick(() => {
-        setTimeout(() => {
-          canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
-        }, 300)
-      })
+      canvasCacheOutRef.value?.dialogInit(draftInfo)
     } else {
-      initLocalCanvasData(() => {
+      await initLocalCanvasData(() => {
         // do init
       })
     }
@@ -290,11 +365,18 @@ onMounted(async () => {
     let deTemplateData
     let preName
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
-      await decompressionPre(templateParamsApply, result => {
-        deTemplateData = result
-        preName = deTemplateData.baseInfo?.preName
-      })
+      try {
+        const templateParamsApply = JSON.parse(
+          Base64.decode(decodeURIComponent(templateParams + ''))
+        )
+        await decompressionPre(templateParamsApply, result => {
+          deTemplateData = result
+          preName = deTemplateData.baseInfo?.preName
+        })
+      } catch {
+        templateLoadError.value = true
+        return
+      }
     }
     nextTick(() => {
       dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo, preName)
@@ -374,6 +456,7 @@ const doRecoverToPublished = () => {
 }
 
 onUnmounted(() => {
+  revokeEditorAccess()
   document.body.style.overflow = ''
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('message', winMsgHandle)
@@ -381,11 +464,12 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <el-empty v-if="templateLoadError" :description="t('visualization.template_load_failed')" />
   <div
     class="dv-common-layout dv-teleport-query"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
     v-loading="pageLoading"
-    v-if="loadFinish && !mobileConfig"
+    v-if="loadFinish && !mobileConfig && !templateLoadError"
   >
     <DbToolbar @recoverToPublished="doRecoverToPublished" />
     <el-container
@@ -418,7 +502,7 @@ onUnmounted(() => {
         :element="curComponent"
         class="left-sidebar"
       >
-        <component :is="currentAttr" :themes="'light'" />
+        <component :is="currentAttr" :key="curComponent.id" :themes="'light'" />
       </dv-sidebar>
       <dv-sidebar
         v-show="!curComponent && !batchOptStatus && !hiddenListStatus"
@@ -463,15 +547,16 @@ onUnmounted(() => {
   </div>
   <MobileConfigPanel
     @pcMode="mobileConfig = false"
-    v-else-if="loadFinish && mobileConfig"
+    v-else-if="loadFinish && mobileConfig && !templateLoadError"
   ></MobileConfigPanel>
   <NewWindowHandler
     v-if="appStore.getXpackValid"
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   ></NewWindowHandler>
-  <ThresholdDialog v-if="appStore.getXpackValid"></ThresholdDialog>
+  <ThresholdDialog v-if="loadFinish && appStore.getXpackValid"></ThresholdDialog>
   <canvas-cache-dialog
+    v-if="loadFinish"
     v-show="canvasCacheOutRefShow"
     ref="canvasCacheOutRef"
     @doUseCache="doUseCache"

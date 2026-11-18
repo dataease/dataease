@@ -184,6 +184,22 @@
           </template>
         </el-select>
       </el-form-item>
+      <el-form-item v-if="formState.viewIdList?.length" prop="excelHeaderMode">
+        <template #label>
+          <div class="basic-form-info-tips">
+            <span>{{ t('report.form.excel_header_mode') }}</span>
+            <el-tooltip :content="t('report.form.excel_header_hint')" placement="top">
+              <el-icon
+                ><Icon name="dv-info"><dvInfo class="svg-icon" /></Icon
+              ></el-icon>
+            </el-tooltip>
+          </div>
+        </template>
+        <el-radio-group v-model="formState.excelHeaderMode">
+          <el-radio label="dataset">{{ t('report.form.excel_header_dataset') }}</el-radio>
+          <el-radio label="display">{{ t('report.form.excel_header_display') }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <!-- <el-form-item label="图表数据范围" prop="viewDataRange">
         <el-radio-group v-model="formState.viewDataRange">
           <el-radio :label="0">展示数据</el-radio>
@@ -249,6 +265,7 @@
 </template>
 
 <script lang="ts" setup>
+import { missingRequiredFilters } from './requiredFilter'
 import areaStack from '@/assets/svg/area-stack.svg'
 import area from '@/assets/svg/area.svg'
 import barGroupStack from '@/assets/svg/bar-group-stack.svg'
@@ -259,6 +276,7 @@ import barStackHorizontal from '@/assets/svg/bar-stack-horizontal.svg'
 import barStack from '@/assets/svg/bar-stack.svg'
 import bar from '@/assets/svg/bar.svg'
 import bidirectionalBar from '@/assets/svg/bidirectional-bar.svg'
+import boxPlot from '@/assets/svg/chart-light/icon_box-plot_light.svg'
 import bubbleMap from '@/assets/svg/bubble-map.svg'
 import chartMixGroup from '@/assets/svg/chart-mix-group.svg'
 import chartMixStack from '@/assets/svg/chart-mix-stack.svg'
@@ -344,6 +362,7 @@ const state = reactive({
   viewMap: {},
   customFilter: {
     sourceFilter: [],
+    sourceDefaultFilter: [],
     defaultFilter: []
   }
 })
@@ -363,6 +382,7 @@ const iconMap = {
   'bar-stack': barStack,
   bar: bar,
   'bidirectional-bar': bidirectionalBar,
+  'box-plot': boxPlot,
   'bubble-map': bubbleMap,
   'chart-mix-group': chartMixGroup,
   'chart-mix-stack': chartMixStack,
@@ -410,6 +430,7 @@ const defaultFormData = ref({
   format: 0,
   viewIdList: [] as string[],
   viewDataRange: 1,
+  excelHeaderMode: 'dataset',
   pixel: '1920 * 1080',
   showWatermark: false,
   dataPermission: 0,
@@ -562,8 +583,26 @@ const dvNodeClick = data => {
 
 const getFormData = async () => {
   hideMceDialog()
+  const filters = state.customFilter
+  const overrides = new Map(
+    (formState.value['reportFilter'] || []).map(item => [
+      String(item.filterId),
+      JSON.parse(item.filterInfo)
+    ])
+  )
+  const effective = filters.sourceDefaultFilter.map(
+    filter => overrides.get(String(filter.id)) || filter
+  )
+  const missing = missingRequiredFilters(filters.sourceFilter, effective)
+  if (missing.length) {
+    ElMessage.error(t('report.filter.empty_tips', [missing.join('、')]))
+    return false
+  }
   const p = new Promise((r, e) => {
     reportBaseForm?.value?.validate(valid => {
+      if (!formState.value.viewIdList?.length) {
+        formState.value.excelHeaderMode = 'dataset'
+      }
       r(valid && formState.value)
     })
   })
@@ -592,6 +631,7 @@ const formatBase2Form = () => {
       formState.value[key] = props.baseFormData[key]
     }
   }
+  formState.value.excelHeaderMode ||= 'dataset'
   customTitle.value = formState.value['name'] === formState.value['title']
 }
 const removeViewTag = (val: string) => {

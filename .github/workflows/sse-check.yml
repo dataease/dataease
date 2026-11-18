@@ -1,0 +1,13 @@
+name: SSE Usage Check
+on: [push, pull_request]
+
+jobs:
+  sse-check:
+    name: Forbid SSE and streaming endpoints
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Actions Repository
+        uses: actions/checkout@v2
+
+      - name: Check no SSE/streaming endpoints
+        run: ./scripts/check-no-sse.sh

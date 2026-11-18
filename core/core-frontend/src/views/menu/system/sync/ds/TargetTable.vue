@@ -24,7 +24,7 @@ import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { dsTypes, filterOption } from './form/option'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import SyncForm from './SyncForm.vue'
-import { symmetricDecryptJson } from '@/utils/encryption'
+import { parseConfigurationJson } from '@/utils/encryption'
 import { formatDate } from '@/utils/DateUtil'
 
 const props = defineProps({
@@ -225,7 +225,7 @@ const getDsInfo = async data => {
     let { configuration, datasourceRole, desc, id, name, status, statusRemark, type } = res.data
     if (configuration) {
       try {
-        configuration = await symmetricDecryptJson(configuration)
+        configuration = await parseConfigurationJson(configuration)
       } catch {
         ElMessage.error(t('sync_datasource.configuration_decrypt_failed'))
         return false
@@ -468,7 +468,7 @@ void listSyncPlugin().catch(() => undefined)
               <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column width="110" fixed="right" key="_operation" :label="t('common.operate')">
+          <el-table-column width="124" fixed="right" key="_operation" :label="t('common.operate')">
             <template #default="scope">
               <div class="operate-icon-container">
                 <el-tooltip effect="dark" :content="t('common.edit')" placement="top">
@@ -540,12 +540,6 @@ void listSyncPlugin().catch(() => undefined)
   padding: 24px;
   .source-ds-table__content {
     height: calc(100vh - 276px);
-  }
-
-  .operate-icon-container {
-    .ed-button {
-      margin-right: 4px;
-    }
   }
 }
 </style>

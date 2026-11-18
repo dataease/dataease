@@ -13,7 +13,6 @@ import {
 import { OpenConditionalFormattingOperator } from '@univerjs/sheets-conditional-formatting-ui'
 import {
   CancelFrozenCommand,
-  ClearSelectionAllCommand,
   AddWorksheetMergeCommand,
   SetBackgroundColorCommand,
   SetBorderBasicCommand,
@@ -34,7 +33,6 @@ import {
   SetRangeStrickThroughCommand,
   SetRangeTextColorCommand,
   SetRangeUnderlineCommand,
-  SetOnceFormatPainterCommand,
   SetRowFrozenCommand,
   SetSelectionFrozenCommand
 } from '@univerjs/sheets-ui'
@@ -54,6 +52,7 @@ export const DATAEASE_RIBBON_POSITION_ORDER = [
   RibbonPosition.OTHERS
 ]
 
+// 明细表、透视表与工具栏共用同一插入菜单 ID，确保子菜单挂载到同一入口。
 export const DATAEASE_INSERT_DROPDOWN_MENU_ID = 'dataease.operation.insert-dropdown'
 export const DATAEASE_QUERY_CONTROL_MENU_ID = 'dataease.operation.toggle-spreadsheet-filter'
 export const DATAEASE_QUERY_CONTROL_GROUP_KEY = 'dataease.ribbon.query-control'
@@ -134,14 +133,9 @@ const DATAEASE_FONT_TOOL_ITEM_ROWS = [
 ]
 
 const DATAEASE_HISTORY_TOOL_ITEM_ROWS = [
-  [
-    UndoCommand.id,
-    RedoCommand.id
-  ],
-  [
-    SetOnceFormatPainterCommand.id,
-    ClearSelectionAllCommand.id
-  ]
+  [UndoCommand.id, RedoCommand.id],
+  // Univer 1.x 改由 UI 层注册这两个菜单，使用新版 ID 复用原生状态和行为。
+  ['ui.operation.activate-format-painter', 'ui.command.clear-formatting']
 ]
 
 const DATAEASE_LAYOUT_TOOL_ITEM_ROWS = [

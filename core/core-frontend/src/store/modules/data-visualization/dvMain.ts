@@ -450,11 +450,12 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 更新当前活动区域
       if (this.curComponent && this.curComponent['category']) {
         // 如果是图片 且图片配置了切换显示区
+        const isPicture =
+          this.curComponent.component === 'Picture' || this.curComponent.materialPicture
         if (
-          this.curComponent.component !== 'Picture' ||
-          (this.curComponent.component === 'Picture' &&
-            (!this.curComponent.events?.checked ||
-              this.curComponent.events?.type !== 'displayChange'))
+          !isPicture ||
+          !this.curComponent.events?.checked ||
+          this.curComponent.events.type !== 'displayChange'
         ) {
           this.canvasState['curPointArea'] = this.curComponent['category']
         }
@@ -572,6 +573,63 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
 
+    initUserView(component, currentFont) {
+      const defaultConfig = JSON.parse(JSON.stringify(BASE_VIEW_CONFIG))
+      if (component.innerType === 'bar-range') {
+        defaultConfig.customStyle.xAxis.axisLine.show = false
+        defaultConfig.customStyle.xAxis.splitLine.show = true
+        defaultConfig.customStyle.yAxis.axisLine.show = true
+        defaultConfig.customStyle.yAxis.splitLine.show = false
+      }
+      let newView = {
+        ...defaultConfig,
+        id: component.id,
+        type: component.innerType,
+        render: component.render,
+        isPlugin: component.isPlugin,
+        plugin: {
+          isPlugin: component.isPlugin,
+          staticMap: component.staticMap
+        }
+      } as unknown as ChartObj
+      // 处理配置项默认值，不同图表的同一配置项默认值不同
+      const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)
+      if (chartViewInstance) {
+        newView = chartViewInstance.setupDefaultOptions(newView)
+        if (!component.isPlugin && chartViewInstance.library === ChartLibraryType.G2) {
+          // 原有图表默认项装配完成后，仅让新建 G2 图表的轴线颜色跟随主题
+          const axisStyles = [
+            newView.customStyle?.xAxis,
+            newView.customStyle?.yAxis,
+            newView.customStyle?.yAxisExt
+          ]
+          axisStyles.forEach(axisStyle => {
+            if (axisStyle?.axisLine) {
+              axisStyle.axisLine.colorMode = 'theme'
+            }
+          })
+        }
+      }
+      newView['title'] = component.name
+      currentFont && (newView.customStyle.text.fontFamily = currentFont.name)
+      this.canvasViewInfo[component.id] = newView
+      return newView
+    },
+    enableMaterialPictureThreshold(component) {
+      const { url, ...imageOptions } = component.propValue
+      Object.assign(component, {
+        component: 'UserView',
+        innerType: 'picture-group',
+        render: 'custom',
+        materialPicture: true,
+        propValue: { ...imageOptions, urlList: [{ name: component.name, url }] },
+        collapseName: [...new Set([...(component.collapseName || []), 'threshold'])]
+      })
+      const currentFont = useAppearanceStoreWithOut().fontList.find(ele => ele.isDefault)
+      const view = this.initUserView(component, currentFont)
+      view.senior.threshold.enable = true
+    },
+
     addComponent({ component, index, isFromGroup = false, componentData = this.componentData }) {
       if (isFromGroup) {
         componentData.push(component)
@@ -587,45 +645,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const currentFont = useAppearanceStoreWithOut().fontList.find(ele => ele.isDefault)
       //如果当前的组件是UserView 图表，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
-        const defaultConfig = JSON.parse(JSON.stringify(BASE_VIEW_CONFIG))
-        if (component.innerType === 'bar-range') {
-          defaultConfig.customStyle.xAxis.axisLine.show = false
-          defaultConfig.customStyle.xAxis.splitLine.show = true
-          defaultConfig.customStyle.yAxis.axisLine.show = true
-          defaultConfig.customStyle.yAxis.splitLine.show = false
-        }
-        let newView = {
-          ...defaultConfig,
-          id: component.id,
-          type: component.innerType,
-          render: component.render,
-          isPlugin: component.isPlugin,
-          plugin: {
-            isPlugin: component.isPlugin,
-            staticMap: component.staticMap
-          }
-        } as unknown as ChartObj
-        // 处理配置项默认值，不同图表的同一配置项默认值不同
-        const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)
-        if (chartViewInstance) {
-          newView = chartViewInstance.setupDefaultOptions(newView)
-          if (!component.isPlugin && chartViewInstance.library === ChartLibraryType.G2) {
-            // 原有图表默认项装配完成后，仅让新建 G2 图表的轴线颜色跟随主题
-            const axisStyles = [
-              newView.customStyle?.xAxis,
-              newView.customStyle?.yAxis,
-              newView.customStyle?.yAxisExt
-            ]
-            axisStyles.forEach(axisStyle => {
-              if (axisStyle?.axisLine) {
-                axisStyle.axisLine.colorMode = 'theme'
-              }
-            })
-          }
-        }
-        newView['title'] = component.name
-        currentFont && (newView.customStyle.text.fontFamily = currentFont.name)
-        this.canvasViewInfo[component.id] = newView
+        this.initUserView(component, currentFont)
       }
       if (component.component === 'VQuery') {
         const { color, titleColor, labelColor, borderColor, bgColor, text, titleLayout, layout } =
@@ -1149,12 +1169,15 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.nowPanelOuterParamsBaseInfoV2[dvId] = outerParamsInfo.outerParamsInfoBaseMap
     },
     // 添加联动 下钻 等查询组件
-    addViewTrackFilter(data) {
+    addViewTrackFilter(data, sourceData?) {
       const viewId = data.viewId
       let trackInfo
       if (data.option === 'linkage') {
         // 维度日期类型转换
-        viewFieldTimeTrans(this.canvasViewDataInfo[viewId], data)
+        viewFieldTimeTrans(
+          sourceData === undefined ? this.canvasViewDataInfo[viewId] : sourceData,
+          data
+        )
         trackInfo = this.nowPanelTrackInfo
       } else {
         trackInfo = this.nowPanelJumpInfoTargetPanel
@@ -1660,6 +1683,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   fieldId: targetFieldId,
                   operator: 'eq',
                   value: [QDItem.value],
+                  ...(QDItem.linkageDateStyle === 'H_m_s' ? { dateStyle: 'H_m_s' } : {}),
+                  ...(QDItem.linkageDateStyle === 'M_d'
+                    ? { dateStyle: 'M_d', datePattern: QDItem.linkageDatePattern }
+                    : {}),
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
@@ -1686,6 +1713,20 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (element.component === 'VQuery' && Array.isArray(element.propValue)) {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
+                if (
+                  ['H_m_s', 'M_d'].includes(QDItem.linkageDateStyle) &&
+                  ['1', '7'].includes(filterItem.displayType)
+                ) {
+                  ElMessage.warning({
+                    message: t(
+                      QDItem.linkageDateStyle === 'M_d'
+                        ? 'visualization.month_day_query_linkage_unsupported'
+                        : 'visualization.time_only_query_linkage_unsupported'
+                    ),
+                    grouping: true
+                  })
+                  return
+                }
                 let queryParams = paramValue
                 if (!['1', '7'].includes(filterItem.displayType)) {
                   // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本

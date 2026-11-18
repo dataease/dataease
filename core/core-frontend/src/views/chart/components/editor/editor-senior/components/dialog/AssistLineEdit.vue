@@ -71,6 +71,9 @@ const state = reactive({
 const singleMetricGroup = computed(
   () => !props.useQuotaExt && props.chart.type === 'bar-group' && props.quotaFields.length <= 1
 )
+const summaryOptions = computed(() =>
+  props.chart.type === 'box-plot' ? ['avg', 'max', 'min'] : ['avg', 'max', 'min', 'last_item']
+)
 
 type BindingLine = Pick<AssistLine, 'field' | 'followField' | 'boundFieldId' | 'yAxisType'>
 
@@ -329,15 +332,30 @@ onMounted(() => {
                 <label>{{ t('chart.aggregation') }}</label>
                 <el-select v-model="item.summary" @change="changeAssistLine">
                   <el-option
-                    v-for="summary in ['avg', 'max', 'min', 'last_item']"
+                    v-for="summary in summaryOptions"
                     :key="summary"
                     :value="summary"
                     :label="t('chart.' + summary)"
                   />
+                  <el-option
+                    v-if="chart.type === 'box-plot' && item.summary === 'last_item'"
+                    value="last_item"
+                    :label="t('chart.last_item')"
+                    disabled
+                  />
                 </el-select>
+                <span
+                  v-if="chart.type === 'box-plot' && !summaryOptions.includes(item.summary)"
+                  class="unsupported-summary"
+                >
+                  {{ t('chart.box_plot_assist_summary_unsupported') }}
+                </span>
               </div>
             </template>
-            <div v-if="useQuotaExt" class="config-field">
+            <div
+              v-if="useQuotaExt || (chart.type === 'box-plot' && item.yAxisType === 'right')"
+              class="config-field"
+            >
               <label>{{ t('chart.assist_axis') }}</label>
               <el-select v-model="item.yAxisType" @change="changeYAxisType(item)">
                 <el-option
@@ -345,8 +363,15 @@ onMounted(() => {
                   :key="opt.type"
                   :label="opt.name"
                   :value="opt.type"
+                  :disabled="chart.type === 'box-plot' && opt.type === 'right'"
                 />
               </el-select>
+              <span
+                v-if="chart.type === 'box-plot' && item.yAxisType === 'right'"
+                class="unsupported-summary"
+              >
+                {{ t('chart.box_plot_assist_axis_unsupported') }}
+              </span>
             </div>
           </div>
           <div class="field-grid style-grid">
@@ -429,6 +454,10 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+.unsupported-summary {
+  color: var(--ed-color-danger);
+  font-size: 12px;
+}
 .assist-list {
   max-height: min(60vh, 620px);
   overflow-y: auto;

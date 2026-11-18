@@ -9,12 +9,14 @@ import io.dataease.result.PageResult;
 import io.dataease.share.manage.ShareTicketManage;
 import io.dataease.utils.CodingUtil;
 import jakarta.annotation.Resource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/ticket")
+@Profile("!desktop")
 public class ShareTicketServer implements ShareTicketApi {
 
     @Resource

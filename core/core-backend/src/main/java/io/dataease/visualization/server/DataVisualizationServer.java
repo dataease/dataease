@@ -2,11 +2,14 @@ package io.dataease.visualization.server;
 import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.permissions.auth.vo.PermissionValVO;
 import io.dataease.constant.AuthEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.result.ResultCode;
@@ -30,6 +33,7 @@ import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.dao.auto.entity.*;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.manage.DatasetGroupManage;
@@ -40,12 +44,14 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.manage.CoreLicManage;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -53,6 +59,7 @@ import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
@@ -88,7 +95,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
     @Autowired
-    private org.springframework.beans.factory.ObjectProvider<io.dataease.api.material.MaterialBundleService> materialBundles;
+    private ImportedImageManage importedImages;
     @Resource
     private JPAQueryFactory queryFactory;
     @Resource
@@ -96,9 +103,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
-    private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
-    @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
+
+    @Resource
+    private PerBusiResourceRepository perBusiResourceRepository;
 
     @Resource
     private ChartViewManege chartViewManege;
@@ -151,6 +159,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private CoreUserManage coreUserManage;
     @Resource
+    private CorePermissionManage corePermissionManage;
+    @Resource
     private DatasourceServer datasourceServer;
 
     @Resource
@@ -169,7 +179,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
-        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag, CommonConstants.RESOURCE_TABLE.SNAPSHOT, DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
+        DataVisualizationInfo resource = requireVisualizationDraftAccess(dvId);
+        if (!Objects.equals(resource.getPid(), -1L)) {
+            denyVisualizationRead();
+        }
+        DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, resource.getType(), CommonConstants.RESOURCE_TABLE.SNAPSHOT, DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
         if (result != null && result.getPid() == -1) {
             return result;
         } else {
@@ -184,7 +198,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public DataVisualizationVO findById(DataVisualizationBaseRequest request) {
         Long dvId = request.getId();
         String busiFlag = request.getBusiFlag();
-        String resourceTable = request.getResourceTable();
+        String resourceTable = StringUtils.defaultIfBlank(request.getResourceTable(), CommonConstants.RESOURCE_TABLE.CORE)
+                .trim().toLowerCase(Locale.ROOT);
+        if (!CommonConstants.RESOURCE_TABLE.CORE.equals(resourceTable)
+                && !CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
+            throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        request.setResourceTable(resourceTable);
+        if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)
+                || DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
+            // Authorize before reading drafts or recovering a snapshot, regardless of the claimed source.
+            DataVisualizationInfo resource = requireVisualizationDraftAccess(dvId);
+            busiFlag = resource.getType();
+            request.setBusiFlag(busiFlag);
+        }
         // 如果是编辑查询 则进行镜像检查
         if (DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
             Specification<SnapshotDataVisualizationInfo> spec = (root, query, criteriaBuilder) -> {
@@ -197,6 +224,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
+            if (CommonConstants.RESOURCE_TABLE.CORE.equals(resourceTable)
+                    && !Objects.equals(result.getStatus(), CommonConstants.DV_STATUS.PUBLISHED)
+                    && !Objects.equals(result.getStatus(), CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)) {
+                throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_resource_not_published");
+            }
             // get creator
             String userName = null;
             if (StringUtils.isNotEmpty(result.getCreateBy())) {
@@ -253,6 +285,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     private DataVisualizationInfo requireVisualizationPermission(Long id, AuthEnum permission) {
+        DataVisualizationInfo resource = requireVisualizationResource(id);
+        checkVisualizationPermission(resource, permission, visualizationAuth(resource));
+        return resource;
+    }
+
+    private DataVisualizationInfo requireVisualizationResource(Long id) {
         if (id == null || id <= 0 || V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) {
             denyVisualizationRead();
         }
@@ -261,16 +299,52 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 || !("dashboard".equals(resource.getType()) || "dataV".equals(resource.getType()))) {
             denyVisualizationRead();
         }
-        // Resolve the permission category from stored metadata, not request.busiFlag.
+        return resource;
+    }
+
+    private InteractiveAuthApi visualizationAuth(DataVisualizationInfo resource) {
+        // XPack permission beans can be present in community mode, but require a valid license.
+        if (!LicenseUtil.licenseValid()) {
+            if (!Objects.equals(V3UserUtil.getUid(), 1L) || V3UserUtil.getProxy().isProxy()
+                    || !DataVisualizationConstants.NODE_TYPE.LEAF.equals(resource.getNodeType())
+                    || perBusiResourceRepository.existsById(resource.getId())) {
+                denyVisualizationRead();
+            }
+            return null;
+        }
         InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
-        if (auth != null) {
-            auth.checkAuth(new BusiPerCheckDTO(id, "dashboard".equals(resource.getType())
-                    ? BusiResourceEnum.PANEL : BusiResourceEnum.SCREEN, permission));
-        } else if (!Objects.equals(V3UserUtil.getUid(), 1L)
-                || CommonBeanFactory.getBean("substituleLoginServer") == null
-                || CommonBeanFactory.getBean("loginServer") != null) {
-            // Only the actual single-user community implementation may omit this service.
+        if (auth == null) {
             denyVisualizationRead();
+        }
+        return auth;
+    }
+
+    private void checkVisualizationPermission(DataVisualizationInfo resource, AuthEnum permission, InteractiveAuthApi auth) {
+        if (auth != null) {
+            // Resolve the permission category from stored metadata, not request.busiFlag.
+            auth.checkAuth(new BusiPerCheckDTO(resource.getId(), "dashboard".equals(resource.getType())
+                    ? BusiResourceEnum.PANEL : BusiResourceEnum.SCREEN, permission));
+        }
+    }
+
+    private DataVisualizationInfo requireVisualizationDraftAccess(Long id) {
+        DataVisualizationInfo resource = requireVisualizationResource(id);
+        InteractiveAuthApi auth = visualizationAuth(resource);
+        if (Objects.equals(resource.getPid(), -1L)) {
+            // Temporary copies are not registered in the permission tree; only their creator may open them.
+            if (!Objects.equals(resource.getCreateBy(), String.valueOf(V3UserUtil.getUid()))
+                    || V3UserUtil.getUser() == null
+                    || !Objects.equals(resource.getOrgId(), V3UserUtil.getUser().getOid())) {
+                denyVisualizationRead();
+            }
+        } else {
+            if (auth != null) {
+                PermissionValVO permission = auth.queryAuth(id);
+                if (permission == null || permission.getWeight() < AuthEnum.MANAGE.getWeight()) {
+                    denyVisualizationRead();
+                }
+            }
+            checkVisualizationPermission(resource, AuthEnum.MANAGE, auth);
         }
         return resource;
     }
@@ -651,6 +725,22 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public DataVisualizationVO updateCanvas(DataVisualizationBaseRequest request) {
+        if (request.getId() == null) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        // Serialize saves, including legacy callers. Check and all writes share this transaction.
+        DataVisualizationInfo saved = dataVisualizationInfoRepository.lockForSave(request.getId())
+                .filter(info -> !Boolean.TRUE.equals(info.getDeleteFlag()))
+                .orElseThrow(() -> io.dataease.exception.DEException.of(
+                        io.dataease.exception.ErrorCategory.NOT_FOUND, "i18n_error_not_found"));
+        if (Boolean.TRUE.equals(request.getCheckHistory())
+                && !java.util.Objects.equals(saved.getContentId(), request.getExpectedContentId())) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.CONFLICT, "i18n_error_conflict")
+                    .setErrorData(java.util.Collections.singletonMap("currentContentId", saved.getContentId()));
+        }
+        if (request.getCanvasViewInfo() == null || request.getPid() == null) {
+            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
         for (Map.Entry<Long, ChartViewDTO> ele : request.getCanvasViewInfo().entrySet()) {
             DatasetUtils.viewDecode(ele.getValue());
         }
@@ -692,6 +782,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
+        if (request == null || request.getId() == null || StringUtils.isBlank(request.getName())
+                || request.getStatus() == null || ((request.getStatus() == 0 || request.getStatus() == 1)
+                && request.getActiveViewIds() == null)) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
         /**
          * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
          * 统一处理为1.删除主表数据，2.将镜像表数据统一copy到主表 不删除镜像数据（发布状态后镜像数据和主表数据是保持一致的）
@@ -706,6 +801,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         coreVisualizationManage.innerEdit(visualizationInfo);
         if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
             coreVisualizationManage.removeDvCore(dvId);
+            // 先执行删除再清理托管状态，保证同 ID 图表从镜像重新插入且发布失败时整体回滚
+            entityManager.flush();
             entityManager.clear();
             coreVisualizationManage.dvRestore(dvId);
             chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
@@ -850,12 +947,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 复制图表 chart_view
         chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.CORE);
         chartViewManege.viewCopyWithDv(sourceDvId, newDvId, copyId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
-        List<CoreChartView> viewList = coreChartViewRepository.findViewInfoByCopyId(copyId);
+        QCoreChartView coreChartView = QCoreChartView.coreChartView;
+        // 替换画布中的图表引用只需复制前后的 ID，避免重复加载完整配置。
+        List<Tuple> viewList = queryFactory
+                .select(coreChartView.id, coreChartView.copyFrom)
+                .from(coreChartView)
+                .where(coreChartView.copyId.eq(copyId))
+                .fetch();
         if (!CollectionUtils.isEmpty(viewList)) {
             String componentData = newDv.getComponentData();
             // componentData viewId 数据  并保存
-            for (CoreChartView viewInfo : viewList) {
-                componentData = componentData.replace(String.valueOf(viewInfo.getCopyFrom()), String.valueOf(viewInfo.getId()));
+            for (Tuple viewInfo : viewList) {
+                Long sourceViewId = viewInfo.get(coreChartView.copyFrom);
+                Long targetViewId = viewInfo.get(coreChartView.id);
+                componentData = componentData.replace(String.valueOf(sourceViewId), String.valueOf(targetViewId));
             }
             newDv.setComponentData(componentData);
         }
@@ -932,14 +1037,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     DEException.throwException("Can't find the template's info from market,please check");
                 }
                 if (templateFileInfo.getMaterialBundle() != null) {
-                    var service = materialBundles.getIfAvailable();
-                    if (service == null) DEException.throwException(Translator.get("i18n_material_invalid"));
-                    service.validate(templateFileInfo.getMaterialBundle());
-                    Set<String> images = MaterialDocuments.images(templateFileInfo.getCanvasStyleData(), templateFileInfo.getComponentData());
-                    var entries = templateFileInfo.getMaterialBundle().getFiles();
-                    if (!images.equals(entries.stream().map(io.dataease.api.material.vo.MaterialBundleEntry::getReference).collect(Collectors.toSet()))) {
-                        DEException.throwException(Translator.get("i18n_material_invalid"));
-                    }
+                    importedImages.validatePreview(templateFileInfo.getMaterialBundle(),
+                            templateFileInfo.getCanvasStyleData(), templateFileInfo.getComponentData());
                     request.setMaterialBundle(templateFileInfo.getMaterialBundle());
                 }
                 templateStyle = templateFileInfo.getCanvasStyleData();
@@ -1117,7 +1216,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public VisualizationExport2AppVO export2AppCheck(VisualizationAppExportRequest appExportRequest) {
         List<Long> viewIds = appExportRequest.getViewIds();
-        List<Long> dsIds = appExportRequest.getDsIds();
+        List<Long> dsIds = CollectionUtils.emptyIfNull(appExportRequest.getDsIds()).stream()
+                .filter(Objects::nonNull)
+                .toList();
         Long dvId = appExportRequest.getDvId();
         List<AppCoreChartViewVO> chartViewVOInfo = null;
         List<AppCoreDatasetGroupVO> datasetGroupVOInfo = null;
@@ -1125,11 +1226,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasetTableFieldVO> datasetTableFieldVOInfo = null;
         List<AppCoreDatasourceVO> datasourceVOInfo = null;
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
+
+        // 校验仪表板/大屏管理权限
+        requireVisualizationPermission(dvId, AuthEnum.MANAGE);
+        // 校验请求数据集均具备 READ 权限
+        if (CollectionUtils.isNotEmpty(dsIds)) {
+            for (Long dsId : dsIds) {
+                if (!corePermissionManage.checkAuth(new BusiPerCheckDTO(dsId, BusiResourceEnum.DATASET, AuthEnum.READ))) {
+                    denyVisualizationRead();
+                }
+            }
+        }
+
         //获取所有视图信息
         if (!CollectionUtils.isEmpty(viewIds)) {
-            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream().map(item -> {
-                return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
-            }).collect(Collectors.toList());
+            chartViewVOInfo = coreChartViewRepository.findAllById(viewIds).stream()
+                    .filter(item -> Objects.equals(item.getSceneId(), dvId))
+                    .map(item -> {
+                        return BeanUtils.copyBean(new AppCoreChartViewVO(), item);
+                    }).collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(dsIds)) {
             QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
@@ -1148,6 +1263,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
             datasourceVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasource)
                     .innerJoin(coreDatasetTable).on(coreDatasetTable.datasourceId.eq(coreDatasource.id))
                     .where(coreDatasetTable.datasetGroupId.in(dsIds)).fetch(), AppCoreDatasourceVO.class);
+
+            if (CollectionUtils.isNotEmpty(datasourceVOInfo)) {
+                datasourceVOInfo.forEach(this::maskDatasourceConfiguration);
+            }
 
             datasourceTaskVOInfo = EntityConverter.convertList(queryFactory.selectFrom(coreDatasourceTask)
                     .innerJoin(coreDatasource).on(coreDatasourceTask.dsId.eq(coreDatasource.id))
@@ -1200,13 +1319,38 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
     }
 
+    private void maskDatasourceConfiguration(AppCoreDatasourceVO datasource) {
+        if (datasource == null || StringUtils.isBlank(datasource.getConfiguration())) {
+            return;
+        }
+        String type = datasource.getType();
+        if (type == null || DatasourceConfiguration.DatasourceType.Excel.name().equals(type)
+                || DatasourceConfiguration.DatasourceType.ExcelRemote.name().equals(type)
+                || DatasourceConfiguration.DatasourceType.API.name().equals(type)) {
+            return;
+        }
+        try {
+            JsonNode configNode = JsonUtil.parseObject(datasource.getConfiguration(), JsonNode.class);
+            datasource.setConfiguration(ConfigurationCredentials.mask(configNode).toString());
+        } catch (Exception e) {
+            LogUtil.error("Failed to mask datasource configuration for export2AppCheck", e);
+            datasource.setConfiguration(null);
+        }
+    }
+
 
     @Override
     public void nameCheck(DataVisualizationBaseRequest request) {
 
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
+                if (request.getId() == null) {
+                    DEException.throwException(ResultCode.PARAM_NOT_COMPLETE.code(), ResultCode.PARAM_NOT_COMPLETE.message());
+                }
                 DataVisualizationInfo result = dataVisualizationInfoRepository.findById(request.getId()).orElse(null);
+                if (result == null) {
+                    DEException.throwException(Translator.get("i18n_resource_not_exists"));
+                }
                 request.setPid(result.getPid());
             }
         }
@@ -1272,20 +1416,29 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<Long> getEnabledViewIds(Long dvId, String resourceTable) {
         List<Long> result = new ArrayList<>();
         DataVisualizationVO dvInfo = coreVisualizationManage.findDvInfo(dvId, null, resourceTable);
-        List<CoreChartView> views;
+        // 画布过滤只使用图表 ID，正式表和快照表都无需加载完整实体。
+        List<Long> viewIds;
         if (resourceTable.equalsIgnoreCase("core")) {
-            views = coreChartViewRepository.findBySceneId(dvId);
+            QCoreChartView coreChartView = QCoreChartView.coreChartView;
+            viewIds = queryFactory
+                    .select(coreChartView.id)
+                    .from(coreChartView)
+                    .where(coreChartView.sceneId.eq(dvId))
+                    .fetch();
         } else {
-            views = snapshotCoreChartViewRepository.findBySceneId(dvId).stream().map(ele -> {
-                CoreChartView coreChartView = new CoreChartView();
-                BeanUtils.copyBean(coreChartView, ele);
-                return coreChartView;
-            }).collect(Collectors.toList());
+            QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
+            viewIds = queryFactory
+                    .select(snapshotCoreChartView.id)
+                    .from(snapshotCoreChartView)
+                    .where(snapshotCoreChartView.sceneId.eq(dvId))
+                    .fetch();
         }
 
-        if (CollectionUtils.isNotEmpty(views) && dvInfo != null) {
+        if (CollectionUtils.isNotEmpty(viewIds) && dvInfo != null) {
             String componentData = dvInfo.getComponentData();
-            result = views.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).map(CoreChartView::getId).collect(Collectors.toList());
+            result = viewIds.stream()
+                    .filter(viewId -> componentData.indexOf("\"id\":\"" + viewId) > 0)
+                    .collect(Collectors.toList());
 
         }
         return result;
@@ -1317,5 +1470,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
         return resourcePermissionManage.queruDatasetPermissionTemplate(resourceId);
+    }
+
+    @Override
+    public List<DatasetPermissionTemplate> queryDatasetPermissionTemplates(List<Long> datasetIds) {
+        return resourcePermissionManage.queryDatasetPermissionTemplates(datasetIds);
     }
 }

@@ -1,5 +1,6 @@
-import { Inject } from '@univerjs/core'
+import { Inject, Rectangle, type IRange } from '@univerjs/core'
 import { IRenderManagerService } from '@univerjs/engine-render'
+import type { FWorksheet } from '@univerjs/sheets/facade'
 import { ElMessage } from 'element-plus-secondary'
 import type { PivotTableConfig } from '../types'
 import { validatePivotConfig } from '../utils/pivot-config-validator'
@@ -18,6 +19,8 @@ import {
   PluginRenderStatusService
 } from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
+import { SpreadsheetOuterParamsService } from '../../DataEaseOuterParamsPlugin/services/outer-params.service'
+import { SpreadsheetLinkJumpService } from '../../DataEaseLinkJumpPlugin/services/link-jump.service'
 import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
@@ -51,6 +54,10 @@ export class PivotTableFillService {
     private readonly pluginRenderLoadingService: PluginRenderLoadingService,
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(SpreadsheetOuterParamsService)
+    private readonly spreadsheetOuterParamsService: SpreadsheetOuterParamsService,
+    @Inject(SpreadsheetLinkJumpService)
+    private readonly spreadsheetLinkJumpService: SpreadsheetLinkJumpService,
     @Inject(TableRenderExpansionService)
     private readonly tableRenderExpansionService: TableRenderExpansionService,
     @Inject(PluginRenderStatusService)
@@ -90,7 +97,7 @@ export class PivotTableFillService {
   private async fillByConfigSerial(
     univerApi: any,
     config: PivotTableConfig,
-    worksheet: any,
+    worksheet: FWorksheet,
     options: PivotTableFillOptions = {}
   ): Promise<boolean> {
     const workbook = univerApi.getActiveWorkbook?.()
@@ -100,6 +107,10 @@ export class PivotTableFillService {
 
     const unitId = workbook.getId?.() || workbook.getUnitId?.()
     const sheetId = worksheet.getSheetId()
+    // 撤销删表会创建相同 ID 的新工作表。排队和异步查询均只允许写入原工作表对象。
+    const isCurrentWorksheet = () =>
+      worksheet.getWorkbook().getSheetBySheetId(sheetId) === worksheet.getSheet()
+    if (!isCurrentWorksheet()) return false
     if (unitId) {
       config.placement.startCell = this.tableRenderExpansionService.resolveStartCell(
         unitId,
@@ -114,9 +125,8 @@ export class PivotTableFillService {
       ElMessage.warning(validateMessage)
       try {
         await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
-      } catch (clearError) {
-      }
-      if (unitId) {
+      } catch (clearError) {}
+      if (unitId && isCurrentWorksheet()) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
@@ -133,10 +143,12 @@ export class PivotTableFillService {
 
     let start = this.rangeService.parseCell(config.placement.startCell)
     const previousState = this.displayStateService.get(config.id)
-    const previousRange = previousState?.sheetId === sheetId &&
-      previousState.rowCount > 0 && previousState.columnCount > 0
-      ? previousState
-      : undefined
+    const previousRange =
+      previousState?.sheetId === sheetId &&
+      previousState.rowCount > 0 &&
+      previousState.columnCount > 0
+        ? previousState
+        : undefined
     const loadingStart = previousRange
       ? this.rangeService.parseCell(previousRange.startCell)
       : start
@@ -167,11 +179,25 @@ export class PivotTableFillService {
     try {
       if (unitId) {
         await this.spreadsheetFilterRuntimeService.waitForValues(unitId)
+        if (!isCurrentWorksheet()) return false
       }
+      const outerParamsFilter = unitId
+        ? await this.spreadsheetOuterParamsService.getFieldFilters(unitId, config.id)
+        : []
+      const linkageFilters = unitId
+        ? await this.spreadsheetLinkJumpService.getFieldFilters(unitId, config.id)
+        : []
+      if (!isCurrentWorksheet()) return false
+      // 外参加载期间查询条件可能变化，实际取数前再读取最新条件。
       const queryConfig = unitId
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
-      const result = await this.dataService.queryData(queryConfig)
+      const result = await this.dataService.queryData(
+        queryConfig,
+        outerParamsFilter,
+        linkageFilters
+      )
+      if (!isCurrentWorksheet()) return false
       if (unitId) {
         // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。
         config.placement.startCell = this.tableRenderExpansionService.resolveStartCell(
@@ -202,13 +228,16 @@ export class PivotTableFillService {
             initialRestore: options.initialRestore === true
           })
         : undefined
-      const rangeMessage = expansionMessage || this.rangeService.validateBeforeFill(
-        worksheet,
-        config,
-        layout.rowCount,
-        layout.columnCount,
-        options.initialRestore === true
-      )
+      const rangeMessage =
+        expansionMessage ||
+        this.rangeService.validateBeforeFill(
+          worksheet,
+          config,
+          layout.rowCount,
+          layout.columnCount,
+          options.initialRestore === true
+        )
+      if (!isCurrentWorksheet()) return false
       if (rangeMessage) {
         ElMessage.warning(rangeMessage)
         if (unitId) {
@@ -226,34 +255,34 @@ export class PivotTableFillService {
         return false
       }
 
-      await this.clearPrevious(
-        univerApi,
-        config.id,
-        worksheet,
-        config.placement.startCell
-      )
+      await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell)
+      if (!isCurrentWorksheet()) return false
+      const tableRange = {
+        startRow: start.row,
+        endRow: start.row + layout.rowCount - 1,
+        startColumn: start.col,
+        endColumn: start.col + layout.columnCount - 1
+      }
+      // 首次加载没有旧显示状态，仍需在写入新数据前清理当前范围内的历史合并。
+      if (options.initialRestore) {
+        await this.removeContainedMerges(univerApi, worksheet, tableRange)
+        if (!isCurrentWorksheet()) return false
+      }
       await this.editProtectionService.runWithoutProtection(() =>
         setWorksheetValuesSilently(univerApi, {
           unitId,
           sheetId,
-          range: {
-            startRow: start.row,
-            endRow: start.row + layout.rowCount - 1,
-            startColumn: start.col,
-            endColumn: start.col + layout.columnCount - 1
-          },
+          range: tableRange,
           values: layout.values
         })
       )
-      const effectiveMerges = this.getEffectiveMerges(
-        config,
-        layout.merges,
-        layout.corner?.range
-      )
+      const effectiveMerges = this.getEffectiveMerges(config, layout.merges, layout.corner?.range)
       if (effectiveMerges.length) {
+        if (!isCurrentWorksheet()) return false
         await this.applyMerges(univerApi, worksheet, start, effectiveMerges)
       }
 
+      if (!isCurrentWorksheet()) return false
       this.displayStateService.set({
         pluginId: config.id,
         sheetId: worksheet.getSheetId(),
@@ -284,11 +313,11 @@ export class PivotTableFillService {
       }
       return true
     } catch (error) {
+      if (!isCurrentWorksheet()) return false
       try {
         await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
-      } catch (clearError) {
-      }
-      if (unitId) {
+      } catch (clearError) {}
+      if (unitId && isCurrentWorksheet()) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
@@ -314,26 +343,18 @@ export class PivotTableFillService {
 
     const workbook = univerApi.getActiveWorkbook?.()
     const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
-    const worksheet = workbook
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId?.() === state.sheetId)
+    const worksheet = workbook?.getSheets?.()?.find(sheet => sheet.getSheetId?.() === state.sheetId)
     if (!unitId || !worksheet) {
       return false
     }
 
     const start = this.rangeService.parseCell(state.startCell)
-    await this.editProtectionService.runWithoutProtection(() =>
-      removeWorksheetMergesSilently(univerApi, {
-        unitId,
-        sheetId: state.sheetId,
-        ranges: [{
-          startRow: start.row,
-          endRow: start.row + state.rowCount - 1,
-          startColumn: start.col,
-          endColumn: start.col + state.columnCount - 1
-        }]
-      })
-    )
+    await this.removeContainedMerges(univerApi, worksheet, {
+      startRow: start.row,
+      endRow: start.row + state.rowCount - 1,
+      startColumn: start.col,
+      endColumn: start.col + state.columnCount - 1
+    })
 
     const valueRegionsToRestore: PivotTableValueRegion[] = []
     if (!config.style?.base?.mergeCell) {
@@ -346,20 +367,10 @@ export class PivotTableFillService {
       })
     }
     if (valueRegionsToRestore.length) {
-      await this.restoreValueRegions(
-        univerApi,
-        unitId,
-        state.sheetId,
-        start,
-        valueRegionsToRestore
-      )
+      await this.restoreValueRegions(univerApi, unitId, state.sheetId, start, valueRegionsToRestore)
     }
 
-    const effectiveMerges = this.getEffectiveMerges(
-      config,
-      state.merges || [],
-      state.corner?.range
-    )
+    const effectiveMerges = this.getEffectiveMerges(config, state.merges || [], state.corner?.range)
     if (effectiveMerges.length) {
       await this.applyMerges(univerApi, worksheet, start, effectiveMerges)
     }
@@ -412,8 +423,7 @@ export class PivotTableFillService {
     }
 
     const moved =
-      previous.sheetId !== targetWorksheet?.getSheetId?.() ||
-      previous.startCell !== targetStartCell
+      previous.sheetId !== targetWorksheet?.getSheetId?.() || previous.startCell !== targetStartCell
     const start = this.rangeService.parseCell(previous.startCell)
     await this.ensureSheetSize(
       univerApi,
@@ -423,18 +433,12 @@ export class PivotTableFillService {
     )
 
     if (unitId) {
-      await this.editProtectionService.runWithoutProtection(() =>
-        removeWorksheetMergesSilently(univerApi, {
-          unitId,
-          sheetId: previous.sheetId,
-          ranges: [{
-            startRow: start.row,
-            endRow: start.row + previous.rowCount - 1,
-            startColumn: start.col,
-            endColumn: start.col + previous.columnCount - 1
-          }]
-        })
-      )
+      await this.removeContainedMerges(univerApi, worksheet, {
+        startRow: start.row,
+        endRow: start.row + previous.rowCount - 1,
+        startColumn: start.col,
+        endColumn: start.col + previous.columnCount - 1
+      })
       this.renderStyleService.deleteRange(unitId, previous.sheetId, pluginId)
 
       if (clearFormat || moved) {
@@ -442,12 +446,14 @@ export class PivotTableFillService {
           clearWorksheetFormatsSilently(univerApi, {
             unitId,
             sheetId: previous.sheetId,
-            ranges: [{
-              startRow: start.row,
-              endRow: start.row + previous.rowCount - 1,
-              startColumn: start.col,
-              endColumn: start.col + previous.columnCount - 1
-            }]
+            ranges: [
+              {
+                startRow: start.row,
+                endRow: start.row + previous.rowCount - 1,
+                startColumn: start.col,
+                endColumn: start.col + previous.columnCount - 1
+              }
+            ]
           })
         )
       }
@@ -477,9 +483,34 @@ export class PivotTableFillService {
     }
   }
 
+  private async removeContainedMerges(
+    univerApi: any,
+    worksheet: FWorksheet,
+    tableRange: IRange
+  ): Promise<void> {
+    const workbook = univerApi.getActiveWorkbook?.()
+    const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
+    if (!unitId) {
+      return
+    }
+
+    // 删除 Mutation 按相交范围处理，必须传入筛选后的实际合并，避免误拆跨边界区域。
+    const ranges = worksheet
+      .getMergedRanges()
+      .map(mergedRange => mergedRange.getRange())
+      .filter(range => Rectangle.contains(tableRange, range))
+    await this.editProtectionService.runWithoutProtection(() =>
+      removeWorksheetMergesSilently(univerApi, {
+        unitId,
+        sheetId: worksheet.getSheetId(),
+        ranges
+      })
+    )
+  }
+
   private async applyMerges(
     univerApi: any,
-    worksheet: any,
+    worksheet: FWorksheet,
     start: { row: number; col: number },
     merges: Array<{ startRow: number; endRow: number; startColumn: number; endColumn: number }>
   ): Promise<void> {
@@ -494,12 +525,19 @@ export class PivotTableFillService {
       return
     }
 
-    const selections = merges.map(range => ({
-      startRow: start.row + range.startRow,
-      endRow: start.row + range.endRow,
-      startColumn: start.col + range.startColumn,
-      endColumn: start.col + range.endColumn
-    }))
+    const existingMerges = worksheet.getMergedRanges().map(range => range.getRange())
+    const selections = merges
+      .map(range => ({
+        startRow: start.row + range.startRow,
+        endRow: start.row + range.endRow,
+        startColumn: start.col + range.startColumn,
+        endColumn: start.col + range.endColumn
+      }))
+      .filter(
+        range =>
+          // 保留跨边界合并优先，不能让新表头合并间接拆掉它们。
+          !existingMerges.some(existing => Rectangle.intersects(range, existing))
+      )
 
     await this.editProtectionService.runWithoutProtection(() =>
       addWorksheetMergesSilently(univerApi, {
@@ -516,11 +554,7 @@ export class PivotTableFillService {
     cornerRange?: PivotLayoutRange
   ): PivotLayoutRange[] {
     const merges = config.style?.base?.mergeCell ? [...headerMerges] : []
-    if (
-      config.style?.base?.slashHeader &&
-      cornerRange &&
-      this.isMultiCellRange(cornerRange)
-    ) {
+    if (config.style?.base?.slashHeader && cornerRange && this.isMultiCellRange(cornerRange)) {
       merges.push(cornerRange)
     }
     return merges
@@ -585,14 +619,12 @@ export class PivotTableFillService {
     const workbook = univerApi.getActiveWorkbook?.()
     const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
     const currentRender = unitId
-      ? this.renderManagerService.getRenderById(unitId) as any
+      ? (this.renderManagerService.getRenderUnitById(unitId) as any)
       : undefined
     currentRender?.mainComponent?.makeDirty?.(true)
     currentRender?.scene?.makeDirty?.(true)
 
-    const worksheet = workbook
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId?.() === sheetId)
+    const worksheet = workbook?.getSheets?.()?.find(sheet => sheet.getSheetId?.() === sheetId)
 
     worksheet?.refreshCanvas?.()
   }

@@ -328,7 +328,7 @@ export class DataEaseSlashCellController extends Disposable {
   }
 
   private refreshUnit(unitId: string): void {
-    const currentRender = this.renderManagerService.getRenderById(unitId) as any
+    const currentRender = this.renderManagerService.getRenderUnitById(unitId) as any
     currentRender?.mainComponent?.makeDirty?.(true)
     currentRender?.scene?.makeDirty?.(true)
     const workbook = this.univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET) as any

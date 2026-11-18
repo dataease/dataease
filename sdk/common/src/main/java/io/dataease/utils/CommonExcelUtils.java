@@ -1,17 +1,11 @@
 package io.dataease.utils;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.write.builder.ExcelWriterBuilder;
-import com.alibaba.excel.write.metadata.style.WriteCellStyle;
-import com.alibaba.excel.write.metadata.style.WriteFont;
-import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
-import io.dataease.model.excel.AutoAdaptWidthStyleStrategy;
-import io.dataease.model.excel.ErrWriteHandler;
+import io.dataease.excel.ExcelIO;
+import io.dataease.excel.ExcelModelHandler;
+import io.dataease.excel.ExcelReadOptions;
+import io.dataease.excel.ExcelWriteOptions;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.poi.ss.usermodel.IndexedColors;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +16,10 @@ import java.util.Map;
 
 public class CommonExcelUtils {
 
-    public static void writeExcel(HttpServletResponse response, List objects, Class clazz,List<Map<Integer, String>> errMsgList, String fileName) throws IOException {
+    public static void writeExcel(HttpServletResponse response, List objects, Class clazz, List<Map<Integer, String>> errMsgList, String fileName) throws IOException {
         String sheetName = fileName;
         writeExcel(response, objects, clazz, errMsgList, fileName, sheetName);
     }
-
 
     public static void writeExcel(HttpServletResponse response, List objects, Class clazz, List<Map<Integer, String>> errMsgList, String fileName, String sheetName) throws IOException {
         response.addHeader("responseType", "blob");
@@ -43,44 +36,22 @@ public class CommonExcelUtils {
     }
 
     public static void writeOutputStream(OutputStream outputStream, Class clazz, List objects, List<Map<Integer, String>> errMsgList, String sheetName) {
-        WriteCellStyle headCellStyle = new WriteCellStyle();
-        headCellStyle.setFillForegroundColor(Short.valueOf(IndexedColors.WHITE.getIndex()));
-        WriteFont headFont = new WriteFont();
-        headFont.setFontHeightInPoints((short) 12);
-        headCellStyle.setWriteFont(headFont);
-        WriteCellStyle contentCellStyle = new WriteCellStyle();
-
-        WriteFont contentFont = new WriteFont();
-        contentFont.setFontHeightInPoints((short) 11);
-        contentCellStyle.setWriteFont(contentFont);
-
-        HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headCellStyle, contentCellStyle);
-        try {
-            ExcelWriterBuilder writerBuilder = EasyExcel.write(outputStream, clazz);
-            if (CollectionUtils.isNotEmpty(errMsgList)) {
-                writerBuilder.inMemory(Boolean.TRUE).registerWriteHandler(new ErrWriteHandler(errMsgList));
-            }
-            writerBuilder.registerWriteHandler(new AutoAdaptWidthStyleStrategy()).registerWriteHandler(horizontalCellStyleStrategy).sheet(sheetName).doWrite(objects);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ExcelWriteOptions options = new ExcelWriteOptions()
+                .setSheetName(sheetName)
+                .setErrMsgList(errMsgList == null ? java.util.Collections.emptyList() : errMsgList);
+        ExcelIO.writeModel(outputStream, clazz, objects, options);
     }
 
-    public static void importExcel(InputStream inputStream, Class clazsz, AnalysisEventListener analysisEventListener) throws Exception {
-        try {
-            EasyExcel.read(inputStream, clazsz, analysisEventListener).sheet().headRowNumber(0).doRead();
-        } finally {
-            clearThreadLocalCache();
-        }
+    public static void importExcel(InputStream inputStream, Class clazsz, ExcelModelHandler handler) throws Exception {
+        ExcelIO.readModel(inputStream, clazsz, new ExcelReadOptions().setHeadRowNumber(0), handler);
     }
 
     /**
-     * 清理 EasyExcel 缓存在当前线程内的日期/数字格式判断结果。
+     * 清理 Excel 读取缓存在当前线程内的日期/数字格式判断结果。
      * Excel 自定义格式 ID 由每个文件独立分配，线程复用时残留的缓存会导致日期被误判为普通数值。
      */
     public static void clearThreadLocalCache() {
-        com.alibaba.excel.util.DateUtils.removeThreadLocalCache();
-        com.alibaba.excel.util.NumberDataFormatterUtils.removeThreadLocalCache();
+        ExcelIO.clearThreadLocalCache();
     }
 
 }

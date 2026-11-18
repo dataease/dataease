@@ -1,6 +1,10 @@
 services:
 
   dataease:
+    environment:
+      DE_SYNC_AUTH_ENABLED: ${DE_SYNC_AUTH_ENABLED:-false}
+      DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:-}
+      JAVA_TOOL_OPTIONS: "${JAVA_TOOL_OPTIONS:-} -XX:-UseBASE64Intrinsics"
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:DE_TAG
     stop_signal: SIGTERM
     stop_grace_period: 15s
@@ -21,6 +25,7 @@ services:
       - ${DE_BASE}/dataease3.0/data/driver:/opt/dataease3.0/data/driver
       - ${DE_BASE}/dataease3.0/data/i18n:/opt/dataease3.0/data/i18n
       - ${DE_BASE}/dataease3.0/data/report:/opt/dataease3.0/data/report
+      - ${DE_BASE}/dataease3.0/data/report-artifacts:/opt/dataease3.0/data/report-artifacts
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy

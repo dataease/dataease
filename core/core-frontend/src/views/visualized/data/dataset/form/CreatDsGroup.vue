@@ -8,15 +8,14 @@ import { ElMessage } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
-  getDatasetTree,
+  getDatasetCreationFolders,
   moveDatasetTree,
   createDatasetTree,
   renameDatasetTree
 } from '@/api/dataset'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
-import { BusiTreeRequest } from '@/models/tree/TreeNode'
-import { filterFreeFolder, getHighlightSegments } from '@/utils/utils'
+import { getHighlightSegments } from '@/utils/utils'
 export interface Tree {
   isCross: boolean
   name: string
@@ -50,6 +49,7 @@ const filterText = ref('')
 let union = []
 let allfields = []
 let isCross = false
+let afterDatasetSave: (() => void) | undefined
 const datasetForm = reactive({
   pid: '',
   name: ''
@@ -118,6 +118,7 @@ const loading = ref(false)
 const createDataset = ref(false)
 const filterMethod = (value, data) => data.name.includes(value)
 const resetForm = () => {
+  afterDatasetSave = undefined
   createDataset.value = false
 }
 
@@ -131,7 +132,7 @@ const dfs = (arr: Tree[]) => {
 }
 const formatRootMiss = (id: string | number, treeData: Tree[]) => {
   if (!treeData?.length) {
-    return ''
+    return id
   }
   if (id === '0' && treeData[0].id !== '0') {
     return treeData[0].id
@@ -152,7 +153,8 @@ const findNodeById = (nodes: Tree[], id: string): Tree | null => {
 }
 const originResourceTree = ref([])
 const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
-const createInit = (type, data: Tree, exec, name: string) => {
+const createInit = (type, data: Tree, exec, name?: string, onSaved?: () => void) => {
+  afterDatasetSave = onSaved
   pid.value = ''
   id.value = ''
   cmd.value = ''
@@ -167,11 +169,10 @@ const createInit = (type, data: Tree, exec, name: string) => {
     allfields = data.allfields
     isCross = data.isCross
   }
-  const request = { leaf: false, weight: 7 } as BusiTreeRequest
-  getDatasetTree(request).then(res => {
-    filterFreeFolder(res, 'dataset')
-    dfs(res as unknown as Tree[])
-    state.tData = (res as unknown as Tree[]) || []
+  getDatasetCreationFolders().then(res => {
+    const folders = res as unknown as Tree[]
+    dfs(folders)
+    state.tData = folders
     let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
     curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
     originResourceTree.value = cloneDeep(unref(state.tData))
@@ -180,17 +181,17 @@ const createInit = (type, data: Tree, exec, name: string) => {
       state.tData[0].name = t('data_set.data_set')
     }
     if (data.id) {
-      data.id = formatRootMiss(data.id, state.tData)
+      const resolvedId = formatRootMiss(data.id, state.tData)
       if (exec) {
         pid.value = data.pid
-        id.value = data.id
+        id.value = resolvedId
         datasetForm.pid = data.pid as string
         datasetForm.name = data.name
         orgRoot.value = data.orgRoot
       } else {
-        datasetForm.pid = data.id as string
-        pid.value = data.id
-        if (!findNodeById(state.tData, data.id as string)) {
+        datasetForm.pid = resolvedId as string
+        pid.value = resolvedId
+        if (!findNodeById(state.tData, resolvedId as string)) {
           datasetForm.pid = ''
           pid.value = ''
         }
@@ -256,6 +257,7 @@ const checkPid = pid => {
   return true
 }
 const saveDataset = () => {
+  const onSaved = afterDatasetSave
   dataset.value.validate(result => {
     if (result) {
       const params: DatasetOrFolder = {
@@ -287,11 +289,15 @@ const saveDataset = () => {
       }
       loading.value = true
       const req =
-        cmd.value === 'move' ? moveDatasetTree : params.id ? renameDatasetTree : createDatasetTree
+        cmd.value === 'move'
+          ? moveDatasetTree
+          : cmd.value === 'rename'
+          ? renameDatasetTree
+          : createDatasetTree
       req(params)
         .then(res => {
           dataset.value.resetFields()
-          createDataset.value = false
+          resetForm()
           emits('finish', res)
           switch (cmd.value) {
             case 'move':
@@ -301,7 +307,7 @@ const saveDataset = () => {
               ElMessage.success(t('data_set.rename_successful'))
               break
             default:
-              emits('onDatasetSave')
+              onSaved?.()
               ElMessage.success(t('common.save_success'))
               break
           }
@@ -318,7 +324,7 @@ defineExpose({
   editeInit
 })
 
-const emits = defineEmits(['finish', 'onDatasetSave'])
+const emits = defineEmits(['finish'])
 </script>
 
 <template>

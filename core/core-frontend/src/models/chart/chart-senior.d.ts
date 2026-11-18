@@ -152,6 +152,10 @@ declare interface ChartThreshold {
    */
   tableThreshold: TableThreshold[]
   /**
+   * 明细表、汇总表的条件样式是否对总计行生效，缺省关闭
+   */
+  applyToTotalRow?: boolean
+  /**
    * 文本卡阈值
    */
   textLabelThreshold: Threshold[]

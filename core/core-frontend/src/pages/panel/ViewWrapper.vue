@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
+provideQueryScope()
+const canvasQuery = useLatestQuery('canvas-load')
 import {
   ref,
   onBeforeMount,
@@ -8,6 +11,7 @@ import {
   onMounted,
   defineAsyncComponent
 } from 'vue'
+import { registerCanvasRuntime, type CanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
 import { initCanvasData, onInitReady } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -44,6 +48,16 @@ const state = reactive({
   initState: true,
   scale: 100
 })
+
+const canvasRuntimeId = registerCanvasRuntime(
+  () =>
+    ({
+      componentData: state.canvasDataPreview,
+      canvasStyleData: state.canvasStylePreview,
+      canvasViewInfo: state.canvasViewInfoPreview,
+      dvInfo: state.dvInfo
+    } as CanvasRuntime)
+)
 
 const embeddedParams = embeddedParamsDiv?.chartId ? embeddedParamsDiv : embeddedStore
 
@@ -115,7 +129,7 @@ onBeforeMount(async () => {
 
   initCanvasData(
     embeddedParams.dvId,
-    { busiFlag: embeddedParams.busiFlag },
+    { busiFlag: embeddedParams.busiFlag, queryRequest: canvasQuery.start() },
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
@@ -164,8 +178,11 @@ onBeforeMount(async () => {
     }
   )
 })
-const userViewEnlargeOpen = opt => {
-  userViewEnlargeRef.value.dialogInit(state.canvasStylePreview, viewInfo.value, config.value, opt)
+const userViewEnlargeOpen = (opt, runtime?) => {
+  userViewEnlargeRef.value.dialogInit(state.canvasStylePreview, viewInfo.value, config.value, opt, {
+    scale: state.scale / 100,
+    runtime
+  })
 }
 
 const onPointClick = param => {
@@ -210,7 +227,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="de-view-wrapper" ref="previewViewCanvas" v-if="!!config && state.initState">
+  <div
+    :data-canvas-runtime="canvasRuntimeId"
+    class="de-view-wrapper"
+    ref="previewViewCanvas"
+    v-if="!!config && state.initState"
+  >
     <ComponentWrapper
       style="width: 100%; height: 100%"
       :scale="state.scale"

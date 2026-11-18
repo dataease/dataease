@@ -3,12 +3,15 @@ import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.*;
 
 import io.dataease.api.ds.EngineApi;
+import io.dataease.exception.DEException;
+import io.dataease.result.ResultCode;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.type.*;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.vo.Configuration;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,36 +43,14 @@ public class EngineServer implements EngineApi {
             return datasourceDTO;
         }
         BeanUtils.copyBean(datasourceDTO, deEngines.get(0));
-        switch (datasourceDTO.getType()) {
-            case "mysql":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
-                break;
-            case "StarRocks":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), StarRocks.class)).toString());
-                break;
-            case "h2":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
-                break;
-            case "oracle":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Oracle.class)).toString());
-                break;
-            case "pg":
-            case "kingbase":
-            case "gaussdb":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class)).toString());
-                break;
-            case "sqlServer":
-                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Sqlserver.class)).toString());
-                break;
-        }
-        datasourceDTO.setConfiguration(RsaUtils.symmetricEncrypt(datasourceDTO.getConfiguration()));
+        datasourceDTO.setConfiguration(configurationForEdit(datasourceDTO.getType(), datasourceDTO.getConfiguration()));
         return datasourceDTO;
     }
 
     @Override
     public void save(DatasourceDTO datasourceDTO) {
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
-            datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
+            datasourceDTO.setConfiguration(restoreConfiguration(datasourceDTO));
         }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
@@ -77,30 +58,74 @@ public class EngineServer implements EngineApi {
         if (coreDeEngine.getId() == null) {
             coreDeEngine.setId(IDUtils.snowID());
             datasourceDTO.setId(coreDeEngine.getId());
+            coreDeEngine.setCreateTime(System.currentTimeMillis());
+            coreDeEngine.setUpdateTime(System.currentTimeMillis());
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         } else {
+            coreDeEngine.setUpdateTime(System.currentTimeMillis());
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
+        Long revision = coreDeEngine.getUpdateTime();
         commonThreadPool.addTask(() -> {
             CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+            if (ds == null) {
+                LogUtil.error("Failed to update engine status: engine not found, id=" + coreDeEngine.getId());
+                return;
+            }
             try {
                 calciteProvider.update(datasourceDTO);
+                CoreDeEngine current = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                if (current != null && java.util.Objects.equals(current.getUpdateTime(), revision)) {
+                    current.setStatus("success");
+                    coreDeEngineRepository.saveAndFlush(current);
+                } else {
+                    LogUtil.info("Skip engine status update, a newer configuration revision exists for id=" + coreDeEngine.getId());
+                }
             } catch (Exception e) {
                 LogUtil.error("Failed to init engine: " + e.getMessage());
-                ds.setStatus("Error");
-            } finally {
-                ds.setStatus("success");
-                coreDeEngineRepository.saveAndFlush(ds);
+                CoreDeEngine current = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                if (current != null && java.util.Objects.equals(current.getUpdateTime(), revision)) {
+                    current.setStatus("Error");
+                    coreDeEngineRepository.saveAndFlush(current);
+                } else {
+                    LogUtil.info("Skip engine error status update, a newer configuration revision exists for id=" + coreDeEngine.getId());
+                }
             }
         });
     }
 
     @Override
     public void validate(DatasourceDTO datasourceDTO) throws Exception {
+        if (datasourceDTO == null || StringUtils.isBlank(datasourceDTO.getConfiguration())) {
+            DEException.throwException(ResultCode.PARAM_IS_BLANK.code(), ResultCode.PARAM_IS_BLANK.message());
+        }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
-        coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
+        coreDeEngine.setConfiguration(restoreConfiguration(datasourceDTO));
         engineManage.validate(coreDeEngine, false);
+    }
+
+    /** Use the form representation on both sides of credential-preservation checks. */
+    private String configurationForEdit(String type, String configuration) {
+        Configuration editable = switch (type) {
+            case "mysql" -> JsonUtil.parseObject(configuration, Mysql.class);
+            case "StarRocks" -> JsonUtil.parseObject(configuration, StarRocks.class);
+            case "h2" -> JsonUtil.parseObject(configuration, H2.class);
+            case "oracle" -> JsonUtil.parseObject(configuration, Oracle.class);
+            case "pg", "kingbase", "gaussdb" -> JsonUtil.parseObject(configuration, Pg.class);
+            case "sqlServer" -> JsonUtil.parseObject(configuration, Sqlserver.class);
+            default -> null;
+        };
+        return editable == null ? configuration : JsonUtil.toJSONString(editable).toString();
+    }
+
+    private String restoreConfiguration(DatasourceDTO request) {
+        String plain = new String(Base64.getDecoder().decode(request.getConfiguration()), java.nio.charset.StandardCharsets.UTF_8);
+        CoreDeEngine stored = request.getId() == null ? null : coreDeEngineRepository.findById(request.getId()).orElse(null);
+        // Type changes require fresh credentials, while preserving the existing engine-edit operation.
+        String original = stored != null && stored.getType().equals(request.getType())
+                ? configurationForEdit(stored.getType(), stored.getConfiguration()) : null;
+        return ConfigurationCredentials.restore(plain, original);
     }
 
     @Override

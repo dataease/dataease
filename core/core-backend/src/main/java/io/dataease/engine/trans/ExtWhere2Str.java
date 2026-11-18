@@ -12,6 +12,8 @@ import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
+import io.dataease.utils.BeanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,6 +45,9 @@ public class ExtWhere2Str {
             Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
             dsType = next.getValue().getType();
         }
+
+        // 单源 Oracle 的字符串字面量不使用反斜杠转义，跨源仍由 Calcite 执行。
+        boolean backslashEscapes = isCross || !StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.oracle.getType());
 
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartExtFilterDTO request : fields) {
@@ -108,7 +113,17 @@ public class ExtWhere2Str {
                         }
                     }
 
-                    if (field.getDeType() == 1) {
+                    if (request.getFilterType() == 2 && !Boolean.TRUE.equals(request.getIsTree())
+                            && field.getDeType() == 1
+                            && ("H_m_s".equals(request.getDateStyle()) || "M_d".equals(request.getDateStyle()))
+                            && ("eq".equals(operator) || "in".equals(operator))) {
+                        // 时分秒和月日不补入日期或年份，按源展示粒度匹配目标日期字段。
+                        ChartViewFieldDTO timeField = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(timeField, field);
+                        timeField.setDateStyle(request.getDateStyle());
+                        timeField.setDatePattern(request.getDatePattern());
+                        whereName = Dimension2SQLObj.getXFields(timeField, originName, null, isCross).getFieldName();
+                    } else if (field.getDeType() == 1) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             // 此处获取标准格式的日期
                             whereName = String.format(SQLConstants.DE_STR_TO_DATE_T, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : (Utils.isValidDateFormat(field.getDateFormat()) ? Utils.transValue(field.getDateFormat()) : SQLConstants.DEFAULT_DATE_FORMAT));
@@ -178,11 +193,11 @@ public class ExtWhere2Str {
                         logic = " OR ";
                     }
                     String term2 = split[2];
-                    whereValue = Utils.transFilterTerm(term1) + getValue(term1, value.get(0)) + logic + whereName + Utils.transFilterTerm(term2) + getValue(term2, value.get(1));
+                    whereValue = Utils.transFilterTerm(term1) + getValue(term1, value.get(0), backslashEscapes) + logic + whereName + Utils.transFilterTerm(term2) + getValue(term2, value.get(1), backslashEscapes);
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                     // 过滤空数据
                     if (value.contains(SQLConstants.EMPTY_SIGN)) {
-                        String joined = value.stream().map(ExtWhere2Str::sanitizeSqlLiteral).collect(Collectors.joining("','"));
+                        String joined = value.stream().map(item -> sanitizeSqlLiteral(item, backslashEscapes)).collect(Collectors.joining("','"));
                         whereValue = "('" + joined + "', '')" + " or " + whereName + " is null ";
                     } else {
                         // tree的情况需额外处理
@@ -197,21 +212,21 @@ public class ExtWhere2Str {
                                 }
                             }
                             if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                                whereValue = "(" + value.stream().map(ExtWhere2Str::toSqlServerNQuotedValue).collect(Collectors.joining(",")) + ")";
+                                whereValue = "(" + value.stream().map(item -> toSqlServerNQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                             } else {
-                                whereValue = "(" + value.stream().map(ExtWhere2Str::toQuotedValue).collect(Collectors.joining(",")) + ")";
+                                whereValue = "(" + value.stream().map(item -> toQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                             }
                         } else {
                             if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                     || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                     && !isCross
                                     && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                                whereValue = "(" + value.stream().map(ExtWhere2Str::toSqlServerNQuotedValue).collect(Collectors.joining(",")) + ")";
+                                whereValue = "(" + value.stream().map(item -> toSqlServerNQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                             } else {
                                 if (request.getDatasetTableField().getDeType() == 2 || request.getDatasetTableField().getDeType() == 3) {
                                     whereValue = "(" + value.stream().map(ExtWhere2Str::sanitizeNumberLiteral).collect(Collectors.joining(",")) + ")";
                                 } else {
-                                    whereValue = "(" + value.stream().map(ExtWhere2Str::toQuotedValue).collect(Collectors.joining(",")) + ")";
+                                    whereValue = "(" + value.stream().map(item -> toQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                                 }
                             }
                         }
@@ -229,18 +244,18 @@ public class ExtWhere2Str {
                             }
                         }
                         if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNLikeValue(value.get(0));
+                            whereValue = toSqlServerNLikeValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toLikeValue(value.get(0));
+                            whereValue = toLikeValue(value.get(0), backslashEscapes);
                         }
                     } else {
                         if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                 || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                 && !isCross
                                 && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNLikeValue(value.get(0));
+                            whereValue = toSqlServerNLikeValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toLikeValue(value.get(0));
+                            whereValue = toLikeValue(value.get(0), backslashEscapes);
                         }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "start_with")) {
@@ -256,18 +271,18 @@ public class ExtWhere2Str {
                             }
                         }
                         if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNStartValue(value.get(0));
+                            whereValue = toSqlServerNStartValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toStartValue(value.get(0));
+                            whereValue = toStartValue(value.get(0), backslashEscapes);
                         }
                     } else {
                         if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                 || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                 && !isCross
                                 && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNStartValue(value.get(0));
+                            whereValue = toSqlServerNStartValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toStartValue(value.get(0));
+                            whereValue = toStartValue(value.get(0), backslashEscapes);
                         }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "end_with")) {
@@ -283,18 +298,18 @@ public class ExtWhere2Str {
                             }
                         }
                         if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNEndValue(value.get(0));
+                            whereValue = toSqlServerNEndValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toEndValue(value.get(0));
+                            whereValue = toEndValue(value.get(0), backslashEscapes);
                         }
                     } else {
                         if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                 || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                 && !isCross
                                 && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNEndValue(value.get(0));
+                            whereValue = toSqlServerNEndValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toEndValue(value.get(0));
+                            whereValue = toEndValue(value.get(0), backslashEscapes);
                         }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
@@ -324,7 +339,7 @@ public class ExtWhere2Str {
                             || request.getDatasetTableField().getDeType() == 4) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, sanitizeNumberLiteral(value.get(0)), sanitizeNumberLiteral(value.get(1)));
                     } else {
-                        whereValue = String.format(SQLConstants.WHERE_BETWEEN, sanitizeSqlLiteral(value.get(0)), sanitizeSqlLiteral(value.get(1)));
+                        whereValue = String.format(SQLConstants.WHERE_BETWEEN, sanitizeSqlLiteral(value.get(0), backslashEscapes), sanitizeSqlLiteral(value.get(1), backslashEscapes));
                     }
                 } else {
                     // 过滤空数据
@@ -344,23 +359,23 @@ public class ExtWhere2Str {
                                 }
                             }
                             if (hasN && !isCross) {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0)));
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                             } else {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0)));
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                             }
                         } else {
                             if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                     || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                     && !isCross
                                     && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0)));
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                             } else {
                                 if (request.getDatasetTableField().getDeType() == 2
                                         || request.getDatasetTableField().getDeType() == 3
                                         || request.getDatasetTableField().getDeType() == 4) {
                                     whereValue = String.format(SQLConstants.WHERE_NUMBER_VALUE, sanitizeNumberLiteral(value.get(0)));
                                 } else {
-                                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0)));
+                                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                                 }
                             }
                         }
@@ -378,51 +393,51 @@ public class ExtWhere2Str {
         meta.setExtWheresDialect(fieldsDialect);
     }
 
-    private static String getValue(String term, String value) {
+    private static String getValue(String term, String value, boolean backslashEscapes) {
         switch (term) {
             case "like":
-                return toLikeValue(value);
+                return toLikeValue(value, backslashEscapes);
             case "eq":
-                return toQuotedValue(value);
+                return toQuotedValue(value, backslashEscapes);
         }
         return null;
     }
 
-    private static String sanitizeSqlLiteral(String value) {
+    private static String sanitizeSqlLiteral(String value, boolean backslashEscapes) {
         String normalized = StringUtils.defaultString(value);
-        return Utils.transValue(normalized);
+        return Utils.transValue(normalized, backslashEscapes);
     }
 
-    private static String toQuotedValue(String value) {
-        return "'" + sanitizeSqlLiteral(value) + "'";
+    private static String toQuotedValue(String value, boolean backslashEscapes) {
+        return "'" + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
-    private static String toLikeValue(String value) {
-        return "'%" + sanitizeSqlLiteral(value) + "%'";
+    private static String toLikeValue(String value, boolean backslashEscapes) {
+        return "'%" + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toStartValue(String value) {
-        return "'" + sanitizeSqlLiteral(value) + "%'";
+    private static String toStartValue(String value, boolean backslashEscapes) {
+        return "'" + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toEndValue(String value) {
-        return "'%" + sanitizeSqlLiteral(value) + "'";
+    private static String toEndValue(String value, boolean backslashEscapes) {
+        return "'%" + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
-    private static String toSqlServerNQuotedValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "'";
+    private static String toSqlServerNQuotedValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
-    private static String toSqlServerNLikeValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "%'";
+    private static String toSqlServerNLikeValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toSqlServerNStartValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "%'";
+    private static String toSqlServerNStartValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toSqlServerNEndValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "'";
+    private static String toSqlServerNEndValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
     private static String sanitizeNumberLiteral(String value) {

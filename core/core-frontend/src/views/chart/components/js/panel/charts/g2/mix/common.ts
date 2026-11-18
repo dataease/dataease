@@ -1,9 +1,21 @@
-import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec, type LinearScale } from '@antv/g2'
+import {
+  Chart as G2Chart,
+  extend,
+  Runtime,
+  stdlib,
+  register,
+  type G2Spec,
+  type LinearScale
+} from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { setGradientColor } from '../../../common/common_antv'
 import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
+import type { MixAxisScaleOptions, MixAxisState } from './axis-alignment'
+import type { TransformComponent } from '@antv/g2/esm/runtime/types/transform'
+import { createOrderedMixPathMark } from './path-order'
 import {
   getCategoryLegendStyle,
   getHorizontalLegendLabelMaxWidth,
@@ -345,7 +357,28 @@ export const createMixElementHighlight = baseElementHighlight => {
   return mixElementHighlight
 }
 
+/**
+ * 图例过滤后柱形仍可能保留零基线，只关闭空系列的轴显示，不影响辅助线保域
+ */
+const hideEmptyMixAxis: TransformComponent = () => (indices, mark) =>
+  [
+    indices,
+    indices.length
+      ? mark
+      : {
+          ...mark,
+          scale: {
+            ...mark.scale,
+            y: { ...mark.scale.y, guide: null }
+          }
+        }
+  ]
+
+register('transform.deMixHideEmptyAxis', hideEmptyMixAxis)
+
 const mixLegendLibrary = stdlib() as Record<string, any>
+mixLegendLibrary['mark.line'] = createOrderedMixPathMark(mixLegendLibrary['mark.line'])
+mixLegendLibrary['mark.area'] = createOrderedMixPathMark(mixLegendLibrary['mark.area'])
 mixLegendLibrary['interaction.elementHighlight'] = createMixElementHighlight(
   mixLegendLibrary['interaction.elementHighlight']
 )
@@ -377,10 +410,12 @@ export const getAssistLineAxisIndex = (yAxisType?: string): number => {
   return yAxisType === 'right' ? 1 : 0
 }
 
-type MixAssistScaleOptions = LinearScale & {
+type MixAssistScaleOptions = MixAxisScaleOptions & {
   dataeaseAssistAxis?: number
   dataeaseAssistSource?: boolean
   dataeaseAssistSetDomain?: (domain: number[]) => number[]
+  dataeaseAreaSource?: string
+  dataeaseAreaTarget?: string
 }
 
 type MixAssistNumericScale = {
@@ -389,6 +424,29 @@ type MixAssistNumericScale = {
 
 // 在每次 G2 比例尺推断之后同步，覆盖图例筛选、堆叠变换和自动 nice 后的实际轴域
 const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales => {
+  // 布局阶段已经确定主轴范围，独立的点和面积比例尺必须跟随同侧主轴
+  scales.forEach(scale => {
+    const options = scale.getOptions() as MixAssistScaleOptions
+    const state = options.dataeaseMixAxisState?.()
+    const index = options.dataeaseMixAxis
+    if (!state || index === undefined) {
+      return
+    }
+    const source = scales.find(candidate => {
+      const sourceOptions = candidate.getOptions() as MixAssistScaleOptions
+      return (
+        sourceOptions.dataeaseMixAxisSource &&
+        sourceOptions.dataeaseMixAxis === index &&
+        sourceOptions.dataeaseMixAxisState?.() === state
+      )
+    })
+    const sourceOptions = source?.getOptions()
+    const domain = state.domains?.[index] ?? state.fixed?.[index]?.domain ?? sourceOptions?.domain
+    if (domain?.length === 2 && domain.every(Number.isFinite)) {
+      const numericScale = scale as MixAssistNumericScale
+      numericScale.update({ domain, range: sourceOptions?.range, nice: false })
+    }
+  })
   scales.forEach(scale => {
     const options = scale.getOptions() as MixAssistScaleOptions
     if (!options.dataeaseAssistSetDomain) {
@@ -405,10 +463,17 @@ const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales =
     const sourceDomain = sourceOptions?.domain || []
     const domain = options.dataeaseAssistSetDomain(sourceDomain)
     if (domain.length === 2 && domain.every(Number.isFinite)) {
-      // 不跟随的辅助线保留初次轴域，主图及同轴散点也必须使用相同范围。
+      // 不跟随的辅助线保留初次轴域，主图及同轴散点也必须使用相同范围
       if (domain !== sourceDomain && sourceOptions) {
         scales.forEach(candidate => {
-          if (candidate.getOptions().key === sourceOptions.key) {
+          const candidateOptions = candidate.getOptions() as MixAssistScaleOptions
+          const state = sourceOptions.dataeaseMixAxisState?.()
+          if (
+            state
+              ? candidateOptions.dataeaseMixAxisState?.() === state &&
+                candidateOptions.dataeaseMixAxis === sourceOptions.dataeaseMixAxis
+              : candidateOptions.key === sourceOptions.key
+          ) {
             const numericScale = candidate as MixAssistNumericScale
             numericScale.update({ domain, nice: false })
           }
@@ -418,6 +483,116 @@ const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales =
       numericScale.update({ domain, range: sourceOptions?.range, nice: false })
     }
   })
+  // 面积的零基线不参与折线轴域推断，辅助线冻结轴域后再同步面积范围
+  scales.forEach(scale => {
+    const options = scale.getOptions() as MixAssistScaleOptions
+    if (!options.dataeaseAreaTarget) {
+      return
+    }
+    const source = scales.find(candidate => {
+      const sourceOptions = candidate.getOptions() as MixAssistScaleOptions
+      return sourceOptions.dataeaseAreaSource === options.dataeaseAreaTarget
+    })
+    const sourceOptions = source?.getOptions() as MixAssistScaleOptions
+    const domain = sourceOptions?.domain || []
+    if (domain.length === 2 && domain.every(Number.isFinite)) {
+      const numericScale = scale as MixAssistNumericScale
+      numericScale.update({ domain, range: sourceOptions.range, nice: false })
+    }
+  })
+}
+
+/**
+ * 仅为四类组合图登记轴角色，布局前对齐刻度，绘图前同步同轴图元
+ */
+export const configMixAxisAlignment = (
+  chart: Chart,
+  leftMarks: G2Spec[],
+  rightMarks: G2Spec[]
+): void => {
+  const { yAxis, yAxisExt } = parseJson(chart.customStyle)
+  const state: MixAxisState = {
+    auto: [yAxis.axisValue.auto !== false, yAxisExt.axisValue.auto !== false],
+    column: leftMarks[0].type === 'interval',
+    preserve: [false, false]
+  }
+  const getState = () => state
+  ;[leftMarks, rightMarks].forEach((marks, index) => {
+    marks.forEach((mark, markIndex) => {
+      mark.scale.y = {
+        ...mark.scale.y,
+        dataeaseMixAxis: index,
+        dataeaseMixAxisSource: markIndex === 0,
+        dataeaseMixAxisState: getState,
+        groupTransform: syncMixAssistScales
+      }
+    })
+  })
+}
+
+/**
+ * 在原图元配置完成后追加面积，沿用最终数据、系列颜色和轴域
+ */
+export const configMixLineArea = (chart: Chart, options: G2Spec): G2Spec => {
+  const { basicStyle } = parseJson(chart.customAttr)
+  const view = options.type === 'view' ? options : options.children.find(c => c.key === 'chart')
+  const lineMarks = view.children.filter(mark => mark.type === 'line')
+  const zIndex = Math.min(0, ...view.children.map(mark => mark.zIndex ?? 0)) - 1
+  lineMarks.forEach(lineMark => {
+    const axis = lineMark.scale.y.key
+    const show = axis === 'left' ? basicStyle.leftLineArea : basicStyle.lineArea
+    if (!show) {
+      return
+    }
+    const gradient = axis === 'left' ? basicStyle.leftLineAreaGradient : basicStyle.lineAreaGradient
+    const colors = new Map<string, string>(lineMark.scale.color.relations)
+    const colorOf = lineMark.encode.color as (datum: Record<string, any>) => string
+    lineMark.scale.y = {
+      ...lineMark.scale.y,
+      dataeaseAreaSource: axis,
+      groupTransform: syncMixAssistScales
+    }
+    // G2 从首个 Y 比例尺读取同步函数，右轴单独启用面积时也需保留该入口
+    const firstMark = view.children[0]
+    firstMark.scale.y = { ...firstMark.scale.y, groupTransform: syncMixAssistScales }
+    view.children.push({
+      type: 'area',
+      data: lineMark.data,
+      encode: {
+        ...lineMark.encode,
+        shape: lineMark.encode.shape === 'smooth' ? 'smooth' : 'area'
+      },
+      scale: {
+        ...lineMark.scale,
+        // 保留点比例尺默认间距及柱形当前间距，避免面积默认零间距改变共有 X 比例尺
+        x: { padding: 0.5, ...view.scale?.x, ...firstMark.scale.x, ...lineMark.scale.x },
+        y: {
+          ...lineMark.scale.y,
+          independent: true,
+          // 自动轴仅钳住域外零基线，手动轴沿用折线既有裁剪，避免切掉自动轴边界圆点
+          clamp: lineMark.scale.y.clamp ?? true,
+          dataeaseAssistSource: false,
+          dataeaseMixAxisSource: false,
+          dataeaseAreaSource: undefined,
+          dataeaseAreaTarget: axis
+        }
+      },
+      axis: { y: false },
+      tooltip: false,
+      zIndex,
+      style: {
+        connect: lineMark.style?.connect ?? false,
+        fillOpacity: 1,
+        lineWidth: 0,
+        pointerEvents: 'none',
+        ...(gradient && {
+          fill: (data: Record<string, any>[]) =>
+            setGradientColor(colors.get(colorOf(data[0])), true, 270)
+        })
+      }
+    })
+  })
+  return options
 }
 
 export const getMixAssistLineOptions = <T extends { value: number }>(
@@ -426,6 +601,7 @@ export const getMixAssistLineOptions = <T extends { value: number }>(
   axisIndex: number,
   assistLines: AssistLine[]
 ) => {
+  axisMark.transform = [...(axisMark.transform ?? []), { type: 'deMixHideEmptyAxis' }]
   axisMark.scale.y = {
     ...axisMark.scale.y,
     dataeaseAssistAxis: axisIndex,
@@ -439,12 +615,23 @@ export const getMixAssistLineOptions = <T extends { value: number }>(
       getAssistLineAxisIndex(line.yAxisType) === axisIndex &&
       (!line.followField || !(line.field === '1' ? line.fieldId : line.boundFieldId))
   )
+  const alignment = (axisMark.scale.y as MixAxisScaleOptions).dataeaseMixAxisState?.()
+  const visibleLineData = lineData.filter(item => Number.isFinite(item.value))
+  if (alignment) {
+    alignment.preserve[axisIndex] = preserveDomain && visibleLineData.length > 0
+  }
   const scaleY: MixAssistScaleOptions = {
     ...axisMark.scale.y,
     // 辅助线保持独立，不能把自身数值合并到主图轴域中
     independent: true,
     dataeaseAssistSource: false,
+    dataeaseMixAxisSource: false,
     dataeaseAssistSetDomain: domain => {
+      const alignedDomain = alignment?.domains?.[axisIndex] ?? alignment?.fixed?.[axisIndex]?.domain
+      if (alignedDomain) {
+        visibleDomain = alignedDomain
+        return visibleDomain
+      }
       if (preserveDomain && domain.length === 2 && domain.every(Number.isFinite)) {
         initialDomain ??= [...domain]
       }
@@ -464,7 +651,7 @@ export const getMixAssistLineOptions = <T extends { value: number }>(
   // 保留越界值以便后续轴域变化时恢复显示；G2 会跳过隐藏元素的标签
   return {
     scaleY,
-    visibleLineData: lineData.filter(item => Number.isFinite(item.value)),
+    visibleLineData,
     visibility
   }
 }
@@ -598,6 +785,8 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'lineSymbol',
     'lineSymbolSize',
     'lineSmooth',
+    'lineArea',
+    'lineAreaGradient',
     'radiusColumnBar',
     'subSeriesColor',
     'seriesColor',

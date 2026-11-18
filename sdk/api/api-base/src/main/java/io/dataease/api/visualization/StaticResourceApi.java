@@ -4,10 +4,11 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.visualization.request.StaticResourceRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
+import java.io.IOException;
 @Tag(name = "可视化管理:静态文件")
 @ApiSupport(order = 998)
 public interface StaticResourceApi {
@@ -17,6 +18,7 @@ public interface StaticResourceApi {
 
     @PostMapping("findResourceAsBase64")
     @Operation(summary = "查找静态文件并转为Base64")
-    Map<String,String> findResourceAsBase64(@RequestBody StaticResourceRequest resourceRequest);
+    void findResourceAsBase64(@RequestBody StaticResourceRequest resourceRequest,
+                              HttpServletResponse response) throws IOException;
 
 }

@@ -121,6 +121,23 @@ const timeTypes = [
   'custom'
 ]
 
+const deTypeLabel = (deType: number) => {
+  switch (deType) {
+    case 0:
+      return t('dataset.text')
+    case 1:
+      return t('dataset.time')
+    case 3:
+      return t('dataset.value') + '(' + t('dataset.float') + ')'
+    case 5:
+      return t('dataset.location')
+    case 7:
+      return 'URL'
+    default:
+      return t('dataset.value')
+  }
+}
+
 type NodeType = 'db' | 'sql'
 type UnionType = 'left' | 'right' | 'inner'
 interface UnionField {
@@ -172,5 +189,6 @@ export {
   guid,
   getFieldName,
   num,
-  timeTypes
+  timeTypes,
+  deTypeLabel
 }

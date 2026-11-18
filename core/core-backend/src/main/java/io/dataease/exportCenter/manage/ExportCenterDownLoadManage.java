@@ -1,7 +1,10 @@
 package io.dataease.exportCenter.manage;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
@@ -74,7 +77,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,8 +84,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -102,19 +105,23 @@ public class ExportCenterDownLoadManage {
     private int core;
     @Value("${dataease.export.max.size:10}")
     private int max;
+    @Value("${dataease.export.queue.size:100}")
+    private int queueSize;
 
     @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
-    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private ThreadPoolExecutor exportThreadPool;
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
     @Resource
     private ChartDataServer chartDataServer;
     @Resource
     private VisualizationWatermarkRepository watermarkRepository;
+    @Resource
+    private ObjectMapper objectMapper;
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Resource
@@ -158,9 +165,8 @@ public class ExportCenterDownLoadManage {
 
     @PostConstruct
     public void init() {
-        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(core);
-        scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
-        scheduledThreadPoolExecutor.setMaximumPoolSize(max);
+        exportThreadPool = new ThreadPoolExecutor(core, max, keepAliveSeconds, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(Math.max(1, queueSize)), new ThreadPoolExecutor.AbortPolicy());
     }
 
     @Scheduled(fixedRate = 5000)
@@ -212,8 +218,9 @@ public class ExportCenterDownLoadManage {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             try {
+                LocaleContextHolder.setLocale(parseLocale(request));
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
                     V3UserUtil.setProxy(proxyOid);
@@ -239,6 +246,7 @@ public class ExportCenterDownLoadManage {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             } finally {
+                LocaleContextHolder.resetLocaleContext();
                 V3UserUtil.clear();
             }
         });
@@ -254,7 +262,7 @@ public class ExportCenterDownLoadManage {
         Object proxyObj = request.get("proxy");
         Long proxyOid = ObjectUtils.isNotEmpty(proxyObj) ? Long.parseLong(proxyObj.toString()) : null;
         final List<Long> scope = resolveLogScope(request);
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             V3UserUtil.setUid(userId);
             if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -311,7 +319,7 @@ public class ExportCenterDownLoadManage {
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -553,7 +561,7 @@ public class ExportCenterDownLoadManage {
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
-        Future future = scheduledThreadPoolExecutor.submit(() -> {
+        Future future = exportThreadPool.submit(() -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -715,14 +723,36 @@ public class ExportCenterDownLoadManage {
     }
 
     public void addWatermarkTools(Workbook wb) {
+        addWatermarkTools(wb, null);
+    }
+
+    public void addWatermarkTools(Workbook wb, Map<Sheet, int[]> sheetBounds) {
         VisualizationWatermark watermark = watermarkRepository.findById("system_default").orElse(null);
-        WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
-        if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
-            // 在主逻辑中添加水印
-            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
-            for (Sheet sheet : wb) {
-                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
+        if (watermark == null || StringUtils.isBlank(watermark.getSettingContent())) {
+            return;
+        }
+        WatermarkContentDTO watermarkContent;
+        try {
+            // 配置损坏必须中止导出，不能与合法 JSON null 一样跳过水印。
+            watermarkContent = objectMapper.readerFor(WatermarkContentDTO.class)
+                    .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                    .without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    .readValue(watermark.getSettingContent());
+        } catch (JsonProcessingException e) {
+            throw DEException.getException(Translator.get("i18n_watermark_config_invalid"));
+        }
+        if (watermarkContent == null || !Boolean.TRUE.equals(watermarkContent.getEnable()) || !Boolean.TRUE.equals(watermarkContent.getExcelEnable())) {
+            return;
+        }
+        UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
+        // 在主逻辑中添加水印
+        int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
+        for (Sheet sheet : wb) {
+            int[] bounds = sheetBounds == null ? null : sheetBounds.get(sheet);
+            if (bounds == null) {
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx);
+            } else {
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx, bounds[0], bounds[1]);
             }
         }
     }
@@ -951,18 +981,5 @@ public class ExportCenterDownLoadManage {
             }
         }
         cell.setCellValue(value);
-    }
-
-
-    private void validateDownloadPath(String filePath) {
-        try {
-            File resolved = new File(filePath).getCanonicalFile();
-            File base = new File(exportData_path).getCanonicalFile();
-            if (!resolved.getAbsolutePath().startsWith(base.getAbsolutePath())) {
-                throw new RuntimeException("非法的下载路径");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("路径解析失败");
-        }
     }
 }

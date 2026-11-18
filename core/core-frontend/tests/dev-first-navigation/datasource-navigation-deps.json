@@ -1,0 +1,8 @@
+[
+  "vue-uuid",
+  "jsencrypt/bin/jsencrypt.min",
+  "mathjs",
+  "vue3-ace-editor",
+  "ace-builds",
+  "ace-builds/src-noconflict/ext-language_tools"
+]

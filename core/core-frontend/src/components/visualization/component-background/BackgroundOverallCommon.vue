@@ -354,7 +354,6 @@
           }"
         >
           <div class="avatar-uploader-container" :class="`img-area_${themes}`">
-            <MaterialPickerButton :themes="themes" @select="applyMaterial" />
             <el-upload
               action=""
               :effect="themes"
@@ -370,6 +369,11 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
+            <MaterialPickerButton
+              :themes="themes"
+              :disabled="!state.commonBackground.backgroundImageEnable || state.uploadDisabled"
+              @select="applyMaterial"
+            />
             <el-row>
               <span
                 style="margin-top: 2px"

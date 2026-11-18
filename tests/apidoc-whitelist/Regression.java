@@ -19,6 +19,11 @@ public class Regression {
         contextPath.setAccessible(true);
         contextPath.set(null, "/deployment");
         for (String prefix : List.of("", "/de2api", "/casbi/de2api", "/oidcbi/de2api", "/deployment/de2api")) {
+            check(prefix + "/dataease.svg", true);
+            for (String path : List.of("/dataease.svg/extra", "/dataease.svg.bak",
+                    "/other.svg", "/vite.svg", "/favicon.ico")) {
+                check(prefix + path, false);
+            }
             for (String path : List.of("/webjars/css/app.1824bac3.css", "/webjars/js/app.c31badf5.js",
                     "/webjars/fonts/icon.woff", "/webjars/fonts/icon.woff2", "/webjars/fonts/icon.eot",
                     "/webjars/fonts/icon.ttf", "/webjars/img/loading.gif", "/webjars/img/icon.svg",

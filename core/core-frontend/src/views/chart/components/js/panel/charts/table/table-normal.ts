@@ -28,6 +28,7 @@ import {
   S2Options,
   S2Theme,
   ScrollbarPositionType,
+  SERIES_NUMBER_FIELD,
   TableColCell,
   TableSheet,
   ViewMeta
@@ -74,6 +75,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...TABLE_EDITOR_PROPERTY_INNER,
+    'tooltip-selector': [...TABLE_EDITOR_PROPERTY_INNER['tooltip-selector'], 'tableDisplayFields'],
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
       'tableHeaderSort',
@@ -436,7 +438,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const { show } = tooltip
     if (show) {
       newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
-      newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
+      newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta, chart))
+      if (tooltip.tableDisplayFields?.length) {
+        newChart.on(S2Event.MERGED_CELLS_HOVER, event => this.showTooltip(newChart, event, meta))
+      }
     }
     // header resize
     newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))
@@ -504,6 +509,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
         basicStyle.seriesSummary,
         chart.data.customSumResult
       ) as any
+      // 条件样式从行数据取值，需与首列实际显示的汇总标签保持一致。
+      const defaultTotalLabel = summaryLabel ?? t('chart.total_show')
+      if (tableHeader.showIndex) {
+        summaryObj[SERIES_NUMBER_FIELD] = defaultTotalLabel
+      } else if (xAxis?.length) {
+        summaryObj[xAxis[0].dataeaseName] = defaultTotalLabel
+      }
       data.push(summaryObj)
     }
     s2Options.dataCell = (viewMeta, sheet) => {

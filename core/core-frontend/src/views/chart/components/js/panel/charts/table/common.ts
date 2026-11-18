@@ -57,3 +57,15 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'function-cfg': ['emptyDataStrategy'],
   threshold: ['tableThreshold']
 }
+
+export function getTableTooltipFields(type: string, xAxis: Axis[] = [], yAxis: Axis[] = []) {
+  if (type === 'table-info') {
+    // 明细表的列配置同时包含维度和指标。
+    return xAxis
+  }
+  if (type === 'table-normal') {
+    // 列隐藏只控制表格展示，提示仍可读取当前行的字段值。
+    return [...xAxis, ...yAxis]
+  }
+  return []
+}

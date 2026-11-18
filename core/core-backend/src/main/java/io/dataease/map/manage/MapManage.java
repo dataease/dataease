@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.map.dto.GeometryNodeCreator;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.map.vo.AreaNode;
 import io.dataease.api.map.vo.CustomGeoArea;
 import io.dataease.api.map.vo.CustomGeoSubArea;
+import io.dataease.constant.AuthResourceEnum;
 import io.dataease.constant.StaticResourceConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.map.bo.AreaBO;
 import io.dataease.map.dao.auto.entity.Area;
 import io.dataease.map.dao.auto.entity.CoreCustomGeoArea;
@@ -156,8 +159,16 @@ public class MapManage {
         if (ObjectUtils.isEmpty(request)) {
             DEException.throwException("geometry request is require");
         }
+        Long uid = V3UserUtil.getUid();
+        InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+        if (uid == null || V3UserUtil.getLink() != null
+                || (auth != null ? !auth.menuIds().contains(AuthResourceEnum.SYS_PARAM.getMenuId())
+                : !V3UserUtil.isSysAdmin(uid))) {
+            DEException.throwException(403, Translator.get("i18n_geo_write_forbidden"));
+        }
         // 统一外部区域编码
         String code = normalizeGeoCode(request.getCode());
+        validateGeoParent(request.getPid(), code);
         // 校验上传文件名和 JSON 后缀
         validateGeoUploadFile(file);
         // 校验 GeoJSON 内容结构
@@ -324,6 +335,68 @@ public class MapManage {
             resultList.addAll(codeList);
             childTreeIdList(codeList, resultList);
         }
+    }
+
+    /**
+     * 父级保留真实内部 ID，中国编码按行政层级校验，不能依赖末尾零判断区县
+     */
+    private void validateGeoParent(String pid, String code) {
+        List<AreaNode> path = findGeoPath(proxy().getWorldTree(), pid);
+        if (path == null) {
+            DEException.throwException(Translator.get("i18n_geo_parent_missing"));
+        }
+        if (StringUtils.equals(pid, WORLD.getId())) {
+            if (code.length() != 3) {
+                DEException.throwException(Translator.get("i18n_geo_country_code"));
+            }
+            return;
+        }
+        String parentCode = getBusiGeoCode(pid);
+        if (isChina(parentCode)) {
+            int level = -2;
+            List<String> levels = List.of("world", "country", "province", "city", "district");
+            for (AreaNode node : path) {
+                int knownLevel = levels.indexOf(StringUtils.defaultString(node.getLevel()));
+                level = knownLevel >= 0 ? knownLevel - 1 : level + 1;
+            }
+            if (level < 0 || level > 3) {
+                DEException.throwException(Translator.get("i18n_geo_parent_unsupported"));
+            }
+            int prefixLength = 3 + level * 2;
+            int codeLength = level == 3 ? 11 : 9;
+            if (parentCode.length() < prefixLength || code.length() != codeLength
+                    || !code.startsWith(parentCode.substring(0, prefixLength))) {
+                DEException.throwException(Translator.get("i18n_geo_parent_mismatch"));
+            }
+        } else {
+            // 非中国区域沿用前端按父码和树深度自动生成的编码
+            String prefix = parentCode.replaceAll("(\\d{3})(0+)$", "$1") + (path.size() - 1);
+            if (prefix.length() >= 9) {
+                DEException.throwException(Translator.get("i18n_geo_parent_unsupported"));
+            }
+            if (!StringUtils.equals(code, StringUtils.rightPad(prefix, 9, '0'))) {
+                DEException.throwException(Translator.get("i18n_geo_parent_mismatch"));
+            }
+        }
+    }
+
+    /**
+     * 查找真实树路径，同时确认内置区域和自定义区域的父级存在
+     */
+    private List<AreaNode> findGeoPath(AreaNode node, String pid) {
+        if (StringUtils.equals(node.getId(), pid)) {
+            return new ArrayList<>(List.of(node));
+        }
+        if (node.getChildren() != null) {
+            for (AreaNode child : node.getChildren()) {
+                List<AreaNode> path = findGeoPath(child, pid);
+                if (path != null) {
+                    path.add(0, node);
+                    return path;
+                }
+            }
+        }
+        return null;
     }
 
     private String getDaoGeoCode(String code) {

@@ -10,7 +10,7 @@ import { cloneDeep } from "lodash-es";
 import { getSchemaApi } from "@/api/sync/syncDatasource";
 import { Base64 } from "js-base64";
 import { CustomPassword } from "@/components/custom-password";
-import { dsTypes } from "./option";
+import { dsTypes, SYNC_DATASOURCE_ROLE } from './option'
 import { Icon } from "@/components/icon-custom";
 import dvInfo from "@/assets/svg/dv-info.svg";
 
@@ -69,7 +69,9 @@ const rule = ref<FormRules>(cloneDeep(defaultRule));
 const initForm = (type) => {
 
   if (type !== "API") {
-    const dsType = dsTypes.find((item) => item.type === type);
+    const dsType = dsTypes.find(
+      item => item.type === type && item.datasourceRole === form.value.datasourceRole
+    )
     form.value.configuration = {
       dataBase: "",
       extraParams: dsType?.extraParams,
@@ -263,6 +265,9 @@ const validatorSchema = () => {
 const dorisFeLabelPrefix = computed(() => {
   return (form.value.type === "doris" ? "FE " : "");
 });
+const isDorisTarget = computed(
+  () => form.value.type === 'doris' && form.value.datasourceRole === SYNC_DATASOURCE_ROLE.TARGET
+)
 defineExpose({
   submitForm,
   resetForm,
@@ -336,7 +341,7 @@ const defaultReplication = computed(() => {
             />
           </el-form-item>
           <el-form-item
-            v-if="form.type == 'doris'"
+            v-if="isDorisTarget"
             :label="'FE ' + t('sync_datasource.http_port')"
             prop="configuration.fePort"
           >
@@ -354,7 +359,7 @@ const defaultReplication = computed(() => {
             />
           </el-form-item>
           <el-form-item
-            v-if="form.type == 'doris'"
+            v-if="isDorisTarget"
             :label="'BE ' + t('sync_datasource.host')"
             prop="configuration.beIp"
           >
@@ -366,7 +371,7 @@ const defaultReplication = computed(() => {
             />
           </el-form-item>
           <el-form-item
-            v-if="form.type == 'doris'"
+            v-if="isDorisTarget"
             :label="'BE ' + t('sync_datasource.http_port')"
             prop="configuration.bePort"
           >
@@ -384,7 +389,7 @@ const defaultReplication = computed(() => {
             />
           </el-form-item>
           <el-form-item
-            v-if="form.type == 'doris'"
+            v-if="isDorisTarget"
             prop="configuration.replication"
           >
             <template #label>
@@ -462,6 +467,8 @@ const defaultReplication = computed(() => {
             v-if="form.type === 'presto'"
           >
             <CustomPassword
+              :reveal-resource-id="form.id"
+              reveal-secret-type="SYNC_PASSWORD"
               :placeholder="
                 t('common.inputText' )+ ' ' + t('sync_datasource.keytab_Key_path')
               "
@@ -491,6 +498,8 @@ const defaultReplication = computed(() => {
             v-if="form.type !== 'presto'"
           >
             <CustomPassword
+              :reveal-resource-id="form.id"
+              reveal-secret-type="SYNC_PASSWORD"
               :placeholder="t('common.inputText') + ' ' + t('sync_datasource.password')"
               show-password
               type="password"
@@ -682,6 +691,8 @@ const defaultReplication = computed(() => {
             v-if="form.type !== 'presto'"
           >
             <CustomPassword
+              :reveal-resource-id="form.id"
+              reveal-secret-type="SYNC_PASSWORD"
               :placeholder="t('common.inputText') + ' ' + t('sync_datasource.password')"
               show-password
               type="password"

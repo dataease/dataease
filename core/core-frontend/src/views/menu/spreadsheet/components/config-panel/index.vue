@@ -90,7 +90,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 280px;
+  width: 240px;
   background: #fff;
   flex-shrink: 0;
   overflow: hidden;
@@ -125,9 +125,10 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 16px;
-      font-weight: 700;
-      color: #1d2129;
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 500;
+      color: #1f2329;
     }
 
     .info-icon {
@@ -156,14 +157,16 @@ export default {
   .collapsed-title {
     writing-mode: vertical-rl;
     text-orientation: upright;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1;
     letter-spacing: 2px;
-    font-weight: 700;
-    color: #1d2129;
+    font-weight: 500;
+    color: #1f2329;
   }
 
   .config-tabs {
+    --ed-tabs-header-height: 34px;
+
     flex: 1;
     display: flex;
     overflow: hidden;
@@ -183,21 +186,16 @@ export default {
     }
 
     :deep(.ed-tabs__item) {
-      height: 56px;
-      line-height: 56px;
       padding: 0 12px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #4b5563;
-      transition: color 0.2s;
+      font-size: 12px;
+      font-weight: 400;
 
-      &:hover {
-        color: #3370ff;
+      &:not(.is-active) {
+        color: #646a73;
       }
 
       &.is-active {
-        color: #3370ff;
-        font-weight: 700;
+        font-weight: 500;
       }
     }
 

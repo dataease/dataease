@@ -86,14 +86,17 @@ public interface DatasetTreeApi {
     DatasetGroupInfoDTO get(@PathVariable("id") Long id) throws Exception;
 
     @Operation(summary = "获取数据集详情")
+    @DePermit({"#p0+':read'"})
     @PostMapping("details/{id}")
     DatasetGroupInfoDTO details(@PathVariable("id") Long id) throws Exception;
 
     @Operation(summary = "获取数据集详情")
+    @DePermit({"#p0+':read'"})
     @PostMapping("dsDetails")
     List<DatasetTableDTO> panelGetDsDetails(@RequestBody List<Long> ids) throws Exception;
 
     @Operation(summary = "获取SQL参数")
+    @DePermit({"#p0+':read'"})
     @PostMapping("getSqlParams")
     List<SqlVariableDetails> getSqlParams(@RequestBody List<Long> ids) throws Exception;
 

@@ -1,7 +1,6 @@
 import type { IAccessor } from '@univerjs/core'
 import { LocaleService, UniverInstanceType } from '@univerjs/core'
-import { FunctionType, type IFunctionInfo } from '@univerjs/engine-formula'
-import { IDescriptionService } from '@univerjs/sheets-formula'
+import { FunctionType, IDescriptionService, type IFunctionInfo } from '@univerjs/engine-formula'
 import { InsertFunctionOperation } from '@univerjs/sheets-formula-ui'
 import type { IMenuSelectorItem } from '@univerjs/ui'
 import { getMenuHiddenObservable, MenuItemType } from '@univerjs/ui'
@@ -143,6 +142,7 @@ const getFunctionCategories = (accessor: IAccessor): DataEaseFunctionCategory[] 
 export function DataEaseFunctionDropdownMenuFactory(
   accessor: IAccessor
 ): IMenuSelectorItem<string> {
+  const localeService = accessor.get(LocaleService)
   let categories: DataEaseFunctionCategory[] = []
 
   try {
@@ -151,7 +151,7 @@ export function DataEaseFunctionDropdownMenuFactory(
     categories = [
       {
         key: 'common',
-        label: '常用函数',
+        label: localeService.t('sheets-formula-ui.insert.common'),
         functions: COMMON_FUNCTIONS.map(name => ({
           name,
           desc: ''
@@ -165,7 +165,7 @@ export function DataEaseFunctionDropdownMenuFactory(
     commandId: InsertFunctionOperation.id,
     type: MenuItemType.SELECTOR,
     icon: 'FunctionIcon',
-    tooltip: '函数',
+    tooltip: 'dataease-spreadsheet.menu.function',
     slot: true,
     selections: [
       {
@@ -174,7 +174,8 @@ export function DataEaseFunctionDropdownMenuFactory(
           hoverable: false,
           selectable: false,
           props: {
-            categories
+            categories,
+            emptyText: localeService.t('dataease-spreadsheet.menu.noFunctions')
           } as any
         },
         value: ''

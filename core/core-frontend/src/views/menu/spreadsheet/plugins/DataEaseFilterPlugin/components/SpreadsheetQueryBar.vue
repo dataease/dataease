@@ -108,10 +108,18 @@ const isConditionNameLeft = computed(
 )
 const isDoubleTextSearch = (condition: SpreadsheetFilterCondition) =>
   condition.displayType === 'textSearch' && condition.textSearchConditionType !== 'single'
+const timeRangeWidths = {
+  yearrange: '220px',
+  monthrange: '300px',
+  daterange: '350px',
+  datetimerange: '400px'
+}
 const getConditionWidth = (condition: SpreadsheetFilterCondition) => {
   if (isDoubleTextSearch(condition)) return '502px'
-  // 时间区间保留完整输入空间，但不再占用两个普通条件的宽度。
-  if (condition.displayType === 'timeRange') return '350px'
+  // 按日期粒度给输入框和操作栏预留同一宽度，避免侵入相邻条件。
+  if (condition.displayType === 'timeRange') {
+    return timeRangeWidths[condition.timeRangeGranularity] ?? timeRangeWidths.daterange
+  }
   return '235px'
 }
 const getConditionStyle = (condition: SpreadsheetFilterCondition) => {
@@ -227,6 +235,9 @@ const autoQueryEnabled = computed(() => !buttonList.value.includes('sure'))
 
 const handleVisibleChange = (nextVisible: boolean) => {
   visible.value = nextVisible
+  if (!nextVisible) {
+    pendingOptionConditionIds.clear()
+  }
 }
 
 const handleConfigChange = (nextConfig: SpreadsheetFilterConfig) => {
@@ -646,6 +657,11 @@ onBeforeUnmount(() => {
   &__control-anchor {
     min-width: 0;
     position: relative;
+
+    :deep(.ed-date-editor.spreadsheet-filter-time--range) {
+      box-sizing: border-box;
+      width: 100%;
+    }
 
     :deep(.ed-input__wrapper),
     :deep(.ed-select__wrapper),

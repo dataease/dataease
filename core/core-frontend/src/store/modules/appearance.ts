@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store/index'
-import { defaultFont, list } from '@/api/font'
+import { defaultFont, getCachedFontList } from '@/api/font'
+import { cloneDeep } from 'lodash-es'
 import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -162,9 +163,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setMobileLogin(data: string) {
       this.mobileLogin = data
     },
-    async setFontList() {
-      const res = await list()
-      this.fontList = res || []
+    async setFontList(force = false) {
+      const res = await getCachedFontList(force)
+      this.fontList = cloneDeep(res || [])
     },
     setCurrentFont(name) {
       const embeddedStore = useEmbedded()
@@ -304,6 +305,14 @@ export const useAppearanceStore = defineStore('appearanceStore', {
           mixColor('ffffff', this.customColor, 15)
         )
         document.documentElement.style.setProperty(
+          '--ed-color-primary-light-7',
+          mixColor('ffffff', this.customColor, 80)
+        )
+        document.documentElement.style.setProperty(
+          '--ed-color-primary-w20',
+          mixColor('ffffff', this.customColor, 20)
+        )
+        document.documentElement.style.setProperty(
           '--ed-color-primary-dark-20',
           mixColor('000000', this.customColor, 20)
         )
@@ -317,6 +326,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       } else if (document.documentElement.style.getPropertyValue('--ed-color-primary')) {
         document.documentElement.style.setProperty('--ed-color-primary', '#3370FF')
         document.documentElement.style.removeProperty('--ed-color-primary-light-3')
+        document.documentElement.style.removeProperty('--ed-color-primary-light-7')
+        document.documentElement.style.removeProperty('--ed-color-primary-w20')
         document.documentElement.style.removeProperty('--ed-color-primary-light-5')
         document.documentElement.style.removeProperty('--ed-color-primary_b50')
         document.documentElement.style.removeProperty('--ed-color-primary-1a')

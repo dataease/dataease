@@ -613,21 +613,17 @@ public class ChartViewManege {
     }
 
     public List<ViewSelectorVO> viewOption(Long resourceId) {
-        Specification<CoreChartView> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("sceneId"), resourceId));
-            predicates.add(cb.notEqual(root.get("type"), "VQuery"));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-
-        List<ViewSelectorVO> result = coreChartViewRepository.findAll(spec).stream().map(coreChartView -> {
-            ViewSelectorVO vo = new ViewSelectorVO();
-            vo.setId(coreChartView.getId());
-            vo.setPid(coreChartView.getSceneId());
-            vo.setTitle(coreChartView.getTitle());
-            vo.setType(coreChartView.getType());
-            return vo;
-        }).toList();
+        QCoreChartView coreChartView = QCoreChartView.coreChartView;
+        // 图表选项只需基础信息，避免加载完整的图表配置。
+        List<ViewSelectorVO> result = queryFactory
+                .select(Projections.fields(ViewSelectorVO.class,
+                        coreChartView.id,
+                        coreChartView.sceneId.as("pid"),
+                        coreChartView.title,
+                        coreChartView.type))
+                .from(coreChartView)
+                .where(coreChartView.sceneId.eq(resourceId), coreChartView.type.ne("VQuery"))
+                .fetch();
         DataVisualizationInfo dvInfo = dataVisualizationInfoRepository.findById(resourceId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
