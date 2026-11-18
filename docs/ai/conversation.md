@@ -1,6 +1,6 @@
 # AI 对话助手开发说明
 
-本文描述现有开发验收入口、多轮会话、工具执行和增量输出；同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
+本文描述 SQL Demo 的多轮会话、工具执行与增量输出，以及数据源详情页的[表关联与语义后台任务](#数据源表关联与语义后台任务)。同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
 
 浏览器通过已认证的 JSON 轮询取得增量；下文 SSE 指服务端读取的上游模型协议，HTTP 输出仍遵循根规范的推送限制。
 
@@ -25,6 +25,7 @@ ai/
 │   ├── runtime/       # 模型执行、传输、准入、提示词约束、工具协议与恢复
 │   └── task/          # 后台任务、调度、租约与结果投递
 ├── scene/
+│   ├── datasource/    # 数据源表关联发现与语义补全
 │   ├── sql/           # SQL 上下文、工具选择与建议结果
 │   └── structure/     # 受控结构说明、结构快照与资源互斥验收
 ├── tool/
@@ -48,7 +49,7 @@ SQL Demo 页面位于 `core/core-frontend/src/views/demo/ai-assistant/sql/`，�
 
 SDK 的 `AiOwnerContext` 统一位于 `sdk/common/src/main/java/io/dataease/ai/security/identity/`，身份安装仍为包内方法，只由经过校验的核心身份作用域调用。旧 `manage` 路径及兼容转发类已删除，主仓库与 XPack 消费者统一迁移到同一个类。本次是包路径变更，需要 SDK、核心和 XPack 配套重新构建与交付，不支持混用旧扩展二进制；HTTP 路径和持久化格式不变。
 
-新增场景适配放到对应的 `scene/<业务场景>/`，通过 `AiConversationScene` 定义业务上下文、授权、允许的工具集合与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。可复用工具实现放到 `tool/<业务领域>/`，场景显式组合所需工具，不依赖另一个具体场景。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
+新增场景适配放到对应的 `scene/<业务场景>/`。对话场景通过 `AiConversationScene` 定义业务上下文、授权、允许的工具集合与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。可复用工具实现放到 `tool/<业务领域>/`，场景显式组合所需工具，不依赖另一个具体场景。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
 
 本次是职责导航和包路径整理，不代表已实现任意资源对话。当前 `Open/Invoke` 的场景校验及 SQL 输入字段、资源列表和建议应用入口、会话的当前数据源提示，以及任务引擎中受控结构场景的表选择适配仍带有 SQL Demo 约束。接入第二种资源时，应根据真实场景扩展这些契约并将对应业务适配移到场景/入口层；不能只新增一个类就宣称完整接入。多种资源同时参与一轮对话仍需单独设计。
 
@@ -65,7 +66,22 @@ SDK 的 `AiOwnerContext` 统一位于 `sdk/common/src/main/java/io/dataease/ai/s
 
 工具存在或可注入不表示模型有权调用。引擎仍以 `scene.tools(context)` 的允许集合验证模型请求；scene 的执行分派只能选择该场景组合的工具，工具中的资源操作继续复核真实权限和版本。新增场景可复用现有工具，但必须准备自己的可信范围及授权，不能直接开放全部 Spring Bean 或绕过共享执行生命周期。
 
-本次提取保持 HTTP/SDK 契约、工具名称和参数、结果 JSON 结构及持久任务上下文格式。结构投影仍使用原有规范化 JSON 计算指纹，旧任务可继续校验；不需要数据迁移或 XPack 配套改动。后端运行前重新构建当前源码以加载新的工具 Bean；SQL 校验器旧路径的内部 Java 使用方需要更新 import。
+工具提取保留了原有工具名称、参数和持久任务上下文格式。`inspect_structure` 仍使用原有物理结构投影计算指纹，旧任务可继续校验。后端运行前重新构建当前源码以加载新的工具 Bean；SQL 校验器旧路径的内部 Java 使用方需要更新 import。
+
+## 数据源表关联与语义后台任务
+
+在数据源详情页，拥有该数据源管理权限的用户可以从「表关联」或「语义管理」发起生成。数据表入口面向具有类型的非文件夹数据源，包括 Excel 和 API。模型输入使用所选表的表名、字段名、类型和备注，语义补全还标明待填属性。两个场景都不读取样本行。
+
+| 页面操作 | 选择范围 | 生成与确认 |
+| --- | --- | --- |
+| 表关联 → AI 发现关联 | 同一数据源的 2–50 张物理表 | 一次提交所选表的结构，推断等值关联、基数和连接类型。写入前重新读取表结构，核对两端表和字段，按表对及连接条件去重，调换左右表也视为同一关联。通过校验的新记录写入表关联列表，等待人工确认。 |
+| 语义管理 → AI 补全语义 | 已加入语义管理且当前可用的 1–50 张表 | 逐表补全表描述、数据粒度，以及字段的业务名称、描述和别名。写入前复核物理结构和语义记录，只填未确认记录的空白属性，保留已有内容和确认状态。字段取值参考由人工维护。 |
+
+两个场景由 `AiDatasourceMetadataScenes` 注册为 `AiBusinessTaskScene`，场景码分别为 `datasource-relations` 和 `datasource-semantics`。前端共用 `DatasourceMetadataAi.vue` 抽屉。业务接口为 `/datasource/metadata/{datasourceId}/ai/{kind}`，`kind` 取 `RELATION` 或 `SEMANTIC`。用 POST 提交表名数组，用 GET 查询状态。两种操作都校验数据源管理权限。
+
+任务按数据源和生成类型互斥。同一类型已有任务排队或运行时，即使改选了表，再次提交也会返回现有任务。两种类型可分别受理，共享后台调度容量。关闭抽屉后任务继续执行。再次打开时，不带 `taskId` 的 GET 可找回当前活动任务。有管理权限的其他用户也能查看其状态。抽屉拿到 ID 后按 ID 轮询至终态并刷新业务列表，这些任务不进入 SQL Demo 的进行中列表或完成通知。
+
+模型调用通过任务引擎的 `Execution.call` 发起，`Execution.write` 在同一事务内写入业务元数据和累计摘要。关联发现按批写入，摘要按新增和跳过的关联条数统计。语义补全按表提交，`written` 统计有更新的表记录和字段记录，`skipped`、`failed` 按表计数。部分表失败时，已提交的建议仍可在语义管理页核对。抽屉终态为 `SUCCESS`、`PARTIAL` 或 `FAILED`。
 
 ## 开发入口与页面生命周期
 
@@ -113,7 +129,11 @@ Sessions are process-local, fixed at 30 minutes, at most 200 per process and fou
 
 ## 工具注册与元数据读取
 
-The core-only typed conversation capability is opt-in; no Spring AI automatic tool callbacks, native WebClient or arbitrary provider extensions are enabled. A scene registers strict string-argument definitions and executes only within the server-owned context. `list_tables` takes `{}`; `get_table_fields` takes only `{ "table": "exact returned table name" }`. These metadata tools accept neither identity, workspace, datasource, SQL, URL nor credentials. The shared datasource tool module freshly checks the original current datasource tree and READ operation, invokes `DatasourceApi.getTables` using only trusted datasourceId, and invokes constrained `getTableField(DatasetTableFieldRequest)` only after exact table membership. It returns only table name/comment or field name/type/comment. Existing metadata operations may open a datasource connection and perform their existing zero-row metadata statements; model candidate SQL, preview/sample paths and direct Providers are never called. Current metadata is capped at 256 tables/fields, names 256 characters, comments 512 and field types 128; oversized structures fail explicitly rather than silently truncate.
+The core-only typed conversation capability is opt-in; no Spring AI automatic tool callbacks, native WebClient or arbitrary provider extensions are enabled. A scene registers strict string-argument definitions and executes only within the server-owned context. `list_tables` takes `{}`; `get_table_fields` takes only `{ "table": "exact returned table name" }`. These metadata tools accept neither identity, workspace, datasource, SQL, URL nor credentials. The shared datasource tool module freshly checks the original current datasource tree and READ operation, invokes `DatasourceApi.getTables` using only trusted datasourceId, and invokes constrained `getTableField(DatasetTableFieldRequest)` only after exact table membership.
+
+`list_tables` 返回表名和备注。在支持语义管理的数据源上，如果目标表已加入语义管理且可用，`get_table_fields` 返回 `structure` 和 `confirmedFieldSemantics`。后者只包含已确认且仍能匹配物理字段名的字段语义，可包含人工维护的取值参考（`valueReferences`）。尚待确认的 AI 建议不会进入该集合。未加入或不可用的语义表沿用物理字段结构。字段取值参考使用迁移 `2.59` 增加的 `value_references` 列。
+
+Existing metadata operations may open a datasource connection and perform their existing zero-row metadata statements; model candidate SQL, preview/sample paths and direct Providers are never called. Current metadata is capped at 256 tables/fields, names 256 characters, comments 512 and field types 128; oversized structures fail explicitly rather than silently truncate.
 
 ## SQL 静态校验
 
@@ -221,4 +241,4 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 后台身份始终来自持久任务。只由已验证的服务器身份作用域安装 SDK 的 `AiOwnerContext` 原空间投影，账号严格匹配且在嵌套、异常和线程结束时恢复；HTTP 参数和请求头不能选择该投影。它不授予权限、不模拟管理员代理，也不改变普通非 AI 请求的当前空间。原账号、成员关系和资源授权仍需在操作前后复核；用户退出登录、离开页面或切换当前空间本身不取消后台。
 
-交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.57`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。
+动态开关与身份授权的交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.57`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。
