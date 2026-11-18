@@ -47,6 +47,11 @@ const guideSections = [
 const failureMessage = (error: unknown) => {
   if (typeof error === 'string') return error
   if (isRequestError(error)) {
+    const key = isAxiosError(error) ? error.response?.data?.messageKey : error.messageKey
+    if (typeof key === 'string' && key.startsWith('i18n_ai_')) {
+      const failureKey = aiFailureKey(key.slice('i18n_ai_'.length))
+      if (failureKey !== 'test_failed') return t(`ai_service.${failureKey}`)
+    }
     if (error.response?.status === 403) return t('ai_service.failure_forbidden')
     if (error.response?.status === 409) return t('ai_service.failure_conflict')
     const transportCode = isAxiosError(error) ? error.code : error.transportCode
@@ -127,7 +132,22 @@ const execution = ref<AiConversationExecution>()
 let polling: AbortController | undefined
 let generation = 0
 let resourceGeneration = 0
-const editorId = crypto.randomUUID()
+const reloadEditorKey = 'de-ai-sql-demo-reload-editor'
+const editorId = (() => {
+  try {
+    const previous = sessionStorage.getItem(reloadEditorKey)
+    sessionStorage.removeItem(reloadEditorKey)
+    const navigation = performance.getEntriesByType('navigation')[0] as
+      | PerformanceNavigationTiming
+      | undefined
+    // Only a reload can replace the departed page's editor; cloned/new tabs remain independent.
+    if (navigation?.type === 'reload' && previous && /^[0-9a-f-]{36}$/.test(previous))
+      return previous
+  } catch {
+    // Storage may be unavailable; closing contexts remains best effort.
+  }
+  return crypto.randomUUID()
+})()
 const backgroundTasks = ref<InstanceType<typeof BackgroundTasks>>()
 const controlledSending = ref(false)
 const sendControlled = async () => {
@@ -745,13 +765,21 @@ const stop = async () => {
 const offline = () => {
   if (busy.value) failure.value = tr('progress_recovering')
 }
+const pageHide = () => {
+  try {
+    sessionStorage.setItem(reloadEditorKey, editorId)
+  } catch {
+    // Never prevent page cleanup when browser storage is unavailable.
+  }
+  reset()
+}
 onMounted(() => {
   void refreshAvailability()
   document.addEventListener('visibilitychange', refreshWhenVisible)
   window.addEventListener('focus', refreshWhenVisible)
   window.addEventListener('online', refreshWhenVisible)
   window.addEventListener('offline', refreshWhenVisible)
-  window.addEventListener('pagehide', reset)
+  window.addEventListener('pagehide', pageHide)
   window.addEventListener('beforeunload', beforeUnload)
   window.addEventListener('offline', offline)
 })
@@ -762,7 +790,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('online', refreshWhenVisible)
   window.removeEventListener('offline', refreshWhenVisible)
   resourceGeneration++
-  window.removeEventListener('pagehide', reset)
+  window.removeEventListener('pagehide', pageHide)
   window.removeEventListener('beforeunload', beforeUnload)
   window.removeEventListener('offline', offline)
   reset()

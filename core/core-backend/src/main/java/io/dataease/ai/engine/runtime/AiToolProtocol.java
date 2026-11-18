@@ -59,7 +59,7 @@ public final class AiToolProtocol {
                 });
             }
             root.put("parallel_tool_calls", false);
-        }
+        } else root.put("tool_choice", "none");
         return root;
     }
     public static String fingerprint(Input input) { return AiPromptFingerprint.of(new Prompt(payload(input).toString())); }
