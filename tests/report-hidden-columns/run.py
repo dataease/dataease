@@ -32,6 +32,8 @@ def main():
         sources = [
             BACKEND / "src/main/java/io/dataease/visualization/manage/CoreVisualizationExportManage.java",
             BACKEND / "src/main/java/io/dataease/visualization/utils/VisualizationExcelUtils.java",
+            BACKEND / "src/main/java/io/dataease/commons/utils/ExcelWatermarkUtils.java",
+            BACKEND / "src/main/java/io/dataease/exportCenter/manage/ExportCenterDownLoadManage.java",
             Path(__file__).with_name("CoreVisualizationExportManageTest.java"),
         ]
         subprocess.run(
