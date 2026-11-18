@@ -17,6 +17,9 @@ entries = [str(root / 'core/core-backend/target/classes')]
 entries += [str(path) for path in (root / 'sdk').glob('**/target/classes')]
 entries += [args.classpath_file.read_text().strip(), str(spring_test)]
 sources = [
+    'sdk/api/api-sync/src/main/java/io/dataease/api/sync/datasource/api/SyncDatasourceImportProvider.java',
+    'sdk/api/api-sync/src/main/java/io/dataease/api/sync/datasource/dto/SyncDatasourceImport.java',
+    'core/core-backend/src/main/java/io/dataease/resource/RootFolderCreatePermissionManage.java',
     'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/user/api/CurrentPasswordVerifier.java',
     'sdk/common/src/main/java/io/dataease/utils/SensitiveConfigurationProvider.java',
     'core/core-backend/src/main/java/io/dataease/sensitive/SensitiveServer.java',

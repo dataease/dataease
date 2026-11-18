@@ -19,6 +19,9 @@ public class BusiDsRequest implements Serializable {
 
     private Long copySourceId;
 
+    @Schema(description = "同步至数据准备时的目标数据源ID，仅用于检查重复和新建")
+    private String syncSourceId;
+
     @JsonSerialize(using= ToStringSerializer.class)
     @Schema(description = "父ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long pid;
