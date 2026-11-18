@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class VisualizationExcelUtils {
@@ -104,12 +105,18 @@ public class VisualizationExcelUtils {
     }
 
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
+        return exportExcel(sheets, fileName, folderId, null);
+    }
+
+    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId,
+                                   BiConsumer<Workbook, Map<Sheet, int[]>> watermarkWriter) throws Exception {
         Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>.\\|]");
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
         if (StringUtils.isNotBlank(fileName)) {
             realFileName.set(pattern.matcher(StringUtils.removeEnd(fileName, suffix)).replaceAll("-"));
         }
         SXSSFWorkbook wb = new SXSSFWorkbook();
+        Map<Sheet, int[]> sheetBounds = new HashMap<>();
         Set<String> usedSheetNames = new HashSet<>();
         // 样式缓存跟随本次导出的 workbook，函数返回后即可回收；放在静态字段上会让每次导出都永久留住已经 close() 的 Workbook
         Map<Workbook, CellStyle> numericStyleCache = new HashMap<>();
@@ -122,6 +129,9 @@ public class VisualizationExcelUtils {
             details.add(0, sheet.getHeads());
             String sheetName = toSheetName(sheet.getSheetName(), usedSheetNames);
             Sheet curSheet = wb.createSheet(sheetName);
+            // SXSSF 会刷出旧行；在写入前记录完整范围，水印无需回读或驻留全部单元格。
+            int columns = details.stream().filter(java.util.Objects::nonNull).mapToInt(List::size).max().orElse(0);
+            sheetBounds.put(curSheet, new int[]{Math.max(0, details.size() - 1), columns});
             if (StringUtils.isBlank(fileName)) {
                 String cName = pattern.matcher(sheetName).replaceAll("-");
                 realFileName.set(cName);
@@ -164,6 +174,15 @@ public class VisualizationExcelUtils {
                 }
             }
         });
+        if (watermarkWriter != null) {
+            try {
+                watermarkWriter.accept(wb, sheetBounds);
+            } catch (RuntimeException | Error e) {
+                wb.dispose();
+                wb.close();
+                throw e;
+            }
+        }
         realFileName.set(realFileName.get() + suffix);
         String folderPath = BASE_ROOT;
         if (StringUtils.isNotBlank(folderId)) {

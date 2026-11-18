@@ -723,6 +723,10 @@ public class ExportCenterDownLoadManage {
     }
 
     public void addWatermarkTools(Workbook wb) {
+        addWatermarkTools(wb, null);
+    }
+
+    public void addWatermarkTools(Workbook wb, Map<Sheet, int[]> sheetBounds) {
         VisualizationWatermark watermark = watermarkRepository.findById("system_default").orElse(null);
         if (watermark == null || StringUtils.isBlank(watermark.getSettingContent())) {
             return;
@@ -744,7 +748,12 @@ public class ExportCenterDownLoadManage {
         // 在主逻辑中添加水印
         int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
         for (Sheet sheet : wb) {
-            ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
+            int[] bounds = sheetBounds == null ? null : sheetBounds.get(sheet);
+            if (bounds == null) {
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx);
+            } else {
+                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx, bounds[0], bounds[1]);
+            }
         }
     }
 

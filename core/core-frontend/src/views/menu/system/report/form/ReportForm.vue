@@ -52,31 +52,34 @@ const prev = () => {
 }
 
 const next = async () => {
+  if (formLoading.value) return
   formLoading.value = true
-  if (activeStep.value === 0) {
-    const baseData = await baseForm?.value?.getFormData()
-    if (baseData) {
-      baseFormData.value = Object.assign(baseFormData.value, baseData)
-      activeStep.value = activeStep.value + 1
-      nextTick(() => {
-        recipientForm?.value?.setOwnSelectHeight()
-        recipientForm?.value?.setDataPermission(baseData?.dataPermission)
-      })
+  try {
+    if (activeStep.value === 0) {
+      const baseData = await baseForm?.value?.getFormData()
+      if (baseData) {
+        baseFormData.value = Object.assign(baseFormData.value, baseData)
+        activeStep.value = activeStep.value + 1
+        nextTick(() => {
+          recipientForm?.value?.setOwnSelectHeight()
+          recipientForm?.value?.setDataPermission(baseData?.dataPermission)
+        })
+      }
+    } else if (activeStep.value === 1) {
+      const recipientData = await recipientForm?.value?.getFormData()
+      if (recipientData) {
+        recipientFormData.value = Object.assign(recipientFormData.value, recipientData)
+        activeStep.value = activeStep.value + 1
+      }
+    } else if (activeStep.value === 2) {
+      const frequencyData = await frequencyForm?.value?.getFormData()
+      if (frequencyData) {
+        frequencyFormData.value = Object.assign(frequencyFormData.value, frequencyData)
+        await saveHandler()
+      }
     }
+  } finally {
     formLoading.value = false
-  } else if (activeStep.value === 1) {
-    const recipientData = await recipientForm?.value?.getFormData()
-    if (recipientData) {
-      recipientFormData.value = Object.assign(recipientFormData.value, recipientData)
-      activeStep.value = activeStep.value + 1
-    }
-    formLoading.value = false
-  } else if (activeStep.value === 2) {
-    const frequencyData = await frequencyForm?.value?.getFormData()
-    if (frequencyData) {
-      frequencyFormData.value = Object.assign(frequencyFormData.value, frequencyData)
-      saveHandler()
-    }
   }
 }
 
@@ -84,7 +87,6 @@ const saveHandler = async () => {
   const baseData = await baseForm.value?.getFormData()
   if (!baseData) {
     activeStep.value = 0
-    formLoading.value = false
     return
   }
   baseFormData.value = baseData
@@ -97,17 +99,13 @@ const saveHandler = async () => {
     param['taskId'] = reportInfo.value['taskId']
   }
   const method = isEdit.value ? reportUpdateApi : reportCreateApi
-  method(param)
-    .then(res => {
-      if (!res?.code) {
-        ElMessage.success(t('common.save_success'))
-        emit('refreshList')
-        cancelClick()
-      }
-    })
-    .finally(() => {
-      formLoading.value = false
-    })
+  return method(param).then(res => {
+    if (!res?.code) {
+      ElMessage.success(t('common.save_success'))
+      emit('refreshList')
+      cancelClick()
+    }
+  })
 }
 
 const cancelClick = () => {

@@ -289,7 +289,7 @@ const rejectBusinessResponse = (
     }
     const local = response.config.handleErrorLocally
     if (!(typeof local === 'function' ? local(failure) : local)) {
-      ElMessage({ type: 'error', message: errMsg, showClose: true })
+      ElMessage({ type: 'error', message: errMsg, showClose: true, grouping: true })
       failure.presented = true
     }
     if (legacySessionFailure) {
@@ -402,7 +402,8 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     ElMessage({
       type: 'error',
       message: normalized.message,
-      showClose: true
+      showClose: true,
+      grouping: true
     })
   } else if (error?.config?.url.startsWith('/xpackComponent/contentPlugin/')) {
     console.error(

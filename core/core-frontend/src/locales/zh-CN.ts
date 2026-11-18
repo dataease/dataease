@@ -2718,6 +2718,7 @@ export default {
     batch_manage: '批量管理',
     type_change_pending: '{count} 个字段类型待确认',
     type_change_pending_title: '字段类型待确认',
+    only_type_change_pending: '仅看待确认',
     type_change_not_auto: '数据集字段类型未自动修改',
     current_field_type: '当前字段类型',
     sql_detected_type: 'SQL 检测类型',

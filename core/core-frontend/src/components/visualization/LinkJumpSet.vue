@@ -98,7 +98,11 @@
                   >
                     <el-radio value="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio value="inner">{{ t('visualization.dashboard_dataV') }}</el-radio>
-                    <el-radio v-if="appStore.getXpackValid" value="spreadsheet">
+                    <el-radio
+                      v-if="appStore.getXpackValid"
+                      value="spreadsheet"
+                      :disabled="isIndicator"
+                    >
                       {{ t('spreadsheet.title') }}
                     </el-radio>
                   </el-radio-group>

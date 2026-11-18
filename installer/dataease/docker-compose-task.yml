@@ -3,6 +3,7 @@ services:
     environment:
       DE_SYNC_AUTH_ENABLED: ${DE_SYNC_AUTH_ENABLED:-false}
       DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:-}
+      JAVA_TOOL_OPTIONS: "${JAVA_TOOL_OPTIONS:-} -XX:-UseBASE64Intrinsics"
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease-sync-task:DE_TAG
     container_name: sync-task-actuator
     volumes:
