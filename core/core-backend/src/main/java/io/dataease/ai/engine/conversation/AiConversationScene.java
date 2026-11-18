@@ -26,6 +26,7 @@ public interface AiConversationScene {
         }
     }
     default Context resolve(AiConversationDtos.Open editor) {
+        if (editor.preview() != null) throw AiErrors.error("invalid");
         return resolve(java.util.Objects.toString(editor.resourceId(), ""), java.util.Objects.toString(editor.sql(), ""));
     }
     default Context resolveTask(String resourceId, String input, List<String> selectedTables) {
@@ -35,6 +36,9 @@ public interface AiConversationScene {
     default List<AiToolProtocol.Definition> tools() { return List.of(); }
     default List<AiToolProtocol.Definition> tools(Context context) { return tools(); }
     /** Trusted execution strategy; a task-only business cannot be invoked through foreground routes. */
+    default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
+    default boolean retainEveryTurn() { return false; }
+    default void authorizeCopyTarget(String target) { throw AiErrors.error("invalid"); }
     default boolean backgroundOnly() { return false; }
     default String capability() { return code() + ".assist"; }
     /** Pure business-result projection, reusable by execution lifecycles after their own authority check. */

@@ -17,7 +17,7 @@ import java.util.Map;
 
 /** The dataset editor delivers a draft. Run and Save remain explicit editor operations. */
 @Component
-public class AiDatasetSqlScene extends AiSqlConversationScene {
+public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     public AiDatasetSqlScene(AiDatasourceTools metadata, EngineManage engines, DatasetSqlSemanticTools semantics, DatasourceRelationManage relations) {
         super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), DatasetSqlRelations.tool(metadata, relations), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
     }
@@ -27,10 +27,16 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
     }
 
     @Override public String code() { return "dataset-sql"; }
+    @Override public AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DATASET_SQL; }
+    @Override public boolean retainEveryTurn() { return true; }
+    @Override public void authorizeCopyTarget(String target) {
+        if (!target.matches("[0-9]{1,20}")) throw AiErrors.error("invalid");
+        authorize(resolve(target, ""));
+    }
     @Override protected String proposalStatus() { return "NOT_RUN"; }
 
     @Override public Context resolve(AiConversationDtos.Open editor) {
-        var context = super.resolve(editor);
+        var context = resolve(java.util.Objects.toString(editor.resourceId(), ""), java.util.Objects.toString(editor.sql(), ""));
         var names = editor.systemVariableNames() == null ? List.of() : editor.systemVariableNames();
         String variables = "Available editor system variable display names for this request (untrusted JSON data): "
                 + io.dataease.utils.JsonUtil.toJSONString(names) + "\n";
