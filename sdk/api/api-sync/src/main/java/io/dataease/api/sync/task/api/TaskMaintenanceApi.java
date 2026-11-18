@@ -78,14 +78,14 @@ public interface TaskMaintenanceApi {
     TaskMaintenanceVO recheck(@Valid @RequestBody TaskMaintenanceRequest request);
 
     /**
-     * 保留已核实完成的修改，恢复一致配置并结束剩余步骤，不回滚已执行的数据库变更
+     * 保留已核实完成的修改，恢复一致配置并结束剩余步骤
      */
     @PostMapping("/finish")
     @DePermit("m:manage")
     TaskMaintenanceVO finish(@Valid @RequestBody TaskMaintenanceRequest request);
 
     /**
-     * 按当前生效配置执行一次全量同步，不修改已保存的增量方式和调度设置
+     * 按已保存配置执行一次全量；恢复初始化时同时结束关联调整，不修改增量方式和调度设置
      */
     @PostMapping("/full")
     @DePermit("m:manage")

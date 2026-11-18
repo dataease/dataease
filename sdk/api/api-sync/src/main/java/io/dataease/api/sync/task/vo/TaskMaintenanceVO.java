@@ -28,6 +28,7 @@ public class TaskMaintenanceVO {
     private String operationId;
     private String state;
     private String phase;
+    private boolean adjustmentDiscarded;
     /**
      * 共享运行归属是否仍在推进字段调整，不以查看页面所在节点的本地线程判断其他节点状态
      */

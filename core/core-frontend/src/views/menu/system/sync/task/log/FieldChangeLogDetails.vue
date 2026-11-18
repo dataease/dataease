@@ -79,7 +79,9 @@ defineExpose({ openLog })
     <template #title>
       <div class="history-title">
         <span>{{ t('sync_task_log.details') }}</span>
-        <el-button :loading="loading" @click="read()">{{ t('common.refresh') }}</el-button>
+        <el-button v-if="readFailed" :loading="loading" @click="read()">{{
+          t('sync_task_log.retry')
+        }}</el-button>
       </div>
     </template>
     <div v-loading="loading" class="field-change-log-details">
@@ -134,7 +136,7 @@ defineExpose({ openLog })
             }}</span
           >
           <span class="history-note"
-            >{{ t('sync_task.log_id') }}：{{ record.initializationLogId }}</span
+            >{{ t('sync_task_log.initialization_log_id') }}：{{ record.initializationLogId }}</span
           >
           <el-alert
             v-if="record.initializationError"
@@ -143,15 +145,10 @@ defineExpose({ openLog })
             :closable="false"
           />
         </div>
-        <div class="history-footer">
-          <span>{{ t('sync_task.log_id') }}：{{ record.id }}</span>
-          <el-button
-            v-if="record.successorLogId"
-            link
-            type="primary"
-            @click="openLog(record.successorLogId)"
-            >{{ t('sync_task_log.successor') }}</el-button
-          >
+        <div v-if="record.successorLogId" class="history-footer">
+          <el-button link type="primary" @click="openLog(record.successorLogId)">{{
+            t('sync_task_log.successor')
+          }}</el-button>
         </div>
       </template>
     </div>
@@ -167,12 +164,69 @@ defineExpose({ openLog })
 .field-change-log-details {
   min-height: 200px;
   overflow-wrap: anywhere;
+  font-size: var(--ed-font-size-base);
+  color: var(--ed-text-color-regular);
+  line-height: var(--ed-font-line-height-primary);
+
+  // 继承系统文字设置，仅在日志详情内覆盖共用组件的固定字号
+  :deep(.field-change-details),
+  :deep(.field-execution-results) {
+    line-height: inherit;
+  }
+  :deep(.field-definition dt),
+  :deep(.field-change-table td) {
+    font-size: inherit;
+  }
+  :deep(.secondary),
+  :deep(.delete-note),
+  :deep(.change-tag),
+  :deep(.execution-state),
+  :deep(.field-change-table th),
+  :deep(.comment-toggle),
+  :deep(.mapping-note) {
+    font-size: var(--ed-font-size-small);
+  }
+  :deep(.changes-heading > span:first-child),
+  :deep(.execution-heading > span:first-child) {
+    font-weight: var(--ed-font-weight-primary);
+  }
+
+  // 日志详情集中展示字段和状态，字段调整弹窗仍沿用共用组件布局
+  :deep(.changes-heading),
+  :deep(.execution-heading),
+  :deep(.execution-step-heading) {
+    justify-content: flex-start;
+  }
+  :deep(.field-change-heading) {
+    display: grid;
+    grid-template-columns: auto minmax(0, max-content) auto 1fr;
+    gap: 4px 10px;
+  }
+  :deep(.field-change-name) {
+    display: contents;
+    > span:first-child {
+      grid-column: 2;
+      min-width: 0;
+    }
+  }
+  :deep(.change-tag) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  :deep(.delete-note) {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    margin-top: 0;
+  }
+  :deep(.execution-name) {
+    flex: 0 1 auto;
+  }
 }
 .history-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 28px;
-  padding-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--ed-border-color);
   label {
     margin-right: 8px;
@@ -180,7 +234,6 @@ defineExpose({ openLog })
   }
 }
 .history-status {
-  margin-left: auto;
   color: var(--ed-color-warning);
   &.success {
     color: var(--ed-color-success);
@@ -195,19 +248,19 @@ defineExpose({ openLog })
 .history-note,
 .history-footer {
   color: var(--ed-text-color-secondary);
-  font-size: 12px;
+  font-size: var(--ed-font-size-small);
 }
 .history-note {
-  margin: 20px 0 12px;
+  margin: 16px 0 12px;
 }
 .history-results {
-  margin-top: 24px;
+  margin-top: 16px;
 }
 .initialization-result {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 16px;
   .history-note {
     margin: 0;
   }
@@ -217,6 +270,6 @@ defineExpose({ openLog })
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 </style>

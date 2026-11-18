@@ -24,6 +24,11 @@ public class TaskMaintenanceRequest {
     @Size(max = 64)
     private String operationId;
     /**
+     * 恢复初始化所关联的字段调整，操作编号仍用于本次初始化请求去重
+     */
+    @Size(max = 64)
+    private String adjustmentId;
+    /**
      * 分别对应已保存配置、实际结构、来源元数据和预检查计划，正式应用时重新核对
      */
     private String configFingerprint;
