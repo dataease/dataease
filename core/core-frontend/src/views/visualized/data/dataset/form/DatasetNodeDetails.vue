@@ -467,22 +467,24 @@ defineExpose({ commit, selectNode, hasPendingChanges })
               <el-table-column :label="t('dataset.dataset_field_type')" min-width="160">
                 <template #default="{ row }">
                   <div class="field-type-cell">
-                    <el-cascader
-                      class="field-editor field-type-editor"
-                      :class="{ 'is-type-drift': getDrift(row) !== null }"
-                      :model-value="getDatasetFieldType(row)"
-                      :disabled="applying"
-                      :aria-label="`${t('dataset.dataset_field_type')} ${row.originName}`"
-                      :options="getFieldTypeOptions(row)"
-                      :show-all-levels="false"
-                      @change="value => changeFieldType(row, value)"
-                    />
-                    <field-type-drift-tip
-                      v-if="getDrift(row) !== null"
-                      :current-type="getConfiguredFieldType(row)"
-                      :detected-type="getDrift(row)"
-                      @keep="emit('keepFieldType', row.id)"
-                    />
+                    <div class="field-type-control">
+                      <el-cascader
+                        class="field-editor field-type-editor"
+                        :class="{ 'is-type-drift': getDrift(row) !== null }"
+                        :model-value="getDatasetFieldType(row)"
+                        :disabled="applying"
+                        :aria-label="`${t('dataset.dataset_field_type')} ${row.originName}`"
+                        :options="getFieldTypeOptions(row)"
+                        :show-all-levels="false"
+                        @change="value => changeFieldType(row, value)"
+                      />
+                      <field-type-drift-tip
+                        v-if="getDrift(row) !== null"
+                        :current-type="getConfiguredFieldType(row)"
+                        :detected-type="getDrift(row)"
+                        @keep="emit('keepFieldType', row.id)"
+                      />
+                    </div>
                   </div>
                 </template>
               </el-table-column>
@@ -653,6 +655,14 @@ defineExpose({ commit, selectNode, hasPendingChanges })
     position: relative;
     display: flex;
     align-items: center;
+    .field-type-control {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+    :deep(.ed-cascader) {
+      width: 100%;
+    }
     :deep(.field-type-drift-tip) {
       position: absolute;
       right: 26px;

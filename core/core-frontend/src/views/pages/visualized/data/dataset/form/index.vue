@@ -977,6 +977,18 @@ const dimensions = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'd')
 })
 
+const onlyPendingDrift = ref(false)
+const batchDimensions = computed(() =>
+  onlyPendingDrift.value
+    ? dimensions.value.filter(field => getFieldTypeDrift(field) !== null)
+    : dimensions.value
+)
+const batchQuota = computed(() =>
+  onlyPendingDrift.value
+    ? quota.value.filter(field => getFieldTypeDrift(field) !== null)
+    : quota.value
+)
+
 const dfsGetName = (list, name) => {
   list.forEach(ele => {
     name[ele.id] = ele.tableName
@@ -1053,6 +1065,10 @@ const allfields = ref([])
 
 provide('allfields', allfields)
 provide('isCross', isCross)
+
+watch(pendingTypeDriftCount, count => {
+  if (!count) onlyPendingDrift.value = false
+})
 
 const expandedD = ref(true)
 const expandedQ = ref(true)
@@ -2258,9 +2274,23 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           </div>
           <el-tabs class="padding-24" v-model="tabActive" @tab-change="tabChange">
             <el-tab-pane :label="t('chart.data_preview')" name="preview" />
-            <el-tab-pane :label="t('dataset.batch_manage')" name="manage" />
+            <el-tab-pane name="manage">
+              <template #label>
+                <span class="batch-manage-tab">
+                  {{ t('dataset.batch_manage') }}
+                  <span v-if="pendingTypeDriftCount" class="batch-manage-count">{{
+                    pendingTypeDriftCount
+                  }}</span>
+                </span>
+              </template>
+            </el-tab-pane>
           </el-tabs>
-          <div v-if="pendingTypeDriftCount" class="field-type-drift-bar" role="status">
+          <div
+            v-if="pendingTypeDriftCount"
+            class="field-type-drift-bar"
+            :class="{ 'is-full-width': tabActive === 'preview' }"
+            role="status"
+          >
             <span class="field-type-drift-bar-text">
               <el-icon
                 ><Icon><icon_warning_colorful class="svg-icon" /></Icon
@@ -2393,16 +2423,27 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           </div>
           <div v-show="tabActive !== 'preview' && !!allfields.length" class="batch-area">
             <div class="manage-container">
+              <div v-if="pendingTypeDriftCount" class="field-type-drift-filter">
+                <el-checkbox v-model="onlyPendingDrift">{{
+                  t('dataset.only_type_change_pending')
+                }}</el-checkbox>
+              </div>
               <el-collapse v-model="state.fieldCollapse" class="style-collapse">
                 <el-collapse-item
+                  v-if="!onlyPendingDrift || batchDimensions.length"
                   name="dimension"
-                  :title="t('chart.dimension')"
                   class="dimension-manage-header manage-header"
                 >
+                  <template #title>
+                    <span class="manage-group-title">
+                      {{ t('chart.dimension') }}
+                      <span class="manage-group-count">{{ batchDimensions.length }}</span>
+                    </span>
+                  </template>
                   <el-table
                     @selection-change="setDeTypeSelection"
                     ref="dimensionsTable"
-                    :data="dimensions"
+                    :data="batchDimensions"
                     :height="quotaTableHeight"
                     style="width: 100%"
                   >
@@ -2462,43 +2503,45 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <div class="field-type-cell">
-                          <el-cascader
-                            :class="[
-                              !!scope.row.deTypeArr &&
-                                !!scope.row.deTypeArr.length &&
-                                'select-type',
-                              { 'is-type-drift': getFieldTypeDrift(scope.row) !== null }
-                            ]"
-                            v-if="scope.row.extField !== 3"
-                            popper-class="cascader-panel"
-                            v-model="scope.row.deTypeArr"
-                            @change="val => cascaderChange(scope.row, val)"
-                            :options="
-                              scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText
-                            "
-                          >
-                            <template v-slot="{ data }">
-                              <el-icon>
-                                <Icon
-                                  ><component
-                                    class="svg-icon"
-                                    :class="`field-icon-${
-                                      fieldType[[2, 3].includes(data.value) ? 2 : 0]
-                                    }`"
-                                    :is="iconFieldMap[getIconName(data.value)]"
-                                  ></component
-                                ></Icon>
-                              </el-icon>
-                              <span>{{ data.label }}</span>
-                            </template>
-                          </el-cascader>
-                          <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
-                          <field-type-drift-tip
-                            v-if="getFieldTypeDrift(scope.row) !== null"
-                            :current-type="scope.row.deType"
-                            :detected-type="getFieldTypeDrift(scope.row)"
-                            @keep="confirmFieldTypeDrift(scope.row)"
-                          />
+                          <div class="field-type-control">
+                            <el-cascader
+                              :class="[
+                                !!scope.row.deTypeArr &&
+                                  !!scope.row.deTypeArr.length &&
+                                  'select-type',
+                                { 'is-type-drift': getFieldTypeDrift(scope.row) !== null }
+                              ]"
+                              v-if="scope.row.extField !== 3"
+                              popper-class="cascader-panel"
+                              v-model="scope.row.deTypeArr"
+                              @change="val => cascaderChange(scope.row, val)"
+                              :options="
+                                scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText
+                              "
+                            >
+                              <template v-slot="{ data }">
+                                <el-icon>
+                                  <Icon
+                                    ><component
+                                      class="svg-icon"
+                                      :class="`field-icon-${
+                                        fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                      }`"
+                                      :is="iconFieldMap[getIconName(data.value)]"
+                                    ></component
+                                  ></Icon>
+                                </el-icon>
+                                <span>{{ data.label }}</span>
+                              </template>
+                            </el-cascader>
+                            <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
+                            <field-type-drift-tip
+                              v-if="getFieldTypeDrift(scope.row) !== null"
+                              :current-type="scope.row.deType"
+                              :detected-type="getFieldTypeDrift(scope.row)"
+                              @keep="confirmFieldTypeDrift(scope.row)"
+                            />
+                          </div>
                         </div>
                         <span class="select-svg-icon">
                           <el-icon>
@@ -2620,15 +2663,21 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                   </el-table>
                 </el-collapse-item>
                 <el-collapse-item
+                  v-if="!onlyPendingDrift || batchQuota.length"
                   name="quota"
-                  :title="t('chart.quota')"
                   class="quota-manage-header manage-header"
                 >
+                  <template #title>
+                    <span class="manage-group-title">
+                      {{ t('chart.quota') }}
+                      <span class="manage-group-count">{{ batchQuota.length }}</span>
+                    </span>
+                  </template>
                   <el-table
                     @selection-change="setDeTypeSelection"
                     ref="quotaTable"
                     :height="quotaTableHeight"
-                    :data="quota"
+                    :data="batchQuota"
                     style="width: 100%"
                   >
                     <el-table-column type="selection" width="40" />
@@ -2683,41 +2732,43 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <div class="field-type-cell">
-                          <el-cascader
-                            :class="[
-                              !!scope.row.deTypeArr &&
-                                !!scope.row.deTypeArr.length &&
-                                'select-type',
-                              { 'is-type-drift': getFieldTypeDrift(scope.row) !== null }
-                            ]"
-                            popper-class="cascader-panel"
-                            v-model="scope.row.deTypeArr"
-                            @change="val => cascaderChange(scope.row, val)"
-                            :options="
-                              scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText
-                            "
-                          >
-                            <template v-slot="{ data }">
-                              <el-icon>
-                                <Icon
-                                  ><component
-                                    class="svg-icon"
-                                    :class="`field-icon-${
-                                      fieldType[[2, 3].includes(data.value) ? 2 : 0]
-                                    }`"
-                                    :is="iconFieldMap[getIconName(data.value)]"
-                                  ></component
-                                ></Icon>
-                              </el-icon>
-                              <span>{{ data.label }}</span>
-                            </template>
-                          </el-cascader>
-                          <field-type-drift-tip
-                            v-if="getFieldTypeDrift(scope.row) !== null"
-                            :current-type="scope.row.deType"
-                            :detected-type="getFieldTypeDrift(scope.row)"
-                            @keep="confirmFieldTypeDrift(scope.row)"
-                          />
+                          <div class="field-type-control">
+                            <el-cascader
+                              :class="[
+                                !!scope.row.deTypeArr &&
+                                  !!scope.row.deTypeArr.length &&
+                                  'select-type',
+                                { 'is-type-drift': getFieldTypeDrift(scope.row) !== null }
+                              ]"
+                              popper-class="cascader-panel"
+                              v-model="scope.row.deTypeArr"
+                              @change="val => cascaderChange(scope.row, val)"
+                              :options="
+                                scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText
+                              "
+                            >
+                              <template v-slot="{ data }">
+                                <el-icon>
+                                  <Icon
+                                    ><component
+                                      class="svg-icon"
+                                      :class="`field-icon-${
+                                        fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                      }`"
+                                      :is="iconFieldMap[getIconName(data.value)]"
+                                    ></component
+                                  ></Icon>
+                                </el-icon>
+                                <span>{{ data.label }}</span>
+                              </template>
+                            </el-cascader>
+                            <field-type-drift-tip
+                              v-if="getFieldTypeDrift(scope.row) !== null"
+                              :current-type="scope.row.deType"
+                              :detected-type="getFieldTypeDrift(scope.row)"
+                              @keep="confirmFieldTypeDrift(scope.row)"
+                            />
+                          </div>
                         </div>
                         <span class="select-svg-icon">
                           <el-icon>
@@ -3767,6 +3818,9 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   background: #fff7e9;
   color: #8c5108;
   font-size: 13px;
+  &.is-full-width {
+    margin-inline: 0;
+  }
   .field-type-drift-bar-text {
     display: flex;
     align-items: center;
@@ -3775,16 +3829,58 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   }
 }
 
+.field-type-drift-filter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 34px;
+}
+
+.batch-manage-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  .batch-manage-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 4px;
+    background: #fff1da;
+    color: #8c5108;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+}
+
+.manage-group-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  .manage-group-count {
+    color: #8d9199;
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
 .field-type-cell {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
-  .ed-cascader {
+  .field-type-control {
+    position: relative;
     flex: 1;
     min-width: 0;
   }
-  .field-type-drift-tip {
+  .ed-cascader {
+    width: 100%;
+  }
+  :deep(.field-type-drift-tip) {
     position: absolute;
     right: 26px;
     top: 50%;
@@ -3792,8 +3888,8 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   }
 }
 
-.el-cascader.is-type-drift,
-.ed-cascader.is-type-drift {
+:deep(.el-cascader.is-type-drift),
+:deep(.ed-cascader.is-type-drift) {
   .ed-input__wrapper {
     background: #fff7e9;
     box-shadow: 0 0 0 1px #ebc383 inset;

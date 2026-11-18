@@ -2699,6 +2699,7 @@ export default {
     batch_manage: '批次管理',
     type_change_pending: '{count} 個欄位類型待確認',
     type_change_pending_title: '欄位類型待確認',
+    only_type_change_pending: '僅看待確認',
     type_change_not_auto: '資料集欄位類型未自動修改',
     current_field_type: '目前欄位類型',
     sql_detected_type: 'SQL 檢測類型',

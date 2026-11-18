@@ -2797,6 +2797,7 @@ export default {
     batch_manage: 'Batch management',
     type_change_pending: '{count} field type(s) to confirm',
     type_change_pending_title: 'Field type to confirm',
+    only_type_change_pending: 'Only pending',
     type_change_not_auto: 'dataset field types were not changed automatically',
     current_field_type: 'Current field type',
     sql_detected_type: 'SQL detected type',
