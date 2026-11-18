@@ -25,7 +25,7 @@ public final class DatasetSqlDialectRegression {
                 return ds;
             }
         };
-        var scene = new AiDatasetSqlScene(source, engine, new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(source, DatasetSqlSemanticRegression.registry()));
+        var scene = new AiDatasetSqlScene(source, engine, new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(source, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(List.of()));
         var context = scene.resolve("11", "SELECT oid FROM orders");
         var json = new ObjectMapper();
         var cross = scene.resolve(new AiConversationDtos.Open(

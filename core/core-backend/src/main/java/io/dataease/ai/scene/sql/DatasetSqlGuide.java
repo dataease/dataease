@@ -33,7 +33,18 @@ final class DatasetSqlGuide {
             String example = switch (topic) {
                 case "projection" -> "SELECT column_name FROM table_name";
                 case "aggregate" -> "SELECT dimension, SUM(amount) AS total FROM table_name GROUP BY dimension";
-                case "join" -> "SELECT a.id, b.label FROM fact_table a LEFT JOIN lookup_table b ON a.lookup_id = b.id";
+                case "join" -> """
+                        Use all confirmed equalities together. Choose LEFT JOIN when every starting row must survive.
+                        A chart usually needs the detail grain, with separate dimensions and measures.
+                        If the author requests one row per group, aggregate at that grain. A many-side join can repeat
+                        fact amounts; preaggregate its rows on every fact key before joining, for example:
+                        SELECT f.group_key, SUM(f.amount) AS total FROM fact_table f
+                        LEFT JOIN (SELECT tenant_key, fact_id, COUNT(*) AS line_count FROM line_table
+                                   GROUP BY tenant_key, fact_id) x
+                          ON f.tenant_key = x.tenant_key AND f.id = x.fact_id GROUP BY f.group_key.
+                        Use EXISTS when the detail is only a filter. Many-to-many measures need an explicit allocation
+                        or grain decision. Never deduplicate by amount: two different facts can have equal amounts.
+                        """;
                 case "monthly" -> monthly(dialect);
                 case "parameters" -> """
                         Preserve relevant existing dashboard parameter names and syntax when revising SQL.

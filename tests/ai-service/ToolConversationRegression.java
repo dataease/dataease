@@ -154,6 +154,29 @@ public final class ToolConversationRegression {
                         }
                         content = call("choice", "get_table_fields", JSON.writeValueAsString(Map.of("table", chosen)));
                     } else content = call("channels", "search_physical_tables", "{\"terms\":\"渠道\"}");
+                } else if (mode.get().startsWith("dataset-join")) {
+                    String previous = body.path("messages").get(body.path("messages").size() - 1).path("content").asText();
+                    content = switch (sent.size()) {
+                        case 1 -> call("search", "search_semantics", "{\"terms\":\"订单\"}");
+                        case 2 -> call("orders", "get_table_fields", "{\"table\":\"orders\"}");
+                        case 3 -> call("customers", "get_table_fields", "{\"table\":\"customers\"}");
+                        case 4 -> call("guide", "read_sql_guide", "{\"topic\":\"join\"}");
+                        case 5 -> call("relationship", "read_relations", "{\"fromTable\":\"orders\",\"toTable\":\"customers\"}");
+                        case 6 -> {
+                            var result = JSON.readTree(previous);
+                            boolean shipping = body.path("messages").toString().contains("按收货客户");
+                            if ("CLARIFY_ROLE".equals(result.path("status").asText()) && !shipping)
+                                yield frame(Map.of("content", "请确认是下单客户还是收货客户？"), "stop");
+                            var relation = result.path("relations").get(shipping ? 1 : 0);
+                            var predicates = new ArrayList<String>();
+                            for (var key : relation.path("conditions"))
+                                predicates.add("o." + key.path("leftField").asText() + " = c." + key.path("rightField").asText());
+                            String sql = "SELECT o.oid, c.name FROM orders o " + relation.path("joinType").asText()
+                                    + " JOIN customers c ON " + String.join(" AND ", predicates) + " ORDER BY o.oid";
+                            yield call("offer", "propose_sql", JSON.writeValueAsString(Map.of("sql", sql)));
+                        }
+                        default -> frame(Map.of("content", "保留所有订单，每订单一行。"), "stop");
+                    };
                 } else if (mode.get().startsWith("dataset-meaning")) {
                     var previous = body.path("messages").get(body.path("messages").size() - 1).path("content").asText();
                     content = switch (sent.size()) {
@@ -238,6 +261,12 @@ public final class ToolConversationRegression {
                         }
                         yield tables;
                     }
+                    if (mode.get().startsWith("dataset-join")) {
+                        for (String name : List.of("orders", "customers")) {
+                            var table = new DatasetTableDTO(); table.setTableName(name); table.setName(name); tables.add(table);
+                        }
+                        yield tables;
+                    }
                     if (mode.get().startsWith("dataset-meaning")) {
                         var orders = new DatasetTableDTO(); orders.setTableName("orders"); orders.setName("订单"); yield List.of(orders);
                     }
@@ -250,6 +279,12 @@ public final class ToolConversationRegression {
                     if (mode.get().equals("dataset-channel") && request.getDatasourceId() == 11L && "channel_live".equals(request.getTableName())) {
                         reads.add(request.getTableName());
                         var f = new TableField(); f.setOriginName("channel_id"); f.setFieldType("BIGINT"); yield List.of(f);
+                    }
+                    if (mode.get().startsWith("dataset-join") && request.getDatasourceId() == 11L) {
+                        reads.add(request.getTableName());
+                        yield DatasetSqlRelationRegression.fields(request.getTableName()).stream().map(n -> {
+                            var field = new TableField(); field.setOriginName(n); field.setName(n); field.setFieldType("BIGINT"); return field;
+                        }).toList();
                     }
                     if (mode.get().startsWith("dataset-meaning") && Objects.equals(request.getDatasourceId(), 11L) && "orders".equals(request.getTableName())) {
                         reads.add("fields");
@@ -306,7 +341,8 @@ public final class ToolConversationRegression {
             sqlTools = new AiSqlTools(metadata);
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
-            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new io.dataease.datasource.manage.EngineManage(), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry())));
+            var joinPaths = new ArrayList<>(List.of(DatasetSqlRelationRegression.buyer()));
+            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new io.dataease.datasource.manage.EngineManage(), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)));
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
@@ -467,6 +503,33 @@ public final class ToolConversationRegression {
             if (!reads.equals(List.of("tables", "tables", "channel_live")) || !chosen.path("text").asText().contains("channel_live"))
                 throw new AssertionError("Number must resolve against the earlier choices; reauthorize and read only that table: " + chosen);
             mvc.perform(delete("/ai/conversations/" + channelSession.path("sessionId").asText()));
+            mode.set("dataset-join");
+            sent.clear(); reads.clear();
+            var joinSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene","dataset-sql","resourceId","11","editorId","join-node","sql",""))))
+                    .andReturn().getResponse().getContentAsString());
+            var joined = terminal(mvc, start(mvc, joinSession, "给每笔订单加上下单客户名称"));
+            if (!"COMPLETED".equals(joined.path("status").asText()) || sent.size() != 7
+                    || !joined.path("result").path("sql").asText().equals("SELECT o.oid, c.name FROM orders o LEFT JOIN customers c ON o.tenant_id = c.tenant_id AND o.buyer_id = c.cid ORDER BY o.oid")
+                    || !joined.path("result").path("evidence").toString().contains("下单客户"))
+                throw new AssertionError("editor must complete the long verified join chain: " + joined);
+            mvc.perform(delete("/ai/conversations/" + joinSession.path("sessionId").asText()));
+            joinPaths.add(DatasetSqlRelationRegression.shipping());
+            var rolesSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene","dataset-sql","resourceId","11","editorId","roles-node","sql",""))))
+                    .andReturn().getResponse().getContentAsString());
+            sent.clear();
+            var clarify = terminal(mvc, start(mvc, rolesSession, "给订单加客户名称")).path("result");
+            if (!"EXPLANATION".equals(clarify.path("type").asText()) || !clarify.path("text").asText().contains("收货客户？"))
+                throw new AssertionError("role ambiguity must ask without a suggestion: " + clarify);
+            sent.clear();
+            var selected = terminal(mvc, start(mvc, rolesSession, "按收货客户")).path("result");
+            if (!selected.path("sql").asText().contains("o.ship_customer_id = c.cid")
+                    || selected.path("evidence").toString().contains("下单客户"))
+                throw new AssertionError("role choice applies to this suggestion: " + selected);
+            mvc.perform(delete("/ai/conversations/" + rolesSession.path("sessionId").asText()));
+            DatasetSqlRelationRegression.main(new String[0]);
+            System.out.println("PASS registered composite JOIN through 7 model requests, relation evidence, ambiguity and stale key filtering");
             for (var meaning : List.of("paid", "ambiguous")) {
                 mode.set("dataset-meaning-" + meaning);
                 sent.clear(); reads.clear();

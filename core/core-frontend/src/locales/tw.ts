@@ -18,6 +18,7 @@ export default {
     replace_draft: '要以這則建議取代編輯器中的整段 SQL 嗎？',
     sql_evidence: '用表與欄位依據',
     sql_reference: 'SQL 中引用',
+    confirmed_join: '已確認關聯 · 建議方向',
     verified_structure: '已核對本輪實體結構',
     confirmed_meaning: '已確認業務語意',
     no_sql_evidence: '本條建議沒有可歸屬的表結構依據。',

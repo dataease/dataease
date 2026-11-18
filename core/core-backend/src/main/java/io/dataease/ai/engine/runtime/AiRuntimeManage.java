@@ -245,12 +245,15 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         private AiTransport.ToolStream active;
         private AiConfigurationManage.Connection connection;
         private volatile boolean closed;
-        private ToolStreaming(Context context, CoreAiSetting settings, CoreAiModel model) {
+        private final AiToolProtocol.StepLimit limit;
+        public int maxToolSteps() { return limit.modelSteps - 1; }
+        private ToolStreaming(Context context, CoreAiSetting settings, CoreAiModel model, AiToolProtocol.StepLimit limit) {
+            this.limit = limit;
             this.context = context; this.settings = settings; this.modelIdentifier = model.getModelIdentifier();
             modelId = model.getId(); configRevision = model.getConfigRevision(); credentialRevision = model.getCredentialRevision(); settingRevision = settings.getRevision();
             if (context.snapshot() != null) connection = new AiConfigurationManage.Connection(model.getId(), model.getConfigRevision(), model.getProvider(), model.getBaseUrl(),
                     secrets.decrypt(model.getKeyEnvelope(), model.getId()), model.getModelIdentifier());
-            budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens()); recovery = new AiRecovery(settings);
+            budget = new AiToolProtocol.Budget(settings.getMaxOutputTokens(), limit); recovery = new AiRecovery(settings, limit);
             if (audit != null) recovery.audit(auditSession(context, model(), settingRevision, recovery, settings.getAuditRetentionDays()));
         }
         public String executionId() { return context.executionId(); }
@@ -296,15 +299,18 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         public synchronized void close() { closed = true; if (active != null) active.close(); active = null; connection = null; finishAudit("CANCELLED"); }
     }
     public ToolStreaming streamTools(String feature, AiDataScope scope, AiToolProtocol.Input input) {
-        return streamTools((Context) currentConversation(feature, scope), input);
+        return streamTools(feature, scope, input, AiToolProtocol.StepLimit.DEFAULT);
+    }
+    public ToolStreaming streamTools(String feature, AiDataScope scope, AiToolProtocol.Input input, AiToolProtocol.StepLimit limit) {
+        return streamTools((Context) currentConversation(feature, scope), input, limit);
     }
     public ToolStreaming streamTaskTools(String feature, String taskId, AiDataScope scope, AiToolProtocol.Input input) {
-        return streamTools((Context) task(feature, taskId, scope), input);
+        return streamTools((Context) task(feature, taskId, scope), input, AiToolProtocol.StepLimit.DEFAULT);
     }
     public ToolStreaming streamTaskTools(String feature, String taskId, AiDataScope scope, AiToolProtocol.Input input, long deadline) {
-        return streamTools(boundedTask(feature, taskId, scope, deadline), input);
+        return streamTools(boundedTask(feature, taskId, scope, deadline), input, AiToolProtocol.StepLimit.DEFAULT);
     }
-    private ToolStreaming streamTools(Context request, AiToolProtocol.Input input) {
+    private ToolStreaming streamTools(Context request, AiToolProtocol.Input input, AiToolProtocol.StepLimit limit) {
         String feature = request.feature(); AiDataScope scope = request.scope(); caller(request);
         if (TransactionSynchronizationManager.isActualTransactionActive()) throw AiErrors.error("transaction_active");
         if (!(feature(feature) instanceof AiToolConversationFeature toolFeature) || !toolFeature.supportsStreaming() || scope.samples()) throw AiErrors.error("unsupported");
@@ -312,7 +318,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
         var original = settings(request); var model = resolve(request, original); toolFeature.authorizeToolInput(request, input);
         Context detached = new Context(request.executionId(), request.feature(), request.actorId(), request.organizationId(), request.background(),
                 request.deadline(), null, request.proxyBinding(), request.taskId(), request.taskVersion(), request.scope(), request.deployment(), request.usageRevision(), request.snapshot());
-        return new ToolStreaming(detached, json.convertValue(original, CoreAiSetting.class), model);
+        return new ToolStreaming(detached, json.convertValue(original, CoreAiSetting.class), model, limit);
     }
     private void inspect(Context context, Prompt prompt) {
         java.util.List<org.springframework.ai.chat.messages.Message> messages = prompt.getInstructions().stream().map(message ->

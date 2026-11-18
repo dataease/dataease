@@ -444,6 +444,17 @@ test("each suggestion expands its own table and field evidence", async ({
         inspected: true,
         description: "销售订单",
         grain: "每笔订单一行",
+        relations: [{
+          name: "下单客户",
+          leftTable: "orders",
+          rightTable: "customers",
+          cardinality: "MANY_TO_ONE",
+          joinType: "LEFT",
+          conditions: [
+            {leftField: "tenant_id", rightField: "tenant_id"},
+            {leftField: "buyer_id", rightField: "cid"},
+          ],
+        }],
         fields: [
           {
             name: "pay_code",
@@ -466,6 +477,10 @@ test("each suggestion expands its own table and field evidence", async ({
   await evidence.first().locator("summary").click();
   await expect(cards.first()).toContainText("pay_code");
   await expect(cards.first()).toContainText("P → 已支付");
+  for (const label of ["下单客户", "orders LEFT JOIN customers", "MANY_TO_ONE",
+    "orders.tenant_id = customers.tenant_id", "orders.buyer_id = customers.cid"]) {
+    await expect(evidence.first()).toContainText(label);
+  }
   state.query = "SELECT count(*) FROM items";
   state.evidence = [{ table: "items", inspected: false, fields: [] }];
   await ask(page);

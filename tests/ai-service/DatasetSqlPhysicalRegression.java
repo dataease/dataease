@@ -44,7 +44,7 @@ public final class DatasetSqlPhysicalRegression {
                 });
             }
         };
-        var scene = new AiDatasetSqlScene(metadata, new EngineManage(), new DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()));
+        var scene = new AiDatasetSqlScene(metadata, new EngineManage(), new DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(java.util.List.of()));
         var tools = scene.tools(scene.resolve("11", "")).stream().map(t -> t.name()).toList();
         if (tools.contains("list_tables") || !tools.contains("search_physical_tables"))
             throw new AssertionError("Editor must expose targeted discovery instead of a complete table list: " + tools);

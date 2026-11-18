@@ -18,6 +18,7 @@ export default {
     replace_draft: '用这条建议替换编辑器中的整段 SQL？',
     sql_evidence: '用表与字段依据',
     sql_reference: 'SQL 中引用',
+    confirmed_join: '已确认关联 · 推荐方向',
     verified_structure: '已核对本轮物理结构',
     confirmed_meaning: '已确认业务语义',
     no_sql_evidence: '本条建议没有可归属的表结构依据。',

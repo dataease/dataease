@@ -510,6 +510,23 @@ const apply = async (turn: Turn) => {
                 <small>{{ tr(table.inspected ? 'verified_structure' : 'sql_reference') }}</small>
                 <p v-if="table.description">{{ table.description }}</p>
                 <p v-if="table.grain">{{ table.grain }}</p>
+                <div v-for="relation in table.relations" :key="JSON.stringify(relation)">
+                  <p>
+                    {{ tr('confirmed_join') }} · {{ relation.name }} · {{ relation.cardinality }}
+                  </p>
+                  <code
+                    >{{ relation.leftTable }} {{ relation.joinType }} JOIN
+                    {{ relation.rightTable }}</code
+                  >
+                  <p
+                    v-for="pair in relation.conditions"
+                    :key="pair.leftField + '=' + pair.rightField"
+                  >
+                    {{ relation.leftTable }}.{{ pair.leftField }} = {{ relation.rightTable }}.{{
+                      pair.rightField
+                    }}
+                  </p>
+                </div>
                 <ul v-if="table.fields.length">
                   <li v-for="field in table.fields" :key="field.name">
                     <code>{{ field.name }}</code> {{ field.type }}
