@@ -911,23 +911,21 @@ const initEdite = async () => {
     copyId = embeddedStore.datasetCopyId || copyId
   }
   isEdit.value = false
-  if (copyId || id) {
-    const barRes = await barInfoApi(copyId || id)
-    if (!barRes || !barRes['id']) {
+  try {
+    if (copyId || id) {
+      const barRes = await barInfoApi(copyId || id)
+      if (!barRes || !barRes['id']) {
+        return
+      }
+      isEdit.value = true
+    }
+    if (datasourceId) {
+      dataSource.value = datasourceId as string
+      getTableName(datasourceId as string, tableName)
+    }
+    if (!id && !copyId) {
       return
     }
-    isEdit.value = true
-  }
-  if (datasourceId) {
-    dataSource.value = datasourceId as string
-    getTableName(datasourceId as string, tableName)
-  }
-  if (!id && !copyId) {
-    loading.value = false
-    return
-  }
-
-  try {
     const res = await getDatasetDetails(copyId || id)
     let arr = []
     const { pid, name } = res || {}
@@ -952,9 +950,9 @@ const initEdite = async () => {
       await nextTick()
       if (allfields.value.length) datasetPreview()
     }
-    loading.value = false
   } catch (error) {
     console.error(error)
+  } finally {
     loading.value = false
   }
 }
