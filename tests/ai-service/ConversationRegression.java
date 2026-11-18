@@ -120,12 +120,15 @@ public final class ConversationRegression {
         var bound = continueContext(mvc, json, initial, "11", "", "continuity-bind");
         await(mvc, json, start(mvc, json, "/ai/conversations/" + bound.path("sessionId").asText() + "/executions", bound, "现在呢") + "/events", "COMPLETED", "多字节");
         var messages = sent.get(sent.size() - 1).path("messages");
-        if (messages.size() != 5 || !messages.get(1).path("content").asText().equals("查看所有表") || !messages.get(4).path("content").asText().equals("现在呢"))
+        var latestQuestion = json.readTree(messages.get(3).path("content").asText());
+        if (messages.size() != 4 || !messages.get(1).path("content").asText().equals("查看所有表")
+                || !latestQuestion.path("userMessage").asText().equals("现在呢")
+                || !latestQuestion.path("currentTarget").path("resourceId").asText().equals("11"))
             throw new AssertionError("first datasource binding must carry the original question into the actual model request");
         var edited = continueContext(mvc, json, bound, "11", "select 2", "continuity-edit");
         await(mvc, json, start(mvc, json, "/ai/conversations/" + edited.path("sessionId").asText() + "/executions", edited, "继续解释") + "/events", "COMPLETED", "多字节");
         messages = sent.get(sent.size() - 1).path("messages");
-        if (messages.size() != 7 || !messages.get(0).path("content").asText().contains("select 2") || !messages.get(1).path("content").asText().equals("查看所有表"))
+        if (messages.size() != 6 || !messages.get(0).path("content").asText().contains("select 2") || !messages.get(1).path("content").asText().equals("查看所有表"))
             throw new AssertionError("SQL draft refresh preserves history and uses the new system context");
         if (edited.path("expiresAt").asLong() != initial.path("expiresAt").asLong()) throw new AssertionError("context refresh cannot extend the conversation lifetime");
         var repeated = continueContext(mvc, json, bound, "11", "select 2", "continuity-edit");
@@ -133,13 +136,21 @@ public final class ConversationRegression {
         var switched = continueContext(mvc, json, edited, "12", "select 2", "continuity-cross-resource");
         await(mvc, json, start(mvc, json, "/ai/conversations/" + switched.path("sessionId").asText() + "/executions", switched, "切换后继续") + "/events", "COMPLETED", "多字节");
         messages = sent.get(sent.size() - 1).path("messages");
-        if (messages.size() != 9 || !messages.get(1).path("content").asText().equals("查看所有表"))
+        if (messages.size() != 8 || !messages.get(1).path("content").asText().equals("查看所有表"))
             throw new AssertionError("datasource switching preserves the continuous dialogue");
         var unbound = continueContext(mvc, json, switched, "", "", "continuity-clear");
         await(mvc, json, start(mvc, json, "/ai/conversations/" + unbound.path("sessionId").asText() + "/executions", unbound, "只聊概念") + "/events", "COMPLETED", "多字节");
         messages = sent.get(sent.size() - 1).path("messages");
-        if (messages.size() != 11 || !messages.get(1).path("content").asText().equals("查看所有表"))
+        if (messages.size() != 10 || !messages.get(1).path("content").asText().equals("查看所有表"))
             throw new AssertionError("clearing the datasource keeps dialogue history");
+        var synchronous = mvc.perform(post(pathFor(unbound)).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsBytes(Map.of("contextVersion", unbound.path("contextVersion").asText(), "text", "同步继续解释"))))
+                .andReturn().getResponse();
+        messages = sent.get(sent.size() - 1).path("messages");
+        if (synchronous.getStatus() != 200 || messages.size() != 12
+                || !messages.get(0).path("content").asText().contains("CURRENT APPLICATION STATE")
+                || !messages.get(0).path("content").asText().contains("\"selection\":\"NONE\""))
+            throw new AssertionError("synchronous continuation preserves history and current state in the leading system message");
         mvc.perform(delete("/ai/conversations/" + unbound.path("sessionId").asText()));
         System.out.println("PASS first datasource binding and SQL edits preserve server-owned conversation history with fresh scope and bounded lifetime");
     }
@@ -228,6 +239,13 @@ public final class ConversationRegression {
         server.createContext("/v1/chat/completions", exchange -> {
             var body = json.readTree(exchange.getRequestBody());
             synchronized (sent) { sent.add(body); }
+            for (int index = 1; index < body.path("messages").size(); index++) {
+                if (!"system".equals(body.path("messages").get(index).path("role").asText())) continue;
+                byte[] rejected = "{\"error\":{\"code\":\"invalid_request\",\"message\":\"System message must be at the beginning.\"}}".getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(400, rejected.length);
+                exchange.getResponseBody().write(rejected); exchange.close(); return;
+            }
             if (temporaryFailures.getAndUpdate(value -> Math.max(0, value - 1)) > 0) {
                 exchange.sendResponseHeaders(503, -1); exchange.close(); return;
             }

@@ -949,6 +949,89 @@ test('stop racing with completed server execution drains missing text before dis
   await expect(page.getByText('· 未完成')).toHaveCount(0)
 })
 
+test('refresh replaces abandoned idle contexts even when unload close requests fail', async ({
+  page
+}) => {
+  const editors = new Set()
+  const opened = []
+  let current
+  await page.route('**/fixture-api/ai/conversations**', (route) => {
+    const request = route.request(),
+      url = new URL(request.url())
+    if (url.pathname.endsWith('/resources')) return route.fulfill({ json: [] })
+    if (request.method() === 'DELETE') return route.abort('aborted')
+    if (url.pathname.endsWith('/executions'))
+      return route.fulfill({
+        json: {
+          ...current,
+          executionId: 'run-' + opened.length,
+          status: 'RUNNING',
+          deadline: Date.now() + 60000
+        }
+      })
+    if (url.pathname.endsWith('/events'))
+      return route.fulfill({
+        json: {
+          ...current,
+          executionId: 'run-' + opened.length,
+          status: 'COMPLETED',
+          cursor: 1,
+          events: [{ sequence: 1, type: 'TEXT', text: 'Fresh answer' }]
+        }
+      })
+    const editorId = request.postDataJSON().editorId
+    // Mirror the backend's same-editor retirement and four-context admission boundary.
+    if (!editors.has(editorId) && editors.size >= 4)
+      return route.fulfill({
+        status: 409,
+        json: { messageKey: 'i18n_ai_concurrency' }
+      })
+    editors.add(editorId)
+    current = { ...session, editorId, resourceId: '', sessionId: 'session-' + opened.length }
+    opened.push(current)
+    return route.fulfill({ json: current })
+  })
+  await page.goto('/?view=conversation')
+  for (let i = 0; i < 6; i++) {
+    if (i) await page.reload()
+    await send(page, 'New question ' + i)
+    await expect(page.getByText('Fresh answer', { exact: true })).toBeVisible()
+  }
+  expect(editors.size).toBe(1)
+  expect(new Set(opened.map((item) => item.sessionId)).size).toBe(6)
+  // A normal navigation must not reuse a copied/abandoned tab's identity.
+  await page.goto('/?view=conversation&fresh=1')
+  await send(page, 'Independent page')
+  await expect(page.getByText('Fresh answer', { exact: true })).toBeVisible()
+  expect(editors.size).toBe(2)
+})
+
+for (const [code, expected] of [
+  ['concurrency', 'AI 并发已达上限，请稍后重试。'],
+  ['conflict', '配置或引用已变化，请刷新后重新操作。'],
+  ['unknown', '配置或引用已变化，请刷新后重新操作。']
+]) {
+  test(`new conversation admission explains ${code} without misreporting configuration changes`, async ({
+    page
+  }) => {
+    await page.route('**/fixture-api/ai/conversations**', (route) => {
+      if (route.request().url().endsWith('/resources')) return route.fulfill({ json: [] })
+      return route.fulfill({
+        status: 409,
+        json: {
+          code: 50005,
+          category: 'CONFLICT',
+          messageKey: `i18n_ai_${code}`,
+          msg: 'Untrusted upstream text'
+        }
+      })
+    })
+    await page.goto('/?view=conversation')
+    await send(page, 'Explain SQL')
+    await expect(page.getByRole('alert')).toHaveText(expected)
+  })
+}
+
 for (const [code, expected] of [
   ['timeout', 'AI 请求超时。'],
   [
