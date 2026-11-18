@@ -172,7 +172,12 @@ for (const cross of [false, true]) {
       await ask(page);
       await expect(control(page, "apply")).toBeVisible();
       expect(state.opens).toMatchObject([
-        { scene: "dataset-sql", resourceId: "source", sql: initial },
+        {
+          scene: "dataset-sql",
+          resourceId: "source",
+          sql: initial,
+          isCross: cross,
+        },
       ]);
       await expect(editor(page).locator(".cm-content")).toHaveText(initial);
       await assertUnrun(page, state);

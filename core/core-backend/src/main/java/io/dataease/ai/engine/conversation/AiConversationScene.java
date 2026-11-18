@@ -13,10 +13,16 @@ public interface AiConversationScene {
     /** Trusted scene declaration after current business authorization and canonical metadata resolution. */
     record ResourceClaim(String datasourceId, String table, String operation) { }
     default List<ResourceClaim> resourceClaims(Context context) { return List.of(); }
-    record Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables) {
+    record Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross) {
+        public Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables) {
+            this(resourceId, resourceName, revision, instruction, selectedTables, false);
+        }
         public Context(String resourceId, String resourceName, String revision, String instruction) {
             this(resourceId, resourceName, revision, instruction, null);
         }
+    }
+    default Context resolve(AiConversationDtos.Open editor) {
+        return resolve(java.util.Objects.toString(editor.resourceId(), ""), java.util.Objects.toString(editor.sql(), ""));
     }
     default Context resolveTask(String resourceId, String input, List<String> selectedTables) {
         if (selectedTables != null && !selectedTables.isEmpty()) throw AiErrors.error("unsupported");

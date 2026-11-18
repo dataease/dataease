@@ -469,7 +469,7 @@ public class DatasetDataManage {
         }
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name())) {
+        if (DatasourceConfiguration.usesDeEngine(coreDatasource.getType())) {
             BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);

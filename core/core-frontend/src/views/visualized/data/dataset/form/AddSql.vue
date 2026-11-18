@@ -721,6 +721,7 @@ const mousedownDrag = () => {
       <DatasetSqlAssistant
         v-if="assistantHost && codeCom"
         :host="assistantHost"
+        :is-cross="isCross"
         :resource-id="String(sqlNode.datasourceId ?? '')"
         :read-draft="readDraft"
         :draft-revision="draftRevision"

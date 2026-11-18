@@ -163,13 +163,14 @@ public class AiConversationManage implements AiToolConversationFeature {
                 || request.sql() != null && request.sql().length() > 30000) throw AiErrors.error("invalid");
         key(request.openKey());
         String opening = fingerprint("open", single, request.scene(), request.resourceId(), request.editorId(), request.sql());
+        if (Boolean.TRUE.equals(request.isCross())) opening = fingerprint("cross", opening);
         if (request.previousSessionId() != null) opening = fingerprint("continue", opening, request.previousSessionId());
         var priorOpening = operation(owner, "open", request.openKey(), opening);
         if (priorOpening != null) { State previous = priorOpening.state; if (previous == null) throw AiErrors.error("scope_changed"); check(previous); return previous.view; }
         var scene = scene(request.scene());
         var usage = access.acceptUsage(owner);
         var context = access.withAcceptedUsage(usage, () -> authorized(owner, () -> {
-            var resolved = scene.resolve(Objects.toString(request.resourceId(), ""), Objects.toString(request.sql(), ""));
+            var resolved = scene.resolve(request);
             scene.authorize(resolved); return resolved;
         }));
         State source = null;
