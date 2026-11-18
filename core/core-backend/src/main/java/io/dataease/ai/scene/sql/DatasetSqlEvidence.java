@@ -43,20 +43,40 @@ final class DatasetSqlEvidence {
         return raw;
     }
 
+    private record JoinedKeys(String rightTable, String joinType, Set<List<String>> keys) {
+        RelationEvidence match(RelationEvidence path) {
+            boolean reversed = rightTable.equals(path.leftTable());
+            if (!reversed && !rightTable.equals(path.rightTable()) || path.conditions().isEmpty()) return null;
+            for (var c : path.conditions()) {
+                if (!keys.contains(List.of(path.leftTable(), c.leftField(), path.rightTable(), c.rightField()))
+                        && !keys.contains(List.of(path.rightTable(), c.rightField(), path.leftTable(), c.leftField()))) return null;
+            }
+            var actual = new SqlJoin(reversed ? path.rightTable() : path.leftTable(), joinType, rightTable);
+            return new RelationEvidence(path.name(), path.description(), path.leftTable(), path.rightTable(),
+                    path.conditions(), path.cardinality(), path.joinType(), actual);
+        }
+    }
+
     private static final class Columns extends TablesNamesFinder {
         private final Map<String, Set<String>> references = new HashMap<>();
-        private final List<Set<List<String>>> joins = new ArrayList<>();
+        private final List<JoinedKeys> joins = new ArrayList<>();
         private Map<String, String> bindings = Map.of();
 
         @Override public void visit(PlainSelect select) {
             var outer = bindings;
             bindings = new HashMap<>();
             bind(select.getFromItem());
-            if (select.getJoins() != null) select.getJoins().forEach(join -> bind(join.getRightItem()));
             if (select.getJoins() != null) for (var join : select.getJoins()) {
+                bind(join.getRightItem());
+                if (!(join.getRightItem() instanceof Table table) || join.isSimple() || join.isNatural()
+                        || join.isCross() || join.isSemi() || join.isApply() || join.isStraight() || join.isWindowJoin()) continue;
+                var rightTable = identifier(table.getFullyQualifiedName());
                 var keys = new HashSet<List<String>>();
                 for (var on : join.getOnExpressions()) equalities(on, keys);
-                if (!keys.isEmpty()) joins.add(keys);
+                if (!keys.isEmpty()) {
+                    String type = join.isFull() ? "FULL" : join.isLeft() ? "LEFT" : join.isRight() ? "RIGHT" : "INNER";
+                    joins.add(new JoinedKeys(rightTable, type, keys));
+                }
             }
             super.visit(select);
             if (select.getGroupBy() != null && select.getGroupBy().getGroupByExpressionList() != null)
@@ -76,7 +96,8 @@ final class DatasetSqlEvidence {
                     && eq.getRightExpression() instanceof Column b && a.getTable() != null && b.getTable() != null) {
                 var left = bindings.get(identifier(a.getTable().getFullyQualifiedName()));
                 var right = bindings.get(identifier(b.getTable().getFullyQualifiedName()));
-                if (left != null && right != null)
+                if (left != null && !left.isEmpty() && right != null && !right.isEmpty() && !left.equals(right)
+                        && Collections.frequency(bindings.values(), left) == 1 && Collections.frequency(bindings.values(), right) == 1)
                     keys.add(List.of(left, identifier(a.getColumnName()), right, identifier(b.getColumnName())));
             }
         }
@@ -120,11 +141,11 @@ final class DatasetSqlEvidence {
                     var lineage = JSON.readTree(tool.result());
                     var matched = new ArrayList<RelationEvidence>();
                     for (var join : lineage.path("joins")) {
-                        Set<List<String>> keys = JSON.convertValue(join, new com.fasterxml.jackson.core.type.TypeReference<>() {});
+                        if (!join.isObject()) continue;
+                        var joined = JSON.treeToValue(join, JoinedKeys.class);
                         for (var path : relations) {
-                            if (path.conditions().stream().allMatch(c -> keys.contains(List.of(path.leftTable(), c.leftField(), path.rightTable(), c.rightField()))
-                                    || keys.contains(List.of(path.rightTable(), c.rightField(), path.leftTable(), c.leftField()))))
-                                matched.add(path);
+                            var match = joined.match(path);
+                            if (match != null) matched.add(match);
                         }
                     }
                     lineage.path("references").fields().forEachRemaining(entry -> {
