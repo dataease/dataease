@@ -83,6 +83,7 @@ public final class ToolConversationRegression {
         var reads = new CopyOnWriteArrayList<String>();
         var authorizations = new CopyOnWriteArrayList<String>();
         var mode = new AtomicReference<String>("tables");
+        var editorProposal = new AtomicReference<>("SELECT COUNT(*) FROM AI_PROBE");
         var operationAllowed = new AtomicBoolean(true);
         var userEnabled = new AtomicBoolean(true);
         var usageChecks = new AtomicInteger();
@@ -123,6 +124,8 @@ public final class ToolConversationRegression {
                     content = call("args-" + sent.size(), "get_table_fields", sent.size() == 1 ? "{\"table\":\"\"}" : "{\"table\":\"AI_PROBE\"}");
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
+                } else if (mode.get().equals("dataset-suggest") && sent.size() == 1) {
+                    content = call("proposal", "propose_sql", JSON.writeValueAsString(Map.of("sql", editorProposal.get())));
                 } else if (mode.get().equals("suggest") && sent.size() == 1) {
                     content = call("proposal", "propose_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
                 } else if (Set.of("validate-stop", "validate-revoke").contains(mode.get()) && sent.size() == 1) {
@@ -230,9 +233,41 @@ public final class ToolConversationRegression {
             sqlTools = new AiSqlTools(metadata);
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
+            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata));
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            mode.set("dataset-suggest");
+            var editor = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "dataset-node",
+                            "sql", "SELECT ID FROM AI_PROBE")))).andReturn().getResponse().getContentAsString());
+            var editorRun = start(mvc, editor, "Count the rows");
+            var proposed = terminal(mvc, editorRun);
+            var application = post(editorRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", editor.path("contextVersion").asText(),
+                            "draftVersion", editor.path("draftVersion").asText())));
+            var replacement = JSON.readTree(mvc.perform(application).andReturn().getResponse().getContentAsString());
+            if (!"SQL_SUGGESTION".equals(proposed.path("result").path("type").asText())
+                    || !editorProposal.get().equals(replacement.path("sql").asText()) || !reads.isEmpty())
+                throw new AssertionError("editor must offer the complete unrun query without running a preview or a Demo validation: " + proposed);
+            for (var candidateSql : List.of("UPDATE AI_PROBE SET ID=2", "SELECT ID FROM AI_PROBE FOR UPDATE",
+                    "SELECT ID FROM AI_PROBE; SELECT ID FROM AI_PROBE")) {
+                sent.clear();
+                editorProposal.set(candidateSql);
+                var checked = terminal(mvc, start(mvc, editor, "Propose an editor query"));
+                if ("SQL_SUGGESTION".equals(checked.path("result").path("type").asText()))
+                    throw new AssertionError("only a single unrun read-only query may be applied: " + candidateSql);
+            }
+            firstResourceAllowed.set(false);
+            try {
+                if (mvc.perform(application).andReturn().getResponse().getStatus() < 400)
+                    throw new AssertionError("dataset application delivered a proposal after datasource READ revocation");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure failure) || !"forbidden".equals(failure.safeCode()))
+                    throw denied;
+            } finally { firstResourceAllowed.set(true); }
+            mvc.perform(delete("/ai/conversations/" + editor.path("sessionId").asText()));
+            sent.clear();
             mode.set("arguments-correction");
             var correctionSession = open(mvc);
             var correctionResult = terminal(mvc, start(mvc, correctionSession, "Fix invalid tool arguments"));

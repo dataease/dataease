@@ -1,5 +1,8 @@
 export default {
   ai_conversation: {
+    editor_title: 'SQL assistant',
+    replace_draft: 'Replace the entire SQL draft with this suggestion?',
+    unrun_sql: 'Suggested SQL (not run)',
     mutex_accepted:
       'Controlled background task {id} accepted. See background tasks for the result.',
     mutex_execute: 'Controlled background structure explanation',
