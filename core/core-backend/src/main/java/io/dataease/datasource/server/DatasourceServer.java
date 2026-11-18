@@ -40,6 +40,7 @@ import io.dataease.constant.AuthEnum;
 import io.dataease.constant.AuthResourceEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.resource.RootFolderCreatePermissionManage;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Oracle;
@@ -118,6 +119,8 @@ public class DatasourceServer implements DatasourceApi {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Resource
     private DataSourceManage dataSourceManage;
+    @Resource
+    private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
     @Resource
     private QrtzSchedulerStateRepository qrtzSchedulerStateRepository;
     @Resource
@@ -291,6 +294,7 @@ public class DatasourceServer implements DatasourceApi {
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
     @Transactional
     public DatasourceDTO createFolder(BusiCreateFolderRequest busiDsRequest) {
+        rootFolderCreatePermissionManage.check(busiDsRequest.getPid(), BusiResourceEnum.DATASOURCE);
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setCreateTime(System.currentTimeMillis());
