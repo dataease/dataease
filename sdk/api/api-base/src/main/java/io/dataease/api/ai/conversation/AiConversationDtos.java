@@ -55,8 +55,18 @@ public final class AiConversationDtos {
     public record Event(long sequence, String type, String text, String error, Tool tool) {
         public Event(long sequence, String type, String text, String error) { this(sequence, type, text, error, null); }
     }
+    public record ValueMeaning(String value, String meaning) { }
+    public record FieldEvidence(String name, String type, String comment, String businessName, String description,
+                                java.util.List<ValueMeaning> values) { }
+    public record TableEvidence(String table, boolean inspected, String description, String grain,
+                                java.util.List<FieldEvidence> fields) { }
     public record Result(String type, String text, String sql, String resourceId, String resourceName,
-                         String resourceVersion, String editorId, String draftVersion) { }
+                         String resourceVersion, String editorId, String draftVersion, java.util.List<TableEvidence> evidence) {
+        public Result(String type, String text, String sql, String resourceId, String resourceName,
+                      String resourceVersion, String editorId, String draftVersion) {
+            this(type, text, sql, resourceId, resourceName, resourceVersion, editorId, draftVersion, java.util.List.of());
+        }
+    }
     public record Application(@NotBlank String contextVersion, @NotBlank String draftVersion,
                               @Pattern(regexp = "[0-9]{1,20}") String targetResourceId) {
         public Application(String contextVersion, String draftVersion) { this(contextVersion, draftVersion, null); }

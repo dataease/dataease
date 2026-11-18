@@ -55,11 +55,22 @@ public class DatasourceSemanticManage {
         var table = tableRepository.findByIdAndDatasource_IdAndActiveTrue(tableId, datasourceId)
                 .orElseThrow(() -> DEException.getException(Translator.get("i18n_datasource_metadata_add_table_first")));
         var fields = fieldRepository.findByTableSemantic_IdOrderByPosition(table.getId()).stream()
-                .map(f -> new FieldSemantic(table.getTableName(), f.getFieldName(),
-                        f.getBusinessName(), f.getDescription(), f.getAliases(), f.isConfirmed(),
-                        f.getPhysicalType(), f.getPhysicalComment(), io.dataease.utils.JsonUtil.parseList(
-                                f.getValueReferences(), new com.fasterxml.jackson.core.type.TypeReference<List<ValueReference>>() {}))).toList();
+                .map(this::fieldSemantic).toList();
         return new TableDetails(fields, relations.countByTable(datasourceId, table.getTableName()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<FieldSemantic> registeredFields(Long datasourceId) {
+        access.require(datasourceId);
+        return fieldRepository.findAvailableFields(datasourceId).stream()
+                .map(this::fieldSemantic).toList();
+    }
+
+    private FieldSemantic fieldSemantic(CoreDatasourceFieldSemantic f) {
+        return new FieldSemantic(f.getTableSemantic().getTableName(), f.getFieldName(), f.getBusinessName(),
+                f.getDescription(), f.getAliases(), f.isConfirmed(), f.getPhysicalType(), f.getPhysicalComment(),
+                io.dataease.utils.JsonUtil.parseList(f.getValueReferences(),
+                        new com.fasterxml.jackson.core.type.TypeReference<List<ValueReference>>() {}));
     }
 
     @Transactional

@@ -84,7 +84,22 @@ export interface AiConversationTool {
   parameters: Record<string, string>
   result?: string
 }
+export interface AiSqlTableEvidence {
+  table: string
+  inspected: boolean
+  description?: string | null
+  grain?: string | null
+  fields: {
+    name: string
+    type: string
+    comment?: string | null
+    businessName?: string | null
+    description?: string | null
+    values: { value: string; meaning: string }[]
+  }[]
+}
 export interface AiAssistanceResult {
+  evidence?: AiSqlTableEvidence[] | null
   type: 'EXPLANATION' | 'SQL_SUGGESTION'
   text: string
   sql: string | null

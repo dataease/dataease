@@ -452,6 +452,31 @@ const apply = async (turn: Turn) => {
               <small>{{ turn.session?.resourceName }} ({{ turn.session?.resourceId }})</small>
             </details>
             <pre>{{ turn.result.sql }}</pre>
+            <details>
+              <summary>{{ tr('sql_evidence') }}</summary>
+              <p v-if="!turn.result.evidence?.length">{{ tr('no_sql_evidence') }}</p>
+              <div v-for="table in turn.result.evidence" :key="table.table">
+                <strong>{{ table.table }}</strong>
+                <small>{{ tr(table.inspected ? 'verified_structure' : 'sql_reference') }}</small>
+                <p v-if="table.description">{{ table.description }}</p>
+                <p v-if="table.grain">{{ table.grain }}</p>
+                <ul v-if="table.fields.length">
+                  <li v-for="field in table.fields" :key="field.name">
+                    <code>{{ field.name }}</code> {{ field.type }}
+                    <span v-if="field.comment && field.comment !== field.name">{{
+                      field.comment
+                    }}</span>
+                    <p v-if="field.businessName || field.description">
+                      {{ tr('confirmed_meaning') }} · {{ field.businessName }}
+                      {{ field.description }}
+                    </p>
+                    <p v-for="value in field.values" :key="value.value">
+                      {{ value.value }} → {{ value.meaning }}
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </details>
             <el-button
               data-testid="dataset-sql-assistant-apply"
               :disabled="busy || applying"

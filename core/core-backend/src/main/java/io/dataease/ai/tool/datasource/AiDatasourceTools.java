@@ -107,6 +107,9 @@ public class AiDatasourceTools {
         return fields.stream().map(field -> safe(field.getOriginName() == null ? field.getName() : field.getOriginName(), 256)).toList();
     }
     public TableFields fields(Scope scope, String table) {
+        return fields(scope, table, false);
+    }
+    public TableFields fields(Scope scope, String table, boolean nativeType) {
         if (table == null || table.length() > 256 || authorizedTables(scope).stream().noneMatch(value -> Objects.equals(table, value.getTableName())))
             throw AiErrors.error("forbidden");
         // authorizedTables already rechecked authority after metadata IO.
@@ -114,7 +117,7 @@ public class AiDatasourceTools {
         if (fields == null || fields.size() > 256) throw AiErrors.error("output_limit");
         var projection = new TableFields(table, fields.stream().map(field -> new Field(
                 safe(field.getOriginName() == null ? field.getName() : field.getOriginName(), 256),
-                safe(field.getType(), 128), safe(field.getName(), 512))).toList());
+                safe(nativeType && field.getFieldType() != null && !field.getFieldType().isBlank() ? field.getFieldType() : field.getType(), 128), safe(field.getName(), 512))).toList());
         authorize(scope);
         return projection;
     }

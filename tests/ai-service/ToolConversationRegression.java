@@ -79,6 +79,7 @@ public final class ToolConversationRegression {
         throw new AssertionError("revoked tool events/history must be inaccessible");
     }
     public static void run(AiConfigurationManage config, CoreAiOrgPolicyRepository policies, AiSecrets keys, AiAdmission admission, AiAccess access) throws Exception {
+        DatasetSqlSemanticRegression.main(new String[0]);
         var sent = new CopyOnWriteArrayList<JsonNode>();
         var reads = new CopyOnWriteArrayList<String>();
         var authorizations = new CopyOnWriteArrayList<String>();
@@ -127,6 +128,23 @@ public final class ToolConversationRegression {
                 } else if (mode.get().equals("dataset-guide") && sent.size() == 1) {
                     String topic = body.path("messages").toString().contains("monthly totals") ? "monthly" : "projection";
                     content = call("guide", "read_sql_guide", JSON.writeValueAsString(Map.of("topic", topic)));
+                } else if (mode.get().startsWith("dataset-meaning")) {
+                    var previous = body.path("messages").get(body.path("messages").size() - 1).path("content").asText();
+                    content = switch (sent.size()) {
+                        case 1 -> call("semantic-search", "search_semantics", "{\"terms\":\"订单,实付金额,已支付\"}");
+                        case 2 -> previous.contains("orders") ? call("selected-table", "get_table_fields", "{\"table\":\"orders\"}")
+                                : frame(Map.of("content", "未找到登记表"), "stop");
+                        case 3 -> {
+                            var fields = JSON.readTree(previous).path("fields");
+                            if (fields.toString().contains("example-only") || !fields.toString().contains("已支付"))
+                                yield frame(Map.of("content", "缺少支付状态取值"), "stop");
+                            if (mode.get().endsWith("ambiguous") && fields.toString().contains("应收金额"))
+                                yield frame(Map.of("content", "请确认金额指实付还是应收？"), "stop");
+                            yield call("paid-proposal", "propose_sql", JSON.writeValueAsString(Map.of("sql",
+                                    "SELECT actual_amt FROM orders WHERE pay_code = 'P'")));
+                        }
+                        default -> frame(Map.of("content", "使用已确认的支付状态和实付字段。"), "stop");
+                    };
                 } else if (mode.get().equals("dataset-suggest") && sent.size() == 1) {
                     content = call("proposal", "propose_sql", JSON.writeValueAsString(Map.of("sql", editorProposal.get())));
                 } else if (mode.get().equals("suggest") && sent.size() == 1) {
@@ -188,12 +206,22 @@ public final class ToolConversationRegression {
                     if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
+                    if (mode.get().startsWith("dataset-meaning")) {
+                        var orders = new DatasetTableDTO(); orders.setTableName("orders"); orders.setName("订单"); yield List.of(orders);
+                    }
                     for (String tableName : Set.of("chain", "chain-retry").contains(mode.get()) ? List.of("AI_PROBE", "AI_PROBE2", "AI_PROBE3", "AI_PROBE4") : List.of("AI_PROBE")) {
                         var table = new DatasetTableDTO(); table.setTableName(tableName); table.setName("Probe table"); table.setInfo("connection-secret"); tables.add(table);
                     }
                     yield tables; }
                 case "getTableField" -> {
                     var request = (DatasetTableFieldRequest) args[0];
+                    if (mode.get().startsWith("dataset-meaning") && Objects.equals(request.getDatasourceId(), 11L) && "orders".equals(request.getTableName())) {
+                        reads.add("fields");
+                        yield Map.of("pay_code", "CHAR", "actual_amt", "DECIMAL", "due_amt", "DECIMAL").entrySet().stream().map(entry -> {
+                            var field = new TableField(); field.setOriginName(entry.getKey()); field.setName(entry.getKey());
+                            field.setType("JDBC"); field.setFieldType(entry.getValue()); return field;
+                        }).toList();
+                    }
                     if (!Objects.equals(request.getDatasourceId(), 11L) || !request.getTableName().matches("AI_PROBE[234]?")) throw new AssertionError("field scope expanded");
                     reads.add("fields");
                     if (mode.get().equals("input-results")) {
@@ -236,7 +264,7 @@ public final class ToolConversationRegression {
             sqlTools = new AiSqlTools(metadata);
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
-            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new io.dataease.datasource.manage.EngineManage()));
+            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new io.dataease.datasource.manage.EngineManage(), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry())));
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
@@ -315,6 +343,24 @@ public final class ToolConversationRegression {
                     throw denied;
             } finally { firstResourceAllowed.set(true); }
             mvc.perform(delete("/ai/conversations/" + editor.path("sessionId").asText()));
+            for (var meaning : List.of("paid", "ambiguous")) {
+                mode.set("dataset-meaning-" + meaning);
+                sent.clear(); reads.clear();
+                var request = post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(JSON.writeValueAsBytes(Map.of(
+                        "scene", "dataset-sql", "resourceId", "11", "editorId", "order-node", "sql", "")));
+                var session = JSON.readTree(mvc.perform(request).andReturn().getResponse().getContentAsString());
+                var question = meaning.equals("paid") ? "列出已支付订单的实付金额" : "订单金额是多少";
+                var result = terminal(mvc, start(mvc, session, question)).path("result");
+                if (!reads.equals(List.of("tables", "fields")))
+                    throw new AssertionError("local search must not enumerate physical tables before inspecting the selected table: " + reads);
+                if (meaning.equals("paid") && (!result.path("sql").asText().equals("SELECT actual_amt FROM orders WHERE pay_code = 'P'")
+                        || !result.path("evidence").toString().contains("已支付") || result.path("evidence").toString().contains("due_amt")))
+                    throw new AssertionError("editor proposal lacks its confirmed field/value evidence: " + result);
+                if (meaning.equals("ambiguous") && (!"EXPLANATION".equals(result.path("type").asText()) || !result.path("text").asText().contains("实付还是应收")))
+                    throw new AssertionError("ambiguous amount must ask only for the missing metric: " + result);
+                mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            }
+            reads.clear();
             sent.clear();
             mode.set("arguments-correction");
             var correctionSession = open(mvc);
