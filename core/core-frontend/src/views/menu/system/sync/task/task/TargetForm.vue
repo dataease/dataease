@@ -1294,8 +1294,8 @@ defineExpose({ validate, closeLoading })
   .field-mapping-alert {
     margin-bottom: 12px;
 
-    :deep(.el-alert__content) {
-      width: 100%;
+    :deep(.ed-alert__content) {
+      flex: 1;
       min-width: 0;
     }
   }
