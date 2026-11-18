@@ -95,6 +95,10 @@ const getDatasetFieldType = (field: Field): FieldTypePath => {
     ? [1, saved.dateFormatType || 'yyyy-MM-dd']
     : [saved.deType]
 }
+const getConfiguredFieldType = (field: Field) => {
+  const [deType] = getDatasetFieldType(field)
+  return Number(deType)
+}
 const getFieldTypeOptions = (field: Field) => {
   const options =
     getDatasetField(field).deExtractType === 0 ? props.fieldOptions : props.fieldOptionsText
@@ -475,7 +479,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                     />
                     <field-type-drift-tip
                       v-if="getDrift(row) !== null"
-                      :current-type="row.deType"
+                      :current-type="getConfiguredFieldType(row)"
                       :detected-type="getDrift(row)"
                       @keep="emit('keepFieldType', row.id)"
                     />
