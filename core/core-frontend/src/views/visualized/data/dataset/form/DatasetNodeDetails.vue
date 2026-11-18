@@ -35,7 +35,7 @@ const emit = defineEmits<{
   command: [node: Node, command: string]
   toggleFullscreen: []
   fieldName: [id: string, value: string]
-  fieldType: [id: string, value: FieldTypePath]
+  fieldType: [id: string, value: FieldTypePath, confirmDrift?: boolean]
   keepFieldType: [id: string]
 }>()
 const { t } = useI18n()
@@ -78,7 +78,9 @@ const dirty = computed(() => {
   )
 })
 
-type FieldDraft = { name?: string; typePath?: FieldTypePath }
+// typeTouched 区分"用户在面板里主动选过类型"与"取消勾选时自动记录的类型"：后者只是为了让字段
+// 重新勾选后能还原已配置类型，不能当作对待确认状态的确认。
+type FieldDraft = { name?: string; typePath?: FieldTypePath; typeTouched?: boolean }
 const nodeFieldDrafts = new Map<string, Record<string, FieldDraft>>()
 const fieldDrafts = ref<Record<string, FieldDraft>>({})
 const getDatasetField = (field: Field) =>
@@ -88,12 +90,9 @@ const getDatasetFieldName = (field: Field) =>
 const needsFieldName = (field: Field) => field.checked && !getDatasetFieldName(field)?.trim()
 const getDatasetFieldType = (field: Field): FieldTypePath => {
   const draft = fieldDrafts.value[field.originName]?.typePath
-  if (draft) return draft
+  if (draft) return normalizeFieldType(field, draft)
   const saved = getDatasetField(field) as DatasetField
-  if (saved.deTypeArr?.length) return saved.deTypeArr
-  return saved.deType === 1 && saved.deExtractType === 0
-    ? [1, saved.dateFormatType || 'yyyy-MM-dd']
-    : [saved.deType]
+  return normalizeFieldType(field, saved.deTypeArr?.length ? saved.deTypeArr : [saved.deType])
 }
 const getConfiguredFieldType = (field: Field) => {
   const [deType] = getDatasetFieldType(field)
@@ -111,6 +110,17 @@ const getFieldTypeOptions = (field: Field) => {
         )
       }))
 }
+// 时间类型的模型值必须是带格式的完整路径：只给到 [1] 时，选项里的时间节点是带子项的父节点，
+// 匹配不到叶子项，下拉框会回显成“请选择”。草稿和已存类型都可能只剩 [1]（格式为空），
+// 这里按当前可选项补齐，保证回显和选项一致。
+const normalizeFieldType = (field: Field, path: FieldTypePath): FieldTypePath => {
+  if (Number(path[0]) !== 1) return path
+  const timeOption = getFieldTypeOptions(field).find(option => option.value === 1)
+  if (!timeOption?.children?.length) return [1]
+  const format = path[1]
+  if (typeof format === 'string' && format) return [1, format]
+  return [1, (getDatasetField(field) as DatasetField).dateFormatType || 'yyyy-MM-dd']
+}
 const changeFieldName = (field: Field, value: string) => {
   if (field.checked && field.id) emit('fieldName', field.id, value)
   else fieldDrafts.value[field.originName] = { ...fieldDrafts.value[field.originName], name: value }
@@ -123,7 +133,11 @@ const changeFieldType = (field: Field, value: CascaderValue = []) => {
   if (path.length !== value.length) return
   if (field.checked && field.id) emit('fieldType', field.id, path)
   else
-    fieldDrafts.value[field.originName] = { ...fieldDrafts.value[field.originName], typePath: path }
+    fieldDrafts.value[field.originName] = {
+      ...fieldDrafts.value[field.originName],
+      typePath: path,
+      typeTouched: true
+    }
 }
 const sourceTableName = computed(() => {
   const node = selectedNode.value
@@ -227,7 +241,8 @@ const commit = (): Promise<boolean> => {
             const draft = fieldDrafts.value[field.originName]
             if (!draft || !field.id) return
             if (draft.name !== undefined) emit('fieldName', field.id, draft.name)
-            if (draft.typePath) emit('fieldType', field.id, draft.typePath)
+            if (draft.typePath)
+              emit('fieldType', field.id, draft.typePath, draft.typeTouched === true)
             delete fieldDrafts.value[field.originName]
           })
         ++previewRequest
