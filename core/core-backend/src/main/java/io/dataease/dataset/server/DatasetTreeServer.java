@@ -8,6 +8,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.XpackSettingConstants;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
@@ -18,6 +19,7 @@ import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.model.ResourceDeleteRequest;
+import io.dataease.resource.RootFolderCreatePermissionManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +35,8 @@ import java.util.*;
 public class DatasetTreeServer implements DatasetTreeApi {
     @Resource
     private DatasetGroupManage datasetGroupManage;
+    @Resource
+    private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
     @Resource
     private ExportCenterManage exportCenterManage;
     @Resource
@@ -58,6 +62,9 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO create(DatasetGroupInfoDTO dto) throws Exception {
+        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "folder")) {
+            rootFolderCreatePermissionManage.check(dto.getPid(), BusiResourceEnum.DATASET);
+        }
         return datasetGroupManage.save(dto, false, true);
     }
 
