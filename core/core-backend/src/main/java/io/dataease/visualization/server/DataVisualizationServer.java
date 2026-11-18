@@ -224,6 +224,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
+            if (CommonConstants.RESOURCE_TABLE.CORE.equals(resourceTable)
+                    && !Objects.equals(result.getStatus(), CommonConstants.DV_STATUS.PUBLISHED)
+                    && !Objects.equals(result.getStatus(), CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)) {
+                throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_resource_not_published");
+            }
             // get creator
             String userName = null;
             if (StringUtils.isNotEmpty(result.getCreateBy())) {
