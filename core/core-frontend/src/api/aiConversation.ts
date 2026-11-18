@@ -30,7 +30,7 @@ export const getAiAvailability = (signal?: AbortSignal) =>
 export const getConversationResources = () =>
   data<AiConversationResource[]>(request.get({ url: '/ai/conversations/resources' }))
 export const openConversation = (value: {
-  scene: 'sql'
+  scene: 'sql' | 'dataset-sql'
   resourceId: string
   editorId: string
   sql: string

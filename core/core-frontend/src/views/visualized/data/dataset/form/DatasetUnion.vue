@@ -1274,7 +1274,12 @@ const emits = defineEmits([
     modal-class="sql-drawer-fullscreen"
     v-model="editSqlField"
   >
-    <add-sql @save="saveSqlNode" @close="closeSqlNode" :sqlNode="sqlNode"></add-sql>
+    <add-sql
+      v-if="editSqlField"
+      @save="saveSqlNode"
+      @close="closeSqlNode"
+      :sqlNode="sqlNode"
+    ></add-sql>
   </el-drawer>
 </template>
 

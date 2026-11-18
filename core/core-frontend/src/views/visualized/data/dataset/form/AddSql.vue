@@ -38,6 +38,7 @@ import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
+import DatasetSqlAssistant from './DatasetSqlAssistant.vue'
 import type { Field, DataSource } from './util'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -77,6 +78,13 @@ const { t } = useI18n()
 const activeName = ref('')
 const myCm = ref()
 const codeCom = ref()
+const assistantHost = ref<HTMLDivElement>()
+const readDraft = (): string => codeCom.value.state.doc.toString()
+const replaceDraft = (query: string) => {
+  codeCom.value.dispatch({
+    changes: { from: 0, to: codeCom.value.state.doc.length, insert: query }
+  })
+}
 const dialogTitle = t('sql_variable.variable_mgm') + ' '
 const tabActive = ref('result')
 const searchTable = ref('')
@@ -260,6 +268,7 @@ onMounted(async () => {
       }
     }
   }
+  if (!myCm.value) return
   codeCom.value = myCm.value.codeComInit(
     setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)),
     true
@@ -267,7 +276,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  codeCom.value.destroy?.()
+  codeCom.value?.destroy()
 })
 
 const gridData = ref([])
@@ -695,6 +704,13 @@ const mousedownDrag = () => {
   <div class="add-sql-name">
     <el-input class="name" ref="editorName" v-model="sqlNode.tableName" @change="setFlag" />
     <div class="save-or-cancel flex-align-center">
+      <DatasetSqlAssistant
+        v-if="assistantHost && codeCom"
+        :host="assistantHost"
+        :resource-id="String(sqlNode.datasourceId ?? '')"
+        :read-draft="readDraft"
+        @apply="replaceDraft"
+      />
       <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
           <el-icon>
@@ -1102,6 +1118,7 @@ const mousedownDrag = () => {
       </div>
     </div>
   </div>
+  <div ref="assistantHost" class="assistant-host"></div>
   <el-drawer
     :title="dialogTitle"
     v-model="showVariableMgm"
@@ -1257,6 +1274,15 @@ const mousedownDrag = () => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
+.assistant-host {
+  position: absolute;
+  top: 56px;
+  bottom: 0;
+  right: 0;
+}
+.sql-eidtor:has(+ .assistant-host > aside) {
+  width: calc(100% - min(360px, 36vw));
+}
 .sql-eidtor {
   width: 100%;
   height: calc(100vh - 156px);

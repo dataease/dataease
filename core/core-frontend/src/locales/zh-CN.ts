@@ -1,5 +1,8 @@
 export default {
   ai_conversation: {
+    editor_title: 'SQL 助手',
+    replace_draft: '用这条建议替换编辑器中的整段 SQL？',
+    unrun_sql: '建议 SQL（未运行）',
     mutex_accepted: '受控后台任务 {id} 已受理，请在后台任务列表查看结果。',
     mutex_execute: '受控后台结构说明',
     mutex_request: '解释选中表的结构',

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public final class AiConversationDtos {
     private AiConversationDtos() { }
     public record Resource(String id, String name) { }
-    public record Open(@NotBlank @Pattern(regexp = "sql") String scene,
+    public record Open(@NotBlank @Pattern(regexp = "sql|dataset-sql") String scene,
                        @Pattern(regexp = "[0-9]{1,20}|") String resourceId,
                        @NotBlank @Size(max = 100) String editorId,
                        @Size(max = 30000) String sql, @Size(max = 100) String openKey,
