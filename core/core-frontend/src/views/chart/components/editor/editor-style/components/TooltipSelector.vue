@@ -635,7 +635,7 @@ onMounted(() => {
     </el-space>
 
     <el-form-item
-      v-if="showProperty('tableDisplayFields') && !batchOptStatus && !mobileInPc"
+      v-if="showProperty('tableDisplayFields') && !batchOptStatus"
       class="form-item"
       :class="'form-item-' + themes"
     >
