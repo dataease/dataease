@@ -167,12 +167,13 @@ export const checkSqlApplication = (
   id: string,
   execution: string,
   contextVersion: string,
-  draftVersion: string
+  draftVersion: string,
+  targetResourceId?: string
 ) =>
   data<AiAssistanceResult>(
     request.post({
       url: `/ai/conversations/${id}/executions/${execution}/check-application`,
-      data: { contextVersion, draftVersion },
+      data: { contextVersion, draftVersion, targetResourceId },
       handleErrorLocally: true
     })
   )

@@ -1,5 +1,14 @@
 export default {
   ai_conversation: {
+    refer_to_suggestion: 'Follow up on this suggestion',
+    history_unavailable: 'Previous messages are no longer available.',
+    new_query: 'New query',
+    numbered_suggestion: 'Suggestion',
+    editor_draft: 'Editor draft',
+    generated_from: 'Generated from',
+    source_copy: 'Copy from datasource to current datasource',
+    overwrite_edits: 'This will overwrite edits made after this suggestion was requested.',
+    unavailable_reference: 'The referenced suggestion is unavailable.',
     editor_title: 'SQL assistant',
     replace_draft: 'Replace the entire SQL draft with this suggestion?',
     unrun_sql: 'Suggested SQL (not run)',

@@ -54,7 +54,10 @@ public final class AiConversationDtos {
     }
     public record Result(String type, String text, String sql, String resourceId, String resourceName,
                          String resourceVersion, String editorId, String draftVersion) { }
-    public record Application(@NotBlank String contextVersion, @NotBlank String draftVersion) { }
+    public record Application(@NotBlank String contextVersion, @NotBlank String draftVersion,
+                              @Pattern(regexp = "[0-9]{1,20}") String targetResourceId) {
+        public Application(String contextVersion, String draftVersion) { this(contextVersion, draftVersion, null); }
+    }
     public record Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events, Result result,
                          String taskId, String attemptId, int attemptNumber, String sourceAttemptId, boolean retryEligible, RecoveryProgress recovery) {
         public Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events, Result result,

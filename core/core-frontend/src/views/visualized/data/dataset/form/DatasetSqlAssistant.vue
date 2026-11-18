@@ -18,13 +18,22 @@ import {
   type AiConversationSession
 } from '@/api/aiConversation'
 
-const props = defineProps<{ host: HTMLElement; resourceId: string; readDraft: () => string }>()
+const props = defineProps<{
+  host: HTMLElement
+  resourceId: string
+  resourceLabel: string
+  draftRevision: number
+  readDraft: () => string
+}>()
 const emit = defineEmits<{ (event: 'apply', query: string): void }>()
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
 const user = useUserStoreWithOut()
 const editorId = uuid.v4()
 interface Turn {
+  basis: string
+  baseSql: string
+  draftRevision: number
   question: string
   answer: string
   session?: AiConversationSession
@@ -37,6 +46,8 @@ const expanded = ref(false)
 const input = ref('')
 const failure = ref('')
 const turns = ref<Turn[]>([])
+// Zero means an explicitly fresh query. Positive numbers refer to displayed turn numbers.
+const selectedBasis = ref<number>()
 const busy = ref(false)
 const applying = ref(false)
 const sessions = new Set<string>()
@@ -44,18 +55,24 @@ let latestSession: AiConversationSession | undefined
 let request: AbortController | undefined
 let availabilityRead: AbortController | undefined
 let availabilityTimer: number | undefined
+let expiryTimer: number | undefined
 let version = 0
 let disposed = false
 
 const close = (id: string) => void closeConversation(id).catch(() => undefined)
+const clearHistory = () => {
+  window.clearTimeout(expiryTimer)
+  sessions.forEach(close)
+  sessions.clear()
+  latestSession = undefined
+  selectedBasis.value = undefined
+  turns.value = []
+}
 const reset = () => {
   version++
   request?.abort()
   request = undefined
-  sessions.forEach(close)
-  sessions.clear()
-  latestSession = undefined
-  turns.value = []
+  clearHistory()
   busy.value = applying.value = expanded.value = false
   input.value = failure.value = ''
 }
@@ -115,39 +132,157 @@ onBeforeUnmount(() => {
   reset()
 })
 
+const accessLost = (error: unknown) =>
+  isRequestError(error) &&
+  ([401, 403, 404].includes(error.response?.status) ||
+    ('messageKey' in error && error.messageKey === 'i18n_ai_scope_changed'))
 const fail = (error: unknown) => {
+  if (accessLost(error)) clearHistory()
   failure.value =
     isRequestError(error) && error.response?.status === 403
       ? t('ai_service.failure_forbidden')
       : tr('failed')
   void refresh()
 }
+// Displayed turn numbers also work as references in a free-text follow-up.
+const referencedTurn = (question: string, latest: number) => {
+  const digits = question.match(
+    /(?:建议|建議|suggestion|proposal)\s*#?\s*(\d+)|第\s*(\d+)\s*[轮輪版条條]/i
+  )
+  if (digits) return Number(digits[1] ?? digits[2])
+  const ordinal = question.match(/第([一二三四五六七八九十]+)[轮輪版条條]/)?.[1]
+  if (ordinal) {
+    const numbers = '零一二三四五六七八九'
+    const [tens, ones] = ordinal.split('十')
+    return ones === undefined
+      ? numbers.indexOf(tens)
+      : (tens ? numbers.indexOf(tens) : 1) * 10 + numbers.indexOf(ones)
+  }
+  if (/\bfirst (?:proposal|suggestion|version)\b/i.test(question)) return 1
+  if (/上一[轮輪版条條]|(?:previous|last) (?:suggestion|proposal)/i.test(question)) return latest
+}
+const chooseBasis = (question: string) => {
+  if (
+    selectedBasis.value === 0 ||
+    (selectedBasis.value === undefined &&
+      /(?:^|[，,。.!！]\s*)(?:请|請|please\s+)?(?:另写|另寫|从头写|從頭寫|重新写一|重新寫一|from scratch|start (?:over|afresh))/i.test(
+        question
+      ))
+  ) {
+    return { label: tr('new_query'), sql: '' }
+  }
+  const latest = turns.value.reduce((last, turn, i) => (turn.result?.sql ? i + 1 : last), 0)
+  const requested = selectedBasis.value ?? referencedTurn(question, latest)
+  const index = (requested ?? latest) - 1
+  const prior = turns.value[index]
+  if (requested !== undefined && !prior?.result?.sql) throw new Error('unavailable_reference')
+  if (
+    prior?.result?.sql &&
+    (requested !== undefined ||
+      (prior.session?.resourceId === props.resourceId &&
+        prior.draftRevision === props.draftRevision))
+  ) {
+    return { label: tr('numbered_suggestion') + ' #' + (index + 1), sql: prior.result.sql, prior }
+  }
+  const sql = props.readDraft()
+  return { label: tr(sql ? 'editor_draft' : 'new_query'), sql }
+}
+const checkedSuggestion = async (turn: Turn, target: string) => {
+  const session = turn.session!
+  const checked = await checkSqlApplication(
+    session.sessionId,
+    turn.executionId!,
+    session.contextVersion,
+    session.draftVersion,
+    target
+  )
+  if (
+    checked.type !== 'SQL_SUGGESTION' ||
+    !checked.sql ||
+    checked.sql !== turn.result?.sql ||
+    checked.editorId !== editorId ||
+    checked.resourceVersion !== session.resourceVersion ||
+    checked.resourceId !== session.resourceId ||
+    checked.draftVersion !== session.draftVersion
+  ) {
+    throw new Error('scope_changed')
+  }
+  return checked.sql
+}
 const send = async () => {
   const question = input.value.trim()
   if (!question || busy.value || applying.value || !available.value) return
+  let basis: ReturnType<typeof chooseBasis>
+  try {
+    basis = chooseBasis(question)
+  } catch {
+    failure.value = tr('unavailable_reference')
+    return
+  }
   const token = version
   const read = new AbortController()
   request = read
   const current = () => token === version && !read.signal.aborted
-  const index = turns.value.push({ question, answer: '', status: 'RUNNING' }) - 1
+  selectedBasis.value = undefined
+  const source = props.resourceId
+  const index =
+    turns.value.push({
+      question,
+      basis: basis.label,
+      baseSql: basis.sql,
+      draftRevision: props.draftRevision,
+      answer: '',
+      status: 'RUNNING'
+    }) - 1
   const turn = turns.value[index]
   busy.value = true
   failure.value = input.value = ''
   try {
-    const session = await openConversation({
-      scene: 'dataset-sql',
-      resourceId: props.resourceId,
+    const sql = basis.prior ? await checkedSuggestion(basis.prior, source) : basis.sql
+    if (!current()) return
+    const opening = {
+      scene: 'dataset-sql' as const,
+      resourceId: source,
       editorId,
-      sql: props.readDraft(),
+      sql,
       openKey: uuid.v4(),
       previousSessionId: latestSession?.sessionId
-    })
+    }
+    let session: AiConversationSession
+    try {
+      session = await openConversation(opening)
+    } catch (error) {
+      // An inaccessible source in the retained history must not block a fresh question on B.
+      if (
+        !current() ||
+        basis.prior ||
+        !opening.previousSessionId ||
+        latestSession?.resourceId === source ||
+        !accessLost(error)
+      )
+        throw error
+      clearHistory()
+      turns.value.push(turn)
+      failure.value = tr('history_unavailable')
+      session = await openConversation({
+        ...opening,
+        previousSessionId: undefined,
+        openKey: uuid.v4()
+      })
+    }
     if (!current()) {
       close(session.sessionId)
       return
     }
     turn.session = latestSession = session
     sessions.add(session.sessionId)
+    window.clearTimeout(expiryTimer)
+    expiryTimer = window.setTimeout(() => {
+      const wasExpanded = expanded.value
+      reset()
+      expanded.value = wasExpanded
+      failure.value = tr('history_unavailable')
+    }, Math.max(0, session.expiresAt - Date.now()))
     const run = await startConversationExecution(
       session.sessionId,
       session.contextVersion,
@@ -231,16 +366,30 @@ const apply = async (turn: Turn) => {
   const token = version
   const draft = props.readDraft()
   const source = props.resourceId
+  const revision = props.draftRevision
   applying.value = true
   failure.value = ''
   try {
+    const warnings = []
     if (source !== session.resourceId) {
-      failure.value = tr('stale_draft')
-      return
+      warnings.push(
+        tr('source_copy') +
+          ' ' +
+          session.resourceName +
+          ' (' +
+          session.resourceId +
+          ') → ' +
+          (props.resourceLabel || source) +
+          ' (' +
+          source +
+          ')'
+      )
     }
-    if (draft.trim() && draft !== result.sql) {
+    if (revision !== turn.draftRevision) warnings.push(tr('overwrite_edits'))
+    else if (draft.trim() && draft !== result.sql) warnings.push(tr('replace_draft'))
+    if (warnings.length) {
       try {
-        await ElMessageBox.confirm(tr('replace_draft'), tr('editor_title'), {
+        await ElMessageBox.confirm(warnings.join(' '), tr('editor_title'), {
           confirmButtonText: t('common.sure'),
           cancelButtonText: t('common.cancel'),
           type: 'warning'
@@ -250,27 +399,17 @@ const apply = async (turn: Turn) => {
       }
     }
     if (token !== version) return
-    const checked = await checkSqlApplication(
-      session.sessionId,
-      executionId,
-      session.contextVersion,
-      session.draftVersion
-    )
+    const sql = await checkedSuggestion(turn, source)
     if (token !== version) return
     if (
       draft !== props.readDraft() ||
       source !== props.resourceId ||
-      checked.type !== 'SQL_SUGGESTION' ||
-      checked.sql !== result.sql ||
-      checked.editorId !== editorId ||
-      checked.resourceVersion !== session.resourceVersion ||
-      checked.resourceId !== source ||
-      checked.draftVersion !== session.draftVersion
+      revision !== props.draftRevision
     ) {
       failure.value = tr('stale_draft')
       return
     }
-    emit('apply', checked.sql)
+    emit('apply', sql)
   } catch (error) {
     if (token === version) fail(error)
   } finally {
@@ -304,7 +443,12 @@ const apply = async (turn: Turn) => {
           <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
           <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
           <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
-            <small>{{ tr('unrun_sql') }}</small>
+            <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small>
+            <details>
+              <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
+              <pre v-if="turn.baseSql">{{ turn.baseSql }}</pre>
+              <small>{{ turn.session?.resourceName }} ({{ turn.session?.resourceId }})</small>
+            </details>
             <pre>{{ turn.result.sql }}</pre>
             <el-button
               data-testid="dataset-sql-assistant-apply"
@@ -312,10 +456,29 @@ const apply = async (turn: Turn) => {
               @click="apply(turn)"
               >{{ tr('apply') }}</el-button
             >
+            <el-button
+              text
+              :disabled="busy || applying"
+              data-testid="dataset-sql-assistant-reference"
+              @click="selectedBasis = index + 1"
+              >{{ tr('refer_to_suggestion') }}</el-button
+            >
           </template>
         </article>
       </div>
       <p v-if="failure" role="alert">{{ failure }}</p>
+      <div v-if="turns.length && !busy">
+        <el-button
+          v-if="selectedBasis === undefined"
+          text
+          data-testid="dataset-sql-assistant-new-query"
+          @click="selectedBasis = 0"
+          >{{ tr('new_query') }}</el-button
+        >
+        <el-tag v-else closable @close="selectedBasis = undefined">
+          {{ selectedBasis ? tr('numbered_suggestion') + ' #' + selectedBasis : tr('new_query') }}
+        </el-tag>
+      </div>
       <el-input
         type="textarea"
         data-testid="dataset-sql-assistant-input"
