@@ -116,7 +116,8 @@ async function backend(page, options = {}) {
         ? null
         : sc.resourceId === "second"
         ? "SELECT 2"
-        : proposal,
+        : state.query || proposal,
+      evidence: state.evidence,
     };
     if (path.endsWith("/executions")) return reply(run);
     if (path.endsWith("/check-application")) {
@@ -429,4 +430,43 @@ test("a written reference to the first version overrides a later hand edit", asy
   await control(page, "send").click();
   await expect(control(page, "apply")).toHaveCount(2);
   expect(state.opens[1].sql).toBe(proposal);
+});
+
+test("each suggestion expands its own table and field evidence", async ({
+  page,
+}) => {
+  const state = await backend(page, {
+    evidence: [
+      {
+        table: "orders",
+        inspected: true,
+        description: "销售订单",
+        grain: "每笔订单一行",
+        fields: [
+          {
+            name: "pay_code",
+            type: "CHAR",
+            businessName: "支付状态",
+            values: [{ value: "P", meaning: "已支付" }],
+          },
+        ],
+      },
+    ],
+  });
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  const cards = control(page, "panel").locator("article");
+  await expect(cards.first().getByText("每笔订单一行")).toBeHidden();
+  await cards.first().locator("summary").click({ timeout: 3000 });
+  await expect(cards.first()).toContainText("pay_code");
+  await expect(cards.first()).toContainText("P → 已支付");
+  state.query = "SELECT count(*) FROM items";
+  state.evidence = [{ table: "items", inspected: false, fields: [] }];
+  await ask(page);
+  await cards.nth(1).locator("summary").click();
+  await expect(cards.nth(1)).toContainText("items");
+  await expect(cards.nth(1)).not.toContainText("pay_code");
+  await expect(cards.first()).toContainText("每笔订单一行");
+  await assertUnrun(page, state);
 });

@@ -30,5 +30,11 @@ public interface CoreDatasourceFieldSemanticRepository extends JpaRepository<Cor
 
     Optional<CoreDatasourceFieldSemantic> findByTableSemantic_IdAndFieldName(Long tableId, String fieldName);
 
+    @Query("""
+            select f from CoreDatasourceFieldSemantic f join fetch f.tableSemantic t
+            where t.datasource.id = :datasourceId and t.active = true and t.available = true
+            """)
+    List<CoreDatasourceFieldSemantic> findAvailableFields(@Param("datasourceId") Long datasourceId);
+
     List<CoreDatasourceFieldSemantic> findByTableSemantic_Datasource_Id(Long datasourceId);
 }

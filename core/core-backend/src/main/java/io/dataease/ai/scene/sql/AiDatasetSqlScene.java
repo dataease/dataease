@@ -2,6 +2,8 @@ package io.dataease.ai.scene.sql;
 
 import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.tool.AiTool;
+import io.dataease.api.ai.conversation.AiConversationDtos;
+import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.api.ai.conversation.AiConversationDtos;
 import io.dataease.datasource.manage.EngineManage;
@@ -14,8 +16,8 @@ import java.util.Map;
 /** The dataset editor delivers a draft. Run and Save remain explicit editor operations. */
 @Component
 public class AiDatasetSqlScene extends AiSqlConversationScene {
-    public AiDatasetSqlScene(AiDatasourceTools metadata, EngineManage engines) {
-        super(metadata, List.of(metadata.listTables(), metadata.getTableFields(), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
+    public AiDatasetSqlScene(AiDatasourceTools metadata, EngineManage engines, DatasetSqlSemanticTools semantics) {
+        super(metadata, List.of(semantics.search(), metadata.listTables(), semantics.fields(), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
     }
 
     @Override public String code() { return "dataset-sql"; }
@@ -35,10 +37,22 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
                 + "Before generating or changing SQL, call read_sql_guide for the relevant topic. Use the bound dialect returned by the tool. "
                 + "Even in cross-source mode, each SQL node reads only the selected source. For cross-database joins, "
                 + "give canvas instructions only: add separate nodes for each source, then configure their relationship. "
+                + "Prioritize exact tables the author names, then existing SQL references on a revision. Otherwise call search_semantics with business terms before listing physical tables. "
+                + "Inspect the selected table with get_table_fields before using business meanings, including previous turns' metadata. "
+                + "Only confirmed business names/descriptions and explicit value/meaning pairs establish a measure, unit or state. Aliases, samples and guesses cannot. "
+                + "If actual vs receivable or another meaning is unresolved, ask only for the missing choice. Apply personal corrections only within this conversation. "
                 + "For a suggestion call propose_sql with one complete read-only query. "
                 + "Explain the proposed change. It has not been run or saved. Only the author may apply and run it. "
                 + "For explanation alone answer directly. Source connector: " + source.type()
                 + "\nSQL basis for this request (not executed):\n" + sql;
+    }
+
+    @Override public AiConversationDtos.Result result(Context context, String text, List<AiConversationDtos.Tool> tools,
+                                                       String editorId, String draftVersion) {
+        var result = super.result(context, text, tools, editorId, draftVersion);
+        if (result.sql() == null) return result;
+        return new AiConversationDtos.Result(result.type(), text, result.sql(), result.resourceId(), result.resourceName(),
+                result.resourceVersion(), editorId, draftVersion, DatasetSqlEvidence.forProposal(tools, result.sql()));
     }
 
     private static AiTool<AiDatasourceTools.Scope> proposal(AiDatasourceTools metadata) {
@@ -48,7 +62,7 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
             metadata.authorize(scope);
             return AiToolProtocol.result(SqlUtil.isSingleReadQuery(arguments.get("sql"))
-                    ? Map.of("status", "NOT_RUN")
+                    ? Map.of("status", "NOT_RUN", "references", DatasetSqlEvidence.references(arguments.get("sql")))
                     : Map.of("status", "INVALID", "message", "Propose one complete read-only SELECT or WITH query."));
         });
     }

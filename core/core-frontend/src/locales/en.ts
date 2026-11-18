@@ -11,6 +11,11 @@ export default {
     unavailable_reference: 'The referenced suggestion is unavailable.',
     editor_title: 'SQL assistant',
     replace_draft: 'Replace the entire SQL draft with this suggestion?',
+    sql_evidence: 'Tables and fields used',
+    sql_reference: 'Referenced in SQL',
+    verified_structure: 'Checked against current structure',
+    confirmed_meaning: 'Confirmed business meaning',
+    no_sql_evidence: 'No attributable table metadata for this query.',
     unrun_sql: 'Suggested SQL (not run)',
     mutex_accepted:
       'Controlled background task {id} accepted. See background tasks for the result.',
