@@ -124,6 +124,9 @@ public final class ToolConversationRegression {
                     content = call("args-" + sent.size(), "get_table_fields", sent.size() == 1 ? "{\"table\":\"\"}" : "{\"table\":\"AI_PROBE\"}");
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
+                } else if (mode.get().equals("dataset-guide") && sent.size() == 1) {
+                    String topic = body.path("messages").toString().contains("monthly totals") ? "monthly" : "projection";
+                    content = call("guide", "read_sql_guide", JSON.writeValueAsString(Map.of("topic", topic)));
                 } else if (mode.get().equals("dataset-suggest") && sent.size() == 1) {
                     content = call("proposal", "propose_sql", JSON.writeValueAsString(Map.of("sql", editorProposal.get())));
                 } else if (mode.get().equals("suggest") && sent.size() == 1) {
@@ -233,10 +236,33 @@ public final class ToolConversationRegression {
             sqlTools = new AiSqlTools(metadata);
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
-            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata));
+            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new io.dataease.datasource.manage.EngineManage()));
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            DatasetSqlDialectRegression.main(new String[0]);
+            mode.set("dataset-guide");
+            for (boolean cross : List.of(false, true)) {
+                for (String question : List.of("Show a plain column projection", "Show monthly totals")) {
+                    sent.clear();
+                    var node = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                            .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11",
+                                    "editorId", "native-or-cross", "sql", "", "isCross", cross))))
+                            .andReturn().getResponse().getContentAsString());
+                    var result = terminal(mvc, start(mvc, node, question));
+                    var messages = sent.getLast().path("messages");
+                    var guide = JSON.readTree(messages.get(messages.size() - 1).path("content").asText());
+                    boolean monthly = question.contains("monthly");
+                    String expected = monthly ? (cross ? "TO MONTH" : "DATE_FORMAT") : "SELECT column_name FROM table_name";
+                    if (!"COMPLETED".equals(result.path("status").asText())
+                            || !(cross ? "calcite" : "MySQL").equals(guide.path("dialect").asText())
+                            || !guide.path("example").asText().contains(expected)
+                            || !guide.path("rules").asText().contains("separate nodes"))
+                        throw new AssertionError("The editor request must bind the dialect and scope of the model's tool response: " + guide);
+                    mvc.perform(delete("/ai/conversations/" + node.path("sessionId").asText()));
+                }
+            }
+            sent.clear();
             mode.set("dataset-suggest");
             var editor = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "dataset-node",

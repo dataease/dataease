@@ -50,7 +50,7 @@ public class AiSqlConversationScene implements AiConversationScene {
         return AiTool.execute(tools, scope(context), name, arguments, active, deadline);
     }
     private AiDatasourceTools.Scope scope(Context context) {
-        return new AiDatasourceTools.Scope(context.resourceId(), context.revision());
+        return new AiDatasourceTools.Scope(context.resourceId(), context.revision(), context.isCross());
     }
     @Override public Context resolve(String resourceId, String sql) {
         if (resourceId.isBlank()) return new Context("", "", "unbound",

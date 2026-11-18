@@ -102,6 +102,7 @@ def main():
         sources.extend((root/'sdk/api/api-base/src/main/java/io/dataease/api/ai').rglob('*.java'))
         sources.extend(root/path for path in [
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/utils/SqlUtil.java',
+            'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/vo/DatasourceConfiguration.java',
             'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
             'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',

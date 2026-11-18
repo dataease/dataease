@@ -10,6 +10,10 @@ public class DatasourceConfiguration extends Configuration {
     private List<String> showTableSqls;
 
 
+    public static boolean usesDeEngine(String type) {
+        return type.contains(DatasourceType.API.name()) || type.contains(DatasourceType.Excel.name());
+    }
+
     static public enum DatasourceType {
         folder("folder", "folder", "folder", null, null, 25),
         API("API", "API", "API", "`", "`", 15),

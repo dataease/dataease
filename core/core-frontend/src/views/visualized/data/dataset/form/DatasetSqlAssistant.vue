@@ -20,6 +20,7 @@ import {
 
 const props = defineProps<{
   host: HTMLElement
+  isCross: boolean
   resourceId: string
   resourceLabel: string
   draftRevision: number
@@ -243,6 +244,7 @@ const send = async () => {
     const opening = {
       scene: 'dataset-sql' as const,
       resourceId: source,
+      isCross: props.isCross,
       editorId,
       sql,
       openKey: uuid.v4(),

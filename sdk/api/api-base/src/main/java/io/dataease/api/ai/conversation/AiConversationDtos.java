@@ -12,7 +12,10 @@ public final class AiConversationDtos {
                        @Pattern(regexp = "[0-9]{1,20}|") String resourceId,
                        @NotBlank @Size(max = 100) String editorId,
                        @Size(max = 30000) String sql, @Size(max = 100) String openKey,
-                       @Size(max = 100) String previousSessionId) {
+                       @Size(max = 100) String previousSessionId, Boolean isCross) {
+        public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId) {
+            this(scene, resourceId, editorId, sql, openKey, previousSessionId, null);
+        }
         public Open(String scene, String resourceId, String editorId, String sql, String openKey) { this(scene, resourceId, editorId, sql, openKey, null); }
         public Open(String scene, String resourceId, String editorId, String sql) { this(scene, resourceId, editorId, sql, null, null); }
     }

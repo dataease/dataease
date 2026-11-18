@@ -26,7 +26,9 @@ import java.util.*;
 @Component
 public class AiDatasourceTools {
     public record Resource(String id, String name) { }
-    public record Scope(String resourceId, String revision) { }
+    public record Scope(String resourceId, String revision, boolean isCross) {
+        public Scope(String resourceId, String revision) { this(resourceId, revision, false); }
+    }
     public record Datasource(String id, String name, String revision, String type) { }
     public record Table(String name, String comment) { }
     public record Field(String name, String type, String comment) { }
