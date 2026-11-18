@@ -615,21 +615,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasViewInfo[component.id] = newView
       return newView
     },
-    enableMaterialPictureThreshold(component) {
-      const { url, ...imageOptions } = component.propValue
-      Object.assign(component, {
-        component: 'UserView',
-        innerType: 'picture-group',
-        render: 'custom',
-        materialPicture: true,
-        propValue: { ...imageOptions, urlList: [{ name: component.name, url }] },
-        collapseName: [...new Set([...(component.collapseName || []), 'threshold'])]
-      })
-      const currentFont = useAppearanceStoreWithOut().fontList.find(ele => ele.isDefault)
-      const view = this.initUserView(component, currentFont)
-      view.senior.threshold.enable = true
-    },
-
     addComponent({ component, index, isFromGroup = false, componentData = this.componentData }) {
       if (isFromGroup) {
         componentData.push(component)
