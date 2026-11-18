@@ -531,6 +531,13 @@ const apply = async (turn: Turn) => {
                     >{{ relation.leftTable }} {{ relation.joinType }} JOIN
                     {{ relation.rightTable }}</code
                   >
+                  <p v-if="relation.actual">
+                    {{ tr('actual_join') }} ·
+                    <code
+                      >{{ relation.actual.leftTable }} {{ relation.actual.joinType }} JOIN
+                      {{ relation.actual.rightTable }}</code
+                    >
+                  </p>
                   <p
                     v-for="pair in relation.conditions"
                     :key="pair.leftField + '=' + pair.rightField"

@@ -71,8 +71,9 @@ public final class AiConversationDtos {
     public record FieldEvidence(String name, String type, String comment, String businessName, String description,
                                 java.util.List<ValueMeaning> values) { }
     public record JoinKey(String leftField, String rightField) {}
+    public record SqlJoin(String leftTable, String joinType, String rightTable) {}
     public record RelationEvidence(String name, String description, String leftTable, String rightTable,
-                                   java.util.List<JoinKey> conditions, String cardinality, String joinType) {}
+                                   java.util.List<JoinKey> conditions, String cardinality, String joinType, SqlJoin actual) {}
     public record TableEvidence(String table, boolean inspected, String description, String grain,
                                 java.util.List<FieldEvidence> fields, java.util.List<RelationEvidence> relations) {
         public TableEvidence(String table, boolean inspected, String description, String grain, java.util.List<FieldEvidence> fields) {

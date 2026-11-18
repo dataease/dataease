@@ -112,6 +112,7 @@ export interface AiSqlTableEvidence {
     rightTable: string
     cardinality: string
     joinType: string
+    actual?: { leftTable: string; joinType: string; rightTable: string }
     conditions: { leftField: string; rightField: string }[]
   }[]
   inspected: boolean

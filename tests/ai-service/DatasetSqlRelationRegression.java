@@ -73,6 +73,25 @@ public final class DatasetSqlRelationRegression {
         String evidence = json.valueToTree(scene.result(context, "", steps, "order", "1")).path("evidence").toString();
         if (!evidence.contains("下单客户") || !evidence.contains("MANY_TO_ONE") || evidence.contains("收货客户"))
             throw new AssertionError("only the composite path used in the proposal is evidence: " + evidence);
+        for (String type : List.of("INNER", "RIGHT")) {
+            String reversed = "SELECT c.name FROM customers c " + type + " JOIN orders o "
+                    + "ON o.buyer_id=c.cid AND c.tenant_id=o.tenant_id";
+            var proposed = new io.dataease.api.ai.conversation.AiConversationDtos.Tool("p2", "propose_sql", "SUCCEEDED",
+                    Map.of("sql", reversed), scene.execute(context, "propose_sql", Map.of("sql", reversed)));
+            var relation = scene.result(context, "", List.of(steps.getFirst(), proposed), "order", "2").evidence()
+                    .stream().flatMap(t -> t.relations().stream()).findFirst().orElseThrow();
+            var actual = json.valueToTree(relation).path("actual");
+            if (!"LEFT".equals(relation.joinType()) || !type.equals(actual.path("joinType").asText())
+                    || !"customers".equals(actual.path("leftTable").asText()) || !"orders".equals(actual.path("rightTable").asText()))
+                throw new AssertionError("display registered direction and actual SQL independently: " + actual);
+        }
+        String wrong = "SELECT * FROM orders o JOIN customers c ON true JOIN items i "
+                + "ON o.buyer_id=c.cid AND o.tenant_id=c.tenant_id";
+        var unrelated = new io.dataease.api.ai.conversation.AiConversationDtos.Tool("p3", "propose_sql", "SUCCEEDED",
+                Map.of("sql", wrong), scene.execute(context, "propose_sql", Map.of("sql", wrong)));
+        if (scene.result(context, "", List.of(steps.getFirst(), unrelated), "order", "3").evidence()
+                .stream().anyMatch(t -> !t.relations().isEmpty()))
+            throw new AssertionError("equalities on the wrong join cannot confirm a relationship");
         registered.clear();
         if (!scene.execute(context, "read_relations", argsMap).contains("NO_CONFIRMED_PATH"))
             throw new AssertionError("missing registration must be distinguished from confirmed join");

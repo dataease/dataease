@@ -450,6 +450,7 @@ test("each suggestion expands its own table and field evidence", async ({
           rightTable: "customers",
           cardinality: "MANY_TO_ONE",
           joinType: "LEFT",
+          actual: { leftTable: "customers", joinType: "INNER", rightTable: "orders" },
           conditions: [
             {leftField: "tenant_id", rightField: "tenant_id"},
             {leftField: "buyer_id", rightField: "cid"},
@@ -477,7 +478,7 @@ test("each suggestion expands its own table and field evidence", async ({
   await evidence.first().locator("summary").click();
   await expect(cards.first()).toContainText("pay_code");
   await expect(cards.first()).toContainText("P → 已支付");
-  for (const label of ["下单客户", "orders LEFT JOIN customers", "MANY_TO_ONE",
+  for (const label of ["下单客户", "orders LEFT JOIN customers", "customers INNER JOIN orders", "MANY_TO_ONE",
     "orders.tenant_id = customers.tenant_id", "orders.buyer_id = customers.cid"]) {
     await expect(evidence.first()).toContainText(label);
   }
