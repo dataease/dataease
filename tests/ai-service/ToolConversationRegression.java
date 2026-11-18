@@ -91,6 +91,7 @@ public final class ToolConversationRegression {
         var userEnabled = new AtomicBoolean(true);
         var usageChecks = new AtomicInteger();
         var firstResourceAllowed = new AtomicBoolean(true);
+        var secondResourceAllowed = new AtomicBoolean(true);
         var readTargets = new CopyOnWriteArrayList<Long>();
         var sourceRevision = new AtomicLong(1);
         var toolEntered = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
@@ -194,6 +195,8 @@ public final class ToolConversationRegression {
                         }
                         default -> frame(Map.of("content", "使用已确认的支付状态和实付字段。"), "stop");
                     };
+                } else if (mode.get().equals("preview-revoke") && sent.size() == 1) {
+                    content = call("preview-fields", "get_table_fields", "{\"table\":\"AI_PROBE\"}");
                 } else if (mode.get().equals("dataset-suggest") && sent.size() == 1) {
                     content = call("proposal", "propose_sql", JSON.writeValueAsString(Map.of("sql", editorProposal.get())));
                 } else if (mode.get().equals("suggest") && sent.size() == 1) {
@@ -251,6 +254,7 @@ public final class ToolConversationRegression {
                 case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId((Long) args[0]); ds.setName("Probe " + args[0]); ds.setType("MySQL"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
                 case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Set.of(11L, 12L).contains(request.getDatasourceId()) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables"); readTargets.add(request.getDatasourceId());
                     if (mode.get().equals("chain-retry") && transientMetadata.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw AiErrors.error("connection_failed");
+                    if (mode.get().equals("preview-revoke")) secondResourceAllowed.set(false);
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
                     if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
@@ -322,7 +326,7 @@ public final class ToolConversationRegression {
                 }
                 if (method.getName().equals("checkAuth")) {
                     var request = (BusiPerCheckDTO) args[0];
-                    if (!operationAllowed.get() || !Set.of(11L, 12L).contains(request.getId()) || Objects.equals(request.getId(), 11L) && !firstResourceAllowed.get() || request.getBusiEnum() != BusiResourceEnum.DATASOURCE || request.getAuthEnum() != AuthEnum.READ) throw AiErrors.error("forbidden");
+                    if (!operationAllowed.get() || !Set.of(11L, 12L).contains(request.getId()) || Objects.equals(request.getId(), 11L) && !firstResourceAllowed.get() || Objects.equals(request.getId(), 12L) && !secondResourceAllowed.get() || request.getBusiEnum() != BusiResourceEnum.DATASOURCE || request.getAuthEnum() != AuthEnum.READ) throw AiErrors.error("forbidden");
                     return null;
                 }
                 throw new AssertionError("unexpected operation authorization " + method.getName());
@@ -494,6 +498,35 @@ public final class ToolConversationRegression {
                 throw new AssertionError("a fresh authorized source must receive neither earlier preview SQL nor its repair");
             mvc.perform(delete("/ai/conversations/" + fresh.path("sessionId").asText()));
             mvc.perform(delete("/ai/conversations/" + successfulOpen.path("sessionId").asText()));
+            // The old SQL's authorized source and the current editor's source both remain bound.
+            sent.clear(); mode.set("preview-revoke");
+            var guarded = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(repairOpen))).andReturn().getResponse().getContentAsString());
+            var guardedRun = start(mvc, guarded, "Check the fields before repairing this failed version");
+            try {
+                for (int attempt = 0; attempt < 100 && secondResourceAllowed.get(); attempt++) Thread.sleep(20);
+                if (secondResourceAllowed.get()) throw new AssertionError("field read did not reach the permission boundary");
+                denied(mvc, guardedRun);
+                if (sent.size() != 1) throw new AssertionError("editor source revocation must prevent the next model request");
+            } finally { secondResourceAllowed.set(true); }
+
+            sent.clear(); mode.set("unknown");
+            var frozen = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(repairOpen))).andReturn().getResponse().getContentAsString());
+            var frozenRun = start(mvc, frozen, "Repair this earlier preview");
+            var failed = terminal(mvc, frozenRun);
+            if (!failed.path("retryEligible").asBoolean()) throw new AssertionError("expected a retryable execution");
+            int requestsBeforeRetry = sent.size();
+            firstResourceAllowed.set(false);
+            try {
+                if (mvc.perform(post(frozenRun + "/retry").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("retryKey", "preview-retry",
+                                "expectedAttemptId", failed.path("attemptId").asText())))).andReturn().getResponse().getStatus() < 400)
+                    throw new AssertionError("retry ignored revoked preview source");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure failure) || !"forbidden".equals(failure.safeCode())) throw denied;
+            } finally { firstResourceAllowed.set(true); }
+            if (sent.size() != requestsBeforeRetry) throw new AssertionError("revoked preview SQL reached the model during retry");
             mode.set("dataset-channel"); sent.clear(); reads.clear();
             var channelSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "channel-node",
