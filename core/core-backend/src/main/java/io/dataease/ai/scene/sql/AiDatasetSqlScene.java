@@ -2,7 +2,6 @@ package io.dataease.ai.scene.sql;
 
 import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.tool.AiTool;
-import io.dataease.api.ai.conversation.AiConversationDtos;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.api.ai.conversation.AiConversationDtos;

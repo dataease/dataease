@@ -54,6 +54,7 @@ async function backend(page, options = {}) {
     ...options,
   };
   const sessions = new Map();
+  const completedResults = new Map();
   await page.route("**/fixture-api/dataset/previewSql", async (route) => {
     state.previews.push(route.request().postDataJSON());
     return route.fulfill({
@@ -128,7 +129,7 @@ async function backend(page, options = {}) {
           status: 403,
           json: { messageKey: "forbidden" },
         });
-      return reply(result);
+      return reply(completedResults.get(id));
     }
     if (path.endsWith("/stop")) {
       state.stops++;
@@ -145,6 +146,7 @@ async function backend(page, options = {}) {
           cursor: 1,
           events: [{ sequence: 1, type: "FAILED", error: "model_unavailable" }],
         });
+      completedResults.set(id, result);
       return reply({
         ...run,
         status: "COMPLETED",
@@ -458,15 +460,18 @@ test("each suggestion expands its own table and field evidence", async ({
   await ask(page);
   const cards = control(page, "panel").locator("article");
   await expect(cards.first().getByText("每笔订单一行")).toBeHidden();
-  await cards.first().locator("summary").click({ timeout: 3000 });
+  const evidence = cards.locator("details").filter({
+    has: page.locator("summary", { hasText: "用表与字段依据" }),
+  });
+  await evidence.first().locator("summary").click();
   await expect(cards.first()).toContainText("pay_code");
   await expect(cards.first()).toContainText("P → 已支付");
   state.query = "SELECT count(*) FROM items";
   state.evidence = [{ table: "items", inspected: false, fields: [] }];
   await ask(page);
-  await cards.nth(1).locator("summary").click();
-  await expect(cards.nth(1)).toContainText("items");
-  await expect(cards.nth(1)).not.toContainText("pay_code");
+  await evidence.nth(1).locator("summary").click();
+  await expect(evidence.nth(1)).toContainText("items");
+  await expect(evidence.nth(1)).not.toContainText("pay_code");
   await expect(cards.first()).toContainText("每笔订单一行");
   await assertUnrun(page, state);
 });
