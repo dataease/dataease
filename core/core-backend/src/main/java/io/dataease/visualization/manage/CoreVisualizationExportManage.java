@@ -10,6 +10,7 @@ import io.dataease.constant.DeTypeConstants;
 import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.util.ExportCenterUtils;
+import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -53,6 +54,9 @@ public class CoreVisualizationExportManage {
     @Resource
     private DatasetFieldServer datasetFieldServer;
 
+    @Resource
+    private ExportCenterDownLoadManage exportCenterDownLoadManage;
+
     public String getResourceName(Long dvId, String busiFlag) {
         DataVisualizationVO visualization = coreVisualizationManage.findDvInfo(dvId, busiFlag, "core");
         if (ObjectUtils.isEmpty(visualization)) DEException.throwException("资源不存在或已经被删除...");
@@ -65,6 +69,12 @@ public class CoreVisualizationExportManage {
 
     public File exportExcelWithHeaderMode(Long dvId, String busiFlag, List<Long> viewIdList,
                                          boolean onlyDisplay, String filterJson, String headerMode) throws Exception {
+        return exportExcelWithWatermark(dvId, busiFlag, viewIdList, onlyDisplay, filterJson, headerMode, false);
+    }
+
+    public File exportExcelWithWatermark(Long dvId, String busiFlag, List<Long> viewIdList,
+                                         boolean onlyDisplay, String filterJson, String headerMode,
+                                         boolean showWatermark) throws Exception {
         if (headerMode != null && !"dataset".equals(headerMode) && !"display".equals(headerMode)) {
             DEException.throwException("Invalid Excel header mode");
         }
@@ -111,7 +121,8 @@ public class CoreVisualizationExportManage {
             sheets.addAll(exportViewData(view, "display".equals(headerMode)));
         }
 
-        return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString());
+        return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString(),
+                showWatermark ? exportCenterDownLoadManage::addWatermarkTools : null);
     }
 
     private ExcelSheetModel exportSingleData(Map<String, Object> chart, String title, boolean displayHeader, boolean filterHidden) {

@@ -62,8 +62,6 @@ public class ExcelWatermarkUtils {
     }
 
     public static void addWatermarkToSheet(Sheet sheet, Integer pictureIdx) {
-        Drawing<?> drawing = sheet.createDrawingPatriarch();
-        CreationHelper helper = sheet.getWorkbook().getCreationHelper();
         // 获取工作表的总列数和行数
         int lastRowNum = sheet.getLastRowNum();
         int totalColumns = 0;
@@ -79,6 +77,12 @@ public class ExcelWatermarkUtils {
             lastRowNum = 100;
             totalColumns = 50;
         }
+        addWatermarkToSheet(sheet, pictureIdx, lastRowNum, totalColumns);
+    }
+
+    public static void addWatermarkToSheet(Sheet sheet, Integer pictureIdx, int lastRowNum, int totalColumns) {
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        CreationHelper helper = sheet.getWorkbook().getCreationHelper();
         int picCount = 0;
         // 根据总行列数循环绘制水印
         for (int row = 0; row <= lastRowNum; row += 15) { // 每15行绘制一行水印
