@@ -121,3 +121,55 @@ test('真实报告向导最终保存再次校验，失败时不调用保存接�
   await page.getByRole('button', { name: 'chart.confirm', exact: true }).click()
   await expect(page.getByTestId('saved')).toHaveText('1')
 })
+
+test('发送设置校验失败后恢复操作，修正后只保存一次', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: '打开报告' }).click()
+  await page.getByRole('button', { name: 'common.next', exact: true }).click()
+  await page.getByRole('button', { name: 'common.next', exact: true }).click()
+  await page.evaluate(() => {
+    window.reportSaveState.stepValid = false
+  })
+  const confirm = page.getByRole('button', {
+    name: 'chart.confirm',
+    exact: true,
+  })
+  await confirm.click()
+  await expect(confirm).not.toHaveClass(/is-loading/)
+  await expect(page.locator('.el-loading-mask:visible')).toHaveCount(0)
+  await expect(page.getByTestId('saved')).toHaveText('0')
+  await page.evaluate(() => {
+    window.reportSaveState.stepValid = true
+    window.reportSaveState.delay = 500
+  })
+  await confirm.evaluate((button) => {
+    button.click()
+    button.click()
+  })
+  await expect(confirm).toHaveClass(/is-loading/)
+  await expect(page.getByTestId('saved')).toHaveText('1')
+  await expect(confirm).not.toBeVisible()
+  await expect(page.getByTestId('saved')).toHaveText('1')
+})
+
+test('校验抛出异常后解除加载并允许取消重开', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: '打开报告' }).click()
+  await page.getByRole('button', { name: 'common.next', exact: true }).click()
+  await page.getByRole('button', { name: 'common.next', exact: true }).click()
+  await page.evaluate(() => {
+    window.reportSaveState.stepThrows = true
+  })
+  const confirm = page.getByRole('button', {
+    name: 'chart.confirm',
+    exact: true,
+  })
+  await confirm.click()
+  await expect(confirm).not.toHaveClass(/is-loading/)
+  await expect(page.getByTestId('saved')).toHaveText('0')
+  await page.getByRole('button', { name: 'common.cancel', exact: true }).click()
+  await page.getByRole('button', { name: '打开报告' }).click()
+  await expect(
+    page.getByRole('button', { name: 'common.next', exact: true })
+  ).toBeEnabled()
+})

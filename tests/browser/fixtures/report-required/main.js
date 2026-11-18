@@ -37,7 +37,7 @@ createApp({
     window.reportSaveState = reportSaveState
     return { drawer, filters, confirmed, reportForm, reportSaveState }
   },
-  template: `<button @click="reportForm.reportFormVisible = true">打开报告</button><output data-testid="saved">{{ reportSaveState.saved }}</output><ReportForm ref="reportForm" /><button @click="drawer.open()">打开参数</button><button @click="filters.defaultFilter[0].defaultValue = null">清空日期</button><button @click="filters.defaultFilter[0].defaultValue = '2026-11-13'">恢复日期</button><output data-testid="confirmed">{{ confirmed }}</output><ConditionDefaultSet ref="drawer" :filter-info="filters" @reportFilterChange="confirmed++" />`,
+  template: `<button @click="reportForm.reportFormVisible = true">打开报告</button><output data-testid="saved">{{ reportSaveState.saved }}</output><ReportForm ref="reportForm" @taskAddVisibleClose="reportForm.reportFormVisible = false" /><button @click="drawer.open()">打开参数</button><button @click="filters.defaultFilter[0].defaultValue = null">清空日期</button><button @click="filters.defaultFilter[0].defaultValue = '2026-11-13'">恢复日期</button><output data-testid="confirmed">{{ confirmed }}</output><ConditionDefaultSet ref="drawer" :filter-info="filters" @reportFilterChange="confirmed++" />`,
 })
   .use(ElementPlus)
   .mount('#app')
