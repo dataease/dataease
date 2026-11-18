@@ -40,6 +40,11 @@ public class CoreDatasourceFieldSemantic {
     @Column(name = "business_aliases", length = 1000)
     private String aliases;
 
+    @Comment("手工维护的字段值参考 JSON")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.LONG32VARCHAR)
+    @Column(name = "value_references", length = org.hibernate.Length.LONG32)
+    private String valueReferences;
+
     @Comment("是否已确认")
     @Column(name = "confirmed", nullable = false)
     private boolean confirmed;

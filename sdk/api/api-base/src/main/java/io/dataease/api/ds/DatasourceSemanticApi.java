@@ -103,6 +103,8 @@ public interface DatasourceSemanticApi {
             @Schema(description = "已确认字段数") long confirmedFieldCount
     ) {}
 
+    record ValueReference(String value, String meaning) {}
+
     @Schema(description = "数据源字段语义")
     record FieldSemantic(
             @Schema(description = "物理表名") String tableName,
@@ -112,6 +114,7 @@ public interface DatasourceSemanticApi {
             @Schema(description = "字段的业务别名") String aliases,
             @Schema(description = "字段语义是否已确认") boolean confirmed,
             @Schema(description = "最近一次同步的物理字段类型") String physicalType,
-            @Schema(description = "最近一次同步的物理字段备注") String physicalComment
+            @Schema(description = "最近一次同步的物理字段备注") String physicalComment,
+            @Schema(description = "手工维护的示例值及可选业务含义") List<ValueReference> valueReferences
     ) {}
 }

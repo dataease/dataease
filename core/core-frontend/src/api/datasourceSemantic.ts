@@ -18,6 +18,7 @@ export interface FieldSemantic {
   fieldName: string
   businessName: string
   description: string
+  valueReferences: { value: string; meaning: string | null }[]
   aliases: string | null
 }
 

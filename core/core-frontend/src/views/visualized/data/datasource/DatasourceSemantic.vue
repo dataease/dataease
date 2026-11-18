@@ -262,7 +262,8 @@ const openField = (semantic: TableSemanticDetails['fields'][number]) => {
     fieldName: semantic.fieldName,
     businessName: semantic.businessName ?? '',
     description: semantic.description ?? '',
-    aliases: semantic.aliases ?? ''
+    aliases: semantic.aliases ?? '',
+    valueReferences: (semantic.valueReferences ?? []).map(item => ({ ...item }))
   }
   drawer.value = 'field'
 }
@@ -293,6 +294,7 @@ const fieldColumns = computed(() => [
   { key: 'fieldName', title: tr('fieldAndType'), width: 135, flexGrow: 1 },
   { key: 'businessName', title: tr('businessName'), width: 120, flexGrow: 1 },
   { key: 'description', title: tr('description'), width: 190, flexGrow: 2 },
+  { key: 'valueReferences', title: tr('valueReferences'), width: 160 },
   { key: 'status', title: tr('status'), width: 100 },
   ...(props.canManage ? [{ key: 'actions', title: tr('actions'), width: 180 }] : [])
 ])
@@ -481,6 +483,19 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                     <div v-if="row.aliases" class="metadata-secondary">
                       {{ tr('aliases') }} · {{ row.aliases }}
                     </div>
+                  </div>
+                  <div
+                    v-else-if="column.key === 'valueReferences'"
+                    class="metadata-description"
+                    :class="{ 'metadata-empty-reference': !row.valueReferences?.length }"
+                  >
+                    {{
+                      (row.valueReferences ?? [])
+                        .map(item =>
+                          item.meaning ? `${item.value} → ${item.meaning}` : item.value
+                        )
+                        .join('、') || '—'
+                    }}
                   </div>
                   <el-tag
                     v-else-if="column.key === 'status'"
@@ -685,6 +700,34 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
             :placeholder="tr('aliasesExample')"
           />
         </el-form-item>
+        <el-form-item :label="tr('valueReferences')">
+          <div class="metadata-value-references">
+            <div
+              v-for="(reference, index) in fieldForm.valueReferences"
+              :key="index"
+              class="metadata-value-reference"
+            >
+              <el-input
+                v-model="reference.value"
+                :placeholder="tr('referenceValue')"
+                maxlength="255"
+              />
+              <el-input
+                v-model="reference.meaning"
+                :placeholder="tr('referenceMeaning')"
+                maxlength="255"
+              />
+              <el-button text @click="fieldForm.valueReferences.splice(index, 1)">{{
+                tr('removeReference')
+              }}</el-button>
+            </div>
+            <el-button
+              :disabled="fieldForm.valueReferences.length >= 20"
+              @click="fieldForm.valueReferences.push({ value: '', meaning: '' })"
+              >{{ tr('addReference') }}</el-button
+            >
+          </div>
+        </el-form-item>
       </el-form>
       <template #footer>
         <span v-if="drawer === 'membership'" class="metadata-membership-count metadata-secondary">
@@ -718,7 +761,10 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
         <el-button
           v-else-if="drawer === 'field' && fieldForm"
           type="primary"
-          :disabled="!fieldForm.businessName.trim()"
+          :disabled="
+            !fieldForm.businessName.trim() ||
+            fieldForm.valueReferences.some(item => !item.value.trim())
+          "
           :loading="saving"
           @click="saveField(fieldForm)"
         >
@@ -731,6 +777,19 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
 
 <style scoped lang="less">
 @import './datasource-metadata.less';
+
+.metadata-empty-reference {
+  color: var(--ed-text-color-secondary);
+}
+
+.metadata-value-references {
+  width: 100%;
+}
+.metadata-value-reference {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
 
 .metadata-heading {
   display: flex;

@@ -102,6 +102,17 @@ public class DatasourceSemanticServer implements DatasourceSemanticApi {
         requireText(field.businessName(), 255);
         limit(field.description(), 4000);
         limit(field.aliases(), 1000);
+        if (field.valueReferences() != null) {
+            if (field.valueReferences().size() > 20) {
+                DEException.throwException(Translator.get("i18n_datasource_metadata_required"));
+            }
+            limit((String) io.dataease.utils.JsonUtil.toJSONString(field.valueReferences()), 16000);
+            for (var reference : field.valueReferences()) {
+                if (reference == null) DEException.throwException(Translator.get("i18n_datasource_metadata_required"));
+                requireText(reference.value(), 255);
+                limit(reference.meaning(), 255);
+            }
+        }
         metadata.saveField(datasourceId, field);
     }
 

@@ -57,7 +57,8 @@ public class DatasourceSemanticManage {
         var fields = fieldRepository.findByTableSemantic_IdOrderByPosition(table.getId()).stream()
                 .map(f -> new FieldSemantic(table.getTableName(), f.getFieldName(),
                         f.getBusinessName(), f.getDescription(), f.getAliases(), f.isConfirmed(),
-                        f.getPhysicalType(), f.getPhysicalComment())).toList();
+                        f.getPhysicalType(), f.getPhysicalComment(), io.dataease.utils.JsonUtil.parseList(
+                                f.getValueReferences(), new com.fasterxml.jackson.core.type.TypeReference<List<ValueReference>>() {}))).toList();
         return new TableDetails(fields, relations.countByTable(datasourceId, table.getTableName()));
     }
 
@@ -151,6 +152,9 @@ public class DatasourceSemanticManage {
         String description = field.description();
         row.setDescription(description == null || description.isBlank() ? null : description);
         row.setAliases(field.aliases());
+        if (field.valueReferences() != null) {
+            row.setValueReferences((String) io.dataease.utils.JsonUtil.toJSONString(field.valueReferences()));
+        }
         row.setConfirmed(true);
     }
 
