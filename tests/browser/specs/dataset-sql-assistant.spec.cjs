@@ -618,3 +618,153 @@ test("system variable catalog follows workspace changes in an open editor", asyn
   expect(state.opens[1].systemVariableNames).toContain("新空间变量");
   expect(state.opens[1].systemVariableNames).not.toContain("旧空间变量");
 });
+
+test("a manual preview failure can be repaired after editing and manually rerun", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  const failedSql = "SELECT misspelled_amt FROM orders";
+  await page.route("**/fixture-api/dataset/previewSql", async (route) => {
+    const request = route.request().postDataJSON();
+    const sql = Buffer.from(request.sql, "base64").toString();
+    if (sql !== failedSql) return route.fallback();
+    state.previews.push(request);
+    return route.fulfill({
+      status: 400,
+      json: {
+        msg: "Unknown column 'misspelled_amt' in 'field list'; password=error-private",
+      },
+    });
+  });
+  await enter(page);
+  const draft = editor(page).locator(".cm-content");
+  await draft.fill(failedSql);
+  const run = editor(page).getByRole("button", { name: "运行", exact: true });
+  await run.click();
+  await expect.poll(() => state.previews.length).toBe(1);
+  await draft.fill("SELECT 99");
+  await expand(page);
+  await ask(page, "刚才为什么报错");
+  await expect(control(page, "apply")).toHaveCount(1);
+  expect(state.opens[0]).toMatchObject({
+    sql: failedSql,
+    preview: {
+      outcome: "UNKNOWN_COLUMN",
+      resourceId: "source",
+      isCross: false,
+    },
+  });
+  expect(state.opens[0].preview.revision).toBeLessThan(
+    state.opens[0].preview.currentRevision
+  );
+  expect(JSON.stringify(state.opens)).not.toContain("error-private");
+  await expect(control(page, "panel").locator("article").first()).toContainText(
+    "失败预览"
+  );
+  await expect(control(page, "panel").locator("article").first()).toContainText(
+    "草稿已修改"
+  );
+  await control(page, "apply").click();
+  await page
+    .locator(".ed-message-box:visible")
+    .getByRole("button", { name: "确定", exact: true })
+    .click();
+  await expect(draft).toHaveText(proposal);
+  expect(state.previews).toHaveLength(1);
+  await run.click();
+  await expect(editor(page).locator(".table-scroll")).toContainText("200");
+  state.explain = true;
+  await ask(page, "为什么订单重复");
+  await expect(control(page, "panel").locator("article")).toHaveCount(2);
+  await expect.poll(() => state.opens.length).toBe(2);
+  expect(state.opens[1]).toMatchObject({
+    sql: proposal,
+    preview: { outcome: "SUCCESS" },
+  });
+  expect(JSON.stringify(state.opens[1])).not.toContain("200");
+  expect(state.previews).toHaveLength(2);
+  expect(await page.evaluate(() => window.saved)).toBeUndefined();
+});
+
+test("disabling AI during a manual preview preserves its table result", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  let release;
+  const gate = new Promise((resolve) => (release = resolve));
+  let pending = false;
+  await page.route("**/fixture-api/dataset/previewSql", async (route) => {
+    pending = true;
+    await gate;
+    await route.fallback();
+  });
+  await enter(page);
+  await expand(page);
+  await editor(page).getByRole("button", { name: "运行", exact: true }).click();
+  await expect.poll(() => pending).toBe(true);
+  try {
+    state.available = false;
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await expect(control(page, "toggle")).toHaveCount(0);
+  } finally {
+    release();
+  }
+  await expect(editor(page).locator(".table-scroll")).toContainText("200");
+});
+
+test("a late older preview cannot replace the newer result or cross datasource boundaries", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  const staleSql = "SELECT delayed_column FROM orders";
+  let release,
+    started = false;
+  const gate = new Promise((resolve) => (release = resolve));
+  await page.route("**/fixture-api/dataset/previewSql", async (route) => {
+    const req = route.request().postDataJSON();
+    if (Buffer.from(req.sql, "base64").toString() !== staleSql)
+      return route.fallback();
+    started = true;
+    await gate;
+    await route.fulfill({
+      status: 400,
+      json: { msg: "Unknown column 'delayed_column'" },
+    });
+  });
+  await enter(page);
+  const draft = editor(page).locator(".cm-content");
+  const run = editor(page).getByRole("button", { name: "运行", exact: true });
+  await draft.fill(staleSql);
+  await run.click();
+  await expect.poll(() => started).toBe(true);
+  const lateResponse = page.waitForResponse(
+    (r) => r.url().endsWith("/previewSql") && r.status() === 400
+  );
+  try {
+    await draft.fill(proposal);
+    await run.click();
+    await expect(editor(page).locator(".table-scroll")).toContainText("200");
+  } finally {
+    release();
+  }
+  await lateResponse;
+  await expand(page);
+  await ask(page, "为什么订单重复");
+  await expect(control(page, "apply")).toBeVisible();
+  expect(state.opens[0]).toMatchObject({
+    sql: proposal,
+    preview: { outcome: "SUCCESS" },
+  });
+  await expect(draft).toHaveText(proposal);
+  await editor(page).locator(".ds-list").click();
+  await page.getByRole("treeitem", { name: "Warehouse B" }).click();
+  await draft.fill("SELECT 2");
+  state.denyHistory = true;
+  await ask(page, "刚才为什么报错");
+  await expect.poll(() => state.opens.length).toBe(3);
+  for (const open of state.opens.slice(1)) {
+    expect(open).toMatchObject({ resourceId: "second", sql: "SELECT 2" });
+    expect(open.preview).toBeUndefined();
+  }
+  expect(state.opens[2].previousSessionId).toBeUndefined();
+});

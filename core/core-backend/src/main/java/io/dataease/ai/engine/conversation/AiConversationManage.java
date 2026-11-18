@@ -166,6 +166,10 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (Boolean.TRUE.equals(request.isCross())) opening = fingerprint("cross", opening);
         if (request.systemVariableNames() != null)
             opening = fingerprint("variables", opening, io.dataease.utils.JsonUtil.toJSONString(request.systemVariableNames()));
+        if (request.preview() != null) {
+            if (!"dataset-sql".equals(request.scene())) throw AiErrors.error("invalid");
+            opening = fingerprint("preview", opening, request.preview());
+        }
         if (request.previousSessionId() != null) opening = fingerprint("continue", opening, request.previousSessionId());
         var priorOpening = operation(owner, "open", request.openKey(), opening);
         if (priorOpening != null) { State previous = priorOpening.state; if (previous == null) throw AiErrors.error("scope_changed"); check(previous); return previous.view; }

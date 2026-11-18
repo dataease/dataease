@@ -1,5 +1,10 @@
 export default {
   ai_conversation: {
+    failed_preview: 'Failed preview',
+    successful_preview: 'Successful preview',
+    draft_revision: 'Revision',
+    preview_draft_changed: 'Draft edited since preview',
+    refer_to_preview: 'Ask about the last preview',
     refer_to_suggestion: 'Follow up on this suggestion',
     history_unavailable: 'Previous messages are no longer available.',
     new_query: 'New query',

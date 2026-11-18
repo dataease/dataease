@@ -1,5 +1,10 @@
 export default {
   ai_conversation: {
+    failed_preview: '失敗預覽',
+    successful_preview: '成功預覽',
+    draft_revision: '版本',
+    preview_draft_changed: '草稿已修改',
+    refer_to_preview: '基於上次預覽追問',
     refer_to_suggestion: '依據此建議追問',
     history_unavailable: '先前對話已無法使用。',
     new_query: '另寫查詢',

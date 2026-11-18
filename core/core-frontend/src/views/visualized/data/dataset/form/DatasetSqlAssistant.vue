@@ -15,6 +15,7 @@ import {
   startConversationExecution,
   stopConversationExecution,
   type AiAssistanceResult,
+  type AiSqlPreview,
   type AiConversationSession
 } from '@/api/aiConversation'
 
@@ -25,9 +26,13 @@ const props = defineProps<{
   resourceId: string
   resourceLabel: string
   draftRevision: number
+  preview?: AiSqlPreview & { sql: string }
   readDraft: () => string
 }>()
-const emit = defineEmits<{ (event: 'apply', query: string): void }>()
+const emit = defineEmits<{
+  (event: 'apply', query: string): void
+  (event: 'invalidate-preview'): void
+}>()
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
 const user = useUserStoreWithOut()
@@ -48,8 +53,8 @@ const expanded = ref(false)
 const input = ref('')
 const failure = ref('')
 const turns = ref<Turn[]>([])
-// Zero means an explicitly fresh query. Positive numbers refer to displayed turn numbers.
-const selectedBasis = ref<number>()
+// Zero starts a new query. Positive numbers identify displayed turns.
+const selectedBasis = ref<number | 'preview'>()
 const busy = ref(false)
 const applying = ref(false)
 const sessions = new Set<string>()
@@ -72,6 +77,7 @@ const clearHistory = () => {
 }
 const reset = () => {
   version++
+  emit('invalidate-preview')
   request?.abort()
   request = undefined
   clearHistory()
@@ -139,7 +145,10 @@ const accessLost = (error: unknown) =>
   ([401, 403, 404].includes(error.response?.status) ||
     ('messageKey' in error && error.messageKey === 'i18n_ai_scope_changed'))
 const fail = (error: unknown) => {
-  if (accessLost(error)) clearHistory()
+  if (accessLost(error)) {
+    emit('invalidate-preview')
+    clearHistory()
+  }
   failure.value =
     isRequestError(error) && error.response?.status === 403
       ? t('ai_service.failure_forbidden')
@@ -175,6 +184,31 @@ const chooseBasis = (question: string) => {
   }
   const latest = turns.value.reduce((last, turn, i) => (turn.result?.sql ? i + 1 : last), 0)
   const requested = selectedBasis.value ?? referencedTurn(question, latest)
+  const preview = props.preview
+  const asksAboutPreview =
+    /预览|預覽|报错|報錯|出错|出錯|错误|錯誤|失败|失敗|(?:为什么|為什麼|为何|為何|怎么|怎麼).*(?:重复|重複)|刚才.*运行|剛才.*執行|\b(preview|error|failed|failure|duplicate[sd]?)\b/i.test(
+      question
+    )
+  if (
+    preview &&
+    props.resourceId &&
+    preview.resourceId === props.resourceId &&
+    preview.isCross === props.isCross &&
+    (requested === 'preview' || (requested === undefined && asksAboutPreview))
+  ) {
+    const { sql, ...facts } = preview
+    const label =
+      tr(preview.outcome === 'SUCCESS' ? 'successful_preview' : 'failed_preview') +
+      ' · ' +
+      (preview.isCross ? 'Calcite' : t('common.single_source')) +
+      ' · ' +
+      tr('draft_revision') +
+      ' ' +
+      preview.revision +
+      (props.draftRevision !== preview.revision ? ' · ' + tr('preview_draft_changed') : '')
+    return { label, sql, preview: { ...facts, currentRevision: props.draftRevision } }
+  }
+  if (requested === 'preview') throw new Error('unavailable_reference')
   const index = (requested ?? latest) - 1
   const prior = turns.value[index]
   if (requested !== undefined && !prior?.result?.sql) throw new Error('unavailable_reference')
@@ -189,6 +223,12 @@ const chooseBasis = (question: string) => {
   const sql = props.readDraft()
   return { label: tr(sql ? 'editor_draft' : 'new_query'), sql }
 }
+watch(
+  () => props.preview,
+  () => {
+    if (selectedBasis.value === 'preview') selectedBasis.value = undefined
+  }
+)
 const checkedSuggestion = async (turn: Turn, target: string) => {
   const session = turn.session!
   const checked = await checkSqlApplication(
@@ -227,6 +267,7 @@ const send = async () => {
   const current = () => token === version && !read.signal.aborted
   selectedBasis.value = undefined
   const source = props.resourceId
+  const isCross = props.isCross
   const index =
     turns.value.push({
       question,
@@ -245,7 +286,8 @@ const send = async () => {
     const opening = {
       scene: 'dataset-sql' as const,
       resourceId: source,
-      isCross: props.isCross,
+      isCross,
+      preview: basis.preview,
       systemVariableNames: [...new Set(props.systemVariableNames)]
         .sort(
           (a, b) =>
@@ -452,13 +494,13 @@ const apply = async (turn: Turn) => {
           <p v-if="turn.answer">{{ turn.answer }}</p>
           <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
           <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
+          <details v-if="turn.result">
+            <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
+            <pre v-if="turn.baseSql">{{ turn.baseSql }}</pre>
+            <small>{{ turn.session?.resourceName }} ({{ turn.session?.resourceId }})</small>
+          </details>
           <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small>
-            <details>
-              <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
-              <pre v-if="turn.baseSql">{{ turn.baseSql }}</pre>
-              <small>{{ turn.session?.resourceName }} ({{ turn.session?.resourceId }})</small>
-            </details>
             <pre>{{ turn.result.sql }}</pre>
             <details>
               <summary>{{ tr('sql_evidence') }}</summary>
@@ -502,7 +544,13 @@ const apply = async (turn: Turn) => {
         </article>
       </div>
       <p v-if="failure" role="alert">{{ failure }}</p>
-      <div v-if="turns.length && !busy">
+      <div v-if="(turns.length || props.preview) && !busy">
+        <el-button
+          v-if="props.preview && selectedBasis === undefined"
+          text
+          @click="selectedBasis = 'preview'"
+          >{{ tr('refer_to_preview') }}</el-button
+        >
         <el-button
           v-if="selectedBasis === undefined"
           text
@@ -511,7 +559,13 @@ const apply = async (turn: Turn) => {
           >{{ tr('new_query') }}</el-button
         >
         <el-tag v-else closable @close="selectedBasis = undefined">
-          {{ selectedBasis ? tr('numbered_suggestion') + ' #' + selectedBasis : tr('new_query') }}
+          {{
+            selectedBasis === 'preview'
+              ? tr('refer_to_preview')
+              : selectedBasis
+              ? tr('numbered_suggestion') + ' #' + selectedBasis
+              : tr('new_query')
+          }}
         </el-tag>
       </div>
       <el-input

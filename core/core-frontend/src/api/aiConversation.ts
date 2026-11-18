@@ -4,6 +4,20 @@ export interface AiConversationResource {
   id: string
   name: string
 }
+export type SqlPreviewOutcome =
+  | 'SUCCESS'
+  | 'UNKNOWN_COLUMN'
+  | 'UNKNOWN_TABLE'
+  | 'AMBIGUOUS_COLUMN'
+  | 'SYNTAX'
+  | 'TIMEOUT'
+  | 'FAILED'
+export interface AiSqlPreview {
+  resourceId: string
+  isCross: boolean
+  outcome: SqlPreviewOutcome
+  revision: number
+}
 export interface AiConversationSession {
   sessionId: string
   contextVersion: string
@@ -36,6 +50,7 @@ export const openConversation = (value: {
   sql: string
   isCross?: boolean
   systemVariableNames?: string[]
+  preview?: AiSqlPreview & { currentRevision: number }
   openKey?: string
   previousSessionId?: string
 }) => data<AiConversationSession>(request.post({ url: '/ai/conversations', data: value }))

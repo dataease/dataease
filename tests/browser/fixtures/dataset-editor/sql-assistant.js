@@ -20,5 +20,7 @@ export async function getPreviewSql(data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  return response.json();
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.msg);
+  return body;
 }

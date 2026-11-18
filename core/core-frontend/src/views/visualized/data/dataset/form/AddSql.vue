@@ -13,8 +13,9 @@ import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
-import { searchVariableApi } from '@/api/variable'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import type { AiSqlPreview, SqlPreviewOutcome } from '@/api/aiConversation'
+import { searchVariableApi } from '@/api/variable'
 import {
   ref,
   reactive,
@@ -542,25 +543,87 @@ const handleClose = () => {
 }
 
 const dataPreviewLoading = ref(false)
-const getSQLPreview = () => {
-  if (!validateVariableNames()) {
-    return
-  }
+const latestPreview = shallowRef<AiSqlPreview & { sql: string }>()
+let previewSequence = 0
+let feedbackGeneration = 0
+const forgetFeedback = () => {
+  feedbackGeneration++
+  latestPreview.value = undefined
+}
+const invalidatePreview = () => {
+  previewSequence++
+  forgetFeedback()
+  dataPreviewLoading.value = false
+  state.plxTableData = []
+  state.fields = []
+}
+watch(
+  () => [
+    sqlNode.value.id,
+    sqlNode.value.datasourceId,
+    isCross.value,
+    user.uid,
+    user.oid,
+    user.proxyInfo?.proxyOid
+  ],
+  invalidatePreview,
+  { flush: 'sync' }
+)
+onBeforeUnmount(invalidatePreview)
+
+// Driver errors can include expanded SQL, connection information and bound values.
+// Only a known classification ever leaves this editor.
+const previewFailure = (error: unknown): SqlPreviewOutcome => {
+  const message = error instanceof Error ? error.message : ''
+  if (/ambiguous column|column .*ambiguous/i.test(message)) return 'AMBIGUOUS_COLUMN'
+  if (
+    /unknown column|invalid identifier|column .*?(?:not found|does not exist)|no such column/i.test(
+      message
+    )
+  )
+    return 'UNKNOWN_COLUMN'
+  if (
+    /unknown table|table .*?(?:not found|doesn't exist|does not exist)|no such table|relation .*does not exist/i.test(
+      message
+    )
+  )
+    return 'UNKNOWN_TABLE'
+  if (/syntax error|sql syntax|parse error/i.test(message)) return 'SYNTAX'
+  if (/timeout|timed out/i.test(message)) return 'TIMEOUT'
+  return 'FAILED'
+}
+
+const getSQLPreview = async () => {
+  if (!validateVariableNames()) return
   parseVariable()
+  const generation = feedbackGeneration
+  const sequence = ++previewSequence
+  const snapshot = {
+    sql: readDraft(),
+    revision: draftRevision.value,
+    resourceId: String(sqlNode.value.datasourceId ?? ''),
+    isCross: Boolean(isCross.value)
+  }
+  latestPreview.value = undefined
   dataPreviewLoading.value = true
-  getPreviewSql({
-    isCross: isCross.value,
-    sql: Base64.encode(setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())),
-    datasourceId: sqlNode.value.datasourceId,
-    sqlVariableDetails: JSON.stringify(state.variables)
-  })
-    .then(res => {
-      state.plxTableData = res.data.data
-      state.fields = generateColumns(res.data.fields)
+  try {
+    const res = await getPreviewSql({
+      isCross: snapshot.isCross,
+      sql: Base64.encode(setNameIdTrans('name', 'id', snapshot.sql)),
+      datasourceId: sqlNode.value.datasourceId,
+      sqlVariableDetails: JSON.stringify(state.variables)
     })
-    .finally(() => {
-      dataPreviewLoading.value = false
-    })
+    if (sequence !== previewSequence) return
+    state.plxTableData = res.data.data
+    state.fields = generateColumns(res.data.fields)
+    if (generation === feedbackGeneration) latestPreview.value = { ...snapshot, outcome: 'SUCCESS' }
+  } catch (error) {
+    if (sequence !== previewSequence || generation !== feedbackGeneration) return
+    // The HTTP interceptor presents the original error to the author.
+    latestPreview.value = { ...snapshot, outcome: previewFailure(error) }
+  } finally {
+    if (sequence === previewSequence) dataPreviewLoading.value = false
+  }
 }
 
 let tableList = []
@@ -742,6 +805,8 @@ const mousedownDrag = () => {
         :system-variable-names="systemVariableNames"
         :resource-id="String(sqlNode.datasourceId ?? '')"
         :read-draft="readDraft"
+        :preview="latestPreview"
+        @invalidate-preview="forgetFeedback"
         :draft-revision="draftRevision"
         :resource-label="resourceLabel"
         @apply="replaceDraft"
