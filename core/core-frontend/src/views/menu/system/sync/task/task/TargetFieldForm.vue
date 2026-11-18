@@ -988,13 +988,13 @@ defineExpose({
       flex-shrink: 0;
     }
   }
+  .ed-form-item__error {
+    position: static;
+    width: 100%;
+    overflow-wrap: anywhere;
+  }
   .source-field-item {
     margin-bottom: 8px;
-
-    .ed-form-item__error {
-      position: static;
-      width: 100%;
-    }
   }
   .source-type-summary {
     margin: 0 0 24px;

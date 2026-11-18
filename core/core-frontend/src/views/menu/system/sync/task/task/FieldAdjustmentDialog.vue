@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import useClipboard from 'vue-clipboard3'
 import { isRequestError } from '@/config/axios/error'
 import { computed, onBeforeUnmount, reactive, ref, watchEffect } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -80,6 +81,9 @@ const showError = (cause: unknown) => {
 }
 const taskName = ref('')
 const context = ref<ITaskMaintenance>()
+const recoveryInitialization = computed(
+  () => context.value?.adjustmentDiscarded && context.value.state !== 'DONE'
+)
 const preview = ref<ITaskMaintenance>()
 const validationIssues = ref<IMaintenanceFieldIssue[]>([])
 const validationBlockers = ref<string[]>([])
@@ -187,7 +191,14 @@ const unknownResult = computed(() =>
 )
 const resultTitle = computed(() => {
   if (context.value?.state === 'DONE') return t('sync_maintenance.success_title')
-  if (context.value?.state === 'RECOVERY_REQUIRED')
+  if (recoveryInitialization.value && !context.value.initializationStatus)
+    return t('sync_maintenance.abandoned_title')
+  if (unknownResult.value && !recoveryInitialization.value)
+    return t('sync_maintenance.unknown_result_title')
+  if (
+    context.value?.state === 'RECOVERY_REQUIRED' &&
+    !context.value.plan?.steps.some(step => step.state === 'FAILED')
+  )
     return t('sync_maintenance.recovery_required_title')
   if (context.value?.state === 'REINIT_REQUIRED') {
     if (context.value.executionRecovery) return t('sync_maintenance.init_unknown')
@@ -202,9 +213,13 @@ const resultTitle = computed(() => {
         : 'sync_maintenance.initialization_pending_title'
     )
   }
+  if (savingConfiguration.value)
+    return t(
+      processing.value
+        ? 'sync_maintenance.configuration_pending_title'
+        : 'sync_maintenance.config_save_failed_title'
+    )
   const steps = context.value?.plan?.steps || []
-  if (steps.some(step => step.state === 'UNKNOWN'))
-    return t('sync_maintenance.unknown_result_title')
   if (operationFailed.value) {
     if (steps.every(step => step.state === 'DONE'))
       return t('sync_maintenance.config_save_failed_title')
@@ -214,7 +229,6 @@ const resultTitle = computed(() => {
         : 'sync_maintenance.schema_failed_title'
     )
   }
-  if (savingConfiguration.value) return t('sync_maintenance.configuration_pending_title')
   if (context.value?.processing === false) return t('sync_maintenance.execution_pending_title')
   return t('sync_maintenance.applying')
 })
@@ -222,6 +236,8 @@ const resultTitle = computed(() => {
  * 按真实失败阶段说明同步限制，不用同一段恢复文案覆盖结构、配置和初始化结果
  */
 const resultDescription = computed(() => {
+  if (recoveryInitialization.value && !context.value.initializationStatus)
+    return t('sync_maintenance.abandoned_help')
   if (context.value?.state === 'REINIT_REQUIRED') {
     const status = context.value.initializationStatus
     return t(
@@ -239,9 +255,13 @@ const resultDescription = computed(() => {
     return t('sync_maintenance.recovery_required_help')
   if (savingConfiguration.value)
     return t(
-      context.value.plan.requiresReinitialization
-        ? 'sync_maintenance.configuration_init_help'
-        : 'sync_maintenance.configuration_pending_help'
+      processing.value
+        ? context.value.plan.requiresReinitialization
+          ? 'sync_maintenance.configuration_init_help'
+          : 'sync_maintenance.configuration_pending_help'
+        : context.value.plan.requiresReinitialization
+        ? 'sync_maintenance.configuration_stopped_init_help'
+        : 'sync_maintenance.configuration_stopped_help'
     )
   return t(
     processing.value
@@ -263,7 +283,50 @@ const summarizeError = (message: string) => {
   return firstLine.length > 200 ? firstLine.slice(0, 200) + '…' : firstLine
 }
 const failureSummary = computed(() => summarizeError(operationError.value))
+const interruptedStep = computed(() =>
+  context.value?.plan?.steps.find(step => ['UNKNOWN', 'FAILED'].includes(step.state))
+)
+const interruptionReason = computed(
+  () =>
+    (
+      error.value ||
+      interruptedStep.value?.error ||
+      operationError.value ||
+      context.value?.blockedReason ||
+      ''
+    ).split('\n')[0]
+)
+const { toClipboard } = useClipboard()
+const copyDiagnostics = async () => {
+  const operation = context.value
+  const details = [
+    `${t('sync_maintenance.operation_record')}：${operation.operationId}`,
+    `${t('sync_maintenance.target_table')}：${operation.targetTable}`,
+    resultTitle.value,
+    error.value,
+    operationError.value,
+    ...(operation.plan?.steps || []).map(step =>
+      [
+        t(`sync_maintenance.action_${step.action.toLowerCase()}`),
+        step.after?.fieldName || step.before?.fieldName || step.id,
+        t(`sync_maintenance.step_${step.state.toLowerCase()}`),
+        step.error
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    )
+  ]
+    .filter(Boolean)
+    .join('\n')
+  try {
+    await toClipboard(details)
+    ElMessage.success(t('commons.copy_success'))
+  } catch {
+    ElMessage.error(t('operate_log.copy_failed'))
+  }
+}
 const appliedTitle = computed(() => {
+  if (context.value?.adjustmentDiscarded) return t('sync_maintenance.recovery_completed')
   if (context.value?.plan?.steps.some(step => step.state === 'SKIPPED'))
     return t('sync_maintenance.ended_summary')
   if (!context.value?.structureVerified || context.value.blockedReason)
@@ -274,6 +337,7 @@ const appliedTitle = computed(() => {
 })
 const appliedDescription = computed(() => {
   const operation = context.value
+  if (operation?.adjustmentDiscarded) return t('sync_maintenance.recovery_completed_help')
   if (!operation?.plan) return t('sync_maintenance.sync_result_logs')
   if (!operation.plan.requiresReinitialization) return t('sync_maintenance.adjustment_without_sync')
   return t(
@@ -282,11 +346,12 @@ const appliedDescription = computed(() => {
       : 'sync_maintenance.initialization_not_verified'
   )
 })
-const configurationApplied = computed(() =>
-  ['DONE', 'REINIT_REQUIRED'].includes(context.value?.state)
+const configurationApplied = computed(
+  () => !recoveryInitialization.value && ['DONE', 'REINIT_REQUIRED'].includes(context.value?.state)
 )
 const initializationText = computed(() => {
-  if (!context.value?.plan?.requiresReinitialization) return t('sync_maintenance.init_not_required')
+  if (!recoveryInitialization.value && !context.value?.plan?.requiresReinitialization)
+    return t('sync_maintenance.init_not_required')
   const status = context.value.initializationStatus
   if (status === 'SUCCESS') return t('sync_maintenance.init_success')
   if (status === 'RUNNING') return t('sync_maintenance.init_running')
@@ -328,24 +393,13 @@ const queryEditable = computed(
 )
 const processing = computed(
   () =>
-    (context.value?.state === 'APPLYING' &&
-      context.value.processing !== false &&
-      !operationFailed.value &&
-      !savingConfiguration.value) ||
+    (submitted.value &&
+      (context.value.processing === true ||
+        (context.value.processing === undefined && !operationFailed.value))) ||
     (context.value?.state === 'REINIT_REQUIRED' &&
       !context.value.executionRecovery &&
       context.value.initializationStatus === 'RUNNING')
 )
-const resumeLabel = computed(() => {
-  if (context.value?.state === 'RECOVERY_REQUIRED') return t('sync_maintenance.resume_original')
-  if (!savingConfiguration.value) return t('sync_maintenance.resume')
-  if (context.value.plan.requiresReinitialization) return t('sync_maintenance.save_and_initialize')
-  return t(
-    operationFailed.value
-      ? 'sync_maintenance.retry_configuration'
-      : 'sync_maintenance.save_configuration'
-  )
-})
 const sourceType = (row: ITableField) => {
   if (!row.fieldSource) return t('sync_maintenance.generated_field')
   const source = context.value?.sourceFields?.find(field => field.fieldName === row.fieldSource)
@@ -597,6 +651,7 @@ const mergeStatus = (state: ITaskMaintenance) => {
     ...context.value,
     state: state.state,
     phase: state.phase,
+    adjustmentDiscarded: state.plan ? state.adjustmentDiscarded : context.value.adjustmentDiscarded,
     processing: state.processing,
     operationId: state.operationId,
     plan:
@@ -1174,7 +1229,10 @@ const showChanges = async () => {
  * 用户重新检查时重置读取次数，只核对现有操作，不重发字段修改
  */
 const inspectStatus = async () => {
-  if (!submitted.value) return poll()
+  if (!submitted.value) {
+    await poll()
+    return
+  }
   const version = viewVersion
   stopPolling()
   loading.value = true
@@ -1194,6 +1252,7 @@ const inspectStatus = async () => {
     if (trackingDatabase) pollTimer = setTimeout(poll, 2000)
   } catch (cause) {
     if (isCurrentView(version)) showError(cause)
+    return
   } finally {
     if (isCurrentView(version)) loading.value = false
   }
@@ -1416,6 +1475,25 @@ defineExpose({ open })
           </div>
         </div>
       </div>
+      <el-alert
+        v-if="activeTab === 'result' && submitted && operationFailed && !processing"
+        class="interruption-summary"
+        :title="resultTitle"
+        :type="unknownResult ? 'warning' : 'error'"
+        :closable="false"
+        show-icon
+      >
+        <p v-if="interruptedStep">
+          {{ t('sync_maintenance.adjustment_step') }}：
+          {{ t(`sync_maintenance.action_${interruptedStep.action.toLowerCase()}`) }} ·
+          {{ interruptedStep.after?.fieldName || interruptedStep.before?.fieldName }}
+        </p>
+        <p v-if="interruptionReason" class="interruption-reason">{{ interruptionReason }}</p>
+        <p>{{ resultDescription }}</p>
+        <el-button link type="primary" @click="copyDiagnostics">{{
+          t('sync_maintenance.copy_diagnostics')
+        }}</el-button>
+      </el-alert>
       <div class="adjustment-content">
         <el-alert
           v-if="precisionAlignment"
@@ -1504,16 +1582,18 @@ defineExpose({ open })
         </template>
         <template v-else-if="activeTab === 'result' && context?.state !== 'DONE' && context?.plan">
           <el-alert
+            v-if="!(submitted && operationFailed && !processing)"
             :title="resultTitle"
             :description="resultDescription"
-            :type="operationFailed || context.state === 'REINIT_REQUIRED' ? 'warning' : 'info'"
+            :type="
+              !processing && (operationFailed || context.state === 'REINIT_REQUIRED')
+                ? 'warning'
+                : 'info'
+            "
             :closable="false"
             show-icon
           />
-          <ol
-            v-if="!processing && (savingConfiguration || configurationApplied)"
-            class="operation-stages"
-          >
+          <ol v-if="savingConfiguration || configurationApplied" class="operation-stages">
             <li>
               {{ t('sync_maintenance.schema_stage')
               }}<span>{{
@@ -1530,6 +1610,8 @@ defineExpose({ open })
                 t(
                   configurationApplied
                     ? 'sync_maintenance.config_updated'
+                    : processing
+                    ? 'sync_maintenance.init_running'
                     : 'sync_maintenance.config_not_updated'
                 )
               }}</span>
@@ -1539,15 +1621,19 @@ defineExpose({ open })
             </li>
           </ol>
           <el-alert
-            v-if="operationError && !failureSteps.some(step => step.error === operationError)"
+            v-if="
+              !processing &&
+              operationError &&
+              !failureSteps.some(step => step.error === operationError)
+            "
             :title="failureSummary"
             type="error"
             :closable="false"
             show-icon
           />
-          <p v-if="processing" class="current-stage">
+          <p v-if="processing && !savingConfiguration" class="current-stage">
             {{ t('sync_maintenance.current_stage') }}：{{
-              configurationApplied
+              configurationApplied || recoveryInitialization
                 ? initializationText
                 : context.plan.steps.every(step => step.state === 'DONE')
                 ? t('sync_maintenance.configuration_stage')
@@ -1565,7 +1651,7 @@ defineExpose({ open })
             :summarize-error="summarizeError"
           />
           <el-collapse
-            v-if="operationFailed || context.initializationError"
+            v-if="!processing && (operationFailed || context.initializationError)"
             v-model="detailsVisible"
             class="technical-details"
             accordion
@@ -1612,9 +1698,14 @@ defineExpose({ open })
               show-icon
             />
             <div class="applied-summary-actions">
-              <el-button link type="primary" :disabled="loading" @click="showChanges">{{
-                t('sync_maintenance.view_changes')
-              }}</el-button>
+              <el-button
+                v-if="!context.adjustmentDiscarded"
+                link
+                type="primary"
+                :disabled="loading"
+                @click="showChanges"
+                >{{ t('sync_maintenance.view_changes') }}</el-button
+              >
               <el-button link type="primary" :disabled="loading" @click="showAllLogs">{{
                 t('sync_task_log.view_more')
               }}</el-button>
@@ -1731,19 +1822,9 @@ defineExpose({ open })
             [changes.length]
           )
         }}</span>
-        <el-button
-          v-if="
-            activeTab !== 'draft' &&
-            !(
-              activeTab === 'result' &&
-              ((submitted && operationFailed && !savingConfiguration && !unknownResult) ||
-                (context?.state === 'REINIT_REQUIRED' && !processing))
-            )
-          "
-          :disabled="loading"
-          @click="close"
-          >{{ t(processing ? 'sync_maintenance.collapse' : 'sync_maintenance.close') }}</el-button
-        >
+        <el-button v-if="activeTab !== 'draft'" :disabled="loading" @click="close">{{
+          t(processing ? 'sync_maintenance.collapse' : 'sync_maintenance.close')
+        }}</el-button>
         <el-button
           v-if="uncertainOperation"
           type="primary"
@@ -1763,6 +1844,13 @@ defineExpose({ open })
           }}</el-button>
         </template>
         <template v-else-if="submitted">
+          <el-button
+            v-if="!processing"
+            link
+            :disabled="loading"
+            @click="fullDialog?.open(context.taskId)"
+            >{{ t('sync_maintenance.recovery_entry') }}</el-button
+          >
           <template v-if="!processing">
             <el-button
               v-if="unknownResult"
@@ -1776,15 +1864,16 @@ defineExpose({ open })
               :disabled="loading"
               type="primary"
               @click="resume"
-              >{{ resumeLabel }}</el-button
+              >{{ t('sync_maintenance.continue_adjustment') }}</el-button
             >
-            <el-button
-              v-else-if="!operationFailed && context.state === 'APPLYING'"
-              :disabled="loading"
-              type="primary"
-              @click="resume"
-              >{{ t('sync_maintenance.resume') }}</el-button
-            >
+            <template v-else-if="!operationFailed && context.state === 'APPLYING'">
+              <el-button :disabled="loading" @click="finishAdjustment(true)">{{
+                t('sync_maintenance.back_edit')
+              }}</el-button>
+              <el-button :disabled="loading" type="primary" @click="resume">{{
+                t('sync_maintenance.resume')
+              }}</el-button>
+            </template>
             <template v-else>
               <el-button
                 class="end-adjustment"
@@ -1798,6 +1887,15 @@ defineExpose({ open })
               }}</el-button>
             </template>
           </template>
+        </template>
+        <template v-else-if="recoveryInitialization && !context.executionRecovery">
+          <el-button
+            v-if="!processing"
+            :disabled="loading"
+            type="primary"
+            @click="fullDialog?.open(context.taskId)"
+            >{{ t('sync_maintenance.recovery_retry') }}</el-button
+          >
         </template>
         <template v-else-if="context?.state === 'REINIT_REQUIRED' && !context.executionRecovery">
           <template v-if="!processing">
@@ -2198,6 +2296,16 @@ defineExpose({ open })
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+}
+.interruption-summary {
+  flex-shrink: 0;
+  margin-top: 16px;
+  max-height: 35%;
+  overflow: auto;
+  p {
+    margin: 4px 0;
+    overflow-wrap: anywhere;
+  }
 }
 .adjustment-content {
   display: flex;
