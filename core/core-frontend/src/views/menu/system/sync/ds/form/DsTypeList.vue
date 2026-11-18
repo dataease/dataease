@@ -106,7 +106,7 @@ const currentTypeList = computed(() => {
   );
 });
 const getDatasourceTypes = () => {
-  const arr = [[], [], [], [], []] as any[];
+  const arr = typeList.map(() => []) as any[]
   dsTypes.forEach((item) => {
     const index = typeList.findIndex((ele) => ele === item.catalog);
     if (index !== -1) {
