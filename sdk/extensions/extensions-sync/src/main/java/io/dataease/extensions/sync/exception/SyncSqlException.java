@@ -43,8 +43,9 @@ public class SyncSqlException extends DEException {
         int depth = 0;
         while (current != null && seen.add(current) && depth++ < 12) {
             details.append("\nCaused by: ").append(current.getClass().getName());
-            if (current instanceof SQLException sql && sql.getSQLState() != null) {
-                details.append(" [SQLState=").append(sql.getSQLState()).append(']');
+            if (current instanceof SQLException sql) {
+                details.append(" [ErrorCode=").append(sql.getErrorCode()).append(']');
+                if (sql.getSQLState() != null) details.append(" [SQLState=").append(sql.getSQLState()).append(']');
             }
             if (current.getMessage() != null) {
                 details.append(": ").append(redact(current.getMessage(), configuration));

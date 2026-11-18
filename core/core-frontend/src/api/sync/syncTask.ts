@@ -381,9 +381,11 @@ export interface ITaskMaintenance {
   state: string
   /** 服务端是否仍在推进调整，旧接口未提供时保留原展示行为 */
   processing?: boolean
+  adjustmentDiscarded?: boolean
   phase?: 'SCHEMA' | 'CONFIGURATION' | 'RECOVERY' | 'INITIALIZATION' | 'DONE'
   blockedReason?: string
   blockedCode?:
+    | 'RECOVERY_INITIALIZATION_REQUIRED'
     | 'UNSUPPORTED_TARGET'
     | 'TARGET_READ_FAILED'
     | 'SCHEMA_MISMATCH'
@@ -455,6 +457,7 @@ export const resolveExecutionApi = (data: IExecutionRecoveryRequest) =>
 export interface ITaskMaintenanceRequest {
   taskId: string
   operationId: string
+  adjustmentId?: string
   configFingerprint?: string
   schemaFingerprint?: string
   sourceFingerprint?: string
@@ -529,7 +532,7 @@ export const recheckTaskMaintenanceApi = (data: ITaskMaintenanceRequest) =>
   })
 
 /**
- * 结束剩余步骤前保留已完成修改并恢复一致配置，不等于回滚
+ * 保留已完成变更并恢复一致配置
  */
 export const finishTaskMaintenanceApi = (data: ITaskMaintenanceRequest) =>
   request.post<Promise<{ data: ITaskMaintenance }>>({
