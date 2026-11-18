@@ -19,6 +19,7 @@ import { isDashboard, isTabCanvas, trackBarStyleCheck } from '@/utils/canvasUtil
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 import { ElMessage } from 'element-plus-secondary'
+import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 
 const props = defineProps({
   // 公共参数集
@@ -568,6 +569,8 @@ const action = param => {
     trackClick(trackMenu.value[0])
   } else {
     setTimeout(() => {
+      // 取数失败或组件卸载后，菜单实例可能已失效
+      if (!viewTrack.value) return
       const barStyleTemp = {
         left: param.x - 50,
         top: param.y + 10
@@ -625,7 +628,9 @@ defineExpose({
 </script>
 
 <template>
+  <chart-error v-if="isError" :err-msg="errMsg" />
   <div
+    v-else
     ref="indicatorRef"
     :class="{ 'menu-point': showCursor, 'mobile-indicator': mobileResponsive }"
     :style="contentStyle"

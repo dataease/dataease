@@ -1,5 +1,7 @@
 import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
+import type { DataEaseError } from '@/config/axios/error'
+import { AxiosHeaders } from 'axios'
 import { originNameHandleWithArr, originNameHandleBackWithArr } from '@/utils/CalculateFields'
 import { cloneDeep } from 'lodash-es'
 import { Base64 } from 'js-base64'
@@ -99,23 +101,55 @@ export const getData = async (data, queryRequest?: QueryRequest): Promise<IRespo
   ]
   const dataFields = ['fields', 'sourceFields']
   originNameHandleWithArr(copyData, fields)
-  return request.post({ url: '/chartData/getData', data: copyData, queryRequest }).then(res => {
-    if (res.code === 0) {
-      originNameHandleBackWithArr(res?.data, fields)
-      // 动态计算字段在数据中，也需要转码
-      originNameHandleWithArr(res?.data?.data, dataFields)
-      originNameHandleBackWithArr(res?.data?.data, dataFields)
-      originNameHandleBackWithArr(res?.data?.data?.left, ['fields'])
-      originNameHandleBackWithArr(res?.data?.data?.right, ['fields'])
-      return res?.data
-    } else {
-      originNameHandleBackWithArr(res, fields)
-      originNameHandleBackWithArr(res?.data, dataFields)
-      originNameHandleBackWithArr(res?.data?.left, ['fields'])
-      originNameHandleBackWithArr(res?.data?.right, ['fields'])
-      return res
-    }
-  })
+  let chartError: DataEaseError | undefined
+  return request
+    .post({
+      url: '/chartData/getData',
+      data: copyData,
+      queryRequest,
+      handleErrorLocally: (error: DataEaseError) => {
+        const headers = AxiosHeaders.from(error.response?.headers)
+        const reason = headers.get('X-DE-Error-Reason') || error.category
+        // 此处只处理 /chartData/getData 的错误响应，40001/50002 在图表内展示
+        // 错误码不代表具体根因，认证、资源权限标记及其他错误保留全局处理
+        if (
+          !error.response ||
+          (error.code !== 40001 && error.code !== 50002) ||
+          error.httpStatus === 401 ||
+          headers.has('DE-GATEWAY-FLAG') ||
+          headers.has('DE-FORBIDDEN-FLAG') ||
+          (reason && reason !== 'INTERNAL') ||
+          error.messageKey === 'i18n_error_key_changed' ||
+          error.message.includes('rsa info has been changed')
+        ) {
+          return false
+        }
+        chartError = error
+        return true
+      }
+    })
+    .catch(error => {
+      if (!chartError || error !== chartError) throw error
+      // 复用图表已有的非零业务码展示分支，兼容非 2xx 错误响应
+      return { code: chartError.code, msg: chartError.message }
+    })
+    .then(res => {
+      if (res.code === 0) {
+        originNameHandleBackWithArr(res?.data, fields)
+        // 动态计算字段在数据中，也需要转码
+        originNameHandleWithArr(res?.data?.data, dataFields)
+        originNameHandleBackWithArr(res?.data?.data, dataFields)
+        originNameHandleBackWithArr(res?.data?.data?.left, ['fields'])
+        originNameHandleBackWithArr(res?.data?.data?.right, ['fields'])
+        return res?.data
+      } else {
+        originNameHandleBackWithArr(res, fields)
+        originNameHandleBackWithArr(res?.data, dataFields)
+        originNameHandleBackWithArr(res?.data?.left, ['fields'])
+        originNameHandleBackWithArr(res?.data?.right, ['fields'])
+        return res
+      }
+    })
 }
 
 export const innerExportDetails = async (data): Promise<IResponse> => {
