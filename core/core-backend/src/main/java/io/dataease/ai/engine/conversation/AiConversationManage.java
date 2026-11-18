@@ -168,7 +168,6 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (request.systemVariableNames() != null)
             opening = fingerprint("variables", opening, io.dataease.utils.JsonUtil.toJSONString(request.systemVariableNames()));
         if (request.preview() != null) {
-            if (!"dataset-sql".equals(request.scene())) throw AiErrors.error("invalid");
             opening = fingerprint("preview", opening, request.preview());
         }
         if (request.previousSessionId() != null) opening = fingerprint("continue", opening, request.previousSessionId());
@@ -218,10 +217,10 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             // A dataset activity can show a proposal from each of its fifty turns.
             // Its frozen contexts share that activity's expiry and must survive unrelated button jobs.
-            boolean dataset = "dataset-sql".equals(scene.code());
+            boolean retainEveryTurn = scene.retainEveryTurn();
             var retained = sessions.values().stream().filter(state -> same(state.owner, owner) && canEvict(state)
-                    && dataset == "dataset-sql".equals(state.view.scene())).toList();
-            if (retained.size() >= (dataset ? MAX_TURNS : MAX_SINGLE_RESULTS))
+                    && retainEveryTurn == scene(state.view.scene()).retainEveryTurn()).toList();
+            if (retained.size() >= (retainEveryTurn ? MAX_TURNS : MAX_SINGLE_RESULTS))
                 evictOldest(retained);
             if (sessions.size() >= MAX_SESSIONS)
                 evictOldest(sessions.values().stream().filter(this::canEvict).toList());
@@ -406,7 +405,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(task.prompt), false, null);
             AiRuntimeManage.StreamHandle stream = !task.toolConversation ? runtime.getObject().stream(code(), scope, task.prompt)
                     : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input,
-                            "dataset-sql".equals(state.view.scene()) ? AiToolProtocol.StepLimit.DATASET_SQL : AiToolProtocol.StepLimit.DEFAULT);
+                            scene(state.view.scene()).toolStepLimit());
             var run = new Run(state, task, stream);
             run.tools = scene(state.view.scene()).beginTurn(state.context);
             stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
@@ -479,11 +478,8 @@ public class AiConversationManage implements AiToolConversationFeature {
                     || !Objects.equals(request.draftVersion(), state.view.draftVersion())) throw AiErrors.error("scope_changed");
             if (!"COMPLETED".equals(run.status) || run.result == null || !"SQL_SUGGESTION".equals(run.result.type())) throw AiErrors.error("invalid");
             if (request.targetResourceId() != null && !request.targetResourceId().equals(state.context.resourceId())) {
-                if (!state.view.scene().equals("dataset-sql") || !request.targetResourceId().matches("[0-9]{1,20}"))
-                    throw AiErrors.error("invalid");
                 authorized(state, () -> {
-                    var scene = scene(state.view.scene());
-                    scene.authorize(scene.resolve(request.targetResourceId(), ""));
+                    scene(state.view.scene()).authorizeCopyTarget(request.targetResourceId());
                     return null;
                 });
             }
