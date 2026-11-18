@@ -9,6 +9,8 @@ export interface TableSemantic {
   physicalLabel: string | null
   available: boolean
   confirmed: boolean
+  fieldCount: number
+  confirmedFieldCount: number
 }
 
 export interface FieldSemantic {

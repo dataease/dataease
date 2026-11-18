@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AiDatasourceMetadataScenes {
-    private static final int MAX_TABLES = 10;
+    private static final int MAX_TABLES = 50;
     private final ObjectProvider<AiTaskManage> tasks;
     private final AiAccess access;
     private final ObjectProvider<InteractiveAuthApi> authorization;

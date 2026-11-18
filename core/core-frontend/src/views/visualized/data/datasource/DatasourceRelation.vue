@@ -82,15 +82,7 @@ watch(
   }
 )
 
-const tableOptions = computed(() =>
-  Array.from(
-    new Set([
-      ...tables.value.map(table => table.tableName),
-      ...[tableFilter.value].filter(Boolean),
-      ...relations.value.flatMap(row => [row.leftTable, row.rightTable])
-    ])
-  )
-)
+const tableOptions = computed(() => Array.from(new Set(tables.value.map(table => table.tableName))))
 const relationValid = computed(() => {
   const { name, leftTable, rightTable, conditions } = relation.value
   const leftFields = fieldsByTable.get(leftTable)
@@ -117,7 +109,8 @@ const load = async () => {
   loading.value = true
   loadFailed.value = false
   try {
-    await refreshRelations()
+    const [, tablesLoaded] = await Promise.all([refreshRelations(), loadTables()])
+    if (!tablesLoaded) loadFailed.value = true
   } catch {
     loadFailed.value = true
   } finally {

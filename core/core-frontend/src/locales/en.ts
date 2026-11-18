@@ -1657,8 +1657,8 @@ export default {
     aiRelationResult: 'Added {written} joins for review. Skipped {skipped}.',
     aiSemanticResult:
       'Added details to {written} records for review. {skipped} tables required no writes and {failed} failed.',
-    aiRelationScope: 'Select 2 to 10 tables. Only schema and comments are used.',
-    aiSemanticScope: 'Select 1 to 10 semantic tables. Only schema and comments are used.',
+    aiRelationScope: 'Select 2 to {limit} tables. Only schema and comments are used.',
+    aiSemanticScope: 'Select 1 to {limit} semantic tables. Only schema and comments are used.',
     aiBackToList: 'Back to list',
     aiStart: 'Start task',
     noRelations: 'No matching relationships',
@@ -1691,7 +1691,9 @@ export default {
     removeRelationPrompt: 'Remove the relationship “{name}”?',
     semanticTables: 'Semantic tables',
     addTables: 'Add semantic tables',
-    addTablesHint: 'Adding tables syncs their physical structure and fields.',
+    addTablesHint:
+      'Adding tables syncs their physical structure and fields. Add up to 100 tables at a time.',
+    addTablesLimit: 'Add up to {limit} tables at a time. Please add tables in batches.',
     searchPhysicalTables: 'Search table names or comments',
     onlySelectedTables: 'Selected only',
     selectTableResults: 'Select all results',

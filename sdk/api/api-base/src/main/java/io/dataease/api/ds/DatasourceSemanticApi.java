@@ -98,7 +98,9 @@ public interface DatasourceSemanticApi {
             @Schema(description = "语义表是否已添加，手工移除后为 false") boolean active,
             @Schema(description = "最近一次同步的物理表显示名称") String physicalLabel,
             @Schema(description = "最近一次同步时物理表是否存在") boolean available,
-            boolean confirmed
+            boolean confirmed,
+            @Schema(description = "字段总数") long fieldCount,
+            @Schema(description = "已确认字段数") long confirmedFieldCount
     ) {}
 
     @Schema(description = "数据源字段语义")

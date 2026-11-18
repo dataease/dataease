@@ -24,7 +24,7 @@ const task = ref<MetadataAiTask | null>(null)
 const selected = ref<string[]>([])
 const options = ref<{ tableName: string; name?: string | null }[]>([])
 const title = computed(() => tr(props.kind === 'RELATION' ? 'discover' : 'complete'))
-const selectionLimit = 10
+const selectionLimit = 50
 const selectionTarget = computed(() => Math.min(selectionLimit, options.value.length))
 const selectionFull = computed(() => selected.value.length === selectionTarget.value)
 const toggleAll = () => {
@@ -144,7 +144,13 @@ const submit = async () => {
       <section v-else-if="!busy" class="metadata-ai-selection">
         <h3 class="metadata-ai-heading">{{ tr('aiSelectTables') }}</h3>
         <div class="metadata-ai-selection-bar">
-          <p>{{ tr(kind === 'RELATION' ? 'aiRelationScope' : 'aiSemanticScope') }}</p>
+          <p>
+            {{
+              tr(kind === 'RELATION' ? 'aiRelationScope' : 'aiSemanticScope', {
+                limit: selectionLimit
+              })
+            }}
+          </p>
           <div v-if="options.length" class="metadata-ai-selection-actions">
             <span aria-live="polite">
               {{ tr('aiSelectedCount', { count: selected.length, limit: selectionTarget }) }}

@@ -53,10 +53,14 @@ public class DatasourceSemanticServer implements DatasourceSemanticApi {
         if (tableNames.isEmpty()) {
             DEException.throwException(Translator.get("i18n_datasource_metadata_select_tables"));
         }
+        var names = new LinkedHashSet<>(tableNames);
+        if (names.size() > 100) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_table_limit", 100));
+        }
         var source = physical.datasource(datasourceId);
         var available = physical.tables(datasourceId, source);
         var selected = new ArrayList<DatasetTableDTO>();
-        for (String name : new LinkedHashSet<>(tableNames)) {
+        for (String name : names) {
             requireText(name, 512);
             selected.add(listedTable(available, name));
         }

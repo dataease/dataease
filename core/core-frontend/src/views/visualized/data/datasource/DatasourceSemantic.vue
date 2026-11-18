@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import referenceTable from '@/assets/svg/reference-table.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import DatasourceMetadataAi from './DatasourceMetadataAi.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -39,6 +40,7 @@ const pendingTableNames = ref(new Set<string>())
 const membershipSearch = ref('')
 const onlySelected = ref(false)
 const membershipList = ref<{ scrollTo: (offset: number) => void }>()
+const maxTablesPerAdd = 100
 const membershipRowHeight = 62
 const loadingTables = ref(false)
 
@@ -93,6 +95,13 @@ watch([membershipSearch, onlySelected], () => membershipList.value?.scrollTo(0),
 const setTableSelected = (tableName: string, selected: boolean) => {
   if (saving.value || activeTableNames.value.has(tableName)) return
   if (selected) {
+    if (
+      !pendingTableNames.value.has(tableName) &&
+      pendingTableNames.value.size >= maxTablesPerAdd
+    ) {
+      ElMessage.warning(tr('addTablesLimit', { limit: maxTablesPerAdd }))
+      return
+    }
     pendingTableNames.value.add(tableName)
   } else {
     pendingTableNames.value.delete(tableName)
@@ -100,6 +109,13 @@ const setTableSelected = (tableName: string, selected: boolean) => {
 }
 
 const setResultsSelected = (selected: boolean) => {
+  if (selected) {
+    const count = new Set([...pendingTableNames.value, ...selectableResults.value]).size
+    if (count > maxTablesPerAdd) {
+      ElMessage.warning(tr('addTablesLimit', { limit: maxTablesPerAdd }))
+      return
+    }
+  }
   for (const name of selectableResults.value) setTableSelected(name, selected)
 }
 
@@ -189,6 +205,10 @@ const addTables = () =>
   runSave(async () => {
     const selected = [...pendingTableNames.value]
     if (!selected.length) return
+    if (selected.length > maxTablesPerAdd) {
+      ElMessage.warning(tr('addTablesLimit', { limit: maxTablesPerAdd }))
+      return
+    }
     await addDatasourceSemanticTables(props.datasourceId, selected)
     selectedTable.value = selected[0]
   })
@@ -324,14 +344,31 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                       :aria-pressed="activeTables[index].tableName === selectedTable"
                       @click="selectedTable = activeTables[index].tableName"
                     >
+                      <span class="metadata-table-icon" aria-hidden="true">
+                        <referenceTable class="svg-icon" />
+                      </span>
                       <strong class="metadata-label" :title="activeTables[index].tableName">{{
                         activeTables[index].tableName
                       }}</strong>
-                      <div
-                        class="metadata-secondary"
-                        :title="tableLabel(activeTables[index]) || undefined"
-                      >
-                        {{ tableLabel(activeTables[index]) || '-' }}
+                      <div class="metadata-table-summary metadata-secondary">
+                        <span
+                          class="metadata-table-comment"
+                          :title="tableLabel(activeTables[index]) || undefined"
+                        >
+                          {{ tableLabel(activeTables[index]) || '-' }}
+                        </span>
+                        <span
+                          class="metadata-table-field-count"
+                          :title="
+                            tr('progress', {
+                              confirmed: activeTables[index].confirmedFieldCount,
+                              total: activeTables[index].fieldCount
+                            })
+                          "
+                        >
+                          {{ activeTables[index].confirmedFieldCount }} /
+                          {{ activeTables[index].fieldCount }}
+                        </span>
                       </div>
                     </button>
                     <button
@@ -522,7 +559,7 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
         >
           <template #prefix>
             <Icon name="icon_search-outline_outlined">
-              <icon_searchOutline_outlined class="svg-icon" />
+              <icon_searchOutline_outlined class="svg-icon metadata-membership-search-icon" />
             </Icon>
           </template>
         </el-input>
@@ -869,16 +906,23 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
   white-space: nowrap;
 }
 
+.metadata-membership-search-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .metadata-membership-count {
   float: left;
   line-height: 32px;
 }
 
 .metadata-table-button {
+  position: relative;
   box-sizing: border-box;
   display: block;
   width: 100%;
-  padding: 8px 30px 8px 12px;
+  padding: 8px 30px 8px 36px;
   overflow-wrap: anywhere;
   color: inherit;
   text-align: left;
@@ -892,6 +936,36 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
     color: var(--ed-color-primary);
     background: var(--ed-color-primary-light-9);
   }
+}
+
+.metadata-table-button > .metadata-table-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+}
+
+.metadata-table-button > .metadata-table-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-right: -22px;
+  margin-top: 6px;
+}
+
+.metadata-table-comment {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metadata-table-field-count {
+  flex-shrink: 0;
 }
 
 .metadata-detail {

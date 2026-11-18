@@ -38,9 +38,14 @@ public class DatasourceSemanticManage {
     @Transactional(readOnly = true)
     public Semantics list(Long datasourceId) {
         access.require(datasourceId);
+        var counts = fieldRepository.countFieldsByDatasource(datasourceId).stream()
+                .collect(Collectors.toMap(CoreDatasourceFieldSemanticRepository.TableFieldCounts::getTableId,
+                        count -> count));
         var tables = tableRepository.findByDatasource_IdOrderById(datasourceId).stream()
                 .map(t -> new TableSemantic(t.getId(), t.getTableName(), t.getDescription(), t.getGrain(), t.isActive(),
-                        t.getPhysicalLabel(), t.isAvailable(), t.isConfirmed())).toList();
+                        t.getPhysicalLabel(), t.isAvailable(), t.isConfirmed(),
+                        counts.containsKey(t.getId()) ? counts.get(t.getId()).getFieldCount() : 0,
+                        counts.containsKey(t.getId()) ? counts.get(t.getId()).getConfirmedFieldCount() : 0)).toList();
         return new Semantics(tables);
     }
 
