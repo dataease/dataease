@@ -35,6 +35,20 @@ public final class RemoteFileErrors {
     public static DEException parse(Throwable failure) {
         for (Throwable cause : causes(failure)) {
             if (cause instanceof DEException de && de.getCategory() != null) return de;
+            // Excel 解析器对无有效工作表的文件抛出 IllegalStateException，归为文件格式错误并保留原始信息。
+            if (cause instanceof IllegalStateException && cause.getMessage() != null
+                    && cause.getMessage().contains("invalid workbook or no sheet found")) {
+                String base = io.dataease.i18n.Translator.get("i18n_error_file_invalid");
+                if (base.endsWith("。") || base.endsWith(".")) {
+                    base = base.substring(0, base.length() - 1);
+                }
+                String message = base + ": " + cause.getMessage();
+                DEException exception = new DEException(ErrorCategory.VALIDATION.code(), message);
+                exception.setCategory(ErrorCategory.VALIDATION);
+                exception.setMessageKey("i18n_error_file_invalid");
+                exception.setArgs(new Object[0]);
+                return exception.causedBy(failure);
+            }
             // Explicit file-format failures only; missing classes and program bugs are internal failures.
             if (cause.getClass().getName().equals("org.apache.poi.UnsupportedFileFormatException")
                     || cause.getClass().getName().equals("org.apache.poi.poifs.filesystem.OfficeXmlFileException")
