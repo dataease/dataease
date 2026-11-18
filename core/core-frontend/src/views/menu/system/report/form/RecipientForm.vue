@@ -85,7 +85,7 @@
           </el-option>
 
           <template #tag="{ data }">
-            <div ref="groupTags" class="ed-select__tags" :style="data">
+            <div ref="dingtalkGroupTags" class="ed-select__tags" :style="data">
               <div class="ed-select-tags-wrapper has-prefix">
                 <el-tag
                   @close="removeDingtalkGroupTag(id)"
