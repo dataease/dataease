@@ -1093,9 +1093,7 @@ const showTableRelations = (tableName: string) => {
   relationTableFilter.value = tableName
   activeName.value = 'relations'
 }
-const hasPhysicalTables = computed(
-  () => !!nodeInfo.type && !/^(excel|api|folder)/i.test(nodeInfo.type)
-)
+const hasPhysicalTables = computed(() => !!nodeInfo.type && !/^folder$/i.test(nodeInfo.type))
 const defaultProps = {
   children: 'children',
   label: 'name',

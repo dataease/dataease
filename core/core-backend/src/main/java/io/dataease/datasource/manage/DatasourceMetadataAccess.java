@@ -46,7 +46,7 @@ public class DatasourceMetadataAccess {
             DEException.throwException(Translator.get("i18n_datasource_metadata_invalid_source"));
         }
         String type = datasource.getType().toLowerCase(Locale.ROOT);
-        if ("folder".equals(type) || type.startsWith("excel") || type.startsWith("api")) {
+        if ("folder".equals(type)) {
             DEException.throwException(Translator.get("i18n_datasource_metadata_invalid_source"));
         }
     }

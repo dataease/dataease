@@ -913,6 +913,8 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
 }
 
 .metadata-membership {
+  font-size: 14px;
+  line-height: 22px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -940,6 +942,9 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
 }
 
 .metadata-membership-header {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
   min-height: 42px;
   margin-bottom: -12px;
   background: var(--ed-fill-color-light);
@@ -957,6 +962,16 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
 
 .metadata-membership-row {
   border-bottom: 1px solid var(--ed-border-color);
+}
+
+.metadata-membership-name {
+  font-size: 14px;
+  line-height: 22px;
+
+  .metadata-secondary {
+    font-size: 12px;
+    line-height: 18px;
+  }
 }
 
 .metadata-membership-name > div {
