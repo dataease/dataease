@@ -64,11 +64,11 @@ export const loadSpreadsheetJumpTargets = async (
   }
   const workbook = JSON.parse(spreadsheet.sheetData) as IWorkbookData
   const context = await loadSpreadsheetBindingContext(workbook, true)
-  const regionIds = new Set(
+  const regions = new Map(
     extractPluginInstancesFromWorkbook(workbook)
       .filter((plugin): plugin is TablePluginConfig => ['detail', 'pivot'].includes(plugin.type))
       .filter(plugin => !!workbook.sheets?.[plugin.placement?.sheetId])
-      .map(plugin => plugin.id)
+      .map(plugin => [plugin.id, plugin] as const)
   )
   const selectableConditions = new Set<string>()
   for (const resource of workbook.resources || []) {
@@ -87,7 +87,7 @@ export const loadSpreadsheetJumpTargets = async (
           const area = context.dataAreas.find(item => item.id === field.pluginId)
           return (
             area &&
-            regionIds.has(area.id) &&
+            regions.has(area.id) &&
             (field.datasetId == null || String(field.datasetId) === area.datasetId) &&
             area.fields.some(item => item.id === String(field.fieldId))
           )
@@ -97,13 +97,23 @@ export const loadSpreadsheetJumpTargets = async (
   }
   // 跳转直接绑定已发布的数据区域及查询条件，不要求目标先配置外参。
   const targets: SpreadsheetJumpTarget[] = [
-    ...context.dataAreas.map<SpreadsheetJumpTarget>(area => ({
-      id: area.id,
-      title: area.name,
-      type: area.pluginType === 'detail' ? 'table-info' : 'table-pivot',
-      disabled: !regionIds.has(area.id) || !area.fields.length,
-      fields: area.fields
-    })),
+    ...context.dataAreas.map<SpreadsheetJumpTarget>(area => {
+      const region = regions.get(area.id)
+      let usedFields = region?.data?.zones?.fields || []
+      if (region?.type === 'pivot') {
+        usedFields = [...(region.data?.zones?.rows || []), ...(region.data?.zones?.columns || [])]
+      }
+      // 只关联实例已拖入的字段，候选元数据仍沿用权限及副本归属校验结果。
+      const usedFieldIds = new Set(usedFields.map(field => String(field.id)))
+      const fields = area.fields.filter(field => usedFieldIds.has(field.id))
+      return {
+        id: area.id,
+        title: area.name,
+        type: area.pluginType === 'detail' ? 'table-info' : 'table-pivot',
+        disabled: !fields.length,
+        fields
+      }
+    }),
     ...context.conditions.map(condition => ({
       id: condition.id,
       title: condition.name,
