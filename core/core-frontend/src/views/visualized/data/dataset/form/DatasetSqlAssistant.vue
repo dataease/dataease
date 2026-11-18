@@ -15,6 +15,7 @@ import {
   startConversationExecution,
   stopConversationExecution,
   type AiAssistanceResult,
+  type AiConversationEvents,
   type AiSqlPreview,
   type AiConversationSession
 } from '@/api/aiConversation'
@@ -44,6 +45,7 @@ interface Turn {
   question: string
   answer: string
   session?: AiConversationSession
+  cursor?: number
   executionId?: string
   result?: AiAssistanceResult
   status: string
@@ -263,9 +265,101 @@ const checkedSuggestion = async (turn: Turn, target: string) => {
   }
   return checked.sql
 }
+const applyPage = (turn: Turn, page: AiConversationEvents) => {
+  if (
+    page.sessionId !== turn.session?.sessionId ||
+    page.executionId !== turn.executionId ||
+    page.contextVersion !== turn.session.contextVersion
+  )
+    throw new Error('scope_changed')
+  for (const event of page.events) {
+    if (event.sequence <= (turn.cursor ?? 0)) continue
+    if (event.type === 'TEXT') turn.answer += event.text ?? ''
+    if (event.type === 'FAILED') {
+      const key = aiFailureKey(event.error ?? null)
+      failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
+    }
+  }
+  turn.cursor = page.cursor
+  turn.status = page.status
+  if (page.status === 'COMPLETED' && page.result) {
+    turn.result = page.result
+    turn.answer = page.result.text
+  }
+  if (page.status === 'FAILED') {
+    failure.value ||= tr('failed')
+    void refresh()
+  }
+}
+const unreachable = (turn: Turn) => {
+  turn.status = 'UNREACHABLE'
+  failure.value = tr('progress_unreachable')
+}
+const poll = async (turn: Turn, read: AbortController) => {
+  let failures = 0
+  while (!read.signal.aborted) {
+    let page: AiConversationEvents
+    const attempt = new AbortController()
+    const abort = () => attempt.abort()
+    read.signal.addEventListener('abort', abort, { once: true })
+    const timer = window.setTimeout(abort, 2500)
+    try {
+      page = await getConversationEvents(
+        turn.session!.sessionId,
+        turn.executionId!,
+        turn.cursor ?? 0,
+        attempt.signal
+      )
+    } catch (error) {
+      if (read.signal.aborted) return
+      const status = isRequestError(error) && error.response?.status
+      if (accessLost(error) || (status && status < 500)) throw error
+      if (++failures > 3) {
+        unreachable(turn)
+        return
+      }
+      failure.value = tr('progress_recovering') + ` (${failures}/3)`
+      await new Promise(resolve => window.setTimeout(resolve, failures * 400))
+      continue
+    } finally {
+      window.clearTimeout(timer)
+      read.signal.removeEventListener('abort', abort)
+    }
+    if (read.signal.aborted) return
+    if (failures) failure.value = ''
+    failures = 0
+    applyPage(turn, page)
+    if (page.status !== 'RUNNING') return
+    await new Promise(resolve => window.setTimeout(resolve, 500))
+  }
+}
+const resume = async (turn: Turn) => {
+  if (busy.value || turn.status !== 'UNREACHABLE') return
+  const read = new AbortController()
+  request = read
+  busy.value = true
+  failure.value = ''
+  try {
+    await poll(turn, read)
+  } catch (error) {
+    if (!read.signal.aborted) fail(error)
+  } finally {
+    if (!read.signal.aborted) {
+      busy.value = false
+      request = undefined
+    }
+  }
+}
 const send = async () => {
   const question = input.value.trim()
-  if (!question || busy.value || applying.value || !available.value) return
+  if (
+    !question ||
+    busy.value ||
+    applying.value ||
+    !available.value ||
+    turns.value.at(-1)?.status === 'UNREACHABLE'
+  )
+    return
   let basis: ReturnType<typeof chooseBasis>
   try {
     basis = chooseBasis(question)
@@ -356,49 +450,16 @@ const send = async () => {
       question,
       uuid.v4()
     )
-    if (!current()) {
+    if (token !== version) {
       await stopConversationExecution(session.sessionId, run.executionId).catch(() => undefined)
       return
     }
     turn.executionId = run.executionId
-    let cursor = 0
-    while (current()) {
-      const page = await getConversationEvents(
-        session.sessionId,
-        run.executionId,
-        cursor,
-        read.signal
-      )
-      if (!current()) return
-      if (
-        page.sessionId !== session.sessionId ||
-        page.executionId !== run.executionId ||
-        page.contextVersion !== session.contextVersion
-      )
-        throw new Error('scope_changed')
-      for (const event of page.events) {
-        if (event.sequence <= cursor) continue
-        if (event.type === 'TEXT') turn.answer += event.text ?? ''
-        if (event.type === 'FAILED') {
-          const key = aiFailureKey(event.error ?? null)
-          failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
-        }
-      }
-      cursor = page.cursor
-      turn.status = page.status
-      if (page.status !== 'RUNNING') {
-        if (page.status === 'COMPLETED' && page.result) {
-          turn.result = page.result
-          turn.answer = page.result.text
-        }
-        if (page.status === 'FAILED') {
-          failure.value ||= tr('failed')
-          void refresh()
-        }
-        return
-      }
-      await new Promise(resolve => window.setTimeout(resolve, 500))
+    if (!current()) {
+      await stopRun(turn, token)
+      return
     }
+    await poll(turn, read)
   } catch (error) {
     if (current()) {
       turn.status = 'FAILED'
@@ -411,21 +472,36 @@ const send = async () => {
     }
   }
 }
-const stop = async () => {
-  if (!busy.value || !request) return
-  const turn = turns.value.at(-1)
-  if (!turn) return
-  request.abort()
-  turn.status = 'CANCELLED'
-  if (!turn.session || !turn.executionId) return
-  const token = version
+const stopRun = async (turn: Turn, token: number) => {
+  turn.status = 'STOPPING'
   try {
-    await stopConversationExecution(turn.session.sessionId, turn.executionId)
+    const page = await stopConversationExecution(turn.session!.sessionId, turn.executionId!)
+    if (token !== version) return
+    if (page.status === 'RUNNING') throw new Error('response_invalid')
+    failure.value = ''
+    applyPage(turn, page)
   } catch (error) {
-    if (token === version) fail(error)
+    if (token === version) {
+      if (accessLost(error)) fail(error)
+      else unreachable(turn)
+    }
   } finally {
-    if (token === version) busy.value = false
+    if (token === version) {
+      busy.value = false
+      request = undefined
+    }
   }
+}
+const stop = async () => {
+  const turn = turns.value.at(-1)
+  if (!turn || turn.status === 'STOPPING' || (!busy.value && turn.status !== 'UNREACHABLE')) return
+  request?.abort()
+  if (!turn.session || !turn.executionId) {
+    turn.status = 'CANCELLED'
+    return
+  }
+  busy.value = true
+  await stopRun(turn, version)
 }
 const apply = async (turn: Turn) => {
   const { session, executionId, result } = turn
@@ -615,9 +691,18 @@ const apply = async (turn: Turn) => {
         :placeholder="tr('message')"
         @keydown.ctrl.enter.prevent="send"
       />
-      <el-button v-if="busy" data-testid="dataset-sql-assistant-stop" @click="stop">{{
-        tr('stop')
-      }}</el-button>
+      <el-button
+        v-if="!busy && turns.at(-1)?.status === 'UNREACHABLE'"
+        data-testid="dataset-sql-assistant-resume"
+        @click="resume(turns.at(-1)!)"
+        >{{ tr('resume_progress') }}</el-button
+      >
+      <el-button
+        v-if="busy || turns.at(-1)?.status === 'UNREACHABLE'"
+        data-testid="dataset-sql-assistant-stop"
+        @click="stop"
+        >{{ tr('stop') }}</el-button
+      >
       <el-button
         v-else
         data-testid="dataset-sql-assistant-send"

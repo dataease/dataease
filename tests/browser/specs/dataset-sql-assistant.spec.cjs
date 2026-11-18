@@ -141,6 +141,10 @@ async function backend(page, options = {}) {
     }
     if (path.endsWith("/events")) {
       state.reads++;
+      if (state.readFailures > 0) {
+        state.readFailures--;
+        return route.fulfill({ status: 503, json: {} });
+      }
       if (state.onRead) await state.onRead();
       if (state.slow) return reply({ ...run, cursor: 0, events: [] });
       if (state.failed)
@@ -835,4 +839,28 @@ test("stop during continuation keeps the new idle context for the following ques
   expect(state.opens[2].previousSessionId).toBe("session-2");
   expect(state.starts).toBe(2);
   expect(state.closes).toBe(0);
+});
+
+test("recovers transient event reads and resumes the same execution after an outage", async ({ page }) => {
+  const state = await backend(page, { readFailures: 1 });
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(1);
+  expect(state.starts).toBe(1);
+  state.readFailures = 9;
+  await ask(page, "continue");
+  await expect(control(page, "resume")).toBeVisible({ timeout: 15000 });
+  expect(state.starts).toBe(2);
+  state.readFailures = 0;
+  await control(page, "resume").click();
+  await expect(control(page, "apply")).toHaveCount(2);
+  expect(state.starts).toBe(2);
+  state.readFailures = 9;
+  await ask(page, "continue again");
+  await expect(control(page, "panel").getByRole("alert")).toBeVisible();
+  await control(page, "stop").click();
+  await expect(control(page, "send")).toBeVisible();
+  expect(state.stops).toBe(1);
+  expect(state.starts).toBe(3);
 });
