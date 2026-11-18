@@ -181,14 +181,25 @@ const handleFieldTypeDetected = ({
   // `saved` is the node's metadata before this SQL ran: by now allfields may already carry the new
   // types, so it is the only reliable baseline for "the physical type of an existing field moved".
   const savedMap = new Map((saved || []).map(item => [item.originName, item]))
+  // The configured type lives on the dataset field and is not replaced when the SQL re-runs; the
+  // node row's type is the freshly detected one. Restoring the original SQL must therefore compare
+  // the detected type against the configured one, not against the previous SQL's detected type.
+  const configuredMap = new Map(
+    allfields.value
+      .filter(field => (field.extField ?? 0) === 0 && `${field.datasetTableId}` === `${nodeId}`)
+      .map(field => [field.originName, field.deTypeArr?.length ? field.deTypeArr[0] : field.deType])
+  )
   fields.forEach(detected => {
     const previous = savedMap.get(detected.originName)
     if (!previous || previous.deExtractType === detected.deExtractType) return
+    const configured = configuredMap.get(detected.originName)
+    if (configured != null && configured === detected.deExtractType) return
     const key = fieldTypeDriftKey(nodeId, detected.originName)
     const prev = sqlFieldTypeDrift.value[key]
     next[key] = {
       detected: detected.deExtractType,
-      configured: previous.deTypeArr?.length ? previous.deTypeArr[0] : previous.deType,
+      configured:
+        configured ?? (previous.deTypeArr?.length ? previous.deTypeArr[0] : previous.deType),
       confirmed: !!prev && prev.detected === detected.deExtractType && prev.confirmed
     }
   })
