@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import dvFolder from '@/assets/svg/dv-folder.svg'
-import {reactive, ref, watch} from 'vue'
+import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus-secondary'
-import {BusiTreeRequest} from "@/models/tree/TreeNode";
-import {checkRepeat, getDsTree, save} from "@/api/datasource";
-import {ElMessage, ElMessageBox, ElMessageBoxOptions} from "element-plus-secondary";
-import {useI18n} from '@/hooks/web/useI18n'
-import {useCache} from "@/hooks/web/useCache";
-import {Base64} from "js-base64";
+import { BusiTreeRequest } from '@/models/tree/TreeNode'
+import { checkRepeat, getDsTree, save } from '@/api/datasource'
+import { ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useCache } from '@/hooks/web/useCache'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -30,12 +29,12 @@ const formLoading = ref<boolean>(false)
 const loadingDirectories = ref(false)
 const syncForm = ref<FormInstance>()
 const syncTargetToDatasourceFormVisible = ref<boolean>(false)
-let request = ref<any>()
+const request = ref<{ id: string; name: string }>()
 const form = reactive({
   pid: '' as string | number,
   name: ''
 })
-const init = (dsObj:any) => {
+const init = (dsObj: { id: string; name: string }) => {
   form.name = dsObj.name
   request.value = dsObj
 }
@@ -45,7 +44,7 @@ const props = {
   isLeaf: node => !node.children?.length
 }
 const state = reactive({
-  tData: [] as Tree[],
+  tData: [] as Tree[]
 })
 const dfs = (arr: Tree[]) => {
   arr.forEach(ele => {
@@ -92,114 +91,105 @@ watch(syncTargetToDatasourceFormVisible, visible => {
     directoryRequest++
   }
 })
-const closeDialog = ()=> {
+const closeDialog = () => {
   syncTargetToDatasourceFormVisible.value = false
 }
 const onSync = async () => {
   if (loadingDirectories.value || formLoading.value || !request.value) return
-  const containsSelection = (nodes: Tree[]): boolean => nodes.some(node =>
-    String(node.id) === String(form.pid) || containsSelection(node.children || [])
-  )
+  const containsSelection = (nodes: Tree[]): boolean =>
+    nodes.some(
+      node => String(node.id) === String(form.pid) || containsSelection(node.children || [])
+    )
   if (!containsSelection(state.tData)) form.pid = ''
   if (!(await syncForm.value?.validate().catch(() => false))) return
-  if (request.value && form.name != "") {
-    let options = {
-      confirmButtonType: 'danger',
-      type: 'warning',
-      autofocus: false,
-      showClose: false,
-      tip: ''
+  const params = {
+    syncSourceId: request.value.id,
+    name: form.name,
+    pid: form.pid
+  }
+  formLoading.value = true
+  try {
+    const repeat = await checkRepeat(params)
+    if (repeat) {
+      await ElMessageBox.confirm(t('datasource.has_same_ds'), {
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false,
+        tip: ''
+      } as ElMessageBoxOptions)
     }
-    const params = {
-      name: request.value.name,
-      // 系统数据源使用插件声明的兼容类型
-      type: request.value.systemDatasourceType || request.value.type,
-      description: request.value.desc,
-      configuration: Base64.encode(JSON.stringify(request.value.configuration)),
-      apiConfiguration:[]
+    const result = await save(params)
+    if (result !== undefined) {
+      wsCache.set('ds-new-success', true)
+      ElMessage.success(t('common.save_success'))
+      closeDialog()
     }
-    formLoading.value = true
-    checkRepeat(params).then(res => {
-      if (res) {
-        ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
-            () => {
-              save({ ...params, name: form.name, pid: form.pid })
-                  .then(res => {
-                    if (res !== undefined) {
-                      wsCache.set('ds-new-success', true)
-                      ElMessage.success(t('common.save_success'))
-                      closeDialog()
-                    }
-                  })
-                  .finally(() => {
-                    formLoading.value = false
-                  })
-            },
-            () => {
-              formLoading.value = false
-            }
-        )
-      } else {
-        save({ ...params, name: form.name, pid: form.pid })
-            .then(res => {
-              if (res !== undefined) {
-                wsCache.set('ds-new-success', true)
-                ElMessage.success(t('common.save_success'))
-                closeDialog()
-              }
-            })
-            .finally(() => {
-              formLoading.value = false
-            })
-      }
-    })
-    return
+  } catch {
+    // 请求错误由统一拦截器展示；取消确认时保留表单。
+  } finally {
+    formLoading.value = false
   }
 }
-const filterMethod = (value, data) => ()=> {
+
+const filterMethod = (value, data) => () => {
   return data.name.includes(value)
 }
 const rules = reactive({
-  name: [{required: true, message: t('commons.name') + t('commons.cannot_be_null'), trigger: 'blur'}],
-  pid: [{required: true, message: t('sync_datasource.select_folder'), trigger: 'change'}],
+  name: [
+    { required: true, message: t('commons.name') + t('commons.cannot_be_null'), trigger: 'blur' }
+  ],
+  pid: [{ required: true, message: t('sync_datasource.select_folder'), trigger: 'change' }]
 })
 defineExpose({
   init,
   syncTargetToDatasourceFormVisible
 })
-
 </script>
 <template>
   <el-dialog v-model="syncTargetToDatasourceFormVisible" width="420px" :z-index="2000">
-   <template #title>
-     <div class="title">
-       <div class="main-title">
-         {{ t('sync_datasource.sync_ds') }}
-       </div>
-       <div class="subtitle">
-         <p> {{ t('sync_datasource.sync_to_datasource') }}</p>
-       </div>
-     </div>
-   </template>
+    <template #title>
+      <div class="title">
+        <div class="main-title">
+          {{ t('sync_datasource.sync_ds') }}
+        </div>
+        <div class="subtitle">
+          <p>{{ t('sync_datasource.sync_to_datasource') }}</p>
+        </div>
+      </div>
+    </template>
     <template #default>
       <div class="dialog-content">
-        <el-form ref="syncForm" :model="form" label-position="top" v-loading="formLoading || loadingDirectories" :rules="rules">
-          <el-form-item :label="t('sync_datasource.datasource') + t('sync_datasource.name')" prop="name" style="margin-bottom: 24px">
-            <el-input v-model="form.name" :placeholder="t('sync_datasource.input_ds_name')"></el-input>
+        <el-form
+          ref="syncForm"
+          :model="form"
+          label-position="top"
+          v-loading="formLoading || loadingDirectories"
+          :rules="rules"
+        >
+          <el-form-item
+            :label="t('sync_datasource.datasource') + t('sync_datasource.name')"
+            prop="name"
+            style="margin-bottom: 24px"
+          >
+            <el-input
+              v-model="form.name"
+              :placeholder="t('sync_datasource.input_ds_name')"
+            ></el-input>
           </el-form-item>
           <el-form-item :label="t('sync_datasource.folder')" prop="pid" style="margin-bottom: 0">
             <el-tree-select
-                v-model="form.pid"
-                :data="state.tData"
-                popper-class="dataset-tree-select"
-                style="width: 100%"
-                :render-after-expand="false"
-                :props="props"
-                :placeholder="t('sync_datasource.select_folder')"
-                check-strictly
-                @node-click="nodeClick"
-                :filter-method="filterMethod"
-                filterable
+              v-model="form.pid"
+              :data="state.tData"
+              popper-class="dataset-tree-select"
+              style="width: 100%"
+              :render-after-expand="false"
+              :props="props"
+              :placeholder="t('sync_datasource.select_folder')"
+              check-strictly
+              @node-click="nodeClick"
+              :filter-method="filterMethod"
+              filterable
             >
               <template #default="{ data: { name } }">
                 <el-icon>
@@ -215,14 +205,20 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="closeDialog">{{ t('common.cancel') }}</el-button>
-        <el-button type="primary" :disabled="loadingDirectories || !state.tData.length || !request" :loading="formLoading" @click="onSync">{{ t('common.sure') }}</el-button>
+        <el-button
+          type="primary"
+          :disabled="loadingDirectories || !state.tData.length || !request"
+          :loading="formLoading"
+          @click="onSync"
+          >{{ t('common.sure') }}</el-button
+        >
       </span>
     </template>
   </el-dialog>
 </template>
 <style lang="less" scoped>
-.title{
-  .main-title{
+.title {
+  .main-title {
     color: var(--ed-text-color-regular);
     font-family: var(--de-custom_font, 'PingFang');
     font-style: normal;
@@ -230,26 +226,26 @@ defineExpose({
     font-size: 16px;
     line-height: 24px;
   }
-  .subtitle{
+  .subtitle {
     margin: 8px 0 0 0;
-    > p{
+    > p {
       font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
       letter-spacing: 0;
       text-align: left;
-      color: #646A73;
+      color: #646a73;
     }
   }
 }
-.dialog-content{
+.dialog-content {
   .ed-select {
     width: 100%;
   }
-  :deep(.ed-select .ed-input__wrapper){
-      padding-right: 12px;
-      padding-left: 12px;
+  :deep(.ed-select .ed-input__wrapper) {
+    padding-right: 12px;
+    padding-left: 12px;
   }
 }
 </style>
