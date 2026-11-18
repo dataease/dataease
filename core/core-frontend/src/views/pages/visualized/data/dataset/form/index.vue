@@ -144,14 +144,15 @@ const changeNodeFieldName = (id: string, value: string) => {
   field.name = value
   changeUpdate()
 }
-const changeNodeFieldType = (id: string, value: (number | string)[]) => {
+const changeNodeFieldType = (id: string, value: (number | string)[], confirmDrift = true) => {
   const field = allfields.value.find(field => field.id === id)
   if (!field) return
   const current = field.deTypeArr?.length ? field.deTypeArr : [field.deType]
   if (JSON.stringify(current) === JSON.stringify(value)) return
   field.deTypeArr = [...value]
-  confirmFieldTypeDrift(field)
-  cascaderChange(field, value)
+  // 取消勾选时自动记录的类型在重新勾选后会回放，只是还原已配置类型，不是用户的确认操作。
+  if (confirmDrift) confirmFieldTypeDrift(field)
+  cascaderChange(field, value, confirmDrift)
   changeUpdate()
 }
 
@@ -1832,7 +1833,7 @@ const dragEnd = () => {
   maskShow.value = false
 }
 
-const cascaderChange = (row, val) => {
+const cascaderChange = (row, val, confirmDrift = true) => {
   const [deType, dateFormat] = val
   if (dateFormat === 'custom') {
     oldArrValue = row.deType === 1 ? [1, row.dateFormatType] : [row.deType]
@@ -1840,7 +1841,7 @@ const cascaderChange = (row, val) => {
     updateCustomTime.value = true
     return
   }
-  confirmFieldTypeDrift(row)
+  if (confirmDrift) confirmFieldTypeDrift(row)
   row.deType = deType
   row.dateFormat = deType === 1 ? dateFormat : ''
   row.dateFormatType = deType === 1 ? dateFormat : ''
