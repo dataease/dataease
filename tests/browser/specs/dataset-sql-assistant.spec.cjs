@@ -793,11 +793,16 @@ test("a late older preview cannot replace the newer result or cross datasource b
   expect(state.opens[2].previousSessionId).toBeUndefined();
 });
 
-test("old failed preview is repaired on its own source after switching the editor", async ({ page }) => {
+test("old failed preview is repaired on its own source after switching the editor", async ({
+  page,
+}) => {
   const state = await backend(page);
-  await page.route("**/fixture-api/dataset/previewSql", route => route.fulfill({
-    status: 400, json: { msg: "Unknown column 'missing_col'" }
-  }));
+  await page.route("**/fixture-api/dataset/previewSql", (route) =>
+    route.fulfill({
+      status: 400,
+      json: { msg: "Unknown column 'missing_col'" },
+    })
+  );
   await enter(page);
   const draft = editor(page).locator(".cm-content");
   await draft.fill("SELECT missing_col FROM orders");
@@ -808,26 +813,38 @@ test("old failed preview is repaired on its own source after switching the edito
   await expand(page);
   await ask(page, "刚才为什么报错");
   await expect(control(page, "apply")).toBeVisible();
-  expect(state.opens[0]).toMatchObject({ sql: "SELECT missing_col FROM orders",
-    preview: { outcome: "UNKNOWN_COLUMN", currentResourceId: "second" } });
+  expect(state.opens[0]).toMatchObject({
+    sql: "SELECT missing_col FROM orders",
+    preview: { outcome: "UNKNOWN_COLUMN", currentResourceId: "second" },
+  });
   expect(state.opens[0].resourceId).toBe(state.opens[0].preview.resourceId);
   await control(page, "apply").click();
-  await expect(page.locator(".ed-message-box:visible")).toContainText("Warehouse B");
-  await page.locator(".ed-message-box:visible").getByRole("button", { name: /Cancel|取消/ }).click();
+  await expect(page.locator(".ed-message-box:visible")).toContainText(
+    "Warehouse B"
+  );
+  await page
+    .locator(".ed-message-box:visible")
+    .getByRole("button", { name: /Cancel|取消/ })
+    .click();
   await expect(draft).toHaveText("SELECT 2");
   await ask(page, "解释当前草稿");
   await expect.poll(() => state.opens.length).toBe(2);
-  expect(state.opens[1]).toMatchObject({ resourceId: "second", sql: "SELECT 2" });
+  expect(state.opens[1]).toMatchObject({
+    resourceId: "second",
+    sql: "SELECT 2",
+  });
 });
 
-test("stop during continuation keeps the new idle context for the following question", async ({ page }) => {
+test("stop during continuation keeps the new idle context for the following question", async ({
+  page,
+}) => {
   const state = await backend(page);
   await enter(page);
   await expand(page);
   await ask(page);
   await expect(control(page, "apply")).toHaveCount(1);
   let release;
-  const pending = new Promise(resolve => release = resolve);
+  const pending = new Promise((resolve) => (release = resolve));
   state.onOpen = () => pending;
   await ask(page, "continue");
   await expect.poll(() => state.opens.length).toBe(2);
@@ -841,7 +858,9 @@ test("stop during continuation keeps the new idle context for the following ques
   expect(state.closes).toBe(0);
 });
 
-test("recovers transient event reads and resumes the same execution after an outage", async ({ page }) => {
+test("recovers transient event reads and resumes the same execution after an outage", async ({
+  page,
+}) => {
   const state = await backend(page, { readFailures: 1 });
   await enter(page);
   await expand(page);
@@ -863,4 +882,34 @@ test("recovers transient event reads and resumes the same execution after an out
   await expect(control(page, "send")).toBeVisible();
   expect(state.stops).toBe(1);
   expect(state.starts).toBe(3);
+});
+
+test("a new custom SQL node can apply its first suggestion before preview or save", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await page.goto("/?create=1");
+  const canvas = page.locator(".drag-mask_dataset");
+  await expect(canvas).toBeVisible();
+  const dataTransfer = await page.evaluateHandle(() => {
+    const drag = new DataTransfer();
+    drag.setData(
+      "text",
+      JSON.stringify({
+        tableName: "custom_sql",
+        type: "sql",
+        datasourceId: "source",
+      })
+    );
+    return drag;
+  });
+  await canvas.dispatchEvent("drop", { dataTransfer });
+  await expect(editor(page).locator(".cm-content")).toHaveText("");
+  await expand(page);
+  await ask(page);
+  await control(page, "apply").click();
+  await expect(editor(page).locator(".cm-content")).toHaveText(proposal);
+  expect(state.opens[0].sql).toBe("");
+  expect(state.previews).toHaveLength(0);
+  expect(await page.evaluate(() => window.saved)).toBeUndefined();
 });
