@@ -153,6 +153,7 @@ const pluginLoadFailed = ref(false)
 const latestUseTypes = ref([]);
 const currentType = ref<DsType>("OLTP");
 const filterText = ref("");
+const effectiveType = computed<DsType>(() => (filterText.value.trim() ? 'all' : currentType.value))
 const currentDsType = ref();
 const sourceActive = ref(true);
 const activeDatasourceRole = computed(() => sourceActive.value
@@ -222,6 +223,7 @@ const handleDsNodeClick = (data) => {
 
 const handleNodeClick = (data: Node) => {
   currentType.value = data.type;
+  filterText.value = ''
 };
 
 watch(filterText, (val) => {
@@ -257,7 +259,7 @@ const currentTypeList = computed(() => {
 const pluginIndex = ref('')
 const pluginDs = ref([])
 const rebuildDatasourceTypes = () => {
-  const arr = [[], [], [], [], []] as any[];
+  const arr = typeList.map(() => []) as any[]
   dsTypes.forEach((item) => {
     if (Number(item.datasourceRole) !== activeDatasourceRole.value) return
     const index = typeList.findIndex((ele) => ele === item.catalog);
@@ -595,6 +597,7 @@ const init = (dsInfo: Form, source: boolean) => {
   sourceActive.value = source
   rebuildDatasourceTypes()
   currentType.value = source ? 'OLTP' : 'OLAP'
+  if (!editDs.value) filterText.value = ''
   currentDsType.value = dsInfo?.type || ''
   isPlugin.value = dsInfo?.isPlugin || false
   pluginIndex.value = isPlugin.value ? dsInfo?.staticMap?.index : null
@@ -736,7 +739,7 @@ defineExpose({
         </div>
         <template v-if="activeStep === 0">
           <p
-              :class="currentType === 'latestUse' && 'active'"
+              :class="effectiveType === 'latestUse' && 'active'"
               @click="
               handleNodeClick({
                 type: 'latestUse',
@@ -749,12 +752,19 @@ defineExpose({
             {{ t("sync_datasource.recently_created") }}
           </p>
           <el-divider/>
+          <p
+            :class="effectiveType === 'all' && 'active'"
+            @click="handleNodeClick({ type: 'all', name: 'all', id: 'all' })"
+            class="list-item_primary"
+          >
+            {{ t('data_source.all') }}
+          </p>
           <div
               :key="ele.name"
               @click="handleNodeClick(<Node>ele)"
               v-for="ele in datasourceTree"
               class="list-item_primary"
-              :class="currentType === ele.type && 'active'"
+              :class="effectiveType === ele.type && 'active'"
           >
             <span :title="ele.name" class="label">{{ ele.name }}</span>
           </div>
@@ -803,7 +813,7 @@ defineExpose({
               v-show="activeStep === 0"
               :filter-text="filterText.toLocaleLowerCase()"
               @select-ds-type="selectDsType"
-              :current-type="currentType"
+              :current-type="effectiveType"
               :latest-use-types="latestUseTypes"
               :datasource-role="activeDatasourceRole"
           ></ds-type-list>
