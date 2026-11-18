@@ -253,16 +253,19 @@ const resultDescription = computed(() => {
   if (unknownResult.value) return t('sync_maintenance.response_unknown_help')
   if (context.value?.state === 'RECOVERY_REQUIRED')
     return t('sync_maintenance.recovery_required_help')
-  if (savingConfiguration.value)
-    return t(
-      processing.value
-        ? context.value.plan.requiresReinitialization
+  if (savingConfiguration.value) {
+    if (processing.value)
+      return t(
+        context.value.plan.requiresReinitialization
           ? 'sync_maintenance.configuration_init_help'
           : 'sync_maintenance.configuration_pending_help'
-        : context.value.plan.requiresReinitialization
+      )
+    return t(
+      context.value.plan.requiresReinitialization
         ? 'sync_maintenance.configuration_stopped_init_help'
         : 'sync_maintenance.configuration_stopped_help'
     )
+  }
   return t(
     processing.value
       ? 'sync_maintenance.collapse_help'
@@ -1605,16 +1608,10 @@ defineExpose({ open })
               }}</span>
             </li>
             <li>
-              {{ t('sync_maintenance.configuration_stage')
-              }}<span>{{
-                t(
-                  configurationApplied
-                    ? 'sync_maintenance.config_updated'
-                    : processing
-                    ? 'sync_maintenance.init_running'
-                    : 'sync_maintenance.config_not_updated'
-                )
-              }}</span>
+              {{ t('sync_maintenance.configuration_stage') }}
+              <span v-if="configurationApplied">{{ t('sync_maintenance.config_updated') }}</span>
+              <span v-else-if="processing">{{ t('sync_maintenance.init_running') }}</span>
+              <span v-else>{{ t('sync_maintenance.config_not_updated') }}</span>
             </li>
             <li v-if="context.plan.requiresReinitialization">
               {{ t('sync_maintenance.initialization_stage') }}<span>{{ initializationText }}</span>
