@@ -69,8 +69,15 @@ public final class AiConversationDtos {
     public record ValueMeaning(String value, String meaning) { }
     public record FieldEvidence(String name, String type, String comment, String businessName, String description,
                                 java.util.List<ValueMeaning> values) { }
+    public record JoinKey(String leftField, String rightField) {}
+    public record RelationEvidence(String name, String description, String leftTable, String rightTable,
+                                   java.util.List<JoinKey> conditions, String cardinality, String joinType) {}
     public record TableEvidence(String table, boolean inspected, String description, String grain,
-                                java.util.List<FieldEvidence> fields) { }
+                                java.util.List<FieldEvidence> fields, java.util.List<RelationEvidence> relations) {
+        public TableEvidence(String table, boolean inspected, String description, String grain, java.util.List<FieldEvidence> fields) {
+            this(table, inspected, description, grain, fields, java.util.List.of());
+        }
+    }
     public record Result(String type, String text, String sql, String resourceId, String resourceName,
                          String resourceVersion, String editorId, String draftVersion, java.util.List<TableEvidence> evidence) {
         public Result(String type, String text, String sql, String resourceId, String resourceName,

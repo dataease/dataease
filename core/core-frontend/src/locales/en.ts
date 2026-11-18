@@ -18,6 +18,7 @@ export default {
     replace_draft: 'Replace the entire SQL draft with this suggestion?',
     sql_evidence: 'Tables and fields used',
     sql_reference: 'Referenced in SQL',
+    confirmed_join: 'Confirmed relationship · recommended direction',
     verified_structure: 'Checked against current structure',
     confirmed_meaning: 'Confirmed business meaning',
     no_sql_evidence: 'No attributable table metadata for this query.',

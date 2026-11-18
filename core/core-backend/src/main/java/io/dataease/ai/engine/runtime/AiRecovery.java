@@ -23,7 +23,10 @@ public final class AiRecovery {
     public io.dataease.api.ai.config.AiConfigDtos.Recovery policy() { return new io.dataease.api.ai.config.AiConfigDtos.Recovery(stepLimit, attemptLimit, delay); }
     private Progress progress = new Progress(null, null, 0, 0, null);
     private java.util.function.Consumer<Progress> observer = ignored -> { };
-    public AiRecovery(CoreAiSetting settings) {
+    private final AiToolProtocol.StepLimit limit;
+    public AiRecovery(CoreAiSetting settings) { this(settings, AiToolProtocol.StepLimit.DEFAULT); }
+    AiRecovery(CoreAiSetting settings, AiToolProtocol.StepLimit limit) {
+        this.limit = limit;
         stepLimit = settings.getRecoveryStepRetries(); attemptLimit = settings.getRecoveryAttemptRetries(); delay = settings.getRecoveryInitialDelayMillis();
     }
     /** A trusted lifecycle may install the policy captured at acceptance, before any step is published. */
@@ -55,8 +58,8 @@ public final class AiRecovery {
             guard.run();
             try {
                 synchronized (this) {
-                    if ("MODEL".equals(kind) && ++modelSends > AiToolProtocol.MAX_MODEL_STEPS
-                            || "TOOL".equals(kind) && ++toolSends > AiToolProtocol.MAX_MODEL_STEPS - 1) throw AiErrors.error("output_limit");
+                    if ("MODEL".equals(kind) && ++modelSends > limit.modelSteps
+                            || "TOOL".equals(kind) && ++toolSends > limit.modelSteps - 1) throw AiErrors.error("output_limit");
                 }
                 return work.get();
             }

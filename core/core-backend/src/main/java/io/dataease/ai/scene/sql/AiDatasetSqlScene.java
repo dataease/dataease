@@ -8,6 +8,7 @@ import io.dataease.ai.tool.datasource.DatasetSqlTableSearch;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.api.ai.conversation.AiConversationDtos;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.manage.DatasourceRelationManage;
 import io.dataease.extensions.datasource.utils.SqlUtil;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +18,8 @@ import java.util.Map;
 /** The dataset editor delivers a draft. Run and Save remain explicit editor operations. */
 @Component
 public class AiDatasetSqlScene extends AiSqlConversationScene {
-    public AiDatasetSqlScene(AiDatasourceTools metadata, EngineManage engines, DatasetSqlSemanticTools semantics) {
-        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
+    public AiDatasetSqlScene(AiDatasourceTools metadata, EngineManage engines, DatasetSqlSemanticTools semantics, DatasourceRelationManage relations) {
+        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), DatasetSqlRelations.tool(metadata, relations), DatasetSqlGuide.tool(metadata, engines), proposal(metadata)));
     }
 
     @Override protected AiDatasourceTools.Scope scope(Context context) {
@@ -71,6 +72,12 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
                 + "Inspect the selected table with get_table_fields before using business meanings, including previous turns' metadata. "
                 + "Only confirmed business names/descriptions and explicit value/meaning pairs establish a measure, unit or state. Aliases, samples and guesses cannot. "
                 + "If actual vs receivable or another meaning is unresolved, ask only for the missing choice. Apply personal corrections only within this conversation. "
+                + "Before a same-source JOIN inspect both tables and call read_relations. Use every confirmed key pair with AND. "
+                + "Explain the endpoint fields, business role, join direction, cardinality and resulting grain. Preserve the rows the author requests. "
+                + "If several roles fit, ask which role before proposing SQL. A selection affects only this dialogue. "
+                + "With no confirmed path, ask before proposing a JOIN. Name any plausible inferred field pair and label it as an inference, with its field evidence. Never assert inferred cardinality as confirmed. "
+                + "Visualization normally needs detail rows with usable dimensions and measures. Group only for an explicit summary. "
+                + "Explain one-to-many and many-to-many fanout. Preaggregate the many side on all join keys or use EXISTS for filtering. Never SUM(DISTINCT amount) to remove repeated orders. "
                 + "For a suggestion call propose_sql with one complete read-only query. "
                 + "Explain the proposed change. It has not been run or saved. Only the author may apply and run it. "
                 + "For explanation alone answer directly. Source connector: " + source.type()
@@ -92,7 +99,7 @@ public class AiDatasetSqlScene extends AiSqlConversationScene {
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
             metadata.authorize(scope);
             return AiToolProtocol.result(SqlUtil.isSingleReadQuery(arguments.get("sql"))
-                    ? Map.of("status", "NOT_RUN", "references", DatasetSqlEvidence.references(arguments.get("sql")))
+                    ? DatasetSqlEvidence.lineage(arguments.get("sql"))
                     : Map.of("status", "INVALID", "message", "Propose one complete read-only SELECT or WITH query."));
         });
     }

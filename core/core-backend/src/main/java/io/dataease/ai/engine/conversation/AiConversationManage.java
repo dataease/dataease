@@ -405,7 +405,8 @@ public class AiConversationManage implements AiToolConversationFeature {
             String id = state.view.sessionId();
             var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(task.prompt), false, null);
             AiRuntimeManage.StreamHandle stream = !task.toolConversation ? runtime.getObject().stream(code(), scope, task.prompt)
-                    : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input);
+                    : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input,
+                            "dataset-sql".equals(state.view.scene()) ? AiToolProtocol.StepLimit.DATASET_SQL : AiToolProtocol.StepLimit.DEFAULT);
             var run = new Run(state, task, stream);
             run.tools = scene(state.view.scene()).beginTurn(state.context);
             stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
@@ -605,7 +606,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                 synchronized (run.state) { progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); }
                 complete(run); return;
             }
-            if (step.calls().size() != 1 || run.toolSteps >= AiToolProtocol.MAX_MODEL_STEPS - 1) throw AiErrors.error("output_limit");
+            if (step.calls().size() != 1 || run.toolSteps >= stream.maxToolSteps()) throw AiErrors.error("output_limit");
             var call = step.calls().get(0); var scene = scene(run.state.view.scene());
             var definition = scene.tools(run.state.context).stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
             Map<String, String> arguments;

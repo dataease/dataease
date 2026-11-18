@@ -102,6 +102,14 @@ export interface AiConversationTool {
 }
 export interface AiSqlTableEvidence {
   table: string
+  relations?: {
+    name: string
+    leftTable: string
+    rightTable: string
+    cardinality: string
+    joinType: string
+    conditions: { leftField: string; rightField: string }[]
+  }[]
   inspected: boolean
   description?: string | null
   grain?: string | null

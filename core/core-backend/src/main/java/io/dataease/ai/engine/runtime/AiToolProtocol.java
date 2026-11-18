@@ -18,6 +18,11 @@ public final class AiToolProtocol {
         JSON.getFactory().setStreamReadConstraints(com.fasterxml.jackson.core.StreamReadConstraints.builder()
                 .maxNestingDepth(12).maxStringLength(65536).maxNumberLength(20).build());
     }
+    public enum StepLimit {
+        DEFAULT(MAX_MODEL_STEPS), DATASET_SQL(12);
+        public final int modelSteps;
+        StepLimit(int modelSteps) { this.modelSteps = modelSteps; }
+    }
     public enum RetrySafety { READ_ONLY, IDEMPOTENT, UNKNOWN }
     public record Definition(String name, String description, Map<String, String> parameters, RetrySafety retrySafety) {
         public Definition(String name, String description, Map<String, String> parameters) { this(name, description, parameters, RetrySafety.UNKNOWN); }
@@ -102,9 +107,11 @@ public final class AiToolProtocol {
         private long raw, generated, results;
         private int steps, frames;
         public final int output;
-        public Budget(int output) { this.output = output; }
+        private final StepLimit limit;
+        public Budget(int output) { this(output, StepLimit.DEFAULT); }
+        public Budget(int output, StepLimit limit) { this.output = output; this.limit = limit; }
         public synchronized int allocate() {
-            if (steps >= MAX_MODEL_STEPS || output < 0) throw AiErrors.error("output_limit");
+            if (steps >= limit.modelSteps || output < 0) throw AiErrors.error("output_limit");
             steps++; return output;
         }
         public synchronized void frame() { if (++frames > 20000) throw AiErrors.error("response_invalid"); }
