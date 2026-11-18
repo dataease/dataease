@@ -12,7 +12,11 @@ public final class AiConversationDtos {
                        @Pattern(regexp = "[0-9]{1,20}|") String resourceId,
                        @NotBlank @Size(max = 100) String editorId,
                        @Size(max = 30000) String sql, @Size(max = 100) String openKey,
-                       @Size(max = 100) String previousSessionId, Boolean isCross) {
+                       @Size(max = 100) String previousSessionId, Boolean isCross,
+                       @Size(max = 64) java.util.List<@NotBlank @Size(max = 256) String> systemVariableNames) {
+        public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId, Boolean isCross) {
+            this(scene, resourceId, editorId, sql, openKey, previousSessionId, isCross, null);
+        }
         public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId) {
             this(scene, resourceId, editorId, sql, openKey, previousSessionId, null);
         }

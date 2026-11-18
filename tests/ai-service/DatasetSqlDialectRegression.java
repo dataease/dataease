@@ -41,6 +41,10 @@ public final class DatasetSqlDialectRegression {
         if (!"mysql".equals(projection.path("dialect").asText()) || projection.toString().contains("DATE_FORMAT")
                 || !projection.path("example").asText().contains("SELECT"))
             throw new AssertionError("Simple projection must read only the native projection guide: " + projection);
+        var parameters = json.readTree(scene.execute(context, "read_sql_guide", Map.of("topic", "parameters")));
+        var syntax = parameters.path("example").asText();
+        for (String text : List.of("$DE_PARAM{", "$[", "${", "$f2cde[", "preview", "dashboard"))
+            if (!syntax.contains(text)) throw new AssertionError("Missing editor parameter semantics: " + text);
         for (var type : DatasourceType.values()) {
             if (type == DatasourceType.folder) continue;
             connector.set(type.getType());

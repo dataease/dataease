@@ -19,7 +19,7 @@ final class DatasetSqlGuide {
     static AiTool<AiDatasourceTools.Scope> tool(AiDatasourceTools metadata, EngineManage engines) {
         var definition = new AiToolProtocol.Definition("read_sql_guide",
                 "Read the DataEase rules, bound execution dialect and one relevant topic. Never choose a dialect yourself.",
-                Map.of("topic", "projection (plain columns), monthly (calendar aggregation), aggregate or join"),
+                Map.of("topic", "projection (plain columns), monthly (calendar aggregation), aggregate, join or parameters (dashboard filters and system variables)"),
                 AiToolProtocol.RetrySafety.READ_ONLY);
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
             var source = metadata.authorize(scope);
@@ -35,6 +35,20 @@ final class DatasetSqlGuide {
                 case "aggregate" -> "SELECT dimension, SUM(amount) AS total FROM table_name GROUP BY dimension";
                 case "join" -> "SELECT a.id, b.label FROM fact_table a LEFT JOIN lookup_table b ON a.lookup_id = b.id";
                 case "monthly" -> monthly(dialect);
+                case "parameters" -> """
+                        Preserve relevant existing dashboard parameter names and syntax when revising SQL.
+                        For an explicitly requested new dashboard filter use a single-line optional WHERE predicate,
+                        e.g. WHERE $DE_PARAM{status_code = $[status]}. Put AND/OR outside the blocks.
+                        In a legacy query with ${status}, retain the legacy form for all dashboard parameters;
+                        never mix it with $DE_PARAM blocks. Never invent filters or parameter defaults.
+                        For a system variable, insert $f2cde[exact editor display name] in a WHERE predicate;
+                        in block syntax put the whole predicate inside $DE_PARAM{...}. Use only the supplied names.
+                        If no matching name is supplied, ask for the exact editor label instead of inventing it.
+                        The editor maps display names to runtime identifiers; never request user variable values.
+                        Explain that Parameter settings reuses same-name configuration and sets types and defaults.
+                        Editor preview uses applicable defaults; a block with a missing parameter becomes true.
+                        Actual dashboard filter values are supplied when the dashboard runs.
+                        """;
                 default -> throw AiErrors.error("invalid");
             };
             return AiToolProtocol.result(Map.of("dialect", dialect, "rules", RULES, "identifiers", identifiers(dialect),

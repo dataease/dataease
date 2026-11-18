@@ -11,7 +11,9 @@ export const Icon = {
 export const EmptyBackground = Icon;
 export const iconFieldMap = {};
 export const isDesktop = () => false;
-export const searchVariableApi = async () => ({ data: [] });
+export const searchVariableApi = async () => ({
+  data: window.fixtureSystemVariables || [],
+});
 export async function getPreviewSql(data) {
   const response = await fetch("/fixture-api/dataset/previewSql", {
     method: "POST",

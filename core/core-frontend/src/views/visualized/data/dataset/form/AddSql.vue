@@ -14,6 +14,7 @@ import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
 import { searchVariableApi } from '@/api/variable'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import {
   ref,
   reactive,
@@ -256,23 +257,39 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   }
   return name2Id
 }
+const showSystemParams = ref(false)
+let variableRequest = 0
 const handleSearchVariableApi = async () => {
-  return searchVariableApi({}).then(res => {
+  const request = ++variableRequest
+  try {
+    const res = await searchVariableApi({})
+    if (request !== variableRequest) return
     fieldFormList.value = res?.data || []
-  })
+    showSystemParams.value = true
+  } catch {
+    if (request !== variableRequest) return
+    fieldFormList.value = []
+    showSystemParams.value = showSysParams.value = false
+  }
 }
-const showSystemParams = ref(true)
+const user = useUserStoreWithOut()
+watch(
+  () => [user.uid, user.oid, user.proxyInfo?.proxyOid],
+  () => {
+    fieldFormList.value = []
+    showSystemParams.value = showSysParams.value = false
+    if (!desktop) void handleSearchVariableApi()
+  },
+  { flush: 'sync' }
+)
+const systemVariableNames = computed<string[]>(() =>
+  !desktop && showSystemParams.value
+    ? [...builtInList.value, ...fieldFormList.value].map(variable => variable.name)
+    : []
+)
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
-  if (!desktop) {
-    try {
-      await handleSearchVariableApi()
-    } catch (e) {
-      if (e) {
-        showSystemParams.value = false
-      }
-    }
-  }
+  if (!desktop) await handleSearchVariableApi()
   if (!myCm.value) return
   codeCom.value = myCm.value.codeComInit(
     setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)),
@@ -722,6 +739,7 @@ const mousedownDrag = () => {
         v-if="assistantHost && codeCom"
         :host="assistantHost"
         :is-cross="isCross"
+        :system-variable-names="systemVariableNames"
         :resource-id="String(sqlNode.datasourceId ?? '')"
         :read-draft="readDraft"
         :draft-revision="draftRevision"

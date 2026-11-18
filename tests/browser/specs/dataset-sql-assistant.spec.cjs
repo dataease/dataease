@@ -28,11 +28,11 @@ async function expand(page) {
   await control(page, "toggle").click();
   await expect(control(page, "panel")).toBeVisible();
 }
-async function ask(page) {
+async function ask(page, question = "按已确认支付口径汇总实付金额") {
   await control(page, "input")
     .locator("textarea")
     .or(page.locator('textarea[data-testid="dataset-sql-assistant-input"]'))
-    .fill("按已确认支付口径汇总实付金额");
+    .fill(question);
   await control(page, "send").click();
 }
 async function closeEditor(page) {
@@ -60,7 +60,7 @@ async function backend(page, options = {}) {
     return route.fulfill({
       json: {
         data: {
-          data: [{ total: "200" }],
+          data: [{ total: state.previewTotals?.shift() ?? "200" }],
           fields: [{ originName: "total", deType: 2 }],
         },
       },
@@ -474,4 +474,147 @@ test("each suggestion expands its own table and field evidence", async ({
   await expect(evidence.nth(1)).not.toContainText("pay_code");
   await expect(cards.first()).toContainText("每笔订单一行");
   await assertUnrun(page, state);
+});
+
+test("system variable suggestions send only editor names and run with mapped identifiers", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.fixtureSystemVariables = [
+      {
+        id: "449000000000000003",
+        name: "订单月份",
+        type: "text",
+        value: "private-fixture-value",
+      },
+    ];
+  });
+  const query =
+    "SELECT SUM(actual_amt) AS total FROM orders WHERE $DE_PARAM{order_month = $f2cde[订单月份]} AND $DE_PARAM{pay_code = $f2cde[账号]}";
+  const state = await backend(page, {
+    query,
+    previewTotals: ["100"],
+  });
+  await enter(page, "&assistantBlank=1");
+  await expand(page);
+  await ask(page, "按订单月份和当前账号筛选");
+  await control(page, "apply").click();
+  await expect(editor(page).locator(".cm-content")).toContainText("订单月份");
+  const opening = state.opens[0];
+  expect(opening.systemVariableNames).toEqual(
+    expect.arrayContaining(["账号", "订单月份"])
+  );
+  expect(JSON.stringify(opening)).not.toMatch(
+    /private-fixture-value|449000000000000003/
+  );
+  await assertUnrun(page, state);
+  await editor(page).getByRole("button", { name: "运行", exact: true }).click();
+  await expect(editor(page).locator(".table-scroll")).toContainText("100");
+  expect(Buffer.from(state.previews[0].sql, "base64").toString()).toBe(
+    query
+      .replace("订单月份", "449000000000000003")
+      .replace("账号", "sysParams.userId")
+  );
+});
+
+for (const legacy of [false, true]) {
+  for (const cross of [false, true]) {
+    test(`dashboard parameters reuse settings and preview defaults (legacy=${legacy}, cross=${cross})`, async ({
+      page,
+    }) => {
+      const draft =
+        "SELECT SUM(actual_amt) AS total FROM orders WHERE " +
+        (legacy ? "oid >= ${minimum}" : "$DE_PARAM{oid >= $[minimum]}");
+      const query =
+        draft +
+        " AND " +
+        (legacy ? "pay_code = ${payment}" : "$DE_PARAM{pay_code = $[payment]}");
+      const state = await backend(page, {
+        query,
+        previewTotals: ["140", "100"],
+      });
+      await enter(page, cross ? "&cross=1" : "");
+      await editor(page).locator(".cm-content").fill(draft);
+      const settings = page.locator(".sql-dataset-drawer .ed-drawer:visible");
+      const openSettings = () =>
+        editor(page)
+          .getByRole("button", { name: "参数设置", exact: true })
+          .click();
+      const confirmSettings = () =>
+        settings.getByRole("button", { name: "确认", exact: true }).click();
+      await openSettings();
+      const minimum = settings.getByRole("row").filter({ hasText: "minimum" });
+      await minimum.locator(".select-type").click();
+      await page
+        .locator(".cascader-panel:visible")
+        .getByText("数值", { exact: true })
+        .click();
+      await minimum.locator('input[type="number"]').fill("2");
+      await confirmSettings();
+      await expand(page);
+      await ask(page, "保留最低订单号，增加支付状态仪表板参数");
+      await control(page, "apply").click();
+      await page
+        .locator(".ed-message-box:visible")
+        .getByRole("button", { name: "确定", exact: true })
+        .click();
+      await expect(editor(page).locator(".cm-content")).toHaveText(query);
+      await assertUnrun(page, state);
+      expect(state.opens[0].sql).toBe(draft);
+      const run = () =>
+        editor(page).getByRole("button", { name: "运行", exact: true }).click();
+      await run();
+      await expect(editor(page).locator(".table-scroll")).toContainText("140");
+      const details = JSON.parse(state.previews[0].sqlVariableDetails);
+      expect(details).toMatchObject([
+        { variableName: "minimum", type: ["LONG"], defaultValue: "2" },
+        { variableName: "payment", type: ["TEXT"], defaultValue: "" },
+      ]);
+      await openSettings();
+      const payment = settings.getByRole("row").filter({ hasText: "payment" });
+      await payment
+        .locator('input[type="text"]:not([readonly])')
+        .last()
+        .fill("P");
+      await confirmSettings();
+      await run();
+      await expect(editor(page).locator(".table-scroll")).toContainText("100");
+      expect(JSON.parse(state.previews[1].sqlVariableDetails)[1]).toMatchObject(
+        {
+          variableName: "payment",
+          type: ["TEXT"],
+          defaultValue: "P",
+          defaultValueScope: "EDIT",
+        }
+      );
+      expect(await page.evaluate(() => window.saved)).toBeUndefined();
+    });
+  }
+}
+
+test("system variable catalog follows workspace changes in an open editor", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.fixtureSystemVariables = [
+      { name: "旧空间变量", id: "449000000000000003", type: "text" },
+    ];
+  });
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page, "哪些系统变量可供查询？");
+  await expect(control(page, "apply")).toBeVisible();
+  expect(state.opens[0].systemVariableNames).toContain("旧空间变量");
+  await page.evaluate(() => {
+    window.fixtureSystemVariables = [
+      { name: "新空间变量", id: "449000000000000004", type: "text" },
+    ];
+    window.aiSwitchUser("workspace");
+  });
+  await expand(page);
+  await ask(page, "哪些系统变量可供查询？");
+  await expect.poll(() => state.opens.length).toBe(2);
+  expect(state.opens[1].systemVariableNames).toContain("新空间变量");
+  expect(state.opens[1].systemVariableNames).not.toContain("旧空间变量");
 });
