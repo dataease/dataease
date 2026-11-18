@@ -211,6 +211,38 @@ const sysParams = () => {
   handleSearchVariableApi()
 }
 
+const exampleSql = [
+  'SELECT',
+  '  id,',
+  '  order_no,',
+  '  CAST(amount AS DECIMAL(18, 2)) AS amount,',
+  '  CAST(discount_rate AS DECIMAL(8, 2)) AS discount_rate',
+  'FROM sales_amount'
+].join('\n')
+
+const exampleSqlTypeChanged = exampleSql
+  .replace('DECIMAL(18, 2)', 'CHAR')
+  .replace('DECIMAL(8, 2)', 'CHAR')
+
+const exampleSqlList = [
+  { label: 'data_set.example_sql_original', value: exampleSql },
+  { label: 'data_set.example_sql_type_changed', value: exampleSqlTypeChanged },
+  {
+    label: 'data_set.example_sql_type_changed_empty',
+    value: `${exampleSqlTypeChanged}\nWHERE 1 = 0`
+  }
+]
+
+const applyExampleSql = (value: string) => {
+  const view = codeCom.value
+  if (!view) return
+  view.dispatch({
+    changes: { from: 0, to: view.state.doc.length, insert: value },
+    selection: { anchor: value.length }
+  })
+  view.focus()
+}
+
 const insertFieldToCodeMirror = (value: string) => {
   codeCom.value.dispatch({
     changes: { from: codeCom.value.viewState.state.selection.ranges[0].from, insert: value },
@@ -719,6 +751,28 @@ const mousedownDrag = () => {
         </template>
         {{ t('auth.sysParams') }}
       </el-button>
+      <el-dropdown class="example-sql-dropdown" trigger="click" @command="applyExampleSql">
+        <el-button>
+          <svg class="example-sql-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 15.8639L20.1317 7.7322C20.327 7.53694 20.6436 7.53694 20.8388 7.7322L21.5459 8.43931C21.7412 8.63457 21.7412 8.95115 21.5459 9.14641L12.7071 17.9852C12.3166 18.3758 11.6834 18.3758 11.2929 17.9852L2.45406 9.14641C2.2588 8.95115 2.2588 8.63457 2.45406 8.43931L3.16117 7.7322C3.35643 7.53694 3.67302 7.53694 3.86828 7.7322L12 15.8639Z"
+              fill="currentColor"
+            />
+          </svg>
+          {{ t('data_set.example_sql') }}
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item
+              v-for="item in exampleSqlList"
+              :key="item.label"
+              :command="item.value"
+            >
+              {{ t(item.label) }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <el-button :disabled="!changeFlagCode" @click="save" type="primary">
         {{ t('data_set.save') }}</el-button
       >
@@ -1634,6 +1688,28 @@ const mousedownDrag = () => {
 
   .save-or-cancel {
     margin-left: auto;
+
+    .example-sql-dropdown {
+      margin: 0 12px;
+
+      .ed-button {
+        background-color: #fff;
+
+        &:hover,
+        &:focus,
+        &:focus-visible,
+        &:active {
+          background-color: #fff;
+        }
+      }
+
+      .example-sql-arrow {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        flex: none;
+      }
+    }
 
     .ed-button--primary:focus {
       color: var(--ed-button-hover-text-color);
