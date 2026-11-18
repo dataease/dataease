@@ -4,6 +4,10 @@ const fs = require("node:fs/promises"),
   { pathToFileURL } = require("node:url");
 const frontend = path.resolve(__dirname, "../../../../core/core-frontend"),
   req = createRequire(frontend + "/package.json");
+const formalSql = process.env.DATASET_SQL_ASSISTANT_FIXTURE === "1";
+const fsRoot = require("node:fs").realpathSync(frontend);
+const aiBridge = path.resolve(__dirname, "../ai-service/bridge.js");
+const editorBridge = path.join(__dirname, "sql-assistant.js");
 let server, dir, url;
 (async () => {
   dir = await fs.realpath(
@@ -15,6 +19,7 @@ let server, dir, url;
   await fs.writeFile(
     bridge,
     `
+${formalSql ? `export {getPreviewSql} from '${editorBridge}';` : ""}
 import {ref} from 'vue';
 import zh from '${frontend}/src/locales/zh-CN';
 export const useI18n=(prefix='')=>({t:(key)=>(prefix?prefix+'.'+key:key).split('.').reduce((v,k)=>v?.[k],zh)||key});
@@ -26,8 +31,9 @@ const field=(id,name,node)=>({id,name,originName:name,description:'字段说明 
 const nodes=['orders','items'].map((name,i)=>({currentDs:{id:name,tableName:name,datasourceId:'source',type:'db',info:JSON.stringify({table:name,sql:''})},currentDsFields:[field(name+'1',name+'_id',name),field(name+'2',name+'_name',name)],childrenDs:[],unionToParent:{unionType:'left',unionFields:[]}}));nodes[1].unionToParent={unionType:'inner',unionFields:[{parentField:nodes[0].currentDsFields[0],currentField:nodes[1].currentDsFields[0]}]};
 if(location.search.includes('sqlNode')){nodes[1].currentDs.type='sql';nodes[1].currentDs.info=JSON.stringify({table:'items',sql:'c2VsZWN0IDE='});nodes[1].currentDs.sqlVariableDetails=JSON.stringify([{variableName:'amount',type:'LONG',defaultValue:'1'}])}
 nodes[0].childrenDs=[nodes[1]];
+if(location.search.includes('assistantBlank')) nodes[1].currentDs.info=JSON.stringify({table:'items',sql:''});
 if(location.search.includes('singleSql')){nodes.splice(1);nodes[0].childrenDs=[];nodes[0].currentDs.type='sql';nodes[0].currentDs.sqlVariableDetails='[]'}
-const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]};if(location.search.includes('calcAbsent')){delete f.deExtractType}else if(location.search.includes('calcNull')){f.deExtractType=null}return f};export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[calcField()]:[])]}));
+const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]};if(location.search.includes('calcAbsent')){delete f.deExtractType}else if(location.search.includes('calcNull')){f.deExtractType=null}return f};export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',isCross:location.search.includes('cross=1'),union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[calcField()]:[])]}));
 export const getDatasourceList=async()=>[];export const getTables=async()=>['orders','items'].map(tableName=>({tableName,type:'db',datasourceId:'source',name:tableName,...(location.search.includes('sourceSemantics')?{semanticDescription:'源表说明',semanticGrain:'一行订单',semanticConfirmed:true}:{})}));export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
 export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);window.fieldRequestDetails??=[];window.fieldRequestDetails.push(data);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}if(window.holdFieldRequests){await new Promise(resolve=>{window.pendingFields??=[];window.pendingFields.push(resolve)})}else await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return ['_id','_name','_extra'].map((suffix,i)=>field('',(['orders','items'].includes(data.id)?data.id:data.tableName||data.id)+suffix,data.id)).map(f=>({...f,...(location.search.includes('sourceSemantics')?{semanticBusinessName:'源字段说明',semanticDescription:'字段业务说明',semanticAliases:'别名',semanticValueReferences:'[{\"value\":\"2\",\"meaning\":\"已完成\"}]',semanticConfirmed:true}:{})}))};
 export const getPreviewData=async(data)=>{window.previewRequests??=[];window.previewRequests.push(JSON.parse(JSON.stringify(data)));await new Promise(r=>setTimeout(r,window.previewDelays?.shift()??(data.union[0].currentDs.id==='orders'?180:20)));window.previewCompleted??=[];window.previewCompleted.push(data.union[0].currentDs.id);return {data:{fields:data.allFields.map(f=>({...f,dataeaseName:f.id})),data:[Object.fromEntries(data.allFields.map(f=>[f.id,data.union[0].currentDs.tableName+':'+f.name]))]}}};
@@ -95,7 +101,17 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
         name: "boundaries",
         enforce: "pre",
         resolveId(id) {
-          if (id.endsWith("/AddSql.vue")) return dir + "/sql-stub.vue";
+          if (id.endsWith("/AddSql.vue") && !formalSql)
+            return dir + "/sql-stub.vue";
+          if (
+            formalSql &&
+            [
+              "AddSql.vue",
+              "CodeMirror.vue",
+              "DatasetSqlAssistant.vue",
+            ].includes(path.basename(id))
+          )
+            return;
           if (
             id.endsWith(".vue") &&
             ![
@@ -124,6 +140,25 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
     resolve: {
       alias: [
         ...modules.map((find) => ({ find, replacement: bridge })),
+        ...(formalSql
+          ? [
+              ...[
+                "@/config/axios/error",
+                "@/config/axios",
+                "@/store/modules/user",
+              ].map((find) => ({
+                find: new RegExp("^" + find + "$"),
+                replacement: aiBridge,
+              })),
+              ...[
+                "@/components/icon-custom",
+                "@/components/icon-group/field-list",
+                "@/components/empty-background",
+                "@/utils/ModelUtil",
+                "@/api/variable",
+              ].map((find) => ({ find, replacement: editorBridge })),
+            ]
+          : []),
         { find: "@", replacement: frontend + "/src" },
         ...[
           "vue",
@@ -132,6 +167,17 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
           "@vueuse/core",
           "dayjs",
           "snowflake-id",
+          ...(formalSql
+            ? [
+                "@codemirror/lang-sql",
+                "@codemirror/view",
+                "@codemirror/commands",
+                "codemirror",
+                "js-base64",
+                "vue-clipboard3",
+                "vue-types",
+              ]
+            : []),
         ].map((find) => ({
           find,
           replacement: ["element-plus-secondary", "dayjs"].includes(find)
@@ -143,9 +189,22 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
     },
     server: {
       host: "127.0.0.1",
-      port: 4205,
+      port: formalSql ? 14277 : 4205,
       strictPort: true,
-      fs: { allow: [dir, frontend] },
+      fs: {
+        allow: [
+          dir,
+          frontend,
+          ...(formalSql
+            ? [
+                __dirname,
+                path.dirname(aiBridge),
+                require("node:fs").realpathSync(path.dirname(aiBridge)),
+                fsRoot,
+              ]
+            : []),
+        ],
+      },
     },
   });
   await server.listen();
