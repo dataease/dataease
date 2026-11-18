@@ -74,17 +74,23 @@ async function backend(page, options = {}) {
       return reply({ available: state.available, revision: "r1" });
     if (path === "/fixture-api/ai/conversations") {
       state.opens.push(body);
+      if (body.previousSessionId && state.denyHistory)
+        return route.fulfill({
+          status: 403,
+          json: { messageKey: "i18n_ai_forbidden" },
+        });
       const id = "session-" + state.opens.length;
       const scope = {
         sessionId: id,
         contextVersion: "context-" + id,
         scene: body.scene,
         resourceId: body.resourceId,
-        resourceName: "Fixture MySQL",
+        resourceName:
+          body.resourceId === "second" ? "Warehouse B" : "Fixture MySQL",
         editorId: body.editorId,
         resourceVersion: "source-v1",
         draftVersion: "draft-" + id,
-        expiresAt: Date.now() + 300000,
+        expiresAt: Date.now() + (state.lifetime ?? 300000),
       };
       sessions.set(id, scope);
       return reply(scope);
@@ -106,11 +112,16 @@ async function backend(page, options = {}) {
       ...sc,
       type: state.explain ? "EXPLANATION" : "SQL_SUGGESTION",
       text: "已核对两笔已支付订单。",
-      sql: state.explain ? null : proposal,
+      sql: state.explain
+        ? null
+        : sc.resourceId === "second"
+        ? "SELECT 2"
+        : proposal,
     };
     if (path.endsWith("/executions")) return reply(run);
     if (path.endsWith("/check-application")) {
       state.checks++;
+      state.lastCheck = { id, target: body.targetResourceId };
       if (state.checkDenied)
         return route.fulfill({
           status: 403,
@@ -277,4 +288,140 @@ test("closing the real drawer discards its late result and any old turn", async 
   expect(state.opens[1].editorId).not.toBe(state.opens[0].editorId);
   expect(state.opens[1].previousSessionId).toBeUndefined();
   await assertUnrun(page, state);
+});
+test("the next suggestion follows the prior suggestion until the author edits the draft", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(1);
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(2);
+  expect(state.opens[1].sql).toBe(proposal);
+  await expect(control(page, "panel").locator("article").nth(1)).toContainText(
+    "建议 #1"
+  );
+  await editor(page).locator(".cm-content").fill("SELECT 77");
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(3);
+  expect(state.opens[2].sql).toBe("SELECT 77");
+  await assertUnrun(page, state);
+});
+
+test("older suggestions can be copied to another source after a combined edit warning", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toBeVisible();
+  await editor(page).locator(".cm-content").fill("SELECT 77");
+  await editor(page).locator(".ds-list").click();
+  await page.getByRole("treeitem", { name: "Warehouse B" }).click();
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(2);
+  expect(state.opens[1]).toMatchObject({
+    resourceId: "second",
+    sql: "SELECT 77",
+    previousSessionId: "session-1",
+  });
+  const old = control(page, "apply").first();
+  await old.click();
+  const dialog = page.locator(".ed-message-box:visible");
+  await expect(dialog).toContainText("Fixture MySQL");
+  await expect(dialog).toContainText("Warehouse B");
+  await expect(dialog).toContainText("覆盖");
+  await dialog.getByRole("button", { name: "取消", exact: true }).click();
+  await expect(editor(page).locator(".cm-content")).toHaveText("SELECT 77");
+  await old.click();
+  await dialog.getByRole("button", { name: "确定", exact: true }).click();
+  await expect(editor(page).locator(".cm-content")).toHaveText(proposal);
+  expect(state.lastCheck).toEqual({ id: "session-1", target: "second" });
+  expect(state.checks).toBe(1);
+  await assertUnrun(page, state);
+});
+
+for (const scope of ["user", "workspace", "proxy", "expiry"]) {
+  test(scope + " invalidates the prior editor activity", async ({ page }) => {
+    const state = await backend(page, {
+      lifetime: scope === "expiry" ? 1500 : 300000,
+    });
+    await enter(page);
+    await expand(page);
+    await ask(page);
+    await expect(control(page, "apply")).toBeVisible();
+    if (scope !== "expiry")
+      await page.evaluate((scope) => window.aiSwitchUser(scope), scope);
+    await expect(control(page, "apply")).toHaveCount(0);
+    await expect(editor(page).locator(".cm-content")).toHaveText(initial);
+    expect(state.checks).toBe(0);
+  });
+}
+
+test("the author can choose an older basis or start another query with the same composer", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toBeVisible();
+  await editor(page).locator(".cm-content").fill("SELECT 77");
+  await control(page, "reference").first().click();
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(2);
+  expect(state.opens[1].sql).toBe(proposal);
+  await control(page, "new-query").click();
+  await ask(page);
+  await expect(control(page, "apply")).toHaveCount(3);
+  expect(state.opens[2]).toMatchObject({
+    sql: "",
+    previousSessionId: "session-2",
+  });
+  await expect(control(page, "panel").locator("article").last()).toContainText(
+    "另写查询"
+  );
+});
+
+test("a revoked source cannot supply history or deliver an older suggestion into the new draft", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toBeVisible();
+  await editor(page).locator(".ds-list").click();
+  await page.getByRole("treeitem", { name: "Warehouse B" }).click();
+  state.denyHistory = true;
+  await ask(page);
+  await expect.poll(() => state.opens.length).toBe(3);
+  expect(state.opens[2]).toMatchObject({ resourceId: "second", sql: initial });
+  expect(state.opens[2].previousSessionId).toBeUndefined();
+  await expect(control(page, "apply")).toHaveCount(1);
+  await expect(control(page, "panel").getByRole("alert")).toContainText(
+    "先前对话"
+  );
+  await assertUnrun(page, state);
+});
+
+test("a written reference to the first version overrides a later hand edit", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toBeVisible();
+  await editor(page).locator(".cm-content").fill("SELECT 77");
+  await control(page, "input")
+    .locator("textarea")
+    .or(page.locator('textarea[data-testid="dataset-sql-assistant-input"]'))
+    .fill("基于第一版建议再加日期");
+  await control(page, "send").click();
+  await expect(control(page, "apply")).toHaveCount(2);
+  expect(state.opens[1].sql).toBe(proposal);
 });

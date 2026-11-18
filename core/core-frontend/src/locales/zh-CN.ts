@@ -1,5 +1,14 @@
 export default {
   ai_conversation: {
+    refer_to_suggestion: '基于此建议追问',
+    history_unavailable: '先前对话已不可用。',
+    new_query: '另写查询',
+    numbered_suggestion: '建议',
+    editor_draft: '编辑器草稿',
+    generated_from: '生成依据',
+    source_copy: '从原数据源复制到当前数据源',
+    overwrite_edits: '这会覆盖发问后对草稿的修改。',
+    unavailable_reference: '所指建议不可用。',
     editor_title: 'SQL 助手',
     replace_draft: '用这条建议替换编辑器中的整段 SQL？',
     unrun_sql: '建议 SQL（未运行）',

@@ -250,6 +250,15 @@ public final class ToolConversationRegression {
             if (!"SQL_SUGGESTION".equals(proposed.path("result").path("type").asText())
                     || !editorProposal.get().equals(replacement.path("sql").asText()) || !reads.isEmpty())
                 throw new AssertionError("editor must offer the complete unrun query without running a preview or a Demo validation: " + proposed);
+            var deniedTarget = post(editorRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", editor.path("contextVersion").asText(),
+                            "draftVersion", editor.path("draftVersion").asText(), "targetResourceId", "13")));
+            try {
+                if (mvc.perform(deniedTarget).andReturn().getResponse().getStatus() < 400)
+                    throw new AssertionError("copy must verify READ for the selected destination before returning the original query");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure)) throw denied;
+            }
             for (var candidateSql : List.of("UPDATE AI_PROBE SET ID=2", "SELECT ID FROM AI_PROBE FOR UPDATE",
                     "SELECT ID FROM AI_PROBE; SELECT ID FROM AI_PROBE")) {
                 sent.clear();
@@ -258,6 +267,19 @@ public final class ToolConversationRegression {
                 if ("SQL_SUGGESTION".equals(checked.path("result").path("type").asText()))
                     throw new AssertionError("only a single unrun read-only query may be applied: " + candidateSql);
             }
+            var editorContexts = new ArrayList<String>();
+            var parentId = editor.path("sessionId").asText();
+            for (int n = 0; n < 12; n++) {
+                var continued = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "12", "editorId", "dataset-node",
+                                "sql", "SELECT " + n, "previousSessionId", parentId)))).andReturn().getResponse().getContentAsString());
+                parentId = continued.path("sessionId").asText(); editorContexts.add(parentId);
+            }
+            var copy = JSON.readTree(mvc.perform(post(editorRun + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("contextVersion", editor.path("contextVersion").asText(),
+                            "draftVersion", editor.path("draftVersion").asText(), "targetResourceId", "12")))).andReturn().getResponse().getContentAsString());
+            if (!replacement.path("sql").equals(copy.path("sql"))) throw new AssertionError("first editor suggestion remains readable after twelve context changes");
+            for (var retiredId : editorContexts) mvc.perform(delete("/ai/conversations/" + retiredId));
             firstResourceAllowed.set(false);
             try {
                 if (mvc.perform(application).andReturn().getResponse().getStatus() < 400)

@@ -208,9 +208,15 @@ public class AiConversationManage implements AiToolConversationFeature {
                     for (Run old : previous.runs.values()) { old.text = new StringBuilder(); old.events = new ArrayList<>(); }
                 }
             }
-            while (sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && !state.executing.get() && same(state.owner, owner)).count() >= MAX_SINGLE_RESULTS)
-                evictSingle(owner);
-            while (sessions.size() >= MAX_SESSIONS && evictSingle(null)) { }
+            // A dataset activity can show a proposal from each of its fifty turns.
+            // Its frozen contexts share that activity's expiry and must survive unrelated button jobs.
+            boolean dataset = "dataset-sql".equals(scene.code());
+            var retained = sessions.values().stream().filter(state -> same(state.owner, owner) && canEvict(state)
+                    && dataset == "dataset-sql".equals(state.view.scene())).toList();
+            if (retained.size() >= (dataset ? MAX_TURNS : MAX_SINGLE_RESULTS))
+                evictOldest(retained);
+            if (sessions.size() >= MAX_SESSIONS)
+                evictOldest(sessions.values().stream().filter(this::canEvict).toList());
             if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && occupiesActivity(state)).count() >= MAX_USER_SESSIONS)
                 throw AiErrors.error("concurrency");
             created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
@@ -219,11 +225,11 @@ public class AiConversationManage implements AiToolConversationFeature {
         }
     }
     private boolean occupiesActivity(State state) { return state.executing.get() || !state.singleFinished && !state.retired; }
-    private boolean evictSingle(AiAccess.Identity owner) {
-        var oldest = sessions.values().stream().filter(state -> (state.singleFinished || state.retired) && !state.executing.get() && (owner == null || same(state.owner, owner)))
-                .min(Comparator.comparingLong(state -> state.view.expiresAt()));
-        oldest.ifPresent(this::invalidate);
-        return oldest.isPresent();
+    private boolean canEvict(State state) {
+        return (state.singleFinished || state.retired) && !state.executing.get();
+    }
+    private void evictOldest(List<State> candidates) {
+        candidates.stream().min(Comparator.comparingLong(state -> state.view.expiresAt())).ifPresent(this::invalidate);
     }
     /** A button owns an isolated editing activity, without requiring or reusing chat history. */
     public Execution invoke(String capability, Invoke request) {
@@ -462,6 +468,15 @@ public class AiConversationManage implements AiToolConversationFeature {
             if (request == null || !Objects.equals(request.contextVersion(), state.view.contextVersion())
                     || !Objects.equals(request.draftVersion(), state.view.draftVersion())) throw AiErrors.error("scope_changed");
             if (!"COMPLETED".equals(run.status) || run.result == null || !"SQL_SUGGESTION".equals(run.result.type())) throw AiErrors.error("invalid");
+            if (request.targetResourceId() != null && !request.targetResourceId().equals(state.context.resourceId())) {
+                if (!state.view.scene().equals("dataset-sql") || !request.targetResourceId().matches("[0-9]{1,20}"))
+                    throw AiErrors.error("invalid");
+                authorized(state, () -> {
+                    var scene = scene(state.view.scene());
+                    scene.authorize(scene.resolve(request.targetResourceId(), ""));
+                    return null;
+                });
+            }
             return run.result;
         }
     }

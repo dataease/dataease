@@ -79,11 +79,16 @@ const activeName = ref('')
 const myCm = ref()
 const codeCom = ref()
 const assistantHost = ref<HTMLDivElement>()
+const draftRevision = ref(0)
 const readDraft = (): string => codeCom.value.state.doc.toString()
 const replaceDraft = (query: string) => {
   codeCom.value.dispatch({
     changes: { from: 0, to: codeCom.value.state.doc.length, insert: query }
   })
+}
+const onDraftChange = () => {
+  changeFlagCode.value = true
+  draftRevision.value++
 }
 const dialogTitle = t('sql_variable.variable_mgm') + ' '
 const tabActive = ref('result')
@@ -358,6 +363,15 @@ const hideCopyTooltip = (tableName: string) => {
   copyTooltipRefs.get(tableName)?.hide()
 }
 
+const resourceLabel = computed(() => {
+  const pending: DataSource[] = [...state.dataSourceList]
+  while (pending.length) {
+    const item = pending.pop()!
+    if (String(item.id) === String(sqlNode.value.datasourceId)) return item.name
+    if (item.children) pending.push(...item.children)
+  }
+  return ''
+})
 const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
@@ -709,6 +723,8 @@ const mousedownDrag = () => {
         :host="assistantHost"
         :resource-id="String(sqlNode.datasourceId ?? '')"
         :read-draft="readDraft"
+        :draft-revision="draftRevision"
+        :resource-label="resourceLabel"
         @apply="replaceDraft"
       />
       <el-button @click="getSQLPreview" text style="color: #1f2329">
@@ -955,7 +971,7 @@ const mousedownDrag = () => {
       :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }"
     >
       <code-mirror
-        @change="changeFlagCode = true"
+        @change="onDraftChange"
         :height="`${dragHeight}px`"
         dom-id="sql-editor"
         :regexp="/\$f2cde\[(.*?)\]/g"
