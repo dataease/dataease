@@ -391,7 +391,7 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
           </div>
           <div class="metadata-secondary metadata-section">
             {{ tr('grain') }} · {{ currentTable.grain?.trim() || tr('incomplete') }}
-            <el-tag :type="currentTable.confirmed ? 'success' : 'info'" size="small">
+            <el-tag :type="currentTable.confirmed ? 'success' : 'warning'" size="small">
               {{ tr(currentTable.confirmed ? 'confirmed' : 'pending') }}
             </el-tag>
           </div>
@@ -447,7 +447,13 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                   </div>
                   <el-tag
                     v-else-if="column.key === 'status'"
-                    :type="row.confirmed ? 'success' : 'info'"
+                    :type="
+                      row.confirmed
+                        ? 'success'
+                        : row.businessName || row.description || row.aliases
+                        ? 'warning'
+                        : 'info'
+                    "
                   >
                     {{
                       tr(
