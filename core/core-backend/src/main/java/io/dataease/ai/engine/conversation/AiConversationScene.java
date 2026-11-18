@@ -13,7 +13,11 @@ public interface AiConversationScene {
     /** Trusted scene declaration after current business authorization and canonical metadata resolution. */
     record ResourceClaim(String datasourceId, String table, String operation) { }
     default List<ResourceClaim> resourceClaims(Context context) { return List.of(); }
-    record Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross) {
+    record ResourceRevision(String id, String revision, boolean isCross) {}
+    record Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross, ResourceRevision editorResource) {
+        public Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross) {
+            this(resourceId, resourceName, revision, instruction, selectedTables, isCross, null);
+        }
         public Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables) {
             this(resourceId, resourceName, revision, instruction, selectedTables, false);
         }

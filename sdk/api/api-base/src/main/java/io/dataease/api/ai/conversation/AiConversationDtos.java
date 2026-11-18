@@ -10,7 +10,8 @@ public final class AiConversationDtos {
     public record Resource(String id, String name) { }
     /** Finite projection of an editor's manual preview; SQL is the unexpanded Open.sql basis. */
     public enum PreviewOutcome { SUCCESS, UNKNOWN_COLUMN, UNKNOWN_TABLE, AMBIGUOUS_COLUMN, SYNTAX, TIMEOUT, FAILED }
-    public record SqlPreview(String resourceId, Boolean isCross, PreviewOutcome outcome, Integer revision, Integer currentRevision) { }
+    public record SqlPreview(String resourceId, Boolean isCross, PreviewOutcome outcome, Integer revision, Integer currentRevision,
+                             String currentResourceId, Boolean currentIsCross) { }
     public record Open(@NotBlank @Pattern(regexp = "sql|dataset-sql") String scene,
                        @Pattern(regexp = "[0-9]{1,20}|") String resourceId,
                        @NotBlank @Size(max = 100) String editorId,

@@ -26,7 +26,7 @@ const props = defineProps<{
   resourceId: string
   resourceLabel: string
   draftRevision: number
-  preview?: AiSqlPreview & { sql: string }
+  preview?: AiSqlPreview & { sql: string; sourceLabel: string }
   readDraft: () => string
 }>()
 const emit = defineEmits<{
@@ -192,13 +192,16 @@ const chooseBasis = (question: string) => {
   if (
     preview &&
     props.resourceId &&
-    preview.resourceId === props.resourceId &&
-    preview.isCross === props.isCross &&
+    (requested === 'preview' ||
+      preview.outcome !== 'SUCCESS' ||
+      (preview.resourceId === props.resourceId && preview.isCross === props.isCross)) &&
     (requested === 'preview' || (requested === undefined && asksAboutPreview))
   ) {
-    const { sql, ...facts } = preview
+    const { sql, sourceLabel, ...facts } = preview
     const label =
       tr(preview.outcome === 'SUCCESS' ? 'successful_preview' : 'failed_preview') +
+      ' · ' +
+      (sourceLabel || preview.resourceId) +
       ' · ' +
       (preview.isCross ? 'Calcite' : t('common.single_source')) +
       ' · ' +
@@ -206,7 +209,16 @@ const chooseBasis = (question: string) => {
       ' ' +
       preview.revision +
       (props.draftRevision !== preview.revision ? ' · ' + tr('preview_draft_changed') : '')
-    return { label, sql, preview: { ...facts, currentRevision: props.draftRevision } }
+    return {
+      label,
+      sql,
+      preview: {
+        ...facts,
+        currentResourceId: props.resourceId,
+        currentIsCross: props.isCross,
+        currentRevision: props.draftRevision
+      }
+    }
   }
   if (requested === 'preview') throw new Error('unavailable_reference')
   const index = (requested ?? latest) - 1
@@ -285,8 +297,8 @@ const send = async () => {
     if (!current()) return
     const opening = {
       scene: 'dataset-sql' as const,
-      resourceId: source,
-      isCross,
+      resourceId: basis.preview?.resourceId ?? source,
+      isCross: basis.preview?.isCross ?? isCross,
       preview: basis.preview,
       systemVariableNames: [...new Set(props.systemVariableNames)]
         .sort(
@@ -308,6 +320,7 @@ const send = async () => {
       if (
         !current() ||
         basis.prior ||
+        basis.preview ||
         !opening.previousSessionId ||
         latestSession?.resourceId === source ||
         !accessLost(error)

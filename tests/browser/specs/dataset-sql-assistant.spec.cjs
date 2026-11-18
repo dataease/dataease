@@ -783,3 +783,30 @@ test("a late older preview cannot replace the newer result or cross datasource b
   }
   expect(state.opens[2].previousSessionId).toBeUndefined();
 });
+
+test("old failed preview is repaired on its own source after switching the editor", async ({ page }) => {
+  const state = await backend(page);
+  await page.route("**/fixture-api/dataset/previewSql", route => route.fulfill({
+    status: 400, json: { msg: "Unknown column 'missing_col'" }
+  }));
+  await enter(page);
+  const draft = editor(page).locator(".cm-content");
+  await draft.fill("SELECT missing_col FROM orders");
+  await editor(page).getByRole("button", { name: "运行", exact: true }).click();
+  await editor(page).locator(".ds-list").click();
+  await page.getByRole("treeitem", { name: "Warehouse B" }).click();
+  await draft.fill("SELECT 2");
+  await expand(page);
+  await ask(page, "刚才为什么报错");
+  await expect(control(page, "apply")).toBeVisible();
+  expect(state.opens[0]).toMatchObject({ sql: "SELECT missing_col FROM orders",
+    preview: { outcome: "UNKNOWN_COLUMN", currentResourceId: "second" } });
+  expect(state.opens[0].resourceId).toBe(state.opens[0].preview.resourceId);
+  await control(page, "apply").click();
+  await expect(page.locator(".ed-message-box:visible")).toContainText("Warehouse B");
+  await page.locator(".ed-message-box:visible").getByRole("button", { name: /Cancel|取消/ }).click();
+  await expect(draft).toHaveText("SELECT 2");
+  await ask(page, "解释当前草稿");
+  await expect.poll(() => state.opens.length).toBe(2);
+  expect(state.opens[1]).toMatchObject({ resourceId: "second", sql: "SELECT 2" });
+});

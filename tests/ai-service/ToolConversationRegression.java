@@ -430,13 +430,15 @@ public final class ToolConversationRegression {
             mode.set("dataset-suggest");
             sent.clear();
             var failedPreview = Map.of("resourceId", "11", "isCross", false, "outcome", "UNKNOWN_COLUMN",
-                    "revision", 3, "currentRevision", 4);
+                    "revision", 3, "currentRevision", 4, "currentResourceId", "12", "currentIsCross", true);
             var repairOpen = Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "preview-node",
                     "sql", "SELECT typoo FROM AI_PROBE", "preview", failedPreview);
             var repairSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content(JSON.writeValueAsBytes(repairOpen))).andReturn().getResponse().getContentAsString());
             var repair = terminal(mvc, start(mvc, repairSession, "刚才为什么报错"));
             if (!repair.path("result").path("type").asText().equals("SQL_SUGGESTION") || sent.isEmpty()
+                    || !repair.path("result").path("resourceId").asText().equals("11")
+                    || !sent.getFirst().path("messages").toString().contains("editor currently selects datasource 12 (Calcite)")
                     || !sent.getFirst().path("messages").toString().contains("UNKNOWN_COLUMN")
                     || !sent.getFirst().path("messages").toString().contains("SELECT typoo FROM AI_PROBE")
                     || !sent.getFirst().path("messages").toString().contains("revision 3")
