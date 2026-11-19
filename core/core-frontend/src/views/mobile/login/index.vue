@@ -8,12 +8,11 @@ import mobileDeTop from '@/assets/img/mobile-de-top.png'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { showToast } from 'vant'
 import xss from 'xss'
-import { loginApi, queryDekey } from '@/api/login'
+import { loginApi } from '@/api/login'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { useCache } from '@/hooks/web/useCache'
 import { useRouter } from 'vue-router_2'
-import { rsaEncryp } from '@/utils/encryption'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 import VanForm from 'vant/es/form'
 import VanField from 'vant/es/field'
 import VanButton from 'vant/es/button'
@@ -31,7 +30,6 @@ const InvalidPwd = defineAsyncComponent(() => import('@/views/component/login/In
 const MfaStep = defineAsyncComponent(() => import('@/views/component/login/MfaStep.vue'))
 
 const { t } = useI18n()
-const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
 const router = useRouter()
@@ -159,15 +157,13 @@ const onSubmit = async () => {
   }
   const name = username.value.trim()
   const pwd = password.value
-  if (!wsCache.get(appStore.getDekey)) {
-    const res = await queryDekey()
-    wsCache.set(appStore.getDekey, res.data)
-  }
   const isLdap = loginType.value === 'ldap'
-  const param = {
-    name: rsaEncryp(name),
-    pwd: rsaEncryp(pwd),
-    origin: isLdap ? 1 : 0
+  let param: { name: string; pwd: string; origin: number }
+  try {
+    await ensureDekey()
+    param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd), origin: isLdap ? 1 : 0 }
+  } catch {
+    return
   }
   duringLogin.value = true
   loginApi(param)

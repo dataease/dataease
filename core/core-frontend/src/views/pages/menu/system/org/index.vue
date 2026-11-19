@@ -25,7 +25,7 @@ import {
   sysOrgMemberRoleOptionsApi
 } from '@/views/menu/system/org/api'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { rsaEncryp } from '@/utils/encryption'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
@@ -175,11 +175,18 @@ const handleDelete = (data: OrgNode) => {
     })
 }
 
-const handleEnterOrg = (data: OrgNode) => {
+const handleEnterOrg = async (data: OrgNode) => {
+  let proxySecret: string
+  try {
+    await ensureDekey()
+    proxySecret = rsaEncryp(data.id)
+  } catch {
+    return
+  }
   userStore.setProxyInfo({
     proxy: true,
     proxyOid: data.id,
-    proxySecret: rsaEncryp(data.id)
+    proxySecret
   })
   location.href = location.origin + location.pathname
 }

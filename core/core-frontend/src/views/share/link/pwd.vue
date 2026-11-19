@@ -45,13 +45,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import request from '@/config/axios'
-import { useAppStoreWithOut } from '@/store/modules/app'
-import { rsaEncryp } from '@/utils/encryption'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 import { useCache } from '@/hooks/web/useCache'
-import { queryDekey } from '@/api/login'
 import { CustomPassword } from '@/components/custom-password'
 const { wsCache } = useCache()
-const appStore = useAppStoreWithOut()
 
 const { t } = useI18n()
 const msg = ref('')
@@ -75,12 +72,18 @@ const rule = reactive<FormRules>({
 
 const refresh = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
       const uuid = vid.value
       const pwd = form.value.password
       const text = `${uuid},${pwd}`
-      const ciphertext = rsaEncryp(text)
+      let ciphertext: string
+      try {
+        await ensureDekey()
+        ciphertext = rsaEncryp(text)
+      } catch {
+        return
+      }
       request.post({ url: '/share/validate', data: { ciphertext } }).then(res => {
         if (res.data) {
           wsCache.set(`link-${uuid}`, ciphertext)
@@ -126,18 +129,13 @@ const prepare = () => {
     refresh(pwdForm.value)
   }
 }
-onMounted(() => {
-  if (!wsCache.get(appStore.getDekey)) {
-    queryDekey()
-      .then(res => {
-        wsCache.set(appStore.getDekey, res.data)
-        prepare()
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  } else {
+onMounted(async () => {
+  try {
+    await ensureDekey()
     prepare()
+  } catch {
+    // The encryption helper displays the reason; keep the form available for retry.
+  } finally {
     loading.value = false
   }
 })

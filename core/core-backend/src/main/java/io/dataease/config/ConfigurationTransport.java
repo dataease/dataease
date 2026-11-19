@@ -16,6 +16,7 @@ import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
@@ -70,10 +71,12 @@ public class ConfigurationTransport {
             byte[] wrapped = decoder.decode(envelope.path("encryptedKey").asText());
             byte[] iv = decoder.decode(envelope.path("iv").asText());
             byte[] ciphertext = decoder.decode(envelope.path("ciphertext").asText());
-            if (wrapped.length != 256 || iv.length != 12 || ciphertext.length < 16) throw invalid();
+            RSAPrivateKey privateKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(
+                    new PKCS8EncodedKeySpec(decoder.decode(RsaUtils.privateKey())));
+            int wrappedLength = (privateKey.getModulus().bitLength() + 7) / 8;
+            if (wrapped.length != wrappedLength || iv.length != 12 || ciphertext.length < 16) throw invalid();
             Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPPadding");
-            rsa.init(Cipher.DECRYPT_MODE, KeyFactory.getInstance("RSA").generatePrivate(
-                    new PKCS8EncodedKeySpec(decoder.decode(RsaUtils.privateKey()))),
+            rsa.init(Cipher.DECRYPT_MODE, privateKey,
                     new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
             byte[] key = rsa.doFinal(wrapped);
             if (key.length != 32) throw invalid();

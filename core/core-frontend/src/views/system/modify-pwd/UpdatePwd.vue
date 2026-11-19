@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { cloneDeep } from 'lodash-es'
 import request from '@/config/axios'
-import { rsaEncryp } from '@/utils/encryption'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 import { ElMessage } from 'element-plus-secondary'
 import { logoutHandler } from '@/utils/logout'
 import { CustomPassword } from '@/components/custom-password'
@@ -83,10 +83,17 @@ const updatePwdForm = ref()
 const emits = defineEmits(['success'])
 
 const save = () => {
-  updatePwdForm.value.validate(val => {
+  updatePwdForm.value.validate(async val => {
     if (val) {
-      const pwd = rsaEncryp(pwdForm.pwd)
-      const newPwd = rsaEncryp(pwdForm.newPwd)
+      let pwd: string
+      let newPwd: string
+      try {
+        await ensureDekey()
+        pwd = rsaEncryp(pwdForm.pwd)
+        newPwd = rsaEncryp(pwdForm.newPwd)
+      } catch {
+        return
+      }
       request.post({ url: '/user/modifyPwd', data: { pwd, newPwd } }).then(() => {
         if (isMobile()) {
           emits('success')

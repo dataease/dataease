@@ -1,4 +1,8 @@
 export default {
+  rsa: {
+    invalid_key: '无法获取有效的加密公钥，请刷新页面重试',
+    encryption_failed: '加密失败，输入内容可能超过当前密钥允许的长度'
+  },
   sensitive_reveal: {
     action: '查看已保存值',
     datasource_title: '查看数据源敏感信息',

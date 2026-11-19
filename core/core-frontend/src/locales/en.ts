@@ -1,4 +1,8 @@
 export default {
+  rsa: {
+    invalid_key: 'Unable to obtain a valid encryption public key. Please refresh and try again.',
+    encryption_failed: 'Encryption failed. The input may exceed the capacity of the current key.'
+  },
   sensitive_reveal: {
     action: 'View saved value',
     datasource_title: 'View datasource credentials',
