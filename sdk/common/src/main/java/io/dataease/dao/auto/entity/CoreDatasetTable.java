@@ -13,6 +13,18 @@ import org.hibernate.annotations.Comment;
 @Table(name = "core_dataset_table")
 @Comment("数据集表")
 public class CoreDatasetTable {
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_description", length = 4000)
+    private String semanticDescription;
+
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_grain", length = 512)
+    private String semanticGrain;
+
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_confirmed")
+    private Boolean semanticConfirmed;
+
     @Comment("ID")
     @Id
     @Column(name = "id", nullable = false)

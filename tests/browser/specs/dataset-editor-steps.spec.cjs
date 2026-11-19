@@ -21,10 +21,10 @@ test("relation details, processing layout and save preserve nodes", async ({
     console.log("PAGE ERROR:", e.message);
   });
   await openRelations(page, "/");
-  await expect(page.locator(".node-title")).toHaveText("orders");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("orders");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "items", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await expect(page.locator(".node-fields")).toContainText("items_extra");
   await page
     .locator(".node-fields .ed-table__body tr")
@@ -59,7 +59,7 @@ test("relation details, processing layout and save preserve nodes", async ({
   await expect(page.locator(".batch-area")).toBeVisible();
   await page.getByRole("button", { name: "数据表关联", exact: true }).click();
   await expect(page.locator(".drag-mask_dataset")).toBeVisible();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await expect(
     page.locator(".node-fields .ed-table__body tr").nth(2).getByRole("checkbox")
   ).toBeChecked();
@@ -114,7 +114,7 @@ test("rapid canvas selection ignores stale fields and node preview responses", a
     .filter({ has: page.locator(".tableName", { hasText: "orders" }) })
     .click();
   await page.getByRole("button", { name: "items", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await expect(page.locator(".node-fields")).toContainText("items_extra");
   await expect(page.locator(".node-fields")).not.toContainText("orders_id");
 });
@@ -191,7 +191,9 @@ test("adding the first table enters inline field selection without a drawer", as
   await page
     .locator(".drag-mask_dataset")
     .dispatchEvent("drop", { dataTransfer });
-  await expect(page.locator(".node-title")).toHaveText("new_orders");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText(
+    "new_orders"
+  );
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await expect(page.locator(".ed-drawer:visible")).toHaveCount(0);
   await expect(
@@ -253,7 +255,9 @@ test("first save retains changed and unchanged field types in batch management",
     .locator(".table-list .list-item_primary")
     .filter({ hasText: /^orders$/ })
     .dispatchEvent("dragstart", { dataTransfer });
-  await page.locator(".drag-mask_dataset").dispatchEvent("drop", { dataTransfer });
+  await page
+    .locator(".drag-mask_dataset")
+    .dispatchEvent("drop", { dataTransfer });
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "下一步，数据处理" }).click();
   await page.getByRole("tab", { name: "批量管理", exact: true }).click();
@@ -343,7 +347,9 @@ test("back navigation without edits leaves the editor without a warning", async 
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.locator(".sql-result .preview-data")).toContainText("orders:");
+  await expect(page.locator(".sql-result .preview-data")).toContainText(
+    "orders:"
+  );
   await page.locator(".top .name > .ed-icon").click();
   await expect
     .poll(() => page.evaluate(() => window.navigations?.length || 0))
@@ -401,7 +407,7 @@ test("dragging over the canvas without dropping does not reload node fields", as
     await canvas.dispatchEvent("dragleave");
   }
   expect(await page.evaluate(() => window.fieldRequests.length)).toBe(before);
-  await expect(page.locator(".node-title")).toHaveText("orders");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("orders");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page
     .locator(".node-fields .ed-table__body tr")
@@ -482,7 +488,9 @@ const openNodeMenu = async (page, name) => {
   return page.locator(".menu-more_popper:visible");
 };
 
-test("list nodes keep deletion command and select on click", async ({ page }) => {
+test("list nodes keep deletion command and select on click", async ({
+  page,
+}) => {
   await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   let menu = await openNodeMenu(page, "items");
@@ -490,18 +498,21 @@ test("list nodes keep deletion command and select on click", async ({ page }) =>
   await expect(
     menu.getByRole("menuitem", { name: "字段选择", exact: true })
   ).toHaveCount(0);
-  await expect(page.locator(".node-title")).toHaveText("orders");
-  await page.locator(".node-title").click();
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("orders");
+  await page.locator(".node-title > .ellipsis").click();
   await expect(page.locator(".menu-more_popper:visible")).toHaveCount(0);
   const itemRow = page
     .locator(".node-items .node-item")
     .filter({ has: page.getByRole("button", { name: "items", exact: true }) });
   await itemRow.getByRole("button", { name: "items", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await expect(page.locator(".node-union.active-node .tableName")).toHaveText(
     "items"
   );
-  await page.getByRole("tab", { name: "数据预览", exact: true }).first().click();
+  await page
+    .getByRole("tab", { name: "数据预览", exact: true })
+    .first()
+    .click();
   await expect(page.locator(".node-preview")).toBeVisible();
   await itemRow.getByRole("button", { name: "items", exact: true }).click();
   await expect(page.locator(".node-preview")).toBeHidden();
@@ -514,7 +525,7 @@ test("list nodes keep deletion command and select on click", async ({ page }) =>
       .getByRole("button", { name: "items", exact: true })
   ).toHaveCount(0);
   await expect(page.locator(".node-union")).toHaveCount(1);
-  await expect(page.locator(".node-title")).toHaveText("orders");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("orders");
 });
 
 test("list SQL node supports rename and edit SQL", async ({ page }) => {
@@ -532,7 +543,7 @@ test("list SQL node supports rename and edit SQL", async ({ page }) => {
     .locator(".menu-more_popper:visible")
     .getByRole("menuitem")
     .allTextContents();
-  await page.locator(".node-title").click();
+  await page.locator(".node-title > .ellipsis").click();
   await expect(page.locator(".menu-more_popper:visible")).toHaveCount(0);
   let menu = await openNodeMenu(page, "items");
   await expect(menu.getByRole("menuitem")).toHaveCount(3);
@@ -548,7 +559,9 @@ test("list SQL node supports rename and edit SQL", async ({ page }) => {
   await expect(page).toHaveURL(url);
   await expect(input).toHaveValue("items_renamed");
   await expect(
-    page.locator(".node-items").getByRole("button", { name: "items", exact: true })
+    page
+      .locator(".node-items")
+      .getByRole("button", { name: "items", exact: true })
   ).toBeVisible();
   await dialog.getByRole("button", { name: "确定", exact: true }).click();
   await expect(dialog).toHaveCount(0);
@@ -669,7 +682,7 @@ test("canvas fullscreen hides details and restores the split and field search", 
   await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "items", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await page.locator(".node-field-search input").fill("extra");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(1);
   const canvas = page.locator(".drag-mask_dataset");
@@ -698,7 +711,7 @@ test("canvas fullscreen hides details and restores the split and field search", 
     .click();
   await expect(page.locator(".node-details-region")).toBeVisible();
   expect((await canvas.boundingBox()).height).toBe(heightBefore);
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await expect(page.locator(".node-field-search input")).toHaveValue("extra");
   expect(await page.evaluate(() => window.fieldRequests.length)).toBe(requests);
 });
@@ -709,14 +722,14 @@ test("node details fullscreen preserves preview and resets on step changes", asy
   await openRelations(page, "/");
   await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
   await page.getByRole("button", { name: "items", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await page
     .getByRole("tab", { name: "数据预览", exact: true })
     .first()
     .click();
   await expect(page.locator(".node-preview")).toContainText("items:items_id");
   const actionBox = await page.locator(".details-fullscreen").boundingBox();
-  const titleBox = await page.locator(".node-title").boundingBox();
+  const titleBox = await page.locator(".node-title > .ellipsis").boundingBox();
   const tabsBox = await page.locator(".node-tabs-row").boundingBox();
   expect(
     Math.abs(
@@ -837,6 +850,7 @@ test("prototype field table edits dataset metadata and preserves it through prev
     "数据集字段类型",
     "来源物理表",
     "备注",
+    "字段语义",
   ]);
   const row = page.locator(".node-fields .ed-table__body tr").first();
   await expect(row).toContainText("orders_id");
@@ -908,7 +922,7 @@ test("unchecked field metadata survives node switching and applies when selected
   await chooseNumericType(page, row);
   await expect(row.getByRole("checkbox")).not.toBeChecked();
   await page.getByRole("button", { name: "items", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveText("items");
+  await expect(page.locator(".node-title > .ellipsis")).toHaveText("items");
   await page.getByRole("button", { name: "orders", exact: true }).click();
   row = page.locator(".node-fields .ed-table__body tr").nth(2);
   await expect(
@@ -983,10 +997,10 @@ test("SQL refresh ignores a node deleted before the response returns", async ({
   await openSingleSqlRefresh(page);
   const menu = await openNodeMenu(page, "orders");
   await menu.getByRole("menuitem", { name: "删除", exact: true }).click();
-  await expect(page.locator(".node-title")).toHaveCount(0);
+  await expect(page.locator(".node-title > .ellipsis")).toHaveCount(0);
   await releaseFields(page, 0);
   await releaseFields(page, 1);
-  await expect(page.locator(".node-title")).toHaveCount(0);
+  await expect(page.locator(".node-title > .ellipsis")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "下一步，数据处理" })
   ).toBeDisabled();
@@ -1330,4 +1344,102 @@ test("late source preview stays isolated and source dragging still adds a node",
     .poll(() => page.evaluate(() => window.fieldRequests.length))
     .toBeGreaterThan(before);
   await expect(page.locator(".node-list .node-item")).toHaveCount(1);
+});
+
+test("dataset semantics stay in draft, persist and reopen independently", async ({
+  page,
+}) => {
+  await openRelations(page, "/");
+  await expect(
+    page
+      .locator(".node-title")
+      .getByRole("button", { name: "编辑", exact: true })
+  ).toHaveCount(0);
+  const drawer = page.locator(".ed-drawer:visible");
+  await page
+    .locator(".node-fields .ed-table__body tr")
+    .first()
+    .getByRole("button", { name: "编辑", exact: true })
+    .click();
+  await drawer.getByRole("textbox").nth(0).fill("订单状态");
+  await drawer.getByRole("button", { name: "添加值参考", exact: true }).click();
+  await drawer.getByPlaceholder("实际值（必填）").fill("2");
+  await drawer.getByPlaceholder("业务含义（选填）").fill("已完成");
+  await drawer.getByRole("button", { name: "确定", exact: true }).click();
+  expect(await page.evaluate(() => window.saved)).toBeUndefined();
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await page.getByText("批量管理", { exact: true }).click();
+  await expect(page.locator(".sql-result")).toContainText("订单状态");
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(() => window.saved?.allFields?.[0]?.semanticBusinessName)
+    )
+    .toBe("订单状态");
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(window.saved.allFields[0].semanticValueReferences)
+    )
+  ).toEqual([{ value: "2", meaning: "已完成" }]);
+  await page.reload();
+  await page.getByText("批量管理", { exact: true }).click();
+  await expect(page.locator(".sql-result")).toContainText("订单状态");
+  const semanticRow = page
+    .locator(".sql-result .ed-table__body tr")
+    .filter({ hasText: "订单状态" });
+  await semanticRow.getByRole("button", { name: "编辑", exact: true }).click();
+  await drawer.getByRole("textbox").first().fill("取消的修改");
+  await drawer.getByRole("button", { name: "取消", exact: true }).click();
+  await expect(semanticRow).toContainText("订单状态");
+  await semanticRow.getByRole("button", { name: "编辑", exact: true }).click();
+  await drawer.getByRole("textbox").first().fill("数据集状态");
+  await drawer.getByRole("button", { name: "删除", exact: true }).click();
+  await drawer.getByRole("button", { name: "确定", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(() => window.saved.allFields[0].semanticBusinessName)
+    )
+    .toBe("数据集状态");
+  expect(
+    await page.evaluate(() => window.saved.allFields[0].semanticValueReferences)
+  ).toBe("[]");
+});
+
+test("new table copies source semantics while legacy fields stay independent", async ({
+  page,
+}) => {
+  await openRelations(page, "/?sourceSemantics=1");
+  await expect(
+    page.locator(".node-fields .ed-table__body tr").first()
+  ).not.toContainText("源字段说明");
+  await page.goto("/?create=1&sourceSemantics=1");
+  const source = page
+    .locator(".table-checkbox-list .list-item_primary")
+    .filter({ hasText: "orders" });
+  await expect(source).not.toContainText("源表说明");
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await source.dispatchEvent("dragstart", { dataTransfer });
+  await page
+    .locator(".drag-mask_dataset")
+    .dispatchEvent("drop", { dataTransfer });
+  await expect(page.locator(".semantic-summary")).toContainText("源表说明");
+  await expect(
+    page.locator(".node-fields .ed-table__body tr").first()
+  ).toContainText("源字段说明");
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          window.previewRequests?.at(-1)?.union[0]?.currentDs
+            ?.semanticDescription
+      )
+    )
+    .toBe("源表说明");
+  expect(
+    await page.evaluate(
+      () => window.previewRequests.at(-1).allFields[0].semanticBusinessName
+    )
+  ).toBe("源字段说明");
 });

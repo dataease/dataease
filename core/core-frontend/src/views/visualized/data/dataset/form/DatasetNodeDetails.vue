@@ -12,6 +12,7 @@ const previewQuery = useLatestQuery('node-preview')
 import { useI18n } from '@/hooks/web/useI18n'
 import type { CascaderOption, CascaderValue } from 'element-plus-secondary'
 import UnionFieldList from './UnionFieldList.vue'
+import DatasetSemanticEditor from './DatasetSemanticEditor.vue'
 import DatasetNodeMenu from './DatasetNodeMenu.vue'
 import DatasetPanelFullscreen from './DatasetPanelFullscreen.vue'
 import FieldTypeDriftTip from './FieldTypeDriftTip.vue'
@@ -37,8 +38,17 @@ const emit = defineEmits<{
   fieldName: [id: string, value: string]
   fieldType: [id: string, value: FieldTypePath]
   keepFieldType: [id: string]
+  semanticChange: [nodeId: string, value: Partial<Node & Field>, fieldId?: string]
 }>()
 const { t } = useI18n()
+const updateSemantic = (row: Field, value: Partial<Field>) => {
+  Object.assign(row, value)
+  fieldDrafts.value[row.originName] = { ...fieldDrafts.value[row.originName], semantic: value }
+  for (const field of [...(selectedNode.value?.currentDsFields ?? []), ...props.allFields]) {
+    if (field.id && field.id === row.id) Object.assign(field, value)
+  }
+  if (selectedNode.value && row.id) emit('semanticChange', selectedNode.value.id, value, row.id)
+}
 const search = ref('')
 const fieldSearch = ref('')
 const selectedId = ref('')
@@ -78,7 +88,7 @@ const dirty = computed(() => {
   )
 })
 
-type FieldDraft = { name?: string; typePath?: FieldTypePath }
+type FieldDraft = { name?: string; typePath?: FieldTypePath; semantic?: Partial<Field> }
 const nodeFieldDrafts = new Map<string, Record<string, FieldDraft>>()
 const fieldDrafts = ref<Record<string, FieldDraft>>({})
 const getDatasetField = (field: Field) =>
@@ -140,11 +150,23 @@ const getDrift = (field: Field) => {
   )
 }
 const driftCount = computed(() => fields.value.filter(field => getDrift(field) !== null).length)
+const semanticSnapshot = (field: Field) => ({
+  semanticBusinessName: field.semanticBusinessName ?? '',
+  semanticDescription: field.semanticDescription ?? '',
+  semanticAliases: field.semanticAliases ?? '',
+  semanticValueReferences: field.semanticValueReferences ?? '[]',
+  semanticConfirmed: field.semanticConfirmed ?? false
+})
 const resetFields = () => {
   const savedFields = selectedNode.value?.currentDsFields || []
   fields.value = fields.value.map(field => {
     const saved = savedFields.find(item => item.originName === field.originName)
-    return { ...field, ...(saved || {}), id: saved?.id, checked: !!saved }
+    return {
+      ...field,
+      ...(saved ? { ...saved, ...semanticSnapshot(saved) } : {}),
+      id: saved?.id,
+      checked: !!saved
+    }
   })
   selectedFields.value = fields.value.filter(field => field.checked)
 }
@@ -189,7 +211,12 @@ const loadFields = async () => {
       const saved = selectedNode.value?.currentDsFields.find(
         item => item.originName === field.originName
       )
-      return { ...field, ...(saved || {}), checked: !!saved }
+      return {
+        ...field,
+        ...(saved ? { ...saved, ...semanticSnapshot(saved) } : {}),
+        ...fieldDrafts.value[field.originName]?.semantic,
+        checked: !!saved
+      }
     })
     selectedFields.value = fields.value.filter(field => field.checked)
     fieldsLoaded.value = true
@@ -400,6 +427,15 @@ defineExpose({ commit, selectNode, hasPendingChanges })
             @toggle="emit('toggleFullscreen')"
           />
         </div>
+        <div
+          v-if="selectedNode.semanticDescription || selectedNode.semanticGrain"
+          class="semantic-summary"
+        >
+          <div v-if="selectedNode.semanticDescription">{{ selectedNode.semanticDescription }}</div>
+          <div v-if="selectedNode.semanticGrain" style="margin-top: 6px">
+            {{ t('datasourceMetadata.grain') }}：{{ selectedNode.semanticGrain }}
+          </div>
+        </div>
         <div class="node-tabs-row">
           <el-tabs v-model="activeTab" class="node-tabs">
             <el-tab-pane
@@ -499,6 +535,15 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                 <template #default="{ row }"
                   ><span class="field-remark">{{ row.description }}</span></template
                 >
+              </el-table-column>
+              <el-table-column :label="t('datasourceMetadata.fieldSemantics')" min-width="200">
+                <template #default="{ row }">
+                  <span>{{ row.semanticBusinessName || row.semanticDescription || '—' }}</span>
+                  <dataset-semantic-editor
+                    :target="row"
+                    @change="value => updateSemantic(row, value)"
+                  />
+                </template>
               </el-table-column>
             </template>
           </union-field-list>
@@ -624,7 +669,14 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   flex-direction: column;
   padding: 16px 24px;
 }
+.semantic-summary {
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+  color: var(--ed-text-color-secondary);
+  font-size: 14px;
+}
 .node-title {
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;

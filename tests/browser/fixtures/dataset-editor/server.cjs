@@ -17,7 +17,7 @@ let server, dir, url;
     `
 import {ref} from 'vue';
 import zh from '${frontend}/src/locales/zh-CN';
-export const useI18n=()=>({t:(key)=>key.split('.').reduce((v,k)=>v?.[k],zh)||key});
+export const useI18n=(prefix='')=>({t:(key)=>(prefix?prefix+'.'+key:key).split('.').reduce((v,k)=>v?.[k],zh)||key});
 export const useAppStoreWithOut=()=>({});export const useEmbedded=()=>({});export const useAppearanceStoreWithOut=()=>({});
 export const useCache=()=>({wsCache:{get(){return undefined},set(){}}});export const useEmitt=()=>({emitter:{emit(){}}});
 export const useRoute=()=>({query:location.search.includes('create')?{datasourceId:'source'}:{id:'dataset'},params:{}});export const useRouter=()=>({push(value){window.navigations??=[];window.navigations.push(value)}});export const cancelMap={};
@@ -28,11 +28,11 @@ if(location.search.includes('sqlNode')){nodes[1].currentDs.type='sql';nodes[1].c
 nodes[0].childrenDs=[nodes[1]];
 if(location.search.includes('singleSql')){nodes.splice(1);nodes[0].childrenDs=[];nodes[0].currentDs.type='sql';nodes[0].currentDs.sqlVariableDetails='[]'}
 const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]};if(location.search.includes('calcAbsent')){delete f.deExtractType}else if(location.search.includes('calcNull')){f.deExtractType=null}return f};export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[calcField()]:[])]}));
-export const getDatasourceList=async()=>[];export const getTables=async()=>['orders','items'].map(tableName=>({tableName,type:'db',datasourceId:'source',name:tableName}));export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
-export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);window.fieldRequestDetails??=[];window.fieldRequestDetails.push(data);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}if(window.holdFieldRequests){await new Promise(resolve=>{window.pendingFields??=[];window.pendingFields.push(resolve)})}else await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return ['_id','_name','_extra'].map((suffix,i)=>field('',(['orders','items'].includes(data.id)?data.id:data.tableName||data.id)+suffix,data.id))};
+export const getDatasourceList=async()=>[];export const getTables=async()=>['orders','items'].map(tableName=>({tableName,type:'db',datasourceId:'source',name:tableName,...(location.search.includes('sourceSemantics')?{semanticDescription:'源表说明',semanticGrain:'一行订单',semanticConfirmed:true}:{})}));export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
+export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);window.fieldRequestDetails??=[];window.fieldRequestDetails.push(data);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}if(window.holdFieldRequests){await new Promise(resolve=>{window.pendingFields??=[];window.pendingFields.push(resolve)})}else await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return ['_id','_name','_extra'].map((suffix,i)=>field('',(['orders','items'].includes(data.id)?data.id:data.tableName||data.id)+suffix,data.id)).map(f=>({...f,...(location.search.includes('sourceSemantics')?{semanticBusinessName:'源字段说明',semanticDescription:'字段业务说明',semanticAliases:'别名',semanticValueReferences:'[{\"value\":\"2\",\"meaning\":\"已完成\"}]',semanticConfirmed:true}:{})}))};
 export const getPreviewData=async(data)=>{window.previewRequests??=[];window.previewRequests.push(JSON.parse(JSON.stringify(data)));await new Promise(r=>setTimeout(r,window.previewDelays?.shift()??(data.union[0].currentDs.id==='orders'?180:20)));window.previewCompleted??=[];window.previewCompleted.push(data.union[0].currentDs.id);return {data:{fields:data.allFields.map(f=>({...f,dataeaseName:f.id})),data:[Object.fromEntries(data.allFields.map(f=>[f.id,data.union[0].currentDs.tableName+':'+f.name]))]}}};
 export const saveDatasetTree=async(data)=>{window.saved=JSON.parse(JSON.stringify(data));sessionStorage.setItem('savedDataset',JSON.stringify(data))};
-export const getDatasetTree=async()=>[{id:'folder',name:'测试文件夹',children:[]}];
+export const getDatasetCreationFolders=async()=>[{id:'folder',name:'测试文件夹',children:[]}];export const getDatasetTree=async()=>[{id:'folder',name:'测试文件夹',children:[]}];
 export const createDatasetTree=async(data)=>{window.saved=JSON.parse(JSON.stringify(data));return {...window.saved,id:'created-dataset',allFields:window.saved.allFields.map(({deTypeArr,...field})=>field)}};
 export const moveDatasetTree=async()=>undefined;export const renameDatasetTree=async()=>undefined;
 `
@@ -102,6 +102,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "index.vue",
               "DatasetUnion.vue",
               "DatasetNodeDetails.vue",
+              "DatasetSemanticEditor.vue",
               "DatasetTableDetails.vue",
               "DatasetNodeMenu.vue",
               "DatasetPanelFullscreen.vue",

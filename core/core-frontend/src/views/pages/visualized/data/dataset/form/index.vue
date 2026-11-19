@@ -79,6 +79,7 @@ import {
   barInfoApi
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
+import DatasetSemanticEditor from '@/views/visualized/data/dataset/form/DatasetSemanticEditor.vue'
 import DatasetUnion from '@/views/visualized/data/dataset/form/DatasetUnion.vue'
 import DatasetTableDetails from '@/views/visualized/data/dataset/form/DatasetTableDetails.vue'
 import DatasetNodeDetails from '@/views/visualized/data/dataset/form/DatasetNodeDetails.vue'
@@ -1079,7 +1080,19 @@ const diffArr = (newArr, oldArr) => {
   const oldFields = new Map(oldArr.map(ele => [ele.id, ele]))
   return cloneDeep([
     ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
-    ...newArr.map(ele => oldFields.get(ele.id) || ele)
+    ...newArr.map(ele => {
+      const old = oldFields.get(ele.id)
+      return old
+        ? {
+            ...old,
+            semanticBusinessName: ele.semanticBusinessName,
+            semanticDescription: ele.semanticDescription,
+            semanticAliases: ele.semanticAliases,
+            semanticValueReferences: ele.semanticValueReferences,
+            semanticConfirmed: ele.semanticConfirmed
+          }
+        : ele
+    })
   ])
 }
 
@@ -1089,6 +1102,16 @@ const closeEditUnion = () => {
   editUnion.value = false
 }
 const fieldUnion = ref()
+
+const updateNodeSemantic = (nodeId, value, fieldId?) => {
+  datasetDrag.value.updateSemantic(nodeId, value, fieldId)
+  changeUpdate()
+}
+const updateFieldSemantic = (row, value) => {
+  Object.assign(row, value)
+  if (row.datasetTableId) updateNodeSemantic(row.datasetTableId, value, row.id)
+  changeUpdate()
+}
 
 const setFieldAll = () => {
   const arr = []
@@ -1681,6 +1704,9 @@ const dfsNodeList = (arr, list) => {
     } = ele
     arr.push({
       currentDs: {
+        semanticDescription: ele.semanticDescription,
+        semanticGrain: ele.semanticGrain,
+        semanticConfirmed: ele.semanticConfirmed,
         sqlVariableDetails,
         tableName,
         type,
@@ -1832,6 +1858,9 @@ const dfsUnion = (arr, list) => {
     const { tableName, type, datasourceId, id, info, sqlVariableDetails } = currentDs || {}
     const { unionType, unionFields } = unionToParent || {}
     arr.push({
+      semanticDescription: currentDs?.semanticDescription,
+      semanticGrain: currentDs?.semanticGrain,
+      semanticConfirmed: currentDs?.semanticConfirmed,
       sqlVariableDetails,
       tableName,
       type,
@@ -2207,6 +2236,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         >
           <span v-show="!expandedPanel" class="drag" @mousedown="mousedownDragH" />
           <dataset-node-details
+            @semantic-change="updateNodeSemantic"
             ref="nodeDetails"
             :nodes="canvasNodes"
             :is-cross="isCross"
@@ -2563,6 +2593,17 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column :label="t('datasourceMetadata.fieldSemantics')" width="240">
+                      <template #default="{ row }">
+                        <span>{{
+                          row.semanticBusinessName || row.semanticDescription || '—'
+                        }}</span>
+                        <dataset-semantic-editor
+                          :target="row"
+                          @change="value => updateFieldSemantic(row, value)"
+                        />
+                      </template>
+                    </el-table-column>
                     <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
                       <template #default="scope">
                         <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
@@ -2778,6 +2819,17 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column :label="t('datasourceMetadata.fieldSemantics')" width="240">
+                      <template #default="{ row }">
+                        <span>{{
+                          row.semanticBusinessName || row.semanticDescription || '—'
+                        }}</span>
+                        <dataset-semantic-editor
+                          :target="row"
+                          @change="value => updateFieldSemantic(row, value)"
+                        />
+                      </template>
+                    </el-table-column>
                     <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
                       <template #default="scope">
                         <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">

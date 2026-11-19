@@ -1623,6 +1623,7 @@ export default {
     description: '业务说明',
     noDescription: '尚未填写业务说明',
     grain: '数据粒度',
+    tableSemantics: '表语义',
     fieldSemantics: '字段语义',
     showRelations: '查看表关联',
     tableUnavailable: '物理表已不可用',

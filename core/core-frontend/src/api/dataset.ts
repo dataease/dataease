@@ -71,6 +71,9 @@ export interface Dataset {
 }
 
 export interface Table {
+  semanticDescription?: string
+  semanticGrain?: string
+  semanticConfirmed?: boolean
   datasourceId: string
   name: string
   tableName: string
@@ -195,15 +198,11 @@ export const getDatasourceList = async (weight?: number): Promise<IResponse> => 
 }
 
 export const getTables = async (data): Promise<Table[]> => {
-  return request.post({ url: `/datasource/getTables`, data }).then(res => {
-    return res?.data
-  })
+  return request.post({ url: `/datasource/getTables`, data }).then(res => res?.data)
 }
 
 export const getTableField = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
-  return request.post({ url: '/datasetData/tableField', data, queryRequest }).then(res => {
-    return res?.data
-  })
+  return request.post({ url: '/datasetData/tableField', data, queryRequest }).then(res => res?.data)
 }
 
 export const getPreviewData = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {

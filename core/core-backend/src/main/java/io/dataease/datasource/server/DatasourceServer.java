@@ -105,6 +105,9 @@ import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RI
 @RestController
 @RequestMapping("/datasource")
 public class DatasourceServer implements DatasourceApi {
+    @org.springframework.beans.factory.annotation.Autowired
+    private io.dataease.datasource.manage.DatasourceSemanticSnapshot semanticSnapshot;
+
     private static final Pattern ORACLE_RECYCLE_BIN_TABLE_PATTERN = Pattern.compile("^BIN\\$.*\\$[0-9]+$", Pattern.CASE_INSENSITIVE);
     @Resource
     private EngineManage engineManage;
@@ -856,7 +859,7 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public List<DatasetTableDTO> getTables(DatasetTableDTO datasetTableDTO) throws DEException {
         Long datasourceId = datasetTableDTO.getDatasourceId();
-        return listPhysicalTables(datasourceId, dataSourceManage.getCoreDatasource(datasourceId));
+        return semanticSnapshot.tables(datasourceId, listPhysicalTables(datasourceId, dataSourceManage.getCoreDatasource(datasourceId)));
     }
 
     List<DatasetTableDTO> listPhysicalTables(Long datasourceId, CoreDatasource coreDatasource) {

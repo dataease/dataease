@@ -900,13 +900,24 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  const { tableName, type, datasourceId, name: noteName } = JSON.parse(data) as Table
+  const {
+    tableName,
+    type,
+    datasourceId,
+    name: noteName,
+    semanticDescription,
+    semanticGrain,
+    semanticConfirmed
+  } = JSON.parse(data) as Table
   const extraData = {
     info: JSON.stringify({
       table: tableName,
       sql: ''
     }),
     noteName,
+    semanticDescription,
+    semanticGrain,
+    semanticConfirmed,
     unionType: 'left',
     unionFields: [],
     currentDsFields: [],
@@ -1064,6 +1075,20 @@ const notConfirm = () => {
   confirm()
 }
 
+const updateSemantic = (nodeId: string, value: Partial<Node & Field>, fieldId?: string) => {
+  const visit = (nodes: Node[]) =>
+    nodes.forEach(node => {
+      if (node.id === nodeId) {
+        if (fieldId) {
+          const field = node.currentDsFields.find(item => item.id === fieldId)
+          if (field) Object.assign(field, value)
+        } else Object.assign(node, value)
+      }
+      if (node.children?.length) visit(node.children)
+    })
+  visit(state.nodeList)
+}
+
 const getNodeList = () => {
   return cloneDeep(unref(state.nodeList))
 }
@@ -1071,6 +1096,7 @@ const getNodeList = () => {
 defineExpose({
   nodeNameList,
   getNodeList,
+  updateSemantic,
   setStateBack,
   notConfirm,
   dfsNodeFieldBackReal,

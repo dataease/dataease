@@ -10,6 +10,10 @@ import java.util.Map;
 
 @Data
 public class DatasetTableDTO implements Serializable {
+    private String semanticDescription;
+    private String semanticGrain;
+    private Boolean semanticConfirmed;
+
 
     /**
      * ID

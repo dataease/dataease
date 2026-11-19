@@ -14,6 +14,27 @@ import org.hibernate.annotations.Comment;
 @Table(name = "core_dataset_table_field")
 @Comment("数据集字段")
 public class CoreDatasetTableField {
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_business_name", length = 255)
+    private String semanticBusinessName;
+
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_description", length = 4000)
+    private String semanticDescription;
+
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_aliases", length = 1000)
+    private String semanticAliases;
+
+    @Comment("数据集独立语义快照")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.LONG32VARCHAR)
+    @Column(name = "semantic_value_references", length = org.hibernate.Length.LONG32)
+    private String semanticValueReferences;
+
+    @Comment("数据集独立语义快照")
+    @Column(name = "semantic_confirmed")
+    private Boolean semanticConfirmed;
+
     @Comment("ID")
     @Id
     @Column(name = "id", nullable = false)

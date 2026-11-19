@@ -70,6 +70,9 @@ import static io.dataease.dataset.utils.TableUtils.format;
  */
 @Component
 public class DatasetDataManage {
+    @org.springframework.beans.factory.annotation.Autowired
+    private io.dataease.datasource.manage.DatasourceSemanticSnapshot semanticSnapshot;
+
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Autowired
@@ -207,7 +210,9 @@ public class DatasetDataManage {
             logger.debug("calcite data table field sql: " + datasourceRequest.getQuery());
             tableFields = provider.fetchTableField(datasourceRequest);
         }
-        return transFields(tableFields, true);
+        var result = transFields(tableFields, true);
+        return StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)
+                ? semanticSnapshot.fields(datasetTableDTO.getDatasourceId(), tableInfoDTO.getTable(), result) : result;
     }
 
     public List<DatasetTableFieldDTO> transFields(List<TableField> tableFields, boolean defaultStatus) {
