@@ -330,6 +330,8 @@ public class Regression {
         check(encryptedPaths.size() == 19);
         SensitiveRegression.run();
         EngineRegression.run();
+        RsaRegression.run(root, temp);
+        assertions += RsaRegression.assertions;
         System.out.println("PASS: " + assertions + " configuration security assertions (no DB/application startup)");
     }
 }

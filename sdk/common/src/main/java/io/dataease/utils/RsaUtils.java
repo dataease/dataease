@@ -19,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.interfaces.RSAKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -33,10 +34,6 @@ public class RsaUtils {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
-
-    private static final int MAX_ENCRYPT_BLOCK = 245;
-
-    private static final int MAX_DECRYPT_BLOCK = 256;
 
     private static final String PK_SEPARATOR = "-pk_separator-";
 
@@ -91,50 +88,57 @@ public class RsaUtils {
         }
     }
 
+    private static int modulusBytes(Key key) {
+        return (((RSAKey) key).getModulus().bitLength() + 7) / 8;
+    }
+
     private static String encrypt(String data, PublicKey publicKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        int inputLen = data.getBytes().length;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offset = 0;
-        byte[] cache;
-        int i = 0;
-        while (inputLen - offset > 0) {
-            if (inputLen - offset > MAX_ENCRYPT_BLOCK) {
-                cache = cipher.doFinal(data.getBytes(), offset, MAX_ENCRYPT_BLOCK);
-            } else {
-                cache = cipher.doFinal(data.getBytes(), offset, inputLen - offset);
+        byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+        int blockSize = modulusBytes(publicKey) - 11;
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            for (int offset = 0; offset < bytes.length; offset += blockSize) {
+                out.write(cipher.doFinal(bytes, offset, Math.min(blockSize, bytes.length - offset)));
             }
-            out.write(cache, 0, cache.length);
-            i++;
-            offset = i * MAX_ENCRYPT_BLOCK;
+            return Base64.getEncoder().encodeToString(out.toByteArray());
         }
-        byte[] encryptedData = out.toByteArray();
-        out.close();
-        return Base64.getEncoder().encodeToString(encryptedData);
     }
 
     private static String decrypt(String data, PrivateKey privateKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] dataBytes = Base64.getDecoder().decode(data);
-        int inputLen = dataBytes.length;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offset = 0;
-        byte[] cache;
-        int i = 0;
-        while (inputLen - offset > 0) {
-            if (inputLen - offset > MAX_DECRYPT_BLOCK) {
-                cache = cipher.doFinal(dataBytes, offset, MAX_DECRYPT_BLOCK);
-            } else {
-                cache = cipher.doFinal(dataBytes, offset, inputLen - offset);
-            }
-            out.write(cache, 0, cache.length);
-            i++;
-            offset = i * MAX_DECRYPT_BLOCK;
+        byte[] bytes = Base64.getDecoder().decode(data);
+        int blockSize = modulusBytes(privateKey);
+        if (bytes.length == 0 || bytes.length % blockSize != 0) {
+            throw new IllegalArgumentException("Invalid RSA ciphertext length");
         }
-        out.close();
-        return out.toString(StandardCharsets.UTF_8);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            for (int offset = 0; offset < bytes.length; offset += blockSize) {
+                out.write(cipher.doFinal(bytes, offset, blockSize));
+            }
+            return out.toString(StandardCharsets.UTF_8);
+        }
+    }
+
+    /** Checks persisted keys without replacing RSA or storage AES material. */
+    public static void checkKeyPair() {
+        try {
+            CoreRsa stored = rsaManage.query();
+            PublicKey publicKey = getPublicKey(stored.getPublicKey());
+            PrivateKey privateKey = getPrivateKey(stored.getPrivateKey());
+            String probe = "dataease:rsa:startup-check";
+            if (!probe.equals(decrypt(encrypt(probe, publicKey), privateKey))) {
+                throw new GeneralSecurityException("RSA key pair mismatch");
+            }
+            int bits = ((RSAKey) publicKey).getModulus().bitLength();
+            if (bits < 2048) {
+                LogUtil.warn("Historical RSA key detected (" + bits + " bits); compatibility mode enabled, keys preserved");
+            }
+        } catch (Exception e) {
+            // Diagnose existing data without silently rotating keys or blocking historical upgrades.
+            LogUtil.error("Persisted RSA key pair check failed; restore matching keys before encrypted operations");
+        }
     }
 
     public static RSAModel generate() {

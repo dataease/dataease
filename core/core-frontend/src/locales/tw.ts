@@ -1,4 +1,8 @@
 export default {
+  rsa: {
+    invalid_key: '無法取得有效的加密公鑰，請重新整理頁面後重試',
+    encryption_failed: '加密失敗，輸入內容可能超過目前金鑰允許的長度'
+  },
   sensitive_reveal: {
     action: '查看已儲存值',
     datasource_title: '查看資料來源敏感資訊',
