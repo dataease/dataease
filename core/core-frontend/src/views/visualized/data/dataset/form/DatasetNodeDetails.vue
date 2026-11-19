@@ -4,6 +4,7 @@ import { Icon } from '@/components/icon-custom'
 import referenceTable from '@/assets/svg/reference-table.svg'
 import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import nothingTree from '@/assets/img/nothing-tree.png'
 import { cloneDeep } from 'lodash-es'
 import { getPreviewData, getTableField } from '@/api/dataset'
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
@@ -30,13 +31,14 @@ const props = defineProps<{
   fieldOptionsText: CascaderOption[]
   applyFields: (node: Node, fields: Field[]) => Promise<boolean>
   fieldTypeDrift?: (field: Field) => number | null
+  fieldTypeBaseline?: (field: Field) => number | null
 }>()
 const emit = defineEmits<{
   select: [id: string]
   command: [node: Node, command: string]
   toggleFullscreen: []
   fieldName: [id: string, value: string]
-  fieldType: [id: string, value: FieldTypePath]
+  fieldType: [id: string, value: FieldTypePath, confirmDrift?: boolean]
   keepFieldType: [id: string]
   semanticChange: [nodeId: string, value: Partial<Node & Field>, fieldId?: string]
 }>()
@@ -88,7 +90,14 @@ const dirty = computed(() => {
   )
 })
 
-type FieldDraft = { name?: string; typePath?: FieldTypePath; semantic?: Partial<Field> }
+// typeTouched 区分"用户在面板里主动选过类型"与"取消勾选时自动记录的类型"：后者只是为了让字段
+// 重新勾选后能还原已配置类型，不能当作对待确认状态的确认。
+type FieldDraft = {
+  name?: string
+  typePath?: FieldTypePath
+  typeTouched?: boolean
+  semantic?: Partial<Field>
+}
 const nodeFieldDrafts = new Map<string, Record<string, FieldDraft>>()
 const fieldDrafts = ref<Record<string, FieldDraft>>({})
 const getDatasetField = (field: Field) =>
@@ -98,12 +107,13 @@ const getDatasetFieldName = (field: Field) =>
 const needsFieldName = (field: Field) => field.checked && !getDatasetFieldName(field)?.trim()
 const getDatasetFieldType = (field: Field): FieldTypePath => {
   const draft = fieldDrafts.value[field.originName]?.typePath
-  if (draft) return draft
+  if (draft) return normalizeFieldType(field, draft)
   const saved = getDatasetField(field) as DatasetField
-  if (saved.deTypeArr?.length) return saved.deTypeArr
-  return saved.deType === 1 && saved.deExtractType === 0
-    ? [1, saved.dateFormatType || 'yyyy-MM-dd']
-    : [saved.deType]
+  return normalizeFieldType(field, saved.deTypeArr?.length ? saved.deTypeArr : [saved.deType])
+}
+const getConfiguredFieldType = (field: Field) => {
+  const [deType] = getDatasetFieldType(field)
+  return Number(deType)
 }
 const getFieldTypeOptions = (field: Field) => {
   const options =
@@ -117,6 +127,17 @@ const getFieldTypeOptions = (field: Field) => {
         )
       }))
 }
+// 时间类型的模型值必须是带格式的完整路径：只给到 [1] 时，选项里的时间节点是带子项的父节点，
+// 匹配不到叶子项，下拉框会回显成“请选择”。草稿和已存类型都可能只剩 [1]（格式为空），
+// 这里按当前可选项补齐，保证回显和选项一致。
+const normalizeFieldType = (field: Field, path: FieldTypePath): FieldTypePath => {
+  if (Number(path[0]) !== 1) return path
+  const timeOption = getFieldTypeOptions(field).find(option => option.value === 1)
+  if (!timeOption?.children?.length) return [1]
+  const format = path[1]
+  if (typeof format === 'string' && format) return [1, format]
+  return [1, (getDatasetField(field) as DatasetField).dateFormatType || 'yyyy-MM-dd']
+}
 const changeFieldName = (field: Field, value: string) => {
   if (field.checked && field.id) emit('fieldName', field.id, value)
   else fieldDrafts.value[field.originName] = { ...fieldDrafts.value[field.originName], name: value }
@@ -129,7 +150,11 @@ const changeFieldType = (field: Field, value: CascaderValue = []) => {
   if (path.length !== value.length) return
   if (field.checked && field.id) emit('fieldType', field.id, path)
   else
-    fieldDrafts.value[field.originName] = { ...fieldDrafts.value[field.originName], typePath: path }
+    fieldDrafts.value[field.originName] = {
+      ...fieldDrafts.value[field.originName],
+      typePath: path,
+      typeTouched: true
+    }
 }
 const sourceTableName = computed(() => {
   const node = selectedNode.value
@@ -147,6 +172,15 @@ const getDrift = (field: Field) => {
   const datasetTableId = (field as Field & { datasetTableId?: string }).datasetTableId
   return props.fieldTypeDrift(
     datasetTableId ? field : ({ ...field, datasetTableId: selectedNode.value?.id } as Field)
+  )
+}
+const getDriftBaseline = (field: Field) => {
+  if (!props.fieldTypeBaseline) return getConfiguredFieldType(field)
+  const datasetTableId = (field as Field & { datasetTableId?: string }).datasetTableId
+  return (
+    props.fieldTypeBaseline(
+      datasetTableId ? field : ({ ...field, datasetTableId: selectedNode.value?.id } as Field)
+    ) ?? getConfiguredFieldType(field)
   )
 }
 const driftCount = computed(() => fields.value.filter(field => getDrift(field) !== null).length)
@@ -250,7 +284,8 @@ const commit = (): Promise<boolean> => {
             const draft = fieldDrafts.value[field.originName]
             if (!draft || !field.id) return
             if (draft.name !== undefined) emit('fieldName', field.id, draft.name)
-            if (draft.typePath) emit('fieldType', field.id, draft.typePath)
+            if (draft.typePath)
+              emit('fieldType', field.id, draft.typePath, draft.typeTouched === true)
             delete fieldDrafts.value[field.originName]
           })
         ++previewRequest
@@ -393,6 +428,12 @@ defineExpose({ commit, selectNode, hasPendingChanges })
         </template>
       </el-input>
       <div class="node-items">
+        <div v-if="!filteredNodes.length" class="node-empty">
+          <img :src="nothingTree" />
+          <span>{{
+            search.trim() ? t('data_set.relevant_content_found') : t('data_set.no_data')
+          }}</span>
+        </div>
         <div
           v-for="node in filteredNodes"
           :key="node.id"
@@ -499,22 +540,25 @@ defineExpose({ commit, selectNode, hasPendingChanges })
               <el-table-column :label="t('dataset.dataset_field_type')" min-width="160">
                 <template #default="{ row }">
                   <div class="field-type-cell">
-                    <el-cascader
-                      class="field-editor field-type-editor"
-                      :class="{ 'is-type-drift': getDrift(row) !== null }"
-                      :model-value="getDatasetFieldType(row)"
-                      :disabled="applying"
-                      :aria-label="`${t('dataset.dataset_field_type')} ${row.originName}`"
-                      :options="getFieldTypeOptions(row)"
-                      :show-all-levels="false"
-                      @change="value => changeFieldType(row, value)"
-                    />
-                    <field-type-drift-tip
-                      v-if="getDrift(row) !== null"
-                      :current-type="row.deType"
-                      :detected-type="getDrift(row)"
-                      @keep="emit('keepFieldType', row.id)"
-                    />
+                    <div class="field-type-control">
+                      <el-cascader
+                        class="field-editor field-type-editor"
+                        :class="{ 'is-type-drift': getDrift(row) !== null }"
+                        :model-value="getDatasetFieldType(row)"
+                        :disabled="applying"
+                        :aria-label="`${t('dataset.dataset_field_type')} ${row.originName}`"
+                        :options="getFieldTypeOptions(row)"
+                        :show-all-levels="false"
+                        @change="value => changeFieldType(row, value)"
+                      />
+                      <field-type-drift-tip
+                        v-if="getDrift(row) !== null"
+                        :active="activeTab === 'fields'"
+                        :current-type="getDriftBaseline(row)"
+                        :detected-type="getDrift(row)"
+                        @keep="emit('keepFieldType', row.id)"
+                      />
+                    </div>
                   </div>
                 </template>
               </el-table-column>
@@ -656,6 +700,22 @@ defineExpose({ commit, selectNode, hasPendingChanges })
       min-width: 0;
     }
   }
+  .node-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+    img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 8px;
+    }
+    span {
+      font-size: 14px;
+      line-height: 22px;
+      color: #646a73;
+    }
+  }
 }
 .node-search {
   margin: 0 16px;
@@ -701,6 +761,14 @@ defineExpose({ commit, selectNode, hasPendingChanges })
     position: relative;
     display: flex;
     align-items: center;
+    .field-type-control {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+    :deep(.ed-cascader) {
+      width: 100%;
+    }
     :deep(.field-type-drift-tip) {
       position: absolute;
       right: 26px;

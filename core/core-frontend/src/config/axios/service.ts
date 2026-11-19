@@ -29,7 +29,7 @@ import { DataEaseError, errorBody, toDataEaseError, markErrorContractResponse } 
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
-    handleErrorLocally?: boolean
+    handleErrorLocally?: boolean | ((error: DataEaseError) => boolean)
     queryRequest?: QueryRequest
     releaseCancellation?: () => void
     loadingPath?: string
@@ -73,7 +73,7 @@ export interface AxiosInstanceWithLoading extends AxiosInstance {
   <T = any, R = AxiosResponse<T>, D = any>(
     config: AxiosRequestConfig<D> & {
       loading?: boolean
-      handleErrorLocally?: boolean
+      handleErrorLocally?: boolean | ((error: DataEaseError) => boolean)
       queryRequest?: QueryRequest
     }
   ): Promise<R>
@@ -268,7 +268,9 @@ service.interceptors.response.use(
 
 const rejectBusinessResponse = (
   response: AxiosResponse & {
-    config: InternalAxiosRequestConfig & { handleErrorLocally?: boolean }
+    config: InternalAxiosRequestConfig & {
+      handleErrorLocally?: boolean | ((error: DataEaseError) => boolean)
+    }
   }
 ) => {
   const failure = new DataEaseError(response)
@@ -285,8 +287,9 @@ const rejectBusinessResponse = (
       wsCache.delete('DataEaseKey')
       errMsg = useI18n().t('common.secret_changed_tips')
     }
-    if (!response.config.handleErrorLocally) {
-      ElMessage({ type: 'error', message: errMsg, showClose: true })
+    const local = response.config.handleErrorLocally
+    if (!(typeof local === 'function' ? local(failure) : local)) {
+      ElMessage({ type: 'error', message: errMsg, showClose: true, grouping: true })
       failure.presented = true
     }
     if (legacySessionFailure) {
@@ -326,7 +329,8 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     }
   }
   const normalized = toDataEaseError(error)
-  if (error.config?.handleErrorLocally) return Promise.reject(normalized)
+  const local = error.config?.handleErrorLocally
+  if (typeof local === 'function' ? local(normalized) : local) return Promise.reject(normalized)
   if (error.message?.includes('timeout of')) {
     normalized.presented = true
     requestStore.resetLoadingMap()
@@ -398,7 +402,8 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     ElMessage({
       type: 'error',
       message: normalized.message,
-      showClose: true
+      showClose: true,
+      grouping: true
     })
   } else if (error?.config?.url.startsWith('/xpackComponent/contentPlugin/')) {
     console.error(

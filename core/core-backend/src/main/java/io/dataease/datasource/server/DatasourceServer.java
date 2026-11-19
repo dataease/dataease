@@ -9,6 +9,8 @@ import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.relation.api.RelationApi;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.sync.datasource.api.SyncDatasourceImportProvider;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CronUtils;
 import io.dataease.constant.LogOT;
@@ -21,9 +23,11 @@ import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
+import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.entity.CoreDsFinishPage;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepository;
+import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDsFinishPageRepository;
 import io.dataease.datasource.dao.auto.repository.QrtzSchedulerStateRepository;
 import io.dataease.datasource.manage.DataSourceManage;
@@ -39,6 +43,7 @@ import io.dataease.constant.AuthEnum;
 import io.dataease.constant.AuthResourceEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.resource.RootFolderCreatePermissionManage;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Oracle;
@@ -123,6 +128,8 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DataSourceManage dataSourceManage;
     @Resource
+    private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
+    @Resource
     private QrtzSchedulerStateRepository qrtzSchedulerStateRepository;
     @Resource
     private CoreDsFinishPageRepository coreDsFinishPageRepository;
@@ -143,6 +150,8 @@ public class DatasourceServer implements DatasourceApi {
     @Autowired
     private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
     @Resource
+    private CoreDeEngineRepository coreDeEngineRepository;
+    @Resource
     private DatabaseTimeManage databaseTimeManage;
     @Resource
     private DatasetCacheManage datasetCacheManage;
@@ -161,6 +170,9 @@ public class DatasourceServer implements DatasourceApi {
     private boolean isUpdatingStatus = false;
     private static List<Long> syncDsIds = new ArrayList<>();
 
+    @Autowired(required = false)
+    private SyncDatasourceImportProvider syncDatasourceImportProvider;
+
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -168,6 +180,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public boolean checkRepeat(@RequestBody BusiDsRequest dataSourceDTO) {
+        boolean syncImport = dataSourceDTO != null && dataSourceDTO.getSyncSourceId() != null;
+        if (syncImport) dataSourceDTO = syncImportRequest(dataSourceDTO);
         if (dataSourceDTO == null || StringUtils.isBlank(dataSourceDTO.getType())) {
             throw new DEException(ResultCode.PARAM_NOT_COMPLETE.code(), ResultCode.PARAM_NOT_COMPLETE.message());
         }
@@ -188,8 +202,10 @@ public class DatasourceServer implements DatasourceApi {
         if (CollectionUtils.isEmpty(datasources)) {
             return false;
         }
-        dataSourceDTO.setConfiguration(restoreConfiguration(dataSourceDTO.getConfiguration(),
-                credentialSourceId(dataSourceDTO), dataSourceDTO.getType()));
+        if (!syncImport) {
+            dataSourceDTO.setConfiguration(restoreConfiguration(dataSourceDTO.getConfiguration(),
+                    credentialSourceId(dataSourceDTO), dataSourceDTO.getType()));
+        }
         DatasourceConfiguration configuration = JsonUtil.parseObject(dataSourceDTO.getConfiguration(), DatasourceConfiguration.class);
         boolean hasRepeat = false;
         for (CoreDatasource datasource : datasources) {
@@ -248,6 +264,7 @@ public class DatasourceServer implements DatasourceApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @Transactional
     public DatasourceDTO move(BusiCreateFolderRequest busiDsRequest) {
+        rootFolderCreatePermissionManage.check(busiDsRequest.getPid(), BusiResourceEnum.DATASOURCE);
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         if (dataSourceDTO.getPid() == null) {
@@ -293,6 +310,7 @@ public class DatasourceServer implements DatasourceApi {
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
     @Transactional
     public DatasourceDTO createFolder(BusiCreateFolderRequest busiDsRequest) {
+        rootFolderCreatePermissionManage.check(busiDsRequest.getPid(), BusiResourceEnum.DATASOURCE);
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setCreateTime(System.currentTimeMillis());
@@ -308,12 +326,15 @@ public class DatasourceServer implements DatasourceApi {
     @Transactional
     @Override
     public DatasourceDTO save(BusiDsRequest busiDsRequest) throws DEException {
+        boolean syncImport = busiDsRequest.getSyncSourceId() != null;
+        if (syncImport) busiDsRequest = syncImportRequest(busiDsRequest);
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
             return update(busiDsRequest);
         }
-        if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
+        rootFolderCreatePermissionManage.check(dataSourceDTO.getPid(), BusiResourceEnum.DATASOURCE);
+        if (!syncImport && StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
             dataSourceDTO.setConfiguration(restoreConfiguration(dataSourceDTO.getConfiguration(),
                     credentialSourceId(busiDsRequest), busiDsRequest.getType()));
         }
@@ -1264,6 +1285,51 @@ public class DatasourceServer implements DatasourceApi {
         return request.getId() != null && request.getId() > 0 ? request.getId() : null;
     }
 
+    /** Only this explicit import path may copy a separately authorized sync target's credentials. */
+    private BusiDsRequest syncImportRequest(BusiDsRequest request) {
+        if (StringUtils.isBlank(request.getSyncSourceId()) || request.getId() != null
+                || request.getCopySourceId() != null || request.getType() != null
+                || request.getConfiguration() != null || request.getApiConfigurationStr() != null
+                || request.getParamsStr() != null || request.getSyncSetting() != null
+                || request.getPid() == null || request.getPid() < 0) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null
+                || !LicenseUtil.licenseValid() || syncDatasourceImportProvider == null) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
+        }
+        // Use the current organization's directory tree, including the root's own permission.
+        InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+        BusiNodeRequest directories = new BusiNodeRequest();
+        directories.setBusiFlag("datasource");
+        directories.setLeaf(false);
+        directories.setWeight(AuthEnum.MANAGE.getWeight());
+        if (auth == null || !writableImportDirectory(auth.resource(directories), request.getPid())) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
+        }
+        var source = syncDatasourceImportProvider.loadAuthorized(request.getSyncSourceId());
+        if (source == null || StringUtils.isBlank(source.getType())
+                || StringUtils.isBlank(source.getConfiguration())) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+        }
+        // Do not copy client connection fields or metadata into this server-built request.
+        BusiDsRequest imported = new BusiDsRequest();
+        imported.setName(request.getName());
+        imported.setPid(request.getPid());
+        imported.setType(source.getType());
+        imported.setDescription(source.getDescription());
+        imported.setConfiguration(source.getConfiguration());
+        return imported;
+    }
+
+    private boolean writableImportDirectory(List<BusiNodeVO> nodes, Long pid) {
+        if (nodes == null) return false;
+        return nodes.stream().filter(Objects::nonNull).anyMatch(node ->
+                (Objects.equals(node.getId(), pid) && Boolean.FALSE.equals(node.getLeaf())
+                        && node.getWeight() != null && node.getWeight() >= AuthEnum.MANAGE.getWeight())
+                        || writableImportDirectory(node.getChildren(), pid));
+    }
+
     private String restoreConfiguration(String encoded, Long id, String type) {
         String requested = new String(Base64.getDecoder().decode(encoded), java.nio.charset.StandardCharsets.UTF_8);
         return restorePlainConfiguration(requested, id, type);
@@ -1488,6 +1554,18 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 });
             }
+        });
+        coreDeEngineRepository.findAll().forEach(engine -> {
+            commonThreadPool.addTask(() -> {
+                try {
+                    LogUtil.info("Begin to check engine status: " + engine.getName());
+                    LicenseUtil.validate();
+                    engineManage.validate(engine, true);
+                    LogUtil.info("Finish to check engine status: " + engine.getName());
+                } catch (Exception e) {
+                    LogUtil.info("Error to check engine status: " + engine.getName() + ", error message: " + e.getMessage());
+                }
+            });
         });
     }
 

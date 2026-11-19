@@ -6,9 +6,11 @@ import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(0)
 public class EncryptKeyInitializer implements ApplicationRunner {
 
     @Resource
@@ -17,6 +19,7 @@ public class EncryptKeyInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         rsaManage.check();
+        RsaUtils.checkKeyPair();
         String aesKey = rsaManage.query().getAesKey();
         EncryptUtils.initKeys(aesKey);
         RsaUtils.initAesKey(aesKey);

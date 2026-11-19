@@ -7,16 +7,21 @@ import tempfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--classpath-file', type=Path, required=True)
+parser.add_argument('--rsa-only', action='store_true', help='Run isolated historical RSA compatibility regression')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 repository = Path(os.environ.get('DE_MAVEN_REPO', str(Path.home() / '.m2/repository')))
 spring_test = repository / 'org/springframework/spring-test/6.2.19/spring-test-6.2.19.jar'
-if not spring_test.exists():
+if not args.rsa_only and not spring_test.exists():
     raise SystemExit('Missing spring-test 6.2.19 regression prerequisite')
 entries = [str(root / 'core/core-backend/target/classes')]
 entries += [str(path) for path in (root / 'sdk').glob('**/target/classes')]
 entries += [args.classpath_file.read_text().strip(), str(spring_test)]
 sources = [
+    'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/auth/api/InteractiveAuthApi.java',
+    'sdk/api/api-sync/src/main/java/io/dataease/api/sync/datasource/api/SyncDatasourceImportProvider.java',
+    'sdk/api/api-sync/src/main/java/io/dataease/api/sync/datasource/dto/SyncDatasourceImport.java',
+    'core/core-backend/src/main/java/io/dataease/resource/RootFolderCreatePermissionManage.java',
     'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/user/api/CurrentPasswordVerifier.java',
     'sdk/common/src/main/java/io/dataease/utils/SensitiveConfigurationProvider.java',
     'core/core-backend/src/main/java/io/dataease/sensitive/SensitiveServer.java',
@@ -41,7 +46,16 @@ sources = [
     'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceServer.java',
     'core/core-backend/src/main/java/io/dataease/datasource/server/EngineServer.java',
     'tests/configuration-security/Regression.java',
+    'tests/configuration-security/RsaRegression.java',
+    'core/core-backend/src/main/java/io/dataease/commons/utils/EncryptKeyInitializer.java',
 ]
+if args.rsa_only:
+    sources = [
+        'sdk/common/src/main/java/io/dataease/utils/RsaUtils.java',
+        'core/core-backend/src/main/java/io/dataease/config/ConfigurationTransport.java',
+        'core/core-backend/src/main/java/io/dataease/commons/utils/EncryptKeyInitializer.java',
+        'tests/configuration-security/RsaRegression.java',
+    ]
 with tempfile.TemporaryDirectory(prefix='configuration-security-') as temporary:
     classpath = os.pathsep.join([temporary, *entries])
     compile_result = subprocess.run(['javac', '-cp', classpath, '-d', temporary,
@@ -49,7 +63,7 @@ with tempfile.TemporaryDirectory(prefix='configuration-security-') as temporary:
     if compile_result.returncode:
         print(compile_result.stderr)
         raise SystemExit(compile_result.returncode)
-    result = subprocess.run(['java', '-cp', classpath, 'Regression', str(root), temporary],
+    result = subprocess.run(['java', '-cp', classpath, 'RsaRegression' if args.rsa_only else 'Regression', str(root), temporary],
                             capture_output=True, text=True)
     if result.returncode:
         print(result.stdout)

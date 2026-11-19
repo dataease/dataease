@@ -9,8 +9,6 @@ import referenceTable from '@/assets/svg/reference-table.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import icon_form_outlined from '@/assets/svg/icon_form_outlined.svg'
 import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
-import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
-import icon_textBox_outlined from '@/assets/svg/icon_text-box_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -33,8 +31,6 @@ import {
 import { debounce } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
-import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
-import { useWindowSize } from '@vueuse/core'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -127,12 +123,6 @@ const paginationConfig = reactive({
   pageSize: 10,
   total: 0
 })
-
-const setActiveName = ({ name, enableCheck }) => {
-  if (!enableCheck) return
-  activeName.value = name
-}
-const { height: windowHeight } = useWindowSize()
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
@@ -302,31 +292,23 @@ onBeforeUnmount(() => {
   codeCom.value?.destroy()
 })
 
-const gridData = ref([])
-const gridDataLoading = ref(false)
-// 表详情浮层的 reference 只在 hover 时参与布局，记录打开的行以保持 reference 有有效尺寸
-const tableInfoOpenName = ref('')
-
-const getNodeField = ({ datasourceId, tableName }) => {
-  gridDataLoading.value = true
-  let info = {
-    table: tableName,
-    sql: ''
-  }
-  getTableField({
-    datasourceId,
-    info: JSON.stringify(info),
-    tableName,
-    type: 'db',
-    isCross: isCross.value
-  })
-    .then(res => {
-      gridData.value = res as unknown as Field[]
-    })
-    .finally(() => {
-      gridDataLoading.value = false
-    })
+const tableTreeData = shallowRef([])
+const tableTreeProps = {
+  children: 'children',
+  label: 'label',
+  isLeaf: data => data.nodeType === 'field'
 }
+
+const syncTableTreeData = () => {
+  tableTreeData.value = datasourceTableData.value.map(table => ({
+    ...table,
+    key: table.tableName,
+    label: table.tableName,
+    nodeType: 'table'
+  }))
+}
+
+watch(datasourceTableData, syncTableTreeData, { immediate: true })
 
 // 源库表备注可能在页面停留期间被修改，打开详情时重新获取，避免沿用进入页面时的旧备注
 const tableComments = ref<Record<string, string>>({})
@@ -342,43 +324,65 @@ const refreshTableComment = (source: { datasourceId: string; tableName: string }
   })
 }
 
-const openTableInfo = (source: { datasourceId: string; tableName: string }) => {
-  tableInfoOpenName.value = source.tableName
-  getNodeField(source)
-  refreshTableComment(source)
+const loadTableFields = (node, resolve) => {
+  const table = node.data
+  if (!table?.tableName) {
+    resolve([])
+    return
+  }
+  refreshTableComment(table)
+  getTableField({
+    datasourceId: table.datasourceId,
+    info: JSON.stringify({ table: table.tableName, sql: '' }),
+    tableName: table.tableName,
+    type: 'db',
+    isCross: isCross.value
+  })
+    .then(res => {
+      const fields = (res as unknown as Field[]) || []
+      resolve(
+        fields.map(field => ({
+          key: `${table.tableName}.${field.originName}`,
+          label: field.originName,
+          nodeType: 'field',
+          field
+        }))
+      )
+    })
+    .catch(() => resolve([]))
 }
 
-const closeTableInfo = (tableName: string) => {
-  if (tableInfoOpenName.value === tableName) {
-    tableInfoOpenName.value = ''
+const handleTableTreeNodeClick = data => {
+  if (data.nodeType === 'table') {
+    activeName.value = data.tableName
   }
 }
 
-// 复制提示的 reference 同样只在 hover 时存在，鼠标移出整行时图标直接消失、tooltip 收不到 mouseleave，
-// 会停留在打开状态并被重新定位到页面左上角，因此移出时主动关闭，并在关闭动画期间保持图标可见
+// 复制提示的 reference 只在 hover 时参与布局，鼠标移出节点时主动关闭，
+// 并在关闭动画期间保持图标可见，避免 tooltip 被重新定位到页面左上角
 const copyTipOpenName = ref('')
 const copyTooltipRefs = new Map<string, { hide: () => void }>()
 
-const setCopyTooltipRef = (tableName: string) => (instance: { hide: () => void } | null) => {
+const setCopyTooltipRef = (key: string) => (instance: { hide: () => void } | null) => {
   if (instance) {
-    copyTooltipRefs.set(tableName, instance)
+    copyTooltipRefs.set(key, instance)
   } else {
-    copyTooltipRefs.delete(tableName)
+    copyTooltipRefs.delete(key)
   }
 }
 
-const openCopyTip = (tableName: string) => {
-  copyTipOpenName.value = tableName
+const openCopyTip = (key: string) => {
+  copyTipOpenName.value = key
 }
 
-const closeCopyTip = (tableName: string) => {
-  if (copyTipOpenName.value === tableName) {
+const closeCopyTip = (key: string) => {
+  if (copyTipOpenName.value === key) {
     copyTipOpenName.value = ''
   }
 }
 
-const hideCopyTooltip = (tableName: string) => {
-  copyTooltipRefs.get(tableName)?.hide()
+const hideCopyTooltip = (key: string) => {
+  copyTooltipRefs.get(key)?.hide()
 }
 
 const resourceLabel = computed(() => {
@@ -625,7 +629,6 @@ const getSQLPreview = async () => {
 
 let tableList = []
 watch(searchTable, val => {
-  tableInfoOpenName.value = ''
   datasourceTableData.value = tableList.filter(ele =>
     ele.tableName.toLowerCase().includes(val.toLowerCase())
   )
@@ -661,7 +664,6 @@ const dsChange = debounce((val: string) => {
   getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
-      tableInfoOpenName.value = ''
       datasourceTableData.value = [...tableList]
     })
     .finally(() => {
@@ -914,136 +916,81 @@ const mousedownDrag = () => {
         </div>
       </div>
       <div v-else class="table-checkbox-list">
-        <FixedSizeList
-          :itemSize="40"
-          :data="datasourceTableData"
-          :total="datasourceTableData.length"
-          :width="LeftWidth - 17"
-          :height="windowHeight - 350"
-          :scrollbarAlwaysOn="false"
-          class-name="el-select-dropdown__list"
-          layout="vertical"
+        <el-tree
+          class="table-tree"
+          :data="tableTreeData"
+          :props="tableTreeProps"
+          node-key="key"
+          lazy
+          :load="loadTableFields"
+          highlight-current
+          :current-node-key="activeName"
+          @node-click="handleTableTreeNodeClick"
         >
-          <template #default="{ index, style }">
+          <template #default="{ data }">
             <div
-              :class="[
-                {
-                  active: activeName === datasourceTableData[index].tableName,
-                  'info-open': tableInfoOpenName === datasourceTableData[index].tableName,
-                  'copy-tip-open': copyTipOpenName === datasourceTableData[index].tableName
-                }
-              ]"
-              class="list-item_primary"
-              :style="style"
-              :title="datasourceTableData[index].tableName"
-              @click="setActiveName(datasourceTableData[index])"
-              @mouseleave="hideCopyTooltip(datasourceTableData[index].tableName)"
+              v-if="data.nodeType === 'table'"
+              class="table-tree-node"
+              :class="{
+                active: activeName === data.tableName,
+                'copy-tip-open': copyTipOpenName === data.key
+              }"
+              :title="tableDisplayName(data)"
+              @mouseleave="hideCopyTooltip(data.key)"
             >
               <el-icon class="icon-color">
                 <Icon name="icon_form_outlined"><icon_form_outlined class="svg-icon" /></Icon>
               </el-icon>
-              <span class="label">{{ datasourceTableData[index].tableName }}</span>
+              <span class="label">{{ tableDisplayName(data) }}</span>
               <span class="name-copy">
                 <el-tooltip
-                  :ref="setCopyTooltipRef(datasourceTableData[index].tableName)"
+                  :ref="setCopyTooltipRef(data.key)"
                   effect="dark"
                   :content="t('common.copy')"
                   placement="top"
-                  @show="openCopyTip(datasourceTableData[index].tableName)"
-                  @hide="closeCopyTip(datasourceTableData[index].tableName)"
+                  @show="openCopyTip(data.key)"
+                  @hide="closeCopyTip(data.key)"
                 >
-                  <el-icon
-                    class="hover-icon"
-                    @click="copyInfo(datasourceTableData[index].tableName)"
-                  >
+                  <el-icon class="hover-icon" @click.stop="copyInfo(data.tableName)">
                     <Icon name="icon_copy_outlined"><icon_copy_outlined class="svg-icon" /></Icon>
                   </el-icon>
                 </el-tooltip>
-
-                <el-popover
-                  popper-class="sql-table-info"
-                  placement="right"
-                  :width="502"
-                  :persistent="false"
-                  trigger="click"
-                  @show="openTableInfo(datasourceTableData[index])"
-                  @hide="closeTableInfo(datasourceTableData[index].tableName)"
+              </span>
+            </div>
+            <div
+              v-else
+              class="table-tree-field"
+              :class="{ 'copy-tip-open': copyTipOpenName === data.key }"
+              :title="data.field.description || data.field.originName"
+              @mouseleave="hideCopyTooltip(data.key)"
+            >
+              <el-icon>
+                <Icon
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[data.field.deType]}`"
+                    :is="iconFieldMap[fieldType[data.field.deType]]"
+                  ></component
+                ></Icon>
+              </el-icon>
+              <span class="label">{{ data.field.originName }}</span>
+              <span class="name-copy">
+                <el-tooltip
+                  :ref="setCopyTooltipRef(data.key)"
+                  effect="dark"
+                  :content="t('common.copy')"
+                  placement="top"
+                  @show="openCopyTip(data.key)"
+                  @hide="closeCopyTip(data.key)"
                 >
-                  <template #reference>
-                    <el-icon class="hover-icon">
-                      <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
-                    </el-icon>
-                  </template>
-                  <div class="table-filed" v-loading="gridDataLoading">
-                    <div class="top flex-align-center">
-                      <div class="title ellipsis">
-                        {{ tableDisplayName(datasourceTableData[index]) }}
-                      </div>
-                      <el-icon
-                        class="hover-icon de-hover-icon-primary"
-                        @click.stop="copyInfo(tableDisplayName(datasourceTableData[index]))"
-                      >
-                        <Icon name="icon_copy_outlined"
-                          ><icon_copy_outlined class="svg-icon"
-                        /></Icon>
-                      </el-icon>
-                      <div class="num flex-align-center">
-                        <el-icon>
-                          <Icon name="icon_text-box_outlined"
-                            ><icon_textBox_outlined class="svg-icon"
-                          /></Icon>
-                        </el-icon>
-                        {{ gridData.length }}
-                      </div>
-                    </div>
-                    <div class="table-grid">
-                      <el-table
-                        height="405"
-                        style="width: 100%"
-                        header-cell-class-name="header-cell"
-                        :data="gridData"
-                      >
-                        <el-table-column :label="t('data_set.physical_field_name')">
-                          <template #default="scope">
-                            <div class="flex-align-center icon">
-                              <el-icon>
-                                <Icon
-                                  ><component
-                                    class="svg-icon"
-                                    :class="`field-icon-${fieldType[scope.row.deType]}`"
-                                    :is="iconFieldMap[fieldType[scope.row.deType]]"
-                                  ></component
-                                ></Icon>
-                              </el-icon>
-                              {{ scope.row.originName }}
-                            </div>
-                          </template>
-                        </el-table-column>
-                        <el-table-column :label="t('common.label')">
-                          <template #default="scope">
-                            {{ scope.row.description || '-' }}
-                          </template>
-                        </el-table-column>
-                        <el-table-column :label="t('common.operate')">
-                          <template #default="scope">
-                            <el-icon
-                              class="hover-icon de-hover-icon-primary"
-                              @click.stop="copyInfo(scope.row.originName)"
-                            >
-                              <Icon name="icon_copy_outlined"
-                                ><icon_copy_outlined class="svg-icon"
-                              /></Icon>
-                            </el-icon>
-                          </template>
-                        </el-table-column>
-                      </el-table>
-                    </div>
-                  </div>
-                </el-popover>
+                  <el-icon class="hover-icon" @click.stop="copyInfo(data.field.originName)">
+                    <Icon name="icon_copy_outlined"><icon_copy_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </el-tooltip>
               </span>
             </div>
           </template>
-        </FixedSizeList>
+        </el-tree>
       </div>
     </div>
     <div
@@ -1429,9 +1376,6 @@ const mousedownDrag = () => {
     font-family: var(--de-custom_font, 'PingFang');
     border-right: 1px solid rgba(31, 35, 41, 0.15);
 
-    .list-item_primary {
-      padding: 8px;
-    }
     .table-list-top {
       padding: 16px;
       padding-bottom: 0;
@@ -1507,43 +1451,71 @@ const mousedownDrag = () => {
       overflow-y: auto;
       padding: 0 8px;
 
-      .list-item_primary {
-        padding-right: 4px;
+      .table-tree {
+        padding-bottom: 8px;
+
+        :deep(.el-tree-node__content) {
+          height: 40px;
+          border-radius: 6px;
+        }
+
+        :deep(.el-tree-node__content:hover) {
+          background: rgba(31, 35, 41, 0.1);
+        }
+
+        :deep(.el-tree-node.is-current > .el-tree-node__content) {
+          background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+        }
+      }
+
+      .table-tree-node,
+      .table-tree-field {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        height: 40px;
+        padding-right: 12px;
+        color: var(--deTextPrimary, #1f2329);
+        cursor: pointer;
+
         .label {
-          width: calc(100% - 4px);
+          flex: 1;
+          min-width: 0;
+          margin-left: 5.33px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 14px;
         }
-        &:hover {
-          .label {
-            width: calc(100% - 74px);
-          }
-        }
+      }
+
+      .table-tree-field {
+        color: #646a73;
+      }
+
+      .table-tree-node.active {
+        color: var(--ed-color-primary, #3370ff);
+      }
+
+      .name-copy {
+        display: none;
+        flex-shrink: 0;
+        align-items: center;
+        line-height: 24px;
+        margin-left: 4px;
+      }
+
+      .table-tree-node:hover .name-copy,
+      .table-tree-node.copy-tip-open .name-copy,
+      .table-tree-field:hover .name-copy,
+      .table-tree-field.copy-tip-open .name-copy {
+        display: flex;
       }
 
       .not-allow {
         cursor: not-allowed;
         color: var(--deTextDisable, #bbbfc4);
-      }
-
-      .name-copy {
-        display: none;
-        line-height: 24px;
-        margin-left: 4px;
-      }
-
-      .list-item_primary:hover {
-        .name-copy {
-          display: inline;
-        }
-      }
-
-      .list-item_primary.info-open,
-      .list-item_primary.copy-tip-open {
-        .name-copy {
-          display: inline;
-        }
-        .label {
-          width: calc(100% - 74px);
-        }
       }
     }
   }
@@ -1829,40 +1801,6 @@ const mousedownDrag = () => {
   margin-top: -35px;
   .ed-icon {
     margin: 0 4px;
-  }
-}
-.sql-table-info {
-  padding: 0 !important;
-  height: 480px;
-  .table-filed {
-    height: 480px;
-    .top {
-      padding: 16px;
-      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
-      .title {
-        max-width: 50%;
-      }
-      .num {
-        margin-left: auto;
-        color: #646a73;
-        font-family: var(--de-custom_font, 'PingFang');
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 22px;
-        .ed-icon {
-          margin-right: 4px;
-          font-size: 16px;
-        }
-      }
-    }
-
-    .table-grid {
-      padding: 16px;
-      height: 423px;
-      padding-bottom: 0;
-      overflow-y: auto;
-    }
   }
 }
 .tree-select-ds_popper {

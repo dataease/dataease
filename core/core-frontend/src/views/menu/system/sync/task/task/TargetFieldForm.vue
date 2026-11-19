@@ -92,7 +92,13 @@ const isSpatialSourceField = computed(() => {
  * 普通源字段不展示数组目标类型，避免误选后在同步阶段发生类型不匹配
  */
 const availableTargetFieldTypeList = computed(() => {
-  const typeList = form.value.source.targetFieldTypeList || []
+  const typeList = [...(form.value.source.targetFieldTypeList || [])]
+  // Doris 数组包含源列的完整元素定义，只为当前字段提供其原生候选
+  if (form.value.target.type === 'doris') {
+    for (const type of [state.form.fieldType, selectedSourceField.value?.fieldType]) {
+      if (type?.startsWith('ARRAY<') && !typeList.includes(type)) typeList.push(type)
+    }
+  }
   if (isSpatialSourceField.value) {
     return typeList.filter(type => ['UNKNOWN', 'BYTEA', 'TEXT'].includes(type))
   }
@@ -363,6 +369,7 @@ const unsupportedKeyFieldTypes = computed(
       ?.unsupportedKeyFieldTypes
 )
 const isKeyFieldDisabled = (field: ITableField) =>
+  (form.value.target.type === 'doris' && field.fieldType?.startsWith('ARRAY<')) ||
   !unsupportedKeyFieldTypes.value ||
   unsupportedKeyFieldTypes.value.some(
     type => normalizeFieldType(type) === normalizeFieldType(field.fieldType)
@@ -616,7 +623,7 @@ const showFieldSize = field => {
     !['CHAR', 'VARCHAR', 'DECIMAL'].includes(normalizeFieldType(field.fieldType))
   )
     return false
-  if (field.fieldType?.endsWith('_ARRAY')) {
+  if (field.fieldType?.endsWith('_ARRAY') || field.fieldType?.startsWith('ARRAY<')) {
     return false
   }
   switch (field.fieldType) {
@@ -981,13 +988,13 @@ defineExpose({
       flex-shrink: 0;
     }
   }
+  .ed-form-item__error {
+    position: static;
+    width: 100%;
+    overflow-wrap: anywhere;
+  }
   .source-field-item {
     margin-bottom: 8px;
-
-    .ed-form-item__error {
-      position: static;
-      width: 100%;
-    }
   }
   .source-type-summary {
     margin: 0 0 24px;

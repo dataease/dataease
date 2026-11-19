@@ -3845,7 +3845,7 @@ defineExpose({
       position: relative;
       overflow: hidden;
 
-      .ed-scrollbar {
+      > .ed-scrollbar {
         padding: 16px;
       }
 
@@ -4248,6 +4248,18 @@ defineExpose({
   }
 }
 .dataset-tree {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  .ed-select-dropdown {
+    padding: 0;
+  }
+  .ed-select-dropdown__list {
+    padding: 4px 0;
+  }
+  .ed-tree-node__content {
+    height: 28px;
+  }
   .content {
     display: flex;
     align-items: center;
@@ -4257,7 +4269,6 @@ defineExpose({
       width: calc(100% - 45px);
     }
   }
-  max-width: 321px;
   .ed-select-dropdown__item.selected {
     font-weight: 400;
   }

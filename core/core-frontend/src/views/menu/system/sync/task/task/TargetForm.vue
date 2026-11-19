@@ -317,6 +317,7 @@ const unsupportedKeyFieldTypes = computed(
       ?.unsupportedKeyFieldTypes
 )
 const isKeyFieldDisabled = (field: ITableField) =>
+  (form.value.target.type === 'doris' && field.fieldType?.startsWith('ARRAY<')) ||
   !unsupportedKeyFieldTypes.value ||
   unsupportedKeyFieldTypes.value.some(
     type => normalizeFieldType(type) === normalizeFieldType(field.fieldType)
@@ -1293,8 +1294,8 @@ defineExpose({ validate, closeLoading })
   .field-mapping-alert {
     margin-bottom: 12px;
 
-    :deep(.el-alert__content) {
-      width: 100%;
+    :deep(.ed-alert__content) {
+      flex: 1;
       min-width: 0;
     }
   }

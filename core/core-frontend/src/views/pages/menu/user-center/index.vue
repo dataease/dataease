@@ -25,7 +25,7 @@ import {
 } from '@/views/component/login/bind'
 import { useCache } from '@/hooks/web/useCache'
 import request from '@/config/axios'
-import { rsaEncryp } from '@/utils/encryption'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 import { clearBinding, type PreparedBinding } from '@/utils/platformBinding'
 const userStore = useUserStoreWithOut()
 
@@ -161,6 +161,7 @@ const bindHandler = async (index: number) => {
         closeOnClickModal: false
       }
     )
+    if (!useMfa) await ensureDekey()
     preparedBinding.value = await prepareBindApi(
       [6, 5, 4, 7][index],
       useMfa ? { mfaCode: value } : { pwd: rsaEncryp(value) }

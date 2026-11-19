@@ -8,6 +8,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.XpackSettingConstants;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
@@ -18,6 +19,7 @@ import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.model.ResourceDeleteRequest;
+import io.dataease.resource.RootFolderCreatePermissionManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,10 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
+    private io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository coreDatasetGroupRepository;
+    @Resource
+    private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
+    @Resource
     private ExportCenterManage exportCenterManage;
     @Resource
     private ExportCenterDownLoadManage exportCenterDownLoadManage;
@@ -42,6 +48,16 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
+        if (datasetNodeDTO.getId() == null) {
+            rootFolderCreatePermissionManage.check(datasetNodeDTO.getPid(), BusiResourceEnum.DATASET);
+        } else if (datasetNodeDTO.getPid() != null) {
+            var saved = coreDatasetGroupRepository.findById(datasetNodeDTO.getId()).orElseThrow(() ->
+                    io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.NOT_FOUND,
+                            "i18n_error_not_found"));
+            if (!Objects.equals(saved.getPid(), datasetNodeDTO.getPid())) {
+                rootFolderCreatePermissionManage.check(datasetNodeDTO.getPid(), BusiResourceEnum.DATASET);
+            }
+        }
         return datasetGroupManage.save(datasetNodeDTO, false, true);
     }
 
@@ -58,12 +74,14 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO create(DatasetGroupInfoDTO dto) throws Exception {
+        rootFolderCreatePermissionManage.check(dto.getPid(), BusiResourceEnum.DATASET);
         return datasetGroupManage.save(dto, false, true);
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO move(DatasetGroupInfoDTO dto) throws Exception {
+        rootFolderCreatePermissionManage.check(dto.getPid(), BusiResourceEnum.DATASET);
         return datasetGroupManage.move(dto);
     }
 

@@ -4,6 +4,8 @@ import type { IMaintenanceStructure, ITableField } from '@/api/sync/syncTask'
  * 比较目标类型语义，原始类型名称单独保留用于展示
  */
 export const normalizeFieldType = (fieldType?: string) => {
+  if (fieldType?.trim().toUpperCase().startsWith('ARRAY<'))
+    return fieldType.replace(/\s+/g, '').toUpperCase()
   const type = fieldType?.split('(')[0].trim().toUpperCase() || ''
   if (['DECIMALV2', 'DECIMALV3', 'DECIMAL32', 'DECIMAL64', 'DECIMAL128'].includes(type))
     return 'DECIMAL'

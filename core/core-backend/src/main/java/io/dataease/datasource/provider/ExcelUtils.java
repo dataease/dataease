@@ -508,7 +508,7 @@ public class ExcelUtils {
         } catch (DEException e) {
             throw e;
         } catch (Exception e) {
-            DEException.throwException(e);
+            throw io.dataease.exception.RemoteFileErrors.parse(e);
         }
         List<ExcelSheetData> returnSheetDataList = excelSheetDataList.stream()
                 .filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields()))

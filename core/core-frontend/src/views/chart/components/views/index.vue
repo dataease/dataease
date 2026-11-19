@@ -609,7 +609,7 @@ const jumpClick = param => {
           }
           // 仪表板公共链接不代表具有目标电子表格的分享授权。
           if (publicLinkStatus.value) {
-            ElMessage.warning(t('visualization.public_link_tips'))
+            ElMessage.warning(t('visualization.public_link_spreadsheet_tips'))
             return
           }
           if (divSelf || iframeSelf) {

@@ -413,6 +413,10 @@ export default {
     select_all: '全選當前搜索結果',
     select_org: '選擇{name}'
   },
+  rsa: {
+    invalid_key: '無法取得有效的加密公鑰，請重新整理頁面後重試',
+    encryption_failed: '加密失敗，輸入內容可能超過目前金鑰允許的長度'
+  },
   sensitive_reveal: {
     action: '查看已儲存值',
     datasource_title: '查看資料來源敏感資訊',
@@ -3223,8 +3227,10 @@ export default {
     batch_manage: '批次管理',
     type_change_pending: '{count} 個欄位類型待確認',
     type_change_pending_title: '欄位類型待確認',
+    only_type_change_pending: '僅看待確認',
     type_change_not_auto: '資料集欄位類型未自動修改',
     current_field_type: '目前欄位類型',
+    last_saved_field_type: '上次儲存的欄位類型',
     sql_detected_type: 'SQL 檢測類型',
     keep_current_type: '保留目前類型',
     view_fields: '查看欄位',
@@ -4494,6 +4500,7 @@ export default {
     mobile_layout: '移動端布局',
     component_hidden: '隱藏的組件',
     public_link_tips: '當前是公共連結模式，目標儀表板未設置公共連結，無法跳轉',
+    public_link_spreadsheet_tips: '公共連結跳轉不支援電子表格',
     input_title: '請輸入標題',
     show_title: '標題',
     default_settings: '預設值設置',
@@ -4741,6 +4748,12 @@ export default {
     ds_search_placeholder: '搜尋名稱,描述'
   },
   sync_datasource: {
+    connection_change_title: '確認修改連線設定？',
+    connection_change_warning:
+      '此資料來源關聯 {count} 個任務。儲存後，新執行使用新連線，已開始的執行及其重試、恢復繼續使用原連線。原有表、SQL、欄位映射和增量規則不變，可能導致執行失敗或同步結果變化，部分情況需要維護或新建任務。',
+    changes_not_saved: '本次修改未儲存，原有設定和狀態保持不變',
+    show_error_details: '查看具體原因',
+    hide_error_details: '收起具體原因',
     title: '資料連線管理',
     source_ds: '來源資料來源',
     target_ds: '目標資料來源',
@@ -4758,8 +4771,6 @@ export default {
     confirm_batch_delete_target_ds: '確定刪除{0}個目標資料來源嗎？ ',
     confirm_batch_delete_source_ds: '確定刪除{0}個來源資料來源嗎？ ',
     recently_created: '最近創建',
-    has_running_task_msg:
-      '執行中的任務完成後，將繼續使用修改先前的配置進行同步，需手動對任務進行重新儲存。 ',
     edit_datasource: '編輯資料來源',
     add_datasource: '新資料來源',
     config_info: '設定資訊',
@@ -4893,8 +4904,10 @@ export default {
     recovery_required: '待核對',
     superseded: '由後續變更接續',
     successor: '查看後續欄位變更',
+    retry: '重試',
+    initialization_log_id: '關聯初始化日誌 ID',
     initialization_result: '關聯初始化結果',
-    read_failed: '欄位變更日誌讀取失敗，請重新整理後重試',
+    read_failed: '欄位變更日誌讀取失敗，請重試',
     cleanup_scope: '按所選時間範圍清理資料同步和欄位變更日誌，執行中及仍需復原的記錄將保留'
   },
   sync_maintenance: {
@@ -5028,28 +5041,44 @@ export default {
     execution_pending_title: '本次調整尚未完成',
     structure_incomplete_help:
       '已完成的修改會保留，後續同步仍受限制。請查看原因後返回修改，或保留已完成並結束',
-    configuration_pending_title: '結構調整已完成，正在更新任務設定',
-    configuration_pending_help:
-      '目標資料表結構已完成核對，任務設定尚未儲存；儲存成功後才能解除本次調整限制',
-    configuration_init_help:
-      '目標資料表結構已完成核對，仍需儲存任務設定並完成本次全量初始化，後續同步繼續暫停',
-    config_save_failed_title: '資料表結構已完成，任務設定尚未儲存',
+    configuration_pending_title: '正在完成欄位調整…',
+    configuration_pending_help: '系統正在自動更新任務設定，無須手動儲存。收起後仍會繼續處理。',
+    configuration_init_help: '系統正在自動更新任務設定，隨後將執行全量初始化。收起後仍會繼續處理。',
+    config_save_failed_title: '欄位已調整，任務設定尚未儲存',
+    continue_adjustment: '繼續完成調整',
+    configuration_stopped_help:
+      '背景處理已停止。繼續完成調整後，後續同步才能使用新設定；已成功的欄位修改不會重複執行。',
+    configuration_stopped_init_help:
+      '背景處理已停止。繼續完成調整後，將儲存任務設定並執行全量初始化；已成功的欄位修改不會重複執行。',
+    recovery_entry: '重新初始化…',
     config_updated: '已更新',
     config_not_updated: '尚未更新',
     not_completed: '尚未全部完成',
-    save_configuration: '儲存任務設定',
-    retry_configuration: '重試儲存設定',
-    save_and_initialize: '儲存設定並初始化',
     schema_failed_title: '欄位調整失敗，本次尚無修改生效',
     partial_apply_title: '欄位調整未完成，已有部分修改生效',
-    unknown_result_title: '部分調整結果仍待核對',
+    unknown_result_title: '欄位調整中斷：執行結果尚未確認',
     response_unknown: '提交結果尚未確認，正在核對既有記錄',
     response_unknown_help:
-      '請求中斷不代表調整失敗。請先重新檢查，系統會核對既有記錄和實際結構，避免重複執行',
+      '請先重新檢查。結果明確後可保留已完成修改，繼續調整未完成部分；仍無法確認時，可選擇重新初始化。',
     recovery_required_title: '任務設定待還原，後續同步已暫停',
     recovery_required_help:
       '已完成的修改會保留。系統需核對實際結構並儲存一致設定，還原成功後才能繼續修改或結束本次調整',
     check_result: '重新檢查',
+    abandoned_title: '重新初始化尚未完成',
+    abandoned_help: '本次欄位調整已停止。請重試初始化，按本次調整前儲存的設定還原目標表與同步。',
+    recovery_initialize: '放棄本次調整並重新初始化',
+    recovery_initialize_help: '將使用本次欄位調整開始前儲存的設定重建目標表，並重新匯入來源資料。',
+    recovery_initialize_confirm: '我已確認重建後的設定，並了解資料替換影響',
+    recovery_initialize_impact:
+      '本次欄位修改將不再保留，包括已經成功的修改。目標表現有資料將被替換，請先確認備份。完成後，任務可繼續同步與調整欄位。',
+    recovery_completed: '任務已恢復',
+    recovery_completed_help: '已按本次調整前儲存的設定完成重新初始化，本次欄位修改未保留。',
+    recovery_fields: '重建後的欄位設定',
+    recovery_submit: '確認重新初始化',
+    recovery_retry: '重試初始化',
+    recovery_job_check: '資料庫仍在修改目標表時，系統會阻止本次操作。',
+    recovery_initialize_failed: '初始化失敗，任務尚未恢復。請查看執行結果中的原因後重試。',
+    copy_diagnostics: '複製排查資訊',
     check_status: '重新檢查',
     resume: '繼續剩餘步驟',
     resume_original: '繼續原調整',

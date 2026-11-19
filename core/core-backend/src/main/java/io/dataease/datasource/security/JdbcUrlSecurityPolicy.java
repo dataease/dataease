@@ -70,7 +70,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("impala", Set.of("krbjaasfile", "krb5.conf", "socketfactory", "dnsresolver")),
             Map.entry("sqlserver", Set.of("socketfactoryclass", "socketfactoryconstructorarg", "accesstokencallbackclass")),
             Map.entry("oracle", Set.of()),
-            Map.entry("db2", Set.of()),
+            Map.entry("db2", Set.of("tracefile", "tracedirectory", "tracelevel", "tracefileappend")),
             Map.entry("gaussdb", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger")),
             Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
             Map.entry("kingbase", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
@@ -121,7 +121,7 @@ public final class JdbcUrlSecurityPolicy {
 
         }
         if (StringUtils.equals(normalizedType, "h2")) {
-            if (StringUtils.contains(jdbcUrl, '\\') || StringUtils.contains(extraParams, '\\')
+            if (hasH2BackslashEscape(jdbcUrl) || StringUtils.contains(extraParams, '\\')
                     || containsIgnoreCase(jdbcUrl, "%5c") || containsIgnoreCase(extraParams, "%5c")) {
                 DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
             }
@@ -193,6 +193,20 @@ public final class JdbcUrlSecurityPolicy {
             }
         }
         return false;
+    }
+
+    /**
+     * H2 反斜杠转义检查。Windows 桌面版的 H2 文件路径允许包含盘符反斜杠，
+     * 但设置区（首个 ; 之后）不允许出现反斜杠，且任何位置的 \; 序列都拒绝，
+     * 避免反斜杠逃逸设置分隔符注入参数。
+     */
+    private static boolean hasH2BackslashEscape(String jdbcUrl) {
+        int settingsStart = jdbcUrl.indexOf(';');
+        String settings = settingsStart >= 0 ? jdbcUrl.substring(settingsStart + 1) : "";
+        if (StringUtils.contains(settings, '\\')) {
+            return true;
+        }
+        return StringUtils.contains(jdbcUrl, "\\;");
     }
 
     private static void validateAllowLoadLocalInfile(String value) {

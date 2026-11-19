@@ -458,6 +458,10 @@ export default {
     select_all: 'Select all current search results',
     select_org: 'Select {name}'
   },
+  rsa: {
+    invalid_key: 'Unable to obtain a valid encryption public key. Please refresh and try again.',
+    encryption_failed: 'Encryption failed. The input may exceed the capacity of the current key.'
+  },
   sensitive_reveal: {
     action: 'View saved value',
     datasource_title: 'View datasource credentials',
@@ -3367,8 +3371,10 @@ export default {
     batch_manage: 'Batch management',
     type_change_pending: '{count} field type(s) to confirm',
     type_change_pending_title: 'Field type to confirm',
+    only_type_change_pending: 'Only pending',
     type_change_not_auto: 'dataset field types were not changed automatically',
     current_field_type: 'Current field type',
+    last_saved_field_type: 'Last saved field type',
     sql_detected_type: 'SQL detected type',
     keep_current_type: 'Keep current type',
     view_fields: 'View fields',
@@ -4680,6 +4686,7 @@ export default {
     component_hidden: 'Hidden Components',
     public_link_tips:
       'Currently in public link mode, the target dashboard has not set up public links, unable to jump',
+    public_link_spreadsheet_tips: 'Public links do not support jumping to spreadsheets',
     input_title: 'Please enter the title',
     show_title: 'Title',
     default_settings: 'Default Settings',
@@ -4951,6 +4958,13 @@ export default {
     ds_search_placeholder: 'Search name, description'
   },
   sync_datasource: {
+    connection_change_title: 'Change connection settings?',
+    connection_change_warning:
+      'This data source is used by {count} tasks. New executions will use the new connection. Existing executions, retries and recovery will keep their original connection. Tables, SQL, field mappings and incremental rules will remain unchanged. Tasks may fail or synchronize different data; maintenance or new tasks may be required.',
+    changes_not_saved:
+      'Changes were not saved. The existing configuration and status are unchanged.',
+    show_error_details: 'View error details',
+    hide_error_details: 'Hide error details',
     title: 'Data Connection Management',
     source_ds: 'Source Data Source',
     target_ds: 'Target Data Source',
@@ -4968,8 +4982,6 @@ export default {
     confirm_batch_delete_target_ds: 'Are you sure you want to delete {0} target Datasources? ',
     confirm_batch_delete_source_ds: 'Are you sure you want to delete {0} source Datasources? ',
     recently_created: 'Recently created',
-    has_running_task_msg:
-      'After the task in progress is completed, the configuration before the modification will continue to be used for synchronization, and the task needs to be manually saved again. ',
     edit_datasource: 'Edit Datasource',
     add_datasource: 'Create a new Datasource',
     config_info: 'Configuration information',
@@ -5106,8 +5118,10 @@ export default {
     recovery_required: 'Verification required',
     superseded: 'Continued by a later change',
     successor: 'View the subsequent field change',
+    retry: 'Retry',
+    initialization_log_id: 'Related initialization log ID',
     initialization_result: 'Related initialization result',
-    read_failed: 'Unable to read the field change log. Refresh to try again.',
+    read_failed: 'Unable to read the field change log. Please try again.',
     cleanup_scope:
       'Clear data synchronization and field change logs in the selected time range. Records in progress or needed for recovery are retained.'
   },
@@ -5257,29 +5271,53 @@ export default {
     execution_pending_title: 'This adjustment has not completed',
     structure_incomplete_help:
       'Completed changes are retained and subsequent synchronization remains restricted. Review the cause, then return to editing or keep the completed changes and end the adjustment.',
-    configuration_pending_title: 'Schema adjustment completed; updating task configuration',
+    configuration_pending_title: 'Completing field adjustment…',
     configuration_pending_help:
-      'The target schema has been verified, but task configuration has not been saved. Restrictions remain until it is saved successfully.',
+      'The task configuration is being updated automatically. No manual save is needed. Processing continues after you close this window.',
     configuration_init_help:
-      'The target schema has been verified. Task configuration must be saved and full initialization completed before subsequent synchronization can resume.',
-    config_save_failed_title: 'Schema changes completed; task configuration not saved',
+      'The task configuration is being updated automatically, followed by full initialization. Processing continues after you close this window.',
+    config_save_failed_title: 'Fields updated; task configuration not saved',
+    continue_adjustment: 'Complete adjustment',
+    configuration_stopped_help:
+      'Background processing has stopped. Complete the adjustment before subsequent syncs can use the new configuration. Successful field changes will not be repeated.',
+    configuration_stopped_init_help:
+      'Background processing has stopped. Continuing will save the task configuration and perform full initialization. Successful field changes will not be repeated.',
+    recovery_entry: 'Reinitialize…',
     config_updated: 'Updated',
     config_not_updated: 'Not updated',
     not_completed: 'Not fully completed',
-    save_configuration: 'Save task configuration',
-    retry_configuration: 'Retry saving configuration',
-    save_and_initialize: 'Save configuration and initialize',
     schema_failed_title: 'Field adjustment failed; no changes have taken effect',
     partial_apply_title: 'Adjustment incomplete; some changes have taken effect',
-    unknown_result_title: 'Some adjustment results need verification',
+    unknown_result_title: 'Field adjustment interrupted: execution result unconfirmed',
     response_unknown: 'Submission result unconfirmed; checking recorded results',
     response_unknown_help:
-      'An interrupted request does not mean the adjustment failed. Check again so the system can verify recorded results and the actual schema without repeating changes.',
+      'Check again first. Once the results are confirmed, keep completed changes and edit the remaining ones. If the results remain unknown, you can reinitialize.',
     recovery_required_title:
       'Task configuration needs recovery; subsequent synchronization is paused',
     recovery_required_help:
       'Completed changes are retained. The actual schema must be verified and consistent configuration saved before editing can continue or the adjustment can end.',
     check_result: 'Check again',
+    abandoned_title: 'Reinitialization is not complete',
+    abandoned_help:
+      'This field adjustment has stopped. Retry initialization to restore the target table and synchronization using the configuration saved before this adjustment.',
+    recovery_initialize: 'Discard this adjustment and reinitialize',
+    recovery_initialize_help:
+      'Rebuild the target table using the configuration saved before this field adjustment, then reload source data.',
+    recovery_initialize_confirm:
+      'I have reviewed the resulting configuration and understand the data replacement impact',
+    recovery_initialize_impact:
+      'All changes in this adjustment, including applied changes, will be discarded. Existing target data will be replaced. Confirm your backup before proceeding. After completion, synchronization and field adjustments are available again.',
+    recovery_completed: 'Task recovered',
+    recovery_completed_help:
+      'Reinitialization completed using the configuration saved before this adjustment. Changes from this adjustment were discarded.',
+    recovery_fields: 'Fields after rebuilding',
+    recovery_submit: 'Confirm reinitialization',
+    recovery_retry: 'Retry initialization',
+    recovery_job_check:
+      'This operation is blocked while database changes to the target table are running.',
+    recovery_initialize_failed:
+      'Initialization failed and the task has not recovered. Review the execution result before retrying.',
+    copy_diagnostics: 'Copy diagnostic details',
     check_status: 'Check again',
     resume: 'Continue remaining steps',
     resume_original: 'Continue original adjustment',

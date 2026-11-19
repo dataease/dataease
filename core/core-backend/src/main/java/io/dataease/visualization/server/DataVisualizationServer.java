@@ -33,6 +33,7 @@ import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.dao.auto.entity.*;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.manage.DatasetGroupManage;
@@ -44,12 +45,14 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
 import io.dataease.exception.ErrorCategory;
+import io.dataease.resource.RootFolderCreatePermissionManage;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.manage.CoreLicManage;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -92,6 +95,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
+    @Resource
+    private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
+
+    private BusiResourceEnum destinationType(String type) {
+        if ("dashboard".equals(type)) return BusiResourceEnum.PANEL;
+        if ("dataV".equals(type)) return BusiResourceEnum.SCREEN;
+        throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+    }
     @Autowired
     private ImportedImageManage importedImages;
     @Resource
@@ -102,6 +113,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
+
+    @Resource
+    private PerBusiResourceRepository perBusiResourceRepository;
 
     @Resource
     private ChartViewManege chartViewManege;
@@ -219,6 +233,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
+            if (CommonConstants.RESOURCE_TABLE.CORE.equals(resourceTable)
+                    && !Objects.equals(result.getStatus(), CommonConstants.DV_STATUS.PUBLISHED)
+                    && !Objects.equals(result.getStatus(), CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)) {
+                throw DEException.of(ErrorCategory.FORBIDDEN, "i18n_resource_not_published");
+            }
             // get creator
             String userName = null;
             if (StringUtils.isNotEmpty(result.getCreateBy())) {
@@ -276,7 +295,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     private DataVisualizationInfo requireVisualizationPermission(Long id, AuthEnum permission) {
         DataVisualizationInfo resource = requireVisualizationResource(id);
-        checkVisualizationPermission(resource, permission, visualizationAuth());
+        checkVisualizationPermission(resource, permission, visualizationAuth(resource));
         return resource;
     }
 
@@ -292,12 +311,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return resource;
     }
 
-    private InteractiveAuthApi visualizationAuth() {
+    private InteractiveAuthApi visualizationAuth(DataVisualizationInfo resource) {
+        // XPack permission beans can be present in community mode, but require a valid license.
+        if (!LicenseUtil.licenseValid()) {
+            if (!Objects.equals(V3UserUtil.getUid(), 1L) || V3UserUtil.getProxy().isProxy()
+                    || !DataVisualizationConstants.NODE_TYPE.LEAF.equals(resource.getNodeType())
+                    || perBusiResourceRepository.existsById(resource.getId())) {
+                denyVisualizationRead();
+            }
+            return null;
+        }
         InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
-        if (auth == null && (!Objects.equals(V3UserUtil.getUid(), 1L)
-                || CommonBeanFactory.getBean("substituleLoginServer") == null
-                || CommonBeanFactory.getBean("loginServer") != null)) {
-            // Only the actual single-user community implementation may omit this service.
+        if (auth == null) {
             denyVisualizationRead();
         }
         return auth;
@@ -313,7 +338,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     private DataVisualizationInfo requireVisualizationDraftAccess(Long id) {
         DataVisualizationInfo resource = requireVisualizationResource(id);
-        InteractiveAuthApi auth = visualizationAuth();
+        InteractiveAuthApi auth = visualizationAuth(resource);
         if (Objects.equals(resource.getPid(), -1L)) {
             // Temporary copies are not registered in the permission tree; only their creator may open them.
             if (!Objects.equals(resource.getCreateBy(), String.valueOf(V3UserUtil.getUid()))
@@ -342,10 +367,19 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return coreVisualizationManage.findDvInfo(request.getId(), request.getBusiFlag(), request.getResourceTable());
     }
 
+    public void checkSaveDestination(DataVisualizationBaseRequest request) {
+        rootFolderCreatePermissionManage.check(request.getPid(), destinationType(request.getType()));
+        if (request.getAppData() != null) {
+            rootFolderCreatePermissionManage.check(request.getDatasetFolderPid(),
+                    BusiResourceEnum.DATASET);
+        }
+    }
+
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, stExp = "#p0.type")
     @Override
     @Transactional
     public String saveCanvas(DataVisualizationBaseRequest request) throws Exception {
+        checkSaveDestination(request);
         /*
          * 发布兼容逻辑
          * saveCanvas 为初次保存 包括 模板 应用 普通创建 所有变更操作都走snapshot表
@@ -725,6 +759,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (request.getCanvasViewInfo() == null || request.getPid() == null) {
             throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
         }
+        if (!java.util.Objects.equals(saved.getPid(), request.getPid())) {
+            rootFolderCreatePermissionManage.check(request.getPid(), destinationType(saved.getType()));
+        }
         for (Map.Entry<Long, ChartViewDTO> ele : request.getCanvasViewInfo().entrySet()) {
             DatasetUtils.viewDecode(ele.getValue());
         }
@@ -893,6 +930,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Transactional
     @Override
     public void move(DataVisualizationBaseRequest request) {
+        rootFolderCreatePermissionManage.check(request.getPid(), destinationType(request.getType()));
         coreVisualizationManage.move(request);
     }
 

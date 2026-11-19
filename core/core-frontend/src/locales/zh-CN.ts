@@ -413,6 +413,10 @@ export default {
     select_all: '全选当前搜索结果',
     select_org: '选择{name}'
   },
+  rsa: {
+    invalid_key: '无法获取有效的加密公钥，请刷新页面重试',
+    encryption_failed: '加密失败，输入内容可能超过当前密钥允许的长度'
+  },
   sensitive_reveal: {
     action: '查看已保存值',
     datasource_title: '查看数据源敏感信息',
@@ -3242,8 +3246,10 @@ export default {
     batch_manage: '批量管理',
     type_change_pending: '{count} 个字段类型待确认',
     type_change_pending_title: '字段类型待确认',
+    only_type_change_pending: '仅看待确认',
     type_change_not_auto: '数据集字段类型未自动修改',
     current_field_type: '当前字段类型',
+    last_saved_field_type: '上次保存的字段类型',
     sql_detected_type: 'SQL 检测类型',
     keep_current_type: '保留当前类型',
     view_fields: '查看字段',
@@ -4513,6 +4519,7 @@ export default {
     mobile_layout: '移动端布局',
     component_hidden: '隐藏的组件',
     public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
+    public_link_spreadsheet_tips: '公共链接跳转不支持电子表格',
     input_title: '请输入标题',
     show_title: '标题',
     default_settings: '默认值设置',
@@ -4761,6 +4768,12 @@ export default {
     ds_search_placeholder: '搜索名称,描述'
   },
   sync_datasource: {
+    connection_change_title: '确认修改连接配置？',
+    connection_change_warning:
+      '该数据源关联 {count} 个任务。保存后，新执行使用新连接，已开始的执行及其重试、恢复继续使用原连接。原有表、SQL、字段映射和增量规则不变，可能导致执行失败或同步结果变化，部分情况需要维护或新建任务。',
+    changes_not_saved: '本次修改未保存，原有配置和状态保持不变',
+    show_error_details: '查看具体原因',
+    hide_error_details: '收起具体原因',
     title: '数据连接管理',
     source_ds: '源数据源',
     target_ds: '目标数据源',
@@ -4778,8 +4791,6 @@ export default {
     confirm_batch_delete_target_ds: '确定删除{0}个目标数据源吗？',
     confirm_batch_delete_source_ds: '确定删除{0}个源数据源吗？',
     recently_created: '最近创建',
-    has_running_task_msg:
-      '执行中的任务完成后，将继续使用修改之前的配置进行同步，需手动对任务进行重新保存。',
     edit_datasource: '编辑数据源',
     add_datasource: '新建数据源',
     config_info: '配置信息',
@@ -4910,8 +4921,10 @@ export default {
     recovery_required: '待核对',
     superseded: '由后续变更接续',
     successor: '查看后续字段变更',
+    retry: '重试',
+    initialization_log_id: '关联初始化日志 ID',
     initialization_result: '关联初始化结果',
-    read_failed: '字段变更日志读取失败，请刷新重试',
+    read_failed: '字段变更日志读取失败，请重试',
     cleanup_scope: '按所选时间范围清理数据同步和字段变更日志，执行中及仍需恢复的记录将保留'
   },
   sync_maintenance: {
@@ -5044,28 +5057,44 @@ export default {
     execution_pending_title: '本次调整尚未完成',
     structure_incomplete_help:
       '已完成的修改会保留，后续同步仍受限制。请查看原因后返回修改，或保留已完成并结束',
-    configuration_pending_title: '结构调整已完成，正在更新任务配置',
-    configuration_pending_help:
-      '目标表结构已完成核对，任务配置尚未保存；保存成功后才能解除本次调整限制',
-    configuration_init_help:
-      '目标表结构已完成核对，仍需保存任务配置并完成本次全量初始化，后续同步继续暂停',
-    config_save_failed_title: '表结构已完成，任务配置尚未保存',
+    configuration_pending_title: '正在完成字段调整…',
+    configuration_pending_help: '系统正在自动更新任务配置，无需手动保存。收起后仍会继续处理。',
+    configuration_init_help: '系统正在自动更新任务配置，随后将执行全量初始化。收起后仍会继续处理。',
+    config_save_failed_title: '字段已调整，任务配置尚未保存',
+    continue_adjustment: '继续完成调整',
+    configuration_stopped_help:
+      '后台处理已停止。继续完成调整后，后续同步才能使用新配置；已成功的字段修改不会重复执行。',
+    configuration_stopped_init_help:
+      '后台处理已停止。继续完成调整后，将保存任务配置并执行全量初始化；已成功的字段修改不会重复执行。',
+    recovery_entry: '重新初始化…',
     config_updated: '已更新',
     config_not_updated: '尚未更新',
     not_completed: '尚未全部完成',
-    save_configuration: '保存任务配置',
-    retry_configuration: '重试保存配置',
-    save_and_initialize: '保存配置并初始化',
     schema_failed_title: '字段调整失败，本次尚无修改生效',
     partial_apply_title: '字段调整未完成，已有部分修改生效',
-    unknown_result_title: '部分调整结果仍待核对',
+    unknown_result_title: '字段调整中断：执行结果尚未确认',
     response_unknown: '提交结果尚未确认，正在核对已有记录',
     response_unknown_help:
-      '请求中断不代表调整失败。请先重新检查，系统会核对已有记录和实际结构，避免重复执行',
+      '请先重新检查。结果明确后可保留已完成修改，继续调整未完成部分；仍无法确认时，可选择重新初始化。',
     recovery_required_title: '任务配置待恢复，后续同步已暂停',
     recovery_required_help:
       '已完成的修改会保留。系统需核对实际结构并保存一致配置，恢复成功后才能继续修改或结束本次调整',
     check_result: '重新检查',
+    abandoned_title: '重新初始化尚未完成',
+    abandoned_help: '本次字段调整已停止。请重试初始化，按本次调整前保存的配置恢复目标表和同步。',
+    recovery_initialize: '放弃本次调整并重新初始化',
+    recovery_initialize_help: '将使用本次字段调整开始前保存的配置重建目标表，并重新导入源数据。',
+    recovery_initialize_confirm: '我已确认重建后的配置，并了解数据替换影响',
+    recovery_initialize_impact:
+      '本次字段修改将不再保留，包括已经成功的修改。目标表现有数据将被替换，请先确认备份。完成后，任务可继续同步和调整字段。',
+    recovery_completed: '任务已恢复',
+    recovery_completed_help: '已按本次调整前保存的配置完成重新初始化，本次字段修改未保留。',
+    recovery_fields: '重建后的字段配置',
+    recovery_submit: '确认重新初始化',
+    recovery_retry: '重试初始化',
+    recovery_job_check: '数据库仍在修改目标表时，系统会阻止本次操作。',
+    recovery_initialize_failed: '初始化失败，任务尚未恢复。请查看执行结果中的原因后重试。',
+    copy_diagnostics: '复制排查信息',
     check_status: '重新检查',
     resume: '继续剩余步骤',
     resume_original: '继续原调整',

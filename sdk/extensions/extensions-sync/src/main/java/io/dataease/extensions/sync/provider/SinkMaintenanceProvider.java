@@ -57,6 +57,14 @@ public interface SinkMaintenanceProvider {
     SinkMaintenance.Structure inspect(Target target);
 
     /**
+     * 独立检查终止维护及恢复初始化的能力，不依赖旧表定义解析
+     * 无实现的插件默认拒绝；返回前必须确认没有相关数据库作业仍在执行
+     */
+    default void checkRecoveryReady(Target target) {
+        throw new UnsupportedOperationException("Recovery initialization is not supported");
+    }
+
+    /**
      * 仅生成可重复的执行计划，不修改数据库；步骤 ID、顺序和内容必须在相同输入下保持一致
      * 步骤使用 ADD、DROP、RENAME、TYPE、COMMENT、ADD_INDEX、DROP_INDEX，before/after 表示该步骤前后的完整字段
      * 插件负责转换白名单、索引依赖及默认键输入变化判断，字段问题通过 Plan.reject 同时返回门禁与定位信息
