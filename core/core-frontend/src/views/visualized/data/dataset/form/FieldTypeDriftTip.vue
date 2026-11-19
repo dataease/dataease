@@ -52,7 +52,7 @@ watch(
     </template>
     <div class="field-type-drift-compare">
       <div class="compare-row">
-        <span>{{ t('dataset.current_field_type') }}</span>
+        <span>{{ t('dataset.last_saved_field_type') }}</span>
         <b>{{ deTypeLabel(currentType) }}</b>
       </div>
       <div class="compare-row">
