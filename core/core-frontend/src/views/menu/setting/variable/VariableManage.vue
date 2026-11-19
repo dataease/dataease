@@ -1005,8 +1005,8 @@ onBeforeUnmount(() => {
     width: 269px;
 
     .title {
-      padding: 0 24px;
-      padding-top: 24px;
+      padding: 0 16px;
+      padding-top: 16px;
       border-top-left-radius: 12px;
     }
 
@@ -1051,7 +1051,7 @@ onBeforeUnmount(() => {
         font-weight: 500;
         line-height: 22px;
         height: 40px;
-        padding-left: 24px;
+        padding-left: 16px;
       }
       .de-role-hidden {
         display: none !important;
@@ -1061,8 +1061,8 @@ onBeforeUnmount(() => {
         color: var(--ed-menu-active-color) !important;
       }
       .list-item_primary {
-        padding: 0 16px;
-        margin: 0 7px;
+        padding: 0 8px;
+        margin: 0 8px;
 
         .label {
           line-height: 22px;
