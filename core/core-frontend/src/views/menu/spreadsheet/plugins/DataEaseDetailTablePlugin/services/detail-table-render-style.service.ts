@@ -4,7 +4,7 @@ import { applyTableBorderStyle } from '../../../components/table-border/border-s
 import type { DetailTableConfig } from '../types'
 import type { FieldItemData } from '../../../types/plugin'
 import { TableStyleService } from './table-style.service'
-import { getFieldDisplayScale } from '../utils/field-format'
+import { getFieldDisplayScale } from '../../../utils/field-format'
 import { isDetailTableIndexVisible } from '../utils/table-style-state'
 
 const DEFAULT_RENDER_STYLE: Partial<IStyleData> = {

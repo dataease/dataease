@@ -3,7 +3,7 @@ import {
   getFieldDisplayScale,
   getFieldNumberFormat,
   toNativeCellValue
-} from '../utils/field-format'
+} from '../../../utils/field-format'
 import { sortPivotDimensionTuples } from '../utils/pivot-axis-sort'
 import type { FieldItemData } from '../../../types/plugin'
 import type {
