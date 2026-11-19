@@ -3,7 +3,7 @@ import type {
   FieldDateStyle,
   FieldFormatterConfig,
   FieldItemData
-} from '../../../types/plugin'
+} from '../types/plugin'
 import Decimal from 'decimal.js'
 import { getLocale } from '@/utils/utils'
 

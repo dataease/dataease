@@ -12,7 +12,11 @@ import { DetailTableEditProtectionService } from './detail-table-edit-protection
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
 import { SpreadsheetOuterParamsService } from '../../DataEaseOuterParamsPlugin/services/outer-params.service'
 import { SpreadsheetLinkJumpService } from '../../DataEaseLinkJumpPlugin/services/link-jump.service'
-import { findConfiguredField, getFieldNumberFormat, toNativeCellValue } from '../utils/field-format'
+import {
+  findConfiguredField,
+  getFieldNumberFormat,
+  toNativeCellValue
+} from '../../../utils/field-format'
 import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
 import { isDetailTableIndexVisible } from '../utils/table-style-state'

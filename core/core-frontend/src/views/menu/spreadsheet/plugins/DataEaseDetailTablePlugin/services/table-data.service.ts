@@ -11,7 +11,7 @@ import {
   DEFAULT_DATE_PATTERN,
   DEFAULT_DATE_STYLE,
   normalizeFormatterConfig
-} from '../utils/field-format'
+} from '../../../utils/field-format'
 
 export class TableDataService {
   async queryData(
