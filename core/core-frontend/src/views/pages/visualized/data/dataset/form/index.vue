@@ -156,7 +156,7 @@ const changeNodeFieldType = (id: string, value: (number | string)[], confirmDrif
   changeUpdate()
 }
 
-type FieldTypeDrift = { detected: number; configured?: number; confirmed: boolean }
+type FieldTypeDrift = { detected: number; baseline: number; confirmed: boolean }
 const sqlFieldTypeDrift = ref<Record<string, FieldTypeDrift>>({})
 const fieldTypeDriftKey = (nodeId: string | number, originName: string) =>
   `${nodeId}::${originName}`
@@ -179,48 +179,42 @@ const handleFieldTypeDetected = ({
   Object.entries(sqlFieldTypeDrift.value).forEach(([key, value]) => {
     if (!key.startsWith(prefix)) next[key] = value
   })
-  // `saved` is the node's metadata before this SQL ran: by now allfields may already carry the new
-  // types, so it is the only reliable baseline for "the physical type of an existing field moved".
+  // 对比基准是上一次保存的 SQL 的检测类型：每次保存后基线随之更新，
+  // 之后任一次 SQL 变更只要字段类型与上次保存的不同，都需要重新确认。
   const savedMap = new Map((saved || []).map(item => [item.originName, item]))
-  // The configured type lives on the dataset field and is not replaced when the SQL re-runs; the
-  // node row's type is the freshly detected one. Restoring the original SQL must therefore compare
-  // the detected type against the configured one, not against the previous SQL's detected type.
-  const configuredMap = new Map(
-    allfields.value
-      .filter(field => (field.extField ?? 0) === 0 && `${field.datasetTableId}` === `${nodeId}`)
-      .map(field => [field.originName, field.deTypeArr?.length ? field.deTypeArr[0] : field.deType])
-  )
   fields.forEach(detected => {
     const previous = savedMap.get(detected.originName)
     if (!previous || previous.deExtractType === detected.deExtractType) return
-    const configured = configuredMap.get(detected.originName)
-    if (configured != null && configured === detected.deExtractType) return
     const key = fieldTypeDriftKey(nodeId, detected.originName)
     const prev = sqlFieldTypeDrift.value[key]
     next[key] = {
       detected: detected.deExtractType,
-      configured:
-        configured ?? (previous.deTypeArr?.length ? previous.deTypeArr[0] : previous.deType),
+      baseline: previous.deExtractType ?? previous.deType,
       confirmed: !!prev && prev.detected === detected.deExtractType && prev.confirmed
     }
   })
   sqlFieldTypeDrift.value = next
 }
-// Returns the SQL-detected type when it differs from the configured one and was not confirmed.
+// Returns the type detected by the current SQL when it differs from the last saved SQL and has not
+// been confirmed yet.
 const getFieldTypeDrift = field => {
   if (!field || (field.extField ?? 0) !== 0) return null
-  // Rows reloaded after an SQL save carry the freshly detected deType; the configured type still
-  // lives on the dataset field, so compare against that rather than the row's own type.
   const saved = (field.id && allfields.value.find(item => item.id === field.id)) || field
   const state =
     sqlFieldTypeDrift.value[
       fieldTypeDriftKey(saved.datasetTableId ?? field.datasetTableId, saved.originName)
     ]
   if (!state || state.confirmed) return null
-  const configured =
-    state.configured ?? (saved.deTypeArr?.length ? saved.deTypeArr[0] : saved.deType)
-  if (state.detected === configured) return null
   return state.detected
+}
+const getFieldTypeDriftBaseline = field => {
+  if (!field || (field.extField ?? 0) !== 0) return null
+  const saved = (field.id && allfields.value.find(item => item.id === field.id)) || field
+  const state =
+    sqlFieldTypeDrift.value[
+      fieldTypeDriftKey(saved.datasetTableId ?? field.datasetTableId, saved.originName)
+    ]
+  return state && !state.confirmed ? state.baseline : null
 }
 const pendingTypeDriftCount = computed(
   () => allfields.value.filter(field => getFieldTypeDrift(field) !== null).length
@@ -2241,6 +2235,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             :field-options="fieldOptions"
             :field-options-text="fieldOptionsText"
             :field-type-drift="getFieldTypeDrift"
+            :field-type-baseline="getFieldTypeDriftBaseline"
             @field-name="changeNodeFieldName"
             @field-type="changeNodeFieldType"
             @keep-field-type="confirmFieldTypeDriftById"
@@ -2537,7 +2532,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             <field-type-drift-tip
                               v-if="getFieldTypeDrift(scope.row) !== null"
                               :active="tabActive !== 'preview'"
-                              :current-type="scope.row.deType"
+                              :current-type="getFieldTypeDriftBaseline(scope.row)"
                               :detected-type="getFieldTypeDrift(scope.row)"
                               @keep="confirmFieldTypeDrift(scope.row)"
                             />
@@ -2765,7 +2760,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             <field-type-drift-tip
                               v-if="getFieldTypeDrift(scope.row) !== null"
                               :active="tabActive !== 'preview'"
-                              :current-type="scope.row.deType"
+                              :current-type="getFieldTypeDriftBaseline(scope.row)"
                               :detected-type="getFieldTypeDrift(scope.row)"
                               @keep="confirmFieldTypeDrift(scope.row)"
                             />

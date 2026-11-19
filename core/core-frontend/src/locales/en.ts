@@ -2796,6 +2796,7 @@ export default {
     only_type_change_pending: 'Only pending',
     type_change_not_auto: 'dataset field types were not changed automatically',
     current_field_type: 'Current field type',
+    last_saved_field_type: 'Last saved field type',
     sql_detected_type: 'SQL detected type',
     keep_current_type: 'Keep current type',
     view_fields: 'View fields',

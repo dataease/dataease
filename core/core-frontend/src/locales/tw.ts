@@ -2698,6 +2698,7 @@ export default {
     only_type_change_pending: '僅看待確認',
     type_change_not_auto: '資料集欄位類型未自動修改',
     current_field_type: '目前欄位類型',
+    last_saved_field_type: '上次儲存的欄位類型',
     sql_detected_type: 'SQL 檢測類型',
     keep_current_type: '保留目前類型',
     view_fields: '查看欄位',

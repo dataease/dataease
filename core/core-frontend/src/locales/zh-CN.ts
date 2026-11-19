@@ -2717,6 +2717,7 @@ export default {
     only_type_change_pending: '仅看待确认',
     type_change_not_auto: '数据集字段类型未自动修改',
     current_field_type: '当前字段类型',
+    last_saved_field_type: '上次保存的字段类型',
     sql_detected_type: 'SQL 检测类型',
     keep_current_type: '保留当前类型',
     view_fields: '查看字段',
