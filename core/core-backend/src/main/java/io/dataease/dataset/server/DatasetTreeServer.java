@@ -36,6 +36,8 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
+    private io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository coreDatasetGroupRepository;
+    @Resource
     private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
     @Resource
     private ExportCenterManage exportCenterManage;
@@ -46,6 +48,16 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
+        if (datasetNodeDTO.getId() == null) {
+            rootFolderCreatePermissionManage.check(datasetNodeDTO.getPid(), BusiResourceEnum.DATASET);
+        } else if (datasetNodeDTO.getPid() != null) {
+            var saved = coreDatasetGroupRepository.findById(datasetNodeDTO.getId()).orElseThrow(() ->
+                    io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.NOT_FOUND,
+                            "i18n_error_not_found"));
+            if (!Objects.equals(saved.getPid(), datasetNodeDTO.getPid())) {
+                rootFolderCreatePermissionManage.check(datasetNodeDTO.getPid(), BusiResourceEnum.DATASET);
+            }
+        }
         return datasetGroupManage.save(datasetNodeDTO, false, true);
     }
 
@@ -62,15 +74,14 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO create(DatasetGroupInfoDTO dto) throws Exception {
-        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "folder")) {
-            rootFolderCreatePermissionManage.check(dto.getPid(), BusiResourceEnum.DATASET);
-        }
+        rootFolderCreatePermissionManage.check(dto.getPid(), BusiResourceEnum.DATASET);
         return datasetGroupManage.save(dto, false, true);
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO move(DatasetGroupInfoDTO dto) throws Exception {
+        rootFolderCreatePermissionManage.check(dto.getPid(), BusiResourceEnum.DATASET);
         return datasetGroupManage.move(dto);
     }
 
