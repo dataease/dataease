@@ -495,6 +495,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                       />
                       <field-type-drift-tip
                         v-if="getDrift(row) !== null"
+                        :active="activeTab === 'fields'"
                         :current-type="getConfiguredFieldType(row)"
                         :detected-type="getDrift(row)"
                         @keep="emit('keepFieldType', row.id)"

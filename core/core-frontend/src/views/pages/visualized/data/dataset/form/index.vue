@@ -2536,6 +2536,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
                             <field-type-drift-tip
                               v-if="getFieldTypeDrift(scope.row) !== null"
+                              :active="tabActive !== 'preview'"
                               :current-type="scope.row.deType"
                               :detected-type="getFieldTypeDrift(scope.row)"
                               @keep="confirmFieldTypeDrift(scope.row)"
@@ -2763,6 +2764,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             </el-cascader>
                             <field-type-drift-tip
                               v-if="getFieldTypeDrift(scope.row) !== null"
+                              :active="tabActive !== 'preview'"
                               :current-type="scope.row.deType"
                               :detected-type="getFieldTypeDrift(scope.row)"
                               @keep="confirmFieldTypeDrift(scope.row)"
