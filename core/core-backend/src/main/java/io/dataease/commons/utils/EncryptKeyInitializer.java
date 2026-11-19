@@ -19,6 +19,7 @@ public class EncryptKeyInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         rsaManage.check();
+        RsaUtils.checkKeyPair();
         String aesKey = rsaManage.query().getAesKey();
         EncryptUtils.initKeys(aesKey);
         RsaUtils.initAesKey(aesKey);

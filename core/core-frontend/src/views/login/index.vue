@@ -4,13 +4,13 @@ import { ref, reactive, onMounted, computed, nextTick, defineAsyncComponent } fr
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { loginApi, queryDekey } from '@/api/login'
+import { loginApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { CustomPassword } from '@/components/custom-password'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
-import { rsaEncryp } from '@/utils/encryption'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 import router from '@/router'
 import { ElMessage } from 'element-plus-secondary'
 import { logoutHandler } from '@/utils/logout'
@@ -93,11 +93,13 @@ const handleLogin = () => {
     if (valid) {
       const name = state.loginForm.username.trim()
       const pwd = state.loginForm.password
-      if (!wsCache.get(appStore.getDekey)) {
-        const res = await queryDekey()
-        wsCache.set(appStore.getDekey, res.data)
+      let param: { name: string; pwd: string; origin?: number }
+      try {
+        await ensureDekey()
+        param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
+      } catch {
+        return
       }
-      const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
       const isLdap = activeName.value === 'ldap'
       if (isLdap) {
         param['origin'] = 1
@@ -257,11 +259,7 @@ onMounted(async () => {
     localStorage.removeItem('DE-GATEWAY-FLAG')
     logoutHandler(true)
   }
-  if (!wsCache.get(appStore.getDekey)) {
-    queryDekey().then(res => {
-      wsCache.set(appStore.getDekey, res.data)
-    })
-  }
+  await ensureDekey().catch(() => undefined)
   const erd = elementResizeDetectorMaker()
   erd.listenTo(loginContainer.value, () => {
     nextTick(() => {

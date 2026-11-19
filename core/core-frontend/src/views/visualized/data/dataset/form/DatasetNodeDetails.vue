@@ -30,6 +30,7 @@ const props = defineProps<{
   fieldOptionsText: CascaderOption[]
   applyFields: (node: Node, fields: Field[]) => Promise<boolean>
   fieldTypeDrift?: (field: Field) => number | null
+  fieldTypeBaseline?: (field: Field) => number | null
 }>()
 const emit = defineEmits<{
   select: [id: string]
@@ -156,6 +157,15 @@ const getDrift = (field: Field) => {
   const datasetTableId = (field as Field & { datasetTableId?: string }).datasetTableId
   return props.fieldTypeDrift(
     datasetTableId ? field : ({ ...field, datasetTableId: selectedNode.value?.id } as Field)
+  )
+}
+const getDriftBaseline = (field: Field) => {
+  if (!props.fieldTypeBaseline) return getConfiguredFieldType(field)
+  const datasetTableId = (field as Field & { datasetTableId?: string }).datasetTableId
+  return (
+    props.fieldTypeBaseline(
+      datasetTableId ? field : ({ ...field, datasetTableId: selectedNode.value?.id } as Field)
+    ) ?? getConfiguredFieldType(field)
   )
 }
 const driftCount = computed(() => fields.value.filter(field => getDrift(field) !== null).length)
@@ -503,7 +513,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                       <field-type-drift-tip
                         v-if="getDrift(row) !== null"
                         :active="activeTab === 'fields'"
-                        :current-type="getConfiguredFieldType(row)"
+                        :current-type="getDriftBaseline(row)"
                         :detected-type="getDrift(row)"
                         @keep="emit('keepFieldType', row.id)"
                       />

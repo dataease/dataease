@@ -1,4 +1,8 @@
 export default {
+  rsa: {
+    invalid_key: '无法获取有效的加密公钥，请刷新页面重试',
+    encryption_failed: '加密失败，输入内容可能超过当前密钥允许的长度'
+  },
   sensitive_reveal: {
     action: '查看已保存值',
     datasource_title: '查看数据源敏感信息',
@@ -2717,6 +2721,7 @@ export default {
     only_type_change_pending: '仅看待确认',
     type_change_not_auto: '数据集字段类型未自动修改',
     current_field_type: '当前字段类型',
+    last_saved_field_type: '上次保存的字段类型',
     sql_detected_type: 'SQL 检测类型',
     keep_current_type: '保留当前类型',
     view_fields: '查看字段',

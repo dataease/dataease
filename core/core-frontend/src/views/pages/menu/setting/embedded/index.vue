@@ -491,7 +491,7 @@ getLimitCount()
   }
 }
 .auth-card-container {
-  margin-top: 20px;
+  margin-top: 16px;
   height: calc(100% - 74px);
   .authentication-card {
     min-width: 204px;

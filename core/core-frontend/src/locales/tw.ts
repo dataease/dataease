@@ -1,4 +1,8 @@
 export default {
+  rsa: {
+    invalid_key: '無法取得有效的加密公鑰，請重新整理頁面後重試',
+    encryption_failed: '加密失敗，輸入內容可能超過目前金鑰允許的長度'
+  },
   sensitive_reveal: {
     action: '查看已儲存值',
     datasource_title: '查看資料來源敏感資訊',
@@ -2698,6 +2702,7 @@ export default {
     only_type_change_pending: '僅看待確認',
     type_change_not_auto: '資料集欄位類型未自動修改',
     current_field_type: '目前欄位類型',
+    last_saved_field_type: '上次儲存的欄位類型',
     sql_detected_type: 'SQL 檢測類型',
     keep_current_type: '保留目前類型',
     view_fields: '查看欄位',
