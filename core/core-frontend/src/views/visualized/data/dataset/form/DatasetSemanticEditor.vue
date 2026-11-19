@@ -29,7 +29,9 @@ const save = () => {
 }
 </script>
 <template>
-  <el-button text type="primary" size="small" @click="open">{{ tr('edit') }}</el-button>
+  <el-button class="semantic-edit-button" text type="primary" size="small" @click="open">{{
+    tr('edit')
+  }}</el-button>
   <el-drawer
     v-model="visible"
     :title="table ? tr('tableSemantics') : tr('fieldSemantics')"
@@ -88,6 +90,19 @@ const save = () => {
   </el-drawer>
 </template>
 <style scoped lang="less">
+@media (hover: hover) {
+  .semantic-edit-button {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.dataset-semantic-cell:hover .semantic-edit-button),
+  .semantic-edit-button:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 .semantic-references {
   width: 100%;
 }

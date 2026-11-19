@@ -1745,6 +1745,7 @@ export default {
     noDescription: 'No business description',
     grain: 'Data grain',
     tableSemantics: 'Table semantics',
+    semanticDetails: 'Details',
     fieldSemantics: 'Field semantics',
     showRelations: 'View relationships',
     tableUnavailable: 'Physical table unavailable',

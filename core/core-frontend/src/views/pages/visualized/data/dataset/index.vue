@@ -225,6 +225,23 @@ let allFields = []
 let columnsPreview = []
 let dataPreview = []
 
+type SemanticDetails = {
+  name?: string
+  semanticBusinessName?: string
+  semanticDescription?: string
+  semanticAliases?: string
+  semanticValueReferences?: string
+}
+const semanticDetails = ref<SemanticDetails>()
+const semanticDetailsVisible = ref(false)
+const semanticReferences = computed<{ value: string; meaning?: string }[]>(() =>
+  JSON.parse(semanticDetails.value?.semanticValueReferences || '[]')
+)
+const openSemanticDetails = (field: SemanticDetails) => {
+  semanticDetails.value = { ...field }
+  semanticDetailsVisible.value = true
+}
+
 const allFieldsColumns = [
   {
     key: 'name',
@@ -256,6 +273,35 @@ const allFieldsColumns = [
     dataKey: 'description',
     title: t('data_set.field_notes'),
     width: 250
+  },
+  {
+    key: 'semanticBusinessName',
+    dataKey: 'semanticBusinessName',
+    title: t('datasourceMetadata.fieldSemantics'),
+    width: 300,
+    cellRenderer: ({ rowData }) => {
+      const semantic = rowData.semanticBusinessName || rowData.semanticDescription
+      return (
+        <div class="semantic-preview-cell">
+          {semantic ? (
+            <span class="ellipsis" title={semantic}>
+              {semantic}
+            </span>
+          ) : (
+            <span class="semantic-empty">-</span>
+          )}
+          <ElButton
+            class="semantic-details-button"
+            text
+            type="primary"
+            size="small"
+            onClick={() => openSemanticDetails(rowData)}
+          >
+            {t('datasourceMetadata.semanticDetails')}
+          </ElButton>
+        </div>
+      )
+    }
   }
 ]
 
@@ -1273,9 +1319,64 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
       </div>
     </template>
   </el-dialog>
+  <el-drawer
+    v-model="semanticDetailsVisible"
+    :title="t('datasourceMetadata.fieldSemantics')"
+    size="560px"
+    append-to-body
+    destroy-on-close
+  >
+    <p>{{ semanticDetails?.name }}</p>
+    <el-descriptions :column="1" border style="margin-top: 8px">
+      <el-descriptions-item :label="t('datasourceMetadata.businessName')">{{
+        semanticDetails?.semanticBusinessName || '-'
+      }}</el-descriptions-item>
+      <el-descriptions-item :label="t('datasourceMetadata.description')"
+        ><span class="semantic-detail-text">{{
+          semanticDetails?.semanticDescription || '-'
+        }}</span></el-descriptions-item
+      >
+      <el-descriptions-item :label="t('datasourceMetadata.aliases')">{{
+        semanticDetails?.semanticAliases || '-'
+      }}</el-descriptions-item>
+    </el-descriptions>
+    <h4 style="margin-top: 8px">{{ t('datasourceMetadata.valueReferences') }}</h4>
+    <el-table :data="semanticReferences" style="margin-top: 8px">
+      <el-table-column prop="value" :label="t('datasourceMetadata.referenceValue')" />
+      <el-table-column prop="meaning" :label="t('datasourceMetadata.referenceMeaning')">
+        <template #default="{ row }">{{ row.meaning || '-' }}</template>
+      </el-table-column>
+    </el-table>
+  </el-drawer>
 </template>
 
 <style lang="less" scoped>
+:deep(.semantic-preview-cell) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+:deep(.semantic-preview-cell .semantic-empty) {
+  color: var(--ed-text-color-secondary);
+}
+.semantic-detail-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (hover: hover) {
+  :deep(.semantic-details-button) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  :deep(.semantic-preview-cell:hover .semantic-details-button),
+  :deep(.semantic-details-button:focus-visible) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 .dataset-selection-state {
   min-height: 240px;
   display: flex;

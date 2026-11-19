@@ -1652,6 +1652,7 @@ export default {
     noDescription: '尚未填写业务说明',
     grain: '数据粒度',
     tableSemantics: '表语义',
+    semanticDetails: '详情',
     fieldSemantics: '字段语义',
     showRelations: '查看表关联',
     tableUnavailable: '物理表已不可用',

@@ -1637,6 +1637,7 @@ export default {
     noDescription: '尚未填寫業務說明',
     grain: '資料粒度',
     tableSemantics: '表語義',
+    semanticDetails: '詳情',
     fieldSemantics: '欄位語意',
     showRelations: '查看表關聯',
     tableUnavailable: '實體表已無法使用',

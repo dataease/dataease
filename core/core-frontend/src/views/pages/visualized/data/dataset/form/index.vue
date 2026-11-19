@@ -110,6 +110,11 @@ const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const embeddedStore = useEmbedded()
 const { t } = useI18n()
+const fieldSemanticLabel = (field: {
+  semanticBusinessName?: string
+  semanticDescription?: string
+}) => field.semanticBusinessName || field.semanticDescription
+
 const route = useRoute()
 const { push } = useRouter() || {
   push: val => {
@@ -2642,11 +2647,16 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
-                    <el-table-column :label="t('datasourceMetadata.fieldSemantics')" width="240">
+                    <el-table-column
+                      class-name="dataset-semantic-cell"
+                      :label="t('datasourceMetadata.fieldSemantics')"
+                      width="240px"
+                    >
                       <template #default="{ row }">
-                        <span>{{
-                          row.semanticBusinessName || row.semanticDescription || '—'
+                        <span v-if="row.semanticBusinessName || row.semanticDescription">{{
+                          fieldSemanticLabel(row)
                         }}</span>
+                        <span v-else class="semantic-empty">-</span>
                         <dataset-semantic-editor
                           :target="row"
                           @change="value => updateFieldSemantic(row, value)"
@@ -2877,11 +2887,16 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
-                    <el-table-column :label="t('datasourceMetadata.fieldSemantics')" width="240">
+                    <el-table-column
+                      class-name="dataset-semantic-cell"
+                      :label="t('datasourceMetadata.fieldSemantics')"
+                      width="240px"
+                    >
                       <template #default="{ row }">
-                        <span>{{
-                          row.semanticBusinessName || row.semanticDescription || '—'
+                        <span v-if="row.semanticBusinessName || row.semanticDescription">{{
+                          fieldSemanticLabel(row)
                         }}</span>
+                        <span v-else class="semantic-empty">-</span>
                         <dataset-semantic-editor
                           :target="row"
                           @change="value => updateFieldSemantic(row, value)"
@@ -3302,6 +3317,10 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 </template>
 
 <style lang="less" scoped>
+:deep(.dataset-semantic-cell) .semantic-empty {
+  color: var(--ed-text-color-secondary);
+}
+
 @import '@/style/mixin.less';
 
 :deep(.dataset-preview_table) {

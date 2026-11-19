@@ -43,6 +43,11 @@ const emit = defineEmits<{
   semanticChange: [nodeId: string, value: Partial<Node & Field>, fieldId?: string]
 }>()
 const { t } = useI18n()
+const fieldSemanticLabel = (field: {
+  semanticBusinessName?: string
+  semanticDescription?: string
+}) => field.semanticBusinessName || field.semanticDescription
+
 const updateSemantic = (row: Field, value: Partial<Field>) => {
   Object.assign(row, value)
   fieldDrafts.value[row.originName] = { ...fieldDrafts.value[row.originName], semantic: value }
@@ -580,9 +585,16 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                   ><span class="field-remark">{{ row.description }}</span></template
                 >
               </el-table-column>
-              <el-table-column :label="t('datasourceMetadata.fieldSemantics')" min-width="200">
+              <el-table-column
+                class-name="dataset-semantic-cell"
+                :label="t('datasourceMetadata.fieldSemantics')"
+                min-width="200"
+              >
                 <template #default="{ row }">
-                  <span>{{ row.semanticBusinessName || row.semanticDescription || '—' }}</span>
+                  <span v-if="row.semanticBusinessName || row.semanticDescription">{{
+                    fieldSemanticLabel(row)
+                  }}</span>
+                  <span v-else class="semantic-empty">-</span>
                   <dataset-semantic-editor
                     :target="row"
                     @change="value => updateSemantic(row, value)"
@@ -617,6 +629,10 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 </template>
 
 <style scoped lang="less">
+.semantic-empty {
+  color: var(--ed-text-color-secondary);
+}
+
 @import '@/style/mixin.less';
 
 .node-tabs-row {

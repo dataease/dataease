@@ -494,7 +494,7 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
                         .map(item =>
                           item.meaning ? `${item.value} → ${item.meaning}` : item.value
                         )
-                        .join('、') || '—'
+                        .join('、') || '-'
                     }}
                   </div>
                   <el-tag
