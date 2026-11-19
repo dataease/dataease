@@ -1,23 +1,42 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import icon_warning_colorful from '@/assets/svg/icon_warning_colorful.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deTypeLabel } from './util'
 
-defineProps<{
-  currentType: number
-  detectedType: number
-}>()
+const props = withDefaults(
+  defineProps<{
+    currentType: number
+    detectedType: number
+    active?: boolean
+  }>(),
+  { active: true }
+)
 const emit = defineEmits<{ keep: [] }>()
 const { t } = useI18n()
+const visible = ref(false)
+// 触发元素被 v-show 隐藏后 popper 会重新定位到左上角，因此在关闭动画期间直接隐藏 popper 避免闪现。
+const popperClass = computed(() =>
+  props.active ? 'field-type-drift-popper' : 'field-type-drift-popper is-trigger-hidden'
+)
+
+// 切换 tab 时触发元素会被 v-show 隐藏，popover 会保留旧定位并漂移，因此隐藏前主动关闭。
+watch(
+  () => props.active,
+  active => {
+    if (!active) visible.value = false
+  }
+)
 </script>
 
 <template>
   <el-popover
+    v-model:visible="visible"
     trigger="click"
     placement="bottom-start"
     :width="240"
-    popper-class="field-type-drift-popper"
+    :popper-class="popperClass"
   >
     <template #reference>
       <span
@@ -76,5 +95,8 @@ const { t } = useI18n()
 .keep-type {
   margin-top: 8px;
   padding: 0;
+}
+:global(.field-type-drift-popper.is-trigger-hidden) {
+  display: none !important;
 }
 </style>
