@@ -93,6 +93,15 @@ public class Regression {
                 "jdbc:h2:mem:pwn;LOCK_TIMEOUT=0\\;CREATE ALIAS EXEC AS 'void x(String c){}'", ""));
         rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("h2", drivers.get("h2"),
                 "jdbc:h2:mem:pwn%5c;CREATE ALIAS EXEC AS 'void x(String c){}'", ""));
+        String db2 = "jdbc:db2://127.0.0.1:1/db";
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("db2", drivers.get("db2"),
+                db2 + ":traceFile=/data/db2_attack.trc;traceLevel=-1;", ""));
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("db2", drivers.get("db2"),
+                db2, "traceFile=/data/db2_attack.trc"));
+        rejectedIllegal(() -> JdbcUrlSecurityPolicy.validate("db2", drivers.get("db2"),
+                db2 + ":traceDirectory=/data/trace;", ""));
+        equal(db2 + ":currentSchema=PUBLIC;", JdbcUrlSecurityPolicy.validate("db2", drivers.get("db2"),
+                db2 + ":currentSchema=PUBLIC;", ""));
         try (RecordingLoader loader = new RecordingLoader()) {
             DatasourceConfiguration configuration = configuration("mysql", "java.lang.Runtime");
             connectedUrl = null;

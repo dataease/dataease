@@ -70,7 +70,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("impala", Set.of("krbjaasfile", "krb5.conf", "socketfactory", "dnsresolver")),
             Map.entry("sqlserver", Set.of("socketfactoryclass", "socketfactoryconstructorarg", "accesstokencallbackclass")),
             Map.entry("oracle", Set.of()),
-            Map.entry("db2", Set.of()),
+            Map.entry("db2", Set.of("tracefile", "tracedirectory", "tracelevel", "tracefileappend")),
             Map.entry("gaussdb", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger")),
             Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
             Map.entry("kingbase", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
