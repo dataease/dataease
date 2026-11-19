@@ -597,7 +597,7 @@ const drawerMainClose = () => {
     align-items: center;
     column-gap: 4px;
     border: 1px solid var(--ed-border-color, #d9dcdf);
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 0 4px;
     div {
       padding: 0 8px;
