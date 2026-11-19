@@ -51,6 +51,7 @@ public interface DatasourceApi {
     @ConfigurationSecurity(encryptedRequest = true, maskedResponse = {"configuration", "paramsStr", "apiConfigurationStr"})
     DatasourceDTO update(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
+    @DePermit({"#p0.id+':manage'"})
     @PostMapping("/move")
     @Operation(summary = "移动")
     DatasourceDTO move(@RequestBody BusiCreateFolderRequest dataSourceDTO) throws DEException;
