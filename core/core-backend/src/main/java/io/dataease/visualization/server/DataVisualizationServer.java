@@ -45,6 +45,7 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
 import io.dataease.exception.ErrorCategory;
+import io.dataease.resource.RootFolderCreatePermissionManage;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -94,6 +95,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
+    @Resource
+    private RootFolderCreatePermissionManage rootFolderCreatePermissionManage;
+
+    private BusiResourceEnum destinationType(String type) {
+        if ("dashboard".equals(type)) return BusiResourceEnum.PANEL;
+        if ("dataV".equals(type)) return BusiResourceEnum.SCREEN;
+        throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+    }
     @Autowired
     private ImportedImageManage importedImages;
     @Resource
@@ -358,10 +367,19 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return coreVisualizationManage.findDvInfo(request.getId(), request.getBusiFlag(), request.getResourceTable());
     }
 
+    public void checkSaveDestination(DataVisualizationBaseRequest request) {
+        rootFolderCreatePermissionManage.check(request.getPid(), destinationType(request.getType()));
+        if (request.getAppData() != null) {
+            rootFolderCreatePermissionManage.check(request.getDatasetFolderPid(),
+                    BusiResourceEnum.DATASET);
+        }
+    }
+
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, stExp = "#p0.type")
     @Override
     @Transactional
     public String saveCanvas(DataVisualizationBaseRequest request) throws Exception {
+        checkSaveDestination(request);
         /*
          * 发布兼容逻辑
          * saveCanvas 为初次保存 包括 模板 应用 普通创建 所有变更操作都走snapshot表
@@ -741,6 +759,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (request.getCanvasViewInfo() == null || request.getPid() == null) {
             throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
         }
+        if (!java.util.Objects.equals(saved.getPid(), request.getPid())) {
+            rootFolderCreatePermissionManage.check(request.getPid(), destinationType(saved.getType()));
+        }
         for (Map.Entry<Long, ChartViewDTO> ele : request.getCanvasViewInfo().entrySet()) {
             DatasetUtils.viewDecode(ele.getValue());
         }
@@ -909,6 +930,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Transactional
     @Override
     public void move(DataVisualizationBaseRequest request) {
+        rootFolderCreatePermissionManage.check(request.getPid(), destinationType(request.getType()));
         coreVisualizationManage.move(request);
     }
 

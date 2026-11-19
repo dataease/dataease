@@ -1,25 +1,24 @@
 package io.dataease.resource;
 
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.constant.AuthEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.exception.ErrorCategory;
-import io.dataease.model.BusiNodeRequest;
-import io.dataease.model.BusiNodeVO;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.CommonBeanFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Objects;
 
 @Component
 public class RootFolderCreatePermissionManage {
 
+    // Compatibility facade: enterprise destination rules live in the permission provider.
     public void check(Long pid, BusiResourceEnum resourceType) {
-        if (pid != null && pid != 0L) {
-            return;
+        if (pid != null && pid < 0) {
+            throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
         }
         Long uid = V3UserUtil.getUid();
         if (uid == null || V3UserUtil.getLink() != null) {
@@ -35,16 +34,8 @@ public class RootFolderCreatePermissionManage {
             }
             throw denied();
         }
-        BusiNodeRequest request = new BusiNodeRequest();
-        request.setBusiFlag(resourceType.name());
-        request.setLeaf(false);
-        List<BusiNodeVO> nodes = auth.resource(request);
-        // Match the root's own permission used by the UI, never a writable descendant.
-        if (nodes == null || nodes.stream().noneMatch(node -> node != null
-                && Objects.equals(node.getId(), 0L) && Boolean.FALSE.equals(node.getLeaf())
-                && node.getWeight() != null && node.getWeight() >= AuthEnum.MANAGE.getWeight())) {
-            throw denied();
-        }
+        auth.checkWriteDestination(new BusiPerCheckDTO(pid == null ? 0L : pid,
+                resourceType, AuthEnum.MANAGE));
     }
 
     private DEException denied() {

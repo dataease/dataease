@@ -258,6 +258,7 @@ public class DatasourceServer implements DatasourceApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @Transactional
     public DatasourceDTO move(BusiCreateFolderRequest busiDsRequest) {
+        rootFolderCreatePermissionManage.check(busiDsRequest.getPid(), BusiResourceEnum.DATASOURCE);
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         if (dataSourceDTO.getPid() == null) {
@@ -326,6 +327,7 @@ public class DatasourceServer implements DatasourceApi {
         if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
             return update(busiDsRequest);
         }
+        rootFolderCreatePermissionManage.check(dataSourceDTO.getPid(), BusiResourceEnum.DATASOURCE);
         if (!syncImport && StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
             dataSourceDTO.setConfiguration(restoreConfiguration(dataSourceDTO.getConfiguration(),
                     credentialSourceId(busiDsRequest), busiDsRequest.getType()));

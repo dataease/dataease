@@ -4,6 +4,7 @@ import { Icon } from '@/components/icon-custom'
 import referenceTable from '@/assets/svg/reference-table.svg'
 import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import nothingTree from '@/assets/img/nothing-tree.png'
 import { cloneDeep } from 'lodash-es'
 import { getPreviewData, getTableField } from '@/api/dataset'
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
@@ -385,6 +386,12 @@ defineExpose({ commit, selectNode, hasPendingChanges })
         </template>
       </el-input>
       <div class="node-items">
+        <div v-if="!filteredNodes.length" class="node-empty">
+          <img :src="nothingTree" />
+          <span>{{
+            search.trim() ? t('data_set.relevant_content_found') : t('data_set.no_data')
+          }}</span>
+        </div>
         <div
           v-for="node in filteredNodes"
           :key="node.id"
@@ -495,6 +502,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                       />
                       <field-type-drift-tip
                         v-if="getDrift(row) !== null"
+                        :active="activeTab === 'fields'"
                         :current-type="getConfiguredFieldType(row)"
                         :detected-type="getDrift(row)"
                         @keep="emit('keepFieldType', row.id)"
@@ -630,6 +638,22 @@ defineExpose({ commit, selectNode, hasPendingChanges })
     .label {
       flex: 1;
       min-width: 0;
+    }
+  }
+  .node-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+    img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 8px;
+    }
+    span {
+      font-size: 14px;
+      line-height: 22px;
+      color: #646a73;
     }
   }
 }

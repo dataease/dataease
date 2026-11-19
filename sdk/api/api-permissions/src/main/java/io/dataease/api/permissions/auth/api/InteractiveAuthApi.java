@@ -71,6 +71,15 @@ public interface InteractiveAuthApi {
     @PostMapping("/checkAuth")
     void checkAuth(@RequestBody BusiPerCheckDTO checkDTO);
 
+    /** Authorize a real destination directory before creating or moving resources.
+     * Older permission providers must reject this operation rather than bypass authorization.
+     */
+    @PostMapping("/checkWriteDestination")
+    default void checkWriteDestination(@RequestBody BusiPerCheckDTO request) {
+        throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.FORBIDDEN,
+                "i18n_error_forbidden");
+    }
+
     /**
      * Internal share-owner authorization. The subject is supplied by trusted share storage,
      * never installed as the request identity. Older implementations must fail closed.

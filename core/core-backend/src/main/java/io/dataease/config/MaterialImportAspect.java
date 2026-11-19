@@ -50,6 +50,11 @@ public class MaterialImportAspect {
         if (method.equals("decompression")) {
             return point.proceed();
         }
+        if (method.equals("saveCanvas")) {
+            // Authorize the destination before restoring imported image files or metadata.
+            ((io.dataease.visualization.server.DataVisualizationServer) point.getTarget())
+                    .checkSaveDestination((DataVisualizationBaseRequest) argument);
+        }
         Set<String> images = importedImages.imageReferences(style, components);
         Object[] result = new Object[1];
         Throwable[] error = new Throwable[1];
