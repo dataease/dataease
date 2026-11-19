@@ -2,6 +2,7 @@ package io.dataease.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.scene.sql.AiDatasetSqlScene;
+import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
 import io.dataease.api.ds.DatasourceRelationApi.*;
@@ -48,7 +49,7 @@ public final class DatasetSqlRelationRegression {
             }
         };
         var registered = new ArrayList<>(List.of(buyer()));
-        var scene = new AiDatasetSqlScene(source, new EngineManage(), new DatasetSqlSemanticTools(source, DatasetSqlSemanticRegression.registry()), registry(registered));
+        var scene = new AiDatasetSqlScene(source, new DatasetSqlGuide(new EngineManage(), null), new DatasetSqlSemanticTools(source, DatasetSqlSemanticRegression.registry()), registry(registered));
         var context = scene.resolve("11", "");
         var argsMap = Map.of("fromTable", "orders", "toTable", "customers");
         var json = new ObjectMapper();
