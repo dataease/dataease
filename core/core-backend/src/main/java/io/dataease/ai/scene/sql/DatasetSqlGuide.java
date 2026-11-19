@@ -5,30 +5,37 @@ import io.dataease.ai.support.AiErrors;
 import io.dataease.ai.tool.AiTool;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Map;
 
 /** Model-readable reference for the current preview engine. Identifiers in examples are placeholders. */
-final class DatasetSqlGuide {
+@Component
+public final class DatasetSqlGuide {
     private static final String RULES = "Use one read-only SELECT or WITH query on the selected datasource. "
             + "For cross-database joins give canvas instructions only: add separate nodes and configure their relationship. "
             + "Use authorized physical names. Examples describe syntax; the installed driver and version determine support.";
 
-    static AiTool<AiDatasourceTools.Scope> tool(AiDatasourceTools metadata, EngineManage engines) {
+    private final EngineManage engines;
+    private final PluginManageApi plugins;
+
+    public DatasetSqlGuide(EngineManage engines, @Nullable PluginManageApi plugins) {
+        this.engines = engines;
+        this.plugins = plugins;
+    }
+
+    AiTool<AiDatasourceTools.Scope> tool(AiDatasourceTools metadata) {
         var definition = new AiToolProtocol.Definition("read_sql_guide",
                 "Read the DataEase rules, bound execution dialect and one relevant topic. Never choose a dialect yourself.",
                 Map.of("topic", "projection (plain columns), monthly (calendar aggregation), aggregate, join or parameters (dashboard filters and system variables)"),
                 AiToolProtocol.RetrySafety.READ_ONLY);
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
             var source = metadata.authorize(scope);
-            String dialect = source.type();
-            if (scope.isCross()) {
-                dialect = "calcite";
-            } else if (DatasourceConfiguration.usesDeEngine(dialect)) {
-                dialect = engines.getDeEngine().getType();
-            }
+            String dialect = executionType(source.type(), scope.isCross());
             var topic = arguments.get("topic");
             String example = switch (topic) {
                 case "projection" -> "SELECT column_name FROM table_name";
@@ -62,13 +69,32 @@ final class DatasetSqlGuide {
                         """;
                 default -> throw AiErrors.error("invalid");
             };
-            return AiToolProtocol.result(Map.of("dialect", dialect, "rules", RULES, "identifiers", identifiers(dialect),
+            return AiToolProtocol.result(Map.of("dialect", displayName(dialect), "rules", RULES, "identifiers", identifiers(dialect),
                     "topic", topic, "example", example));
         });
     }
 
+    String executionType(String sourceType, boolean isCross) {
+        if (isCross) return "calcite";
+        return DatasourceConfiguration.usesDeEngine(sourceType) ? engines.getDeEngine().getType() : sourceType;
+    }
+
+    String displayName(String type) {
+        if ("calcite".equalsIgnoreCase(type)) return "Apache Calcite";
+        for (var connector : DatasourceConfiguration.DatasourceType.values()) {
+            if (connector.getType().equalsIgnoreCase(type)) return connector.getName();
+        }
+        if (plugins != null) {
+            for (var config : plugins.queryPluginDs()) {
+                if (type.equalsIgnoreCase(config.getType()) && config.getName() != null && !config.getName().isBlank())
+                    return config.getName().strip();
+            }
+        }
+        return "Unspecified plugin dialect";
+    }
+
     private static String identifiers(String dialect) {
-        return switch (dialect) {
+        return switch (dialect.toLowerCase(Locale.ROOT)) {
             case "calcite" -> "DataEase Calcite uses JAVA lexical policy. Quote physical identifiers with backticks when needed.";
             case "dm" -> "Use double quotes for identifiers requiring quoting.";
             default -> {

@@ -9,6 +9,7 @@ import io.dataease.ai.engine.runtime.AiOutboundPolicy;
 import io.dataease.ai.engine.runtime.AiRuntimeManage;
 import io.dataease.ai.engine.runtime.AiTransport;
 import io.dataease.ai.scene.sql.AiSqlConversationScene;
+import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.ai.tool.sql.AiSqlTools;
 import io.dataease.ai.security.credential.AiSecrets;
@@ -24,6 +25,7 @@ import io.dataease.api.ai.runtime.AiFeature;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.system.manage.CorePermissionManage;
@@ -346,7 +348,7 @@ public final class ToolConversationRegression {
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
             var joinPaths = new ArrayList<>(List.of(DatasetSqlRelationRegression.buyer()));
-            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new io.dataease.datasource.manage.EngineManage(), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)));
+            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)));
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
@@ -365,7 +367,7 @@ public final class ToolConversationRegression {
                     boolean monthly = question.contains("monthly");
                     String expected = monthly ? (cross ? "TO MONTH" : "DATE_FORMAT") : "SELECT column_name FROM table_name";
                     if (!"COMPLETED".equals(result.path("status").asText())
-                            || !(cross ? "calcite" : "MySQL").equals(guide.path("dialect").asText())
+                            || !(cross ? "Apache Calcite" : DatasourceType.mysql.getName()).equals(guide.path("dialect").asText())
                             || !guide.path("example").asText().contains(expected)
                             || !guide.path("rules").asText().contains("separate nodes"))
                         throw new AssertionError("The editor request must bind the dialect and scope of the model's tool response: " + guide);

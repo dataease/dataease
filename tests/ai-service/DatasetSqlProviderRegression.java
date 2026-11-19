@@ -1,6 +1,7 @@
 package io.dataease.ai;
 
 import io.dataease.ai.scene.sql.AiDatasetSqlScene;
+import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
 import io.dataease.datasource.manage.EngineManage;
@@ -89,7 +90,7 @@ public final class DatasetSqlProviderRegression {
                     @Override public Datasource authorize(Scope scope) { return resolve(scope.resourceId()); }
                     @Override protected PhysicalTableCatalog openCatalog(long id) { return provider.openCatalog(schema, (name, label) -> true); }
                 };
-                var scene = new AiDatasetSqlScene(metadata, new EngineManage(), new DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(java.util.List.of()));
+                var scene = new AiDatasetSqlScene(metadata, new DatasetSqlGuide(new EngineManage(), null), new DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(java.util.List.of()));
                 var turn = scene.beginTurn(scene.resolve("11", ""));
                 var candidates = turn.execute("search_physical_tables", Map.of("terms", "Channel"), () -> {}, Long.MAX_VALUE);
                 if (!candidates.contains("ZZ_Channel_Live") || !candidates.contains("ZZ_Channel_Archive") || pool.catalogs != 0 || pool.types != 0)

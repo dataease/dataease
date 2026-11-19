@@ -2,6 +2,7 @@ package io.dataease.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.scene.sql.AiDatasetSqlScene;
+import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
 import io.dataease.api.ds.DatasourceSemanticApi.*;
@@ -30,7 +31,7 @@ public final class DatasetSqlSemanticRegression {
                         new Field("changed", "INT", ""), new Field("pending", "CHAR", "")));
             }
         };
-        var scene = new AiDatasetSqlScene(source, new io.dataease.datasource.manage.EngineManage(), new DatasetSqlSemanticTools(source, registry()), DatasetSqlRelationRegression.registry(List.of()));
+        var scene = new AiDatasetSqlScene(source, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new DatasetSqlSemanticTools(source, registry()), DatasetSqlRelationRegression.registry(List.of()));
         var context = scene.resolve("11", "");
         var found = json.readTree(scene.execute(context, "search_semantics", Map.of("terms", "订单,已支付,实付金额")));
         if (found.path("tables").size() != 1 || !found.path("tables").toString().contains("orders")) throw new AssertionError(found);
