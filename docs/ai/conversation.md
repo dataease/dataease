@@ -26,6 +26,71 @@ Demo 的可用性、后台任务和完成通知在页面可见且在线时同步
 
 正式抽屉的浏览器回归入口为 `npm --prefix tests/browser test -- --config=playwright.dataset-sql-assistant.config.cjs`。用例从数据集编辑界面打开真实抽屉，使用合成 API 响应。后端会话与工具行为通过 `tests/ai-service/run.py --recovery-tools` 的受控模型 HTTP 链路验证，依赖准备见下方 AI 服务验证说明。
 
+### 从提问到应用 SQL 草稿
+
+```mermaid
+flowchart TD
+    Open["打开自定义 SQL 编辑器，展开 SQL 助手"] --> Ask["针对当前草稿、已有建议或手动预览提问"]
+    Ask --> Bound{"本轮是否绑定数据源？"}
+    Bound -->|否| General["回答通用问题，生成具体 SQL 时请作者选择数据源"]
+    General --> Ask
+    Bound -->|是| Check["后端核对数据源权限，助手按需读取表、字段和关系"]
+    Check --> Intent{"本轮需要什么？"}
+    Intent -->|解释已有 SQL| Explain["展示解释"]
+    Intent -->|表或业务口径不明确| Clarify["请作者选择候选表或确认口径"]
+    Clarify --> Ask
+    Intent -->|生成或修改 SQL| Suggest["展示完整 SQL 建议和可核对的依据"]
+    Suggest -->|继续修改建议| Ask
+    Suggest -->|作者点击应用| Apply["如需覆盖草稿或跨数据源复制，先请作者确认"]
+    Apply --> Verify["后端复核权限，前端核对草稿版本"]
+    Verify -->|通过| Draft["将建议写入编辑器草稿"]
+    Draft -->|点击运行| Preview["预览当前 SQL"]
+    Draft -->|点击保存| Save["写回数据集节点"]
+    Preview -->|追问结果或修复错误| Ask
+```
+
+追问预览时，助手收到的是运行当时的 SQL、数据源、模式和结果状态。即使作者后来改了草稿或切换了数据源，也能区分这次预览和当前编辑内容。预览结果行留在编辑器内。
+
+### 一条 SQL 建议在代码中如何生成
+
+```mermaid
+sequenceDiagram
+    participant E as SQL 编辑器
+    participant C as AiConversationManage
+    participant M as 模型
+    participant S as AiDatasetSqlScene 及其工具
+
+    E->>C: 以 dataset-sql 场景提交问题和编辑上下文
+    C->>S: 解析本轮数据源、执行方言和可用工具
+    C->>M: 发送场景指令、会话历史、问题和工具定义
+    loop 按需读取本轮所需的依据
+        M->>C: 请求查表、查字段、查关系或读取方言指南
+        C->>S: 在已授权的数据源范围内执行工具
+        S-->>C: 返回元数据或方言规则及示例
+        C->>M: 将工具结果加入会话，继续生成
+    end
+    alt 需要澄清或只需解释
+        M-->>C: 返回问题或解释
+        C-->>E: EXPLANATION
+    else 生成 SQL 建议
+        M->>C: 调用 propose_sql，参数为完整 SQL
+        C->>S: 复核权限，调用 SqlUtil.isSingleReadQuery
+        alt 未通过单条只读查询规则
+            S-->>C: INVALID
+            C->>M: 返回原因，模型可修改后重新提交
+        else 通过规则
+            S-->>C: NOT_RUN，附能解析到的表、字段和 JOIN 引用
+            C->>M: 回传工具结果
+            M-->>C: 解释本次建议，完成回复
+            C-->>E: SQL_SUGGESTION，SQL 取自获接受的工具参数
+        end
+    end
+```
+
+场景指令要求模型在生成或修改 SQL 前调用 `read_sql_guide`。提示词与工具共用方言名称解析逻辑。内置连接器取数据源枚举的名称，已加载的插件取配置中的 `name`。例如达梦单源查询的执行方言是“达梦”，同一个连接器在跨源模式下的执行方言是 Apache Calcite。Excel 和 API 数据源使用配置的数据引擎方言。[场景指令](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AiDatasetSqlScene.java) · [方言指南](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/DatasetSqlGuide.java)
+
+图中的 `propose_sql` 属于正式编辑器的 `dataset-sql` 场景。`NOT_RUN` 表示候选 SQL 已通过单条只读规则，可供作者应用。作者点击“运行”时才执行数据库查询。开发 Demo 的 `sql` 场景注册了另一个同名工具，使用静态校验器的 `PASS` 作为可应用条件。[建议结果组装](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AbstractSqlConversationScene.java) · [Demo 工具定义](../../core/core-backend/src/main/java/io/dataease/ai/tool/sql/AiSqlTools.java)
+
 ## 目录与扩展位置
 
 后端根目录为 `core/core-backend/src/main/java/io/dataease/ai/`，按执行机制、具体场景、可复用工具和 HTTP 入口区分：
