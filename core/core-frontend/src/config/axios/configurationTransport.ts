@@ -27,7 +27,9 @@ interface Challenge {
 }
 
 export const needsConfigurationEncryption = (url: string, method: string): boolean =>
-  method.toLowerCase() === 'post' && protectedPaths.has(url)
+  (method.toLowerCase() === 'post' && protectedPaths.has(url)) ||
+  (['post', 'put'].includes(method.toLowerCase()) &&
+    /^\/ai\/models(?:\/\d+|\/discover|\/test)?$/.test(url))
 
 export const sealConfiguration = async (data: unknown, path: string, challenge: Challenge) => {
   if (challenge.version !== 1 || !challenge.requestId || !challenge.publicKey) {

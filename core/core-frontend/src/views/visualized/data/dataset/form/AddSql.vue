@@ -11,6 +11,8 @@ import icon_form_outlined from '@/assets/svg/icon_form_outlined.svg'
 import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
 import icon_info_colorful from '@/assets/svg/icon_info_colorful.svg'
 import icon_playRound_outlined from '@/assets/svg/icon_play-round_outlined.svg'
+import { useUserStoreWithOut } from '@/store/modules/user'
+import type { AiSqlPreview, SqlPreviewOutcome } from '@/api/aiConversation'
 import { searchVariableApi } from '@/api/variable'
 import {
   ref,
@@ -34,6 +36,7 @@ import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
+import DatasetEditorAssistant from './DatasetEditorAssistant.vue'
 import type { Field, DataSource } from './util'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -73,6 +76,18 @@ const { t } = useI18n()
 const activeName = ref('')
 const myCm = ref()
 const codeCom = ref()
+const assistantHost = ref<HTMLDivElement>()
+const draftRevision = ref(0)
+const readDraft = (): string => codeCom.value.state.doc.toString()
+const replaceDraft = (query: string) => {
+  codeCom.value.dispatch({
+    changes: { from: 0, to: codeCom.value.state.doc.length, insert: query }
+  })
+}
+const onDraftChange = () => {
+  changeFlagCode.value = true
+  draftRevision.value++
+}
 const dialogTitle = t('sql_variable.variable_mgm') + ' '
 const tabActive = ref('result')
 const searchTable = ref('')
@@ -233,23 +248,40 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   }
   return name2Id
 }
+const showSystemParams = ref(false)
+let variableRequest = 0
 const handleSearchVariableApi = async () => {
-  return searchVariableApi({}).then(res => {
+  const request = ++variableRequest
+  try {
+    const res = await searchVariableApi({})
+    if (request !== variableRequest) return
     fieldFormList.value = res?.data || []
-  })
+    showSystemParams.value = true
+  } catch {
+    if (request !== variableRequest) return
+    fieldFormList.value = []
+    showSystemParams.value = showSysParams.value = false
+  }
 }
-const showSystemParams = ref(true)
+const user = useUserStoreWithOut()
+watch(
+  () => [user.uid, user.oid, user.proxyInfo?.proxyOid],
+  () => {
+    fieldFormList.value = []
+    showSystemParams.value = showSysParams.value = false
+    if (!desktop) void handleSearchVariableApi()
+  },
+  { flush: 'sync' }
+)
+const systemVariableNames = computed<string[]>(() =>
+  !desktop && showSystemParams.value
+    ? [...builtInList.value, ...fieldFormList.value].map(variable => variable.name)
+    : []
+)
 onMounted(async () => {
   dsChange(sqlNode.value.datasourceId)
-  if (!desktop) {
-    try {
-      await handleSearchVariableApi()
-    } catch (e) {
-      if (e) {
-        showSystemParams.value = false
-      }
-    }
-  }
+  if (!desktop) await handleSearchVariableApi()
+  if (!myCm.value) return
   codeCom.value = myCm.value.codeComInit(
     setNameIdTrans('id', 'name', Base64.decode(sqlNode.value.sql)),
     true
@@ -257,7 +289,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  codeCom.value.destroy?.()
+  codeCom.value?.destroy()
 })
 
 const tableTreeData = shallowRef([])
@@ -278,27 +310,12 @@ const syncTableTreeData = () => {
 
 watch(datasourceTableData, syncTableTreeData, { immediate: true })
 
-// 源库表备注可能在页面停留期间被修改，打开详情时重新获取，避免沿用进入页面时的旧备注
-const tableComments = ref<Record<string, string>>({})
-const tableDisplayName = (source: { tableName: string; name?: string }) =>
-  tableComments.value[source.tableName] || source.name || source.tableName
-
-const refreshTableComment = (source: { datasourceId: string; tableName: string }) => {
-  getTables({ datasourceId: source.datasourceId }).then(res => {
-    const latest = (res || []).find(table => table.tableName === source.tableName)
-    if (latest) {
-      tableComments.value[source.tableName] = latest.name
-    }
-  })
-}
-
 const loadTableFields = (node, resolve) => {
   const table = node.data
   if (!table?.tableName) {
     resolve([])
     return
   }
-  refreshTableComment(table)
   getTableField({
     datasourceId: table.datasourceId,
     info: JSON.stringify({ table: table.tableName, sql: '' }),
@@ -353,6 +370,15 @@ const hideCopyTooltip = (key: string) => {
   copyTooltipRefs.get(key)?.hide()
 }
 
+const resourceLabel = computed(() => {
+  const pending: DataSource[] = [...state.dataSourceList]
+  while (pending.length) {
+    const item = pending.pop()!
+    if (String(item.id) === String(sqlNode.value.datasourceId)) return item.name
+    if (item.children) pending.push(...item.children)
+  }
+  return ''
+})
 const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
@@ -506,25 +532,84 @@ const handleClose = () => {
 }
 
 const dataPreviewLoading = ref(false)
-const getSQLPreview = () => {
-  if (!validateVariableNames()) {
-    return
-  }
+const latestPreview = shallowRef<AiSqlPreview & { sql: string; sourceLabel: string }>()
+let previewSequence = 0
+let feedbackGeneration = 0
+const forgetFeedback = () => {
+  feedbackGeneration++
+  latestPreview.value = undefined
+}
+const invalidatePreview = () => {
+  previewSequence++
+  dataPreviewLoading.value = false
+  state.plxTableData = []
+  state.fields = []
+}
+watch(() => [sqlNode.value.datasourceId, isCross.value], invalidatePreview, { flush: 'sync' })
+watch(
+  () => [sqlNode.value.id, user.uid, user.oid, user.proxyInfo?.proxyOid],
+  () => {
+    invalidatePreview()
+    forgetFeedback()
+  },
+  { flush: 'sync' }
+)
+onBeforeUnmount(invalidatePreview)
+
+// Driver errors can include expanded SQL, connection information and bound values.
+// Only a known classification ever leaves this editor.
+const previewFailure = (error: unknown): SqlPreviewOutcome => {
+  const message = error instanceof Error ? error.message : ''
+  if (/ambiguous column|column .*ambiguous/i.test(message)) return 'AMBIGUOUS_COLUMN'
+  if (
+    /unknown column|invalid identifier|column .*?(?:not found|does not exist)|no such column/i.test(
+      message
+    )
+  )
+    return 'UNKNOWN_COLUMN'
+  if (
+    /unknown table|table .*?(?:not found|doesn't exist|does not exist)|no such table|relation .*does not exist/i.test(
+      message
+    )
+  )
+    return 'UNKNOWN_TABLE'
+  if (/syntax error|sql syntax|parse error/i.test(message)) return 'SYNTAX'
+  if (/timeout|timed out/i.test(message)) return 'TIMEOUT'
+  return 'FAILED'
+}
+
+const getSQLPreview = async () => {
+  if (!validateVariableNames()) return
   parseVariable()
+  const generation = feedbackGeneration
+  const sequence = ++previewSequence
+  const snapshot = {
+    sql: readDraft(),
+    sourceLabel: resourceLabel.value,
+    revision: draftRevision.value,
+    resourceId: String(sqlNode.value.datasourceId ?? ''),
+    isCross: Boolean(isCross.value)
+  }
+  latestPreview.value = undefined
   dataPreviewLoading.value = true
-  getPreviewSql({
-    isCross: isCross.value,
-    sql: Base64.encode(setNameIdTrans('name', 'id', codeCom.value.state.doc.toString())),
-    datasourceId: sqlNode.value.datasourceId,
-    sqlVariableDetails: JSON.stringify(state.variables)
-  })
-    .then(res => {
-      state.plxTableData = res.data.data
-      state.fields = generateColumns(res.data.fields)
+  try {
+    const res = await getPreviewSql({
+      isCross: snapshot.isCross,
+      sql: Base64.encode(setNameIdTrans('name', 'id', snapshot.sql)),
+      datasourceId: sqlNode.value.datasourceId,
+      sqlVariableDetails: JSON.stringify(state.variables)
     })
-    .finally(() => {
-      dataPreviewLoading.value = false
-    })
+    if (sequence !== previewSequence) return
+    state.plxTableData = res.data.data
+    state.fields = generateColumns(res.data.fields)
+    if (generation === feedbackGeneration) latestPreview.value = { ...snapshot, outcome: 'SUCCESS' }
+  } catch (error) {
+    if (sequence !== previewSequence || generation !== feedbackGeneration) return
+    // The HTTP interceptor presents the original error to the author.
+    latestPreview.value = { ...snapshot, outcome: previewFailure(error) }
+  } finally {
+    if (sequence === previewSequence) dataPreviewLoading.value = false
+  }
 }
 
 let tableList = []
@@ -697,6 +782,19 @@ const mousedownDrag = () => {
   <div class="add-sql-name">
     <el-input class="name" ref="editorName" v-model="sqlNode.tableName" @change="setFlag" />
     <div class="save-or-cancel flex-align-center">
+      <DatasetEditorAssistant
+        v-if="assistantHost && codeCom"
+        :host="assistantHost"
+        :is-cross="isCross"
+        :system-variable-names="systemVariableNames"
+        :resource-id="String(sqlNode.datasourceId ?? '')"
+        :read-draft="readDraft"
+        :preview="latestPreview"
+        @invalidate-preview="forgetFeedback"
+        :draft-revision="draftRevision"
+        :resource-label="resourceLabel"
+        @apply="replaceDraft"
+      />
       <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
           <el-icon>
@@ -822,13 +920,13 @@ const mousedownDrag = () => {
                 active: activeName === data.tableName,
                 'copy-tip-open': copyTipOpenName === data.key
               }"
-              :title="tableDisplayName(data)"
+              :title="data.tableName"
               @mouseleave="hideCopyTooltip(data.key)"
             >
               <el-icon class="icon-color">
                 <Icon name="icon_form_outlined"><icon_form_outlined class="svg-icon" /></Icon>
               </el-icon>
-              <span class="label">{{ tableDisplayName(data) }}</span>
+              <span class="label">{{ data.tableName }}</span>
               <span class="name-copy">
                 <el-tooltip
                   :ref="setCopyTooltipRef(data.key)"
@@ -886,7 +984,7 @@ const mousedownDrag = () => {
       :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }"
     >
       <code-mirror
-        @change="changeFlagCode = true"
+        @change="onDraftChange"
         :height="`${dragHeight}px`"
         dom-id="sql-editor"
         :regexp="/\$f2cde\[(.*?)\]/g"
@@ -1049,6 +1147,7 @@ const mousedownDrag = () => {
       </div>
     </div>
   </div>
+  <div ref="assistantHost" class="assistant-host"></div>
   <el-drawer
     :title="dialogTitle"
     v-model="showVariableMgm"
@@ -1204,6 +1303,15 @@ const mousedownDrag = () => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
+.assistant-host {
+  position: absolute;
+  top: 56px;
+  bottom: 0;
+  right: 0;
+}
+.sql-eidtor:has(+ .assistant-host > aside) {
+  width: calc(100% - min(360px, 36vw));
+}
 .sql-eidtor {
   width: 100%;
   height: calc(100vh - 156px);

@@ -6,8 +6,10 @@ test('custom SQL table fields expand inline in the table tree', async ({ page })
 
   await page.goto('/')
 
-  const table = page.getByText('订单主表', { exact: true })
+  const table = page.locator('.table-tree-node').filter({ hasText: 'orders' })
   await expect(table).toBeVisible()
+  await expect(table).toHaveAttribute('title', 'orders')
+  await expect(table).not.toContainText('订单主表')
   await table.click()
 
   const fields = page.locator('.table-tree-field')

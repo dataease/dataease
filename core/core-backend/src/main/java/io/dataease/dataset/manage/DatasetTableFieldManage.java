@@ -318,6 +318,10 @@ public class DatasetTableFieldManage {
 
     private CoreDatasetTableField transDTO2Record(DatasetTableFieldDTO dto) {
         CoreDatasetTableField record = new CoreDatasetTableField();
+        DatasetSemanticValidation.text(dto.getSemanticBusinessName(), 255);
+        DatasetSemanticValidation.text(dto.getSemanticDescription(), 4000);
+        DatasetSemanticValidation.text(dto.getSemanticAliases(), 1000);
+        DatasetSemanticValidation.references(dto.getSemanticValueReferences());
         BeanUtils.copyBean(record, dto);
         if (ObjectUtils.isNotEmpty(dto.getParams())) {
             record.setParams(JsonUtil.toJSONString(dto.getParams()).toString());

@@ -59,6 +59,19 @@ public class SqlUtil {
         }
     }
 
+    private static final Pattern LOCKING_QUERY = Pattern.compile(
+            "(?i)\\bFOR\\s+(?:KEY\\s+)?SHARE\\b|\\bLOCK\\s+IN\\s+SHARE\\s+MODE\\b");
+
+    /** A dataset suggestion represents one read query. Use the editor's read policy without executing or validating a dialect. */
+    public static boolean isSingleReadQuery(String sql) {
+        if (sql == null || sql.isBlank() || sql.contains("/*!") || sql.contains("/*M!")) return false;
+        String code = maskSql(sql).strip();
+        if (code.endsWith(";")) code = code.substring(0, code.length() - 1).stripTrailing();
+        return !containsBackslashQuote(sql) && !code.contains(";")
+                && SELECT_PATTERN.matcher(code.replaceAll("[\\r\\n]+", " ")).matches()
+                && !WRITE_OPERATION_PATTERN.matcher(code).find() && !LOCKING_QUERY.matcher(code).find();
+    }
+
     /**
      * 将SQL中的字符串、引号标识符、dollar-quoted string 和注释替换为空格，
      * 仅保留可执行代码关键字，供安全检查使用。

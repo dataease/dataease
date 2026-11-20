@@ -1,0 +1,263 @@
+"""Compile changed AI sources and run isolated regressions; never start DataEase or use external credentials.
+Uses the existing CoreApplication.jar and locally installed Maven dependencies. No downloads/build lifecycle.
+"""
+import argparse
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+import socket
+import time
+from contextlib import ExitStack
+from zipfile import ZipFile
+import xml.etree.ElementTree as ET
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--model-limits', action='store_true', help='model defaults and optional per-request length limits')
+    parser.add_argument('--conversation', action='store_true', help='complete public conversation protocol regression')
+    parser.add_argument('--runtime', action='store_true', help='native Java model policy and off/on epoch boundary')
+    parser.add_argument('--retention', action='store_true', help='public settings and production retention cleanup on isolated H2')
+    parser.add_argument('--task-policy', action='store_true', help='dynamic shutdown and authorization across independent JVMs')
+    parser.add_argument('--disabled-errors', action='store_true', help='global/organization shutdown errors through actual MVC advice')
+    parser.add_argument('--conflict-errors', action='store_true', help='task conflicts and busy conversation import through actual MVC advice')
+    parser.add_argument('--audit', action='store_true', help='public HTTP execution audit and isolated persistence')
+    parser.add_argument('--audit-recovery', action='store_true', help='audit termination after a real worker JVM is killed')
+    parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
+    parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
+    parser.add_argument('--task-structure', action='store_true', help='public controlled structure scene with authorized SQL metadata')
+    parser.add_argument('--task-structure-nodes', action='store_true', help='actual SQL/structure scenes across independent JVM map iteration seeds')
+    parser.add_argument('--task-mutex', action='store_true', help='public resource occupancy across independent JVMs')
+    parser.add_argument('--task-scheduling', action='store_true', help='public HTTP task scheduling across independent JVMs')
+    parser.add_argument('--task-idle', action='store_true', help='actual idle SQL and wakeup across independent JVMs')
+    parser.add_argument('--recovery-tools', action='store_true', help='public tool correction recovery loop')
+    parser.add_argument('--recovery', action='store_true', help='public foreground recovery loop')
+    parser.add_argument('--identity-scope', action='store_true', help='trusted worker identity and original business license dispatch')
+    parser.add_argument('--task-progress', action='store_true', help='isolated public task private-frame timing loop')
+    parser.add_argument('--progress-case', default='all', choices=['all', 'text-plain', 'sql-plain', 'text-burst', 'sql-burst'])
+    parser.add_argument('--progress-frames', type=int, default=512)
+    parser.add_argument('--progress-delay-ms', type=int, default=2)
+    parser.add_argument('--progress-private-chars', type=int, default=4096)
+    parser.add_argument('--progress-delay-scope', default='all', choices=['all', 'state', 'other'])
+    parser.add_argument('--task-contracts', action='store_true', help='fast public task contract loop, excluding cross-JVM tests')
+    parser.add_argument('--only-tasks', action='store_true', help='run focused persistent task regressions')
+    parser.add_argument('--xpack', action='store_true', help='also compile the two changed private extension sources')
+    parser.add_argument('--ai-classpath', default=os.environ.get('AI_SERVICE_DEPENDENCY_CP_FILE'), help='Maven-resolved Spring AI dependency classpath file')
+    parser.add_argument('--redis-server', help='existing local Redis binary; start only an owned temporary loopback instance')
+    args = parser.parse_args()
+    if not 1 <= args.progress_frames <= 4096 or not 0 <= args.progress_private_chars <= 8192 or not 0 <= args.progress_delay_ms <= 10:
+        parser.error('Progress fixture requires 1..4096 frames, 0..8192 private characters and 0..10 ms owned JDBC delay')
+    root = Path(__file__).resolve().parents[2]
+    repository = Path.home() / '.m2/repository'
+    application = root / 'core/core-backend/target/CoreApplication.jar'
+    by_name = {file.name: file for file in repository.rglob('*.jar') if not file.name.endswith(('-sources.jar', '-javadoc.jar'))}
+    with tempfile.TemporaryDirectory(prefix='de-ai-regression-') as temporary:
+        work = Path(temporary)
+        boot = work / 'boot'
+        with ZipFile(application) as archive:
+            names = [Path(name).name for name in archive.namelist() if name.startswith('BOOT-INF/lib/') and name.endswith('.jar')]
+            for name in archive.namelist():
+                if name.startswith('BOOT-INF/classes/') and not name.endswith('/'):
+                    target = boot / name.removeprefix('BOOT-INF/classes/')
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(archive.read(name))
+        missing = [name for name in names if name not in by_name and not name.startswith('spring-boot-jarmode-')]
+        if missing:
+            parser.error('Missing local application dependencies: ' + ', '.join(missing))
+        libraries = [by_name[name] for name in names if name in by_name and not name.startswith('spring-ai-')]
+        for pattern in ['org/springframework/ai/*/1.1.8/*.jar', 'org/projectlombok/lombok/*/*.jar',
+                        'org/apache/httpcomponents/client5/httpclient5/5.5.2/*.jar',
+                        'org/apache/httpcomponents/core5/httpcore5/5.3.6/*.jar',
+                        'org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/*.jar',
+                        'org/springframework/retry/spring-retry/*/*.jar',
+                        'org/springframework/spring-webflux/6.2.19/*.jar', 'io/projectreactor/reactor-core/3.7.19/*.jar',
+                        'com/github/victools/*/4.38.0/*.jar',
+                        'org/antlr/ST4/*/*.jar', 'org/antlr/antlr-runtime/*/*.jar',
+                        'com/knuddels/jtokkit/*/*.jar', 'org/reactivestreams/reactive-streams/*/*.jar',
+                        'com/h2database/h2/2.2.220/*.jar']:
+            libraries.extend(file for file in repository.glob(pattern) if not file.name.endswith(('-sources.jar', '-javadoc.jar')))
+        if not list(repository.glob('org/springframework/ai/spring-ai-openai/1.1.8/*.jar')):
+            parser.error('Spring AI 1.1.8 dependencies must already be installed')
+        if args.ai_classpath:
+            resolved = [Path(path) for path in Path(args.ai_classpath).read_text().strip().split(os.pathsep)]
+            if not all(path.exists() for path in resolved):
+                parser.error('Resolved AI dependency files missing')
+            libraries = [*resolved, *libraries]
+        # Match the current parent version rather than the old packaged license SDK.
+        parent = ET.parse(root / 'pom.xml').getroot()
+        version = parent.find('{*}properties/{*}dataease.version').text
+        license_sdk = repository / f'io/dataease/dataease-license-sdk/{version}/dataease-license-sdk-{version}.jar'
+        if not license_sdk.is_file():
+            parser.error('Current license SDK must already be installed')
+        libraries = [license_sdk, *[file for file in libraries if not file.name.startswith('dataease-license-sdk-')]]
+        classes = work / 'classes'
+        classes.mkdir()
+        classpath = os.pathsep.join(map(str, [classes, *[path for path in libraries if path.is_dir()], boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
+        # The isolated task fixture supplies its own business scenes. The product datasource
+        # scene is compiled by the backend build together with the current datasource classes.
+        product_only = {'AiBaseService.java', 'AiDatasourceMetadataScenes.java'}
+        sources = [file for file in (root/'core/core-backend/src/main/java/io/dataease/ai').rglob('*.java')
+                   if file.name not in product_only]
+        sources.extend((root/'sdk/api/api-base/src/main/java/io/dataease/api/ai').rglob('*.java'))
+        sources.extend(root/path for path in [
+            'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/utils/SqlUtil.java',
+            'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/dto/DatasourceRequest.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/dataset/union/DatasetGroupInfoDTO.java',
+            'core/core-backend/src/main/java/io/dataease/dataset/manage/DatasetDataManage.java',
+            'core/core-backend/src/main/java/io/dataease/engine/trans/Field2SQLObj.java',
+            'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/vo/DatasourceConfiguration.java',
+            'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
+            'sdk/common/src/main/java/io/dataease/exception/DEException.java',
+            'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
+            'sdk/common/src/main/java/io/dataease/exception/ErrorResponses.java',
+            'sdk/common/src/main/java/io/dataease/exception/GlobalExceptionHandler.java',
+            'sdk/common/src/main/java/io/dataease/result/ResultMessage.java',
+            'sdk/common/src/main/java/io/dataease/utils/ServletUtils.java',
+            'sdk/common/src/main/java/io/dataease/constant/AuthResourceEnum.java',
+            'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
+            'sdk/common/src/main/java/io/dataease/exception/DEException.java',
+            'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
+            'sdk/common/src/main/java/io/dataease/auth/ConfigurationSecurity.java',
+            'sdk/common/src/main/java/io/dataease/ai/security/identity/AiOwnerContext.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceRelationApi.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceSemanticApi.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceMetadataSource.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceServer.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/provider/PhysicalTableCatalog.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/provider/CalciteProvider.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/manage/DatasourceSemanticManage.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/repository/CoreDatasourceFieldSemanticRepository.java',
+            'core/core-backend/src/main/java/io/dataease/menu/dao/auto/entity/CoreMenu.java',
+            'core/core-backend/src/main/java/io/dataease/system/manage/CorePermissionManage.java',
+            'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/auth/api/InteractiveAuthApi.java',
+            'sdk/api/api-permissions/src/main/java/io/dataease/api/permissions/org/api/AiOrganizationLifecycle.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiKeyringInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiRetentionInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiAuditRecoveryInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiSettingsDefaultsInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskDeliveryInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskSchedulingInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiTaskResourceInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecoveryInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiUsageEpochInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiConfigurationMenuInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/AiRecordsMenuInit.java',
+            'core/core-backend/src/main/java/io/dataease/menu/manage/MenuManage.java',
+            'core/core-backend/src/main/java/io/dataease/config/ConfigurationTransport.java'])
+        if args.xpack:
+            sources.extend(root/path for path in [
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/server/InteractiveAuthServer.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/V3AuthTemplateImp.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/ai/authorization/AiAuthCache.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/ai/authorization/AiAuthorizationService.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/RoleAuthManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/UserAuthManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/InteractiveAuthManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/user/manage/RoleManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/MenuPermissionManage.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/auth/manage/AuthManage.java',
+                'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiMenuClassificationRegression.java',
+                'de-xpack/xpack-permissions/src/main/java/io/dataease/xpack/permissions/org/manage/OrgPageManage.java'])
+        private_audit = next((path for path in [
+            root/'de-xpack/tests/ai-service/AiAuditAuthorizationRegression.java',
+            root/'de-xpack/xpack-permissions/src/test/java/io/dataease/xpack/permissions/ai/AiAuditAuthorizationRegression.java',
+        ] if path.is_file()), None)
+        if args.xpack and private_audit is not None:
+            sources.append(private_audit)
+        sources.extend((root/'tests/ai-service').glob('*.java'))
+        sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasource*Semantic.java'))
+        sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasourceRelation*.java'))
+        sources.extend(root/path for path in [
+            'core/core-backend/src/main/java/io/dataease/listener/InitSqlListener.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceMetadataInit.java'])
+        java = ['java']
+        if args.identity_scope:
+            java.append('-Dai.test.identityScopeOnly=true')
+        if args.disabled_errors:
+            java.append('-Dai.test.disabledErrorsOnly=true')
+        if args.conflict_errors:
+            java.append('-Dai.test.conflictErrorsOnly=true')
+        if args.task_policy:
+            java.append('-Dai.test.policyOnly=true')
+        if args.task_mutex:
+            java.append('-Dai.test.mutexOnly=true')
+
+        if args.model_limits:
+            java.append('-Dai.test.modelLimitsOnly=true')
+        if args.conversation:
+            java.append('-Dai.test.conversationOnly=true')
+        if args.runtime:
+            java.append('-Dai.test.runtimeOnly=true')
+        if args.retention:
+            java.append('-Dai.test.retentionOnly=true')
+        if args.audit:
+            java.append('-Dai.test.auditOnly=true')
+        if args.audit_recovery:
+            java.append('-Dai.test.auditRecoveryOnly=true')
+        if args.task_scheduling:
+            java.append('-Dai.test.schedulingOnly=true')
+        if args.task_idle:
+            java.append('-Dai.test.idleOnly=true')
+        if args.recovery_tools:
+            java.append('-Dai.test.recoveryToolsOnly=true')
+        if args.recovery:
+            java.append('-Dai.test.recoveryOnly=true')
+        if args.only_tasks or args.task_contracts:
+            java.append('-Dai.test.onlyTasks=true')
+        if args.task_contracts:
+            java.append('-Dai.test.taskContractsOnly=true')
+        redis = None
+        if args.redis_server:
+            with socket.socket() as reserved:
+                reserved.bind(('127.0.0.1',0))
+                port = reserved.getsockname()[1]
+            redis = subprocess.Popen([args.redis_server, '--bind','127.0.0.1','--port',str(port),'--save','','--appendonly','no','--dir',str(work)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            for attempt in range(100):
+                if redis.poll() is not None:
+                    parser.error('Owned Redis stopped during startup')
+                try:
+                    with socket.create_connection(('127.0.0.1',port),timeout=0.1):
+                        break
+                except OSError:
+                    time.sleep(0.05)
+            java.append('-Dai.test.redisPort=' + str(port))
+        commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
+                     '-cp', classpath, '-d', str(classes), *map(str, sources)],
+                    [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_policy or args.task_scheduling or args.task_idle or args.task_mutex or args.disabled_errors or args.conflict_errors else ['io.dataease.ai.Regression'])]]
+        if args.recovery_tools:
+            commands.append([*java, '-cp', classpath, 'io.dataease.ai.CalcFieldPreviewRegression'])
+        if args.task_structure:
+            commands.append([*java, '-cp', classpath, 'io.dataease.ai.TaskStructureNodeRegression'])
+        if args.xpack:
+            commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiMenuClassificationRegression'])
+        if args.xpack and private_audit is not None:
+            commands.append([*java, '-cp', classpath, 'io.dataease.xpack.permissions.ai.AiAuditAuthorizationRegression'])
+        try:
+            for command in commands:
+                result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=240)
+                if result.returncode:
+                    print('\n'.join((result.stdout + result.stderr).splitlines()[-100:]))
+                    return result.returncode
+                for line in (result.stdout + result.stderr).splitlines():
+                    if line.startswith(('PASS ', 'DIAG ')):
+                        print(line)
+        finally:
+            if redis is not None:
+                redis.terminate()
+                try:
+                    redis.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    redis.kill()
+                    redis.wait()
+        if args.xpack:
+            print('PASS changed private extension sources compiled against the new public contract')
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

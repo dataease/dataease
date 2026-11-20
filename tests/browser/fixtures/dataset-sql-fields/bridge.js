@@ -21,6 +21,7 @@ export default defineComponent({
 export const Icon = Empty
 export const EmptyBackground = Empty
 export const useI18n = () => ({ t: key => key })
+export const useUserStoreWithOut = () => ({ uid: 'fixture-user', oid: 'fixture-org' })
 export const isDesktop = () => false
 export const fieldType = { 0: 'text', 1: 'value', 2: 'value', 3: 'time', 4: 'time' }
 export const iconFieldMap = { text: Empty, value: Empty, time: Empty }

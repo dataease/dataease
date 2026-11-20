@@ -25,9 +25,17 @@ import static io.dataease.constant.SQLConstants.FIELD_DOT_FIX;
 public class Field2SQLObj {
 
     public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage, boolean forSqlbot) {
+        field2sqlObj(meta, fields, originFields, isCross, dsMap, fieldParam, chartParam, pluginManage, forSqlbot, null);
+    }
+
+    /** Returns whether this projection replaced the requested field's expanded aggregate with a placeholder. */
+    public static boolean field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields,
+                                       boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam,
+                                       List<CalParam> chartParam, PluginManageApi pluginManage, boolean forSqlbot, Long previewFieldId) {
+        boolean aggregatePlaceholder = false;
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
-            return;
+            return false;
         }
         Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
         List<SQLObj> xFields = new ArrayList<>();
@@ -56,6 +64,7 @@ public class Field2SQLObj {
                     // 此处是数据集预览，获取数据库原始字段枚举值等操作使用，如果遇到聚合函数则将originField设置为null
                     for (String func : FunctionConstant.AGG_FUNC) {
                         if (Utils.matchFunction(func, calcFieldExp)) {
+                            if (previewFieldId != null && previewFieldId.equals(x.getId())) aggregatePlaceholder = true;
                             originField = null;
                             break;
                         }
@@ -99,6 +108,7 @@ public class Field2SQLObj {
         }
         meta.setXFields(xFields);
         meta.setXFieldsDialect(fieldsDialect);
+        return aggregatePlaceholder;
     }
 
     public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {

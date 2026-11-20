@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 public class DatasourceRequest implements Serializable {
     private final String REG_WITH_SQL_FRAGMENT = "((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT";
     private Pattern WITH_SQL_FRAGMENT = Pattern.compile("((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT");
+    /** Optional server-side deadline for an automatic preview. */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Long executionDeadline;
     protected String query;
     protected String table;
     protected DatasourceDTO datasource;

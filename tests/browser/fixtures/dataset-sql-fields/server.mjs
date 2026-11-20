@@ -13,6 +13,7 @@ const bridgeImports = [
   '@/hooks/web/useI18n',
   '@/api/dataset',
   '@/api/variable',
+  '@/store/modules/user',
   '@/components/icon-custom',
   '@/components/empty-background',
   '@/components/grid-table/src/GridTable.vue',
@@ -34,11 +35,18 @@ const server = await createServer({
       name: 'dataset-sql-fields-boundaries',
       enforce: 'pre',
       resolveId(id, importer) {
-        if (importer?.endsWith('/AddSql.vue') && ['.', './util', './CodeMirror.vue'].includes(id)) {
+        if (!importer?.split('?')[0].endsWith('/AddSql.vue')) return
+        if (id === './DatasetEditorAssistant.vue') {
+          return '\0dataset-sql-assistant-stub'
+        }
+        if (['.', './util', './CodeMirror.vue'].includes(id)) {
           return bridge
         }
       },
       load(id) {
+        if (id === '\0dataset-sql-assistant-stub') {
+          return 'export default { name: "DatasetSqlAssistantStub", render() { return null } }'
+        }
         if (id.endsWith('.svg')) {
           return 'export default { name: "SvgStub", render() { return null } }'
         }

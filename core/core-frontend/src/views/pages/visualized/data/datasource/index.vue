@@ -90,6 +90,8 @@ import EditorDatasource from '@/views/pages/visualized/data/datasource/form/inde
 import ExcelInfoBase from '@/views/visualized/data/datasource/ExcelInfoBase.vue'
 import SheetTabs from '@/views/visualized/data/datasource/SheetTabs.vue'
 import BaseInfoItem from '@/views/visualized/data/datasource/BaseInfoItem.vue'
+import DatasourceRelation from '@/views/visualized/data/datasource/DatasourceRelation.vue'
+import DatasourceSemantic from '@/views/visualized/data/datasource/DatasourceSemantic.vue'
 import BaseInfoContent from '@/views/visualized/data/datasource/BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
@@ -1077,6 +1079,20 @@ const uploadExcel = editType => {
     })
 }
 const activeName = ref('table')
+const relationTableFilter = ref('')
+const semanticSelectedTable = ref('')
+watch(
+  () => nodeInfo.id,
+  () => {
+    relationTableFilter.value = ''
+    semanticSelectedTable.value = ''
+  }
+)
+const showTableRelations = (tableName: string) => {
+  relationTableFilter.value = tableName
+  activeName.value = 'relations'
+}
+const hasPhysicalTables = computed(() => !!nodeInfo.type && !/^folder$/i.test(nodeInfo.type))
 const defaultProps = {
   children: 'children',
   label: 'name',
@@ -1367,7 +1383,8 @@ const getMenuList = (val: boolean, data?: any) => {
       class="datasource-content"
       :class="{
         auto: isIframe || isDataEaseBi,
-        h100: isDataEaseBi || isIframe
+        h100: isDataEaseBi || isIframe,
+        'semantic-content': hasPhysicalTables && activeName === 'semantics'
       }"
     >
       <template v-if="!state.datasourceTree.length && mounted">
@@ -1488,6 +1505,16 @@ const getMenuList = (val: boolean, data?: any) => {
             <el-tabs v-model="activeName" @tab-change="handleClick">
               <el-tab-pane :label="t('datasource.config')" name="config"></el-tab-pane>
               <el-tab-pane :label="t('datasource.table')" name="table"></el-tab-pane>
+              <el-tab-pane
+                v-if="hasPhysicalTables"
+                :label="t('datasourceMetadata.relations')"
+                name="relations"
+              />
+              <el-tab-pane
+                v-if="hasPhysicalTables"
+                :label="t('datasourceMetadata.semantics')"
+                name="semantics"
+              />
             </el-tabs>
           </div>
         </div>
@@ -1608,6 +1635,23 @@ const getMenuList = (val: boolean, data?: any) => {
             </grid-table>
           </div>
         </div>
+        <DatasourceRelation
+          v-else-if="hasPhysicalTables && activeName === 'relations'"
+          :key="`relations-${nodeInfo.id}`"
+          v-model:table-filter="relationTableFilter"
+          :datasource-id="String(nodeInfo.id)"
+          :datasource-name="nodeInfo.name"
+          :can-manage="nodeInfo.weight >= 7"
+        />
+        <DatasourceSemantic
+          v-else-if="hasPhysicalTables && activeName === 'semantics'"
+          :key="`semantics-${nodeInfo.id}`"
+          v-model:selected-table="semanticSelectedTable"
+          :datasource-id="String(nodeInfo.id)"
+          :datasource-name="nodeInfo.name"
+          :can-manage="nodeInfo.weight >= 7"
+          @show-relations="showTableRelations"
+        />
         <template v-else>
           <BaseInfoContent v-slot="slotProps" :name="t('datasource.base_info')">
             <template v-if="slotProps.active">
@@ -2404,6 +2448,17 @@ const getMenuList = (val: boolean, data?: any) => {
   .datasource-content {
     flex: 1;
     position: relative;
+
+    &.semantic-content {
+      display: flex;
+      height: calc(100dvh - 56px);
+      flex-direction: column;
+      overflow: hidden;
+
+      .datasource-info {
+        flex-shrink: 0;
+      }
+    }
 
     .datasource-info {
       background: #fff;

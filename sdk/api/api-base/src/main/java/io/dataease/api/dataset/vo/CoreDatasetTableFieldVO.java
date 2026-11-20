@@ -10,6 +10,12 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 public class CoreDatasetTableFieldVO implements Serializable {
+    private String semanticBusinessName;
+    private String semanticDescription;
+    private String semanticAliases;
+    private String semanticValueReferences;
+    private Boolean semanticConfirmed;
+
     private static final long serialVersionUID = 1L;
 
     /**

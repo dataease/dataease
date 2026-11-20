@@ -1,0 +1,120 @@
+package io.dataease.api.ds;
+
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
+
+@Tag(name = "数据源管理:语义管理")
+@ApiSupport(order = 969)
+@DeApiPath(value = "/datasource/metadata", rt = DATASOURCE)
+public interface DatasourceSemanticApi {
+    @DePermit({"#p0+':read'"})
+    @GetMapping("/{datasourceId}/semantics")
+    @Operation(summary = "查询语义表列表")
+    Semantics list(@PathVariable("datasourceId") Long datasourceId);
+
+    @DePermit({"#p0+':read'"})
+    @PostMapping("/{datasourceId}/semantics/detail")
+    @Operation(summary = "查询单表字段语义及关联数量")
+    TableDetails detail(@PathVariable("datasourceId") Long datasourceId, @RequestBody TableDetailRequest request);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/table")
+    @Operation(summary = "保存表语义")
+    void saveTable(@PathVariable("datasourceId") Long datasourceId, @RequestBody TableSemantic table);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/tables/add")
+    @Operation(summary = "添加语义表")
+    void addTables(@PathVariable("datasourceId") Long datasourceId, @RequestBody List<String> tableNames);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/tables/remove")
+    @Operation(summary = "移除语义表")
+    void removeTable(@PathVariable("datasourceId") Long datasourceId, @RequestBody TableReference table);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/tables/refresh")
+    @Operation(summary = "同步物理表结构")
+    boolean refreshTable(@PathVariable("datasourceId") Long datasourceId, @RequestBody TableReference table);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/field")
+    @Operation(summary = "保存并确认字段语义")
+    void saveField(@PathVariable("datasourceId") Long datasourceId, @RequestBody FieldSemantic field);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/table/confirmation")
+    @Operation(summary = "更新表语义确认状态")
+    void setTableConfirmed(@PathVariable("datasourceId") Long datasourceId,
+                           @RequestBody TableConfirmation confirmation);
+
+    @DePermit({"#p0+':manage'"})
+    @PostMapping("/{datasourceId}/field/confirmation")
+    @Operation(summary = "更新字段语义确认状态")
+    void setFieldConfirmed(@PathVariable("datasourceId") Long datasourceId,
+                           @RequestBody FieldConfirmation confirmation);
+
+    record TableConfirmation(String tableName, boolean confirmed) {}
+
+    record FieldConfirmation(String tableName, String fieldName, boolean confirmed) {}
+
+    @Schema(description = "数据源语义管理数据")
+    record Semantics(
+            @Schema(description = "语义表列表") List<TableSemantic> tables
+    ) {}
+
+    @Schema(description = "单表语义详情")
+    record TableDetails(
+            @Schema(description = "已添加语义表的字段及其语义") List<FieldSemantic> fields,
+            @Schema(description = "当前表的关联数量，自关联计一次") long relationCount
+    ) {}
+
+    @Schema(description = "物理表引用")
+    record TableReference(
+            @Schema(description = "物理表名") String tableName
+    ) {}
+
+    @Schema(description = "单表语义查询请求")
+    record TableDetailRequest(Long tableId) {}
+
+    @Schema(description = "数据源表语义")
+    record TableSemantic(
+            @JsonSerialize(using = ToStringSerializer.class)
+            @Schema(description = "语义表记录 ID", type = "string") Long id,
+            @Schema(description = "物理表名") String tableName,
+            @Schema(description = "表的业务说明") String description,
+            @Schema(description = "数据粒度，例如一行代表一笔订单") String grain,
+            @Schema(description = "语义表是否已添加，兼容历史未激活记录") boolean active,
+            @Schema(description = "最近一次同步的物理表显示名称") String physicalLabel,
+            @Schema(description = "最近一次同步时物理表是否存在") boolean available,
+            boolean confirmed,
+            @Schema(description = "字段总数") long fieldCount,
+            @Schema(description = "已确认字段数") long confirmedFieldCount
+    ) {}
+
+    record ValueReference(String value, String meaning) {}
+
+    @Schema(description = "数据源字段语义")
+    record FieldSemantic(
+            @Schema(description = "物理表名") String tableName,
+            @Schema(description = "物理字段名") String fieldName,
+            @Schema(description = "字段的业务名称") String businessName,
+            @Schema(description = "字段的业务说明，选填") String description,
+            @Schema(description = "字段的业务别名") String aliases,
+            @Schema(description = "字段语义是否已确认") boolean confirmed,
+            @Schema(description = "最近一次同步的物理字段类型") String physicalType,
+            @Schema(description = "最近一次同步的物理字段备注") String physicalComment,
+            @Schema(description = "手工维护的示例值及可选业务含义") List<ValueReference> valueReferences
+    ) {}
+}

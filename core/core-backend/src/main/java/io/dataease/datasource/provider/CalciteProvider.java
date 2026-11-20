@@ -62,6 +62,9 @@ public class CalciteProvider extends Provider {
     private EngineManage engineManage;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
+    // The connection owns one mutable Calcite schema tree. getRootSchema() returns new wrappers,
+    // so schema changes, pool borrowing and implicit planner/cache access share this stable monitor.
+    private final Object schemaMonitor = new Object();
     @Value("${dataease.path.driver:/opt/dataease3.0/drivers}")
     private String FILE_PATH;
     @Value("${dataease.path.custom-drivers:/opt/dataease3.0/custom-drivers/}")
@@ -293,49 +296,58 @@ public class CalciteProvider extends Provider {
             return jdbcFetchResultField(datasourceRequest);
         }
 
-        List<TableField> datasetTableFields = new ArrayList<>();
-        List<String[]> list = new LinkedList<>();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        Connection connection = take();
-        try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-            statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
-            bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
-            resultSet = statement.executeQuery();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                TableField tableField = new TableField();
-                tableField.setOriginName(metaData.getColumnLabel(i));
-                tableField.setType(metaData.getColumnTypeName(i));
-                tableField.setPrecision(metaData.getPrecision(i));
-                int deType = transType2DeType(tableField.getType(), datasourceRequest);
-                tableField.setDeExtractType(deType);
-                tableField.setDeType(deType);
-                tableField.setScale(metaData.getScale(i));
-                datasetTableFields.add(tableField);
-            }
-            list = getDataResult(resultSet);
-        } catch (Exception | AssertionError e) {
-            String msg;
-            if (e.getCause() != null && e.getCause().getCause() != null) {
-                msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
-            } else {
-                msg = e.getMessage();
-            }
-            DEException.throwException(Translator.get("i18n_fetch_error") + msg);
-        } finally {
+        // Calcite planning may populate schema caches. Keep the shared connection exclusive until
+        // results are consumed/closed, so a refresh cannot remove its schemas or close their pools.
+        synchronized (schemaMonitor) {
+            List<TableField> datasetTableFields = new ArrayList<>();
+            List<String[]> list = new LinkedList<>();
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            Connection connection = take();
             try {
-                if (resultSet != null) resultSet.close();
-                if (statement != null) statement.close();
-            } catch (Exception e) {
+                Long deadline = datasourceRequest.getExecutionDeadline();
+                previewQueryTimeout(0, deadline);
+                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
+                bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
+                if (deadline != null) statement.setQueryTimeout(previewQueryTimeout(statement.getQueryTimeout(), deadline));
+                resultSet = statement.executeQuery();
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    TableField tableField = new TableField();
+                    tableField.setOriginName(metaData.getColumnLabel(i));
+                    tableField.setType(metaData.getColumnTypeName(i));
+                    tableField.setPrecision(metaData.getPrecision(i));
+                    int deType = transType2DeType(tableField.getType(), datasourceRequest);
+                    tableField.setDeExtractType(deType);
+                    tableField.setDeType(deType);
+                    tableField.setScale(metaData.getScale(i));
+                    datasetTableFields.add(tableField);
+                }
+                list = getDataResult(resultSet);
+            } catch (Exception | AssertionError e) {
+                if (datasourceRequest.getExecutionDeadline() != null)
+                    throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal").causedBy(e);
+                String msg;
+                if (e.getCause() != null && e.getCause().getCause() != null) {
+                    msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
+                } else {
+                    msg = e.getMessage();
+                }
+                DEException.throwException(Translator.get("i18n_fetch_error") + msg);
+            } finally {
+                try {
+                    if (resultSet != null) resultSet.close();
+                    if (statement != null) statement.close();
+                } catch (Exception e) {
+                }
             }
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("fields", datasetTableFields);
+            map.put("data", list);
+            return map;
         }
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("fields", datasetTableFields);
-        map.put("data", list);
-        return map;
     }
 
     @Override
@@ -408,35 +420,68 @@ public class CalciteProvider extends Provider {
         return map;
     }
 
+    /** The reader captures this source and schema; clients can only select an exact name actually returned here. */
+    public PhysicalTableCatalog openCatalog(DatasourceSchemaDTO datasource, java.util.function.BiPredicate<String, String> include) {
+        var schema = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(schema, datasource);
+        var listing = new DatasourceRequest();
+        listing.setDatasource(schema);
+        var tables = getTables(listing).stream().filter(t -> include.test(t.getTableName(), t.getName())).toList();
+        return new PhysicalTableCatalog(tables, name -> {
+            var request = new DatasourceRequest();
+            request.setDatasource(schema);
+            request.setDsList(Map.of(schema.getId(), schema));
+            request.setTable(name);
+            // PhysicalTableCatalog.fields verified the exact name in this source's enumeration.
+            return fetchFields(request);
+        });
+    }
+
     @Override
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
+        if (!Boolean.TRUE.equals(datasourceRequest.getIsCross()) && StringUtils.isNotBlank(datasourceRequest.getTable())) {
+            datasourceRequest.setDatasource(datasourceRequest.getDsList().values().iterator().next());
+            validateTable(datasourceRequest);
+        }
+        return fetchFields(datasourceRequest);
+    }
+
+    private List<TableField> fetchFields(DatasourceRequest datasourceRequest) {
         if (datasourceRequest.getIsCross() != null && datasourceRequest.getIsCross()) {
-            List<TableField> datasetTableFields = new ArrayList<>();
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
-            Connection connection = take();
-            try {
-                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-                statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
-                bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
-                resultSet = statement.executeQuery();
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                int columnCount = metaData.getColumnCount();
-                for (int i = 1; i <= columnCount; i++) {
-                    TableField tableField = new TableField();
-                    tableField.setOriginName(metaData.getColumnLabel(i));
-                    tableField.setType(metaData.getColumnTypeName(i));
-                    tableField.setPrecision(metaData.getPrecision(i));
-                    int deType = transType2DeType(tableField.getType(), datasourceRequest);
-                    tableField.setDeExtractType(deType);
-                    tableField.setDeType(deType);
-                    tableField.setScale(metaData.getScale(i));
-                    datasetTableFields.add(tableField);
+            synchronized (schemaMonitor) {
+                List<TableField> datasetTableFields = new ArrayList<>();
+                PreparedStatement statement = null;
+                ResultSet resultSet = null;
+                Connection connection = take();
+                try {
+                    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                    statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
+                    bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
+                    resultSet = statement.executeQuery();
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    for (int i = 1; i <= columnCount; i++) {
+                        TableField tableField = new TableField();
+                        tableField.setOriginName(metaData.getColumnLabel(i));
+                        tableField.setType(metaData.getColumnTypeName(i));
+                        tableField.setPrecision(metaData.getPrecision(i));
+                        int deType = transType2DeType(tableField.getType(), datasourceRequest);
+                        tableField.setDeExtractType(deType);
+                        tableField.setDeType(deType);
+                        tableField.setScale(metaData.getScale(i));
+                        datasetTableFields.add(tableField);
+                    }
+                } catch (Exception e) {
+                    throw DEException.getException(e.getMessage());
+                } finally {
+                    try {
+                        if (resultSet != null) resultSet.close();
+                        if (statement != null) statement.close();
+                    } catch (Exception e) {
+                    }
                 }
-            } catch (Exception e) {
-                throw DEException.getException(e.getMessage());
+                return datasetTableFields;
             }
-            return datasetTableFields;
         }
         List<TableField> datasetTableFields = new ArrayList<>();
         DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
@@ -468,7 +513,7 @@ public class CalciteProvider extends Provider {
         } else {
             ResultSet resultSet = null;
             PreparedStatement preparedStatement = null;
-            validateTableAndSchema(datasourceRequest, datasourceConfiguration);
+            validateSchema(datasourceRequest, datasourceConfiguration);
             try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
@@ -734,6 +779,8 @@ public class CalciteProvider extends Provider {
             fieldList = getField(resultSet, datasourceRequest);
             dataList = getData(resultSet, datasourceRequest);
         } catch (SQLException e) {
+            if (datasourceRequest.getExecutionDeadline() != null)
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal").causedBy(e);
             LogUtil.error(e);
             DEException.throwException("SQL ERROR: " + e.getMessage());
         } catch (Exception e) {
@@ -826,8 +873,17 @@ public class CalciteProvider extends Provider {
                 datasourceRequest.setQuery(new String(datasourceRequest.getQuery().getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset()));
             }
         }
-        statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues(), autoIncrementPkName, datasourceConfiguration);
+        int timeout = previewQueryTimeout(datasourceConfiguration.getQueryTimeout(), datasourceRequest.getExecutionDeadline());
+        statement = getPreparedStatement(con, timeout, datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues(), autoIncrementPkName, datasourceConfiguration);
         return statement;
+    }
+
+    private static int previewQueryTimeout(int configured, Long deadline) throws SQLTimeoutException {
+        if (deadline == null) return configured;
+        long remaining = deadline - System.currentTimeMillis();
+        if (remaining < 1000) throw new SQLTimeoutException();
+        int budget = (int) Math.min(15, remaining / 1000);
+        return configured > 0 ? Math.min(configured, budget) : budget;
     }
 
     @Override
@@ -1272,6 +1328,13 @@ public class CalciteProvider extends Provider {
     }
 
     private void buildSchema(DatasourceSchemaDTO ds, SchemaPlus rootSchema) throws Exception {
+        synchronized (schemaMonitor) {
+            replaceSchema(ds, rootSchema);
+        }
+    }
+
+    private void replaceSchema(DatasourceSchemaDTO ds, SchemaPlus rootSchema) throws Exception {
+        // Called under schemaMonitor, including the old pool's close and the new schema's publish.
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setMaxWaitMillis(5 * 1000);
         dataSource.setTestWhileIdle(true);
@@ -1581,7 +1644,7 @@ public class CalciteProvider extends Provider {
         return FieldUtils.transType2DeType(type, datasource == null ? null : datasource.getType());
     }
 
-    private void validateTableAndSchema(DatasourceRequest datasourceRequest, DatasourceConfiguration configuration) {
+    private void validateTable(DatasourceRequest datasourceRequest) {
         String table = datasourceRequest.getTable();
         if (StringUtils.isNotBlank(table)) {
             List<String> realTables = getTables(datasourceRequest).stream()
@@ -1595,6 +1658,9 @@ public class CalciteProvider extends Provider {
                 DEException.throwException(Translator.get("i18n_invalid_table_name"));
             }
         }
+    }
+
+    private void validateSchema(DatasourceRequest datasourceRequest, DatasourceConfiguration configuration) {
         String schema = configuration.getSchema();
         if (StringUtils.isNotBlank(schema) && isSchemaValidatedType(datasourceRequest.getDatasource().getType())) {
             List<String> schemas = getSchema(datasourceRequest);
@@ -1863,7 +1929,7 @@ public class CalciteProvider extends Provider {
                 sql = "DESCRIBE " + quoteName(datasourceRequest.getTable(), '`');
                 break;
             case h2:
-                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s", bindParams, datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = CURRENT_SCHEMA AND TABLE_NAME = %s", bindParams, datasourceRequest.getTable());
                 break;
             default:
                 break;
@@ -2081,7 +2147,7 @@ public class CalciteProvider extends Provider {
         }
     }
 
-    private Connection connection = null;
+    private volatile Connection connection = null;
 
     public void initConnectionPool() {
         LogUtil.info("Begin to init datasource pool...");
@@ -2145,10 +2211,12 @@ public class CalciteProvider extends Provider {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-            SchemaPlus rootSchema = calciteConnection.getRootSchema();
-            if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) == null) {
-                buildSchema(datasourceSchemaDTO, rootSchema);
+            synchronized (schemaMonitor) {
+                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                SchemaPlus rootSchema = calciteConnection.getRootSchema();
+                if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) == null) {
+                    buildSchema(datasourceSchemaDTO, rootSchema);
+                }
             }
             DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), DatasourceConfiguration.class);
             if (configuration.isUseSSH()) {
@@ -2167,14 +2235,16 @@ public class CalciteProvider extends Provider {
         BeanUtils.copyBean(datasourceSchemaDTO, datasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         try {
-            if (connection != null) {
-                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-                SchemaPlus rootSchema = calciteConnection.getRootSchema();
-                if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
-                    JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
-                    BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
-                    basicDataSource.close();
-                    rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
+            synchronized (schemaMonitor) {
+                if (connection != null) {
+                    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                    SchemaPlus rootSchema = calciteConnection.getRootSchema();
+                    if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
+                        JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
+                        BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+                        basicDataSource.close();
+                        rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
+                    }
                 }
             }
         } catch (Exception e) {
@@ -2189,7 +2259,7 @@ public class CalciteProvider extends Provider {
 
     public Connection take() {
         if (connection == null) { // 第一次检查，无需锁
-            synchronized (Connection.class) { // 同步块
+            synchronized (schemaMonitor) { // 与共享 schema 使用同一个稳定锁
                 if (connection == null) { // 第二次检查，需要锁
                     connection = getCalciteConnection();
                 }
@@ -2207,16 +2277,20 @@ public class CalciteProvider extends Provider {
 
     private Connection getConnectionFromPool(Long dsId) {
         try {
-            Connection connection = take();
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-            SchemaPlus rootSchema = calciteConnection.getRootSchema();
-            if (rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)) == null) {
-                DEException.throwException(Translator.get("i18n_check_datasource_connection"));
+            // Borrow while the pool is still registered; the returned JDBC connection is independent
+            // of the schema tree and its SQL execution must not hold the global schema monitor.
+            synchronized (schemaMonitor) {
+                Connection connection = take();
+                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                SchemaPlus rootSchema = calciteConnection.getRootSchema();
+                if (rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)) == null) {
+                    DEException.throwException(Translator.get("i18n_check_datasource_connection"));
+                }
+                JdbcSchema jdbcSchema = rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)).unwrap(JdbcSchema.class);
+                BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+                basicDataSource.setMaxWaitMillis(5 * 1000);
+                return basicDataSource.getConnection();
             }
-            JdbcSchema jdbcSchema = rootSchema.getSubSchema(String.format(SQLConstants.SCHEMA, dsId)).unwrap(JdbcSchema.class);
-            BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
-            basicDataSource.setMaxWaitMillis(5 * 1000);
-            return basicDataSource.getConnection();
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_invalid_connection") + e.getMessage());
         }
