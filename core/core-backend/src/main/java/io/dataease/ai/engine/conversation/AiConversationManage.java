@@ -654,6 +654,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             toolEvent(run, call, "STARTED", arguments, null);
             String result;
+            String modelResult;
             boolean finish = false;
             boolean retained;
             try {
@@ -666,7 +667,9 @@ public class AiConversationManage implements AiToolConversationFeature {
                 });
                 result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
                         () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, () -> stream.recovery().tool(call.id(), call.name(), arguments, execute));
-                progress(run); stream.result(result);
+                progress(run);
+                modelResult = scene.modelToolResult(call.name(), result);
+                stream.result(modelResult);
                 retained = scene.retainToolFailure(call.name(), result);
                 if (AiToolProtocol.invalidResult(result)) {
                     if (!stream.recovery().correct(canonical)) {
@@ -681,7 +684,7 @@ public class AiConversationManage implements AiToolConversationFeature {
                 throw failure;
             }
             synchronized (run.state) {
-                progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, result));
+                progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, modelResult));
                 if (retained) run.retainedFailures.put(canonical, result);
                 toolEvent(run, call, "SUCCEEDED", arguments, result);
             }
