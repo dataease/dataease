@@ -190,6 +190,7 @@ final class CalcFieldRegression {
                 || !result.path("result").path("sql").isNull() || previews.get() != 1 || requests.size() != 2
                 || !requests.getFirst().toString().contains("Price") || requests.toString().contains("private-context-value")
                 || requests.toString().contains("sample-secret")) throw new AssertionError("bounded detail projection: " + result);
+        assertPrivateBindingAbsent(requests);
         var application = JSON.writeValueAsBytes(Map.of("contextVersion",session.path("contextVersion").asText(),
                 "draftVersion",session.path("draftVersion").asText()));
         var applied = mvc.perform(post(run + "/check-application").contentType(MediaType.APPLICATION_JSON).content(application))
@@ -197,6 +198,7 @@ final class CalcFieldRegression {
         if (!JSON.readTree(applied.getContentAsString()).path("calcField").equals(candidate)) throw new AssertionError("application projection");
         requests.clear(); mode.set("calc-invalid");
         var bad = terminal(mvc, start(mvc, session, "Use a missing field"));
+        assertPrivateBindingAbsent(requests);
         if (!"COMPLETED".equals(bad.path("status").asText()) || previews.get() != 1 || requests.size() != 2
                 || !"INVALID".equals(bad.at("/result/calcField/validation").asText())
                 || !"[Unknown] * 2".equals(bad.at("/result/calcField/expression").asText()))
@@ -307,6 +309,15 @@ final class CalcFieldRegression {
         verifyUnits(mvc, mode, requests, opening);
         System.out.println("PASS calculated-field HTTP conversation, bounded private preview, correction/exhaustion/duplicate, safe failure classification, canonical application, cancellation and revocation");
     }
+    private void assertPrivateBindingAbsent(List<JsonNode> requests) {
+        for (var request : requests) for (var message : request.path("messages")) {
+            if (!"tool".equals(message.path("role").asText())) continue;
+            String content = message.path("content").asText();
+            if (content.contains("expression") || content.contains("boundExpression") || content.contains("[102]"))
+                throw new AssertionError("Model received private formula result");
+        }
+    }
+
     private void verifyUnits(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
         var editor = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree(opening);
         var fields = (com.fasterxml.jackson.databind.node.ArrayNode) editor.at("/calcField/dataset/allFields");

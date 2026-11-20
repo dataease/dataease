@@ -188,6 +188,14 @@ public class AiCalcFieldScene implements AiConversationScene {
                 "message", "Check the field references, expression syntax and suggested properties, then submit a corrected candidate."));
     }
 
+    @Override public String modelToolResult(String name, String result) {
+        try {
+            var feedback = CalcFieldCanvas.JSON.readTree(result);
+            if ("CLARIFY_FIELD".equals(feedback.path("status").asText())) return result;
+            return AiToolProtocol.result(Map.of("status", feedback.path("status").asText(), "code", feedback.path("code").asText()));
+        } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
+    }
+
     @Override public boolean retainToolFailure(String name, String result) {
         if (!PROPOSE.equals(name)) return false;
         try {
