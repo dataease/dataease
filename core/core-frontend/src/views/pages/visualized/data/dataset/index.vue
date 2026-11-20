@@ -71,6 +71,7 @@ import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import treeSort from '@/utils/treeSortUtils'
+import { useResourceTreeSearch } from '@/utils/resourceTreeSearch'
 import RowAuth from '@/views/chart/components/editor/filter/auth-tree/RowAuth.vue'
 
 import {
@@ -83,7 +84,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useCache } from '@/hooks/web/useCache'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
-import { exportPermission, isFreeFolder } from '@/utils/utils'
+import { exportPermission, getHighlightSegments, isFreeFolder } from '@/utils/utils'
 const Pane = defineAsyncComponent(
   () => import('@/views/component/row-col-permission/pane/index.vue')
 )
@@ -843,19 +844,16 @@ const panelLoad = paneInfo => {
   tablePanes.value = paneInfo
 }
 const datasetListTree = ref()
-
-watch(nickName, (val: string) => {
-  datasetListTree.value.filter(val)
+const { filterNode: filterResourceNode } = useResourceTreeSearch(datasetListTree, nickName, {
+  canView: data => data.weight > 0
 })
 const sideTreeStatus = ref(true)
 const changeSideTreeStatus = val => {
   sideTreeStatus.value = val
 }
 
-const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true
-  return data.name?.toLowerCase().includes(value.toLowerCase())
-}
+const filterNode = (value: string, data: BusiTreeNode, node?: any) =>
+  filterResourceNode(value, data, node)
 const mouseenter = () => {
   appStore.setArrowSide(true)
 }
@@ -1025,11 +1023,29 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                   :content="t('common.no_permission_node')"
                   placement="top-start"
                 >
-                  <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
+                  <span :title="node.label" class="label-tooltip ellipsis"
+                    ><template
+                      v-for="(segment, index) in getHighlightSegments(node.label, nickName)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template></span
+                  >
                 </el-tooltip>
-                <span v-else :title="node.label" class="label-tooltip ellipsis">{{
-                  node.label
-                }}</span>
+                <span v-else :title="node.label" class="label-tooltip ellipsis"
+                  ><template
+                    v-for="(segment, index) in getHighlightSegments(node.label, nickName)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                      segment.text
+                    }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template></span
+                >
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
                     icon-size="24px"

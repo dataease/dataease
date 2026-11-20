@@ -96,11 +96,12 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { cloneDeep } from 'lodash-es'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
+import { useResourceTreeSearch } from '@/utils/resourceTreeSearch'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
-import { isFreeFolder } from '@/utils/utils'
+import { getHighlightSegments, isFreeFolder } from '@/utils/utils'
 import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
 const DatasourceDataFillingInfo = defineAsyncComponent(
   () => import('@/views/component/data-filling/DatasourceDataFillingInfo.vue')
@@ -672,8 +673,8 @@ const showRecord = ref(false)
 const dsListTree = ref()
 const expandedKey = ref([])
 const dsListTreeShow = ref(true)
-watch(dsName, (val: string) => {
-  dsListTree.value.filter(val)
+const { filterNode: filterResourceNode } = useResourceTreeSearch(dsListTree, dsName, {
+  canView: data => data.weight > 0
 })
 const updateTreeExpand = () => {
   dsListTreeShow.value = false
@@ -743,10 +744,8 @@ const nodeCollapse = data => {
   }
 }
 
-const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true
-  return data.name?.toLowerCase().includes(value.toLowerCase())
-}
+const filterNode = (value: string, data: BusiTreeNode, node?: any) =>
+  filterResourceNode(value, data, node)
 
 const editDatasource = (editType?: number) => {
   if (nodeInfo.type.startsWith('Excel')) {
@@ -1287,7 +1286,15 @@ const getMenuList = (val: boolean, data?: any) => {
                     :title="node.label"
                     class="label-tooltip ellipsis"
                     :class="data.type === 'Excel' && 'excel'"
-                    >{{ node.label }}</span
+                    ><template
+                      v-for="(segment, index) in getHighlightSegments(node.label, dsName)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template></span
                   >
                 </el-tooltip>
                 <span
@@ -1295,7 +1302,15 @@ const getMenuList = (val: boolean, data?: any) => {
                   :title="node.label"
                   class="label-tooltip ellipsis"
                   :class="data.type === 'Excel' && 'excel'"
-                  >{{ node.label }}</span
+                  ><template
+                    v-for="(segment, index) in getHighlightSegments(node.label, dsName)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                      segment.text
+                    }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template></span
                 >
                 <el-tooltip
                   v-else
@@ -1307,7 +1322,15 @@ const getMenuList = (val: boolean, data?: any) => {
                     :title="node.label"
                     class="label-tooltip ellipsis"
                     :class="data.type === 'Excel' && 'excel'"
-                    >{{ node.label }}</span
+                    ><template
+                      v-for="(segment, index) in getHighlightSegments(node.label, dsName)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template></span
                   >
                 </el-tooltip>
                 <div class="icon-more" v-if="data.weight >= 7">
