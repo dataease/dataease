@@ -21,13 +21,14 @@ public class AiConfigurationMenuInit implements CoreSqlBlock {
         this.tx = new TransactionTemplate(manager);
     }
 
-    public Version getVersion() { return new Version("2.45"); }
+    public Version getVersion() { return new Version("2.46"); }
 
     public void execute() {
         tx.executeWithoutResult(status -> {
             Long menuId = AuthResourceEnum.AI_CONFIG.getMenuId();
             CoreMenu current = em.find(CoreMenu.class, menuId);
-            if (current != null && !aiMenu(current)) {
+            if (current != null && !aiMenu(current, 15L, "ai-service")
+                    && !aiMenu(current, AuthResourceEnum.AI_SERVICE.getMenuId(), "ai-models")) {
                 throw new IllegalStateException("AI configuration menu ID is already in use");
             }
             if (current == null) {
@@ -46,15 +47,15 @@ public class AiConfigurationMenuInit implements CoreSqlBlock {
                 em.persist(current);
             }
             CoreMenu previous = em.find(CoreMenu.class, 130L);
-            if (previous != null && aiMenu(previous)) em.remove(previous);
+            if (previous != null && aiMenu(previous, 15L, "ai-service")) em.remove(previous);
             em.flush();
         });
     }
 
-    private boolean aiMenu(CoreMenu menu) {
-        return Objects.equals(menu.getPid(), 15L)
+    private boolean aiMenu(CoreMenu menu, long parentId, String name) {
+        return Objects.equals(menu.getPid(), parentId)
                 && Objects.equals(menu.getType(), 2)
-                && Objects.equals(menu.getName(), "ai-service")
+                && Objects.equals(menu.getName(), name)
                 && Objects.equals(menu.getComponent(), "system/ai-service");
     }
 }

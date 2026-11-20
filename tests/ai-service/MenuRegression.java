@@ -40,6 +40,6 @@ public final class MenuRegression {
         if (menus.findById(140L).orElseThrow().getPid() != 15L) throw new AssertionError("failed migration partly moved configuration");
         tx.executeWithoutResult(status -> em.find(CoreMenu.class, 142L).setComponent("system/ai-records"));
         migration.execute();
-        System.out.println("PASS AI 2.46 menu migration, repeated execution, retained configuration ID, independent leaf visibility and collision rollback");
+        System.out.println("PASS AI 2.47 menu migration, repeated execution, retained configuration ID, independent leaf visibility and collision rollback");
     }
 }

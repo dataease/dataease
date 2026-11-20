@@ -25,7 +25,7 @@ public class AiConfigurationInit implements CoreSqlBlock {
                                PlatformTransactionManager manager) {
         this.jdbc = jdbc; this.factory = factory; this.em = em; this.tx = new TransactionTemplate(manager);
     }
-    public Version getVersion() { return new Version("2.44"); }
+    public Version getVersion() { return new Version("2.45"); }
     public void execute() {
         create(CoreAiSetting.class); create(CoreAiModel.class); create(CoreAiOrgPolicy.class);
         // A retry of an earlier partial 2.44 migration must support the current entity mapping.
@@ -34,8 +34,11 @@ public class AiConfigurationInit implements CoreSqlBlock {
         index("core_ai_model", "uk_ai_model_name", "name_key", true);
         index("core_ai_org_policy", "idx_ai_org_model", "model_id", false);
         tx.executeWithoutResult(status -> {
-            if (em.find(CoreAiSetting.class, 1L) == null) em.persist(new CoreAiSetting());
-            // Menu registration is handled by 2.45, including early development compatibility.
+            // Older settings tables acquire additional mapped columns in later migrations.
+            if (jdbc.queryForObject("select count(*) from core_ai_setting where id = 1", Long.class) == 0L) {
+                em.persist(new CoreAiSetting());
+            }
+            // Menu registration is handled by 2.46, including early development compatibility.
             em.flush();
         });
     }

@@ -649,7 +649,7 @@ public final class TaskClusterRegression {
             new AiConfigurationInit(jdbc, factory, em, manager).execute(); var migration = new AiTaskInit(jdbc, factory, em, manager); migration.execute(); migration.execute();
             for (String table : List.of("core_ai_setting", "core_ai_org_policy")) jdbc.execute("alter table " + table + " drop column usage_epoch");
             var epochMigration = new AiUsageEpochInit(jdbc, factory); epochMigration.execute(); epochMigration.execute();
-            check(jdbc.queryForObject("select usage_epoch from core_ai_setting where id=1", Long.class) == 0L, "2.56 adds a conservative durable epoch and is retryable on old settings");
+            check(jdbc.queryForObject("select usage_epoch from core_ai_setting where id=1", Long.class) == 0L, "2.57 adds a conservative durable epoch and is retryable on old settings");
             var delivery = new AiTaskDeliveryInit(jdbc, factory); delivery.execute(); delivery.execute();
             legacyUpgrade(jdbc, factory, em, manager);
             new AiTaskResourceInit(jdbc, factory, em, manager).execute();

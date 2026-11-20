@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AiSettingsDefaultsInit implements CoreSqlBlock {
     private final JdbcTemplate jdbc;
     public AiSettingsDefaultsInit(JdbcTemplate jdbc) { this.jdbc = jdbc; }
-    public Version getVersion() { return new Version("2.58"); }
+    public Version getVersion() { return new Version("2.59"); }
     public void execute() {
         record Default(String column, int minimum, int value) {
             String invalid() { return "(" + column + " is null or " + column + " < " + minimum + ")"; }

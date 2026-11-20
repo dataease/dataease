@@ -16,7 +16,7 @@ public class DatasourceValueReferencesInit implements CoreSqlBlock {
     public DatasourceValueReferencesInit(JdbcTemplate jdbc, EntityManagerFactory factory) {
         this.jdbc = jdbc; this.factory = factory;
     }
-    public Version getVersion() { return new Version("2.59"); }
+    public Version getVersion() { return new Version("2.60"); }
     public void execute() {
         var session = factory.unwrap(SessionFactoryImplementor.class);
         var registry = session.getTypeConfiguration().getDdlTypeRegistry(); var dialect = session.getJdbcServices().getDialect();

@@ -14,13 +14,15 @@
 | `core/core-backend/.../ai/manage`                             | 配置协调、发现/测试、身份及运行策略解析                       |
 | `core/core-backend/.../ai/support`                            | 密钥、出站边界、参数白名单、HTTP 执行与 JVM/Redis 准入        |
 | `core/core-backend/.../ai/server`                             | 管理 API 实现                                                 |
-| `core/core-backend/.../listener/sql/AiConfigurationInit.java` | `2.44` 建表及 `2.45` 菜单兼容迁移                             |
+| `core/core-backend/.../listener/sql/AiConfigurationInit.java` | `2.45` 建表及 `2.46` 菜单兼容迁移                             |
 | `core/core-frontend/src/views/system/ai-service`              | 实际配置页面、模型抽屉、组织及限制抽屉                        |
 | `tests/browser/fixtures/ai-service`                           | 加载上述真实组件的隔离浏览器夹具                              |
 
 Spring AI 锁定 `1.1.8`，沿 Java 21 / Spring Boot 3.5.15，不升级 Boot。公开 AI Java 契约直接使用 Spring AI 类型；管理 HTTP DTO 不含 Spring AI 对象。只引入所需的 ChatClient 和 OpenAI 模型库，没有增加默认提供商自动配置或工具执行入口。Apache HttpClient 5 沿 Boot 管理版本，用于受控传输、DNS 解析及硬超时；模型协议、消息和响应仍由 Spring AI 处理。
 
 既有 `AiBaseService` 属于旧集成，保持其契约，未自动迁移或删除它的业务调用方。
+
+原 `dev-v3` 的 `2.44` 用于存储加密迁移。旧 AI 分支曾使用 `2.44`–`2.60`；整合后的 AI 和语义迁移从 `2.45` 到 `2.61` 依序执行。启动器通过重叠版本的脚本名区分新旧记录。读到旧编号时从新版 `2.45` 补齐；新版中途失败时从失败处重试，保留既有记录。菜单迁移 `2.46` 接受已有的 AI 配置或模型管理菜单；若 ID 140 属于其他功能，会保留该菜单并报告冲突。
 
 ## 部署参数
 
@@ -34,7 +36,7 @@ Spring AI 锁定 `1.1.8`，沿 Java 21 / Spring Boot 3.5.15，不升级 Boot。�
 
 未提供上述两个密钥参数时，全新部署在迁移完成后自动生成独立的 32 字节随机 AI 密钥，保存在现有 `core_ai_setting` 行，不增加表、不复用 RSA/AES 密钥。`key_source`、`key_ring`、`active_key_id`、`key_revision` 和 `key_fingerprint` 是内部字段，不通过设置 DTO、实体 JSON 或配置接口读写。数据库模式的密钥与模型密文同库，完整数据库备份也包含解密材料；需要存储分离的部署继续使用外置 Secret。
 
-`2.47` 仅幂等补列，不生成密钥。`AiKeyringStarter` 在 `InitSqlListener` 之后执行首次初始化：各节点在独立短事务中锁定同一设置行，只有第一个节点生成，其他节点等待提交并读取。事务提交前不会发布候选密钥；重启、扩容不重新生成。当前迁移框架没有集群迁移锁，首次安装/升级应先由单节点完成全部迁移，再启动其余节点；不能把密钥初始化并发安全当作所有 DDL 并发安全。
+`2.48` 仅幂等补列，不生成密钥。`AiKeyringStarter` 在 `InitSqlListener` 之后执行首次初始化：各节点在独立短事务中锁定同一设置行，只有第一个节点生成，其他节点等待提交并读取。事务提交前不会发布候选密钥；重启、扩容不重新生成。当前迁移框架没有集群迁移锁，首次安装/升级应先由单节点完成全部迁移，再启动其余节点；不能把密钥初始化并发安全当作所有 DDL 并发安全。
 
 已有手工 key ring 的部署升级时，必须保留原 keyId、密钥和 active-key，并让所有节点一致。首次登记逐一校验存量模型密文；外置模式只在设置行登记来源、active-key、版本和摘要，不复制密钥原文到数据库。显式配置不完整、格式错误或与已登记来源/摘要不一致时拒绝 AI 密钥操作，不自动回退数据库模式。有历史密文但没有原密钥，或初始化标记存在而密钥损坏/丢失时，必须恢复原配置或配套备份，禁止重新生成覆盖。启动初始化失败仅记录安全提示，原有非 AI 功能不依赖该密钥；修复后重启节点重试初始化。
 
@@ -76,7 +78,7 @@ Redis 主从异步复制发生故障切换时，不能承诺任何故障下的�
 
 ## 权限
 
-`2.46` 迁移在系统设置下建立 `AI 服务` 目录（ID141），下设模型管理（保留 ID140）和调用记录（ID142）。配置页面保留“模型管理”“使用设置”两个页签，调用记录只展示说明，不调用配置 API 或提供记录 API。两个叶子菜单独立参与现有权限矩阵，未将旧配置授权复制为记录授权；目录没有独立功能授权。已有配置权限仍绑定 ID140。旧 `/sys-setting/ai-service` 入口跳转当前身份可访问的首个子菜单，新配置和占位页路径分别为 `/sys-setting/ai-service/models`、`/sys-setting/ai-service/records`。无可见子菜单时目录隐藏。
+`2.47` 迁移在系统设置下建立 `AI 服务` 目录（ID141），下设模型管理（保留 ID140）和调用记录（ID142）。配置页面保留“模型管理”“使用设置”两个页签，调用记录只展示说明，不调用配置 API 或提供记录 API。两个叶子菜单独立参与现有权限矩阵，未将旧配置授权复制为记录授权；目录没有独立功能授权。已有配置权限仍绑定 ID140。旧 `/sys-setting/ai-service` 入口跳转当前身份可访问的首个子菜单，新配置和占位页路径分别为 `/sys-setting/ai-service/models`、`/sys-setting/ai-service/records`。无可见子菜单时目录隐藏。
 
 既有菜单只有“使用”权重 1 与“授权”权重 9；配置页全部功能复用配置菜单使用权，没有新增只读配置档位或独立 AI 授权表。权限扩展同步识别 AI 目录下的叶子菜单属于系统设置，保留系统菜单的用户授权边界及组织菜单过滤，不因多一层目录自动授予普通业务身份。
 
@@ -173,7 +175,7 @@ npm --prefix tests/browser test -- --config=playwright.ai-service-live.config.mj
 
 测试账号可能配置了很短的登录时长；运行前检查认证快照尚未过期，过期时明确拒绝启动，避免把登录跳转误判为页面回归。当前开发账号 Token 有效期约一分钟，应在登录后立即保存状态并运行。社区模式优化前的前后端重启后，六项真实环境用例整批通过，耗时 18.3 秒。本轮新增模式校验使用合成许可管理源、认证 SPI 和隔离组件验证；没有更改实际许可或执行混淆产物专项验收。
 
-实际联调发现早期菜单 ID130 与既有菜单冲突，导致插件加载路径错误。AI 菜单采用独立 ID140；保留 2.44，新增 2.45 兼容迁移，仅移除旧 AI 菜单，不转移属于其他菜单的 130 授权。AI 中文 properties 使用 Unicode 转义，兼容既有消息加载器的默认编码。
+实际联调发现早期菜单 ID130 与既有菜单冲突，导致插件加载路径错误。AI 菜单采用独立 ID140；由 2.46 兼容迁移处理，仅移除旧 AI 菜单，不转移属于其他菜单的 130 授权。AI 中文 properties 使用 Unicode 转义，兼容既有消息加载器的默认编码。
 
 ## AI 密钥初始化回归
 
@@ -238,7 +240,7 @@ uv run python tests/ai-service/run.py --task-progress --progress-case text-burst
 
 ## 任务迁移升级回归
 
-`uv run python tests/ai-service/run.py --task-upgrade --ai-classpath <已有依赖 classpath 文件>` 通过真实 `InitSqlListener`、JPA 版本记录仓库与隔离 H2 验证启动升级，关闭 `ddl-auto`。覆盖已完成上游数据源语义迁移 `2.48` 且尚无 AI 任务表，以及从 `2.47` 依序升级的情况：`2.49` 建任务表、`2.50` 补交付字段，保留语义数据；另覆盖 `2.49` 存量任务表缺交付列的启动补列及旧结果回填。重复启动不重复执行或破坏结果。该回归验证实际 DDL 与启动排序，不仅检查版本号；不代表已验证其他数据库上的真实升级。
+`uv run python tests/ai-service/run.py --task-upgrade --ai-classpath <已有依赖 classpath 文件>` 使用真实启动监听器与隔离 H2（关闭 ddl-auto），覆盖原 dev-v3 已完成 2.44、旧 2.45 失败重试和已有 AI 配置、任务及菜单的升级。另覆盖已完成旧 2.60 的库。新版本从 2.45 连续执行到 2.61，保留原版本记录、配置和已有任务；再次启动跳过已完成迁移。
 
 ## Declared resource mutex regressions
 
@@ -252,7 +254,7 @@ AI_BROWSER_TEST_PORT=4297 npm --prefix tests/browser test -- --config=playwright
 
 `--task-mutex` uses independent real HTTP/MVC/runtime/JPA JVMs sharing an owned H2 TCP database and controlled scene, identity and loopback-model boundaries. It covers overlapping batches and races, queue rejection without residue, task/retry replay, own-task location and cross-owner privacy, different datasources/operations, undeclared SQL, accepted queue expiry, complete/cancel/execute-timeout release, held automatic-backoff claims and cancellation, node lease fencing and late old results against a replacement owner. It observes public responses rather than treating local executor state as the lock.
 
-`--task-structure` uses the actual controlled structure scene and SQL scene with an approved external DatasourceApi/permission fixture. It verifies authoritative canonical names, metadata reads outside metadata transactions, a changed field snapshot refused before model send, and an explanation-only result. No candidate SQL, data row read or source business write is allowed by the datasource fixture. `--task-upgrade` exercises the real startup/version boundary through ordered resource migration `2.53` and repeat startup. The Vue suite loads the actual Demo component/API and covers explicit batch selection, shared current-message submission, safe busy refusal and same-owner location.
+`--task-structure` uses the actual controlled structure scene and SQL scene with an approved external DatasourceApi/permission fixture. It verifies authoritative canonical names, metadata reads outside metadata transactions, a changed field snapshot refused before model send, and an explanation-only result. No candidate SQL, data row read or source business write is allowed by the datasource fixture. `--task-upgrade` exercises the real startup/version boundary through ordered resource migration `2.54` and repeat startup. The Vue suite loads the actual Demo component/API and covers explicit batch selection, shared current-message submission, safe busy refusal and same-owner location.
 
 `--task-structure-nodes` persists actual SQL/structure scene contexts and reads them in 12 independent JVMs, requiring different immutable-map iteration orders. Unchanged metadata authorizes both current contexts and legacy raw-JSON fingerprints; changed field names, types, comments, column order/count, table names, datasource revision and revoked READ remain rejected. Legacy compatibility requires the exact instruction prefix, matching original raw projection hash and strict complete JSON object parsing. The fixture uses only the DatasourceApi/identity seams and temporary context files, with no model or database access. It also runs in `--task-structure`, default and `--only-tasks` suites.
 
@@ -262,7 +264,7 @@ These fixtures use synthetic identities and models, owned H2 and loopback ports.
 
 `uv run python tests/ai-service/run.py --retention --ai-classpath <既有依赖classpath文件>` 在独立 H2 样本上，通过公开设置/任务/审计 HTTP 与正式 `AiRetentionCleanup.clean()` 验证：默认值与管理员配置、旧请求兼容及 CAS、结果到期前后读取、通知确认、过期旧提交/重试/会话投递拒绝、混合尝试及运行/排队资源保护、交付分项提交失败、审计条目与父记录原子清理失败重跑、并发清理、晚到审计写入及定时缺口修复防复活。审计及清理结果只在隔离库读取观察。
 
-同一入口执行 2.55/2.57 的 MySQL/PostgreSQL/H2 方言注册表迁移及部分迁移重试，并验证审计期限补记、运行中任务保护、已完成条目保留和迟到写入隔离；承载数据库均为隔离 H2，不代表真实 MySQL/PostgreSQL 迁移。`--task-upgrade` 另通过实际启动迁移监听器验证从 2.47/2.48/2.49/2.50/2.52/2.54/2.55/2.56 顺序升级到 2.57，并保留已有期限、配置和任务事实。已安装的真实 Vue/Playwright 配置回归中含独立留存字段及保存校验；这些隔离入口均不代替真实登录、配置模型或许可环境验收。
+同一入口执行 2.56/2.58 的 MySQL/PostgreSQL/H2 方言注册表迁移及部分迁移重试，并验证审计期限补记、运行中任务保护、已完成条目保留和迟到写入隔离；承载数据库均为隔离 H2，不代表真实 MySQL/PostgreSQL 迁移。`--task-upgrade` 另通过实际启动迁移监听器验证从旧 AI 版本升级到 2.61，保留已有期限、配置和任务事实。已安装的真实 Vue/Playwright 配置回归中含独立留存字段及保存校验；这些隔离入口均不代替真实登录、配置模型或许可环境验收。
 
 `uv run python tests/ai-service/run.py --audit-recovery --ai-classpath <既有依赖classpath文件>` 通过独立 JVM、共享隔离 H2 和本机合成模型验证实际工作进程被强制结束后，其他节点补记中断审计。覆盖执行开始后修改留存配置仍采用原快照、保留已采集请求、缺失结果不伪造、不重发模型，以及到期清理重复执行。运行期不连接产品数据库或已配置模型。
 
@@ -278,12 +280,12 @@ These fixtures use synthetic identities and models, owned H2 and loopback ports.
 
 `--conflict-errors` uses the same actual MVC advice and isolated database to verify changed-input submissions, mismatched retry attempts, queue/user/resource admission conflicts and an active origin conversation delaying background-result import. Each uses existing business code50005/CONFLICT (HTTP409 under both contracts) and its original safe message key; literal business code409 is not an HTTP status. A controlled loopback model holds the original turn busy; failed imports preserve delivery, and later repeated imports append the completed result once without rerunning the task. The focused Vue suite (`--grep 'recovery reasons|after busy import'`) additionally checks busy-import409 does not consume the read-recovery budget, and foreground/background recovery reasons use safe localized text with unknown-code fallback in zh-CN/en/tw at360px.
 
-Migration 2.56 adds monotonic `usage_epoch` fences to global and organization AI policy. Only shutdown increments the affected epoch; capacity, recovery and retention changes preserve valid work. Model contexts and temporary sessions bind the current epoch. `/ai/availability` exposes only the current authenticated usage state and revision; the Demo hides the assistant when unavailable and discards temporary chat/pending state when its revision changes, preserving the editor draft. Re-enabling does not resume cancelled tasks or restore history; valid unacknowledged notices retain their existing delivery boundary. Administrator configuration and audit authorization remain independent of AI usage availability.
+Migration 2.57 adds monotonic `usage_epoch` fences to global and organization AI policy. Only shutdown increments the affected epoch; capacity, recovery and retention changes preserve valid work. Model contexts and temporary sessions bind the current epoch. `/ai/availability` exposes only the current authenticated usage state and revision; the Demo hides the assistant when unavailable and discards temporary chat/pending state when its revision changes, preserving the editor draft. Re-enabling does not resume cancelled tasks or restore history; valid unacknowledged notices retain their existing delivery boundary. Administrator configuration and audit authorization remain independent of AI usage availability.
 
 The unmapped AI authorization SPI requires explicit `Boolean.TRUE` (`checkAiAllowed` / `checkAiCommunityAllowed`). Defaults, missing implementations and intercepted null results deny AI usage and configuration, not only the new audit endpoint. The adapter requires the new SDK common scope class; previous audit-only old-SDK compilation does not establish compatibility for it. Deploy the matching public SDK, extension adapter and core together; an old extension cannot silently authorize the new capability. `io.dataease.ai.security.identity.AiOwnerContext` owns the SDK identity state with a package-private installer used only by the verified server-owned identity scope. The old package and compatibility entry have been removed; SDK, core and extension consumers must be built and delivered together. Identity-scope regressions verify scoped readers, cleanup after exceptions and the absence of a public installer; private authorization regressions exercise the shared identity class and current cache rules. It cannot be selected by an HTTP argument/header and never grants permissions. Current account, real membership and resource authorization still apply before and after work; changing the current browser space does not rewrite a background owner.
 
 ## 模型默认长度与截断提示回归
 
-`uv run python tests/ai-service/run.py --model-limits --ai-classpath <已解析的依赖类路径文件>` 验证默认跟随模型、0/64K/1M 设置、真实本机模型 HTTP 参数省略、普通/工具增量响应，以及 2.58 修复 Hibernate 隐式 0 值后的配置保存前提。该迁移只修复任务容量、重试等待和留存天数的不合法值；保留合法的 0 次重试、已有自定义长度及历史执行快照。`--conversation` 验证完整对话协议（含同步/增量截断专用错误），`--recovery-tools` 验证工具协议和每次请求使用完整输出上限。
+`uv run python tests/ai-service/run.py --model-limits --ai-classpath <已解析的依赖类路径文件>` 验证默认跟随模型、0/64K/1M 设置、真实本机模型 HTTP 参数省略、普通/工具增量响应，以及 2.59 修复 Hibernate 隐式 0 值后的配置保存前提。该迁移只修复任务容量、重试等待和留存天数的不合法值；保留合法的 0 次重试、已有自定义长度及历史执行快照。`--conversation` 验证完整对话协议（含同步/增量截断专用错误），`--recovery-tools` 验证工具协议和每次请求使用完整输出上限。
 
 页面定向回归：`npm --prefix tests/browser test -- --config=playwright.ai-service.config.mjs --grep 'model length limits'`；截断提示使用 `playwright.ai-conversation.config.mjs --grep 'safe .*failure is explained'`，验证准确提示、保留部分输出及未完成标识。

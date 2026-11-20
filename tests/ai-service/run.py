@@ -25,7 +25,7 @@ def main():
     parser.add_argument('--audit', action='store_true', help='public HTTP execution audit and isolated persistence')
     parser.add_argument('--audit-recovery', action='store_true', help='audit termination after a real worker JVM is killed')
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
-    parser.add_argument('--task-upgrade', action='store_true', help='isolated production startup migration upgrade from upstream semantic 2.48')
+    parser.add_argument('--task-upgrade', action='store_true', help='isolated startup migration from dev-v3 and legacy AI versions')
     parser.add_argument('--task-structure', action='store_true', help='public controlled structure scene with authorized SQL metadata')
     parser.add_argument('--task-structure-nodes', action='store_true', help='actual SQL/structure scenes across independent JVM map iteration seeds')
     parser.add_argument('--task-mutex', action='store_true', help='public resource occupancy across independent JVMs')
@@ -174,7 +174,9 @@ def main():
         sources.extend((root/'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/entity').glob('CoreDatasourceRelation*.java'))
         sources.extend(root/path for path in [
             'core/core-backend/src/main/java/io/dataease/listener/InitSqlListener.java',
-            'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceMetadataInit.java'])
+            'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceMetadataInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/DatasourceValueReferencesInit.java',
+            'core/core-backend/src/main/java/io/dataease/listener/sql/DatasetSemanticsInit.java'])
         java = ['java']
         if args.identity_scope:
             java.append('-Dai.test.identityScopeOnly=true')

@@ -12,7 +12,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 public final class RetentionSchemaRegression {
     public static void run() {
         verify("MySQLDialect", "MySQL"); verify("PostgreSQLDialect", "PostgreSQL"); verify("H2Dialect", "REGULAR");
-        System.out.println("PASS retention 2.55 and audit recovery 2.57 partial-upgrade retry preserve original expiries/configuration with MySQL/PostgreSQL/H2 dialect registries over isolated H2");
+        System.out.println("PASS retention 2.56 and audit recovery 2.58 partial-upgrade retry preserve original expiries/configuration with MySQL/PostgreSQL/H2 dialect registries over isolated H2");
     }
     private static void verify(String dialect, String mode) {
         String url = "jdbc:h2:mem:retention_ddl_" + mode + ";MODE=" + mode + ";DB_CLOSE_DELAY=-1";
@@ -46,12 +46,12 @@ public final class RetentionSchemaRegression {
                     || jdbc.queryForObject("select deadline from core_ai_audit_execution where id='old-running'", Long.class) != 301000
                     || jdbc.queryForObject("select retention_days from core_ai_audit_execution where id='old-running'", Integer.class) != 90
                     || jdbc.queryForObject("select retention_days from core_ai_audit_execution where id='partial-upgrade'", Integer.class) != 45)
-                throw new AssertionError("2.57 preserves terminal facts and freezes a conservative legacy recovery baseline: " + dialect);
+                throw new AssertionError("2.58 preserves terminal facts and freezes a conservative legacy recovery baseline: " + dialect);
             jdbc.update("update core_ai_setting set audit_retention_days=7 where id=1");
             jdbc.update("update core_ai_audit_execution set deadline=400000 where id='partial-upgrade'"); recovery.execute();
             if (jdbc.queryForObject("select retention_days from core_ai_audit_execution where id='old-running'", Integer.class) != 90
                     || jdbc.queryForObject("select deadline from core_ai_audit_execution where id='partial-upgrade'", Long.class) != 400000)
-                throw new AssertionError("2.57 retry cannot replace an already frozen policy or deadline");
+                throw new AssertionError("2.58 retry cannot replace an already frozen policy or deadline");
         }
     }
 }
