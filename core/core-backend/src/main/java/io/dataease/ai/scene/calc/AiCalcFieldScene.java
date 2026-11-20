@@ -96,31 +96,85 @@ public class AiCalcFieldScene implements AiConversationScene {
             String type = args.get("deType");
             if (fieldName == null || fieldName.isBlank() || fieldName.length() > 128 || !("q".equals(group) || "d".equals(group))
                     || type == null || !type.matches("[012357]")) return invalid();
+            var fields = new CalcFieldInputs(draft, scope.target(), scope.grant(), scope.columns());
+            String display;
             try {
-                new CalcFieldInputs(draft, scope.target(), scope.grant(), scope.columns())
-                        .candidate(draft, expression, Integer.parseInt(type), scope.preserveType());
+                display = fields.candidate(expression, Integer.parseInt(type), scope.preserveType());
             } catch (IllegalArgumentException invalid) { return invalid(); }
-            active.run();
-            if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+            if (!fields.includePreviewFields(draft))
+                return verdict("PREVIEW_FAILED", "dataset_preview_failed", display);
+            // Keep the diagnostic baseline independent of aliases/SQL expansion mutated by a failed preview.
+            String snapshot = CalcFieldCanvas.json(draft);
+            Runnable guard = () -> {
+                active.run();
+                authorize(context);
+                if (System.currentTimeMillis() >= deadline) throw AiErrors.error("timeout");
+            };
+            guard.run();
             String validation;
             try {
                 validation = preview.previewCalcField(draft, scope.target(), deadline);
-            } catch (AiErrors.Failure known) { throw known; }
-            catch (Exception unavailable) {
-                active.run();
-                authorize(context);
-                if (unavailable instanceof io.dataease.exception.DEException denied
-                        && denied.getCategory() == io.dataease.exception.ErrorCategory.FORBIDDEN) throw AiErrors.error("forbidden");
-                throw AiErrors.error("upstream_failed");
+            } catch (Exception failure) {
+                guard.run();
+                checkPreviewAccess(failure);
+                if (!isExpressionError(failure)) return verdict("PREVIEW_FAILED", "preview_unavailable", display);
+                // Only attribute a Provider error to this candidate if the same authorized preview
+                // succeeds with a neutral expression and all joins and siblings still present.
+                var baseline = CalcFieldCanvas.copy(snapshot);
+                baseline.getAllFields().stream().filter(f -> f.getId() == scope.target()).findFirst().orElseThrow().setOriginName("1");
+                try {
+                    preview.previewCalcField(baseline, scope.target(), deadline);
+                } catch (Exception other) {
+                    guard.run();
+                    checkPreviewAccess(other);
+                    return verdict("PREVIEW_FAILED", "dataset_preview_failed", display);
+                }
+                guard.run();
+                return verdict("INVALID", "formula_execution_failed", display);
             }
-            active.run();
-            authorize(context);
-            return AiToolProtocol.result(Map.of("status", validation));
+            guard.run();
+            return verdict(validation, "", display);
         };
     }
 
+    private static void checkPreviewAccess(Exception error) {
+        if (error instanceof AiErrors.Failure known
+                && !Set.of("upstream_failed", "connection_failed", "provider_unavailable").contains(known.safeCode())) throw known;
+        if (error instanceof io.dataease.exception.DEException de) {
+            if (de.getCategory() == io.dataease.exception.ErrorCategory.FORBIDDEN
+                    || de.getCategory() == io.dataease.exception.ErrorCategory.UNAUTHENTICATED) throw AiErrors.error("forbidden");
+            if (de.getCategory() == io.dataease.exception.ErrorCategory.CONFLICT
+                    || de.getCategory() == io.dataease.exception.ErrorCategory.NOT_FOUND) throw AiErrors.error("scope_changed");
+        }
+    }
+
+    private static boolean isExpressionError(Exception failure) {
+        for (Throwable e = failure; e != null; e = e.getCause()) {
+            if (e instanceof java.sql.SQLException sql) {
+                String state = sql.getSQLState();
+                // MySQL includes access denials in class 42. Accept only known expression diagnostics there.
+                return state != null && (state.startsWith("22") || state.startsWith("42")
+                        && Set.of(1054, 1064, 1305, 1582).contains(sql.getErrorCode()));
+            }
+        }
+        return false;
+    }
+
+    private static String verdict(String status, String reason, String expression) {
+        return AiToolProtocol.result(Map.of("status", status, "code", reason, "expression", expression));
+    }
+
     private static String invalid() {
-        return AiToolProtocol.result(Map.of("status", "INVALID", "code", "invalid_formula"));
+        return AiToolProtocol.result(Map.of("status", "INVALID", "code", "invalid_formula",
+                "message", "Check the field references, expression syntax and suggested properties, then submit a corrected candidate."));
+    }
+
+    @Override public boolean retainToolFailure(String name, String result) {
+        if (!PROPOSE.equals(name)) return false;
+        try {
+            String status = CalcFieldCanvas.JSON.readTree(result).path("status").asText();
+            return "INVALID".equals(status) || "PREVIEW_FAILED".equals(status);
+        } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
     }
 
     @Override public Result result(Context context, String text, List<Tool> tools, String editorId, String draftVersion) {
@@ -129,9 +183,15 @@ public class AiCalcFieldScene implements AiConversationScene {
             if (!PROPOSE.equals(tool.name()) || !"SUCCEEDED".equals(tool.status())) continue;
             var args = tool.parameters();
             try {
-                String status = CalcFieldCanvas.JSON.readTree(tool.result()).path("status").asText();
-                candidate = canApply(status) ? new CalcFieldSuggestion(args.get("expression"), args.get("name"),
-                        args.get("groupType"), Integer.parseInt(args.get("deType")), status) : null;
+                var feedback = CalcFieldCanvas.JSON.readTree(tool.result());
+                String status = feedback.path("status").asText();
+                String expression = feedback.path("expression").asText();
+                if (expression.isEmpty()) {
+                    if (canApply(status)) throw AiErrors.error("response_invalid");
+                    expression = args.get("expression");
+                }
+                candidate = new CalcFieldSuggestion(expression, args.get("name"), args.get("groupType"),
+                        args.get("deType").matches("[012357]") ? Integer.parseInt(args.get("deType")) : 0, status, feedback.path("code").asText());
             } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
         }
         return new Result(candidate == null ? "EXPLANATION" : "CALC_FIELD_SUGGESTION", text, null, context.resourceId(),

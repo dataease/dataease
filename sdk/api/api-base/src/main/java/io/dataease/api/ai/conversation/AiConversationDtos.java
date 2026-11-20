@@ -88,7 +88,7 @@ public final class AiConversationDtos {
             this(table, inspected, description, grain, fields, java.util.List.of());
         }
     }
-    public record CalcFieldSuggestion(String expression, String name, String groupType, int deType, String validation) { }
+    public record CalcFieldSuggestion(String expression, String name, String groupType, int deType, String validation, String reason) { }
     public record Result(String type, String text, String sql, String resourceId, String resourceName,
                          String resourceVersion, String editorId, String draftVersion, java.util.List<TableEvidence> evidence, CalcFieldSuggestion calcField) {
         public Result(String type, String text, String sql, String resourceId, String resourceName,

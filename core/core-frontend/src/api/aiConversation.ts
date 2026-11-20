@@ -35,6 +35,12 @@ export interface AiCalcFieldSuggestion {
   groupType: 'd' | 'q'
   deType: number
   validation: 'DETAIL_PASS' | 'AGGREGATE_PLACEHOLDER' | 'INVALID' | 'PREVIEW_FAILED'
+  reason?:
+    | 'invalid_formula'
+    | 'formula_execution_failed'
+    | 'dataset_preview_failed'
+    | 'preview_unavailable'
+    | ''
 }
 export interface AiConversationSession {
   sessionId: string

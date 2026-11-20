@@ -96,6 +96,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         AiConversationScene.ToolExecution tools;
         int toolSteps;
         final Set<String> invalidRequests = new HashSet<>();
+        final Map<String, String> retainedFailures = new HashMap<>();
         List<Event> events = new ArrayList<>();
         StringBuilder text = new StringBuilder();
         Result result;
@@ -510,13 +511,14 @@ public class AiConversationManage implements AiToolConversationFeature {
             run.text.append(text); run.events.add(new Event(++run.sequence, "TEXT", text, null));
         }
     }
-    private void complete(Run run) {
+    private void complete(Run run) { complete(run, false); }
+    private void complete(Run run, boolean terminalToolResult) {
         synchronized (run.state) {
             if (!"RUNNING".equals(run.status)) return;
             try {
                 authorized(run.state, () -> { run.stream.verifyDelivery(); return null; });
                 progress(run);
-                if (run.text.isEmpty() || run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
+                if (!terminalToolResult && run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
                 if (run.state.single) {
                     // One-shot callers retain only their result/lease, never a conversational transcript.
                     run.state.history.clear(); run.state.toolHistory.clear();
@@ -641,11 +643,19 @@ public class AiConversationManage implements AiToolConversationFeature {
             synchronized (run.state) {
                 progress(run);
                 tools = run.tools;
+                String previous = run.retainedFailures.get(canonical);
+                if (previous != null) {
+                    toolEvent(run, call, "SUCCEEDED", arguments, previous);
+                    complete(run, true);
+                    return;
+                }
                 if (!run.toolIds.add(call.id()) || !run.toolRequests.add(canonical)) throw AiErrors.error("output_limit");
                 run.toolSteps++;
             }
             toolEvent(run, call, "STARTED", arguments, null);
             String result;
+            boolean finish = false;
+            boolean retained;
             try {
                 if (definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN) run.replayUnsafe = true;
                 java.util.function.Supplier<String> execute = () -> authorized(run.state, () -> {
@@ -657,7 +667,13 @@ public class AiConversationManage implements AiToolConversationFeature {
                 result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
                         () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, () -> stream.recovery().tool(call.id(), call.name(), arguments, execute));
                 progress(run); stream.result(result);
-                if (AiToolProtocol.invalidResult(result) && !stream.recovery().correct(canonical)) throw AiErrors.error("invalid");
+                retained = scene.retainToolFailure(call.name(), result);
+                if (AiToolProtocol.invalidResult(result)) {
+                    if (!stream.recovery().correct(canonical)) {
+                        if (!retained) throw AiErrors.error("invalid");
+                        finish = true;
+                    }
+                } else if (retained) finish = true;
             } catch (RuntimeException failure) {
                 if (!(failure instanceof AiErrors.Failure known) || !Set.of("forbidden", "scope_changed", "conflict").contains(known.safeCode()))
                     toolEvent(run, call, "FAILED", arguments, null);
@@ -666,8 +682,10 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             synchronized (run.state) {
                 progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, result));
+                if (retained) run.retainedFailures.put(canonical, result);
                 toolEvent(run, call, "SUCCEEDED", arguments, result);
             }
+            if (finish) { complete(run, true); return; }
             // The previous response/permit is already closed. Enqueue the next step, without waiting on this worker.
             var input = new AiToolProtocol.Input(run.transcript, scene.tools(run.state.context));
             stream.send(input, () -> progress(run), text -> append(run, text), next -> toolStep(run, next), failure -> fail(run, failure));
@@ -685,7 +703,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }
-        run.tools = null; run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear();
+        run.tools = null; run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear(); run.retainedFailures.clear();
         run.stream.finishAudit(status); run.stream.close();
     }
     private void invalidate(State state) {

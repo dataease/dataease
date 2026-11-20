@@ -6,6 +6,14 @@ export default {
     detail_pass: 'Preview validation passed',
     aggregate_placeholder: 'Verify the aggregate result in a chart',
     calc_failed: 'Preview validation failed',
+    copy_formula: 'Copy formula',
+    invalid_formula: 'Check the field references, functions and formula syntax.',
+    formula_execution_failed:
+      'The data source could not evaluate this formula. Check its function arguments, types and arithmetic.',
+    dataset_preview_failed:
+      'Preview failed on other fields or joins in the dataset. Check the dataset draft.',
+    preview_unavailable:
+      'Dataset preview was unavailable. Check the data source and its connection.',
     failed_preview: 'Failed preview',
     successful_preview: 'Successful preview',
     draft_revision: 'Revision',

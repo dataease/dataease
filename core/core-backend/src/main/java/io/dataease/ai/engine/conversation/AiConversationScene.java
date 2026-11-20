@@ -41,6 +41,8 @@ public interface AiConversationScene {
     default List<AiToolProtocol.Definition> tools(Context context) { return tools(); }
     default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
     default boolean retainEveryTurn() { return false; }
+    /** A failed business validation may be delivered as a reference-only suggestion. */
+    default boolean retainToolFailure(String name, String result) { return false; }
     default boolean applicable(AiConversationDtos.Result result) { return "SQL_SUGGESTION".equals(result.type()); }
     default void authorizeCopyTarget(String target) { throw AiErrors.error("invalid"); }
     /** Trusted execution strategy; a task-only business cannot be invoked through foreground routes. */
