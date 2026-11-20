@@ -107,8 +107,10 @@ final class CalcFieldCanvas {
             if (f == null || f.getId() == null || !Objects.equals(f.getExtField(), 0)
                     || !(allowed.contains(f.getOriginName()) || Objects.equals(savedColumns.get(f.getId()), f.getOriginName())) || !identifier(f.getOriginName())
                     || !Objects.equals(table.getId(), f.getDatasetTableId())
-                    || !Objects.equals(table.getDatasourceId(), f.getDatasourceId())
+                    || (f.getDatasourceId() != null && !Objects.equals(table.getDatasourceId(), f.getDatasourceId()))
                     || f.getChecked() == null || physical.putIfAbsent(f.getId(), f) != null) throw AiErrors.error("invalid");
+            // Saved output columns may inherit the datasource from their canvas node.
+            f.setDatasourceId(table.getDatasourceId());
             columns.put(f.getId(), new CalcFieldAccess.Column(table.getDatasourceId(), name, table.getId(), f.getOriginName()));
             local.put(f.getId(), f);
             clearAliases(f);

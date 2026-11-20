@@ -573,6 +573,8 @@ final class CalcFieldRegression {
         var table = (com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0/currentDs");
         String query = Base64.getEncoder().encodeToString("SELECT ID FROM AI_PROBE".getBytes(java.nio.charset.StandardCharsets.UTF_8));
         table.put("type", "sql").put("tableName", "AI_PROBE").put("info", JSON.writeValueAsString(Map.of("sql", query, "table", "AI_PROBE")));
+        var outputColumn = (com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0/currentDsFields/0");
+        outputColumn.putNull("datasourceId");
         savedDataset = JSON.treeToValue(dataset, DatasetGroupInfoDTO.class);
         savedDataset.setNodeType("dataset"); savedDataset.setLastUpdateTime(99L);
         requests.clear();
@@ -586,6 +588,9 @@ final class CalcFieldRegression {
             if (prompt.contains("warehouse cents") || prompt.contains("one row per payment"))
                 throw new AssertionError("A SQL node named after a physical table must not inherit its datasource semantics");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            outputColumn.put("datasourceId", "12");
+            expectDenied(mvc, tree.toString());
+            outputColumn.put("datasourceId", "11");
             table.put("info", JSON.writeValueAsString(Map.of("sql", Base64.getEncoder().encodeToString(
                     "SELECT AI_PROBE.ID AS ID FROM AI_PROBE".getBytes()), "table", "AI_PROBE")));
             for (String policy : List.of("hidden", "row")) {
