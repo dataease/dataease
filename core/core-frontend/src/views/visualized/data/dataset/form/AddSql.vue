@@ -310,27 +310,12 @@ const syncTableTreeData = () => {
 
 watch(datasourceTableData, syncTableTreeData, { immediate: true })
 
-// 源库表备注可能在页面停留期间被修改，打开详情时重新获取，避免沿用进入页面时的旧备注
-const tableComments = ref<Record<string, string>>({})
-const tableDisplayName = (source: { tableName: string; name?: string }) =>
-  tableComments.value[source.tableName] || source.name || source.tableName
-
-const refreshTableComment = (source: { datasourceId: string; tableName: string }) => {
-  getTables({ datasourceId: source.datasourceId }).then(res => {
-    const latest = (res || []).find(table => table.tableName === source.tableName)
-    if (latest) {
-      tableComments.value[source.tableName] = latest.name
-    }
-  })
-}
-
 const loadTableFields = (node, resolve) => {
   const table = node.data
   if (!table?.tableName) {
     resolve([])
     return
   }
-  refreshTableComment(table)
   getTableField({
     datasourceId: table.datasourceId,
     info: JSON.stringify({ table: table.tableName, sql: '' }),
@@ -935,13 +920,13 @@ const mousedownDrag = () => {
                 active: activeName === data.tableName,
                 'copy-tip-open': copyTipOpenName === data.key
               }"
-              :title="tableDisplayName(data)"
+              :title="data.tableName"
               @mouseleave="hideCopyTooltip(data.key)"
             >
               <el-icon class="icon-color">
                 <Icon name="icon_form_outlined"><icon_form_outlined class="svg-icon" /></Icon>
               </el-icon>
-              <span class="label">{{ tableDisplayName(data) }}</span>
+              <span class="label">{{ data.tableName }}</span>
               <span class="name-copy">
                 <el-tooltip
                   :ref="setCopyTooltipRef(data.key)"
