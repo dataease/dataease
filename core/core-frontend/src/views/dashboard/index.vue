@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { useCanvasEditSession } from '@/hooks/web/useCanvasEditSession'
 const canvasQuery = useLatestQuery('canvas-load')
 import {
   computed,
@@ -21,7 +22,12 @@ import DbToolbar from '@/components/dashboard/DbToolbar.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
-import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
+import {
+  decompressionPre,
+  initCanvasData,
+  onInitReady,
+  recoverPublishedCanvas
+} from '@/utils/canvasUtils'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
@@ -39,11 +45,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  checkCanvasChange,
-  findCopyResource,
-  recoverToPublished
-} from '@/api/visualization/dataVisualization'
+import { checkCanvasChange, findCopyResource } from '@/api/visualization/dataVisualization'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -104,6 +106,17 @@ const state = reactive({
   opt: null,
   resourceId: null
 })
+
+const editorRoutePath = router.currentRoute.value.path
+const editorLocation = () => ({
+  id: embeddedStore.resourceId || router.currentRoute.value.query.resourceId,
+  type: router.currentRoute.value.path === editorRoutePath ? 'dashboard' : '',
+  opt: embeddedStore.opt || router.currentRoute.value.query.opt,
+  template: embeddedStore.templateParams || router.currentRoute.value.query.templateParams,
+  parent: embeddedStore.pid || router.currentRoute.value.query.pid,
+  createType: embeddedStore.createType || router.currentRoute.value.query.createType
+})
+const editorSession = useCanvasEditSession(dvMainStore, editorLocation, () => dvInfo.value)
 
 const initDataset = () => {
   getDatasetTree({}).then(res => {
@@ -245,11 +258,14 @@ const doUseCache = async flag => {
   const pending = pendingCanvasDraft
   if (!pending || !isCurrentDraftResource(pending.resourceId)) return
   pendingCanvasDraft = undefined
+  const load = editorSession.begin()
   if (flag && pending.data) {
     const canvasCacheSeries = deepCopy(pending.data)
     snapshotStore.snapshotPublish(canvasCacheSeries)
+    if (!load.ready()) return
     dataInitState.value = true
     setTimeout(() => {
+      if (!load.isCurrent()) return
       snapshotStore.recordSnapshotCache('doUseCache')
       // 使用缓存时，初始化的保存按钮为激活状态
       snapshotStore.recordSnapshotCache('renderChart')
@@ -261,8 +277,9 @@ const doUseCache = async flag => {
   }
 }
 
-const initLocalCanvasData = async callBack => {
+const initLocalCanvasData = async (callBack?: () => void, awaitRelations = false) => {
   if (!loadFinish.value) return
+  const load = editorSession.begin()
   const { resourceId, opt, sourcePid } = state
   const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
   const queryRequest = canvasQuery.start()
@@ -274,9 +291,12 @@ const initLocalCanvasData = async callBack => {
         resourceTable: 'snapshot',
         source: 'main-edit',
         awaitLoad: true,
-        queryRequest
+        awaitRelations,
+        queryRequest,
+        isCurrent: load.isCurrent
       },
       function () {
+        if (!load.ready()) return
         dataInitState.value = true
         if (dvInfo.value && opt === 'copy') {
           dvInfo.value.dataState = 'prepare'
@@ -292,6 +312,7 @@ const initLocalCanvasData = async callBack => {
     )
   } catch (error) {
     if (!queryRequest.isCurrent()) return
+    load.fail()
     revokeEditorAccess()
     console.error(error)
   }
@@ -352,6 +373,7 @@ onMounted(async () => {
       })
     }
   } else if (opt && opt === 'create') {
+    const load = editorSession.begin()
     dataInitState.value = false
     let watermarkBaseInfo
     try {
@@ -380,6 +402,7 @@ onMounted(async () => {
     }
     nextTick(() => {
       dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo, preName)
+      if (!load.ready()) return
       // 从模板新建
       if (createType === 'template') {
         wsCache.delete('de-template-data')
@@ -438,21 +461,20 @@ const cancelHidden = item => {
   }
 }
 
-const doRecoverToPublished = () => {
-  recoverToPublished({ id: dvInfo.value.id, type: 'dashboard', name: dvInfo.value.name }).then(
-    () => {
-      state.resourceId = dvInfo.value.id
-      state.sourcePid = dvInfo.value.pid
-      state.opt = null
-      initLocalCanvasData(() => {
-        nextTick(() => {
-          deCanvasRef.value.canvasInit(false)
-          dvMainStore.updateDvInfoCall(1)
-          useEmitt().emitter.emit('calcData-all')
-        })
-      })
-    }
-  )
+const doRecoverToPublished = async () => {
+  const recovered = await recoverPublishedCanvas()
+  if (!recovered || !isCurrentDraftResource(recovered.id)) return
+  state.resourceId = recovered.id
+  state.sourcePid = recovered.pid
+  state.opt = null
+  snapshotStore.initSnapShot()
+  await initLocalCanvasData(() => {
+    nextTick(() => {
+      deCanvasRef.value?.canvasInit(false)
+      snapshotStore.recordSnapshot('recoverToPublished')
+      useEmitt().emitter.emit('calcData-all')
+    })
+  }, true)
 }
 
 onUnmounted(() => {

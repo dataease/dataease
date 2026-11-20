@@ -9,6 +9,7 @@ import axios, {
   AxiosHeaders
 } from 'axios'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
+import { isErrorToastRecentlyShown, markErrorToastShown } from '@/utils/errorToastDedupe'
 import qs from 'qs'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -289,7 +290,10 @@ const rejectBusinessResponse = (
     }
     const local = response.config.handleErrorLocally
     if (!(typeof local === 'function' ? local(failure) : local)) {
-      ElMessage({ type: 'error', message: errMsg, showClose: true, grouping: true })
+      if (!isErrorToastRecentlyShown(errMsg)) {
+        ElMessage({ type: 'error', message: errMsg, showClose: true, grouping: true })
+        markErrorToastShown(errMsg)
+      }
       failure.presented = true
     }
     if (legacySessionFailure) {
@@ -399,12 +403,15 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     !forbiddenFailure &&
     !gatewayFailure
   ) {
-    ElMessage({
-      type: 'error',
-      message: normalized.message,
-      showClose: true,
-      grouping: true
-    })
+    if (!isErrorToastRecentlyShown(normalized.message)) {
+      ElMessage({
+        type: 'error',
+        message: normalized.message,
+        showClose: true,
+        grouping: true
+      })
+      markErrorToastShown(normalized.message)
+    }
   } else if (error?.config?.url.startsWith('/xpackComponent/contentPlugin/')) {
     console.error(
       "never mind this error about '/xpackComponent/contentPlugin/', just a reminder to support the official license"

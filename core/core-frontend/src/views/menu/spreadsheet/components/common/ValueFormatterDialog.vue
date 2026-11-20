@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { cloneDeep } from 'lodash-es'
-import type { FieldFormatterConfig } from '../../../../types/plugin'
+import type { FieldFormatterConfig } from '../../types/plugin'
 import {
   createDefaultFormatterConfig,
   getUnitLabel,

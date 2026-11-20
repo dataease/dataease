@@ -472,23 +472,23 @@ body .ed-select__wrapper {
 }
 
 .color-panel {
-  background: var(--ed-color-primary, #3370ff);
+  background: #3370ff;
 }
 
 .color-dashboard {
-  background: var(--ed-color-primary, #3370ff);
+  background: #3370ff;
 }
 
 .color-screen {
-  background: var(--ed-color-primary, rgba(51, 112, 255, 1));
+  background: #00d6b9;
 }
 
 .color-dataV {
-  background: var(--ed-color-primary, rgba(51, 112, 255, 1));
+  background: #00d6b9;
 }
 
 .color-dataset {
-  background: var(--ed-color-primary, rgba(51, 112, 255, 1));
+  background: #16c0ff;
 }
 
 .color-datasource {
@@ -1329,4 +1329,20 @@ body:has(.proxy-warn-bar) {
   align-items: center;
   justify-content: flex-start;
   padding: 0 35px 0 11px;
+}
+
+.resource-tree-highlight {
+  color: var(--ed-color-primary);
+}
+
+.sidebar-scrollbar {
+  height: 100%;
+
+  .ed-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+
+  .ed-scrollbar__bar.is-horizontal {
+    display: none;
+  }
 }

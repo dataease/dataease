@@ -66,6 +66,7 @@ import {
   type Field as DatasetField
 } from '@/views/visualized/data/dataset/form/util'
 import { fieldType } from '@/utils/attr'
+import { isErrorToastRecentlyShown, markErrorToastShown } from '@/utils/errorToastDedupe'
 import { provideQueryScope, useLatestQuery } from '@/hooks/web/useQueryScope'
 
 provideQueryScope()
@@ -937,7 +938,17 @@ const initEdite = async () => {
   isEdit.value = false
   try {
     if (copyId || id) {
-      const barRes = await barInfoApi(copyId || id)
+      let barRes
+      try {
+        barRes = await barInfoApi(copyId || id, undefined, true)
+      } catch (error) {
+        const message = error?.message
+        if (message && !isErrorToastRecentlyShown(message)) {
+          ElMessage({ type: 'error', message, showClose: true, grouping: true })
+          markErrorToastShown(message)
+        }
+        return
+      }
       if (!barRes || !barRes['id']) {
         return
       }
@@ -967,12 +978,18 @@ const initEdite = async () => {
     dfsUnion(arr, res.union || [])
     const [fir] = res.union as { currentDs: { datasourceId: string } }[]
     dataSource.value = fir?.currentDs?.datasourceId
-    dsChange(dataSource.value)
+    const tablesRequest = dsChange(dataSource.value).then(
+      () => true,
+      () => false
+    )
     datasetDrag.value.initState(arr)
     if (id && !copyId) {
       editorStep.value = 'process'
       await nextTick()
-      if (allfields.value.length) datasetPreview()
+      if (allfields.value.length) {
+        const datasourceReady = isCross.value ? true : await tablesRequest
+        if (datasourceReady) datasetPreview()
+      }
     }
   } catch (error) {
     console.error(error)

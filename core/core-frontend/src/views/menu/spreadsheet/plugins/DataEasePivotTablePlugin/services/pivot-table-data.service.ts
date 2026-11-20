@@ -5,7 +5,7 @@ import {
   DEFAULT_DATE_PATTERN,
   DEFAULT_DATE_STYLE,
   normalizeFormatterConfig
-} from '../utils/field-format'
+} from '../../../utils/field-format'
 import type { PivotTableConfig, PivotTableField, PivotTableQueryResult } from '../types'
 import { normalizePivotFields } from '../utils/pivot-config-validator'
 

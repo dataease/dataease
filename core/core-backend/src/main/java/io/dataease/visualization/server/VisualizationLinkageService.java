@@ -17,6 +17,7 @@ import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewRepository
 import io.dataease.visualization.dao.auto.mapper.SnapshotVisualizationLinkageFieldRepository;
 import io.dataease.visualization.dao.auto.mapper.SnapshotVisualizationLinkageRepository;
 import io.dataease.visualization.manage.CoreVisualizationManage;
+import io.dataease.visualization.manage.VisualizationDraftManage;
 import io.dataease.visualization.manage.VisualizationLinkageManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,6 +49,8 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     private VisualizationLinkageManage visualizationLinkageManage;
     @Resource
     private CoreVisualizationManage coreVisualizationManage;
+    @Resource
+    private VisualizationDraftManage visualizationDraftManage;
 
     @Override
     public Map<String, VisualizationLinkageDTO> getViewLinkageGather(VisualizationLinkageRequest request) {
@@ -82,7 +85,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
         Long dvId = request.getDvId();
 
         Assert.notNull(sourceViewId, "source View ID can not be null");
-        Assert.notNull(dvId, "dvId can not be null");
+        visualizationDraftManage.lockForAssociation(dvId, request.getRevision());
 
         // 清理原有关系
         coreVisualizationManage.deleteViewLinkageFieldSnapshot(dvId, sourceViewId);
@@ -131,13 +134,17 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     }
 
     @Override
+    @Transactional
     public Map updateLinkageActive(VisualizationLinkageRequest request) {
+        visualizationDraftManage.lockForAssociation(request.getDvId(), request.getRevision());
         snapshotCoreChartViewRepository.updateLinkageActiveById(request.getSourceViewId(),request.getActiveStatus());
         return getVisualizationAllLinkageInfo(request.getDvId(), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 
     @Override
+    @Transactional
     public void removeLinkage(VisualizationLinkageRequest request) {
+        visualizationDraftManage.lockForAssociation(request.getDvId(), request.getRevision());
         // 清理原有关系
         coreVisualizationManage.deleteViewLinkageFieldSnapshot(request.getDvId(), request.getSourceViewId());
         coreVisualizationManage.deleteViewLinkageSnapshot(request.getDvId(), request.getSourceViewId());

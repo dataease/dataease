@@ -35,6 +35,7 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.LocalModelUtils;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
+import io.dataease.visualization.manage.VisualizationDraftManage;
 import io.dataease.visualization.manage.VisualizationLinkJumpManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +76,8 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
     private VisualizationLinkJumpManage visualizationLinkJumpManage;
+    @Resource
+    private VisualizationDraftManage visualizationDraftManage;
 
     @Resource
     private ObjectProvider<SpreadsheetLinkJumpService> spreadsheetLinkJumpServices;
@@ -131,8 +134,8 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     public void updateJumpSet(VisualizationLinkJumpDTO jumpDTO) {
         Long dvId = jumpDTO.getSourceDvId();
         Long viewId = jumpDTO.getSourceViewId();
-        Assert.notNull(dvId, "dvId cannot be null");
         Assert.notNull(viewId, "viewId cannot be null");
+        visualizationDraftManage.lockForAssociation(dvId, jumpDTO.getRevision());
         // 先校验所有生效的电子表格目标，再替换快照，避免失效映射落库或删除旧配置。
         Map<Long, List<VisualizationLinkJumpTargetViewInfoVO>> spreadsheetTargets = new LinkedHashMap<>();
         for (VisualizationLinkJumpInfoDTO info : Optional.ofNullable(jumpDTO.getLinkJumpInfoArray()).orElse(List.of())) {
@@ -408,7 +411,19 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     }
 
     @Override
+    @Transactional
     public VisualizationLinkJumpBaseResponse updateJumpSetActive(VisualizationLinkJumpBaseRequest request) {
+        Long resourceId = request.getSourceDvId();
+        if (resourceId == null) {
+            resourceId = snapshotCoreChartViewRepository.findById(request.getSourceViewId())
+                    .map(SnapshotCoreChartView::getSceneId)
+                    .orElse(null);
+        }
+        if (resourceId != null) {
+            visualizationDraftManage.lockForAssociation(resourceId, request.getRevision());
+        } else if (request.getRevision() != null) {
+            throw DEException.of(ErrorCategory.NOT_FOUND, "i18n_error_not_found");
+        }
         snapshotCoreChartViewRepository.updateJumpActiveById(request.getSourceViewId(), request.getActiveStatus());
         if (request.getSourceDvId() != null) {
             return queryVisualizationJumpInfo(request.getSourceDvId(), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
@@ -418,7 +433,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     }
 
     @Override
+    @Transactional
     public void removeJumpSet(VisualizationLinkJumpDTO jumpDTO) {
+        visualizationDraftManage.lockForAssociation(jumpDTO.getSourceDvId(), jumpDTO.getRevision());
         //清理原有数据
         visualizationLinkJumpManage.deleteJumpTargetViewInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
         visualizationLinkJumpManage.deleteJumpInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());

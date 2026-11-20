@@ -1,5 +1,7 @@
 import { hasErrorContract } from '@/config/axios/error'
+import { checkCanvasRevision } from '@/api/visualization/canvasRevision'
 import { saveWithConflict } from '@/utils/canvasSaveConflict'
+import { captureCanvasSave, failCanvasEditSession } from '@/utils/canvasEditSession'
 import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
@@ -23,8 +25,10 @@ import {
   dvNameCheck,
   findById,
   findCopyResource,
+  recoverToPublished,
   saveCanvas,
-  updateCanvas
+  updateCanvas,
+  updatePublishStatus
 } from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
@@ -626,6 +630,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
   return method(dvId, busiFlagCustom, attachInfo, params.queryRequest)
     .then(res => {
       if (params.queryRequest && !params.queryRequest.isCurrent()) return
+      if (params.isCurrent && !params.isCurrent()) return
       const canvasInfo = res.data
       const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
 
@@ -678,34 +683,44 @@ export async function initCanvasData(dvId, params, callBack) {
   const loading = initCanvasDataPrepare(
     dvId,
     params,
-    function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
+    async function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       if (!params.onlyPreview) {
         dvMainStore.setComponentData(canvasDataResult)
         dvMainStore.setCanvasStyle(canvasStyleResult)
         dvMainStore.updateCurDvInfo(dvInfo)
         dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
+        if (params.awaitRelations) {
+          dvMainStore.setNowPanelTrackInfo({})
+          dvMainStore.setNowPanelJumpInfoInner({})
+        }
         // 刷新联动信息
-        getPanelAllLinkageInfo(
+        const linkage = getPanelAllLinkageInfo(
           dvInfo.id,
           params.resourceTable,
           params.queryRequest?.fork('linkage')
         )
           .then(rsp => {
             if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            if (params.isCurrent && !params.isCurrent()) return
             dvMainStore.setNowPanelTrackInfo(rsp.data)
           })
           .catch(() => undefined)
         // 刷新跳转信息
-        queryVisualizationJumpInfo(
+        const jump = queryVisualizationJumpInfo(
           dvInfo.id,
           params.resourceTable,
           params.queryRequest?.fork('jump')
         )
           .then(rsp => {
             if (params.queryRequest && !params.queryRequest.isCurrent()) return
+            if (params.isCurrent && !params.isCurrent()) return
             dvMainStore.setNowPanelJumpInfo(rsp.data)
           })
           .catch(() => undefined)
+        if (params.awaitRelations) {
+          await Promise.all([linkage, jump])
+          if (params.queryRequest && !params.queryRequest.isCurrent()) return
+        }
       }
       return callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
@@ -854,6 +869,11 @@ export function initCanvasDataMobile(dvId, params, callBack) {
 }
 
 export function checkCanvasChangePre(callBack) {
+  const save = captureCanvasSave(dvMainStore, () => curDvInfo.value)
+  if (!save) return
+  const complete = () => {
+    if (save.isCurrent()) callBack()
+  }
   // do pre
   const isUpdate = curDvInfo.value.id && curDvInfo.value.optType !== 'copy'
   // 桌面版为单人模式不需要检查
@@ -864,9 +884,10 @@ export function checkCanvasChangePre(callBack) {
         ? t('work_branch.dashboard')
         : t('work_branch.big_data_screen')) + t('visualization.save_conflict_tips')
     checkCanvasChange(params).then(rsp => {
+      if (!save.isCurrent()) return
       if (hasErrorContract(rsp)) {
         // New servers check under a lock at save time. Old servers keep their original precheck.
-        callBack()
+        complete()
         return
       }
       if (rsp && rsp.data === 'Repeat') {
@@ -876,24 +897,78 @@ export function checkCanvasChangePre(callBack) {
           autofocus: false,
           showClose: false
         }).then(() => {
-          callBack()
+          complete()
         })
       } else {
-        callBack()
+        complete()
       }
     })
   } else {
-    callBack()
+    complete()
   }
 }
 
-export async function canvasSave(callBack) {
-  await canvasSaveWithParams(null, callBack)
+interface CanvasRevision {
+  id: string | number
+  contentId?: string | null
+}
+
+interface CanvasPublishTarget extends CanvasRevision {
+  name: string
+  type: string
+  mobileLayout: boolean
+  activeViewIds: (string | number)[]
+}
+
+const isCurrentCanvasRevision = ({ id, contentId }: CanvasRevision) =>
+  String(curDvInfo.value.id) === String(id) &&
+  (curDvInfo.value.contentId ?? null) === (contentId ?? null)
+
+const getCanvasPublishTarget = (
+  { id, contentId, name, type, mobileLayout }: Omit<CanvasPublishTarget, 'activeViewIds'>,
+  components: typeof componentData.value
+): CanvasPublishTarget => {
+  const activeViewIds: CanvasPublishTarget['activeViewIds'] = []
+  findAllViewsId(components, activeViewIds)
+  return { id, contentId, name, type, mobileLayout, activeViewIds }
+}
+
+export async function changeCanvasPublishStatus(
+  status: 0 | 1,
+  target = getCanvasPublishTarget(curDvInfo.value, componentData.value)
+) {
+  const { contentId, ...data } = target
+  await updatePublishStatus({ ...data, status, ...checkCanvasRevision(contentId) })
+  if (isCurrentCanvasRevision(target)) {
+    dvMainStore.updateDvInfoCall(status)
+    ElMessage.success(
+      t(status ? 'visualization.published_success' : 'visualization.cancel_publish_tips')
+    )
+  }
+}
+
+export async function recoverPublishedCanvas() {
+  const { id, type, name, pid, contentId } = curDvInfo.value
+  const revision = { id, contentId }
+  await recoverToPublished({ id, type, name, ...checkCanvasRevision(contentId) })
+  if (!isCurrentCanvasRevision(revision)) return
+  await snapshotStore.clearCanvasDraft(id)
+  if (isCurrentCanvasRevision(revision)) return { id, pid }
+}
+
+export async function canvasSave(
+  callBack: (target: CanvasPublishTarget, isCurrent: () => boolean) => unknown
+) {
+  return canvasSaveWithParams(null, callBack)
 }
 
 export async function canvasSaveWithParams(params, callBack) {
+  // 会话快照在保存入口捕获；切走或文档被替换后不再回写当前编辑器。
+  const save = captureCanvasSave(dvMainStore, () => curDvInfo.value)
+  if (!save) return
   const savingDvInfo = curDvInfo.value
   const sourceResourceId = savingDvInfo.id
+  nameTrim(savingDvInfo, t('components.length_1_64_characters'))
   dvMainStore.removeGroupArea()
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
@@ -915,18 +990,17 @@ export async function canvasSaveWithParams(params, callBack) {
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentDataToSave),
-    canvasViewInfo: canvasViewInfo.value,
-    appData: appData.value,
-    ...curDvInfo.value,
+    canvasViewInfo: cloneDeep(canvasViewInfo.value),
+    appData: cloneDeep(appData.value),
+    ...cloneDeep(savingDvInfo),
     checkVersion: wsCache.get('x-de-execute-version'),
     contentId: newContentId,
-    checkHistory: !isDesktop(),
-    expectedContentId: curDvInfo.value.contentId ?? null,
+    ...checkCanvasRevision(savingDvInfo.contentId),
     watermarkInfo: null
   }
 
   let dsNameCheck = 'success'
-  if (appData.value) {
+  if (canvasInfo.appData) {
     await appCanvasNameCheck({
       datasetFolderPid: canvasInfo.datasetFolderPid,
       datasetFolderName: canvasInfo.datasetFolderName
@@ -934,22 +1008,22 @@ export async function canvasSaveWithParams(params, callBack) {
       dsNameCheck = rsp.data
     })
   }
+  if (!save.isCurrent()) return
   if (dsNameCheck === 'repeat') {
     ElMessage.error('数据集分组名称已存在')
     return
   }
-  nameTrim(curDvInfo.value, t('components.length_1_64_characters'))
-  const method =
-    curDvInfo.value.id && curDvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
+  const method = sourceResourceId && canvasInfo.optType !== 'copy' ? updateCanvas : saveCanvas
   if (method === updateCanvas) {
     await dvNameCheck({
       opt: 'edit',
       nodeType: 'leaf',
-      name: curDvInfo.value.name,
-      type: curDvInfo.value.type,
-      id: curDvInfo.value.id
+      name: canvasInfo.name,
+      type: canvasInfo.type,
+      id: sourceResourceId
     })
   }
+  if (!save.isCurrent()) return
   return saveWithConflict(canvasInfo, method, () =>
     ElMessageBox.confirm(
       (curDvInfo.value.type === 'dashboard'
@@ -972,6 +1046,8 @@ export async function canvasSaveWithParams(params, callBack) {
     ) {
       await snapshotStore.clearCanvasDraft(res.data)
     }
+    // 写请求已发出时允许完成；切换会话后不再更新当前文档或执行页面回调。
+    if (!save.isCurrent()) return res
     if (
       curDvInfo.value !== savingDvInfo ||
       String(curDvInfo.value.id) !== String(sourceResourceId)
@@ -980,28 +1056,44 @@ export async function canvasSaveWithParams(params, callBack) {
     }
     if (method === updateCanvas) {
       // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
-      const status = params?.status ? params?.status : res.data?.status
+      const status = params?.status ? params.status : res.data?.status
       dvMainStore.updateDvInfoCall(status, null, newContentId)
     } else {
       dvMainStore.updateDvInfoCall(0, res.data, newContentId)
     }
+    save.saved(curDvInfo.value.id)
     if (canvasInfo.materialBundle) {
       delete curDvInfo.value.materialBundle
-      await new Promise<void>(resolve =>
-        initCanvasData(
+      try {
+        await initCanvasData(
           curDvInfo.value.id,
           {
             busiFlag: curDvInfo.value.type,
-            resourceTable: 'snapshot'
+            resourceTable: 'snapshot',
+            awaitLoad: true,
+            isCurrent: save.isCurrent
           },
-          resolve
+          () => undefined
         )
-      )
+      } catch (error) {
+        if (save.isCurrent()) {
+          dvMainStore.setAppDataInfo(null)
+          dvMainStore.setDataPrepareState(false)
+          failCanvasEditSession(dvMainStore)
+          ElMessage.error(t('visualization.saved_reload_failed'))
+        }
+        throw error
+      }
+      if (!save.isCurrent()) return res
       clearMaterialPreviews()
       snapshotStore.resetSnapshot()
     }
     snapshotStore.resetStyleChangeTimes()
-    await callBack(res)
+    const savedId = method === updateCanvas ? sourceResourceId : res.data
+    return callBack(
+      getCanvasPublishTarget({ ...canvasInfo, id: savedId }, componentDataToSave),
+      save.isCurrent
+    )
   })
 }
 
@@ -1318,8 +1410,9 @@ export function findParentIdByChildIdRecursive(tree, targetChildId) {
   return null // 没有找到匹配的子节点
 }
 
-export async function decompressionPre(params, callBack) {
+export async function decompressionPre(params, callBack, isCurrent = () => true) {
   const response = await decompression(params)
+  if (!isCurrent()) return
   const deTemplateDataTemp = response.data
   const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
   const appData = deTemplateDataTemp['appData']

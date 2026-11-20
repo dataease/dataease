@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLatestQuery } from '@/hooks/web/useQueryScope'
+import { useCanvasEditSession } from '@/hooks/web/useCanvasEditSession'
 const canvasQuery = useLatestQuery('canvas-load')
 import dvRuler from '@/assets/svg/dv-ruler.svg'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
@@ -33,7 +34,8 @@ import {
   findDragComponent,
   findNewComponent,
   initCanvasData,
-  onInitReady
+  onInitReady,
+  recoverPublishedCanvas
 } from '@/utils/canvasUtils'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown, releaseAttachKey } from '@/utils/DeShortcutKey'
@@ -56,11 +58,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  checkCanvasChange,
-  findCopyResource,
-  recoverToPublished
-} from '@/api/visualization/dataVisualization'
+import { checkCanvasChange, findCopyResource } from '@/api/visualization/dataVisualization'
 import ComponentToolBarV3 from '@/components/data-visualization/ComponentToolBarV3.vue'
 import DeRulerV3 from '@/custom-component/common/DeRulerV3.vue'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -142,6 +140,17 @@ const state = reactive({
   baseWidth: 10,
   baseHeight: 10
 })
+
+const editorRoutePath = router.currentRoute.value.path
+const editorLocation = () => ({
+  id: embeddedStore.dvId || router.currentRoute.value.query.dvId,
+  type: router.currentRoute.value.path === editorRoutePath ? 'dataV' : '',
+  opt: embeddedStore.opt || router.currentRoute.value.query.opt,
+  template: embeddedStore.templateParams || router.currentRoute.value.query.templateParams,
+  parent: embeddedStore.pid || router.currentRoute.value.query.pid,
+  createType: embeddedStore.createType || router.currentRoute.value.query.createType
+})
+const editorSession = useCanvasEditSession(dvMainStore, editorLocation, () => dvInfo.value)
 
 const tabSort = () => {
   if (loadFinish.value && curComponent.value) {
@@ -351,9 +360,11 @@ const doUseCache = async flag => {
   const pending = pendingCanvasDraft
   if (!pending || !isCurrentDraftResource(pending.resourceId)) return
   pendingCanvasDraft = undefined
+  const load = editorSession.begin()
   if (flag && pending.data) {
     const canvasCacheSeries = deepCopy(pending.data)
     snapshotStore.snapshotPublish(canvasCacheSeries)
+    if (!load.ready()) return
     state.canvasInitStatus = true
     nextTick(() => {
       dvMainStore.setDataPrepareState(true)
@@ -372,8 +383,9 @@ const doUseCache = async flag => {
   }
 }
 
-const initLocalCanvasData = async callback => {
+const initLocalCanvasData = async (callback?: () => void, awaitRelations = false) => {
   if (!loadFinish.value) return
+  const load = editorSession.begin()
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
   const queryRequest = canvasQuery.start()
@@ -385,9 +397,12 @@ const initLocalCanvasData = async callback => {
         resourceTable: 'snapshot',
         source: 'main-edit',
         awaitLoad: true,
-        queryRequest
+        awaitRelations,
+        queryRequest,
+        isCurrent: load.isCurrent
       },
       function () {
+        if (!load.ready()) return
         state.canvasInitStatus = true
         if (dvInfo.value && opt === 'copy') {
           dvInfo.value.dataState = 'prepare'
@@ -410,6 +425,7 @@ const initLocalCanvasData = async callback => {
     )
   } catch (error) {
     if (!queryRequest.isCurrent()) return
+    load.fail()
     revokeEditorAccess()
     console.error(error)
   }
@@ -545,6 +561,7 @@ onMounted(async () => {
       })
     }
   } else if (opt && opt === 'create') {
+    const load = editorSession.begin()
     state.canvasInitStatus = false
     let watermarkBaseInfo
     try {
@@ -573,6 +590,7 @@ onMounted(async () => {
     }
     dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
     nextTick(() => {
+      if (!load.ready()) return
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
       snapshotStore.recordSnapshotCache('renderChart')
@@ -651,15 +669,14 @@ const popComponentData = computed(() =>
   componentData.value.filter(ele => ele.category && ele.category === 'hidden')
 )
 
-const doRecoverToPublished = () => {
-  recoverToPublished({ id: dvInfo.value.id, type: 'dataV', name: dvInfo.value.name }).then(() => {
-    state.resourceId = dvInfo.value.id
-    state.sourcePid = dvInfo.value.pid
-    state.opt = null
-    initLocalCanvasData(() => {
-      dvMainStore.updateDvInfoCall(1)
-    })
-  })
+const doRecoverToPublished = async () => {
+  const recovered = await recoverPublishedCanvas()
+  if (!recovered || !isCurrentDraftResource(recovered.id)) return
+  state.resourceId = recovered.id
+  state.sourcePid = recovered.pid
+  state.opt = null
+  snapshotStore.initSnapShot()
+  await initLocalCanvasData(() => snapshotStore.recordSnapshot('recoverToPublished'), true)
 }
 
 const canvasCoreStyle = computed(() => {

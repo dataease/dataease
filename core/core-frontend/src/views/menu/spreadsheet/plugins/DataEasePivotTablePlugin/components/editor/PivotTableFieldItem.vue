@@ -27,12 +27,12 @@ import type {
 } from '../../../../types/plugin'
 import { getSpreadsheetFieldIcon } from '../../../../utils/field-icon'
 import SpreadsheetCustomSortDialog from '../../../../components/common/spreadsheet-custom-sort-dialog.vue'
-import ValueFormatterDialog from './ValueFormatterDialog.vue'
+import ValueFormatterDialog from '../../../../components/common/ValueFormatterDialog.vue'
 import {
   DEFAULT_DATE_PATTERN,
   DEFAULT_DATE_STYLE,
   normalizeFormatterConfig
-} from '../../utils/field-format'
+} from '../../../../utils/field-format'
 
 const props = defineProps<{
   field: FieldItemData

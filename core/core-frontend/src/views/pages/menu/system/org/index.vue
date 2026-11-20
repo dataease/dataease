@@ -344,7 +344,7 @@ onMounted(async () => {
           </template>
         </el-input>
       </div>
-      <div class="org-tree-body">
+      <el-scrollbar class="org-tree-body">
         <el-tree
           ref="treeRef"
           :data="treeData"
@@ -401,7 +401,7 @@ onMounted(async () => {
             </span>
           </template>
         </el-tree>
-      </div>
+      </el-scrollbar>
     </div>
 
     <!-- Right: Member List -->
@@ -558,14 +558,14 @@ onMounted(async () => {
 }
 
 .org-tree-panel {
-  width: 280px;
-  min-width: 280px;
+  width: 269px;
+  min-width: 269px;
   background: var(--ContentBG, #ffffff);
   display: flex;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: 16px;
+  padding: 16px 0;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
 
@@ -573,7 +573,8 @@ onMounted(async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    padding: 0 16px;
+    margin-bottom: 16px;
 
     .org-tree-title {
       font-size: 16px;
@@ -604,7 +605,8 @@ onMounted(async () => {
   }
 
   .org-tree-search {
-    margin-bottom: 12px;
+    padding: 0 16px;
+    margin-bottom: 16px;
 
     :deep(.ed-input) {
       width: 100%;
@@ -614,10 +616,10 @@ onMounted(async () => {
   .org-tree-body {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
+    padding: 0 8px;
 
     :deep(.ed-tree-node__content) {
-      height: 32px;
+      height: 40px;
     }
 
     .custom-tree-node {

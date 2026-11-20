@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { postCanvasRelation } from './canvasRevision'
 
 export function queryWithVisualizationId(dvId) {
   return request.get({
@@ -10,11 +11,12 @@ export function queryWithVisualizationId(dvId) {
 }
 
 export function updateOuterParamsSet(requestInfo) {
-  return request.post({
-    url: '/outerParams/updateOuterParamsSet',
-    data: requestInfo,
-    loading: true
-  })
+  return postCanvasRelation(
+    '/outerParams/updateOuterParamsSet',
+    requestInfo,
+    requestInfo?.visualizationId,
+    true
+  )
 }
 
 export function getOuterParamsInfo(dvId) {

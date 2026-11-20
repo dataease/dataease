@@ -150,10 +150,16 @@ export const getDatasetCreationFolders = async (): Promise<BusiTreeNode[]> => {
   return folders
 }
 
-export const barInfoApi = async (id, signal?: AbortSignal): Promise<IResponse> => {
-  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {}, signal }).then(res => {
-    return res?.data
-  })
+export const barInfoApi = async (
+  id,
+  signal?: AbortSignal,
+  handleErrorLocally = false
+): Promise<IResponse> => {
+  return request
+    .get({ url: `/datasetTree/barInfo/${id}`, data: {}, signal, handleErrorLocally })
+    .then(res => {
+      return res?.data
+    })
 }
 
 export const delDatasetTree = async (data: {
