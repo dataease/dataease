@@ -6,6 +6,7 @@ import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.extensions.datasource.dto.ConnectionObj;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
@@ -16,6 +17,7 @@ import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Connection;
@@ -27,6 +29,7 @@ import java.util.Map;
 /** Execute the preview projection through the built-in JDBC provider against one synthetic row. */
 public final class CalcFieldPreviewRegression {
     public static void main(String[] args) throws Exception {
+        new Translator().setMessageSource(new StaticMessageSource());
         var data = new DatasetDataManage();
         var schema = new DatasourceSchemaDTO();
         schema.setId(11L);
