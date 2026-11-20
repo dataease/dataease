@@ -26,7 +26,7 @@ public class AiKeyringInit implements CoreSqlBlock {
         this.factory = factory;
     }
 
-    public Version getVersion() { return new Version("2.47"); }
+    public Version getVersion() { return new Version("2.48"); }
 
     public void execute() { ensureColumns(jdbc, factory); }
 

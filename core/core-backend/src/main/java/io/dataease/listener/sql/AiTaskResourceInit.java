@@ -14,7 +14,7 @@ public class AiTaskResourceInit implements CoreSqlBlock {
     public AiTaskResourceInit(JdbcTemplate jdbc, EntityManagerFactory factory, EntityManager em, PlatformTransactionManager manager) {
         schema = new AiConfigurationInit(jdbc, factory, em, manager);
     }
-    public Version getVersion() { return new Version("2.53"); }
+    public Version getVersion() { return new Version("2.54"); }
     public void execute() {
         schema.create(CoreAiTaskResource.class);
         schema.index("core_ai_task_resource", "idx_ai_resource_attempt", "attempt_id", false);

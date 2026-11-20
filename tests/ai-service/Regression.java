@@ -120,7 +120,7 @@ public class Regression {
             jdbc.execute("create table core_menu(id bigint primary key,pid bigint,type integer,name varchar(45),component varchar(45),menu_sort integer,icon varchar(45),path varchar(45),hidden boolean,in_layout boolean,auth boolean)");
             jdbc.update("insert into core_menu(id,pid,type,name,component,hidden,in_layout,auth) values(130,15,2,?,?,false,true,true)", "retained-menu", "retained/component");
             var taskMigration=new io.dataease.listener.sql.AiTaskInit(jdbc,factory,em,manager); taskMigration.execute(); taskMigration.execute();
-            // Simulate an existing 2.49 task database; migration must add missing columns and retry safely.
+            // Simulate an existing 2.50 task database; migration must add missing columns and retry safely.
             jdbc.execute("alter table core_ai_task_attempt drop column delivery_expires_at");
             jdbc.execute("alter table core_ai_task_attempt drop column notice_ack_at");
             jdbc.execute("alter table core_ai_task_attempt drop column retry_safe");
@@ -130,7 +130,7 @@ public class Regression {
             var deliveryMigration=new io.dataease.listener.sql.AiTaskDeliveryInit(jdbc,factory); deliveryMigration.execute(); deliveryMigration.execute();
             if (jdbc.queryForObject("select delivery_expires_at from core_ai_task_attempt where id=777", Long.class) != 2000L + io.dataease.ai.engine.task.AiTaskManage.DELIVERY_MILLIS
                     || jdbc.queryForObject("select notice_ack_at from core_ai_task_attempt where id=777", Long.class) != 2000L) throw new AssertionError("legacy result expiry backfill preserves original finish and creates no old pending notice");
-            System.out.println("PASS AI 2.50 additive retryable delivery migration, original expiry and no manufactured legacy notices");
+            System.out.println("PASS AI 2.51 additive retryable delivery migration, original expiry and no manufactured legacy notices");
             var migration=new AiConfigurationInit(jdbc,factory,em,manager); migration.execute(); migration.execute();
             var recoveryMigration=new io.dataease.listener.sql.AiRecoveryInit(jdbc,factory); recoveryMigration.execute(); recoveryMigration.execute();
             check(!jdbc.queryForObject("select retry_safe from core_ai_task_attempt where id=777", Boolean.class), "legacy attempts without trusted tool safety cannot be blindly replayed");
@@ -139,7 +139,7 @@ public class Regression {
             new io.dataease.listener.sql.AiTaskResourceInit(jdbc,factory,em,manager).execute();
             var menuMigration=new io.dataease.listener.sql.AiConfigurationMenuInit(em,manager);menuMigration.execute();menuMigration.execute();
             check(settings.count()==1,"migration singleton idempotent without ddl-auto");check(menus.count()==2,"existing menu and independent AI configuration menu");
-            check(menus.findById(140L).isPresent() && "retained-menu".equals(menus.findById(130L).orElseThrow().getName()),"2.44 then 2.45 preserve a non-AI menu 130");
+            check(menus.findById(140L).isPresent() && "retained-menu".equals(menus.findById(130L).orElseThrow().getName()),"2.45 then 2.46 preserve a non-AI menu 130");
             tx.executeWithoutResult(status -> { var old=em.find(CoreMenu.class,130L);old.setName("ai-service");old.setComponent("system/ai-service");em.flush(); });
             menuMigration.execute();migration.execute();menuMigration.execute();
             check(menus.count()==1 && menus.findById(130L).isEmpty(),"early development AI130 is cleaned without being recreated");

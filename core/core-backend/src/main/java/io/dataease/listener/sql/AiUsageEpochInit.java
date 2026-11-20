@@ -14,7 +14,7 @@ public class AiUsageEpochInit implements CoreSqlBlock {
     private final JdbcTemplate jdbc;
     private final EntityManagerFactory factory;
     public AiUsageEpochInit(JdbcTemplate jdbc, EntityManagerFactory factory) { this.jdbc = jdbc; this.factory = factory; }
-    public Version getVersion() { return new Version("2.56"); }
+    public Version getVersion() { return new Version("2.57"); }
     public void execute() {
         var session = factory.unwrap(SessionFactoryImplementor.class);
         String type = session.getTypeConfiguration().getDdlTypeRegistry().getTypeName(java.sql.Types.BIGINT, session.getJdbcServices().getDialect());

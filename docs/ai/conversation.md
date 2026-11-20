@@ -208,7 +208,7 @@ Sessions are process-local, fixed at 30 minutes, at most 200 per process and fou
 
 The core-only typed conversation capability is opt-in; no Spring AI automatic tool callbacks, native WebClient or arbitrary provider extensions are enabled. A scene registers strict string-argument definitions and executes only within the server-owned context. `list_tables` takes `{}`; `get_table_fields` takes only `{ "table": "exact returned table name" }`. These metadata tools accept neither identity, workspace, datasource, SQL, URL nor credentials. The shared datasource tool module freshly checks the original current datasource tree and READ operation, invokes `DatasourceApi.getTables` using only trusted datasourceId, and invokes constrained `getTableField(DatasetTableFieldRequest)` only after exact table membership.
 
-`list_tables` 返回表名和备注。在支持语义管理的数据源上，如果目标表已加入语义管理且可用，`get_table_fields` 返回 `structure` 和 `confirmedFieldSemantics`。后者只包含已确认且仍能匹配物理字段名的字段语义，可包含人工维护的取值参考（`valueReferences`）。尚待确认的 AI 建议不会进入该集合。未加入或不可用的语义表沿用物理字段结构。字段取值参考使用迁移 `2.59` 增加的 `value_references` 列。
+`list_tables` 返回表名和备注。在支持语义管理的数据源上，如果目标表已加入语义管理且可用，`get_table_fields` 返回 `structure` 和 `confirmedFieldSemantics`。后者只包含已确认且仍能匹配物理字段名的字段语义，可包含人工维护的取值参考（`valueReferences`）。尚待确认的 AI 建议不会进入该集合。未加入或不可用的语义表沿用物理字段结构。字段取值参考使用迁移 `2.60` 增加的 `value_references` 列。
 
 Existing metadata operations may open a datasource connection and perform their existing zero-row metadata statements; model candidate SQL, preview/sample paths and direct Providers are never called. Current metadata is capped at 256 tables/fields, names 256 characters, comments 512 and field types 128; oversized structures fail explicitly rather than silently truncate.
 
@@ -236,9 +236,9 @@ Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不�
 
 `POST /ai/tasks` 接收 `submissionKey`、`capability`、`scene`、`resourceId`、`editorId`、`sql`、`text`，可选 `origin={sessionId,contextVersion}`。服务端验证原会话身份、场景、编辑器、资源及版本，客户端不能指定任意结果接收会话；无 origin 的旧七字段幂等指纹保持兼容。同一身份下，同次提交重发返回同一个持久任务；同键不同输入拒绝，修改输入应使用新键创建新任务。`GET /ai/tasks` 只列本人进行中任务，`GET /ai/tasks/{id}` 返回当前尝试的状态、固定模型版本及经当前资源权限复核的结果。所有 Long 任务/尝试 ID 以字符串传输。`POST /{id}/cancel` 先持久撤销执行归属，再停止本地模型工作；它只返回不含资源、模型或结果的安全状态投影。完成先胜出时仍返回已完成状态，受保护结果须单独经过 GET 的权限复核。`POST /{id}/retry` 接收 `retryKey` 和 `expectedAttemptId`，仅对 FAILED/CANCELLED/INTERRUPTED 创建下一尝试；重复相同操作只创建一次，复用键却改变原尝试拒绝。重试不会修改原任务输入。
 
-迁移 2.49 在 ddl-auto 关闭时幂等创建任务、尝试、节点及唯一性/调度索引。必要输入、服务端身份/资源上下文和有界最终结果持久保存，普通响应不暴露内部身份快照、凭据或 fencing。JSON 长字段使用字符 JDBC 类型，不依赖 PostgreSQL OID 大对象流。实例沿现有 Snowflake 约定配置不同 `dataease.machine-id`。
+迁移 2.50 在 ddl-auto 关闭时幂等创建任务、尝试、节点及唯一性/调度索引。必要输入、服务端身份/资源上下文和有界最终结果持久保存，普通响应不暴露内部身份快照、凭据或 fencing。JSON 长字段使用字符 JDBC 类型，不依赖 PostgreSQL OID 大对象流。实例沿现有 Snowflake 约定配置不同 `dataease.machine-id`。
 
-迁移 2.52 增加独立共享调度协调、真实 actor UID、单调受理顺序和固定等待期限。AI 服务设置的可选 `taskScheduling` 组使用既有配置权限、字段校验和 rowVersion 冲突处理：`maxRunning=2`、`maxQueued=100`、`maxQueuedPerUser=10`、`maxWaitSeconds=300` 为默认值。运行槽覆盖完整 RUNNING 任务，读取数据或自动重试等待也持续占槽；模型每次 HTTP 继续单独申请既有 I/B 请求许可。共享任务容量由数据库协调，模型请求全局限额仍取决于既有 AiAdmission 部署模式。
+迁移 2.53 增加独立共享调度协调、真实 actor UID、单调受理顺序和固定等待期限。AI 服务设置的可选 `taskScheduling` 组使用既有配置权限、字段校验和 rowVersion 冲突处理：`maxRunning=2`、`maxQueued=100`、`maxQueuedPerUser=10`、`maxWaitSeconds=300` 为默认值。运行槽覆盖完整 RUNNING 任务，读取数据或自动重试等待也持续占槽；模型每次 HTTP 继续单独申请既有 I/B 请求许可。共享任务容量由数据库协调，模型请求全局限额仍取决于既有 AiAdmission 部署模式。
 
 所有节点共用 QUEUED/RUNNING 事实、用户轮转指针和受理顺序；用户内 FIFO 按受理顺序执行。个人待执行额度按真实 UID 跨适用工作空间/代理上下文计算，访问授权仍绑定原身份和空间。容量已满在持久受理前明确拒绝；相同提交重发优先返回原任务。开始前重新检查身份、资源权限及当前 AI/模型策略。调低容量不终止在跑任务，也不删除已受理队列，只暂停相应新增受理或启动，直到满足新上限。
 
@@ -254,7 +254,7 @@ Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不�
 
 后台任务已领取但模型请求尚未发送时，配置发布的短暂准入屏障可能返回 `policy_blocked`。该阶段最多等待 1 秒（仍受本次执行期限约束），每 25ms 重新检查权限、取消和当前配置后尝试准入；持续阻断则失败，不绕过准入，也不重放已发送的请求。这是发送前的本地准入等待，不消耗模型技术重试次数；已受理前台问题也允许相同的短暂准入等待，但只更新容量，不替换本轮执行配置；普通并发已满不因此自动重试。
 
-迁移 2.50 增加尝试的 `delivery_expires_at` / `notice_ack_at`。终态、业务结果、交付期限和待确认事实在同一短事务写入，失败不能宣告成功。升级前已结束的尝试只回填原 finishedAt+7 天，标为已确认，避免升级制造旧通知；不会重跑模型。`GET /ai/tasks/notices` 只返回当前本人身份/适用空间下仍有资源权限、未确认且未过期的安全终态投影，不含输入、正文或审计。`POST /ai/tasks/notices/{attemptId}/ack` 幂等确认；客户端在提示前按 attempt 去重，确认失败保留待投递，跨节点确认共享。
+迁移 2.51 增加尝试的 `delivery_expires_at` / `notice_ack_at`。终态、业务结果、交付期限和待确认事实在同一短事务写入，失败不能宣告成功。升级前已结束的尝试只回填原 finishedAt+7 天，标为已确认，避免升级制造旧通知；不会重跑模型。`GET /ai/tasks/notices` 只返回当前本人身份/适用空间下仍有资源权限、未确认且未过期的安全终态投影，不含输入、正文或审计。`POST /ai/tasks/notices/{attemptId}/ack` 幂等确认；客户端在提示前按 attempt 去重，确认失败保留待投递，跨节点确认共享。
 
 原会话仍打开时，原页面保留本次 task 关联并调用 `POST /ai/tasks/{id}/conversation`，按持久任务 origin、当前身份和资源版本重新验证，再幂等追加原问题与合法结果（含候选 SQL）到真实模型历史，后续追问实际携带该成果。该关联独立于通知确认，其他标签页先确认不会丢失原对话结果。只追加到仍打开的原进程会话，不创建或恢复会话；关闭、刷新、离线结束编辑活动或服务重启后不恢复旧聊天。页面不把结果写入新的资源选择或草稿，应用 SQL 仍经当前任务重新鉴权和原草稿版本检查。
 
@@ -282,7 +282,7 @@ Ordinary SQL assistance and foreground conversations declare no table lock. The 
 
 The explicitly marked `structure-mutex.assist` Demo is read-only structure/resource-mutex acceptance. Select an authorized datasource and a batch of up to 32 tables. The background button and the current-message action submit the same capability through `POST /ai/tasks`, with optional `selectedTables`; both use identical admission and ownership rules. It shares the datasource tool module's DE READ authorization and table/field projection with the SQL scene, without depending on that scene. It does not implement semantic generation, read samples, execute candidate SQL or save business resources. Its result is an explanation with no applicable SQL, and is not imported into an unrelated SQL conversation. The ordinary SQL background option remains available without declarations.
 
-Migration `2.53` adds the unique current resource owner table. Under the existing scheduling coordinator, duplicate submission/retry keys return their original task/attempt before checking conflicts or capacity. New overlapping requests are rejected immediately as `i18n_ai_task_resource_busy`, without a queue row. A batch either claims all resources and creates its attempt in the same short transaction, or claims nothing. Queue-capacity failures cannot leave partial claims. Same-owner conflicts may contain only a string `data.taskId` for locating the current task; other actors, workspaces or proxy contexts receive no task identifier or content. The conflict response only retains this locator after checking the original task snapshot outside the acceptance transaction; stale or inaccessible snapshots receive no locator. Every subsequent task read still requires current authorization.
+Migration `2.54` adds the unique current resource owner table. Under the existing scheduling coordinator, duplicate submission/retry keys return their original task/attempt before checking conflicts or capacity. New overlapping requests are rejected immediately as `i18n_ai_task_resource_busy`, without a queue row. A batch either claims all resources and creates its attempt in the same short transaction, or claims nothing. Queue-capacity failures cannot leave partial claims. Same-owner conflicts may contain only a string `data.taskId` for locating the current task; other actors, workspaces or proxy contexts receive no task identifier or content. The conflict response only retains this locator after checking the original task snapshot outside the acceptance transaction; stale or inaccessible snapshots receive no locator. Every subsequent task read still requires current authorization.
 
 Occupancy begins at acceptance and lasts through QUEUED, RUNNING, tool work and automatic retry waits. Cancellation, wait/execute timeout, completion, failure and node interruption first flush the attempt's revoked execution fence, then release claims matching that exact task and attempt in the same terminal transaction. Late old results cannot overwrite terminal state or release a newer owner's claims. Completed results and pending application do not retain occupancy. The structure scene rechecks datasource and selected field snapshots at dispatch, model/tool, result and delivery boundaries; a newer resource version requires a new request. All nodes must run the matching code and ordered migrations; migration does not invent declarations for historical tasks.
 
@@ -300,11 +300,11 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 审计使用执行开始时的配置快照，并以结束时间计算到期日；后台结果及待投递完成通知使用尝试进入终态时的配置计算到期日。已经写入的到期时间保持不变，调长期限不能恢复过期正文，调短期限不追溯删除既有结果。读取端按到期时间立即拒绝，过期交付使用 `result_expired` / `NOT_FOUND`（契约 2 为 HTTP 404，旧消费者沿用业务码 50001 的 HTTP 409），独立于物理清理进度；不会从管理员审计重建用户交付结果。
 
-迁移 2.55 增加留存设置、尝试清理标记及仅含执行 ID 的审计退休墓碑，不重写 2.49–2.54 或现有到期时间。`AiRetentionCleanup` 在应用就绪后每分钟分批执行，单轮最多处理 100 个交付尝试与 100 个审计执行。公开 Java `clean()` 是运维/隔离验收使用的正式作业入口，没有新增普通用户 HTTP 清理接口或历史列表。
+迁移 2.56 增加留存设置、尝试清理标记及仅含执行 ID 的审计退休墓碑，不重写 2.50–2.55 或现有到期时间。`AiRetentionCleanup` 在应用就绪后每分钟分批执行，单轮最多处理 100 个交付尝试与 100 个审计执行。公开 Java `clean()` 是运维/隔离验收使用的正式作业入口，没有新增普通用户 HTTP 清理接口或历史列表。
 
-迁移 2.57 为审计持久保存执行期限、开始时的留存天数和补记标记。清理作业每轮先补记最多 100 个未结束审计：后台采用持久尝试的终态和结束时间，其他执行只在固定期限到达后标为中断；仍在排队或运行的后台尝试不被审计作业终止。普通终态留出五秒给正常回调完成写入。补记标识审计不完整，保留已采集正文及已完成条目，只结束未完成条目；带补记标记的执行拒绝迟到写入覆盖终态、到期时间或已结束条目，也不能新增条目。普通同步 SDK 的完成记录不带此标记，同一上下文后续合法调用仍逐次记录审计。该过程不恢复聊天、重放模型或生成缺失结果。
+迁移 2.58 为审计持久保存执行期限、开始时的留存天数和补记标记。清理作业每轮先补记最多 100 个未结束审计：后台采用持久尝试的终态和结束时间，其他执行只在固定期限到达后标为中断；仍在排队或运行的后台尝试不被审计作业终止。普通终态留出五秒给正常回调完成写入。补记标识审计不完整，保留已采集正文及已完成条目，只结束未完成条目；带补记标记的执行拒绝迟到写入覆盖终态、到期时间或已结束条目，也不能新增条目。普通同步 SDK 的完成记录不带此标记，同一上下文后续合法调用仍逐次记录审计。该过程不恢复聊天、重放模型或生成缺失结果。
 
-旧审计未保存原始期限和留存快照，无法还原：2.57 仅对缺失字段按升级时的审计留存配置冻结天数，未结束记录按开始时间加当前最大执行时长 300 秒补齐期限，缺失开始时间时使用升级时间。既有终态和到期时间不变，部分迁移重试不覆盖已补字段。新执行始终采用自身原始快照。
+旧审计未保存原始期限和留存快照，无法还原：2.58 仅对缺失字段按升级时的审计留存配置冻结天数，未结束记录按开始时间加当前最大执行时长 300 秒补齐期限，缺失开始时间时使用升级时间。既有终态和到期时间不变，部分迁移重试不覆盖已补字段。新执行始终采用自身原始快照。
 
 交付清理仅对明确终态且到期的尝试，通过事务内显式更新清空结果正文并确认过期通知。只有同一任务的所有尝试均已结束且交付到期，才清除任务输入、上下文和持久身份 JSON；保留归属绑定、提交指纹及终态事实作为最小幂等墓碑，使旧提交键不能重新触发模型。混合的新排队/运行/未到期尝试继续保留所需输入、身份、状态和资源占用；通知确认不会提前清除结果或审计。
 
@@ -314,8 +314,8 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 对持久后台任务，关闭全局 AI 或某个适用空间的使用策略，会在配置事务中撤销受影响的排队/运行尝试 fence，按原任务和尝试释放资源；终态保留 `disabled` / `organization_disabled` 原因。后台巡检及模型、工具、提交和交付边界继续检查账号、原空间真实成员关系、资源权限及上下文。关闭期间拒绝新建、重试和普通交付，独立管理员审计及有权限的系统设置仍可访问。容量、恢复和留存配置不触发关闭，也不删除已受理队列。
 
-迁移 `2.56` 为全局和空间使用策略增加单调 `usage_epoch`，只在对应策略由开启转为关闭时递增。后台任务和通用原生 SDK 模型上下文保留该版本围栏；前台对话每次提问固定执行配置，不再以会话级版本清理历史。`GET /ai/availability` 仍投影当前可信身份/空间的使用状态及版本。Demo 关闭新提问、手动重试和后台入口，同时保留已受理前台回答的读取、停止及历史；没有前台活动时隐藏助手。重新开启后恢复入口及原有效期内未确认 toast，保留消息草稿和业务 SQL 草稿，不恢复后台旧执行。身份/空间变化、权限拒绝和显式结束仍清理临时聊天。
+迁移 `2.57` 为全局和空间使用策略增加单调 `usage_epoch`，只在对应策略由开启转为关闭时递增。后台任务和通用原生 SDK 模型上下文保留该版本围栏；前台对话每次提问固定执行配置，不再以会话级版本清理历史。`GET /ai/availability` 仍投影当前可信身份/空间的使用状态及版本。Demo 关闭新提问、手动重试和后台入口，同时保留已受理前台回答的读取、停止及历史；没有前台活动时隐藏助手。重新开启后恢复入口及原有效期内未确认 toast，保留消息草稿和业务 SQL 草稿，不恢复后台旧执行。身份/空间变化、权限拒绝和显式结束仍清理临时聊天。
 
 后台身份始终来自持久任务。只由已验证的服务器身份作用域安装 SDK 的 `AiOwnerContext` 原空间投影，账号严格匹配且在嵌套、异常和线程结束时恢复；HTTP 参数和请求头不能选择该投影。它不授予权限、不模拟管理员代理，也不改变普通非 AI 请求的当前空间。原账号、成员关系和资源授权仍需在操作前后复核；用户退出登录、离开页面或切换当前空间本身不取消后台。
 
-动态开关与身份授权的交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.57`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。
+动态开关与身份授权的交付必须提供匹配的 SDK common / permissions、授权扩展适配和核心/前端，并先由单节点完成有序迁移至 `2.58`。先提供新 SDK，再准备依赖该 SDK 的授权扩展，最后联合切换匹配的核心及扩展。新核心与旧扩展混用时，内部 Boolean 授权缺失、默认 false 或返回 null 都拒绝，可能使 AI 使用和配置入口均不可用；不能把此组合描述为仅缺少新增审计能力。新扩展对新增公共身份投影存在依赖，不宣称整个适配兼容旧 SDK。两个仓库的交付并非原子操作，应在发布时明确此限制；本地源码实现不表示已发布 SDK 或扩展。

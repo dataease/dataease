@@ -16,7 +16,7 @@ public class AiAuditInit implements CoreSqlBlock {
     public AiAuditInit(JdbcTemplate jdbc, EntityManagerFactory factory, EntityManager em, PlatformTransactionManager manager) {
         schema = new AiConfigurationInit(jdbc, factory, em, manager);
     }
-    public Version getVersion() { return new Version("2.54"); }
+    public Version getVersion() { return new Version("2.55"); }
     public void execute() {
         schema.create(CoreAiAuditExecution.class); schema.create(CoreAiAuditEntry.class);
         schema.index("core_ai_audit_entry", "idx_ai_audit_entry_execution", "execution_id,sequence", false);

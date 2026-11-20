@@ -22,6 +22,9 @@ import java.util.*;
 @Component
 @Order(value = 1)
 public class InitSqlListener implements ApplicationRunner {
+    private static final Version AI_CONFIGURATION_VERSION = new Version("2.45");
+    private static final Version LAST_LEGACY_AI_VERSION = new Version("2.60");
+
     @Autowired
     private DeStandaloneVersionRepository deStandaloneVersionRepository;
 
@@ -60,6 +63,13 @@ public class InitSqlListener implements ApplicationRunner {
                 Version version = new Version(lastVersion.getVersion());
                 // 上一版本执行失败（success=false），需要重新执行相同版本
                 boolean retry = lastVersion.getSuccess() != null && !lastVersion.getSuccess();
+                // 旧 AI 分支与新编号共用 2.45–2.60。旧记录只有通用脚本名，
+                // 无法证明新编号对应的迁移已执行，需从 AI 配置开始补齐。
+                if (overlapsLegacyAiVersions(group, version)
+                        && ("V" + version.getVersion() + "__ddl.sql").equals(lastVersion.getScript())) {
+                    version = AI_CONFIGURATION_VERSION;
+                    retry = true;
+                }
                 for (SqlBlock sqlBlock : toMigrateSqlBlocks) {
                     int cmp = sqlBlock.getVersion().compareTo(version);
                     if (cmp > 0 || (retry && cmp >= 0)) {
@@ -82,7 +92,9 @@ public class InitSqlListener implements ApplicationRunner {
         deStandaloneVersion.setVersion(sqlBlock.getVersion().getVersion());
         deStandaloneVersion.setDescription("ddl");
         deStandaloneVersion.setType("SQL");
-        deStandaloneVersion.setScript("V" + sqlBlock.getVersion().getVersion() + "__ddl.sql");
+        String scriptSuffix = overlapsLegacyAiVersions(sqlBlock.getVersionGroup(), sqlBlock.getVersion())
+                ? "__ai_ddl.sql" : "__ddl.sql";
+        deStandaloneVersion.setScript("V" + sqlBlock.getVersion().getVersion() + scriptSuffix);
         deStandaloneVersion.setChecksum(0);
         deStandaloneVersion.setInstalledBy("system");
         deStandaloneVersion.setInstalledOn(LocalDateTime.now());
@@ -103,6 +115,11 @@ public class InitSqlListener implements ApplicationRunner {
         deStandaloneVersion.setSuccess(true);
         deStandaloneVersionRepository.saveAndFlush(deStandaloneVersion);
         LogUtil.info("Success to migrate sql : " + sqlBlock.getVersion().getVersion());
+    }
+
+    private boolean overlapsLegacyAiVersions(String group, Version version) {
+        return "2".equals(group) && version.compareTo(AI_CONFIGURATION_VERSION) >= 0
+                && version.compareTo(LAST_LEGACY_AI_VERSION) <= 0;
     }
 
     private int findLastRank() {

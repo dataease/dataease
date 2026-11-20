@@ -22,7 +22,7 @@ public class AiTaskSchedulingInit implements CoreSqlBlock {
     public AiTaskSchedulingInit(JdbcTemplate jdbc, EntityManagerFactory factory, EntityManager em, PlatformTransactionManager manager) {
         this.jdbc = jdbc; this.factory = factory; this.em = em; tx = new TransactionTemplate(manager);
     }
-    public Version getVersion() { return new Version("2.52"); }
+    public Version getVersion() { return new Version("2.53"); }
     public void execute() {
         var schema = new AiConfigurationInit(jdbc, factory, em, tx.getTransactionManager());
         schema.create(CoreAiTaskSchedule.class);

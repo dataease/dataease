@@ -20,7 +20,7 @@ public class AiRetentionInit implements CoreSqlBlock {
     public AiRetentionInit(JdbcTemplate jdbc, EntityManagerFactory factory, EntityManager em, PlatformTransactionManager manager) {
         this.jdbc = jdbc; this.factory = factory; schema = new AiConfigurationInit(jdbc, factory, em, manager);
     }
-    public Version getVersion() { return new Version("2.55"); }
+    public Version getVersion() { return new Version("2.56"); }
     public void execute() {
         var session = factory.unwrap(SessionFactoryImplementor.class);
         var registry = session.getTypeConfiguration().getDdlTypeRegistry(); var dialect = session.getJdbcServices().getDialect();

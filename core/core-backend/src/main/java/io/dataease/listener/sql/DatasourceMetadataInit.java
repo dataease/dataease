@@ -46,7 +46,7 @@ public class DatasourceMetadataInit implements CoreSqlBlock {
 
     @Override
     public Version getVersion() {
-        return new Version("2.48");
+        return new Version("2.49");
     }
 
     @Override

@@ -14,7 +14,7 @@ public class AiAuditRecoveryInit implements CoreSqlBlock {
     private final JdbcTemplate jdbc;
     private final EntityManagerFactory factory;
     public AiAuditRecoveryInit(JdbcTemplate jdbc, EntityManagerFactory factory) { this.jdbc = jdbc; this.factory = factory; }
-    public Version getVersion() { return new Version("2.57"); }
+    public Version getVersion() { return new Version("2.58"); }
     public void execute() {
         var session = factory.unwrap(SessionFactoryImplementor.class);
         var types = session.getTypeConfiguration().getDdlTypeRegistry(); var dialect = session.getJdbcServices().getDialect();

@@ -21,7 +21,7 @@ public class AiRecordsMenuInit implements CoreSqlBlock {
         this.tx = new TransactionTemplate(manager);
     }
 
-    public Version getVersion() { return new Version("2.46"); }
+    public Version getVersion() { return new Version("2.47"); }
 
     public void execute() {
         tx.executeWithoutResult(status -> {

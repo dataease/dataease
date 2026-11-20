@@ -27,7 +27,7 @@ public class DatasetSemanticsInit implements CoreSqlBlock {
 
     @Override
     public Version getVersion() {
-        return new Version("2.60");
+        return new Version("2.61");
     }
 
     @Override

@@ -22,6 +22,6 @@ public final class SettingsDefaultsRegression {
         if (jdbc.queryForObject("select row_version from core_ai_setting where id=2", Integer.class) != 5
                 || jdbc.queryForObject("select task_max_queued from core_ai_setting where id=2", Integer.class) != 42)
             throw new AssertionError("valid custom settings changed");
-        System.out.println("PASS AI 2.58 repairs legacy zero settings atomically, preserves valid policies and repeats without change");
+        System.out.println("PASS AI 2.59 repairs legacy zero settings atomically, preserves valid policies and repeats without change");
     }
 }
