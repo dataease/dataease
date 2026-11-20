@@ -1334,3 +1334,15 @@ body:has(.proxy-warn-bar) {
 .resource-tree-highlight {
   color: var(--ed-color-primary);
 }
+
+.sidebar-scrollbar {
+  height: 100%;
+
+  .ed-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+
+  .ed-scrollbar__bar.is-horizontal {
+    display: none;
+  }
+}

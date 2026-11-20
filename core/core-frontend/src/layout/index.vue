@@ -58,10 +58,12 @@ const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
           ></Menu>
         </Sidebar>
         <el-aside class="layout-sidebar layout-sidebar-collapse" v-else>
-          <Menu
-            :collapse="isCollapse"
-            :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"
-          ></Menu>
+          <el-scrollbar class="sidebar-scrollbar">
+            <Menu
+              :collapse="isCollapse"
+              :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"
+            ></Menu>
+          </el-scrollbar>
         </el-aside>
         <CollapseBar @setCollapse="setCollapse" :isCollapse="isCollapse"></CollapseBar>
       </template>
@@ -93,6 +95,7 @@ const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
 
     .layout-sidebar {
       height: calc(100vh - 106px);
+      overflow: hidden;
     }
 
     .layout-sidebar-collapse {
