@@ -305,9 +305,12 @@ public class CalciteProvider extends Provider {
             ResultSet resultSet = null;
             Connection connection = take();
             try {
+                Long deadline = datasourceRequest.getExecutionDeadline();
+                previewQueryTimeout(0, deadline);
                 CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
                 statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
                 bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
+                if (deadline != null) statement.setQueryTimeout(previewQueryTimeout(statement.getQueryTimeout(), deadline));
                 resultSet = statement.executeQuery();
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
@@ -870,15 +873,17 @@ public class CalciteProvider extends Provider {
                 datasourceRequest.setQuery(new String(datasourceRequest.getQuery().getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset()));
             }
         }
-        int timeout = datasourceConfiguration.getQueryTimeout();
-        if (datasourceRequest.getExecutionDeadline() != null) {
-            long remaining = datasourceRequest.getExecutionDeadline() - System.currentTimeMillis();
-            if (remaining < 1000) throw new java.sql.SQLTimeoutException();
-            int budget = (int) Math.min(15, remaining / 1000);
-            timeout = timeout > 0 ? Math.min(timeout, budget) : budget;
-        }
+        int timeout = previewQueryTimeout(datasourceConfiguration.getQueryTimeout(), datasourceRequest.getExecutionDeadline());
         statement = getPreparedStatement(con, timeout, datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues(), autoIncrementPkName, datasourceConfiguration);
         return statement;
+    }
+
+    private static int previewQueryTimeout(int configured, Long deadline) throws SQLTimeoutException {
+        if (deadline == null) return configured;
+        long remaining = deadline - System.currentTimeMillis();
+        if (remaining < 1000) throw new SQLTimeoutException();
+        int budget = (int) Math.min(15, remaining / 1000);
+        return configured > 0 ? Math.min(configured, budget) : budget;
     }
 
     @Override

@@ -15,11 +15,12 @@ final class CalcFieldCanvas {
     final Map<Long, String> tables = new LinkedHashMap<>();
     private final AiDatasourceTools metadata;
     private final AiDatasourceTools.Scope scope;
-    private final Map<String, Set<String>> catalog = new HashMap<>();
+    final Map<String, AiDatasourceTools.Scope> sources = new LinkedHashMap<>();
 
     CalcFieldCanvas(AiDatasourceTools metadata, AiDatasourceTools.Scope scope) {
         this.metadata = metadata;
         this.scope = scope;
+        sources.put(scope.resourceId(), scope);
     }
 
     void rebuild(DatasetGroupInfoDTO draft) {
@@ -32,7 +33,12 @@ final class CalcFieldCanvas {
         if (node == null || depth > 8 || tables.size() >= 16) throw AiErrors.error("input_limit");
         var table = node.getCurrentDs();
         if (table == null || !"db".equalsIgnoreCase(table.getType())) throw AiErrors.error("unsupported");
-        if (!scope.resourceId().equals(String.valueOf(table.getDatasourceId()))) throw AiErrors.error("scope_changed");
+        String id = String.valueOf(table.getDatasourceId());
+        if ((parent == null || !scope.isCross()) && !scope.resourceId().equals(id)) throw AiErrors.error("scope_changed");
+        var source = sources.computeIfAbsent(id, key -> {
+            var resource = metadata.resolve(key);
+            return AiDatasourceTools.Scope.editor(resource.id(), resource.revision(), true);
+        });
         String name = table.getTableName();
         if (table.getId() == null || !identifier(name) || tables.putIfAbsent(table.getId(), name) != null) throw AiErrors.error("invalid");
         try {
@@ -40,12 +46,8 @@ final class CalcFieldCanvas {
             table.setInfo(JSON.writeValueAsString(Map.of("table", name)));
         } catch (java.io.IOException failure) { throw AiErrors.error("invalid"); }
         table.setSqlVariableDetails(null);
-        Set<String> allowed = catalog.computeIfAbsent(name, key -> {
-            var found = metadata.fields(scope, key, true);
-            var names = new HashSet<String>();
-            for (var field : found.fields()) names.add(field.name());
-            return names;
-        });
+        Set<String> allowed = new HashSet<>();
+        for (var field : metadata.fields(source, name, true).fields()) allowed.add(field.name());
         var local = new LinkedHashMap<Long, DatasetTableFieldDTO>();
         var fields = node.getCurrentDsFields();
         if (fields == null || fields.isEmpty() || fields.size() > 256) throw AiErrors.error("invalid");

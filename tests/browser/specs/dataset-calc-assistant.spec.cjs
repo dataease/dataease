@@ -295,3 +295,47 @@ test("a clarified duplicate and calculation parameter keep their exact IDs after
   await open();
   await expect(drawer.locator(".cm-content")).toHaveText(expression);
 });
+
+test("cross mode sends the editor and canvas mode and applies the Calcite formula", async ({
+  page,
+}) => {
+  const expression = "EXTRACT(MONTH FROM [orders_id])";
+  const state = await backend(page, { expression });
+  await page.goto("/?cross=1");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByRole("button", { name: "计算字段助手" }).click();
+  await drawer.locator("textarea").fill("提取订单月份");
+  await drawer.getByRole("button", { name: "发送", exact: true }).click();
+  await drawer.getByRole("button", { name: "应用到当前草稿" }).click();
+  await expect(drawer.locator(".cm-content")).toHaveText(expression);
+  expect(state.opens[0].isCross).toBe(true);
+  expect(state.opens[0].calcField.dataset.isCross).toBe(true);
+});
+
+for (const search of ["nonMysql", "cross=1&sqlNode"]) {
+  test(
+    search + " retains manual formula editing and preview",
+    async ({ page }) => {
+      const state = await backend(page);
+      await page.goto("/?" + search);
+      await page
+        .getByRole("button", { name: "新建计算字段", exact: true })
+        .click();
+      const drawer = page.locator(".calc-field-drawer");
+      await expect(
+        drawer.getByRole("button", { name: "计算字段助手" })
+      ).toHaveCount(0);
+      await drawer.getByPlaceholder("请输入字段名称").fill("手动计算");
+      await drawer.locator(".cm-content").fill("7 + 2");
+      await drawer.getByRole("button", { name: "校验", exact: true }).click();
+      await expect(page.getByText("字段表达式校验成功")).toBeVisible();
+      expect(
+        await page.evaluate(
+          () => window.previewRequests.at(-1).allFields.at(-1).originName
+        )
+      ).toBe("7 + 2");
+      expect(state.opens).toHaveLength(0);
+    }
+  );
+}

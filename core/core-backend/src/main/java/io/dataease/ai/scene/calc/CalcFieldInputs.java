@@ -12,6 +12,7 @@ final class CalcFieldInputs {
     private final Map<String, DatasetTableFieldDTO> available = new LinkedHashMap<>();
     private static final java.util.regex.Pattern BOUND_REFERENCE = java.util.regex.Pattern.compile("\\[([^\\]]+)]");
     private final Set<Long> hidden;
+    private final boolean isCross;
     private final Map<String, String> parameterOwner = new HashMap<>();
     private final Map<String, Integer> nameCounts = new HashMap<>();
     private final Map<String, List<String>> choices = new HashMap<>();
@@ -21,6 +22,7 @@ final class CalcFieldInputs {
     CalcFieldInputs(DatasetGroupInfoDTO dataset, Long targetId, CalcFieldAccess.Grant grant,
                     Map<Long, CalcFieldAccess.Column> physical) {
         hidden = grant.hidden();
+        isCross = dataset.getIsCross();
         var fields = dataset.getAllFields();
         if (fields == null || fields.isEmpty() || fields.size() > 256) throw AiErrors.error("input_limit");
         var seen = new HashSet<Long>();
@@ -119,7 +121,7 @@ final class CalcFieldInputs {
         var f = available.get(id);
         if (f == null || path.size() >= 8 || ++expanded[0] > 128 || !path.add(id)) throw CalcFieldExpression.invalid();
         if (Objects.equals(f.getExtField(), 2)) {
-            CalcFieldExpression.bind(f.getOriginName(), ref -> {
+            CalcFieldExpression.bind(f.getOriginName(), isCross, ref -> {
                 if (!id.equals(parameterOwner.get(ref))) dependencies(ref, path, expanded);
                 return ref;
             });
@@ -130,7 +132,7 @@ final class CalcFieldInputs {
     String candidate(String expression, int deType, boolean preserveType) {
         var expanded = new int[]{0};
         var displayNames = new HashMap<String, String>();
-        String binding = CalcFieldExpression.bind(expression, label -> {
+        String binding = CalcFieldExpression.bind(expression, isCross, label -> {
             var id = labels.get(label);
             if (id == null && choices.getOrDefault(label, List.of()).size() > 1) throw new Ambiguous(choices.get(label));
             if (id == null) throw CalcFieldExpression.invalid();
@@ -159,7 +161,7 @@ final class CalcFieldInputs {
                 dependencies(field.getId().toString(), new HashSet<>(), new int[]{0});
                 if (Objects.equals(field.getExtField(), 2)) {
                     // dependencies already checked every reference, including private parameters.
-                    field.setOriginName(CalcFieldExpression.bind(field.getOriginName(), ref -> ref));
+                    field.setOriginName(CalcFieldExpression.bind(field.getOriginName(), isCross, ref -> ref));
                 }
             } catch (IllegalArgumentException unsupportedSibling) { return false; }
         }

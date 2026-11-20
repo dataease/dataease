@@ -446,10 +446,16 @@ const dfsChild = arr => {
   })
 }
 
+const supportsCalcNode = (node: DatasetNode): boolean =>
+  node.type === 'db' &&
+  (isCross.value || node.datasourceId === currentDsId.value) &&
+  (node.children || []).every(supportsCalcNode)
 const supportsCalcAssistant = computed(
   () =>
-    !isCross.value &&
-    findSource(state.dataSourceList, currentDsId.value)?.type?.toLowerCase() === 'mysql'
+    canvasNodes.value.length === 1 &&
+    supportsCalcNode(canvasNodes.value[0]) &&
+    (isCross.value ||
+      findSource(state.dataSourceList, currentDsId.value)?.type?.toLowerCase() === 'mysql')
 )
 const getDsName = (id: string) => {
   return findSource(state.dataSourceList, id)?.name || ''

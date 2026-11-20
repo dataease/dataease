@@ -8,19 +8,21 @@ import java.util.function.Function;
 public final class CalcFieldExpression {
     private static final Set<String> FUNCTIONS = Set.of("ABS", "ROUND", "FLOOR", "CEIL", "NULLIF", "COALESCE");
     private static final Set<String> AGGREGATES = Set.of("SUM", "AVG", "MIN", "MAX", "COUNT");
+    private final boolean isCross;
     private final String source;
     private final Function<String, String> references;
     private int position;
     private int tokens;
 
-    private CalcFieldExpression(String source, Function<String, String> references) {
+    private CalcFieldExpression(String source, boolean isCross, Function<String, String> references) {
         this.source = source;
+        this.isCross = isCross;
         this.references = references;
     }
 
-    public static String bind(String source, Function<String, String> references) {
+    public static String bind(String source, boolean isCross, Function<String, String> references) {
         if (source == null || source.isBlank() || source.length() > 2048) throw invalid();
-        var parser = new CalcFieldExpression(source, references);
+        var parser = new CalcFieldExpression(source, isCross, references);
         String result = parser.expression(0);
         if (parser.peek() != 0 || parser.position != source.length()) throw invalid();
         return result;
@@ -74,6 +76,20 @@ public final class CalcFieldExpression {
         }
         while (position < source.length() && Character.isLetter(source.charAt(position))) position++;
         String function = source.substring(start, position).toUpperCase(Locale.ROOT);
+        if (isCross && function.equals("EXTRACT")) {
+            require('(');
+            requireWord("MONTH");
+            requireWord("FROM");
+            String date = expression(depth + 1);
+            require(')');
+            return "EXTRACT(MONTH FROM " + date + ")";
+        }
+        if (!isCross && function.equals("MONTH")) {
+            require('(');
+            String date = expression(depth + 1);
+            require(')');
+            return "MONTH(" + date + ")";
+        }
         boolean aggregate = AGGREGATES.contains(function);
         if (!FUNCTIONS.contains(function) && !aggregate) throw invalid();
         require('(');
@@ -89,6 +105,13 @@ public final class CalcFieldExpression {
     private char peek() {
         while (position < source.length() && Character.isWhitespace(source.charAt(position))) position++;
         return position < source.length() ? source.charAt(position) : 0;
+    }
+
+    private void requireWord(String word) {
+        peek();
+        if (!source.regionMatches(true, position, word, 0, word.length())) throw invalid();
+        position += word.length();
+        if (position < source.length() && Character.isLetterOrDigit(source.charAt(position))) throw invalid();
     }
 
     private void require(char token) {
