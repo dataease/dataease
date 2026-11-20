@@ -5,6 +5,7 @@ import icon_adjustment_outlined from '@/assets/svg/icon_adjustment_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { AiCalcFieldSuggestion } from '@/api/aiConversation'
 import CodeMirror from './CodeMirror.vue'
@@ -39,6 +40,7 @@ const searchFunction = ref('')
 const mirror = ref()
 
 const props = defineProps({
+  datasetReferences: Boolean,
   crossDs: {
     type: Boolean,
     default: () => false
@@ -110,7 +112,7 @@ const formQuotaConfirm = () => {
       if (!formQuota.id) {
         formQuota.id = `params_${guid()}`
       }
-      setFieldForm()
+      if (!setFieldForm()) return
       fieldForm.params = [cloneDeep(formQuota)]
       showFormula()
       formQuotaClose()
@@ -119,12 +121,50 @@ const formQuotaConfirm = () => {
 }
 
 const setFieldForm = () => {
-  fieldForm.originName = setNameIdTrans('name', 'id', mirror.value.state.doc.toString())
+  const formula = readFormula()
+  if (props.datasetReferences) {
+    for (const [, name] of formula.matchAll(/\[([^\]]+)\]/g)) {
+      if (references.value.counts.has(name) && !references.value.byName.has(name)) {
+        ElMessage.error(t('ai_conversation.ambiguous_field'))
+        return false
+      }
+    }
+  }
+  fieldForm.originName = setNameIdTrans('name', formula)
+  return true
 }
 
-const setNameIdTrans = (from, to, formula: string) => {
-  const references = [...dimensionDataList.value, ...quotaDataList.value]
-  const mapping = new Map(references.map(item => [String(item[from]), item[to]]))
+const references = computed(() => {
+  const items = [...dimensionDataList.value, ...quotaDataList.value]
+  const counts = new Map<string, number>()
+  for (const item of items) counts.set(item.name, (counts.get(item.name) || 0) + 1)
+  const byId = new Map<string, string>()
+  const byName = new Map<string, string>()
+  for (const item of items) {
+    const id = String(item.id)
+    const name = item.name
+    let label = name
+    if (props.datasetReferences) {
+      // The same qualified token is advertised by the assistant for ambiguous names.
+      let qualified = name.replaceAll('[', '［').replaceAll(']', '］') + ' #' + id
+      while (counts.has(qualified)) qualified += ' #' + id
+      byName.set(qualified, id)
+      if (
+        (counts.get(name) || 0) > 1 ||
+        name.includes('[') ||
+        name.includes(']') ||
+        / #(?:params_)?-?\d+$/.test(name)
+      )
+        label = qualified
+    }
+    byId.set(id, label)
+    byName.set(label, id)
+  }
+  return { byId, byName, counts }
+})
+const referenceName = item => references.value.byId.get(String(item.id)) || item.name
+const setNameIdTrans = (from: 'id' | 'name', formula: string) => {
+  const mapping = from === 'id' ? references.value.byId : references.value.byName
   return formula.replace(/\[([^\]]+)\]/g, (token, key) =>
     mapping.has(key) ? `[${mapping.get(key)}]` : token
   )
@@ -135,7 +175,7 @@ const showFormula = () => {
     changes: {
       from: 0,
       to: mirror.value.state.doc.length,
-      insert: setNameIdTrans('id', 'name', fieldForm.originName)
+      insert: setNameIdTrans('id', fieldForm.originName)
     }
   })
 }
@@ -146,10 +186,11 @@ const touched = reactive({ name: false, groupType: false, deType: false })
 const readFormula = (): string => mirror.value.state.doc.toString()
 const draftField = () => ({
   ...cloneDeep(fieldForm),
-  originName: setNameIdTrans('name', 'id', readFormula())
+  originName: setNameIdTrans('name', readFormula())
 })
 const applyFormula = (suggestion: AiCalcFieldSuggestion) => {
-  const { expression, name, groupType, deType } = suggestion
+  const { boundExpression, name, groupType, deType } = suggestion
+  const expression = boundExpression ? setNameIdTrans('id', boundExpression) : suggestion.expression
   if (!editingExisting.value) {
     if (!touched.name && name) fieldForm.name = name
     if (!touched.groupType) fieldForm.groupType = groupType
@@ -228,7 +269,7 @@ const disableCaParams = computed(() => {
 
 const delParamsToQuota = () => {
   const [param] = fieldForm.params
-  setFieldForm()
+  if (!setFieldForm()) return
   fieldForm.originName = fieldForm.originName.replaceAll(`[${param.id}]`, '')
   fieldForm.params = []
   showFormula()
@@ -392,7 +433,7 @@ getFunction().then(res => {
                 :key="item.id"
                 class="item-dimension flex-align-center"
                 :title="item.name"
-                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+                @click="insertFieldToCodeMirror('[' + referenceName(item) + ']')"
               >
                 <el-icon>
                   <Icon
@@ -403,7 +444,7 @@ getFunction().then(res => {
                     ></component
                   ></Icon>
                 </el-icon>
-                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
+                <span class="ellipsis" :title="referenceName(item)">{{ referenceName(item) }}</span>
               </span>
             </div>
 
@@ -436,7 +477,7 @@ getFunction().then(res => {
                 v-for="item in quotaData"
                 :key="item.id"
                 class="item-quota flex-align-center"
-                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+                @click="insertFieldToCodeMirror('[' + referenceName(item) + ']')"
               >
                 <el-icon v-if="!item.groupType">
                   <Icon name="icon_adjustment_outlined"
@@ -452,7 +493,7 @@ getFunction().then(res => {
                     ></component
                   ></Icon>
                 </el-icon>
-                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
+                <span class="ellipsis" :title="referenceName(item)">{{ referenceName(item) }}</span>
                 <div v-if="!item.groupType" class="icon-right">
                   <el-icon @click.stop="updateParamsToQuota" class="hover-icon">
                     <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>

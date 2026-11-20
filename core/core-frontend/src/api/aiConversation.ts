@@ -30,6 +30,7 @@ export interface AiCalcFieldDraft {
   }
 }
 export interface AiCalcFieldSuggestion {
+  boundExpression?: string | null
   expression: string
   name: string
   groupType: 'd' | 'q'

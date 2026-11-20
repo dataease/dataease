@@ -1,6 +1,8 @@
 export default {
   ai_conversation: {
     calc_title: 'Calculated field assistant',
+    ambiguous_field:
+      'Several references have this name. Select a specific field or parameter from the list.',
     new_formula: 'New formula',
     replace_formula: 'Replace the current formula with this suggestion?',
     detail_pass: 'Preview validation passed',
