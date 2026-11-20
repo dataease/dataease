@@ -24,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import static io.dataease.ai.ToolConversationRegression.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -31,6 +33,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 final class CalcFieldRegression {
     final AtomicBoolean writable = new AtomicBoolean(true);
     final AtomicInteger previews = new AtomicInteger();
+    private CountDownLatch previewStarted;
+    private CountDownLatch previewRelease;
+    private volatile String previewMode = "";
     private final String formula = "[Price] * 2";
 
     AiCalcFieldScene scene(AiDatasourceTools metadata) {
@@ -70,7 +75,25 @@ final class CalcFieldRegression {
         };
         var access = new CalcFieldAccess(identity, null, null, null, permissions, destinations, groups, fields, new PermissionManage());
         var preview = new DatasetDataManage() {
-            @Override public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) {
+            @Override public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) throws Exception {
+                String value = draft.getAllFields().stream().filter(f -> f.getId() == fieldId).findFirst().orElseThrow().getOriginName();
+                if (Set.of("calc-stop", "calc-revoke").contains(previewMode)) {
+                    previewStarted.countDown();
+                    previewRelease.await(5, TimeUnit.SECONDS);
+                    throw new java.sql.SQLException("private-driver-value", "22012");
+                }
+                if ("calc-comment".equals(previewMode)) {
+                    if (!"[102] - (-2)".equals(value)) throw new AssertionError("ambiguous preview expression");
+                    return "DETAIL_PASS";
+                }
+                if ("calc-sibling".equals(previewMode)
+                        && draft.getAllFields().stream().anyMatch(f -> Objects.equals(f.getId(), 302L)))
+                    throw new java.sql.SQLException("private-driver-value", "22012");
+                if ("calc-outage".equals(previewMode)) throw new java.sql.SQLException("private-driver-value", "08006");
+                if ("calc-db-repair".equals(previewMode)) {
+                    if (value.equals("ABS([102], 2)")) throw new java.sql.SQLException("private-driver-value", "42000", 1582);
+                    if (value.equals("1")) return "DETAIL_PASS";
+                }
                 if (draft.getId() != null || fieldId != 301 || deadline <= System.currentTimeMillis()
                         || draft.getAllFields().size() != 2 || !"[102] * 2".equals(draft.getAllFields().getLast().getOriginName())
                         || draft.getAllFields().getLast().getDeType() != 2)
@@ -83,8 +106,16 @@ final class CalcFieldRegression {
     }
 
     String respond(String mode, int step) throws Exception {
-        String candidate = "calc-invalid".equals(mode) ? "[Unknown] * 2" : formula;
-        return step == 1 || "calc-invalid".equals(mode)
+        String candidate = switch (mode) {
+            case "calc-invalid" -> "[Unknown] * 2";
+            case "calc-exhaust" -> "[Missing" + step + "] + 1";
+            case "calc-repair" -> step == 1 ? "[Missing] + 1" : formula;
+            case "calc-db-repair" -> step == 1 ? "ABS([Price], 2)" : formula;
+            case "calc-comment" -> "[Price]-- 2";
+            default -> formula;
+        };
+        return step == 1 || "calc-invalid".equals(mode) || "calc-exhaust".equals(mode)
+                || (mode.equals("calc-repair") || mode.equals("calc-db-repair")) && step == 2
                 ? call("formula-" + step, "propose_calc_field", JSON.writeValueAsString(Map.of("expression", candidate,
                         "name", "Double price", "groupType", "q", "deType", "3")))
                 : frame(Map.of("content", "Confirmed detail projection"), "stop");
@@ -118,8 +149,80 @@ final class CalcFieldRegression {
         if (!JSON.readTree(applied.getContentAsString()).path("calcField").equals(candidate)) throw new AssertionError("application projection");
         requests.clear(); mode.set("calc-invalid");
         var bad = terminal(mvc, start(mvc, session, "Use a missing field"));
-        if (!"FAILED".equals(bad.path("status").asText()) || previews.get() != 1)
+        if (!"COMPLETED".equals(bad.path("status").asText()) || previews.get() != 1 || requests.size() != 2
+                || !"INVALID".equals(bad.at("/result/calcField/validation").asText())
+                || !"[Unknown] * 2".equals(bad.at("/result/calcField/expression").asText()))
             throw new AssertionError("unknown field must stop before the datasource preview");
+        for (String scenario : List.of("calc-repair", "calc-exhaust", "calc-comment", "calc-outage", "calc-db-repair", "calc-sibling", "calc-unsafe-sibling")) {
+            requests.clear();
+            mode.set(scenario);
+            previewMode = scenario;
+            String data = opening;
+            if (scenario.endsWith("sibling")) data = opening.replace("{\"id\":\"301\",\"name\":\"\"", """
+                    {"id":"302","name":"Other","extField":2,"deType":2,"checked":true,"originName":"%s"},{"id":"301","name":""
+                    """.strip().formatted(scenario.equals("calc-sibling") ? "1 / 0" : "unsupported()"));
+            var isolated = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(data))
+                    .andReturn().getResponse().getContentAsString());
+            var path = start(mvc, isolated, "Calculate the field");
+            var report = terminal(mvc, path);
+            var field = report.at("/result/calcField");
+            String expected = switch (scenario) {
+                case "calc-exhaust" -> "INVALID";
+                case "calc-outage", "calc-sibling", "calc-unsafe-sibling" -> "PREVIEW_FAILED";
+                default -> "DETAIL_PASS";
+            };
+            int sends = switch (scenario) {
+                case "calc-exhaust", "calc-db-repair", "calc-repair" -> 3;
+                case "calc-comment" -> 2;
+                default -> 1;
+            };
+            if (!expected.equals(field.path("validation").asText()) || requests.size() != sends
+                    || report.toString().contains("private-driver-value") || requests.toString().contains("private-driver-value"))
+                throw new AssertionError(scenario + " " + field + " sends=" + requests.size());
+            if ("calc-comment".equals(scenario) && !"[Price] - (-2)".equals(field.path("expression").asText()))
+                throw new AssertionError("application must return the validated arithmetic");
+            if (!"DETAIL_PASS".equals(expected)) {
+                if (field.path("reason").asText().isBlank()) throw new AssertionError("missing finite failure reason");
+                if ("calc-exhaust".equals(scenario) && !field.path("expression").asText().equals("[Missing3] + 1"))
+                    throw new AssertionError("must retain final failed candidate");
+                try {
+                    if (mvc.perform(post(path + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                            .content(JSON.writeValueAsBytes(Map.of("contextVersion", isolated.path("contextVersion").asText(),
+                                    "draftVersion", isolated.path("draftVersion").asText()))))
+                            .andReturn().getResponse().getStatus() < 400) throw new AssertionError("failed formula was applicable");
+                } catch (jakarta.servlet.ServletException rejected) {
+                    if (!(rejected.getCause() instanceof AiErrors.Failure)) throw rejected;
+                }
+            }
+            mvc.perform(delete("/ai/conversations/" + isolated.path("sessionId").asText()));
+        }
+        for (String boundary : List.of("calc-stop", "calc-revoke")) {
+            mode.set(boundary); requests.clear();
+            previewStarted = new CountDownLatch(1); previewRelease = new CountDownLatch(1);
+            previewMode = boundary;
+            var isolated = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(opening))
+                    .andReturn().getResponse().getContentAsString());
+            String path = start(mvc, isolated, "Calculate the field");
+            if (!previewStarted.await(5, TimeUnit.SECONDS)) throw new AssertionError("preview never started");
+            try {
+                if (boundary.equals("calc-stop")) {
+                    var stopped = JSON.readTree(mvc.perform(post(path + "/stop")).andReturn().getResponse().getContentAsString());
+                    if (!stopped.path("status").asText().equals("CANCELLED")) throw new AssertionError("preview still running");
+                    previewRelease.countDown();
+                    var cancelled = terminal(mvc, path);
+                    if (!cancelled.path("result").isNull() || cancelled.toString().contains("SUCCEEDED"))
+                        throw new AssertionError("cancelled validation returned a candidate");
+                } else {
+                    writable.set(false);
+                    denied(mvc, path);
+                }
+            } finally {
+                previewRelease.countDown(); writable.set(true);
+                mvc.perform(delete("/ai/conversations/" + isolated.path("sessionId").asText()));
+            }
+            if (requests.size() != 1) throw new AssertionError("cancelled/revoked preview requested model correction");
+        }
+        previewMode = "";
         writable.set(false);
         try {
             if (mvc.perform(post(run + "/check-application").contentType(MediaType.APPLICATION_JSON).content(application))
@@ -153,7 +256,7 @@ final class CalcFieldRegression {
         if (!requests.getFirst().path("messages").get(0).path("content").asText().contains(manual))
             throw new AssertionError("manual formula basis missing in model request");
         mvc.perform(delete("/ai/conversations/" + manualSession.path("sessionId").asText()));
-        System.out.println("PASS calculated-field HTTP conversation, bounded preview, unknown reference, application and revocation");
+        System.out.println("PASS calculated-field HTTP conversation, bounded private preview, correction/exhaustion/duplicate, safe failure classification, canonical application, cancellation and revocation");
     }
     private static void expectDenied(MockMvc mvc, String opening) throws Exception {
         try {

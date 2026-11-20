@@ -87,7 +87,8 @@ public final class CalcFieldPreviewRegression {
                 data.previewCalcField(draft, 201, System.currentTimeMillis() + 10000);
                 throw new AssertionError("failed query accepted an aggregate placeholder");
             } catch (DEException expected) {
-                if (!expected.getMessage().contains("UNKNOWN_FUNCTION")) throw expected;
+                if (!(expected.getCause() instanceof SQLException) || expected.getMessage().contains("UNKNOWN_FUNCTION"))
+                    throw new AssertionError("preview must preserve a typed driver cause and expose a safe message", expected);
             }
             System.out.println("PASS JDBC preview distinguishes direct/indirect aggregates, ordinary dash and failed query");
         }

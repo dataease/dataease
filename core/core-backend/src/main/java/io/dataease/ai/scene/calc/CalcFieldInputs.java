@@ -10,12 +10,15 @@ import java.util.*;
 final class CalcFieldInputs {
     private final Map<String, String> labels = new HashMap<>();
     private final Map<String, DatasetTableFieldDTO> available = new LinkedHashMap<>();
+    private static final java.util.regex.Pattern BOUND_REFERENCE = java.util.regex.Pattern.compile("\\[([^\\]]+)]");
+    private final Set<Long> hidden;
     private final Map<String, String> paramNames = new HashMap<>();
     final DatasetTableFieldDTO target;
     final List<Map<String,Object>> projection = new ArrayList<>();
 
     CalcFieldInputs(DatasetGroupInfoDTO dataset, Long targetId, CalcFieldAccess.Grant grant,
                     Map<Long, CalcFieldAccess.Column> physical) {
+        hidden = grant.hidden();
         var fields = dataset.getAllFields();
         if (fields == null || fields.isEmpty() || fields.size() > 256) throw AiErrors.error("input_limit");
         var seen = new HashSet<Long>();
@@ -53,7 +56,7 @@ final class CalcFieldInputs {
         }
         for (var entry : available.entrySet()) {
             try {
-                dependencies(entry.getKey(), new HashSet<>(), new HashSet<>(), new int[]{0});
+                dependencies(entry.getKey(), new HashSet<>(), new int[]{0});
             } catch (IllegalArgumentException unavailable) { continue; }
             var f = entry.getValue();
             label(f.getName(), entry.getKey());
@@ -63,42 +66,52 @@ final class CalcFieldInputs {
 
     private void label(String name, String id) { labels.merge(name, id, (a, b) -> ""); }
 
-    private void dependencies(String id, Set<String> path, Set<String> used, int[] expanded) {
+    private void dependencies(String id, Set<String> path, int[] expanded) {
         var f = available.get(id);
         if (f == null || path.size() >= 8 || ++expanded[0] > 128 || !path.add(id)) throw CalcFieldExpression.invalid();
-        used.add(id);
         if (Objects.equals(f.getExtField(), 2)) {
             CalcFieldExpression.bind(f.getOriginName(), ref -> {
-                dependencies(ref, path, used, expanded);
+                if (f != target || !paramNames.containsKey(ref)) dependencies(ref, path, expanded);
                 return ref;
             });
         }
         path.remove(id);
     }
 
-    void candidate(DatasetGroupInfoDTO draft, String expression, int deType, boolean preserveType) {
-        var used = new HashSet<String>();
+    String candidate(String expression, int deType, boolean preserveType) {
         var expanded = new int[]{0};
+        var displayNames = new HashMap<String, String>();
         String binding = CalcFieldExpression.bind(expression, label -> {
             var id = labels.get(label);
-            if (!paramNames.containsKey(id)) dependencies(id, new HashSet<>(), used, expanded);
+            if (!paramNames.containsKey(id)) dependencies(id, new HashSet<>(), expanded);
+            displayNames.put(id, label);
             return id;
         });
-        for (String id : used) {
-            var field = available.get(id);
-            if (Objects.equals(field.getExtField(), 2))
-                field.setOriginName(CalcFieldExpression.bind(field.getOriginName(), ref -> available.containsKey(ref) ? ref : null));
-        }
         target.setOriginName(binding);
         if (!preserveType) {
             target.setDeType(deType);
             target.setDeExtractType(deType);
         }
         target.setChecked(true);
-        // Physical fields remain available to join and row predicates. Execute only reachable calculated fields.
-        draft.setAllFields(draft.getAllFields().stream().filter(f -> f == target
-                || available.containsKey(f.getId().toString()) && (Objects.equals(f.getExtField(), 0)
-                || used.contains(f.getId().toString()))).toList());
+        // Render the editor expression from the very same parse used by the Provider.
+        return BOUND_REFERENCE.matcher(binding)
+                .replaceAll(match -> java.util.regex.Matcher.quoteReplacement("[" + displayNames.get(match.group(1)) + "]"));
+    }
+
+    /** Do not claim success if a sibling was dropped, or execute unchecked sibling SQL. */
+    boolean includePreviewFields(DatasetGroupInfoDTO draft) {
+        available.put(target.getId().toString(), target);
+        var fields = draft.getAllFields().stream().filter(f -> !hidden.contains(f.getId())).toList();
+        for (var field : fields) {
+            if (field == target) continue;
+            try {
+                dependencies(field.getId().toString(), new HashSet<>(), new int[]{0});
+                if (Objects.equals(field.getExtField(), 2))
+                    field.setOriginName(CalcFieldExpression.bind(field.getOriginName(), ref -> available.containsKey(ref) ? ref : null));
+            } catch (IllegalArgumentException unsupportedSibling) { return false; }
+        }
+        draft.setAllFields(fields);
+        return true;
     }
 
     static void checkNodes(UnionDTO node, CalcFieldAccess.Grant grant) {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
-import { ElMessageBox } from 'element-plus-secondary'
+import useClipboard from 'vue-clipboard3'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -49,6 +50,9 @@ const validationLabel = (validation: AiCalcFieldSuggestion['validation']) => {
 const title = () => tr(props.calcFieldDraft ? 'calc_title' : 'editor_title')
 const newDraftLabel = () => tr(props.calcFieldDraft ? 'new_formula' : 'new_query')
 const suggestionText = (result?: AiAssistanceResult) => result?.calcField?.expression ?? result?.sql
+const failedFormula = (result?: AiAssistanceResult) =>
+  result?.calcField?.validation === 'INVALID' || result?.calcField?.validation === 'PREVIEW_FAILED'
+const { toClipboard } = useClipboard()
 const user = useUserStoreWithOut()
 const editorId = uuid.v4()
 interface Turn {
@@ -161,7 +165,7 @@ const accessLost = (error: unknown) =>
   ([401, 403, 404].includes(error.response?.status) ||
     ('messageKey' in error && error.messageKey === 'i18n_ai_scope_changed'))
 const fail = (error: unknown) => {
-  if (accessLost(error)) {
+  if (accessLost(error) || (error instanceof Error && error.message === 'scope_changed')) {
     emit('invalidate-preview')
     clearHistory()
   }
@@ -280,18 +284,42 @@ const calcScope = (draft?: AiCalcFieldDraft) => {
     )
   ])
 }
-const checkedSuggestion = async (turn: Turn, target: string) => {
+const checkedSuggestion = async (turn: Turn, target: string, referenceOnly = false) => {
   const session = turn.session!
   if (props.calcFieldDraft && turn.calcScope !== calcScope(props.calcFieldDraft())) {
     throw new Error('scope_changed')
   }
-  const checked = await checkSqlApplication(
-    session.sessionId,
-    turn.executionId!,
-    session.contextVersion,
-    session.draftVersion,
-    target
-  )
+  let checked: AiAssistanceResult
+  if (referenceOnly && failedFormula(turn.result)) {
+    const page = await getConversationEvents(
+      session.sessionId,
+      turn.executionId!,
+      turn.cursor ?? 0,
+      new AbortController().signal
+    )
+    if (
+      page.status !== 'COMPLETED' ||
+      !page.result ||
+      !failedFormula(page.result) ||
+      page.executionId !== turn.executionId ||
+      page.sessionId !== session.sessionId ||
+      page.contextVersion !== session.contextVersion ||
+      target !== props.resourceId ||
+      session.resourceId !== target ||
+      turn.calcScope !== calcScope(props.calcFieldDraft?.())
+    ) {
+      throw new Error('scope_changed')
+    }
+    checked = page.result
+  } else {
+    checked = await checkSqlApplication(
+      session.sessionId,
+      turn.executionId!,
+      session.contextVersion,
+      session.draftVersion,
+      target
+    )
+  }
   if (
     checked.type !== (props.calcFieldDraft ? 'CALC_FIELD_SUGGESTION' : 'SQL_SUGGESTION') ||
     !suggestionText(checked) ||
@@ -430,7 +458,7 @@ const send = async () => {
   failure.value = input.value = ''
   try {
     const sql = basis.prior
-      ? suggestionText(await checkedSuggestion(basis.prior, source))!
+      ? suggestionText(await checkedSuggestion(basis.prior, source, true))!
       : basis.sql
     if (!current()) return
     const opening = {
@@ -550,6 +578,21 @@ const stop = async () => {
   busy.value = true
   await stopRun(turn, version)
 }
+const copyFormula = async (turn: Turn) => {
+  if (busy.value || applying.value || !failedFormula(turn.result)) return
+  const token = version
+  applying.value = true
+  try {
+    const result = await checkedSuggestion(turn, props.resourceId, true)
+    if (token !== version || !result.calcField) return
+    await toClipboard(result.calcField.expression)
+    ElMessage.success(t('data_set.copied_successfully'))
+  } catch (error) {
+    if (token === version) fail(error)
+  } finally {
+    if (token === version) applying.value = false
+  }
+}
 const apply = async (turn: Turn) => {
   const { session, executionId, result } = turn
   if (busy.value || applying.value || !session || !executionId || !suggestionText(result)) return
@@ -646,6 +689,17 @@ const apply = async (turn: Turn) => {
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
             <pre>{{ turn.result.calcField.expression }}</pre>
             <span>{{ validationLabel(turn.result.calcField.validation) }}</span>
+            <p v-if="failedFormula(turn.result) && turn.result.calcField.reason">
+              {{ tr(turn.result.calcField.reason) }}
+            </p>
+            <el-button
+              v-if="failedFormula(turn.result)"
+              text
+              :disabled="busy || applying"
+              @click="copyFormula(turn)"
+            >
+              {{ tr('copy_formula') }}
+            </el-button>
             <el-button
               :disabled="busy || applying || !canApplyCalcField(turn.result.calcField.validation)"
               @click="apply(turn)"

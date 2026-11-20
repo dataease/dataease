@@ -324,6 +324,8 @@ public class CalciteProvider extends Provider {
                 }
                 list = getDataResult(resultSet);
             } catch (Exception | AssertionError e) {
+                if (datasourceRequest.getExecutionDeadline() != null)
+                    throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal").causedBy(e);
                 String msg;
                 if (e.getCause() != null && e.getCause().getCause() != null) {
                     msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
@@ -774,6 +776,8 @@ public class CalciteProvider extends Provider {
             fieldList = getField(resultSet, datasourceRequest);
             dataList = getData(resultSet, datasourceRequest);
         } catch (SQLException e) {
+            if (datasourceRequest.getExecutionDeadline() != null)
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal").causedBy(e);
             LogUtil.error(e);
             DEException.throwException("SQL ERROR: " + e.getMessage());
         } catch (Exception e) {

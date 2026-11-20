@@ -36,6 +36,7 @@ async function backend(page, options = {}) {
           groupType: "q",
           deType: 3,
           validation: options.validation ?? "DETAIL_PASS",
+          reason: options.reason,
         },
         resourceId: opening.resourceId,
         resourceVersion: "r1",
@@ -171,4 +172,43 @@ test("an aggregate placeholder explains chart verification and allows explicit a
   await expect(drawer.locator(".cm-content")).toHaveText(expression);
   expect(state.checks).toBe(1);
   expect(await page.evaluate(() => window.saved)).toBeUndefined();
+});
+
+test("failed formulas support authorized copy and follow-up while manual validation uses only the editor", async ({
+  page,
+  context,
+}) => {
+  const state = await backend(page, {
+    validation: "INVALID",
+    reason: "invalid_formula",
+  });
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByRole("button", { name: "计算字段助手" }).click();
+  await drawer.locator("textarea").fill("生成公式");
+  await drawer.getByRole("button", { name: "发送", exact: true }).click();
+  await expect(
+    drawer.getByText("请检查字段引用、函数和公式语法。")
+  ).toBeVisible();
+  await expect(
+    drawer.getByRole("button", { name: "应用到当前草稿" })
+  ).toBeDisabled();
+  await drawer.getByRole("button", { name: "复制公式" }).click();
+  await expect
+    .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toBe("[orders_id] - [items_id]");
+  await drawer.locator("textarea").fill("请修改上一轮建议");
+  await drawer.getByRole("button", { name: "发送", exact: true }).click();
+  await expect.poll(() => state.opens.length).toBe(2);
+  expect(state.opens[1].sql).toBe("[orders_id] - [items_id]");
+  expect(state.checks).toBe(0);
+  await expect(drawer.locator(".cm-content")).toHaveText("");
+  await drawer.getByPlaceholder("请输入字段名称").fill("手改");
+  await drawer.locator(".cm-content").fill("5 + 2");
+  await drawer.getByRole("button", { name: "校验", exact: true }).click();
+  await expect(page.getByText("字段表达式校验成功")).toBeVisible();
+  expect(state.opens).toHaveLength(2);
+  await expect(drawer.locator(".cm-content")).toHaveText("5 + 2");
 });
