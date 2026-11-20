@@ -36,7 +36,7 @@ const server = await createServer({
       enforce: 'pre',
       resolveId(id, importer) {
         if (!importer?.split('?')[0].endsWith('/AddSql.vue')) return
-        if (id === './DatasetSqlAssistant.vue') {
+        if (id === './DatasetEditorAssistant.vue') {
           return '\0dataset-sql-assistant-stub'
         }
         if (['.', './util', './CodeMirror.vue'].includes(id)) {

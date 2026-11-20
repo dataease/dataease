@@ -167,6 +167,15 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (Boolean.TRUE.equals(request.isCross())) opening = fingerprint("cross", opening);
         if (request.systemVariableNames() != null)
             opening = fingerprint("variables", opening, io.dataease.utils.JsonUtil.toJSONString(request.systemVariableNames()));
+        String draftVersion = AiPromptFingerprint.of(new Prompt(Objects.toString(request.sql(), "")));
+        if (request.calcField() != null) {
+            if (!"dataset-calc-field".equals(request.scene())) throw AiErrors.error("invalid");
+            String draft = (String) io.dataease.utils.JsonUtil.toJSONString(request.calcField());
+            if (draft == null) throw AiErrors.error("invalid");
+            if (draft.length() > 512_000) throw AiErrors.error("input_limit");
+            draftVersion = fingerprint(draftVersion, draft);
+            opening = fingerprint(opening, draftVersion);
+        }
         if (request.preview() != null) {
             opening = fingerprint("preview", opening, request.preview());
         }
@@ -192,7 +201,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         }
         String id = UUID.randomUUID().toString();
         var view = new Session(id, UUID.randomUUID().toString(), scene.code(), context.resourceId(), context.resourceName(), request.editorId(),
-                source == null ? System.currentTimeMillis() + SESSION_MILLIS : source.view.expiresAt(), context.revision(), AiPromptFingerprint.of(new Prompt(Objects.toString(request.sql(), ""))));
+                source == null ? System.currentTimeMillis() + SESSION_MILLIS : source.view.expiresAt(), context.revision(), draftVersion);
         State created = new State(view, owner, context, single, usage);
         if (source != null) synchronized (source) {
             if (source.closed) throw AiErrors.error("scope_changed");
@@ -476,7 +485,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             run.stream.verifyDelivery();
             if (request == null || !Objects.equals(request.contextVersion(), state.view.contextVersion())
                     || !Objects.equals(request.draftVersion(), state.view.draftVersion())) throw AiErrors.error("scope_changed");
-            if (!"COMPLETED".equals(run.status) || run.result == null || !"SQL_SUGGESTION".equals(run.result.type())) throw AiErrors.error("invalid");
+            if (!"COMPLETED".equals(run.status) || run.result == null || !scene(state.view.scene()).applicable(run.result)) throw AiErrors.error("invalid");
             if (request.targetResourceId() != null && !request.targetResourceId().equals(state.context.resourceId())) {
                 authorized(state, () -> {
                     scene(state.view.scene()).authorizeCopyTarget(request.targetResourceId());

@@ -233,6 +233,16 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count, boolean checkPermission, boolean encode) throws Exception {
+        return previewDataWithLimit(datasetGroupInfoDTO, start, count, checkPermission, encode, null, 0);
+    }
+
+    /** Runs the editor's actual query on an isolated draft. Only a finite verdict leaves this boundary. */
+    public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) throws Exception {
+        return (String) previewDataWithLimit(draft, 0, 1, draft.getId() != null, false, fieldId, deadline).get("validation");
+    }
+
+    private Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count,
+                                                       boolean checkPermission, boolean encode, Long fieldId, long deadline) throws Exception {
         if (encode) {
             DatasetUtils.dsDecode(datasetGroupInfoDTO);
         }
@@ -252,6 +262,10 @@ public class DatasetDataManage {
             if (ObjectUtils.isEmpty(fields)) {
                 DEException.throwException(Translator.get("i18n_no_column_permission"));
             }
+        }
+        if (fieldId != null && (fields.size() != datasetGroupInfoDTO.getAllFields().size() || !desensitizationList.isEmpty()
+                || fields.stream().noneMatch(f -> fieldId.equals(f.getId()) && Objects.equals(f.getExtField(), 2)))) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
         }
         buildFieldName(sqlMap, fields);
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -302,7 +316,13 @@ public class DatasetDataManage {
         datasourceRequest.setDsList(dsMap);
         datasourceRequest.setIsCross(crossDs);
         applyPreparedParams(datasourceRequest, sqlMap);
+        if (fieldId != null) datasourceRequest.setExecutionDeadline(deadline);
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
+        if (fieldId != null) {
+            if (data == null || !(data.get("fields") instanceof List<?> projected) || projected.size() != fields.size())
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal");
+            return Map.of("validation", "DETAIL_PASS");
+        }
 
         Map<String, Object> map = new LinkedHashMap<>();
         // 重新构造data

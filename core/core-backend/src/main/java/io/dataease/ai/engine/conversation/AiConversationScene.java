@@ -14,7 +14,11 @@ public interface AiConversationScene {
     record ResourceClaim(String datasourceId, String table, String operation) { }
     default List<ResourceClaim> resourceClaims(Context context) { return List.of(); }
     record ResourceRevision(String id, String revision, boolean isCross) {}
-    record Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross, ResourceRevision editorResource) {
+    interface SceneState { }
+    record Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross, ResourceRevision editorResource, SceneState sceneState) {
+        public Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross, ResourceRevision editorResource) {
+            this(resourceId, resourceName, revision, instruction, selectedTables, isCross, editorResource, null);
+        }
         public Context(String resourceId, String resourceName, String revision, String instruction, List<String> selectedTables, boolean isCross) {
             this(resourceId, resourceName, revision, instruction, selectedTables, isCross, null);
         }
@@ -37,6 +41,7 @@ public interface AiConversationScene {
     default List<AiToolProtocol.Definition> tools(Context context) { return tools(); }
     default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
     default boolean retainEveryTurn() { return false; }
+    default boolean applicable(AiConversationDtos.Result result) { return "SQL_SUGGESTION".equals(result.type()); }
     default void authorizeCopyTarget(String target) { throw AiErrors.error("invalid"); }
     /** Trusted execution strategy; a task-only business cannot be invoked through foreground routes. */
     default boolean backgroundOnly() { return false; }

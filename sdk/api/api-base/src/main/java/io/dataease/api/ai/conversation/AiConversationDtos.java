@@ -1,5 +1,6 @@
 package io.dataease.api.ai.conversation;
 
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -12,12 +13,19 @@ public final class AiConversationDtos {
     public enum PreviewOutcome { SUCCESS, UNKNOWN_COLUMN, UNKNOWN_TABLE, AMBIGUOUS_COLUMN, SYNTAX, TIMEOUT, FAILED }
     public record SqlPreview(String resourceId, Boolean isCross, PreviewOutcome outcome, Integer revision, Integer currentRevision,
                              String currentResourceId, Boolean currentIsCross) { }
-    public record Open(@NotBlank @Pattern(regexp = "sql|dataset-sql") String scene,
+    public record CalcFieldDraft(Long fieldId, DatasetGroupInfoDTO dataset, Boolean preserveType) {
+        public CalcFieldDraft(Long fieldId, DatasetGroupInfoDTO dataset) { this(fieldId, dataset, null); }
+    }
+    public record Open(@NotBlank @Pattern(regexp = "sql|dataset-sql|dataset-calc-field") String scene,
                        @Pattern(regexp = "[0-9]{1,20}|") String resourceId,
                        @NotBlank @Size(max = 100) String editorId,
                        @Size(max = 30000) String sql, @Size(max = 100) String openKey,
                        @Size(max = 100) String previousSessionId, Boolean isCross,
-                       @Size(max = 64) java.util.List<@NotBlank @Size(max = 256) String> systemVariableNames, SqlPreview preview) {
+                       @Size(max = 64) java.util.List<@NotBlank @Size(max = 256) String> systemVariableNames, SqlPreview preview, CalcFieldDraft calcField) {
+        public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId, Boolean isCross,
+                    java.util.List<String> systemVariableNames, SqlPreview preview) {
+            this(scene, resourceId, editorId, sql, openKey, previousSessionId, isCross, systemVariableNames, preview, null);
+        }
         public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId, Boolean isCross,
                     java.util.List<String> systemVariableNames) {
             this(scene, resourceId, editorId, sql, openKey, previousSessionId, isCross, systemVariableNames, null);
@@ -80,8 +88,13 @@ public final class AiConversationDtos {
             this(table, inspected, description, grain, fields, java.util.List.of());
         }
     }
+    public record CalcFieldSuggestion(String expression, String name, String groupType, int deType, String validation) { }
     public record Result(String type, String text, String sql, String resourceId, String resourceName,
-                         String resourceVersion, String editorId, String draftVersion, java.util.List<TableEvidence> evidence) {
+                         String resourceVersion, String editorId, String draftVersion, java.util.List<TableEvidence> evidence, CalcFieldSuggestion calcField) {
+        public Result(String type, String text, String sql, String resourceId, String resourceName,
+                      String resourceVersion, String editorId, String draftVersion, java.util.List<TableEvidence> evidence) {
+            this(type, text, sql, resourceId, resourceName, resourceVersion, editorId, draftVersion, evidence, null);
+        }
         public Result(String type, String text, String sql, String resourceId, String resourceName,
                       String resourceVersion, String editorId, String draftVersion) {
             this(type, text, sql, resourceId, resourceName, resourceVersion, editorId, draftVersion, java.util.List.of());

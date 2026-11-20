@@ -180,6 +180,7 @@ interface Field extends SemanticSnapshot {
 }
 
 interface DataSource {
+  type?: string
   id: string
   name: string
   children?: DataSource[]

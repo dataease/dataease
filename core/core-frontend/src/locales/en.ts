@@ -1,5 +1,10 @@
 export default {
   ai_conversation: {
+    calc_title: 'Calculated field assistant',
+    new_formula: 'New formula',
+    replace_formula: 'Replace the current formula with this suggestion?',
+    detail_pass: 'Preview validation passed',
+    calc_failed: 'Preview validation failed',
     failed_preview: 'Failed preview',
     successful_preview: 'Successful preview',
     draft_revision: 'Revision',

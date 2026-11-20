@@ -15,6 +15,8 @@ import {
   startConversationExecution,
   stopConversationExecution,
   type AiAssistanceResult,
+  type AiCalcFieldDraft,
+  type AiCalcFieldSuggestion,
   type AiConversationEvents,
   type AiSqlPreview,
   type AiConversationSession
@@ -28,19 +30,25 @@ const props = defineProps<{
   resourceLabel: string
   draftRevision: number
   preview?: AiSqlPreview & { sql: string; sourceLabel: string }
+  calcFieldDraft?: () => AiCalcFieldDraft
   readDraft: () => string
 }>()
 const emit = defineEmits<{
   (event: 'apply', query: string): void
+  (event: 'apply-formula', formula: AiCalcFieldSuggestion): void
   (event: 'invalidate-preview'): void
 }>()
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
+const title = () => tr(props.calcFieldDraft ? 'calc_title' : 'editor_title')
+const newDraftLabel = () => tr(props.calcFieldDraft ? 'new_formula' : 'new_query')
+const suggestionText = (result?: AiAssistanceResult) => result?.calcField?.expression ?? result?.sql
 const user = useUserStoreWithOut()
 const editorId = uuid.v4()
 interface Turn {
   basis: string
   baseSql: string
+  calcScope?: string
   draftRevision: number
   question: string
   answer: string
@@ -182,9 +190,12 @@ const chooseBasis = (question: string) => {
         question
       ))
   ) {
-    return { label: tr('new_query'), sql: '' }
+    return { label: newDraftLabel(), sql: '' }
   }
-  const latest = turns.value.reduce((last, turn, i) => (turn.result?.sql ? i + 1 : last), 0)
+  const latest = turns.value.reduce(
+    (last, turn, i) => (suggestionText(turn.result) ? i + 1 : last),
+    0
+  )
   const requested = selectedBasis.value ?? referencedTurn(question, latest)
   const preview = props.preview
   const asksAboutPreview =
@@ -225,17 +236,22 @@ const chooseBasis = (question: string) => {
   if (requested === 'preview') throw new Error('unavailable_reference')
   const index = (requested ?? latest) - 1
   const prior = turns.value[index]
-  if (requested !== undefined && !prior?.result?.sql) throw new Error('unavailable_reference')
+  if (requested !== undefined && !suggestionText(prior?.result))
+    throw new Error('unavailable_reference')
   if (
-    prior?.result?.sql &&
+    suggestionText(prior?.result) &&
     (requested !== undefined ||
       (prior.session?.resourceId === props.resourceId &&
         prior.draftRevision === props.draftRevision))
   ) {
-    return { label: tr('numbered_suggestion') + ' #' + (index + 1), sql: prior.result.sql, prior }
+    return {
+      label: tr('numbered_suggestion') + ' #' + (index + 1),
+      sql: suggestionText(prior.result)!,
+      prior
+    }
   }
   const sql = props.readDraft()
-  return { label: tr(sql ? 'editor_draft' : 'new_query'), sql }
+  return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
 }
 watch(
   () => props.preview,
@@ -243,8 +259,26 @@ watch(
     if (selectedBasis.value === 'preview') selectedBasis.value = undefined
   }
 )
+// The draft formula and its proposed attributes may change after a turn. References,
+// parameters, node bindings and the execution mode must still match the validated snapshot.
+const calcScope = (draft?: AiCalcFieldDraft) => {
+  if (!draft) return undefined
+  const { allFields, ...dataset } = draft.dataset
+  return JSON.stringify([
+    draft.fieldId,
+    dataset,
+    allFields.map(field =>
+      field.id === draft.fieldId
+        ? { id: field.id, params: field.params, type: draft.preserveType ? field.deType : null }
+        : field
+    )
+  ])
+}
 const checkedSuggestion = async (turn: Turn, target: string) => {
   const session = turn.session!
+  if (props.calcFieldDraft && turn.calcScope !== calcScope(props.calcFieldDraft())) {
+    throw new Error('scope_changed')
+  }
   const checked = await checkSqlApplication(
     session.sessionId,
     turn.executionId!,
@@ -253,9 +287,9 @@ const checkedSuggestion = async (turn: Turn, target: string) => {
     target
   )
   if (
-    checked.type !== 'SQL_SUGGESTION' ||
-    !checked.sql ||
-    checked.sql !== turn.result?.sql ||
+    checked.type !== (props.calcFieldDraft ? 'CALC_FIELD_SUGGESTION' : 'SQL_SUGGESTION') ||
+    !suggestionText(checked) ||
+    suggestionText(checked) !== suggestionText(turn.result) ||
     checked.editorId !== editorId ||
     checked.resourceVersion !== session.resourceVersion ||
     checked.resourceId !== session.resourceId ||
@@ -263,7 +297,7 @@ const checkedSuggestion = async (turn: Turn, target: string) => {
   ) {
     throw new Error('scope_changed')
   }
-  return checked.sql
+  return checked
 }
 const applyPage = (turn: Turn, page: AiConversationEvents) => {
   if (
@@ -373,12 +407,14 @@ const send = async () => {
   const current = () => token === version && !read.signal.aborted
   selectedBasis.value = undefined
   const source = props.resourceId
+  const calcField = props.calcFieldDraft?.()
   const isCross = props.isCross
   const index =
     turns.value.push({
       question,
       basis: basis.label,
       baseSql: basis.sql,
+      calcScope: calcScope(calcField),
       draftRevision: props.draftRevision,
       answer: '',
       status: 'RUNNING'
@@ -387,20 +423,25 @@ const send = async () => {
   busy.value = true
   failure.value = input.value = ''
   try {
-    const sql = basis.prior ? await checkedSuggestion(basis.prior, source) : basis.sql
+    const sql = basis.prior
+      ? suggestionText(await checkedSuggestion(basis.prior, source))!
+      : basis.sql
     if (!current()) return
     const opening = {
-      scene: 'dataset-sql' as const,
+      scene: calcField ? ('dataset-calc-field' as const) : ('dataset-sql' as const),
+      calcField,
       resourceId: basis.preview?.resourceId ?? source,
       isCross: basis.preview?.isCross ?? isCross,
       preview: basis.preview,
-      systemVariableNames: [...new Set(props.systemVariableNames)]
-        .sort(
-          (a, b) =>
-            Number(question.includes(b) || sql.includes(b)) -
-            Number(question.includes(a) || sql.includes(a))
-        )
-        .slice(0, 64),
+      systemVariableNames: calcField
+        ? undefined
+        : [...new Set(props.systemVariableNames)]
+            .sort(
+              (a, b) =>
+                Number(question.includes(b) || sql.includes(b)) -
+                Number(question.includes(a) || sql.includes(a))
+            )
+            .slice(0, 64),
       editorId,
       sql,
       openKey: uuid.v4(),
@@ -505,7 +546,7 @@ const stop = async () => {
 }
 const apply = async (turn: Turn) => {
   const { session, executionId, result } = turn
-  if (busy.value || applying.value || !session || !executionId || !result?.sql) return
+  if (busy.value || applying.value || !session || !executionId || !suggestionText(result)) return
   const token = version
   const draft = props.readDraft()
   const source = props.resourceId
@@ -529,10 +570,11 @@ const apply = async (turn: Turn) => {
       )
     }
     if (revision !== turn.draftRevision) warnings.push(tr('overwrite_edits'))
-    else if (draft.trim() && draft !== result.sql) warnings.push(tr('replace_draft'))
+    else if (draft.trim() && draft !== suggestionText(result))
+      warnings.push(tr(props.calcFieldDraft ? 'replace_formula' : 'replace_draft'))
     if (warnings.length) {
       try {
-        await ElMessageBox.confirm(warnings.join(' '), tr('editor_title'), {
+        await ElMessageBox.confirm(warnings.join(' '), title(), {
           confirmButtonText: t('common.sure'),
           cancelButtonText: t('common.cancel'),
           type: 'warning'
@@ -542,17 +584,19 @@ const apply = async (turn: Turn) => {
       }
     }
     if (token !== version) return
-    const sql = await checkedSuggestion(turn, source)
+    const checked = await checkedSuggestion(turn, source)
     if (token !== version) return
     if (
       draft !== props.readDraft() ||
       source !== props.resourceId ||
-      revision !== props.draftRevision
+      revision !== props.draftRevision ||
+      (props.calcFieldDraft && turn.calcScope !== calcScope(props.calcFieldDraft()))
     ) {
       failure.value = tr('stale_draft')
       return
     }
-    emit('apply', sql)
+    if (checked.calcField) emit('apply-formula', checked.calcField)
+    else if (checked.sql) emit('apply', checked.sql)
   } catch (error) {
     if (token === version) fail(error)
   } finally {
@@ -569,16 +613,16 @@ const apply = async (turn: Turn) => {
     :aria-expanded="expanded"
     @click="expanded = !expanded"
   >
-    {{ tr('editor_title') }}
+    {{ title() }}
   </el-button>
   <Teleport :to="host">
     <aside
       v-if="available && expanded"
       class="dataset-sql-assistant"
       data-testid="dataset-sql-assistant-panel"
-      :aria-label="tr('editor_title')"
+      :aria-label="title()"
     >
-      <strong>{{ tr('editor_title') }}</strong>
+      <strong>{{ title() }}</strong>
       <div class="conversation" role="log">
         <article v-for="(turn, index) in turns" :key="index">
           <p class="question">{{ turn.question }}</p>
@@ -590,6 +634,18 @@ const apply = async (turn: Turn) => {
             <pre v-if="turn.baseSql">{{ turn.baseSql }}</pre>
             <small>{{ turn.session?.resourceName }} ({{ turn.session?.resourceId }})</small>
           </details>
+          <template v-if="turn.result?.type === 'CALC_FIELD_SUGGESTION' && turn.result.calcField">
+            <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
+            <pre>{{ turn.result.calcField.expression }}</pre>
+            <span>{{
+              tr(turn.result.calcField.validation === 'DETAIL_PASS' ? 'detail_pass' : 'calc_failed')
+            }}</span>
+            <el-button
+              :disabled="busy || applying || turn.result.calcField.validation !== 'DETAIL_PASS'"
+              @click="apply(turn)"
+              >{{ tr('apply') }}</el-button
+            >
+          </template>
           <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small>
             <pre>{{ turn.result.sql }}</pre>
@@ -671,7 +727,7 @@ const apply = async (turn: Turn) => {
           text
           data-testid="dataset-sql-assistant-new-query"
           @click="selectedBasis = 0"
-          >{{ tr('new_query') }}</el-button
+          >{{ newDraftLabel() }}</el-button
         >
         <el-tag v-else closable @close="selectedBasis = undefined">
           {{
@@ -679,7 +735,7 @@ const apply = async (turn: Turn) => {
               ? tr('refer_to_preview')
               : selectedBasis
               ? tr('numbered_suggestion') + ' #' + selectedBasis
-              : tr('new_query')
+              : newDraftLabel()
           }}
         </el-tag>
       </div>

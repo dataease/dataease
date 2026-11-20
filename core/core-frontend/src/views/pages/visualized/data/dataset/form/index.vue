@@ -48,6 +48,8 @@ import FieldMore from '@/views/visualized/data/dataset/form/FieldMore.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { Icon } from '@/components/icon-custom'
 import { useWindowSize } from '@vueuse/core'
+import DatasetEditorAssistant from '@/views/visualized/data/dataset/form/DatasetEditorAssistant.vue'
+import type { AiCalcFieldDraft } from '@/api/aiConversation'
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { useRoute, useRouter } from 'vue-router_2'
 import UnionEdit from '@/views/visualized/data/dataset/form/UnionEdit.vue'
@@ -126,6 +128,25 @@ const quotaTableHeight = ref(238)
 const creatDsFolder = ref()
 const editCalcField = ref(false)
 const calcEdit = ref()
+const calcAssistantHost = ref<HTMLElement>()
+const readCalcDraft = (): AiCalcFieldDraft => {
+  const field = calcEdit.value!.draftField()
+  const union = []
+  dfsNodeList(union, canvasNodes.value)
+  const fields = allfields.value.filter(item => item.id !== field.id)
+  const pid = appStore.getIsDataEaseBi ? embeddedStore.datasetPid : route.query.pid || nodeInfo.pid
+  return cloneDeep({
+    fieldId: String(field.id),
+    preserveType: calcEdit.value.preserveType,
+    dataset: {
+      id: nodeInfo.id || null,
+      pid: String(pid || '0'),
+      isCross: isCross.value,
+      union,
+      allFields: [...fields, field]
+    }
+  })
+}
 const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref(t('data_set.unnamed_dataset'))
@@ -392,21 +413,12 @@ const dragHeight = ref(260)
 
 let tableList = []
 
-const dfsName = (arr, id) => {
-  let name = ''
-  arr.some(ele => {
-    if (ele.id === id) {
-      name = ele.name
-      return true
-    }
-
-    if (!!ele.children?.length) {
-      name = dfsName(ele.children, id) || name
-    }
-    return false
-  })
-
-  return name
+const findSource = (nodes: DataSource[], id: string): DataSource | undefined => {
+  for (const node of nodes) {
+    if (node.id === id) return node
+    const child = node.children && findSource(node.children, id)
+    if (child) return child
+  }
 }
 
 const { height } = useWindowSize()
@@ -434,8 +446,13 @@ const dfsChild = arr => {
   })
 }
 
+const supportsCalcAssistant = computed(
+  () =>
+    !isCross.value &&
+    findSource(state.dataSourceList, currentDsId.value)?.type?.toLowerCase() === 'mysql'
+)
 const getDsName = (id: string) => {
-  return dfsName(state.dataSourceList, id)
+  return findSource(state.dataSourceList, id)?.name || ''
 }
 
 const pushDataset = () => {
@@ -3053,8 +3070,28 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     :close-on-click-modal="false"
     :title="calcTitle"
   >
-    <calc-field-edit v-if="editCalcField" ref="calcEdit" :crossDs="crossDatasources" />
+    <div v-if="editCalcField" class="calc-field-workspace" ref="calcAssistantHost">
+      <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
+    </div>
     <template #footer>
+      <DatasetEditorAssistant
+        v-if="
+          editCalcField &&
+          calcAssistantHost &&
+          calcEdit?.fieldForm.id &&
+          currentDsId &&
+          supportsCalcAssistant
+        "
+        :host="calcAssistantHost"
+        :is-cross="isCross"
+        :system-variable-names="[]"
+        :resource-id="String(currentDsId)"
+        :resource-label="getDsName(currentDsId)"
+        :draft-revision="calcEdit.formulaRevision"
+        :read-draft="calcEdit.readFormula"
+        :calc-field-draft="readCalcDraft"
+        @apply-formula="calcEdit.applyFormula"
+      />
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
       <el-button secondary :disabled="datasetPreviewLoading" @click="verify"
         >{{ t('datasource.validate') }}
@@ -4078,6 +4115,21 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 }
 .calc-field-drawer {
   --calc-form-width: 100%;
+
+  .calc-field-workspace {
+    display: flex;
+    align-items: stretch;
+    min-height: 100%;
+    > .calcu-field {
+      flex: 1;
+      min-width: 0;
+    }
+    > aside {
+      flex-shrink: 0;
+      height: auto;
+      margin-left: 12px;
+    }
+  }
 }
 .group-fields_dialog {
   .group-fields_item {
