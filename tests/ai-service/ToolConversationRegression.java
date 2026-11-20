@@ -332,7 +332,7 @@ public final class ToolConversationRegression {
             var beans = new StaticListableBeanFactory();
             beans.addBean("permission", (InteractiveAuthApi) Proxy.newProxyInstance(ToolConversationRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class}, (proxy, method, args) -> {
                 if (Set.of("checkAiAllowed", "checkAiCommunityAllowed").contains(method.getName())) {
-                    usageChecks.incrementAndGet(); return userEnabled.get() && Objects.equals(args[0], 1L);
+                    usageChecks.incrementAndGet(); return userEnabled.get() && (Objects.equals(args[0], 1L) || "calc-open-concurrency".equals(mode.get()) && Objects.equals(args[0], 2L));
                 }
                 if (method.getName().equals("checkAuth")) {
                     var request = (BusiPerCheckDTO) args[0];

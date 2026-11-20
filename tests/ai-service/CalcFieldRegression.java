@@ -36,6 +36,8 @@ final class CalcFieldRegression {
     private CountDownLatch previewStarted;
     private CountDownLatch previewRelease;
     private volatile String previewMode = "";
+    private CountDownLatch datasetRead;
+    private CountDownLatch releaseRead;
     private final String formula = "[Price] * 2";
 
     AiCalcFieldScene scene(AiDatasourceTools metadata) {
@@ -58,6 +60,11 @@ final class CalcFieldRegression {
                 return List.of(node);
             }
             @Override public DatasetGroupInfoDTO getForCount(Long id) {
+                if (datasetRead != null) {
+                    datasetRead.countDown();
+                    try { if (!releaseRead.await(5, TimeUnit.SECONDS)) throw new AssertionError("blocked opening never released"); }
+                    catch (InterruptedException interrupted) { throw new AssertionError(interrupted); }
+                }
                 var saved = new DatasetGroupInfoDTO();
                 saved.setId(42L); saved.setNodeType("dataset"); saved.setLastUpdateTime(99L);
                 saved.setAllFields(List.of()); saved.setUnion(List.of());
@@ -175,6 +182,7 @@ final class CalcFieldRegression {
                   "allFields":[{"id":"102","datasetTableId":"1","datasourceId":"11","name":"Price","originName":"ID","deType":2,"extField":0,"checked":true,
                   "description":"private-context-value"},{"id":"301","name":"","extField":2,"deType":2,"originName":"","checked":true}]}}}
                 """;
+        verifyIndependentOpen(mvc, mode, opening);
         verifyDialects(mvc, mode, requests, opening);
         requests.clear();
         verifyJoin(mvc, mode, opening, secondResourceAllowed);
@@ -366,6 +374,37 @@ final class CalcFieldRegression {
         previewMode = "";
         mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
         System.out.println("PASS calculated-field clarification, confirmed draft semantics, parameterized references and units");
+    }
+
+    private void verifyIndependentOpen(MockMvc mvc, AtomicReference<String> mode, String opening) throws Exception {
+        mode.set("calc-open-concurrency");
+        var executor = java.util.concurrent.Executors.newFixedThreadPool(2);
+        datasetRead = new CountDownLatch(1);
+        releaseRead = new CountDownLatch(1);
+        try {
+            var blocked = executor.submit(() -> openAs(mvc, 1L, opening.replace("\"pid\":\"0\"", "\"id\":\"42\",\"pid\":\"0\"")));
+            if (!datasetRead.await(5, TimeUnit.SECONDS)) throw new AssertionError("saved dataset resolution did not enter");
+            var unrelated = executor.submit(() -> openAs(mvc, 2L, "{\"scene\":\"dataset-sql\",\"editorId\":\"another-editor\",\"sql\":\"\"}"));
+            if (unrelated.get(2, TimeUnit.SECONDS).path("sessionId").asText().isBlank())
+                throw new AssertionError("Unrelated editor did not open");
+            releaseRead.countDown();
+            if (blocked.get(5, TimeUnit.SECONDS).path("sessionId").asText().isBlank()) throw new AssertionError("Saved editor failed");
+        } finally {
+            releaseRead.countDown();
+            executor.shutdown();
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+            datasetRead = null;
+        }
+    }
+
+    private JsonNode openAs(MockMvc mvc, long actor, String opening) throws Exception {
+        io.dataease.permission.util.V3UserUtil.setUid(actor);
+        try {
+            var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(opening)).andReturn().getResponse().getContentAsByteArray());
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            return session;
+        } finally { io.dataease.permission.util.V3UserUtil.clear(); }
     }
 
     private void verifyJoin(MockMvc mvc, AtomicReference<String> mode, String opening, AtomicBoolean secondAllowed) throws Exception {

@@ -159,7 +159,6 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private Session open(Open request, boolean single) {
         AiAccess.Identity owner = identity();
-        synchronized (sessions) {
         if (request == null || request.editorId() == null || request.editorId().isBlank() || request.editorId().length() > 100
                 || request.resourceId() != null && !request.resourceId().matches("[0-9]{1,20}|")
                 || request.sql() != null && request.sql().length() > 30000) throw AiErrors.error("invalid");
@@ -190,56 +189,69 @@ public class AiConversationManage implements AiToolConversationFeature {
             scene.authorize(resolved); return resolved;
         }));
         State source = null;
+        long sourceHistory = 0;
         if (request.previousSessionId() != null) {
             if (single || request.previousSessionId().isBlank() || request.previousSessionId().length() > 100) throw AiErrors.error("invalid");
             source = owned(request.previousSessionId());
             synchronized (source) {
                 check(source);
-                if (source.single || source.retired || !source.view.scene().equals(scene.code())
+                if (source.single || !source.view.scene().equals(scene.code())
                         || !source.view.editorId().equals(request.editorId())) throw AiErrors.error("scope_changed");
-                if (source.executing.get()) throw AiErrors.error("concurrency");
+                sourceHistory = source.historyVersion;
             }
         }
         String id = UUID.randomUUID().toString();
         var view = new Session(id, UUID.randomUUID().toString(), scene.code(), context.resourceId(), context.resourceName(), request.editorId(),
                 source == null ? System.currentTimeMillis() + SESSION_MILLIS : source.view.expiresAt(), context.revision(), draftVersion);
         State created = new State(view, owner, context, single, usage);
-        if (source != null) synchronized (source) {
-            if (source.closed) throw AiErrors.error("scope_changed");
-            created.history.addAll(source.history); created.toolHistory.addAll(source.toolHistory);
-            var targets = new ArrayList<>(source.historyTargets);
-            int size = source.toolHistory.isEmpty() ? source.history.size() : source.toolHistory.size();
-            int lastEnd = source.historyTargets.isEmpty() ? 0 : source.historyTargets.getLast().endExclusive();
-            if (size > lastEnd) targets.add(new HistoryTarget(source.context, size));
-            created.historyTargets = List.copyOf(targets);
-            created.turns = source.turns; created.historyVersion = source.historyVersion;
-        }
+        // Resolution reads physical metadata. Only the final idempotency, history and capacity checks share the registry lock.
+        State duplicate;
         synchronized (sessions) {
-            expire();
-            // Replaced idle editors keep only bounded result/task records; no history or interaction quota.
-            if (!single) for (State previous : sessions.values()) synchronized (previous) {
-                if (!previous.single && !previous.retired && same(previous.owner, owner)
-                        && previous.view.editorId().equals(request.editorId()) && !previous.executing.get()) {
-                    previous.retired = true; previous.history.clear(); previous.toolHistory.clear();
-                    // Frozen results/retries still depend on every historical resource's authority.
-                    for (Run old : previous.runs.values()) { old.text = new StringBuilder(); old.events = new ArrayList<>(); }
+            var existing = operation(owner, "open", request.openKey(), opening);
+            if (existing == null) {
+                long now = System.currentTimeMillis();
+                for (var state : sessions.values()) if (state.view.expiresAt() <= now) invalidate(state);
+                if (source != null) synchronized (source) {
+                    if (source.closed || source.retired || System.currentTimeMillis() >= source.view.expiresAt())
+                        throw AiErrors.error("scope_changed");
+                    if (source.executing.get() || source.historyVersion != sourceHistory) throw AiErrors.error("concurrency");
+                    created.history.addAll(source.history); created.toolHistory.addAll(source.toolHistory);
+                    var targets = new ArrayList<>(source.historyTargets);
+                    int size = source.toolHistory.isEmpty() ? source.history.size() : source.toolHistory.size();
+                    int lastEnd = source.historyTargets.isEmpty() ? 0 : source.historyTargets.getLast().endExclusive();
+                    if (size > lastEnd) targets.add(new HistoryTarget(source.context, size));
+                    created.historyTargets = List.copyOf(targets);
+                    created.turns = source.turns; created.historyVersion = source.historyVersion;
                 }
+                // Replaced idle editors keep only bounded result/task records; no history or interaction quota.
+                if (!single) for (State previous : sessions.values()) {
+                    if (previous.single || !same(previous.owner, owner) || !previous.view.editorId().equals(request.editorId())) continue;
+                    synchronized (previous) {
+                        if (previous.retired || previous.executing.get()) continue;
+                        previous.retired = true; previous.history.clear(); previous.toolHistory.clear();
+                        // Frozen results/retries still depend on every historical resource's authority.
+                        for (Run old : previous.runs.values()) { old.text = new StringBuilder(); old.events = new ArrayList<>(); }
+                    }
+                }
+                // A dataset activity can show a proposal from each of its fifty turns.
+                // Its frozen contexts share that activity's expiry and must survive unrelated button jobs.
+                boolean retainEveryTurn = scene.retainEveryTurn();
+                var retained = sessions.values().stream().filter(state -> same(state.owner, owner) && canEvict(state)
+                        && retainEveryTurn == scene(state.view.scene()).retainEveryTurn()).toList();
+                if (retained.size() >= (retainEveryTurn ? MAX_TURNS : MAX_SINGLE_RESULTS))
+                    evictOldest(retained);
+                if (sessions.size() >= MAX_SESSIONS)
+                    evictOldest(sessions.values().stream().filter(this::canEvict).toList());
+                if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && occupiesActivity(state)).count() >= MAX_USER_SESSIONS)
+                    throw AiErrors.error("concurrency");
+                created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
+                return view;
             }
-            // A dataset activity can show a proposal from each of its fifty turns.
-            // Its frozen contexts share that activity's expiry and must survive unrelated button jobs.
-            boolean retainEveryTurn = scene.retainEveryTurn();
-            var retained = sessions.values().stream().filter(state -> same(state.owner, owner) && canEvict(state)
-                    && retainEveryTurn == scene(state.view.scene()).retainEveryTurn()).toList();
-            if (retained.size() >= (retainEveryTurn ? MAX_TURNS : MAX_SINGLE_RESULTS))
-                evictOldest(retained);
-            if (sessions.size() >= MAX_SESSIONS)
-                evictOldest(sessions.values().stream().filter(this::canEvict).toList());
-            if (sessions.size() >= MAX_SESSIONS || sessions.values().stream().filter(state -> same(state.owner, owner) && occupiesActivity(state)).count() >= MAX_USER_SESSIONS)
-                throw AiErrors.error("concurrency");
-            created.opening = request; bind(created, "open", request.openKey(), opening, null); sessions.put(id, created);
+            duplicate = existing.state;
         }
-        return view;
-        }
+        if (duplicate == null) throw AiErrors.error("scope_changed");
+        check(duplicate);
+        return duplicate.view;
     }
     private boolean occupiesActivity(State state) { return state.executing.get() || !state.singleFinished && !state.retired; }
     private boolean canEvict(State state) {
