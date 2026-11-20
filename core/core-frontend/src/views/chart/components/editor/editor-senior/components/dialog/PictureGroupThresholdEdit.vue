@@ -622,17 +622,25 @@ span {
 </style>
 
 <style lang="less">
-.picture-group-select {
-  min-width: 50px !important;
-  width: 304px;
-  .ed-scrollbar__view {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
+.ed-select__popper.picture-group-select {
+  @option-width: 100px;
+
+  width: max-content;
+  .ed-select-dropdown:has(.ed-select-dropdown__item) {
+    min-width: 0 !important;
+  }
+  .ed-select-dropdown__list {
+    display: flex;
+    flex-wrap: wrap;
+    width: max-content;
+    max-width: (3 * @option-width);
   }
   .ed-select-dropdown__item {
+    box-sizing: border-box;
+    flex: 0 0 @option-width;
     height: 100px !important;
     text-align: center;
-    padding: 0px 5px;
+    padding: 0 1px;
   }
 
   .ed-select-dropdown__item.selected::after {
