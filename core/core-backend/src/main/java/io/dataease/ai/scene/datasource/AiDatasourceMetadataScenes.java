@@ -155,15 +155,11 @@ public class AiDatasourceMetadataScenes {
     private record RelationSuggestion(String name, String leftTable, String rightTable, List<Condition> conditions,
                                       Cardinality cardinality, JoinType joinType, String description) {}
     private record RelationSuggestions(List<RelationSuggestion> relations) {}
-    private record FieldTarget(String fieldName, boolean businessName, boolean description, boolean aliases) {
-        boolean hasMissingValues() { return businessName || description || aliases; }
-    }
+    private record FieldTarget(String fieldName, boolean businessName, boolean description, boolean aliases) {}
 
-    private record SemanticInput(TableMetadata metadata, boolean description, boolean grain, List<FieldTarget> fields) {}
+    private record TableTarget(boolean description) {}
 
-    private static boolean blank(String value) {
-        return value == null || value.isBlank();
-    }
+    private record SemanticInput(TableMetadata metadata, TableTarget table, List<FieldTarget> fields) {}
 
     private TableMetadata metadata(Long datasourceId, String name) {
         var source = physical.datasource(datasourceId);
@@ -237,16 +233,13 @@ public class AiDatasourceMetadataScenes {
                 var snapshot = metadata(datasourceId, name);
                 var fields = semantics.detail(datasourceId, table.id()).fields().stream()
                         .filter(field -> !field.confirmed())
-                        .map(field -> new FieldTarget(field.fieldName(), blank(field.businessName()),
-                                blank(field.description()), blank(field.aliases())))
-                        .filter(FieldTarget::hasMissingValues).toList();
-                boolean description = !table.confirmed() && blank(table.description());
-                boolean grain = !table.confirmed() && blank(table.grain());
-                if (!description && !grain && fields.isEmpty()) {
+                        .map(field -> new FieldTarget(field.fieldName(), true, true, true)).toList();
+                boolean description = !table.confirmed();
+                if (!description && fields.isEmpty()) {
                     summary = execution.write(() -> new Summary(previous.written(), previous.skipped() + 1, previous.failed()));
                     continue;
                 }
-                var answer = generate(execution, AiDatasourceMetadataPrompts.SEMANTICS, new SemanticInput(snapshot, description, grain, fields),
+                var answer = generate(execution, AiDatasourceMetadataPrompts.SEMANTICS, new SemanticInput(snapshot, new TableTarget(description), fields),
                         SemanticSuggestion.class);
                 var targets = fields.stream().collect(Collectors.toMap(FieldTarget::fieldName, target -> target));
                 var scopedFields = answer.fields() == null ? List.<FieldSuggestion>of()
@@ -258,7 +251,7 @@ public class AiDatasourceMetadataScenes {
                                     target.description() ? field.description() : null, target.aliases() ? field.aliases() : null);
                         }).toList();
                 var scoped = new SemanticSuggestion(description ? answer.description() : null,
-                        grain ? answer.grain() : null, scopedFields);
+                        null, scopedFields);
                 execution.check();
                 var current = metadata(datasourceId, name);
                 if (!snapshot.equals(current)) {

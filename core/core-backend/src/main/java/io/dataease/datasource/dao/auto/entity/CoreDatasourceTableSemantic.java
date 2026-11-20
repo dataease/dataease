@@ -37,7 +37,7 @@ public class CoreDatasourceTableSemantic {
     @Column(name = "data_grain", length = 512)
     private String grain;
 
-    @Comment("语义表是否已添加，手工移除后为 false")
+    @Comment("语义表是否已添加，兼容历史未激活记录")
     @Column(name = "active", nullable = false)
     private boolean active;
 

@@ -44,7 +44,6 @@ public class DatasourceSemanticServer implements DatasourceSemanticApi {
     public void saveTable(Long datasourceId, TableSemantic table) {
         requireText(table.tableName(), 512);
         limit(table.description(), 4000);
-        limit(table.grain(), 512);
         metadata.saveTable(datasourceId, table);
     }
 

@@ -78,7 +78,6 @@ public class DatasourceSemanticManage {
         access.lock(datasourceId);
         var row = activeTable(datasourceId, table.tableName());
         row.setDescription(table.description());
-        row.setGrain(table.grain());
         row.setConfirmed(true);
     }
 
@@ -109,7 +108,8 @@ public class DatasourceSemanticManage {
         access.lock(datasourceId);
         var row = table(datasourceId, tableName);
         if (row != null) {
-            row.setActive(false);
+            fieldRepository.deleteAll(fieldRepository.findByTableSemantic_Id(row.getId()));
+            tableRepository.delete(row);
         }
     }
 
@@ -221,10 +221,8 @@ public class DatasourceSemanticManage {
         int count = 0;
         if (!table.isConfirmed()) {
             String description = fill(table.getDescription(), suggestion.description(), 4000);
-            String grain = fill(table.getGrain(), suggestion.grain(), 512);
-            if (!Objects.equals(description, table.getDescription()) || !Objects.equals(grain, table.getGrain())) {
+            if (!Objects.equals(description, table.getDescription())) {
                 table.setDescription(description);
-                table.setGrain(grain);
                 count++;
             }
         }
@@ -254,7 +252,7 @@ public class DatasourceSemanticManage {
     }
 
     private static String fill(String current, String candidate, int limit) {
-        if ((current == null || current.isBlank()) && candidate != null && !candidate.isBlank()
+        if (candidate != null && !candidate.isBlank()
                 && candidate.strip().length() <= limit) {
             return candidate.strip();
         }

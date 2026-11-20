@@ -1735,7 +1735,8 @@ export default {
     refreshTablePrompt:
       'Refresh fields for “{name}”? Saved semantics for existing fields will be kept. Fields deleted from the source table and their semantics will be removed.',
     removeNamedTable: 'Remove semantic table “{table}”',
-    removeTablePrompt: 'Remove semantic table “{name}”? Its saved semantics will be retained.',
+    removeTablePrompt:
+      'Remove semantic table “{name}”? Its table and field semantics will be permanently deleted and must be configured again if re-added.',
     invalidRelation: 'Invalid',
     missingField: 'Missing field: {table}.{field}',
     missingTable: 'Missing table: {table}',

@@ -246,8 +246,7 @@ const openTable = () => {
   if (!currentTable.value) return
   tableForm.value = {
     ...currentTable.value,
-    description: currentTable.value.description ?? '',
-    grain: currentTable.value.grain ?? ''
+    description: currentTable.value.description ?? ''
   }
   drawer.value = 'table'
 }
@@ -429,7 +428,6 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
             {{ currentTable.description || tr('noDescription') }}
           </div>
           <div class="metadata-secondary metadata-section">
-            {{ tr('grain') }} · {{ currentTable.grain?.trim() || tr('incomplete') }}
             <el-tag :type="currentTable.confirmed ? 'success' : 'warning'" size="small">
               {{ tr(currentTable.confirmed ? 'confirmed' : 'pending') }}
             </el-tag>
@@ -668,9 +666,6 @@ const fieldLabel = (field: TableSemanticDetails['fields'][number]) =>
         <p class="metadata-label">{{ tableForm.tableName }}</p>
         <el-form-item :label="tr('description')">
           <el-input v-model="tableForm.description" type="textarea" :rows="5" maxlength="4000" />
-        </el-form-item>
-        <el-form-item :label="tr('grain')">
-          <el-input v-model="tableForm.grain" maxlength="512" :placeholder="tr('grainExample')" />
         </el-form-item>
       </el-form>
 

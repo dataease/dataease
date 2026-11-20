@@ -473,14 +473,8 @@ defineExpose({ commit, selectNode, hasPendingChanges })
             @toggle="emit('toggleFullscreen')"
           />
         </div>
-        <div
-          v-if="selectedNode.semanticDescription || selectedNode.semanticGrain"
-          class="semantic-summary"
-        >
+        <div v-if="selectedNode.semanticDescription" class="semantic-summary">
           <div v-if="selectedNode.semanticDescription">{{ selectedNode.semanticDescription }}</div>
-          <div v-if="selectedNode.semanticGrain" style="margin-top: 6px">
-            {{ t('datasourceMetadata.grain') }}：{{ selectedNode.semanticGrain }}
-          </div>
         </div>
         <div class="node-tabs-row">
           <el-tabs v-model="activeTab" class="node-tabs">

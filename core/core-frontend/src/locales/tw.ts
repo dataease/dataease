@@ -1627,7 +1627,8 @@ export default {
     refreshTablePrompt:
       '確定更新「{name}」的欄位？仍存在的欄位會保留已填寫的語意，來源表中已刪除的欄位及其語意會移除。',
     removeNamedTable: '移除語意表「{table}」',
-    removeTablePrompt: '確定移除語意表「{name}」？已填寫的語意會保留。',
+    removeTablePrompt:
+      '確定移除語意表「{name}」？該表及其欄位的語意將永久刪除，重新新增後需重新維護。',
     invalidRelation: '已失效',
     missingField: '缺少欄位：{table}.{field}',
     missingTable: '缺少表：{table}',

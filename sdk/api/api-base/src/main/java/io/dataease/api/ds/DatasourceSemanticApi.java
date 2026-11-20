@@ -95,7 +95,7 @@ public interface DatasourceSemanticApi {
             @Schema(description = "物理表名") String tableName,
             @Schema(description = "表的业务说明") String description,
             @Schema(description = "数据粒度，例如一行代表一笔订单") String grain,
-            @Schema(description = "语义表是否已添加，手工移除后为 false") boolean active,
+            @Schema(description = "语义表是否已添加，兼容历史未激活记录") boolean active,
             @Schema(description = "最近一次同步的物理表显示名称") String physicalLabel,
             @Schema(description = "最近一次同步时物理表是否存在") boolean available,
             boolean confirmed,

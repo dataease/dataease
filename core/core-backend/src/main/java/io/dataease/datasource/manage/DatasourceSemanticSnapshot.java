@@ -32,7 +32,6 @@ public class DatasourceSemanticSnapshot {
             var semantic = semantics.get(table.getTableName());
             if (semantic == null) continue;
             table.setSemanticDescription(semantic.getDescription());
-            table.setSemanticGrain(semantic.getGrain());
             table.setSemanticConfirmed(semantic.isConfirmed());
         }
         return physical;

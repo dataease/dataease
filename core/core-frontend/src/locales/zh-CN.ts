@@ -1642,7 +1642,8 @@ export default {
     refreshTablePrompt:
       '确定更新「{name}」的字段？仍存在的字段会保留已填写的语义，源表中已删除的字段及其语义会移除。',
     removeNamedTable: '移除语义表「{table}」',
-    removeTablePrompt: '确定移除语义表「{name}」？已填写的语义会保留。',
+    removeTablePrompt:
+      '确定移除语义表「{name}」？该表及其字段的语义将永久删除，重新添加后需重新维护。',
     invalidRelation: '已失效',
     missingField: '缺失字段：{table}.{field}',
     missingTable: '缺失表：{table}',

@@ -46,10 +46,7 @@ const save = () => {
       <el-form-item :label="tr('description')">
         <el-input v-model="draft.semanticDescription" type="textarea" :rows="4" maxlength="4000" />
       </el-form-item>
-      <el-form-item v-if="table" :label="tr('grain')">
-        <el-input v-model="draft.semanticGrain" maxlength="512" />
-      </el-form-item>
-      <template v-else>
+      <template v-if="!table">
         <el-form-item :label="tr('aliases')"
           ><el-input v-model="draft.semanticAliases" maxlength="1000"
         /></el-form-item>
