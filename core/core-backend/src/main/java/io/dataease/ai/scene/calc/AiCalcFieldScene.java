@@ -19,7 +19,7 @@ public class AiCalcFieldScene implements AiConversationScene {
             Map.of("expression", "Calculated-field expression using the exact [reference] provided for each field or parameter", "name", "Suggested field name",
                     "groupType", "d for dimension, q for measure", "deType", "0 text, 1 date, 2 integer, 3 decimal, 5 geography or 7 URL"),
             AiToolProtocol.RetrySafety.READ_ONLY);
-    private record Draft(long target, String dataset, AiDatasourceTools.Scope source, Map<Long, CalcFieldAccess.Column> columns,
+    private record Draft(long target, String dataset, List<ResourceRevision> sources, Map<Long, CalcFieldAccess.Column> columns,
                          CalcFieldAccess.Grant grant, boolean preserveType) implements SceneState { }
 
     private final AiDatasourceTools metadata;
@@ -42,11 +42,12 @@ public class AiCalcFieldScene implements AiConversationScene {
         var input = editor.calcField();
         if (input == null || input.dataset() == null || input.fieldId() == null || editor.preview() != null
                 || editor.systemVariableNames() != null || editor.resourceId() == null) throw AiErrors.error("invalid");
-        if (!Boolean.FALSE.equals(editor.isCross()) || !Objects.equals(editor.isCross(), input.dataset().getIsCross()))
+        if (editor.isCross() == null || !Objects.equals(editor.isCross(), input.dataset().getIsCross()))
             throw AiErrors.error("unsupported");
         var resource = metadata.resolve(editor.resourceId());
-        if (!"mysql".equalsIgnoreCase(resource.type())) throw AiErrors.error("unsupported");
-        var scope = AiDatasourceTools.Scope.editor(resource.id(), resource.revision(), false);
+        boolean isCross = editor.isCross();
+        if (!isCross && !"mysql".equalsIgnoreCase(resource.type())) throw AiErrors.error("unsupported");
+        var scope = AiDatasourceTools.Scope.editor(resource.id(), resource.revision(), isCross);
         var draft = CalcFieldCanvas.copy(CalcFieldCanvas.json(input.dataset()));
         var canvas = new CalcFieldCanvas(metadata, scope);
         canvas.rebuild(draft);
@@ -57,7 +58,9 @@ public class AiCalcFieldScene implements AiConversationScene {
         var fields = new CalcFieldInputs(draft, input.fieldId(), grant, canvas.columns);
         // This is the author-selected editor text, including unfinished input. Only tool candidates execute.
         String basis = Objects.toString(editor.sql(), "");
-        String instruction = "You assist the DataEase dataset calculated-field editor. The active dialect is MySQL. "
+        String dialect = isCross ? "DataEase Calcite. Use EXTRACT(MONTH FROM [date field]) for the month number."
+                : "MySQL. Use MONTH([date field]) for the month number.";
+        String instruction = "You assist the DataEase dataset calculated-field editor. The active dialect is " + dialect + " "
                 + "Use currentExpression as the formula basis for this request, even when it differs from an earlier suggestion. "
                 + "It can be an unfinished draft or a selected suggestion. If empty, start a new formula from the author's requirements. "
                 + "Use only the current draft fields and this field's own parameters. Copy exact reference tokens in brackets. "
@@ -75,16 +78,18 @@ public class AiCalcFieldScene implements AiConversationScene {
                 + "Do not claim to have seen preview rows. Answer in the user's language.\n"
                 + AiToolProtocol.result(Map.of("fields", fields.projection, "currentExpression", basis));
         String snapshot = CalcFieldCanvas.json(draft);
-        String revision = AiPromptFingerprint.of(new Prompt(snapshot + resource.revision() + grant.savedVersion() + input.fieldId()));
-        // The physical directory cache belongs only to this open operation.
-        var source = new AiDatasourceTools.Scope(resource.id(), resource.revision());
-        return new Context(resource.id(), resource.name(), revision, instruction, null, false, null,
-                new Draft(input.fieldId(), snapshot, source, Map.copyOf(canvas.columns), grant, Boolean.TRUE.equals(input.preserveType())));
+        // Bind every physical source revision. Discard the metadata caches after this open operation.
+        var sources = canvas.sources.values().stream()
+                .map(s -> new ResourceRevision(s.resourceId(), s.revision(), isCross)).toList();
+        String revision = AiPromptFingerprint.of(new Prompt(snapshot + CalcFieldCanvas.json(sources) + grant.savedVersion() + input.fieldId()));
+        return new Context(resource.id(), resource.name(), revision, instruction, null, isCross, null,
+                new Draft(input.fieldId(), snapshot, sources, Map.copyOf(canvas.columns), grant, Boolean.TRUE.equals(input.preserveType())));
     }
 
     @Override public void authorize(Context context) {
         var scope = (Draft) context.sceneState();
-        metadata.authorize(scope.source());
+        for (var source : scope.sources())
+            metadata.authorize(new AiDatasourceTools.Scope(source.id(), source.revision(), source.isCross()));
         var grant = access.grant(CalcFieldCanvas.copy(scope.dataset()), scope.columns(), scope.target());
         if (!grant.equals(scope.grant())) throw AiErrors.error("scope_changed");
     }
@@ -130,7 +135,7 @@ public class AiCalcFieldScene implements AiConversationScene {
             } catch (Exception failure) {
                 guard.run();
                 checkPreviewAccess(failure);
-                if (!isExpressionError(failure)) return verdict("PREVIEW_FAILED", "preview_unavailable", display);
+                if (!isExpressionError(failure, context.isCross())) return verdict("PREVIEW_FAILED", "preview_unavailable", display);
                 // Only attribute a Provider error to this candidate if the same authorized preview
                 // succeeds with a neutral expression and all joins and siblings still present.
                 var baseline = CalcFieldCanvas.copy(snapshot);
@@ -161,13 +166,14 @@ public class AiCalcFieldScene implements AiConversationScene {
         }
     }
 
-    private static boolean isExpressionError(Exception failure) {
+    private static boolean isExpressionError(Exception failure, boolean isCross) {
         for (Throwable e = failure; e != null; e = e.getCause()) {
+            if (isCross && e instanceof org.apache.calcite.sql.validate.SqlValidatorException) return true;
             if (e instanceof java.sql.SQLException sql) {
                 String state = sql.getSQLState();
                 // MySQL includes access denials in class 42. Accept only known expression diagnostics there.
-                return state != null && (state.startsWith("22") || state.startsWith("42")
-                        && Set.of(1054, 1064, 1305, 1582).contains(sql.getErrorCode()));
+                if (state != null && (state.startsWith("22") || state.startsWith("42")
+                        && Set.of(1054, 1064, 1305, 1582).contains(sql.getErrorCode()))) return true;
             }
         }
         return false;

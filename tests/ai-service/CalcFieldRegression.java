@@ -94,6 +94,18 @@ final class CalcFieldRegression {
                     previewRelease.await(5, TimeUnit.SECONDS);
                     throw new java.sql.SQLException("private-driver-value", "22012");
                 }
+                if (previewMode.equals("calc-join")) {
+                    if (!draft.getIsCross() || !value.equals("[103] + [102]")
+                            || draft.getUnion().getFirst().getChildrenDs().getFirst().getCurrentDs().getDatasourceId() != 12L)
+                        throw new AssertionError("wrong second source or field binding");
+                    return "DETAIL_PASS";
+                }
+                if (Set.of("calc-mysql", "calc-calcite").contains(previewMode)) {
+                    boolean cross = previewMode.equals("calc-calcite");
+                    String expected = cross ? "EXTRACT(MONTH FROM [102])" : "MONTH([102])";
+                    if (draft.getIsCross() != cross || !expected.equals(value)) throw new AssertionError("preview dialect " + value);
+                    return "DETAIL_PASS";
+                }
                 if ("calc-comment".equals(previewMode)) {
                     if (!"[102] - (-2)".equals(value)) throw new AssertionError("ambiguous preview expression");
                     return "DETAIL_PASS";
@@ -136,6 +148,10 @@ final class CalcFieldRegression {
             case "calc-unit-yuan" -> "[Amount #102 #102] * [Rate]";
             case "calc-unit-converted" -> "[Amount #302] * [Rate]";
             case "calc-unit-literal" -> "[Amount #102 #303] * [Rate]";
+
+            case "calc-join" -> "[Other] + [Price]";
+            case "calc-mysql" -> step == 1 ? "EXTRACT(MONTH FROM [Order date])" : "MONTH([Order date])";
+            case "calc-calcite" -> step == 1 ? "MONTH([Order date])" : "EXTRACT(MONTH FROM [Order date])";
             case "calc-invalid" -> "[Unknown] * 2";
             case "calc-exhaust" -> "[Missing" + step + "] + 1";
             case "calc-repair" -> step == 1 ? "[Missing] + 1" : formula;
@@ -144,13 +160,13 @@ final class CalcFieldRegression {
             default -> formula;
         };
         return step == 1 || "calc-invalid".equals(mode) || "calc-exhaust".equals(mode)
-                || (mode.equals("calc-repair") || mode.equals("calc-db-repair")) && step == 2
+                || Set.of("calc-repair", "calc-db-repair", "calc-mysql", "calc-calcite").contains(mode) && step == 2
                 ? call("formula-" + step, "propose_calc_field", JSON.writeValueAsString(Map.of("expression", candidate,
                         "name", "Double price", "groupType", "q", "deType", "3")))
                 : frame(Map.of("content", explanation), "stop");
     }
 
-    void verify(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests) throws Exception {
+    void verify(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, AtomicBoolean secondResourceAllowed) throws Exception {
         String opening = """
                 {"scene":"dataset-calc-field","resourceId":"11","editorId":"calc-301","sql":"","isCross":false,
                  "calcField":{"fieldId":"301","preserveType":true,"dataset":{"pid":"0","isCross":false,
@@ -159,6 +175,9 @@ final class CalcFieldRegression {
                   "allFields":[{"id":"102","datasetTableId":"1","datasourceId":"11","name":"Price","originName":"ID","deType":2,"extField":0,"checked":true,
                   "description":"private-context-value"},{"id":"301","name":"","extField":2,"deType":2,"originName":"","checked":true}]}}}
                 """;
+        verifyDialects(mvc, mode, requests, opening);
+        requests.clear();
+        verifyJoin(mvc, mode, opening, secondResourceAllowed);
         requests.clear();
         mode.set("calc-detail");
         var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(opening))
@@ -337,6 +356,69 @@ final class CalcFieldRegression {
         mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
         System.out.println("PASS calculated-field clarification, confirmed draft semantics, parameterized references and units");
     }
+
+    private void verifyJoin(MockMvc mvc, AtomicReference<String> mode, String opening, AtomicBoolean secondAllowed) throws Exception {
+        previewMode = "calc-join";
+        mode.set(previewMode);
+        var tree = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree(opening);
+        var dataset = (com.fasterxml.jackson.databind.node.ObjectNode) tree.at("/calcField/dataset");
+        tree.put("isCross", true); dataset.put("isCross", true);
+        var root = (com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0");
+        var child = root.deepCopy();
+        ((com.fasterxml.jackson.databind.node.ObjectNode) child.get("currentDs")).put("datasourceId", "12").put("id", "2");
+        var right = (com.fasterxml.jackson.databind.node.ObjectNode) child.at("/currentDsFields/0");
+        right.put("datasourceId", "12").put("datasetTableId", "2").put("id", "103").put("originName", "SECOND_ID").put("name", "Other");
+        var join = child.putObject("unionToParent");
+        var key = join.put("unionType", "inner").putArray("unionFields").addObject();
+        key.set("parentField", root.at("/currentDsFields/0")); key.set("currentField", right);
+        root.putArray("childrenDs").add(child);
+        ((com.fasterxml.jackson.databind.node.ArrayNode) dataset.get("allFields")).add(right);
+        var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
+        var path = start(mvc, session, "Add the two joined values");
+        if (!"DETAIL_PASS".equals(terminal(mvc, path).at("/result/calcField/validation").asText()))
+            throw new AssertionError("authorized joined physical fields must preview");
+        secondAllowed.set(false);
+        try {
+            expectDenied(mvc, tree.toString());
+            try {
+                var response = mvc.perform(post(path + "/check-application").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("contextVersion",session.path("contextVersion").asText(),
+                                "draftVersion",session.path("draftVersion").asText())))).andReturn().getResponse();
+                if (response.getStatus() < 400) throw new AssertionError("revoked secondary source allowed application");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure failure) || !"forbidden".equals(failure.safeCode())) throw denied;
+            }
+        } finally { secondAllowed.set(true); }
+        expectDenied(mvc, tree.toString().replace("\"isCross\":true", "\"isCross\":false"));
+        expectDenied(mvc, tree.toString().replace("\"resourceId\":\"11\"", "\"resourceId\":\"12\""));
+        mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+        previewMode = "";
+    }
+
+    private void verifyDialects(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        for (boolean cross : List.of(false, true)) {
+            previewMode = cross ? "calc-calcite" : "calc-mysql";
+            mode.set(previewMode);
+            requests.clear();
+            var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(opening.replace("\"isCross\":false", "\"isCross\":" + cross)
+                            .replace("\"Price\"", "\"Order date\"").replace("\"deType\":2,\"extField\":0", "\"deType\":1,\"extField\":0")))
+                    .andReturn().getResponse().getContentAsByteArray());
+            String path = start(mvc, session, "Return the month of the date");
+            var candidate = terminal(mvc, path).at("/result/calcField");
+            String expected = cross ? "EXTRACT(MONTH FROM [Order date])" : "MONTH([Order date])";
+            if (!"DETAIL_PASS".equals(candidate.path("validation").asText()) || !expected.equals(candidate.path("expression").asText())
+                    || requests.size() != 3) throw new AssertionError("dialect correction " + candidate + " sends=" + requests.size());
+            for (var request : requests) {
+                if (!request.path("messages").get(0).path("content").asText().contains(cross ? "DataEase Calcite" : "MySQL"))
+                    throw new AssertionError("missing editor dialect after correction");
+            }
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+        }
+        previewMode = "";
+    }
+
     private static void expectDenied(MockMvc mvc, String opening) throws Exception {
         try {
             if (mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(opening))

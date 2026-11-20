@@ -302,6 +302,11 @@ public final class ToolConversationRegression {
                             field.setType("JDBC"); field.setFieldType(entry.getValue()); return field;
                         }).toList();
                     }
+                    if (mode.get().equals("calc-join") && Objects.equals(request.getDatasourceId(), 12L)
+                            && "AI_PROBE".equals(request.getTableName())) {
+                        var field = new TableField(); field.setOriginName("SECOND_ID"); field.setType("BIGINT");
+                        yield List.of(field);
+                    }
                     if (!Objects.equals(request.getDatasourceId(), 11L) || !request.getTableName().matches("AI_PROBE[234]?")) throw new AssertionError("field scope expanded");
                     reads.add("fields");
                     if (mode.get().equals("input-results")) {
@@ -356,7 +361,7 @@ public final class ToolConversationRegression {
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
-            calculated.verify(mvc, mode, sent);
+            calculated.verify(mvc, mode, sent, secondResourceAllowed);
             reads.clear(); readTargets.clear();
             DatasetSqlDialectRegression.main(new String[0]);
             mode.set("dataset-guide");
