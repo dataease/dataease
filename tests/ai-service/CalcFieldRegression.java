@@ -3,6 +3,9 @@ package io.dataease.ai;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dataease.ai.scene.calc.AiCalcFieldScene;
 import io.dataease.ai.scene.calc.CalcFieldAccess;
+import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
+import io.dataease.api.ds.DatasourceSemanticApi.*;
+import io.dataease.datasource.manage.DatasourceSemanticManage;
 import io.dataease.ai.support.AiErrors;
 import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.security.identity.AiDeploymentMode;
@@ -178,7 +181,17 @@ final class CalcFieldRegression {
                 return "DETAIL_PASS";
             }
         };
-        return new AiCalcFieldScene(metadata, access, preview);
+        var registry = new DatasourceSemanticManage(null, null, null, null) {
+            @Override public Semantics list(Long source) {
+                return new Semantics(source == 11L ? List.of(new TableSemantic(7L, "AI_PROBE", "source table", "one row per payment",
+                        true, "", true, true, 1, 1)) : List.of());
+            }
+            @Override public TableDetails detail(Long source, Long tableId) {
+                return new TableDetails(List.of(new FieldSemantic("AI_PROBE", "ID", "warehouse cents", "amount in minor units",
+                        "", true, "BIGINT", "", List.of(new ValueReference("P", "source paid")))), 0);
+            }
+        };
+        return new AiCalcFieldScene(metadata, access, preview, new DatasetSqlSemanticTools(metadata, registry));
     }
 
     String respond(String mode, int step) throws Exception {
@@ -247,6 +260,9 @@ final class CalcFieldRegression {
                 || !result.path("result").path("sql").isNull() || previews.get() != 1 || requests.size() != 2
                 || !requests.getFirst().toString().contains("Price") || requests.toString().contains("private-context-value")
                 || requests.toString().contains("sample-secret")) throw new AssertionError("bounded detail projection: " + result);
+        String inherited = requests.getFirst().at("/messages/0/content").asText();
+        if (!inherited.contains("warehouse cents") || !inherited.contains("source paid") || !inherited.contains("one row per payment"))
+            throw new AssertionError("Missing confirmed datasource meanings for a physical field without dataset semantics");
         assertPrivateBindingAbsent(requests);
         var application = JSON.writeValueAsBytes(Map.of("contextVersion",session.path("contextVersion").asText(),
                 "draftVersion",session.path("draftVersion").asText()));
@@ -389,6 +405,10 @@ final class CalcFieldRegression {
         fields.addObject().put("id", "303").put("name", "Amount #102").put("extField", 2)
                 .put("deType", 3).put("checked", true).put("originName", "[102] + 1");
         converted.putArray("params").addObject().put("id", "params_88").put("name", "Scale").put("value", "100");
+        var table = (com.fasterxml.jackson.databind.node.ObjectNode) editor.at("/calcField/dataset/union/0/currentDs");
+        table.put("semanticConfirmed", true).put("semanticGrain", "one row per invoice");
+        raw.put("semanticAliases", "posted amount")
+                .put("semanticValueReferences", "[{\"value\":\"A\",\"meaning\":\"settled locally\"}]");
         var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                 .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
         for (String unit : List.of("ask", "grain", "missing", "cents", "yuan", "converted", "literal")) {
@@ -405,6 +425,9 @@ final class CalcFieldRegression {
             };
             var result = terminal(mvc, start(mvc, session, question)).path("result");
             String context = requests.getFirst().path("messages").get(0).path("content").asText();
+            if (!context.contains("one row per invoice") || !context.contains("posted amount") || !context.contains("settled locally")
+                    || context.contains("warehouse cents") || context.contains("one row per payment"))
+                throw new AssertionError("Confirmed dataset field and table semantics take precedence");
             if (!context.contains("Invoiced total") || !context.contains("Minor currency units")
                     || !context.contains("Amount #102 #102") || !context.contains("Amount #302")
                     || !context.contains("Rate") || context.contains("unconfirmed-private-value") || context.contains("private-context-value"))
@@ -422,7 +445,21 @@ final class CalcFieldRegression {
         }
         previewMode = "";
         mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
-        System.out.println("PASS calculated-field clarification, confirmed draft semantics, parameterized references and units");
+        mode.set("calc-unit-ask");
+        for (boolean localField : List.of(true, false)) {
+            raw.put("semanticConfirmed", localField);
+            table.put("semanticConfirmed", !localField);
+            requests.clear();
+            var mixed = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+            terminal(mvc, start(mvc, mixed, "Calculate the amount"));
+            var prompt = requests.getFirst().at("/messages/0/content").asText();
+            if (prompt.contains("settled locally") != localField || prompt.contains("source paid") == localField
+                    || prompt.contains("one row per invoice") == localField || prompt.contains("one row per payment") != localField)
+                throw new AssertionError("Table and field semantic confirmations must resolve independently");
+            mvc.perform(delete("/ai/conversations/" + mixed.path("sessionId").asText()));
+        }
+        System.out.println("PASS calculated-field clarification, dataset semantic priority, independent source fallback, parameters and units");
     }
 
     private void verifyColumnAccess(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
@@ -463,7 +500,8 @@ final class CalcFieldRegression {
                 session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                         .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
                 terminal(mvc, start(mvc, session, "Calculate a value"));
-                if (requests.getFirst().at("/messages/0/content").asText().contains("Price"))
+                String prompt = requests.getFirst().at("/messages/0/content").asText();
+                if (prompt.contains("Price") || prompt.contains("warehouse cents") || prompt.contains("source paid"))
                     throw new AssertionError("Restricted column appeared in the model field list");
                 mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
                 columnPolicy = "";
@@ -534,18 +572,22 @@ final class CalcFieldRegression {
         dataset.put("id", "42");
         var table = (com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0/currentDs");
         String query = Base64.getEncoder().encodeToString("SELECT ID FROM AI_PROBE".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        table.put("type", "sql").put("tableName", "Saved query").put("info", JSON.writeValueAsString(Map.of("sql", query, "table", "Saved query")));
+        table.put("type", "sql").put("tableName", "AI_PROBE").put("info", JSON.writeValueAsString(Map.of("sql", query, "table", "AI_PROBE")));
         savedDataset = JSON.treeToValue(dataset, DatasetGroupInfoDTO.class);
         savedDataset.setNodeType("dataset"); savedDataset.setLastUpdateTime(99L);
+        requests.clear();
         mode.set("calc-saved-sql"); previewMode = mode.get();
         try {
             var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                     .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
             if (!"DETAIL_PASS".equals(terminal(mvc, start(mvc, session, "Double the saved query's price")).at("/result/calcField/validation").asText()))
                 throw new AssertionError("Saved read-only SQL columns must preview");
+            var prompt = requests.getFirst().toString();
+            if (prompt.contains("warehouse cents") || prompt.contains("one row per payment"))
+                throw new AssertionError("A SQL node named after a physical table must not inherit its datasource semantics");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             table.put("info", JSON.writeValueAsString(Map.of("sql", Base64.getEncoder().encodeToString(
-                    "SELECT AI_PROBE.ID AS ID FROM AI_PROBE".getBytes()), "table", "Saved query")));
+                    "SELECT AI_PROBE.ID AS ID FROM AI_PROBE".getBytes()), "table", "AI_PROBE")));
             for (String policy : List.of("hidden", "row")) {
                 columnPolicy = policy;
                 try {
@@ -556,7 +598,7 @@ final class CalcFieldRegression {
                 } finally { columnPolicy = ""; }
             }
             String projected = Base64.getEncoder().encodeToString("SELECT ID AS AMOUNT FROM AI_PROBE".getBytes());
-            table.put("info", JSON.writeValueAsString(Map.of("sql", projected, "table", "Saved query")));
+            table.put("info", JSON.writeValueAsString(Map.of("sql", projected, "table", "AI_PROBE")));
             ((com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0/currentDsFields/0")).put("originName", "AMOUNT").put("id", "103");
             ((com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/allFields/0")).put("originName", "AMOUNT").put("id", "103");
             for (boolean saved : List.of(true, false)) {
@@ -569,7 +611,7 @@ final class CalcFieldRegression {
                     throw new AssertionError("Current simple SELECT projection did not bind");
                 mvc.perform(delete("/ai/conversations/" + changed.path("sessionId").asText()));
             }
-            table.put("info", JSON.writeValueAsString(Map.of("sql", Base64.getEncoder().encodeToString("SELECT 2 AS ID".getBytes()), "table", "Saved query")));
+            table.put("info", JSON.writeValueAsString(Map.of("sql", Base64.getEncoder().encodeToString("SELECT 2 AS ID".getBytes()), "table", "AI_PROBE")));
             expectDenied(mvc, tree.toString());
         } finally { savedDataset = null; previewMode = ""; }
     }
