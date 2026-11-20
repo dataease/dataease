@@ -2648,6 +2648,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     </el-table-column>
 
                     <el-table-column
+                      v-if="false"
                       class-name="dataset-semantic-cell"
                       :label="t('datasourceMetadata.fieldSemantics')"
                       width="240px"
@@ -2888,6 +2889,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     </el-table-column>
 
                     <el-table-column
+                      v-if="false"
                       class-name="dataset-semantic-cell"
                       :label="t('datasourceMetadata.fieldSemantics')"
                       width="240px"

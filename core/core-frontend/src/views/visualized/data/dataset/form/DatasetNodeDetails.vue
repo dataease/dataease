@@ -473,7 +473,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
             @toggle="emit('toggleFullscreen')"
           />
         </div>
-        <div v-if="selectedNode.semanticDescription" class="semantic-summary">
+        <div v-if="false" class="semantic-summary">
           <div v-if="selectedNode.semanticDescription">{{ selectedNode.semanticDescription }}</div>
         </div>
         <div class="node-tabs-row">
@@ -580,6 +580,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
                 >
               </el-table-column>
               <el-table-column
+                v-if="false"
                 class-name="dataset-semantic-cell"
                 :label="t('datasourceMetadata.fieldSemantics')"
                 min-width="200"

@@ -663,7 +663,10 @@ const handleClick = (tabName: TabPaneName) => {
       break
     }
     case 'structPreview':
-      columns.value = allFieldsColumns
+      // 暂时隐藏结构预览中的语义展示及查看入口。
+      columns.value = allFieldsColumns.filter(
+        column => column.key !== 'semanticBusinessName' || false
+      )
       tableData.value = allFields
       break
     case 'row':
@@ -1320,6 +1323,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
     </template>
   </el-dialog>
   <el-drawer
+    v-if="false"
     v-model="semanticDetailsVisible"
     :title="t('datasourceMetadata.fieldSemantics')"
     size="560px"
