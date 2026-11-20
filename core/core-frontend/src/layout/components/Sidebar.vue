@@ -6,7 +6,9 @@ const { width, node } = useMoveLine('DATASET')
 
 <template>
   <el-aside ref="node" :width="width + 'px'">
-    <slot />
+    <el-scrollbar class="sidebar-scrollbar">
+      <slot />
+    </el-scrollbar>
   </el-aside>
 </template>
 
