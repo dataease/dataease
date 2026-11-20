@@ -196,7 +196,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
       host: "127.0.0.1",
       port:
         process.env.DATASET_CALC_ASSISTANT_FIXTURE === "1"
-          ? 14278
+          ? Number(process.env.DATASET_CALC_ASSISTANT_PORT || 14278)
           : formalSql
           ? 14277
           : 4205,

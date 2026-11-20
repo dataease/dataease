@@ -629,10 +629,12 @@ const apply = async (turn: Turn) => {
           <p v-if="turn.answer">{{ turn.answer }}</p>
           <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
           <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
-          <details v-if="turn.result">
+          <details v-if="calcFieldDraft || turn.result">
             <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
             <pre v-if="turn.baseSql">{{ turn.baseSql }}</pre>
-            <small>{{ turn.session?.resourceName }} ({{ turn.session?.resourceId }})</small>
+            <small v-if="turn.session"
+              >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
+            >
           </details>
           <template v-if="turn.result?.type === 'CALC_FIELD_SUGGESTION' && turn.result.calcField">
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
@@ -704,14 +706,15 @@ const apply = async (turn: Turn) => {
               @click="apply(turn)"
               >{{ tr('apply') }}</el-button
             >
-            <el-button
-              text
-              :disabled="busy || applying"
-              data-testid="dataset-sql-assistant-reference"
-              @click="selectedBasis = index + 1"
-              >{{ tr('refer_to_suggestion') }}</el-button
-            >
           </template>
+          <el-button
+            v-if="suggestionText(turn.result)"
+            text
+            :disabled="busy || applying"
+            data-testid="dataset-sql-assistant-reference"
+            @click="selectedBasis = index + 1"
+            >{{ tr('refer_to_suggestion') }}</el-button
+          >
         </article>
       </div>
       <p v-if="failure" role="alert">{{ failure }}</p>
