@@ -1443,3 +1443,121 @@ test("new table copies source semantics while legacy fields stay independent", a
     )
   ).toBe("源字段说明");
 });
+
+test("manual calculated field opens in a bottom drawer", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  await expect(page.locator(".calc-field-drawer.btt")).toBeVisible();
+  await page
+    .locator(".calc-field-drawer.btt")
+    .getByRole("button", { name: "取消", exact: true })
+    .click();
+  await expect(page.locator(".calc-field-drawer.btt")).toBeHidden();
+});
+
+test("a calculated draft field is searchable and can be inserted and verified without saving", async ({
+  page,
+}) => {
+  await page.goto("/?dependency=1");
+  await expect(page.locator(".preview-data")).toContainText("orders:");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByPlaceholder("请输入字段名称").fill("二次引用");
+  const fields = drawer.locator(".field-ref");
+  await fields.getByRole("textbox").fill("计算");
+  await fields.getByText("计算字段", { exact: true }).click({ timeout: 3000 });
+  await expect(drawer.locator(".cm-content")).toHaveText("[计算字段]");
+  await drawer.getByRole("button", { name: "校验", exact: true }).click();
+  await expect(page.getByText("字段表达式校验成功")).toBeVisible();
+  const field = await page.evaluate(() =>
+    window.previewRequests.at(-1).allFields.at(-1)
+  );
+  expect(field).toMatchObject({ name: "二次引用", originName: "[calc]" });
+  await drawer.getByRole("button", { name: "取消", exact: true }).click();
+  await expect(page.locator(".preview-field")).not.toContainText("二次引用");
+  expect(await page.evaluate(() => window.saved)).toBeUndefined();
+});
+
+test("manual field parameters survive save and reopen and a cancelled rename", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByPlaceholder("请输入字段名称").fill("订单比例");
+  await drawer.locator(".hover-icon_quota").click();
+  const paramDialog = page.locator(".create-dialog:visible");
+  await paramDialog.getByRole("textbox").fill("比例");
+  await paramDialog.getByRole("spinbutton").fill("3");
+  await paramDialog.getByRole("button", { name: "确认", exact: true }).click();
+  const parameter = drawer.locator(".item-quota").filter({ hasText: /^比例$/ });
+  await parameter.click();
+  const code = drawer.locator(".cm-content");
+  await expect(code).toHaveText("[比例]");
+  await code.press("End");
+  await code.press("*");
+  const functions = drawer.locator(".padding-lr").last();
+  await functions.getByRole("textbox").fill("abs");
+  await functions.getByText("ABS(-1)", { exact: true }).click();
+  await expect(code).toHaveText("[比例]*ABS(-1)");
+  await drawer.getByRole("button", { name: "确认", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.saved?.allFields.at(-1)?.name))
+    .toBe("订单比例");
+  const saved = await page.evaluate(() => window.saved.allFields.at(-1));
+  expect(saved).toMatchObject({
+    groupType: "q",
+    params: [{ name: "比例", value: 3 }],
+    originName: "[" + saved.params[0].id + "]*ABS(-1)",
+  });
+  await page.reload();
+  await page.getByRole("tab", { name: "批量管理" }).click();
+  const row = page.getByRole("row", { name: /订单比例/ });
+  const edit = row.locator("td").last().getByRole("button").last();
+  await edit.click({ timeout: 4000 });
+  await expect(drawer).toContainText("编辑计算字段");
+  await expect(code).toHaveText("[比例]*ABS(-1)");
+  await parameter.hover();
+  await parameter.locator(".icon-right .hover-icon").first().click();
+  await paramDialog.getByRole("textbox").fill("改名");
+  await paramDialog.getByRole("button", { name: "确认", exact: true }).click();
+  await expect(code).toHaveText("[改名]*ABS(-1)");
+  await drawer.getByRole("button", { name: "取消", exact: true }).click();
+  await edit.click({ timeout: 4000 });
+  await expect(code).toHaveText("[比例]*ABS(-1)");
+  await expect(parameter).toBeVisible();
+});
+
+test("manual preview validates an unsaved data set and confirm updates only its draft", async ({
+  page,
+}) => {
+  await openRelations(page, "/?create=1");
+  const transfer = await page.evaluateHandle(() => new DataTransfer());
+  await page
+    .locator(".table-list .list-item_primary")
+    .filter({ hasText: /^orders$/ })
+    .dispatchEvent("dragstart", { dataTransfer: transfer });
+  await page
+    .locator(".drag-mask_dataset")
+    .dispatchEvent("drop", { dataTransfer: transfer });
+  await expect(page.locator(".node-fields .ed-table__body tr")).toHaveCount(3);
+  await page.getByRole("button", { name: "下一步，数据处理" }).click();
+  await expect(page.locator(".preview-data")).toContainText("orders:");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByPlaceholder("请输入字段名称").fill("常数");
+  await drawer.locator(".cm-content").fill("2 + 3");
+  await drawer.getByRole("button", { name: "校验", exact: true }).click();
+  await expect(page.getByText("字段表达式校验成功")).toBeVisible();
+  const preview = await page.evaluate(() => window.previewRequests.at(-1));
+  expect(preview.allFields.at(-1)).toMatchObject({
+    name: "常数",
+    originName: "2 + 3",
+    extField: 2,
+  });
+  expect(preview.union[0].currentDs.tableName).toBe("orders");
+  await drawer.getByRole("button", { name: "确认", exact: true }).click();
+  await expect(page.locator(".preview-field")).toContainText("常数");
+  expect(await page.evaluate(() => window.saved)).toBeUndefined();
+});
