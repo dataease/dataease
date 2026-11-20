@@ -762,4 +762,8 @@ span {
 :deep(.ed-collapse-item__content) {
   padding: 16px 8px 8px 8px !important;
 }
+
+:deep(.common-style-area .ed-collapse-item__content) {
+  padding-bottom: 0 !important;
+}
 </style>

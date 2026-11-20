@@ -304,6 +304,7 @@ const removeJumpSenior = () => {
             v-if="showProperties('scroll-cfg')"
             v-model="chart.senior.scrollCfg.open"
             name="scroll"
+            class="scroll-setting"
             @modelChange="onScrollCfgChange"
           >
             <scroll-cfg
@@ -528,6 +529,9 @@ span {
   }
   :deep(.style-collapse) {
     border-bottom: none;
+  }
+  :deep(.scroll-setting .ed-collapse-item__content) {
+    padding-bottom: 8px !important;
   }
 }
 
