@@ -15,7 +15,8 @@ final class CalcFieldCanvas {
     static final ObjectMapper JSON = new ObjectMapper();
     final Map<Long, CalcFieldAccess.Column> columns = new HashMap<>();
     final Map<Long, DatasetTableFieldDTO> physical = new HashMap<>();
-    final Map<Long, String> tables = new LinkedHashMap<>();
+    final Map<Long, DatasetTableDTO> tables = new LinkedHashMap<>();
+    final Map<Long, AiDatasourceTools.TableFields> physicalTables = new HashMap<>();
     private final AiSqlStaticValidator sqlValidator;
     private final AiDatasourceTools metadata;
     boolean hasDraftSql;
@@ -94,9 +95,11 @@ final class CalcFieldCanvas {
                 table.setInfo(JSON.writeValueAsString(Map.of("table", name)));
             } catch (java.io.IOException failure) { throw AiErrors.error("invalid"); }
             table.setSqlVariableDetails(null);
-            for (var field : metadata.fields(source, name, true).fields()) allowed.add(field.name());
+            var structure = metadata.fields(source, name, true);
+            physicalTables.put(table.getId(), structure);
+            for (var field : structure.fields()) allowed.add(field.name());
         }
-        if (table.getId() == null || name == null || tables.putIfAbsent(table.getId(), name) != null) throw AiErrors.error("invalid");
+        if (table.getId() == null || name == null || tables.putIfAbsent(table.getId(), table) != null) throw AiErrors.error("invalid");
         var local = new LinkedHashMap<Long, DatasetTableFieldDTO>();
         var fields = node.getCurrentDsFields();
         if (fields == null || fields.isEmpty() || fields.size() > 256) throw AiErrors.error("invalid");

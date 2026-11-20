@@ -20,7 +20,7 @@ final class CalcFieldInputs {
     final List<Map<String,Object>> projection = new ArrayList<>();
 
     CalcFieldInputs(DatasetGroupInfoDTO dataset, Long targetId, CalcFieldAccess.Grant grant,
-                    Map<Long, CalcFieldAccess.Column> physical) {
+                    Map<Long, CalcFieldAccess.Column> physical, CalcFieldSemantics semantics) {
         hidden = grant.hidden();
         isCross = dataset.getIsCross();
         var fields = dataset.getAllFields();
@@ -91,16 +91,9 @@ final class CalcFieldInputs {
             } else {
                 item.put("kind", "calculated");
             }
-            if (Boolean.TRUE.equals(f.getSemanticConfirmed())) {
-                addMeaning(item, "businessName", f.getSemanticBusinessName());
-                addMeaning(item, "description", f.getSemanticDescription());
-            }
+            if (semantics != null) semantics.describe(f, column, item);
             projection.add(item);
         }
-    }
-
-    private static void addMeaning(Map<String, Object> item, String key, String value) {
-        if (value != null && !value.isBlank() && value.length() <= 512) item.put(key, value);
     }
 
     private String label(String name, String id) {
