@@ -60,8 +60,9 @@ import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive, onInitReady } from '@/utils/canvasUtils'
 import treeSort from '@/utils/treeSortUtils'
+import { useResourceTreeSearch } from '@/utils/resourceTreeSearch'
 import router from '@/router'
-import { isFreeFolder } from '@/utils/utils'
+import { getHighlightSegments, isFreeFolder } from '@/utils/utils'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
@@ -104,9 +105,14 @@ const resourceLabel =
 const newResourceLabel =
   curCanvasType.value === 'dataV' ? t('visualization.new_screen') : t('visualization.new_dashboard')
 const selectedNodeKey = ref(null)
-const filterText = ref(null)
+const filterText = ref('')
 const expandedArray = ref([])
 const resourceListTree = ref()
+const { filterNode: filterResourceNode, applyFilter } = useResourceTreeSearch(
+  resourceListTree,
+  filterText,
+  { canView: data => data.weight > 0 }
+)
 const resourceGroupOpt = ref()
 const resourceCreateOpt = ref()
 const returnMounted = ref(false)
@@ -241,12 +247,11 @@ const nodeCollapse = data => {
   }
 }
 
-const filterNode = (value: string, data: BusiTreeNode) => {
+const filterNode = (value: string, data: BusiTreeNode, node?: any) => {
   if (showPosition.value === 'multiplexing' && data.id === dvInfo.value?.id) {
     return false
   }
-  if (!value) return true
-  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  return filterResourceNode(value, data, node)
 }
 const nodeClick = (data: BusiTreeNode, node) => {
   dvMainStore.setCurComponent({ component: null, index: null })
@@ -364,7 +369,7 @@ const afterTreeInit = (notOpen = false, isCurrent = () => true) => {
   nextTick(() => {
     if (!isCurrent()) return
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
-    resourceListTree.value.filter(filterText.value)
+    applyFilter(filterText.value)
     if (notOpen) return
     nextTick(() => {
       if (!isCurrent()) return
@@ -631,10 +636,6 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
   return false
 }, 300)
 
-watch(filterText, val => {
-  resourceListTree.value.filter(val)
-})
-
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
@@ -819,7 +820,17 @@ defineExpose({
                 :content="t('common.no_permission_node')"
                 placement="top-start"
               >
-                {{ node.label }}
+                <span>
+                  <template
+                    v-for="(segment, index) in getHighlightSegments(node.label, filterText)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                      segment.text
+                    }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template>
+                </span>
               </el-tooltip>
               <el-tooltip
                 v-else
@@ -829,7 +840,17 @@ defineExpose({
                 :disabled="data.extraFlag1"
                 placement="top-start"
               >
-                {{ node.label }}
+                <span>
+                  <template
+                    v-for="(segment, index) in getHighlightSegments(node.label, filterText)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                      segment.text
+                    }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template>
+                </span>
               </el-tooltip>
             </span>
             <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">

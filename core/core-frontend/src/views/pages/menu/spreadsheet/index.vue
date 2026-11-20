@@ -63,6 +63,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useResizeObserver } from '@vueuse/core'
 import { onInitReady } from '@/utils/canvasUtils'
 import treeSort from '@/utils/treeSortUtils'
+import { getHighlightSegments } from '@/utils/utils'
+import { useResourceTreeSearch } from '@/utils/resourceTreeSearch'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useCache } from '@/hooks/web/useCache'
 import UniverSheet from '@/views/menu/spreadsheet/components/UniverSheet.vue'
@@ -256,9 +258,8 @@ const sortTypeTip = computed(() => {
 const spreadsheetListTree = ref()
 const spreadsheetFolderDialogRef = ref<InstanceType<typeof SpreadsheetFolderDialog>>()
 const nickName = ref('')
-
-watch(nickName, (val: string) => {
-  spreadsheetListTree.value.filter(val)
+const { filterNode: filterResourceNode } = useResourceTreeSearch(spreadsheetListTree, nickName, {
+  canView: data => data.weight > 0
 })
 
 const sideTreeStatus = ref(true)
@@ -266,10 +267,8 @@ const changeSideTreeStatus = (val: boolean) => {
   sideTreeStatus.value = val
 }
 
-const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true
-  return data.name?.toLowerCase().includes(value.toLowerCase())
-}
+const filterNode = (value: string, data: BusiTreeNode, node?: any) =>
+  filterResourceNode(value, data, node)
 
 const mouseenter = () => {
   appStore.setArrowSide(true)
@@ -920,7 +919,17 @@ onBeforeUnmount(() => {
                   :content="t('common.no_permission_node')"
                   placement="top-start"
                 >
-                  <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
+                  <span :title="node.label" class="label-tooltip ellipsis"
+                    ><template
+                      v-for="(segment, index) in getHighlightSegments(node.label, nickName)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template></span
+                  >
                 </el-tooltip>
                 <el-tooltip
                   v-else-if="isSpreadsheetUnpublished(data)"
@@ -928,11 +937,29 @@ onBeforeUnmount(() => {
                   :content="t('visualization.publish_tips1')"
                   placement="top-start"
                 >
-                  <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
+                  <span :title="node.label" class="label-tooltip ellipsis"
+                    ><template
+                      v-for="(segment, index) in getHighlightSegments(node.label, nickName)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template></span
+                  >
                 </el-tooltip>
-                <span v-else :title="node.label" class="label-tooltip ellipsis">{{
-                  node.label
-                }}</span>
+                <span v-else :title="node.label" class="label-tooltip ellipsis"
+                  ><template
+                    v-for="(segment, index) in getHighlightSegments(node.label, nickName)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                      segment.text
+                    }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template></span
+                >
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
                     @handle-command="cmd => handleSpreadsheetTree(cmd, data)"
