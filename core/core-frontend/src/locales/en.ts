@@ -4,6 +4,7 @@ export default {
     new_formula: 'New formula',
     replace_formula: 'Replace the current formula with this suggestion?',
     detail_pass: 'Preview validation passed',
+    aggregate_placeholder: 'Verify the aggregate result in a chart',
     calc_failed: 'Preview validation failed',
     failed_preview: 'Failed preview',
     successful_preview: 'Successful preview',

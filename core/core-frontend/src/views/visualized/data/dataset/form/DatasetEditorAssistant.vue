@@ -40,6 +40,12 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const tr = (key: string) => t(`ai_conversation.${key}`)
+const canApplyCalcField = (validation: AiCalcFieldSuggestion['validation']) =>
+  validation === 'DETAIL_PASS' || validation === 'AGGREGATE_PLACEHOLDER'
+const validationLabel = (validation: AiCalcFieldSuggestion['validation']) => {
+  if (validation === 'AGGREGATE_PLACEHOLDER') return tr('aggregate_placeholder')
+  return tr(validation === 'DETAIL_PASS' ? 'detail_pass' : 'calc_failed')
+}
 const title = () => tr(props.calcFieldDraft ? 'calc_title' : 'editor_title')
 const newDraftLabel = () => tr(props.calcFieldDraft ? 'new_formula' : 'new_query')
 const suggestionText = (result?: AiAssistanceResult) => result?.calcField?.expression ?? result?.sql
@@ -639,11 +645,9 @@ const apply = async (turn: Turn) => {
           <template v-if="turn.result?.type === 'CALC_FIELD_SUGGESTION' && turn.result.calcField">
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
             <pre>{{ turn.result.calcField.expression }}</pre>
-            <span>{{
-              tr(turn.result.calcField.validation === 'DETAIL_PASS' ? 'detail_pass' : 'calc_failed')
-            }}</span>
+            <span>{{ validationLabel(turn.result.calcField.validation) }}</span>
             <el-button
-              :disabled="busy || applying || turn.result.calcField.validation !== 'DETAIL_PASS'"
+              :disabled="busy || applying || !canApplyCalcField(turn.result.calcField.validation)"
               @click="apply(turn)"
               >{{ tr('apply') }}</el-button
             >

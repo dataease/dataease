@@ -4,6 +4,7 @@ export default {
     new_formula: '另写公式',
     replace_formula: '用这条建议替换当前公式？',
     detail_pass: '预览校验通过',
+    aggregate_placeholder: '聚合结果需在图表中验证',
     calc_failed: '预览校验失败',
     failed_preview: '失败预览',
     successful_preview: '成功预览',
