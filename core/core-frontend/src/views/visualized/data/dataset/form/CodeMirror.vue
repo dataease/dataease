@@ -116,19 +116,12 @@ const codeComInit = (doc: string, sqlMode?: boolean) => {
       return false
     }
   }
+  const changed = EditorView.updateListener.of(update => {
+    if (update.docChanged) emits('change')
+  })
   const extensionsAttach = sqlMode
-    ? [
-        basicSetup,
-        sql(),
-        placeholders,
-        keymap.of([indentWithTab]),
-        EditorView.updateListener.of(v => {
-          if (v.docChanged) {
-            emits('change')
-          }
-        })
-      ]
-    : [basicSetup, placeholders, keymap.of([indentWithTab])]
+    ? [basicSetup, sql(), placeholders, keymap.of([indentWithTab]), changed]
+    : [basicSetup, placeholders, keymap.of([indentWithTab]), changed]
   return new EditorView({
     doc,
     extensions: extensionsAttach,

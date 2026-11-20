@@ -1,5 +1,10 @@
 export default {
   ai_conversation: {
+    calc_title: '計算欄位助手',
+    new_formula: '另寫公式',
+    replace_formula: '用這項建議取代目前公式？',
+    detail_pass: '預覽校驗通過',
+    calc_failed: '預覽校驗失敗',
     failed_preview: '失敗預覽',
     successful_preview: '成功預覽',
     draft_revision: '版本',

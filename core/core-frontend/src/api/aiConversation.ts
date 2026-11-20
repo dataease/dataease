@@ -18,6 +18,24 @@ export interface AiSqlPreview {
   outcome: SqlPreviewOutcome
   revision: number
 }
+export interface AiCalcFieldDraft {
+  preserveType?: boolean
+  fieldId: string
+  dataset: {
+    id: string | null
+    pid: string
+    isCross: boolean
+    allFields: { id?: string; params?: unknown; deType?: number }[]
+    union: unknown[]
+  }
+}
+export interface AiCalcFieldSuggestion {
+  expression: string
+  name: string
+  groupType: 'd' | 'q'
+  deType: number
+  validation: 'DETAIL_PASS' | 'INVALID' | 'PREVIEW_FAILED'
+}
 export interface AiConversationSession {
   sessionId: string
   contextVersion: string
@@ -44,7 +62,8 @@ export const getAiAvailability = (signal?: AbortSignal) =>
 export const getConversationResources = () =>
   data<AiConversationResource[]>(request.get({ url: '/ai/conversations/resources' }))
 export const openConversation = (value: {
-  scene: 'sql' | 'dataset-sql'
+  scene: 'sql' | 'dataset-sql' | 'dataset-calc-field'
+  calcField?: AiCalcFieldDraft
   resourceId: string
   editorId: string
   sql: string
@@ -129,7 +148,8 @@ export interface AiSqlTableEvidence {
 }
 export interface AiAssistanceResult {
   evidence?: AiSqlTableEvidence[] | null
-  type: 'EXPLANATION' | 'SQL_SUGGESTION'
+  calcField?: AiCalcFieldSuggestion
+  type: 'EXPLANATION' | 'SQL_SUGGESTION' | 'CALC_FIELD_SUGGESTION'
   text: string
   sql: string | null
   resourceId: string

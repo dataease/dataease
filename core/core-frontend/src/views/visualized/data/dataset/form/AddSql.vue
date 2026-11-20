@@ -36,7 +36,7 @@ import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
-import DatasetSqlAssistant from './DatasetSqlAssistant.vue'
+import DatasetEditorAssistant from './DatasetEditorAssistant.vue'
 import type { Field, DataSource } from './util'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -782,7 +782,7 @@ const mousedownDrag = () => {
   <div class="add-sql-name">
     <el-input class="name" ref="editorName" v-model="sqlNode.tableName" @change="setFlag" />
     <div class="save-or-cancel flex-align-center">
-      <DatasetSqlAssistant
+      <DatasetEditorAssistant
         v-if="assistantHost && codeCom"
         :host="assistantHost"
         :is-cross="isCross"

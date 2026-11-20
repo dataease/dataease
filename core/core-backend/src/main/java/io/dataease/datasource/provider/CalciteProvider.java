@@ -866,7 +866,14 @@ public class CalciteProvider extends Provider {
                 datasourceRequest.setQuery(new String(datasourceRequest.getQuery().getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset()));
             }
         }
-        statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues(), autoIncrementPkName, datasourceConfiguration);
+        int timeout = datasourceConfiguration.getQueryTimeout();
+        if (datasourceRequest.getExecutionDeadline() != null) {
+            long remaining = datasourceRequest.getExecutionDeadline() - System.currentTimeMillis();
+            if (remaining < 1000) throw new java.sql.SQLTimeoutException();
+            int budget = (int) Math.min(15, remaining / 1000);
+            timeout = timeout > 0 ? Math.min(timeout, budget) : budget;
+        }
+        statement = getPreparedStatement(con, timeout, datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues(), autoIncrementPkName, datasourceConfiguration);
         return statement;
     }
 

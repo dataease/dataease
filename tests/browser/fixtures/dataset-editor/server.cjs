@@ -37,7 +37,7 @@ const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:
 export const getDatasourceList=async()=>${
       formalSql
         ? JSON.stringify([
-            { id: "source", name: "Fixture MySQL" },
+            { id: "source", name: "Fixture MySQL", type: "mysql", leaf: true },
             { id: "second", name: "Warehouse B" },
           ])
         : "[]"
@@ -116,7 +116,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
             [
               "AddSql.vue",
               "CodeMirror.vue",
-              "DatasetSqlAssistant.vue",
+              "DatasetEditorAssistant.vue",
             ].includes(path.basename(id))
           )
             return;
@@ -194,7 +194,12 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
     },
     server: {
       host: "127.0.0.1",
-      port: formalSql ? 14277 : 4205,
+      port:
+        process.env.DATASET_CALC_ASSISTANT_FIXTURE === "1"
+          ? 14278
+          : formalSql
+          ? 14277
+          : 4205,
       strictPort: true,
       fs: {
         allow: [

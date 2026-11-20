@@ -6,6 +6,7 @@ import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import type { AiCalcFieldSuggestion } from '@/api/aiConversation'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
 import { fieldType } from '@/utils/attr'
@@ -139,7 +140,32 @@ const showFormula = () => {
   })
 }
 
+const editingExisting = ref(false)
+const formulaRevision = ref(0)
+const touched = reactive({ name: false, groupType: false, deType: false })
+const readFormula = (): string => mirror.value.state.doc.toString()
+const draftField = () => ({
+  ...cloneDeep(fieldForm),
+  originName: setNameIdTrans('name', 'id', readFormula())
+})
+const applyFormula = (suggestion: AiCalcFieldSuggestion) => {
+  const { expression, name, groupType, deType } = suggestion
+  if (!editingExisting.value) {
+    if (!touched.name && name) fieldForm.name = name
+    if (!touched.groupType) fieldForm.groupType = groupType
+    if (!touched.deType) fieldForm.deType = deType
+  }
+  mirror.value.dispatch({
+    changes: { from: 0, to: mirror.value.state.doc.length, insert: expression }
+  })
+}
+const selectGroup = (group: 'd' | 'q') => {
+  touched.groupType = true
+  fieldForm.groupType = group
+}
 const initEdit = (obj, dimensions, quotas) => {
+  editingExisting.value = obj.extField === 2
+  Object.assign(touched, { name: false, groupType: false, deType: false })
   Object.assign(fieldForm, cloneDeep({ ...defaultForm, ...obj }))
   dimensionDataList.value = dimensions
   quotaFields.value = quotas
@@ -170,6 +196,11 @@ const formField = ref()
 defineExpose({
   initEdit,
   setFieldForm,
+  readFormula,
+  draftField,
+  applyFormula,
+  formulaRevision,
+  preserveType: computed(() => editingExisting.value || touched.deType),
   fieldForm,
   formField
 })
@@ -234,7 +265,11 @@ getFunction().then(res => {
               ]"
               :label="t('dataset.field_edit_name')"
             >
-              <el-input v-model="fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
+              <el-input
+                v-model="fieldForm.name"
+                @input="touched.name = true"
+                :placeholder="t('dataset.input_edit_name')"
+              />
             </el-form-item>
           </el-form>
           <div>
@@ -242,14 +277,14 @@ getFunction().then(res => {
               <el-form-item class="mr12" :label="t('dataset.data_type')">
                 <div class="btn-select">
                   <el-button
-                    @click="fieldForm.groupType = 'd'"
+                    @click="selectGroup('d')"
                     :class="[fieldForm.groupType === 'd' && 'is-active']"
                     text
                   >
                     {{ t('chart.dimension_abb') }}
                   </el-button>
                   <el-button
-                    @click="fieldForm.groupType = 'q'"
+                    @click="selectGroup('q')"
                     :class="[fieldForm.groupType === 'q' && 'is-active']"
                     text
                   >
@@ -258,7 +293,11 @@ getFunction().then(res => {
                 </div>
               </el-form-item>
               <el-form-item class="mr0" :label="t('dataset.field_type')">
-                <el-select v-model="fieldForm.deType" style="width: 376px">
+                <el-select
+                  v-model="fieldForm.deType"
+                  @change="touched.deType = true"
+                  style="width: min(376px, 100%)"
+                >
                   <template #prefix>
                     <el-icon>
                       <Icon
@@ -312,6 +351,7 @@ getFunction().then(res => {
           <code-mirror
             :quotaMap="quotaDataList.map(ele => ele.name)"
             :dimensionMap="dimensionDataList.map(ele => ele.name)"
+            @change="formulaRevision++"
             ref="myCm"
             height="318px"
             dom-id="calcField"

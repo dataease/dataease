@@ -99,6 +99,7 @@ public final class ToolConversationRegression {
         var toolEntered = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var toolRelease = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var transientMetadata = new AtomicInteger();
+        var calculated = new CalcFieldRegression();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         var providerWorkers = Executors.newFixedThreadPool(4); server.setExecutor(providerWorkers);
         server.createContext("/v1/chat/completions", exchange -> {
@@ -113,7 +114,9 @@ public final class ToolConversationRegression {
                     exchange.getResponseBody().write(rejected); exchange.close(); return;
                 }
                 String content;
-                if (mode.get().equals("selection-followup")) {
+                if (mode.get().startsWith("calc-")) {
+                    content = calculated.respond(mode.get(), sent.size());
+                } else if (mode.get().equals("selection-followup")) {
                     var last = body.path("messages").get(body.path("messages").size() - 1);
                     JsonNode input;
                     try { input = JSON.readTree(last.path("content").asText()); }
@@ -347,11 +350,14 @@ public final class ToolConversationRegression {
             sqlTools = new AiSqlTools(metadata);
             var scene = new AiSqlConversationScene(metadata, sqlTools);
             beans.addBean("scene", scene);
+            beans.addBean("calcField", calculated.scene(metadata));
             var joinPaths = new ArrayList<>(List.of(DatasetSqlRelationRegression.buyer()));
             beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)));
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            calculated.verify(mvc, mode, sent);
+            reads.clear(); readTargets.clear();
             DatasetSqlDialectRegression.main(new String[0]);
             mode.set("dataset-guide");
             for (boolean cross : List.of(false, true)) {
