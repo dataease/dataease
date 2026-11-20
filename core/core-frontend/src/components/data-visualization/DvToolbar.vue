@@ -38,9 +38,8 @@ import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import {
   canvasSave,
-  canvasSaveWithParams,
+  changeCanvasPublishStatus,
   checkCanvasChangePre,
-  findAllViewsId,
   initCanvasData
 } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
@@ -57,7 +56,6 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRouter } from 'vue-router_2'
@@ -142,11 +140,11 @@ const resourceOptFinish = param => {
     dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
-    saveCanvasWithCheck(param.withPublish, param.status)
+    saveCanvasWithCheck(param.withPublish)
   }
 }
 
-const saveCanvasWithCheck = (withPublish = false, status?) => {
+const saveCanvasWithCheck = (withPublish = false) => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm('已切换至新组织，无权保存其他组织的资源', {
       confirmButtonType: 'primary',
@@ -181,39 +179,38 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
         leaf: true,
         id: dvInfo.value.pid || '0'
       }
-      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish })
     }
     return
   }
   checkCanvasChangePre(() => {
-    saveResource({ withPublish, status })
+    saveResource(withPublish)
   })
 }
 
-const saveResource = (checkParams?) => {
-  if (styleChangeTimes.value > 0 || checkParams.withPublish) {
+const saveResource = (withPublish: boolean) => {
+  if (styleChangeTimes.value > 0 || withPublish) {
     eventBus.emit('hideArea-canvas-main')
     const loadingKey = permissionStore.getCurrentPath
     // 保存 + 发布合并为一次 loading：先占一个引用，保证两次请求之间计数不归零
-    if (checkParams.withPublish) {
+    if (withPublish) {
       tryShowLoading(loadingKey)
     }
     nextTick(() => {
-      canvasSaveWithParams(checkParams, async () => {
-        snapshotStore.resetStyleChangeTimes()
+      canvasSave(async savedCanvas => {
         if (!embeddedStore.baseUrl) {
           // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前大屏
           try {
             await router.replace({
               name: 'dvCanvas',
-              query: { dvId: String(dvInfo.value.id) }
+              query: { dvId: String(savedCanvas.id) }
             })
           } catch (e) {
             console.error(e)
           }
         }
         if (appData.value) {
-          initCanvasData(dvInfo.value.id, { busiFlag: 'dataV', resourceTable: 'snapshot' }, () => {
+          initCanvasData(savedCanvas.id, { busiFlag: 'dataV', resourceTable: 'snapshot' }, () => {
             useEmitt().emitter.emit('refresh-dataset-selector')
             resourceAppOpt.value.close()
             dvMainStore.setAppDataInfo(null)
@@ -221,17 +218,18 @@ const saveResource = (checkParams?) => {
             snapshotStore.resetSnapshot()
           })
         }
-        if (checkParams.withPublish) {
-          publishStatusChange(checkParams.status).finally(() => {
-            tryHideLoading(loadingKey)
-          })
+        if (withPublish) {
+          await changeCanvasPublishStatus(1, savedCanvas)
         } else {
           ElMessage.success(t('commons.save_success'))
         }
-      }).catch(() => {
-        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
-        if (checkParams.withPublish) tryHideLoading(loadingKey)
       })
+        .catch(() => {
+          // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
+        })
+        .finally(() => {
+          if (withPublish) tryHideLoading(loadingKey)
+        })
     })
   }
 }
@@ -340,25 +338,6 @@ const openOuterParamsSet = () => {
 
 const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit('dataV')
-}
-
-const publishStatusChange = status => {
-  const targetViewIds = []
-  findAllViewsId(componentData.value, targetViewIds)
-  // do update
-  return updatePublishStatus({
-    id: dvInfo.value.id,
-    name: dvInfo.value.name,
-    mobileLayout: dvInfo.value.mobileLayout,
-    status,
-    activeViewIds: targetViewIds,
-    type: 'dataV'
-  }).then(() => {
-    dvMainStore.updateDvInfoCall(status)
-    status
-      ? ElMessage.success(t('visualization.published_success'))
-      : ElMessage.success(t('visualization.cancel_publish_tips'))
-  })
 }
 
 const isIframe = computed(() => appStore.getIsIframe)
@@ -518,7 +497,7 @@ const fullScreenPreview = () => {
           trigger="hover"
         >
           <el-button
-            @click="saveCanvasWithCheck(true, 1)"
+            @click="saveCanvasWithCheck(true)"
             style="float: right; margin: 0 12px 0 0"
             type="primary"
           >
@@ -535,7 +514,7 @@ const fullScreenPreview = () => {
                 {{ t('visualization.publish_recover') }}
               </el-dropdown-item>
               <el-dropdown-item
-                @click.stop="publishStatusChange(0)"
+                @click.stop="changeCanvasPublishStatus(0)"
                 v-if="[1, 2].includes(dvInfo.status)"
               >
                 <el-icon class="handle-icon">

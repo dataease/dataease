@@ -21,7 +21,12 @@ import DbToolbar from '@/components/dashboard/DbToolbar.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
-import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
+import {
+  decompressionPre,
+  initCanvasData,
+  onInitReady,
+  recoverPublishedCanvas
+} from '@/utils/canvasUtils'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
@@ -39,11 +44,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  checkCanvasChange,
-  findCopyResource,
-  recoverToPublished
-} from '@/api/visualization/dataVisualization'
+import { checkCanvasChange, findCopyResource } from '@/api/visualization/dataVisualization'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -261,7 +262,7 @@ const doUseCache = async flag => {
   }
 }
 
-const initLocalCanvasData = async callBack => {
+const initLocalCanvasData = async (callBack?: () => void, awaitRelations = false) => {
   if (!loadFinish.value) return
   const { resourceId, opt, sourcePid } = state
   const busiFlag = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
@@ -274,6 +275,7 @@ const initLocalCanvasData = async callBack => {
         resourceTable: 'snapshot',
         source: 'main-edit',
         awaitLoad: true,
+        awaitRelations,
         queryRequest
       },
       function () {
@@ -438,21 +440,20 @@ const cancelHidden = item => {
   }
 }
 
-const doRecoverToPublished = () => {
-  recoverToPublished({ id: dvInfo.value.id, type: 'dashboard', name: dvInfo.value.name }).then(
-    () => {
-      state.resourceId = dvInfo.value.id
-      state.sourcePid = dvInfo.value.pid
-      state.opt = null
-      initLocalCanvasData(() => {
-        nextTick(() => {
-          deCanvasRef.value.canvasInit(false)
-          dvMainStore.updateDvInfoCall(1)
-          useEmitt().emitter.emit('calcData-all')
-        })
-      })
-    }
-  )
+const doRecoverToPublished = async () => {
+  const recovered = await recoverPublishedCanvas()
+  if (!recovered || !isCurrentDraftResource(recovered.id)) return
+  state.resourceId = recovered.id
+  state.sourcePid = recovered.pid
+  state.opt = null
+  snapshotStore.initSnapShot()
+  await initLocalCanvasData(() => {
+    nextTick(() => {
+      deCanvasRef.value?.canvasInit(false)
+      snapshotStore.recordSnapshot('recoverToPublished')
+      useEmitt().emitter.emit('calcData-all')
+    })
+  }, true)
 }
 
 onUnmounted(() => {

@@ -1,5 +1,6 @@
 package io.dataease.api.visualization.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.constant.CommonConstants;
@@ -11,6 +12,9 @@ import lombok.Data;
  */
 @Data
 public class VisualizationLinkJumpBaseRequest {
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private VisualizationDraftRevision revision;
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceDvId;

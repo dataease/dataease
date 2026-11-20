@@ -48,9 +48,8 @@ import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import {
   canvasSave,
-  canvasSaveWithParams,
+  changeCanvasPublishStatus,
   checkCanvasChangePre,
-  findAllViewsId,
   initCanvasData
 } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -60,7 +59,6 @@ import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vu
 import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRouter } from 'vue-router_2'
@@ -198,7 +196,7 @@ const resourceOptFinish = param => {
     dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
-    saveCanvasWithCheck(param.withPublish, param.status)
+    saveCanvasWithCheck(param.withPublish)
   }
 }
 
@@ -206,26 +204,7 @@ const recoverToPublished = () => {
   emits('recoverToPublished')
 }
 
-const publishStatusChange = status => {
-  const targetViewIds = []
-  findAllViewsId(componentData.value, targetViewIds)
-  // do update
-  return updatePublishStatus({
-    id: dvInfo.value.id,
-    name: dvInfo.value.name,
-    mobileLayout: dvInfo.value.mobileLayout,
-    activeViewIds: targetViewIds,
-    status,
-    type: 'dashboard'
-  }).then(() => {
-    dvMainStore.updateDvInfoCall(status)
-    status
-      ? ElMessage.success(t('visualization.published_success'))
-      : ElMessage.success(t('visualization.cancel_publish_tips'))
-  })
-}
-
-const saveCanvasWithCheck = (withPublish = false, status?) => {
+const saveCanvasWithCheck = (withPublish = false) => {
   if (userStore.getOid && wsCache.get('user.oid') && userStore.getOid !== wsCache.get('user.oid')) {
     ElMessageBox.confirm(t('components.from_other_organizations'), {
       confirmButtonType: 'primary',
@@ -259,74 +238,63 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
       const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
       resourceGroupOptShow.value = true
       nextTick(() => {
-        resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
+        resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish })
       })
       return
     }
   }
   checkCanvasChangePre(() => {
-    saveResource({ withPublish, status })
+    saveResource(withPublish)
   })
 }
 
-const saveResource = (checkParams?) => {
-  if (styleChangeTimes.value > 0 || checkParams.withPublish) {
+const saveResource = (withPublish: boolean) => {
+  if (styleChangeTimes.value > 0 || withPublish) {
     dvMainStore.matrixSizeAdaptor()
     queryList.value.forEach(ele => {
       useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
     })
     const loadingKey = permissionStore.getCurrentPath
     // 保存 + 发布合并为一次 loading：先占一个引用，保证两次请求之间计数不归零
-    if (checkParams.withPublish) {
+    if (withPublish) {
       tryShowLoading(loadingKey)
     }
-    try {
-      canvasSaveWithParams(checkParams, async () => {
-        snapshotStore.resetStyleChangeTimes()
-        if (!embeddedStore.baseUrl) {
-          // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前仪表板
-          try {
-            await router.replace({
-              name: 'dashboard',
-              query: { resourceId: String(dvInfo.value.id) }
-            })
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        if (appData.value) {
-          initCanvasData(
-            dvInfo.value.id,
-            { busiFlag: 'dashboard', resourceTable: 'snapshot' },
-            () => {
-              useEmitt().emitter.emit('refresh-dataset-selector')
-              useEmitt().emitter.emit('calcData-all')
-              resourceAppOptShow.value = true
-              nextTick(() => {
-                resourceAppOpt.value.close()
-              })
-              dvMainStore.setAppDataInfo(null)
-              snapshotStore.resetSnapshot()
-            }
-          )
-        }
-        if (checkParams.withPublish) {
-          publishStatusChange(checkParams.status).finally(() => {
-            tryHideLoading(loadingKey)
+    canvasSave(async savedCanvas => {
+      if (!embeddedStore.baseUrl) {
+        // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前仪表板
+        try {
+          await router.replace({
+            name: 'dashboard',
+            query: { resourceId: String(savedCanvas.id) }
           })
-        } else {
-          ElMessage.success(t('commons.save_success'))
+        } catch (e) {
+          console.error(e)
         }
-      }).catch(() => {
-        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
-        if (checkParams.withPublish) tryHideLoading(loadingKey)
-      })
-    } catch (e) {
-      console.error(e)
-      if (checkParams.withPublish) {
-        tryHideLoading(loadingKey)
       }
-    }
+      if (appData.value) {
+        initCanvasData(savedCanvas.id, { busiFlag: 'dashboard', resourceTable: 'snapshot' }, () => {
+          useEmitt().emitter.emit('refresh-dataset-selector')
+          useEmitt().emitter.emit('calcData-all')
+          resourceAppOptShow.value = true
+          nextTick(() => {
+            resourceAppOpt.value.close()
+          })
+          dvMainStore.setAppDataInfo(null)
+          snapshotStore.resetSnapshot()
+        })
+      }
+      if (withPublish) {
+        await changeCanvasPublishStatus(1, savedCanvas)
+      } else {
+        ElMessage.success(t('commons.save_success'))
+      }
+    })
+      .catch(() => {
+        // The request layer presents failures. A cancelled overwrite keeps the editor untouched.
+      })
+      .finally(() => {
+        if (withPublish) tryHideLoading(loadingKey)
+      })
   }
 }
 
@@ -767,7 +735,7 @@ const userGroupShow = ref(false)
             trigger="hover"
           >
             <el-button
-              @click="saveCanvasWithCheck(true, 1)"
+              @click="saveCanvasWithCheck(true)"
               style="float: right; margin: 0 12px 0 0"
               type="primary"
             >
@@ -784,7 +752,7 @@ const userGroupShow = ref(false)
                   {{ t('visualization.publish_recover') }}
                 </el-dropdown-item>
                 <el-dropdown-item
-                  @click="publishStatusChange(0)"
+                  @click="changeCanvasPublishStatus(0)"
                   v-if="[1, 2].includes(dvInfo.status)"
                 >
                   <el-icon class="handle-icon">

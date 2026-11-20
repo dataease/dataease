@@ -1,5 +1,6 @@
 import type { QueryRequest } from '@/config/axios/queryScope'
 import request from '@/config/axios'
+import { postCanvasRelation } from './canvasRevision'
 
 export function getTableFieldWithViewId(viewId) {
   return request.get({
@@ -13,11 +14,7 @@ export function queryWithViewId(dvId, viewId) {
 }
 
 export function updateJumpSet(requestInfo) {
-  return request.post({
-    url: '/linkJump/updateJumpSet',
-    data: requestInfo,
-    loading: true
-  })
+  return postCanvasRelation('/linkJump/updateJumpSet', requestInfo, requestInfo?.sourceDvId, true)
 }
 export function queryTargetVisualizationJumpInfo(requestInfo, signal?: AbortSignal) {
   return request.post({
@@ -48,17 +45,14 @@ export function viewTableDetailList(dvId) {
 }
 
 export function updateJumpSetActive(requestInfo) {
-  return request.post({
-    url: '/linkJump/updateJumpSetActive',
-    data: requestInfo,
-    loading: true
-  })
+  return postCanvasRelation(
+    '/linkJump/updateJumpSetActive',
+    requestInfo,
+    requestInfo?.sourceDvId,
+    true
+  )
 }
 
 export function removeJumpSet(requestInfo) {
-  return request.post({
-    url: '/linkJump/removeJumpSet',
-    data: requestInfo,
-    loading: true
-  })
+  return postCanvasRelation('/linkJump/removeJumpSet', requestInfo, requestInfo?.sourceDvId, true)
 }

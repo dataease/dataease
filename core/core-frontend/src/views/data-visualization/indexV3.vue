@@ -33,7 +33,8 @@ import {
   findDragComponent,
   findNewComponent,
   initCanvasData,
-  onInitReady
+  onInitReady,
+  recoverPublishedCanvas
 } from '@/utils/canvasUtils'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown, releaseAttachKey } from '@/utils/DeShortcutKey'
@@ -56,11 +57,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  checkCanvasChange,
-  findCopyResource,
-  recoverToPublished
-} from '@/api/visualization/dataVisualization'
+import { checkCanvasChange, findCopyResource } from '@/api/visualization/dataVisualization'
 import ComponentToolBarV3 from '@/components/data-visualization/ComponentToolBarV3.vue'
 import DeRulerV3 from '@/custom-component/common/DeRulerV3.vue'
 import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
@@ -372,7 +369,7 @@ const doUseCache = async flag => {
   }
 }
 
-const initLocalCanvasData = async callback => {
+const initLocalCanvasData = async (callback?: () => void, awaitRelations = false) => {
   if (!loadFinish.value) return
   const { opt, sourcePid, resourceId } = state
   const busiFlag = opt === 'copy' ? 'dataV-copy' : 'dataV'
@@ -385,6 +382,7 @@ const initLocalCanvasData = async callback => {
         resourceTable: 'snapshot',
         source: 'main-edit',
         awaitLoad: true,
+        awaitRelations,
         queryRequest
       },
       function () {
@@ -651,15 +649,14 @@ const popComponentData = computed(() =>
   componentData.value.filter(ele => ele.category && ele.category === 'hidden')
 )
 
-const doRecoverToPublished = () => {
-  recoverToPublished({ id: dvInfo.value.id, type: 'dataV', name: dvInfo.value.name }).then(() => {
-    state.resourceId = dvInfo.value.id
-    state.sourcePid = dvInfo.value.pid
-    state.opt = null
-    initLocalCanvasData(() => {
-      dvMainStore.updateDvInfoCall(1)
-    })
-  })
+const doRecoverToPublished = async () => {
+  const recovered = await recoverPublishedCanvas()
+  if (!recovered || !isCurrentDraftResource(recovered.id)) return
+  state.resourceId = recovered.id
+  state.sourcePid = recovered.pid
+  state.opt = null
+  snapshotStore.initSnapShot()
+  await initLocalCanvasData(() => snapshotStore.recordSnapshot('recoverToPublished'), true)
 }
 
 const canvasCoreStyle = computed(() => {
