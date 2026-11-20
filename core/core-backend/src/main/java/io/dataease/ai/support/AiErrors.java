@@ -14,6 +14,10 @@ public final class AiErrors {
             if ("response_truncated".equals(code)) {
                 setCategory(io.dataease.exception.ErrorCategory.UPSTREAM); setMessageKey("i18n_ai_response_truncated");
             }
+            if ("calc_sql_manual".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.VALIDATION);
+                setMessageKey("i18n_ai_calc_sql_manual");
+            }
             if ("result_expired".equals(code)) {
                 setCategory(io.dataease.exception.ErrorCategory.NOT_FOUND); setMessageKey("i18n_ai_result_expired");
             }

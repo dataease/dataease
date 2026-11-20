@@ -11,6 +11,11 @@ async function backend(page, options = {}) {
     if (path.endsWith("/conversations")) {
       opening = req.postDataJSON();
       state.opens.push(opening);
+      if (options.manualSql)
+        return route.fulfill({
+          status: 400,
+          json: { messageKey: "i18n_ai_calc_sql_manual" },
+        });
       return json({
         scene: opening.scene,
         resourceId: opening.resourceId,
@@ -175,6 +180,32 @@ test("an aggregate placeholder explains chart verification and allows explicit a
   expect(await page.evaluate(() => window.saved)).toBeUndefined();
 });
 
+test("manual aggregate validation reports the chart check for the current field", async ({
+  page,
+}) => {
+  const state = await backend(page);
+  await page.goto("/");
+  await page.evaluate(() => {
+    window.manualPreviewValidation = "AGGREGATE_PLACEHOLDER";
+  });
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByPlaceholder("请输入字段名称").fill("订单合计");
+  await drawer.locator(".cm-content").fill("SUM([orders_id])");
+  await drawer.getByRole("button", { name: "校验", exact: true }).click();
+  await expect(
+    page.getByText("聚合结果需在图表中验证", { exact: true })
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => {
+      const last = window.previewRequests.at(-1);
+      return last.allFields.find((field) => field.id === last.previewFieldId)
+        ?.originName;
+    })
+  ).toContain("SUM(");
+  expect(state.opens).toHaveLength(0);
+});
+
 test("failed formulas support authorized copy and follow-up while manual validation uses only the editor", async ({
   page,
   context,
@@ -317,15 +348,26 @@ for (const search of ["nonMysql", "cross=1&sqlNode"]) {
   test(
     search + " retains manual formula editing and preview",
     async ({ page }) => {
-      const state = await backend(page);
+      const sql = search.includes("sqlNode");
+      const state = await backend(page, { manualSql: sql });
       await page.goto("/?" + search);
       await page
         .getByRole("button", { name: "新建计算字段", exact: true })
         .click();
       const drawer = page.locator(".calc-field-drawer");
-      await expect(
-        drawer.getByRole("button", { name: "计算字段助手" })
-      ).toHaveCount(0);
+      const assistant = drawer.getByRole("button", { name: "计算字段助手" });
+      if (sql) {
+        await assistant.click();
+        await drawer.locator("textarea").fill("生成公式");
+        await drawer.getByRole("button", { name: "发送", exact: true }).click();
+        await expect(
+          drawer.getByText(
+            "请先保存自定义 SQL 节点及其参数，或使用计算字段编辑器的手动校验。"
+          )
+        ).toBeVisible();
+      } else {
+        await expect(assistant).toHaveCount(0);
+      }
       await drawer.getByPlaceholder("请输入字段名称").fill("手动计算");
       await drawer.locator(".cm-content").fill("7 + 2");
       await drawer.getByRole("button", { name: "校验", exact: true }).click();
@@ -335,7 +377,7 @@ for (const search of ["nonMysql", "cross=1&sqlNode"]) {
           () => window.previewRequests.at(-1).allFields.at(-1).originName
         )
       ).toBe("7 + 2");
-      expect(state.opens).toHaveLength(0);
+      expect(state.opens).toHaveLength(sql ? 1 : 0);
     }
   );
 }

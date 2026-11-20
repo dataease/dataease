@@ -9,6 +9,10 @@ import io.dataease.ai.security.identity.AiDeploymentMode;
 import io.dataease.constant.AuthEnum;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
+import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
+import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
@@ -38,12 +42,16 @@ final class CalcFieldRegression {
     private volatile String previewMode = "";
     private CountDownLatch datasetRead;
     private CountDownLatch releaseRead;
+    private DatasetGroupInfoDTO savedDataset;
+    private final Map<String, Object> licensedBeans = new HashMap<>();
+    private boolean licensed;
+    private String columnPolicy = "";
     private final String formula = "[Price] * 2";
 
     AiCalcFieldScene scene(AiDatasourceTools metadata) {
         var identity = new AiAccess(null, null) {
             @Override public Identity capture() {
-                return new Identity(1L, null, null, new AiDeploymentMode.State(AiDeploymentMode.Mode.COMMUNITY, "fixture"));
+                return new Identity(1L, null, null, new AiDeploymentMode.State(licensed ? AiDeploymentMode.Mode.LICENSED : AiDeploymentMode.Mode.COMMUNITY, "fixture"));
             }
             @Override public void verify(Identity identity, boolean configuration) { }
         };
@@ -65,6 +73,7 @@ final class CalcFieldRegression {
                     try { if (!releaseRead.await(5, TimeUnit.SECONDS)) throw new AssertionError("blocked opening never released"); }
                     catch (InterruptedException interrupted) { throw new AssertionError(interrupted); }
                 }
+                if (savedDataset != null) return savedDataset;
                 var saved = new DatasetGroupInfoDTO();
                 saved.setId(42L); saved.setNodeType("dataset"); saved.setLastUpdateTime(99L);
                 saved.setAllFields(List.of()); saved.setUnion(List.of());
@@ -80,10 +89,46 @@ final class CalcFieldRegression {
         var fields = new DatasetTableFieldManage(null) {
             @Override public List<DatasetTableFieldDTO> selectByFieldIds(List<Long> ids) { return List.of(); }
         };
-        var access = new CalcFieldAccess(identity, null, null, null, permissions, destinations, groups, fields, new PermissionManage());
+        var plugins = new org.springframework.beans.factory.support.StaticListableBeanFactory(licensedBeans);
+        var policies = new PermissionManage() {
+            @Override public List<io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO> getRowPermissionsTree(Long id, Long user) {
+                if (!"row".equals(columnPolicy)) return List.of();
+                var item = new io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem();
+                item.setFieldId(102L);
+                item.setField(savedDataset.getAllFields().getFirst());
+                var tree = new io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj();
+                tree.setItems(List.of(item));
+                var rule = new io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO();
+                rule.setTree(tree);
+                return List.of(rule);
+            }
+            @Override public List<DatasetTableFieldDTO> filterColumnPermissions(List<DatasetTableFieldDTO> fields,
+                    Map<String, ColumnPermissionItem> masked, Long dataset, Long actor) {
+                if ("hidden".equals(columnPolicy)) return fields.stream().filter(f -> !Objects.equals(f.getId(), 102L)).toList();
+                if ("masked".equals(columnPolicy)) masked.put("saved_price", new ColumnPermissionItem());
+                return fields;
+            }
+        };
+        var access = new CalcFieldAccess(identity, plugins.getBeanProvider(InteractiveAuthApi.class),
+                plugins.getBeanProvider(ColumnPermissionsApi.class), plugins.getBeanProvider(RowPermissionsApi.class),
+                permissions, destinations, groups, fields, policies);
         var preview = new DatasetDataManage() {
             @Override public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) throws Exception {
                 String value = draft.getAllFields().stream().filter(f -> f.getId() == fieldId).findFirst().orElseThrow().getOriginName();
+                if ("calc-column-policy".equals(previewMode)) {
+                    if (!columnPolicy.isEmpty()) throw new AssertionError("Restricted field reached the provider");
+                    return "DETAIL_PASS";
+                }
+                if (previewMode.equals("calc-draft-siblings")) {
+                    if (!"[102] * 2".equals(value) || draft.getAllFields().size() != 6)
+                        throw new AssertionError("The provider must preview all six draft fields");
+                    return "DETAIL_PASS";
+                }
+                if ("calc-saved-sql".equals(previewMode)) {
+                    if (!draft.getUnion().getFirst().getCurrentDs().getInfo().contains("sql") || !Set.of("[102] * 2", "[103] * 2").contains(value))
+                        throw new AssertionError("Saved SQL preview lost the query or its bound field");
+                    return "DETAIL_PASS";
+                }
                 if (previewMode.startsWith("calc-unit-")) {
                     String expected = switch (previewMode) {
                         case "calc-unit-cents" -> "[102] / 100 * [params_9210000000000000003]";
@@ -182,7 +227,11 @@ final class CalcFieldRegression {
                   "allFields":[{"id":"102","datasetTableId":"1","datasourceId":"11","name":"Price","originName":"ID","deType":2,"extField":0,"checked":true,
                   "description":"private-context-value"},{"id":"301","name":"","extField":2,"deType":2,"originName":"","checked":true}]}}}
                 """;
+        verifyColumnAccess(mvc, mode, requests, opening);
         verifyIndependentOpen(mvc, mode, opening);
+        verifySiblings(mvc, mode, requests, opening);
+        requests.clear();
+        verifySavedSql(mvc, mode, requests, opening);
         verifyDialects(mvc, mode, requests, opening);
         requests.clear();
         verifyJoin(mvc, mode, opening, secondResourceAllowed);
@@ -376,6 +425,54 @@ final class CalcFieldRegression {
         System.out.println("PASS calculated-field clarification, confirmed draft semantics, parameterized references and units");
     }
 
+    private void verifyColumnAccess(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        var tree = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree(opening);
+        var dataset = (com.fasterxml.jackson.databind.node.ObjectNode) tree.at("/calcField/dataset");
+        dataset.put("id", "42");
+        savedDataset = JSON.treeToValue(dataset, DatasetGroupInfoDTO.class);
+        savedDataset.setNodeType("dataset"); savedDataset.setLastUpdateTime(99L);
+        savedDataset.getAllFields().getFirst().setDataeaseName("saved_price");
+        licensed = true;
+        for (var api : List.of(InteractiveAuthApi.class, ColumnPermissionsApi.class, RowPermissionsApi.class))
+            licensedBeans.put(api.getName(), java.lang.reflect.Proxy.newProxyInstance(api.getClassLoader(), new Class[]{api},
+                    (proxy, method, args) -> null));
+        previewMode = "calc-column-policy";
+        mode.set(previewMode);
+        try {
+            for (var api : List.of(ColumnPermissionsApi.class, RowPermissionsApi.class)) {
+                var removed = licensedBeans.remove(api.getName());
+                expectDenied(mvc, tree.toString());
+                licensedBeans.put(api.getName(), removed);
+            }
+            for (String restriction : List.of("hidden", "masked")) {
+                requests.clear();
+                var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
+                String path = start(mvc, session, "Double the price");
+                if (!"DETAIL_PASS".equals(terminal(mvc, path).at("/result/calcField/validation").asText())) throw new AssertionError("Authorized price");
+                columnPolicy = restriction;
+                try {
+                    var response = mvc.perform(post(path + "/check-application").contentType(MediaType.APPLICATION_JSON).content(
+                            JSON.writeValueAsBytes(Map.of("contextVersion", session.path("contextVersion").asText(),
+                                    "draftVersion", session.path("draftVersion").asText())))).andReturn().getResponse();
+                    if (response.getStatus() < 400) throw new AssertionError("Column revocation allowed application");
+                } catch (jakarta.servlet.ServletException revoked) {
+                    if (!(revoked.getCause() instanceof AiErrors.Failure failure) || !"scope_changed".equals(failure.safeCode())) throw revoked;
+                }
+                requests.clear();
+                session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
+                terminal(mvc, start(mvc, session, "Calculate a value"));
+                if (requests.getFirst().at("/messages/0/content").asText().contains("Price"))
+                    throw new AssertionError("Restricted column appeared in the model field list");
+                mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+                columnPolicy = "";
+            }
+        } finally {
+            licensed = false; licensedBeans.clear(); savedDataset = null; columnPolicy = ""; previewMode = "";
+        }
+    }
+
     private void verifyIndependentOpen(MockMvc mvc, AtomicReference<String> mode, String opening) throws Exception {
         mode.set("calc-open-concurrency");
         var executor = java.util.concurrent.Executors.newFixedThreadPool(2);
@@ -407,6 +504,76 @@ final class CalcFieldRegression {
         } finally { io.dataease.permission.util.V3UserUtil.clear(); }
     }
 
+    private void verifySiblings(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        var tree = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree(opening);
+        var fields = (com.fasterxml.jackson.databind.node.ArrayNode) tree.at("/calcField/dataset/allFields");
+        var group = fields.addObject().put("id", "401").put("name", "Price band").put("extField", 3)
+                .put("originName", "102").put("deType", 0).put("otherGroup", "Other");
+        group.putArray("groupList").addObject().put("name", "Small").put("min", "0").put("max", "100")
+                .put("minTerm", "le").put("maxTerm", "lt");
+        var rate = fields.addObject().put("id", "402").put("name", "Commission").put("extField", 2).put("deType", 3)
+                .put("originName", "[102] * [params_901]");
+        rate.putArray("params").addObject().put("id", "params_901").put("name", "Rate").put("value", "0.05");
+        fields.add(rate.deepCopy().put("id", "403").put("name", "Commission copy"));
+        fields.addObject().put("id", "404").put("name", "First digit").put("extField", 2).put("deType", 0)
+                .put("originName", "SUBSTRING([102], 1, 1)");
+        requests.clear(); mode.set("calc-draft-siblings"); previewMode = mode.get();
+        try {
+            var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
+            if (!"DETAIL_PASS".equals(terminal(mvc, start(mvc, session, "Double Price")).at("/result/calcField/validation").asText())
+                    || requests.getFirst().toString().contains("Price band") || requests.getFirst().toString().contains("params_901"))
+                throw new AssertionError("An ordinary group, copied parameter and text calculation must coexist in preview");
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+        } finally { previewMode = ""; }
+    }
+
+    private void verifySavedSql(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        var tree = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree(opening);
+        var dataset = (com.fasterxml.jackson.databind.node.ObjectNode) tree.at("/calcField/dataset");
+        dataset.put("id", "42");
+        var table = (com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0/currentDs");
+        String query = Base64.getEncoder().encodeToString("SELECT ID FROM AI_PROBE".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        table.put("type", "sql").put("tableName", "Saved query").put("info", JSON.writeValueAsString(Map.of("sql", query, "table", "Saved query")));
+        savedDataset = JSON.treeToValue(dataset, DatasetGroupInfoDTO.class);
+        savedDataset.setNodeType("dataset"); savedDataset.setLastUpdateTime(99L);
+        mode.set("calc-saved-sql"); previewMode = mode.get();
+        try {
+            var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
+            if (!"DETAIL_PASS".equals(terminal(mvc, start(mvc, session, "Double the saved query's price")).at("/result/calcField/validation").asText()))
+                throw new AssertionError("Saved read-only SQL columns must preview");
+            mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            table.put("info", JSON.writeValueAsString(Map.of("sql", Base64.getEncoder().encodeToString(
+                    "SELECT AI_PROBE.ID AS ID FROM AI_PROBE".getBytes()), "table", "Saved query")));
+            for (String policy : List.of("hidden", "row")) {
+                columnPolicy = policy;
+                try {
+                    mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON).content(tree.toString()));
+                    throw new AssertionError("Changed SQL and retained field IDs need manual validation under " + policy);
+                } catch (jakarta.servlet.ServletException expected) {
+                    if (!(expected.getCause() instanceof AiErrors.Failure failure) || !"calc_sql_manual".equals(failure.safeCode())) throw expected;
+                } finally { columnPolicy = ""; }
+            }
+            String projected = Base64.getEncoder().encodeToString("SELECT ID AS AMOUNT FROM AI_PROBE".getBytes());
+            table.put("info", JSON.writeValueAsString(Map.of("sql", projected, "table", "Saved query")));
+            ((com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/union/0/currentDsFields/0")).put("originName", "AMOUNT").put("id", "103");
+            ((com.fasterxml.jackson.databind.node.ObjectNode) dataset.at("/allFields/0")).put("originName", "AMOUNT").put("id", "103");
+            for (boolean saved : List.of(true, false)) {
+                if (!saved) dataset.remove("id");
+                requests.clear();
+                var changed = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(tree.toString())).andReturn().getResponse().getContentAsByteArray());
+                var field = terminal(mvc, start(mvc, changed, "Double the projected amount")).at("/result/calcField");
+                if (!"DETAIL_PASS".equals(field.path("validation").asText()) || !"[103] * 2".equals(field.path("boundExpression").asText()))
+                    throw new AssertionError("Current simple SELECT projection did not bind");
+                mvc.perform(delete("/ai/conversations/" + changed.path("sessionId").asText()));
+            }
+            table.put("info", JSON.writeValueAsString(Map.of("sql", Base64.getEncoder().encodeToString("SELECT 2 AS ID".getBytes()), "table", "Saved query")));
+            expectDenied(mvc, tree.toString());
+        } finally { savedDataset = null; previewMode = ""; }
+    }
+
     private void verifyJoin(MockMvc mvc, AtomicReference<String> mode, String opening, AtomicBoolean secondAllowed) throws Exception {
         previewMode = "calc-join";
         mode.set(previewMode);
@@ -419,7 +586,7 @@ final class CalcFieldRegression {
         var right = (com.fasterxml.jackson.databind.node.ObjectNode) child.at("/currentDsFields/0");
         right.put("datasourceId", "12").put("datasetTableId", "2").put("id", "103").put("originName", "SECOND_ID").put("name", "Other");
         var join = child.putObject("unionToParent");
-        var key = join.put("unionType", "inner").putArray("unionFields").addObject();
+        var key = join.put("unionType", "full").putArray("unionFields").addObject();
         key.set("parentField", root.at("/currentDsFields/0")); key.set("currentField", right);
         root.putArray("childrenDs").add(child);
         ((com.fasterxml.jackson.databind.node.ArrayNode) dataset.get("allFields")).add(right);

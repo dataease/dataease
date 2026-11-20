@@ -56,9 +56,10 @@ public final class CalcFieldPreviewRegression {
         ReflectionTestUtils.setField(data, "datasetTableFieldManage", new DatasetTableFieldManage(null) {
             @Override public DatasetTableFieldDTO selectById(Long id) { return null; }
         });
+        var empty = new java.util.concurrent.atomic.AtomicBoolean();
         ReflectionTestUtils.setField(data, "datasetSQLManage", new DatasetSQLManage() {
             @Override public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dto, ChartExtRequest request) {
-                return Map.of("sql", "SELECT 7 AS price, '-' AS label", "field", List.of(raw, text),
+                return Map.of("sql", "SELECT 7 AS price, '-' AS label" + (empty.get() ? " WHERE 1 = 0" : ""), "field", List.of(raw, text),
                         "dsMap", Map.of(11L, schema), "isFullJoin", false);
             }
         });
@@ -100,11 +101,18 @@ public final class CalcFieldPreviewRegression {
             } catch (DEException expected) {
                 if (!(expected.getCause() instanceof java.sql.SQLTimeoutException)) throw expected;
             }
+            draft.setPreviewFieldId(201L);
+            if (!"AGGREGATE_PLACEHOLDER".equals(data.previewDataWithLimit(draft, 0, 100, false, false).get("validation")))
+                throw new AssertionError("The manual preview must identify the selected aggregate");
+            draft.setPreviewFieldId(null);
             assertVerdict(data, draft, 201, "AGGREGATE_PLACEHOLDER");
             assertVerdict(data, draft, 202, "AGGREGATE_PLACEHOLDER");
 
             candidate.setOriginName("[102]");
             candidate.setDeType(0);
+            empty.set(true);
+            assertVerdict(data, draft, 202, "NO_PREVIEW_ROWS");
+            empty.set(false);
             assertVerdict(data, draft, 202, "DETAIL_PASS");
             var result = data.previewDataWithLimit(draft, 0, 1, false, false);
             var page = (Map<?, ?>) result.get("data");

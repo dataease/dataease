@@ -41,6 +41,7 @@ export interface AiCalcFieldSuggestion {
     | 'formula_execution_failed'
     | 'dataset_preview_failed'
     | 'preview_unavailable'
+    | 'no_preview_rows'
     | ''
 }
 export interface AiConversationSession {
