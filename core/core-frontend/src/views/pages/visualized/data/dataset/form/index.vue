@@ -3044,19 +3044,24 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     </el-drawer>
   </div>
   <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
-  <el-dialog
-    modal-class="calc-field-edit-dialog"
+  <el-drawer
     v-model="editCalcField"
-    width="1000px"
+    class="calc-field-drawer"
+    direction="btt"
+    size="calc(100% - 60px)"
+    append-to-body
+    :close-on-click-modal="false"
     :title="calcTitle"
   >
-    <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
+    <calc-field-edit v-if="editCalcField" ref="calcEdit" :crossDs="crossDatasources" />
     <template #footer>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
-      <el-button secondary @click="verify">{{ t('datasource.validate') }} </el-button>
+      <el-button secondary :disabled="datasetPreviewLoading" @click="verify"
+        >{{ t('datasource.validate') }}
+      </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
-  </el-dialog>
+  </el-drawer>
   <el-dialog
     class="create-dialog"
     :title="t('data_set.format_edit')"
@@ -4071,10 +4076,8 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     padding-right: 15px;
   }
 }
-.calc-field-edit-dialog {
-  .ed-dialog__footer {
-    padding-top: 24px;
-  }
+.calc-field-drawer {
+  --calc-form-width: 100%;
 }
 .group-fields_dialog {
   .group-fields_item {
