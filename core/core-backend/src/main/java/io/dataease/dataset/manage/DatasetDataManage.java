@@ -70,6 +70,9 @@ import static io.dataease.dataset.utils.TableUtils.format;
  */
 @Component
 public class DatasetDataManage {
+    @org.springframework.beans.factory.annotation.Autowired
+    private io.dataease.datasource.manage.DatasourceSemanticSnapshot semanticSnapshot;
+
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Autowired
@@ -207,7 +210,9 @@ public class DatasetDataManage {
             logger.debug("calcite data table field sql: " + datasourceRequest.getQuery());
             tableFields = provider.fetchTableField(datasourceRequest);
         }
-        return transFields(tableFields, true);
+        var result = transFields(tableFields, true);
+        return StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)
+                ? semanticSnapshot.fields(datasetTableDTO.getDatasourceId(), tableInfoDTO.getTable(), result) : result;
     }
 
     public List<DatasetTableFieldDTO> transFields(List<TableField> tableFields, boolean defaultStatus) {
@@ -228,6 +233,16 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count, boolean checkPermission, boolean encode) throws Exception {
+        return previewDataWithLimit(datasetGroupInfoDTO, start, count, checkPermission, encode, null, 0);
+    }
+
+    /** Runs the editor's actual query on an isolated draft. Only a finite verdict leaves this boundary. */
+    public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) throws Exception {
+        return (String) previewDataWithLimit(draft, 0, 1, draft.getId() != null, false, fieldId, deadline).get("validation");
+    }
+
+    private Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count,
+                                                       boolean checkPermission, boolean encode, Long fieldId, long deadline) throws Exception {
         if (encode) {
             DatasetUtils.dsDecode(datasetGroupInfoDTO);
         }
@@ -247,6 +262,10 @@ public class DatasetDataManage {
             if (ObjectUtils.isEmpty(fields)) {
                 DEException.throwException(Translator.get("i18n_no_column_permission"));
             }
+        }
+        if (fieldId != null && (fields.size() != datasetGroupInfoDTO.getAllFields().size() || !desensitizationList.isEmpty()
+                || fields.stream().noneMatch(f -> fieldId.equals(f.getId()) && Objects.equals(f.getExtField(), 2)))) {
+            throw DEException.of(io.dataease.exception.ErrorCategory.FORBIDDEN, "i18n_error_forbidden");
         }
         buildFieldName(sqlMap, fields);
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -278,7 +297,9 @@ public class DatasetDataManage {
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+        Long target = fieldId == null ? datasetGroupInfoDTO.getPreviewFieldId() : fieldId;
+        boolean aggregatePlaceholder = Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap,
+                Utils.getParams(fields), null, pluginManage, false, target);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
         String querySQL;
@@ -297,9 +318,17 @@ public class DatasetDataManage {
         datasourceRequest.setDsList(dsMap);
         datasourceRequest.setIsCross(crossDs);
         applyPreparedParams(datasourceRequest, sqlMap);
+        if (fieldId != null) datasourceRequest.setExecutionDeadline(deadline);
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
-
         Map<String, Object> map = new LinkedHashMap<>();
+        if (target != null) {
+            if (data == null || !(data.get("fields") instanceof List<?> projected) || projected.size() != fields.size()
+                    || !(data.get("data") instanceof List<?> rows)
+                    || fields.stream().noneMatch(f -> target.equals(f.getId()) && Objects.equals(f.getExtField(), 2)))
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal");
+            map.put("validation", aggregatePlaceholder ? "AGGREGATE_PLACEHOLDER" : rows.isEmpty() ? "NO_PREVIEW_ROWS" : "DETAIL_PASS");
+            if (fieldId != null) return map;
+        }
         // 重新构造data
         Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList, encode);
         map.put("data", previewData);
@@ -464,7 +493,7 @@ public class DatasetDataManage {
         }
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name())) {
+        if (DatasourceConfiguration.usesDeEngine(coreDatasource.getType())) {
             BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);

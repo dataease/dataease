@@ -1,0 +1,39 @@
+package io.dataease.ai.support;
+
+import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
+
+public final class AiErrors {
+    private AiErrors() { }
+    public static final class Failure extends DEException {
+        private final String safeCode;
+        private long retryAfterMillis;
+        private Failure(String code) {
+            super("result_expired".equals(code) ? 50001 : ("forbidden".equals(code) || "disabled".equals(code) || "organization_disabled".equals(code)) ? 70001 : ("task_resource_busy".equals(code) || "conflict".equals(code) || "concurrency".equals(code) || "task_queue_full".equals(code) || "task_user_queue_full".equals(code)) ? 50005 : 500, Translator.get("i18n_ai_" + code));
+            safeCode = code;
+            if ("response_truncated".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.UPSTREAM); setMessageKey("i18n_ai_response_truncated");
+            }
+            if ("calc_sql_manual".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.VALIDATION);
+                setMessageKey("i18n_ai_calc_sql_manual");
+            }
+            if ("result_expired".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.NOT_FOUND); setMessageKey("i18n_ai_result_expired");
+            }
+            if ("forbidden".equals(code) || "disabled".equals(code) || "organization_disabled".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.FORBIDDEN); setMessageKey("i18n_ai_" + code);
+            }
+            if ("conflict".equals(code) || "concurrency".equals(code) || "task_resource_busy".equals(code) || "task_queue_full".equals(code) || "task_user_queue_full".equals(code)) {
+                setCategory(io.dataease.exception.ErrorCategory.CONFLICT); setMessageKey("i18n_ai_" + code);
+            }
+        }
+        public String safeCode() { return safeCode; }
+        public long retryAfterMillis() { return retryAfterMillis; }
+    }
+    public static String code(Exception error) { return error instanceof Failure failure ? failure.safeCode() : "upstream_failed"; }
+    public static RuntimeException retryAfter(String code, long millis) { var failure = new Failure(code); failure.retryAfterMillis = Math.max(0, millis); return failure; }
+    public static RuntimeException error(String code) {
+        return new Failure(code);
+    }
+}

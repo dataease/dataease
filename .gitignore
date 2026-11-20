@@ -55,7 +55,16 @@ core/core-frontend/src/assets/fsSvg.html
 /core/core-frontend/.claude/settings.json
 
 .workbuddy/
-docs/
+docs/*
+!docs/development/
+docs/development/*
+!docs/development/backend.md
+!docs/development/frontend.md
+!docs/development/validation.md
+!docs/ai/
+docs/ai/*
+!docs/ai/conversation.md
+!docs/ai/sql-draft-example.md
 
 .codex/**/.env.local
 .codex/**/browser-profile/

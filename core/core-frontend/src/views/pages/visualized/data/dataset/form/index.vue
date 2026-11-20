@@ -48,6 +48,8 @@ import FieldMore from '@/views/visualized/data/dataset/form/FieldMore.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { Icon } from '@/components/icon-custom'
 import { useWindowSize } from '@vueuse/core'
+import DatasetEditorAssistant from '@/views/visualized/data/dataset/form/DatasetEditorAssistant.vue'
+import type { AiCalcFieldDraft } from '@/api/aiConversation'
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { useRoute, useRouter } from 'vue-router_2'
 import UnionEdit from '@/views/visualized/data/dataset/form/UnionEdit.vue'
@@ -80,6 +82,7 @@ import {
   barInfoApi
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
+import DatasetSemanticEditor from '@/views/visualized/data/dataset/form/DatasetSemanticEditor.vue'
 import DatasetUnion from '@/views/visualized/data/dataset/form/DatasetUnion.vue'
 import DatasetTableDetails from '@/views/visualized/data/dataset/form/DatasetTableDetails.vue'
 import DatasetNodeDetails from '@/views/visualized/data/dataset/form/DatasetNodeDetails.vue'
@@ -110,6 +113,11 @@ const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const embeddedStore = useEmbedded()
 const { t } = useI18n()
+const fieldSemanticLabel = (field: {
+  semanticBusinessName?: string
+  semanticDescription?: string
+}) => field.semanticBusinessName || field.semanticDescription
+
 const route = useRoute()
 const { push } = useRouter() || {
   push: val => {
@@ -121,6 +129,25 @@ const quotaTableHeight = ref(238)
 const creatDsFolder = ref()
 const editCalcField = ref(false)
 const calcEdit = ref()
+const calcAssistantHost = ref<HTMLElement>()
+const readCalcDraft = (): AiCalcFieldDraft => {
+  const field = calcEdit.value!.draftField()
+  const union = []
+  dfsNodeList(union, canvasNodes.value)
+  const fields = allfields.value.filter(item => item.id !== field.id)
+  const pid = appStore.getIsDataEaseBi ? embeddedStore.datasetPid : route.query.pid || nodeInfo.pid
+  return cloneDeep({
+    fieldId: String(field.id),
+    preserveType: calcEdit.value.preserveType,
+    dataset: {
+      id: nodeInfo.id || null,
+      pid: String(pid || '0'),
+      isCross: isCross.value,
+      union,
+      allFields: [...fields, field]
+    }
+  })
+}
 const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref(t('data_set.unnamed_dataset'))
@@ -387,21 +414,12 @@ const dragHeight = ref(260)
 
 let tableList = []
 
-const dfsName = (arr, id) => {
-  let name = ''
-  arr.some(ele => {
-    if (ele.id === id) {
-      name = ele.name
-      return true
-    }
-
-    if (!!ele.children?.length) {
-      name = dfsName(ele.children, id) || name
-    }
-    return false
-  })
-
-  return name
+const findSource = (nodes: DataSource[], id: string): DataSource | undefined => {
+  for (const node of nodes) {
+    if (node.id === id) return node
+    const child = node.children && findSource(node.children, id)
+    if (child) return child
+  }
 }
 
 const { height } = useWindowSize()
@@ -429,8 +447,19 @@ const dfsChild = arr => {
   })
 }
 
+const supportsCalcNode = (node: DatasetNode): boolean =>
+  (node.type === 'db' || node.type === 'sql') &&
+  (isCross.value || node.datasourceId === currentDsId.value) &&
+  (node.children || []).every(supportsCalcNode)
+const supportsCalcAssistant = computed(
+  () =>
+    canvasNodes.value.length === 1 &&
+    supportsCalcNode(canvasNodes.value[0]) &&
+    (isCross.value ||
+      findSource(state.dataSourceList, currentDsId.value)?.type?.toLowerCase() === 'mysql')
+)
 const getDsName = (id: string) => {
-  return dfsName(state.dataSourceList, id)
+  return findSource(state.dataSourceList, id)?.name || ''
 }
 
 const pushDataset = () => {
@@ -831,7 +860,7 @@ const closeEditCalc = () => {
 const confirmEditCalc = () => {
   calcEdit.value.formField.validate(val => {
     if (val) {
-      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.setFieldForm()) return
       if (!calcEdit.value.fieldForm.originName.trim()) {
         ElMessage.error(t('data_set.cannot_be_empty_de_'))
         return
@@ -1116,7 +1145,19 @@ const diffArr = (newArr, oldArr) => {
   const oldFields = new Map(oldArr.map(ele => [ele.id, ele]))
   return cloneDeep([
     ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
-    ...newArr.map(ele => oldFields.get(ele.id) || ele)
+    ...newArr.map(ele => {
+      const old = oldFields.get(ele.id)
+      return old
+        ? {
+            ...old,
+            semanticBusinessName: ele.semanticBusinessName,
+            semanticDescription: ele.semanticDescription,
+            semanticAliases: ele.semanticAliases,
+            semanticValueReferences: ele.semanticValueReferences,
+            semanticConfirmed: ele.semanticConfirmed
+          }
+        : ele
+    })
   ])
 }
 
@@ -1126,6 +1167,16 @@ const closeEditUnion = () => {
   editUnion.value = false
 }
 const fieldUnion = ref()
+
+const updateNodeSemantic = (nodeId, value, fieldId?) => {
+  datasetDrag.value.updateSemantic(nodeId, value, fieldId)
+  changeUpdate()
+}
+const updateFieldSemantic = (row, value) => {
+  Object.assign(row, value)
+  if (row.datasetTableId) updateNodeSemantic(row.datasetTableId, value, row.id)
+  changeUpdate()
+}
 
 const setFieldAll = () => {
   const arr = []
@@ -1468,7 +1519,7 @@ const verify = () => {
   if (datasetPreviewLoading.value) return
   calcEdit.value.formField.validate(val => {
     if (val) {
-      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.setFieldForm()) return
       if (!calcEdit.value.fieldForm.originName.trim()) {
         ElMessage.error(t('data_set.cannot_be_empty_de_'))
         return
@@ -1489,9 +1540,17 @@ const verify = () => {
       dfsNodeList(arr, datasetDrag.value.getNodeList())
       datasetPreviewLoading.value = true
       const query = previewQuery.start()
-      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value }, query)
-        .then(() => {
-          if (query.isCurrent()) ElMessage.success(t('data_set.validation_succeeded'))
+      getPreviewData(
+        { union: arr, allFields: allfieldsCopy, isCross: isCross.value, previewFieldId: obj.id },
+        query
+      )
+        .then(result => {
+          if (!query.isCurrent()) return
+          if (result.validation === 'NO_PREVIEW_ROWS')
+            ElMessage.info(t('ai_conversation.no_preview_rows'))
+          else if (result.validation === 'AGGREGATE_PLACEHOLDER')
+            ElMessage.info(t('ai_conversation.aggregate_placeholder'))
+          else ElMessage.success(t('data_set.validation_succeeded'))
         })
         .catch(() => undefined)
         .finally(() => {
@@ -1718,6 +1777,9 @@ const dfsNodeList = (arr, list) => {
     } = ele
     arr.push({
       currentDs: {
+        semanticDescription: ele.semanticDescription,
+        semanticGrain: ele.semanticGrain,
+        semanticConfirmed: ele.semanticConfirmed,
         sqlVariableDetails,
         tableName,
         type,
@@ -1869,6 +1931,9 @@ const dfsUnion = (arr, list) => {
     const { tableName, type, datasourceId, id, info, sqlVariableDetails } = currentDs || {}
     const { unionType, unionFields } = unionToParent || {}
     arr.push({
+      semanticDescription: currentDs?.semanticDescription,
+      semanticGrain: currentDs?.semanticGrain,
+      semanticConfirmed: currentDs?.semanticConfirmed,
       sqlVariableDetails,
       tableName,
       type,
@@ -2244,6 +2309,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         >
           <span v-show="!expandedPanel" class="drag" @mousedown="mousedownDragH" />
           <dataset-node-details
+            @semantic-change="updateNodeSemantic"
             ref="nodeDetails"
             :nodes="canvasNodes"
             :is-cross="isCross"
@@ -2629,6 +2695,23 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column
+                      v-if="false"
+                      class-name="dataset-semantic-cell"
+                      :label="t('datasourceMetadata.fieldSemantics')"
+                      width="240px"
+                    >
+                      <template #default="{ row }">
+                        <span v-if="row.semanticBusinessName || row.semanticDescription">{{
+                          fieldSemanticLabel(row)
+                        }}</span>
+                        <span v-else class="semantic-empty">-</span>
+                        <dataset-semantic-editor
+                          :target="row"
+                          @change="value => updateFieldSemantic(row, value)"
+                        />
+                      </template>
+                    </el-table-column>
                     <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
                       <template #default="scope">
                         <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
@@ -2853,6 +2936,23 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column
+                      v-if="false"
+                      class-name="dataset-semantic-cell"
+                      :label="t('datasourceMetadata.fieldSemantics')"
+                      width="240px"
+                    >
+                      <template #default="{ row }">
+                        <span v-if="row.semanticBusinessName || row.semanticDescription">{{
+                          fieldSemanticLabel(row)
+                        }}</span>
+                        <span v-else class="semantic-empty">-</span>
+                        <dataset-semantic-editor
+                          :target="row"
+                          @change="value => updateFieldSemantic(row, value)"
+                        />
+                      </template>
+                    </el-table-column>
                     <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
                       <template #default="scope">
                         <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
@@ -2992,19 +3092,44 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     </el-drawer>
   </div>
   <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
-  <el-dialog
-    modal-class="calc-field-edit-dialog"
+  <el-drawer
     v-model="editCalcField"
-    width="1000px"
+    class="calc-field-drawer"
+    direction="btt"
+    size="calc(100% - 60px)"
+    append-to-body
+    :close-on-click-modal="false"
     :title="calcTitle"
   >
-    <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
+    <div v-if="editCalcField" class="calc-field-workspace" ref="calcAssistantHost">
+      <calc-field-edit ref="calcEdit" dataset-references :crossDs="crossDatasources" />
+    </div>
     <template #footer>
+      <DatasetEditorAssistant
+        v-if="
+          editCalcField &&
+          calcAssistantHost &&
+          calcEdit?.fieldForm.id &&
+          currentDsId &&
+          supportsCalcAssistant
+        "
+        :host="calcAssistantHost"
+        :is-cross="isCross"
+        :system-variable-names="[]"
+        :resource-id="String(currentDsId)"
+        :resource-label="getDsName(currentDsId)"
+        :draft-revision="calcEdit.formulaRevision"
+        :read-draft="calcEdit.readFormula"
+        :calc-field-draft="readCalcDraft"
+        @apply-formula="calcEdit.applyFormula"
+      />
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
-      <el-button secondary @click="verify">{{ t('datasource.validate') }} </el-button>
+      <el-button secondary :disabled="datasetPreviewLoading" @click="verify"
+        >{{ t('datasource.validate') }}
+      </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
-  </el-dialog>
+  </el-drawer>
   <el-dialog
     class="create-dialog"
     :title="t('data_set.format_edit')"
@@ -3267,6 +3392,10 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 </template>
 
 <style lang="less" scoped>
+:deep(.dataset-semantic-cell) .semantic-empty {
+  color: var(--ed-text-color-secondary);
+}
+
 @import '@/style/mixin.less';
 
 :deep(.dataset-preview_table) {
@@ -4015,9 +4144,22 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     padding-right: 15px;
   }
 }
-.calc-field-edit-dialog {
-  .ed-dialog__footer {
-    padding-top: 24px;
+.calc-field-drawer {
+  --calc-form-width: 100%;
+
+  .calc-field-workspace {
+    display: flex;
+    align-items: stretch;
+    min-height: 100%;
+    > .calcu-field {
+      flex: 1;
+      min-width: 0;
+    }
+    > aside {
+      flex-shrink: 0;
+      height: auto;
+      margin-left: 12px;
+    }
   }
 }
 .group-fields_dialog {

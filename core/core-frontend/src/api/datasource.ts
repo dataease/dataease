@@ -194,3 +194,15 @@ export const listSyncRecord = (page: number, limit: number, dsId: number | strin
 export const getDeEngine = () => request.get({ url: '/engine/getEngine' })
 
 export const supportSetKey = () => request.get({ url: '/engine/supportSetKey' })
+
+export interface PhysicalTable {
+  tableName: string
+  name?: string
+}
+
+export interface PhysicalField {
+  originName: string
+  name?: string
+  type?: string
+  fieldType?: string
+}

@@ -3,6 +3,27 @@ import type { RouteRecordRaw } from 'vue-router_2'
 import type { App } from 'vue'
 
 export const routes: AppRouteRecordRaw[] = [
+  // 临时 Demo 入口：完成正式接入后，连同 views/demo/ai-assistant 一起清理。
+  ...(import.meta.env.DEV
+    ? [
+        {
+          // 页面准入的 pathValid 按路径层级检查，前缀需要注册为父路由。
+          path: '/demo',
+          name: 'development-demo',
+          hidden: true,
+          meta: { hidden: true },
+          children: [
+            {
+              path: 'ai-assistant',
+              name: 'demo-ai-assistant',
+              hidden: true,
+              meta: { hidden: true },
+              component: () => import('@/views/demo/ai-assistant/sql/index.vue')
+            }
+          ]
+        }
+      ]
+    : []),
   {
     path: '/',
     name: 'index',

@@ -12,6 +12,12 @@ import java.util.List;
  */
 @Data
 public class DatasetTableFieldDTO implements Serializable {
+    private String semanticBusinessName;
+    private String semanticDescription;
+    private String semanticAliases;
+    private String semanticValueReferences;
+    private Boolean semanticConfirmed;
+
     /**
      * ID
      */

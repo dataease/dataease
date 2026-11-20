@@ -144,7 +144,16 @@ interface UnionField {
   currentField: Field
   parentField: Field
 }
-interface Node {
+interface SemanticSnapshot {
+  semanticBusinessName?: string
+  semanticDescription?: string
+  semanticAliases?: string
+  semanticGrain?: string
+  semanticValueReferences?: string
+  semanticConfirmed?: boolean
+}
+
+interface Node extends SemanticSnapshot {
   tableName: string
   type: NodeType
   datasourceId: string
@@ -160,7 +169,7 @@ interface Node {
   flag?: string
 }
 
-interface Field {
+interface Field extends SemanticSnapshot {
   checked: boolean
   deExtractType: number
   deType: number
@@ -171,6 +180,7 @@ interface Field {
 }
 
 interface DataSource {
+  type?: string
   id: string
   name: string
   children?: DataSource[]

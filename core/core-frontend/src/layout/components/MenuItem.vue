@@ -23,6 +23,7 @@ import icon_webhook from '@/assets/svg/icon_webhook.svg'
 import icon_template from '@/assets/svg/icon_template.svg'
 import log from '@/assets/svg/log.svg'
 import img from '@/assets/svg/img.svg'
+import dvAi from '@/assets/svg/dv-ai.svg'
 
 const iconMap = {
   appearance: appearance,
@@ -46,6 +47,7 @@ const iconMap = {
   sync: sync,
   icon_template,
   img,
+  'dv-ai': dvAi,
   'dv-picture-show': img,
   log
 }

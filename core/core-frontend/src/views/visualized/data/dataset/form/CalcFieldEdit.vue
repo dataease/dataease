@@ -4,8 +4,10 @@ import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlin
 import icon_adjustment_outlined from '@/assets/svg/icon_adjustment_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
-import { ref, reactive, onMounted, onBeforeUnmount, watch, unref, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import type { AiCalcFieldSuggestion } from '@/api/aiConversation'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
 import { fieldType } from '@/utils/attr'
@@ -38,6 +40,7 @@ const searchFunction = ref('')
 const mirror = ref()
 
 const props = defineProps({
+  datasetReferences: Boolean,
   crossDs: {
     type: Boolean,
     default: () => false
@@ -68,12 +71,21 @@ const defaultForm = {
   checked: true
 }
 
-const state = reactive({
-  functionData: [],
-  dimensionData: [],
-  dimensionList: [],
-  quotaData: []
-})
+const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
+const dimensionDataList = ref([])
+const quotaFields = ref([])
+const quotaDataList = computed(() => [...quotaFields.value, ...(fieldForm.params || [])])
+const functions = ref([])
+const matchesField = field =>
+  field.name.toLocaleLowerCase().includes(searchField.value.toLocaleLowerCase())
+const dimensionData = computed(() => dimensionDataList.value.filter(matchesField))
+const quotaData = computed(() => quotaDataList.value.filter(matchesField))
+const functionData = computed(() =>
+  functions.value.filter(item =>
+    item.func.toLocaleLowerCase().includes(searchFunction.value.toLocaleLowerCase())
+  )
+)
+
 const formQuotaRef = ref()
 const formQuota = reactive({
   id: null,
@@ -100,98 +112,115 @@ const formQuotaConfirm = () => {
       if (!formQuota.id) {
         formQuota.id = `params_${guid()}`
       }
-      const q = cloneDeep(unref(formQuota))
-      fieldForm.params = [q]
-      const i = state.quotaData.find(ele => ele.id === formQuota.id)
-
-      if (i) {
-        const str = mirror.value.state.doc.toString()
-        const name2Auto = []
-        fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
-        Object.assign(i, cloneDeep(unref(formQuota)))
-
-        nextTick(() => {
-          mirror.value.dispatch({
-            changes: {
-              from: 0,
-              to: mirror.value.viewState.state.doc.length,
-              insert: setNameIdTrans('id', 'name', fieldForm.originName)
-            }
-          })
-        })
-      } else {
-        state.quotaData.push(q)
-        quotaDataList.push(q)
-      }
+      if (!setFieldForm()) return
+      fieldForm.params = [cloneDeep(formQuota)]
+      showFormula()
       formQuotaClose()
     }
   })
 }
 
-const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
-
 const setFieldForm = () => {
-  const str = mirror.value.state.doc.toString()
-  const name2Auto = []
-  fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
+  const formula = readFormula()
+  if (props.datasetReferences) {
+    for (const [, name] of formula.matchAll(/\[([^\]]+)\]/g)) {
+      if (references.value.counts.has(name) && !references.value.byName.has(name)) {
+        ElMessage.error(t('ai_conversation.ambiguous_field'))
+        return false
+      }
+    }
+  }
+  fieldForm.originName = setNameIdTrans('name', formula)
+  return true
 }
 
-const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
-  let name2Id = originName
-  const nameIdMap = [...dimensionDataList, ...quotaDataList].reduce((pre, next) => {
-    pre[next[from]] = next[to]
-    return pre
-  }, {})
-  const on = originName.match(/\[(.+?)\]/g) || []
-  if (on) {
-    on.forEach(itm => {
-      const ele = itm.slice(1, -1)
-      if (name2Auto) {
-        name2Auto.push(nameIdMap[ele])
-      }
-      name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
-    })
+const references = computed(() => {
+  const items = [...dimensionDataList.value, ...quotaDataList.value]
+  const counts = new Map<string, number>()
+  for (const item of items) counts.set(item.name, (counts.get(item.name) || 0) + 1)
+  const byId = new Map<string, string>()
+  const byName = new Map<string, string>()
+  for (const item of items) {
+    const id = String(item.id)
+    const name = item.name
+    let label = name
+    if (props.datasetReferences) {
+      // The same qualified token is advertised by the assistant for ambiguous names.
+      let qualified = name.replaceAll('[', '［').replaceAll(']', '］') + ' #' + id
+      while (counts.has(qualified)) qualified += ' #' + id
+      byName.set(qualified, id)
+      if (
+        (counts.get(name) || 0) > 1 ||
+        name.includes('[') ||
+        name.includes(']') ||
+        / #(?:params_)?-?\d+$/.test(name)
+      )
+        label = qualified
+    }
+    byId.set(id, label)
+    byName.set(label, id)
   }
-  return name2Id
+  return { byId, byName, counts }
+})
+const referenceName = item => references.value.byId.get(String(item.id)) || item.name
+const setNameIdTrans = (from: 'id' | 'name', formula: string) => {
+  const mapping = from === 'id' ? references.value.byId : references.value.byName
+  return formula.replace(/\[([^\]]+)\]/g, (token, key) =>
+    mapping.has(key) ? `[${mapping.get(key)}]` : token
+  )
 }
 
-let quotaDataList = []
-let dimensionDataList = []
-const initEdit = (obj, dimensionData, quotaData) => {
-  formQuota.id = null
-  Object.assign(fieldForm, { ...defaultForm, ...obj })
-  state.dimensionData = dimensionData
-  state.quotaData = quotaData.concat(fieldForm.params || [])
-  quotaDataList = cloneDeep(quotaData.concat(fieldForm.params || []))
-  dimensionDataList = cloneDeep(dimensionData)
-  setTimeout(() => {
-    formField.value.clearValidate()
-  }, 100)
-  if (!obj.originName) {
-    mirror.value.dispatch({
-      changes: {
-        from: 0,
-        to: mirror.value.viewState.state.doc.length,
-        insert: ''
-      }
-    })
-    return
-  }
-  nextTick(() => {
-    mirror.value.dispatch({
-      changes: {
-        from: 0,
-        to: mirror.value.viewState.state.doc.length,
-        insert: setNameIdTrans('id', 'name', obj.originName)
-      }
-    })
+const showFormula = () => {
+  mirror.value.dispatch({
+    changes: {
+      from: 0,
+      to: mirror.value.state.doc.length,
+      insert: setNameIdTrans('id', fieldForm.originName)
+    }
   })
 }
 
-const insertFieldToCodeMirror = (value: string) => {
+const editingExisting = ref(false)
+const formulaRevision = ref(0)
+const touched = reactive({ name: false, groupType: false, deType: false })
+const readFormula = (): string => mirror.value.state.doc.toString()
+const draftField = () => ({
+  ...cloneDeep(fieldForm),
+  originName: setNameIdTrans('name', readFormula())
+})
+const applyFormula = (suggestion: AiCalcFieldSuggestion) => {
+  const { boundExpression, name, groupType, deType } = suggestion
+  const expression = boundExpression ? setNameIdTrans('id', boundExpression) : suggestion.expression
+  if (!editingExisting.value) {
+    if (!touched.name && name) fieldForm.name = name
+    if (!touched.groupType) fieldForm.groupType = groupType
+    if (!touched.deType) fieldForm.deType = deType
+  }
   mirror.value.dispatch({
-    changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
+    changes: { from: 0, to: mirror.value.state.doc.length, insert: expression }
+  })
+}
+const selectGroup = (group: 'd' | 'q') => {
+  touched.groupType = true
+  fieldForm.groupType = group
+}
+const initEdit = (obj, dimensions, quotas) => {
+  editingExisting.value = obj.extField === 2
+  Object.assign(touched, { name: false, groupType: false, deType: false })
+  Object.assign(fieldForm, cloneDeep({ ...defaultForm, ...obj }))
+  dimensionDataList.value = dimensions
+  quotaFields.value = quotas
+  searchField.value = ''
+  searchFunction.value = ''
+  formField.value.clearValidate()
+  showFormula()
+}
+
+const insertFieldToCodeMirror = (value: string) => {
+  const { from, to } = mirror.value.state.selection.main
+  mirror.value.dispatch({
+    changes: { from, to, insert: value },
+    selection: { anchor: from + value.length }
   })
 }
 
@@ -203,74 +232,23 @@ onBeforeUnmount(() => {
   mirror.value.destroy?.()
 })
 
-const insertParamToCodeMirror = (value: string) => {
-  mirror.value.dispatch({
-    changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
-  })
-}
-let functions = []
-const initFunction = () => {
-  getFunction().then(res => {
-    functions = cloneDeep(res)
-    state.functionData = cloneDeep(res)
-  })
-}
-watch(
-  () => searchField.value,
-  val => {
-    if (val && val !== '') {
-      state.dimensionData = JSON.parse(
-        JSON.stringify(
-          dimensionDataList.filter(
-            ele =>
-              ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0
-          )
-        )
-      )
-      state.quotaData = JSON.parse(
-        JSON.stringify(
-          quotaDataList.filter(
-            ele =>
-              ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0
-          )
-        )
-      )
-    } else {
-      state.dimensionData = JSON.parse(JSON.stringify(dimensionDataList))
-      state.quotaData = JSON.parse(JSON.stringify(quotaDataList))
-    }
-  }
-)
-
-watch(
-  () => searchFunction.value,
-  val => {
-    if (val && val !== '') {
-      state.functionData = JSON.parse(
-        JSON.stringify(
-          functions.filter(ele => {
-            return ele.func.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-          })
-        )
-      )
-    } else {
-      state.functionData = cloneDeep(functions)
-    }
-  }
-)
-
 const formField = ref()
 
 defineExpose({
   initEdit,
   setFieldForm,
+  readFormula,
+  draftField,
+  applyFormula,
+  formulaRevision,
+  preserveType: computed(() => editingExisting.value || touched.deType),
   fieldForm,
   formField
 })
 const paramsTitle = ref('')
 const addParamsToQuota = () => {
   if (disableCaParams.value) return
+  Object.assign(formQuota, { id: null, name: '', value: null })
   paramsTitle.value = t('data_set.add_calculation_parameters')
   if (!fieldForm.params) {
     fieldForm.params = []
@@ -290,28 +268,23 @@ const disableCaParams = computed(() => {
 })
 
 const delParamsToQuota = () => {
-  const [o] = fieldForm.params
+  const [param] = fieldForm.params
+  if (!setFieldForm()) return
+  fieldForm.originName = fieldForm.originName.replaceAll(`[${param.id}]`, '')
   fieldForm.params = []
-  const str = mirror.value.state.doc.toString()
-  const name2Auto = []
-  fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto).replaceAll(`[${o.id}]`, '')
-  state.quotaData = state.quotaData.filter(ele => ele.id !== o.id)
-  mirror.value.dispatch({
-    changes: {
-      from: 0,
-      to: mirror.value.viewState.state.doc.length,
-      insert: setNameIdTrans('id', 'name', fieldForm.originName)
-    }
-  })
+  showFormula()
 }
-initFunction()
+
+getFunction().then(res => {
+  functions.value = res
+})
 </script>
 
 <template>
   <div @keydown.stop @keyup.stop class="calcu-field">
     <div class="calcu-cont">
       <div style="flex: 1">
-        <div style="max-width: 488px">
+        <div class="formula-editor">
           <el-form
             require-asterisk-position="right"
             ref="formField"
@@ -333,7 +306,11 @@ initFunction()
               ]"
               :label="t('dataset.field_edit_name')"
             >
-              <el-input v-model="fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
+              <el-input
+                v-model="fieldForm.name"
+                @input="touched.name = true"
+                :placeholder="t('dataset.input_edit_name')"
+              />
             </el-form-item>
           </el-form>
           <div>
@@ -341,14 +318,14 @@ initFunction()
               <el-form-item class="mr12" :label="t('dataset.data_type')">
                 <div class="btn-select">
                   <el-button
-                    @click="fieldForm.groupType = 'd'"
+                    @click="selectGroup('d')"
                     :class="[fieldForm.groupType === 'd' && 'is-active']"
                     text
                   >
                     {{ t('chart.dimension_abb') }}
                   </el-button>
                   <el-button
-                    @click="fieldForm.groupType = 'q'"
+                    @click="selectGroup('q')"
                     :class="[fieldForm.groupType === 'q' && 'is-active']"
                     text
                   >
@@ -357,7 +334,11 @@ initFunction()
                 </div>
               </el-form-item>
               <el-form-item class="mr0" :label="t('dataset.field_type')">
-                <el-select v-model="fieldForm.deType" style="width: 376px">
+                <el-select
+                  v-model="fieldForm.deType"
+                  @change="touched.deType = true"
+                  style="width: min(376px, 100%)"
+                >
                   <template #prefix>
                     <el-icon>
                       <Icon
@@ -409,8 +390,9 @@ initFunction()
             </el-tooltip>
           </div>
           <code-mirror
-            :quotaMap="state.quotaData.map(ele => ele.name)"
-            :dimensionMap="state.dimensionData.map(ele => ele.name)"
+            :quotaMap="quotaDataList.map(ele => ele.name)"
+            :dimensionMap="dimensionDataList.map(ele => ele.name)"
+            @change="formulaRevision++"
             ref="myCm"
             height="318px"
             dom-id="calcField"
@@ -445,13 +427,13 @@ initFunction()
           </el-input>
           <div class="field-height">
             <span>{{ t('chart.dimension') }}</span>
-            <div v-if="state.dimensionData.length" class="field-list">
+            <div v-if="dimensionData.length" class="field-list">
               <span
-                v-for="item in state.dimensionData"
+                v-for="item in dimensionData"
                 :key="item.id"
                 class="item-dimension flex-align-center"
                 :title="item.name"
-                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+                @click="insertFieldToCodeMirror('[' + referenceName(item) + ']')"
               >
                 <el-icon>
                   <Icon
@@ -462,7 +444,7 @@ initFunction()
                     ></component
                   ></Icon>
                 </el-icon>
-                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
+                <span class="ellipsis" :title="referenceName(item)">{{ referenceName(item) }}</span>
               </span>
             </div>
 
@@ -490,12 +472,12 @@ initFunction()
             </el-tooltip>
           </div>
           <div class="field-height">
-            <div v-if="state.quotaData.length" class="field-list">
+            <div v-if="quotaData.length" class="field-list">
               <span
-                v-for="item in state.quotaData"
+                v-for="item in quotaData"
                 :key="item.id"
                 class="item-quota flex-align-center"
-                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+                @click="insertFieldToCodeMirror('[' + referenceName(item) + ']')"
               >
                 <el-icon v-if="!item.groupType">
                   <Icon name="icon_adjustment_outlined"
@@ -511,7 +493,7 @@ initFunction()
                     ></component
                   ></Icon>
                 </el-icon>
-                <span class="ellipsis" :title="item.name">{{ item.name }}</span>
+                <span class="ellipsis" :title="referenceName(item)">{{ referenceName(item) }}</span>
                 <div v-if="!item.groupType" class="icon-right">
                   <el-icon @click.stop="updateParamsToQuota" class="hover-icon">
                     <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
@@ -563,9 +545,9 @@ initFunction()
             </template>
           </el-input>
           <el-row class="function-height">
-            <div v-if="state.functionData.length" style="width: 100%">
+            <div v-if="functionData.length" style="width: 100%">
               <el-popover
-                v-for="(item, index) in state.functionData"
+                v-for="(item, index) in functionData"
                 :key="index"
                 class="function-pop"
                 placement="right"
@@ -576,7 +558,7 @@ initFunction()
                 <template #reference>
                   <span
                     class="function-style flex-align-center"
-                    @click="insertParamToCodeMirror(item.func)"
+                    @click="insertFieldToCodeMirror(item.func)"
                     >{{ item.func }}</span
                   >
                 </template>
@@ -595,7 +577,7 @@ initFunction()
       v-model="dialogFormVisible"
       append-to-body
       class="create-dialog"
-      :title="t('data_set.add_calculation_parameters')"
+      :title="paramsTitle"
       width="500"
     >
       <el-form
@@ -639,6 +621,10 @@ initFunction()
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
+  }
+
+  .formula-editor {
+    max-width: var(--calc-form-width, 488px);
   }
 
   .mr12 {

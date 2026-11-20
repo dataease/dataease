@@ -36,6 +36,8 @@ public class DatasetTableManage {
 
     @Transactional
     public void save(DatasetTableDTO currentDs) {
+        DatasetSemanticValidation.text(currentDs.getSemanticDescription(), 4000);
+        DatasetSemanticValidation.text(currentDs.getSemanticGrain(), 512);
         checkNameLength(currentDs.getName());
         checkNameLength(currentDs.getTableName());
         CoreDatasetTable coreDatasetTable = coreDatasetTableRepository.findById(currentDs.getId()).orElse(null);
@@ -53,6 +55,10 @@ public class DatasetTableManage {
         coreDatasetTable.setType(currentDs.getType());
         coreDatasetTable.setInfo(currentDs.getInfo());
         coreDatasetTable.setSqlVariableDetails(currentDs.getSqlVariableDetails());
+        coreDatasetTable.setSemanticDescription(currentDs.getSemanticDescription());
+        coreDatasetTable.setSemanticGrain(currentDs.getSemanticGrain());
+        coreDatasetTable.setSemanticConfirmed(currentDs.getSemanticConfirmed());
+
     }
 
     public List<CoreDatasetTable> selectByDatasetGroupId(Long datasetGroupId) {

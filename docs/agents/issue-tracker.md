@@ -55,6 +55,81 @@ GitHub 平台下的默认仓库为 `dataease/dataease`，使用 `gh` CLI。
 - 创建、更新规格、任务、依赖、附件及交付记录：操作前读取完整的 [TAPD 发布约定](tapd-publishing.md)，
   按实际写入范围执行发布维护与回读流程。
 
+### 创建 Task
+
+官方 TAPD MCP 使用 `create_story_or_task` 创建任务。先核对当前工具 schema，再按以下顺序操作：
+
+1. 在已确认项目中用 `get_stories_or_tasks` 按标题查询，显式传入 `entity_type: "tasks"`、`limit` 和 `page`，
+   核对已有任务的 Parent，避免同一问题重复建票。
+2. 调用 `create_story_or_task`，`workspace_id` 和 `name` 是顶层参数；
+   `options.entity_type` 明确填 `tasks`，省略时官方实现默认创建需求。
+   正文可传 Markdown；按任务用途填写原生 `label`，新票保持 `open`。
+   Wayfinder 票的 Parent、`story_id` 和依赖遵循下节；实施票遵循发布约定。
+
+   ```json
+   {
+     "workspace_id": 40899682,
+     "name": "【Wayfinder 决策】具体决策标题",
+     "options": {
+       "entity_type": "tasks",
+       "description": "## Parent\n\n实际地图链接\n\n## Question\n\n待解决的问题\n\n## Blocked by\n\n无。",
+       "label": "wayfinder:grilling",
+       "status": "open",
+       "story_id": "0"
+     }
+   }
+   ```
+
+   示例中的标题和地图链接须替换为本次实际内容；未领取的新票不设置处理人。
+
+3. 从返回值提取实体 ID；官方实现的 `data` 可能是 JSON 字符串，链接可能通过 `url_template` 返回。
+   用真实 ID 回读 `id,name,description,label,status,owner,story_id`，再维护地图或规格索引。
+   多票先创建取得真实 ID，再写入依赖；超时或返回结果不明确时先查重再重试。
+
+**工具不可见时**：区分服务端能力与当前会话暴露的工具。
+先检查 `.codex/config.toml` 的 `mcp_servers.tapd.enabled_tools` 是否包含 `create_story_or_task`；
+`enabled_tools` 是工具白名单，见 [OpenAI 官方 MCP 配置](https://developers.openai.com/codex/mcp)。
+配置变更后重新加载 MCP，并核对工具列表。
+当前会话无法刷新时，可通过 MCP 客户端以 stdio 启动同一个 `.codex/launch_tapd.py`，
+先 `tools/list` 确认名称与 schema，再 `tools/call`；继续沿用项目本地配置、账号和已获授权范围。
+启动器选择及解释器配置见 [项目 MCP 说明](../../.codex/README.md#tapd-实现选择)。
+仅在该服务的工具列表也无创建入口时，才按发布约定的“连接”分支处理。
+
+### Wayfinding operations
+
+使用 wayfinder 在 TAPD 建图或续接时，以地图链接为入口。采用 Task 承载时：
+
+| 对象     | 载体与关联                                                                                                                                       |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 地图     | 独立 Task，原生 `label` 为 `wayfinder:map`；保存 Destination、Notes、任务导航与直接依赖、已决摘要、待明确范围和范围外事项                        |
+| 决策票   | 独立 Task，原生 `label` 为对应的 `wayfinder:research`、`wayfinder:prototype`、`wayfinder:grilling` 或 `wayfinder:task`；正文 `Parent` 链接到地图 |
+| 来源需求 | 通过地图和决策票中的来源链接引用，保留原有需求内容                                                                                               |
+
+地图是唯一续接入口和规划主版本，在“任务与依赖”中集中维护全部决策票的标题、真实链接及直接前置票。
+索引只保存导航和依赖，决策详情及解决评论保存在各票，状态和领取情况从任务实时读取。
+来源需求仅作为参考，不承载地图的任务索引。地图与决策票默认不挂靠来源需求（`story_id` 为 `0`），
+Task 地图的父子关系通过 `Parent` 表达；`story_id` 只能填需求 ID，不能填地图 Task ID。
+优先使用当前实体可写且可回读的原生阻塞关系；MCP 不支持 Task 阻塞时，
+在决策票正文用 `Blocked by` 列出直接前置票的标题与真实链接，并注明这是正文约定。
+Wayfinder 票使用上述类型标签，按决策流程推进，不套用实施任务的 `ready-for-agent`。
+
+新会话续接步骤：
+
+1. 读取地图最新的 Destination、Notes 和“任务与依赖”，确认本次范围、阶段、分支和连接方式。
+   地图负责人的设置不代表其决策票已被领取。
+2. 按地图索引中的任务 ID，用 `get_stories_or_tasks` 查询同一项目的 `tasks`，显式设置 `limit` 并读完分页，
+   返回字段包含 `id,name,description,label,status,owner,story_id,created`。
+   核对类型标签、`Parent` 指向当前地图、各票 `Blocked by` 与地图索引一致，按需读取前置票的实时记录。
+   发现缺票或关系不一致时核对最新记录并补齐，不通过来源需求代替地图定位任务。
+3. 前沿为未完成、处理人为空且全部直接前置票为 `done` 的决策票。
+   用户指定票时先核对该票，否则按地图索引顺序选择第一张；开展工作前设置实际推进者为处理人并回读。
+   已被领取的票按领取记录核对是否属于本次续接，保留其他会话的领取。
+4. 按类型解决后，先发表解决评论，再将决策票设为 `done`，向地图 Decisions so far 增量加入摘要和链接。
+   新增或调整决策票时同步地图索引、Parent 及各票直接依赖；完成后回读。本轮解决数量遵循 wayfinder。
+
+交接给新会话时提供地图 Task 链接；范围、阶段和分支以地图 Notes 为准。
+同一目标的新问题继续加入原地图，跨出目标的需求先明确范围调整或另建地图。
+
 ## 资料归属
 
 - 任务专属规格、方案比较、实验报告和实验脚本随选定平台的规格正文及附件维护；

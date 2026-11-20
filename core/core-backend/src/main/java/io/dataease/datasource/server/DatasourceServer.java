@@ -32,6 +32,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDsFinishPageRepository;
 import io.dataease.datasource.dao.auto.repository.QrtzSchedulerStateRepository;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatabaseTimeManage;
+import io.dataease.datasource.manage.DatasourceMetadataAccess;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -109,9 +110,14 @@ import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RI
 @RestController
 @RequestMapping("/datasource")
 public class DatasourceServer implements DatasourceApi {
+    @org.springframework.beans.factory.annotation.Autowired
+    private io.dataease.datasource.manage.DatasourceSemanticSnapshot semanticSnapshot;
+
     private static final Pattern ORACLE_RECYCLE_BIN_TABLE_PATTERN = Pattern.compile("^BIN\\$.*\\$[0-9]+$", Pattern.CASE_INSENSITIVE);
     @Resource
     private EngineManage engineManage;
+    @Resource
+    private DatasourceMetadataAccess datasourceMetadataAccess;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
@@ -820,7 +826,7 @@ public class DatasourceServer implements DatasourceApi {
 
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
-        coreDatasourceRepository.deleteById(datasourceId);
+        datasourceMetadataAccess.deleteDatasource(datasourceId);
         if (notFullDs.stream().allMatch(e -> !coreDatasource.getType().contains(e))) {
             calciteProvider.delete(coreDatasource);
         }
@@ -873,9 +879,13 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public List<DatasetTableDTO> getTables(DatasetTableDTO datasetTableDTO) throws DEException {
-        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasetTableDTO.getDatasourceId());
+        Long datasourceId = datasetTableDTO.getDatasourceId();
+        return semanticSnapshot.tables(datasourceId, listPhysicalTables(datasourceId, dataSourceManage.getCoreDatasource(datasourceId)));
+    }
+
+    List<DatasetTableDTO> listPhysicalTables(Long datasourceId, CoreDatasource coreDatasource) {
         if (coreDatasource == null) {
-            DEException.throwException("无效数据源！");
+            DEException.throwException(Translator.get("i18n_datasource_not_exists"));
         }
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
@@ -884,12 +894,12 @@ public class DatasourceServer implements DatasourceApi {
         List<DatasetTableDTO> result;
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
             result = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
-            datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+            datasetCacheManage.cacheTablesByDatasource(datasourceId, result);
             return result;
         }
         if (coreDatasource.getType().contains("Excel")) {
             result = ExcelUtils.getTables(datasourceRequest);
-            datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+            datasetCacheManage.cacheTablesByDatasource(datasourceId, result);
             return result;
         }
         Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
@@ -899,7 +909,7 @@ public class DatasourceServer implements DatasourceApi {
         } else {
             result = tables;
         }
-        datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+        datasetCacheManage.cacheTablesByDatasource(datasourceId, result);
         return result;
     }
 
@@ -910,7 +920,7 @@ public class DatasourceServer implements DatasourceApi {
         return isOracleRecycleBinName(table.getTableName()) || isOracleRecycleBinName(table.getName());
     }
 
-    private boolean isOracleRecycleBinName(String tableName) {
+    static boolean isOracleRecycleBinName(String tableName) {
         if (StringUtils.isBlank(tableName)) {
             return false;
         }
@@ -949,12 +959,15 @@ public class DatasourceServer implements DatasourceApi {
     public List<TableField> getTableField(DatasetTableFieldRequest req) throws DEException {
         String tableName = req.getTableName();
         Long datasourceId = req.getDatasourceId();
-        DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-        datasetTableDTO.setDatasourceId(datasourceId);
-        if (!getTables(datasetTableDTO).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
-            DEException.throwException("无效的表名！");
+        CoreDatasource source = dataSourceManage.getCoreDatasource(datasourceId);
+        if (listPhysicalTables(datasourceId, source).stream().noneMatch(table -> Objects.equals(table.getTableName(), tableName))) {
+            DEException.throwException(Translator.get("i18n_datasource_metadata_table_unavailable", tableName));
         }
-        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
+        return getFieldsForListedTable(source, tableName);
+    }
+
+    // Callers must validate the table name against this datasource's physical table list first.
+    List<TableField> getFieldsForListedTable(CoreDatasource coreDatasource, String tableName) {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains("Excel")) {
@@ -976,7 +989,6 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
         datasourceRequest.setTable(tableName);
         Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         return (List<TableField>) provider.fetchTableField(datasourceRequest);
