@@ -141,6 +141,18 @@ final class CalcFieldRegression {
         expectDenied(mvc, saved.replace("\"id\":\"42\"", "\"id\":\"43\""));
         expectDenied(mvc, opening.replace("\"pid\":\"0\"", "\"pid\":\"43\""));
         mvc.perform(delete("/ai/conversations/" + reopened.path("sessionId").asText()));
+        // An unfinished author input is useful to the model even though it cannot run as a candidate.
+        requests.clear();
+        mode.set("calc-detail");
+        String manual = "[Price] * (";
+        var manualOpening = JSON.readValue(opening, com.fasterxml.jackson.databind.node.ObjectNode.class);
+        manualOpening.put("sql", manual);
+        var manualSession = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(manualOpening))).andReturn().getResponse().getContentAsByteArray());
+        terminal(mvc, start(mvc, manualSession, "Finish my formula"));
+        if (!requests.getFirst().path("messages").get(0).path("content").asText().contains(manual))
+            throw new AssertionError("manual formula basis missing in model request");
+        mvc.perform(delete("/ai/conversations/" + manualSession.path("sessionId").asText()));
         System.out.println("PASS calculated-field HTTP conversation, bounded preview, unknown reference, application and revocation");
     }
     private static void expectDenied(MockMvc mvc, String opening) throws Exception {

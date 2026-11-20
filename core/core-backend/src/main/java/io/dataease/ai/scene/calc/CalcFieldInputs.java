@@ -63,8 +63,6 @@ final class CalcFieldInputs {
 
     private void label(String name, String id) { labels.merge(name, id, (a, b) -> ""); }
 
-    String bind(String expression) { return CalcFieldExpression.bind(expression, labels::get); }
-
     private void dependencies(String id, Set<String> path, Set<String> used, int[] expanded) {
         var f = available.get(id);
         if (f == null || path.size() >= 8 || ++expanded[0] > 128 || !path.add(id)) throw CalcFieldExpression.invalid();
