@@ -101,8 +101,12 @@ const getConfiguredFieldType = (field: Field) => {
   return Number(deType)
 }
 const getFieldTypeOptions = (field: Field) => {
-  const options =
-    getDatasetField(field).deExtractType === 0 ? props.fieldOptions : props.fieldOptionsText
+  // 类型待确认期间沿用上一次保存 SQL 的检测类型选择选项集：
+  // 否则 deExtractType 从时间变成文本时，时间节点会突然带出格式子项，
+  // 把已配置的 [1]（时间）显示成默认的 yyyy-MM-dd。
+  const extractType =
+    getDrift(field) !== null ? getDriftBaseline(field) : getDatasetField(field).deExtractType
+  const options = extractType === 0 ? props.fieldOptions : props.fieldOptionsText
   return field.checked
     ? options
     : options.map(option => ({
@@ -270,6 +274,12 @@ const commit = (): Promise<boolean> => {
   })()
   return pendingCommit
 }
+// 草稿保存已配置类型，不使用用于下拉回显的 normalizeFieldType 结果，
+// 避免把 [1]（时间）写成默认的 [1, 'yyyy-MM-dd'] 后在重新勾选时丢时间部分。
+const getConfiguredFieldTypePath = (field: Field): FieldTypePath => {
+  const saved = getDatasetField(field) as DatasetField
+  return saved.deTypeArr?.length ? [...saved.deTypeArr] : [saved.deType]
+}
 const changeFields = (value: Field[]) => {
   if (applying.value || !fieldsLoaded.value) return
   selectedFields.value
@@ -277,7 +287,7 @@ const changeFields = (value: Field[]) => {
     .forEach(field => {
       fieldDrafts.value[field.originName] = {
         name: getDatasetFieldName(field),
-        typePath: getDatasetFieldType(field)
+        typePath: getConfiguredFieldTypePath(field)
       }
     })
   selectedFields.value = value
