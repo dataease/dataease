@@ -4,6 +4,7 @@ export default {
     new_formula: '另寫公式',
     replace_formula: '用這項建議取代目前公式？',
     detail_pass: '預覽校驗通過',
+    aggregate_placeholder: '聚合結果需在圖表中驗證',
     calc_failed: '預覽校驗失敗',
     failed_preview: '失敗預覽',
     successful_preview: '成功預覽',

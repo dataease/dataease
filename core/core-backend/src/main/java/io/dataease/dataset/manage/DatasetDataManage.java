@@ -297,7 +297,8 @@ public class DatasetDataManage {
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+        boolean aggregatePlaceholder = Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap,
+                Utils.getParams(fields), null, pluginManage, false, fieldId);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
         String querySQL;
@@ -321,7 +322,7 @@ public class DatasetDataManage {
         if (fieldId != null) {
             if (data == null || !(data.get("fields") instanceof List<?> projected) || projected.size() != fields.size())
                 throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal");
-            return Map.of("validation", "DETAIL_PASS");
+            return Map.of("validation", aggregatePlaceholder ? "AGGREGATE_PLACEHOLDER" : "DETAIL_PASS");
         }
 
         Map<String, Object> map = new LinkedHashMap<>();

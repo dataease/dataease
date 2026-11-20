@@ -29,9 +29,9 @@ async function backend(page, options = {}) {
       result = {
         type: "CALC_FIELD_SUGGESTION",
         sql: null,
-        text: "按行计算差额。",
+        text: options.text ?? "按行计算差额。",
         calcField: {
-          expression: "[orders_id] - [items_id]",
+          expression: options.expression ?? "[orders_id] - [items_id]",
           name: "差额",
           groupType: "q",
           deType: 3,
@@ -142,3 +142,33 @@ for (const scenario of ["preview failed", "apply permission revoked"]) {
     }
   );
 }
+
+test("an aggregate placeholder explains chart verification and allows explicit application", async ({
+  page,
+}) => {
+  const expression = "SUM([orders_id])";
+  const state = await backend(page, {
+    expression,
+    text: "按订单求和。",
+    validation: "AGGREGATE_PLACEHOLDER",
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "新建计算字段", exact: true }).click();
+  const drawer = page.locator(".calc-field-drawer");
+  await drawer.getByRole("button", { name: "计算字段助手" }).click();
+  await drawer.locator("textarea").fill("合计订单");
+  await drawer.getByRole("button", { name: "发送", exact: true }).click();
+  await expect(
+    drawer.getByText("聚合结果需在图表中验证", { exact: true })
+  ).toBeVisible();
+  await expect(drawer.getByText("预览校验通过", { exact: true })).toHaveCount(
+    0
+  );
+  await expect(drawer.locator(".cm-content")).toHaveText("");
+  await drawer
+    .getByRole("button", { name: "应用到当前草稿", exact: true })
+    .click();
+  await expect(drawer.locator(".cm-content")).toHaveText(expression);
+  expect(state.checks).toBe(1);
+  expect(await page.evaluate(() => window.saved)).toBeUndefined();
+});

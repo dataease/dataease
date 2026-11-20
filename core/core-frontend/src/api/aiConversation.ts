@@ -34,7 +34,7 @@ export interface AiCalcFieldSuggestion {
   name: string
   groupType: 'd' | 'q'
   deType: number
-  validation: 'DETAIL_PASS' | 'INVALID' | 'PREVIEW_FAILED'
+  validation: 'DETAIL_PASS' | 'AGGREGATE_PLACEHOLDER' | 'INVALID' | 'PREVIEW_FAILED'
 }
 export interface AiConversationSession {
   sessionId: string

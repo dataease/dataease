@@ -7,6 +7,7 @@ import java.util.function.Function;
 /** Single scalar expression. Every reference and function is resolved before it reaches a Provider. */
 public final class CalcFieldExpression {
     private static final Set<String> FUNCTIONS = Set.of("ABS", "ROUND", "FLOOR", "CEIL", "NULLIF", "COALESCE");
+    private static final Set<String> AGGREGATES = Set.of("SUM", "AVG", "MIN", "MAX", "COUNT");
     private final String source;
     private final Function<String, String> references;
     private int position;
@@ -73,10 +74,11 @@ public final class CalcFieldExpression {
         }
         while (position < source.length() && Character.isLetter(source.charAt(position))) position++;
         String function = source.substring(start, position).toUpperCase(Locale.ROOT);
-        if (!FUNCTIONS.contains(function)) throw invalid();
+        boolean aggregate = AGGREGATES.contains(function);
+        if (!FUNCTIONS.contains(function) && !aggregate) throw invalid();
         require('(');
         StringBuilder args = new StringBuilder(expression(depth + 1));
-        while (peek() == ',') {
+        while (!aggregate && peek() == ',') {
             position++;
             args.append(", ").append(expression(depth + 1));
         }
