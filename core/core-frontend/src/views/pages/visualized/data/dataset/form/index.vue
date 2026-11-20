@@ -853,7 +853,7 @@ const closeEditCalc = () => {
 const confirmEditCalc = () => {
   calcEdit.value.formField.validate(val => {
     if (val) {
-      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.setFieldForm()) return
       if (!calcEdit.value.fieldForm.originName.trim()) {
         ElMessage.error(t('data_set.cannot_be_empty_de_'))
         return
@@ -1496,7 +1496,7 @@ const verify = () => {
   if (datasetPreviewLoading.value) return
   calcEdit.value.formField.validate(val => {
     if (val) {
-      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.setFieldForm()) return
       if (!calcEdit.value.fieldForm.originName.trim()) {
         ElMessage.error(t('data_set.cannot_be_empty_de_'))
         return
@@ -3071,7 +3071,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     :title="calcTitle"
   >
     <div v-if="editCalcField" class="calc-field-workspace" ref="calcAssistantHost">
-      <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
+      <calc-field-edit ref="calcEdit" dataset-references :crossDs="crossDatasources" />
     </div>
     <template #footer>
       <DatasetEditorAssistant

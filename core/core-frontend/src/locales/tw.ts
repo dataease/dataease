@@ -1,6 +1,7 @@
 export default {
   ai_conversation: {
     calc_title: '計算欄位助手',
+    ambiguous_field: '存在同名引用，請從欄位清單選擇具體欄位或參數。',
     new_formula: '另寫公式',
     replace_formula: '用這項建議取代目前公式？',
     detail_pass: '預覽校驗通過',

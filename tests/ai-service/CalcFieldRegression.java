@@ -77,6 +77,18 @@ final class CalcFieldRegression {
         var preview = new DatasetDataManage() {
             @Override public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) throws Exception {
                 String value = draft.getAllFields().stream().filter(f -> f.getId() == fieldId).findFirst().orElseThrow().getOriginName();
+                if (previewMode.startsWith("calc-unit-")) {
+                    String expected = switch (previewMode) {
+                        case "calc-unit-cents" -> "[102] / 100 * [params_9210000000000000003]";
+                        case "calc-unit-yuan" -> "[102] * [params_9210000000000000003]";
+                        case "calc-unit-converted" -> "[302] * [params_9210000000000000003]";
+                        case "calc-unit-literal" -> "[303] * [params_9210000000000000003]";
+                        default -> throw new AssertionError("Ambiguous proposal reached preview");
+                    };
+                    if (!value.equals(expected) || draft.getAllFields().size() != 4)
+                        throw new AssertionError("Unexpected bound preview " + value);
+                    return "DETAIL_PASS";
+                }
                 if (Set.of("calc-stop", "calc-revoke").contains(previewMode)) {
                     previewStarted.countDown();
                     previewRelease.await(5, TimeUnit.SECONDS);
@@ -106,7 +118,24 @@ final class CalcFieldRegression {
     }
 
     String respond(String mode, int step) throws Exception {
+        String explanation = switch (mode) {
+            case "calc-unit-ask" -> "Which Amount do you mean, the source column or the calculated field? What is its unit?";
+            case "calc-unit-grain" -> "Do you want a row-level amount or a grouped total?";
+            case "calc-unit-missing" -> "Which available field represents tax?";
+            case "calc-unit-cents" -> "Divide cents by 100 to return yuan.";
+            case "calc-unit-yuan" -> "The input is yuan; keep the same unit.";
+            case "calc-unit-literal" -> "The separately named input is in yuan.";
+            case "calc-unit-converted" -> "The calculated input is already in yuan; keep the same unit.";
+            default -> "Confirmed detail projection";
+        };
+        if (mode.equals("calc-unit-grain") || mode.equals("calc-unit-missing"))
+            return frame(Map.of("content", explanation), "stop");
         String candidate = switch (mode) {
+            case "calc-unit-ask" -> "[Amount] * [Rate]";
+            case "calc-unit-cents" -> "[Amount #102 #102] / 100 * [Rate]";
+            case "calc-unit-yuan" -> "[Amount #102 #102] * [Rate]";
+            case "calc-unit-converted" -> "[Amount #302] * [Rate]";
+            case "calc-unit-literal" -> "[Amount #102 #303] * [Rate]";
             case "calc-invalid" -> "[Unknown] * 2";
             case "calc-exhaust" -> "[Missing" + step + "] + 1";
             case "calc-repair" -> step == 1 ? "[Missing] + 1" : formula;
@@ -118,7 +147,7 @@ final class CalcFieldRegression {
                 || (mode.equals("calc-repair") || mode.equals("calc-db-repair")) && step == 2
                 ? call("formula-" + step, "propose_calc_field", JSON.writeValueAsString(Map.of("expression", candidate,
                         "name", "Double price", "groupType", "q", "deType", "3")))
-                : frame(Map.of("content", "Confirmed detail projection"), "stop");
+                : frame(Map.of("content", explanation), "stop");
     }
 
     void verify(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests) throws Exception {
@@ -256,7 +285,57 @@ final class CalcFieldRegression {
         if (!requests.getFirst().path("messages").get(0).path("content").asText().contains(manual))
             throw new AssertionError("manual formula basis missing in model request");
         mvc.perform(delete("/ai/conversations/" + manualSession.path("sessionId").asText()));
+        verifyUnits(mvc, mode, requests, opening);
         System.out.println("PASS calculated-field HTTP conversation, bounded private preview, correction/exhaustion/duplicate, safe failure classification, canonical application, cancellation and revocation");
+    }
+    private void verifyUnits(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        var editor = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree(opening);
+        var fields = (com.fasterxml.jackson.databind.node.ArrayNode) editor.at("/calcField/dataset/allFields");
+        var raw = (com.fasterxml.jackson.databind.node.ObjectNode) fields.get(0);
+        raw.put("name", "Amount").put("semanticConfirmed", true).put("semanticBusinessName", "Invoiced total")
+                .put("semanticDescription", "Minor currency units before rounding");
+        ((com.fasterxml.jackson.databind.node.ObjectNode) fields.get(1)).putArray("params").addObject()
+                .put("id", "params_9210000000000000003").put("name", "Rate").put("value", "0.8");
+        var converted = fields.addObject().put("id", "302").put("name", "Amount").put("extField", 2)
+                .put("deType", 3).put("checked", true).put("originName", "[102] / [params_88]")
+                .put("semanticConfirmed", false).put("semanticDescription", "unconfirmed-private-value");
+        fields.addObject().put("id", "303").put("name", "Amount #102").put("extField", 2)
+                .put("deType", 3).put("checked", true).put("originName", "[102] + 1");
+        converted.putArray("params").addObject().put("id", "params_88").put("name", "Scale").put("value", "100");
+        var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        for (String unit : List.of("ask", "grain", "missing", "cents", "yuan", "converted", "literal")) {
+            String scenario = "calc-unit-" + unit;
+            requests.clear(); mode.set(scenario); previewMode = scenario;
+            var question = switch (unit) {
+                case "ask" -> "Calculate the amount";
+                case "grain" -> "Calculate the total per order or across orders";
+                case "missing" -> "Calculate tax using the missing tax field";
+                case "cents" -> "Use the physical amount in cents per row and return yuan times Rate";
+                case "literal" -> "Use the field literally named Amount #102";
+                case "yuan" -> "For this turn use the physical amount which is already yuan times Rate";
+                default -> "Use the calculated amount already converted to yuan times Rate";
+            };
+            var result = terminal(mvc, start(mvc, session, question)).path("result");
+            String context = requests.getFirst().path("messages").get(0).path("content").asText();
+            if (!context.contains("Invoiced total") || !context.contains("Minor currency units")
+                    || !context.contains("Amount #102 #102") || !context.contains("Amount #302")
+                    || !context.contains("Rate") || context.contains("unconfirmed-private-value") || context.contains("private-context-value"))
+                throw new AssertionError("Missing draft references/confirmed meaning or leaked unconfirmed metadata");
+            if (unit.equals("ask")) {
+                if (!"EXPLANATION".equals(result.path("type").asText()) || !requests.toString().contains("CLARIFY_FIELD"))
+                    throw new AssertionError("Expected clarification for the bare duplicate name: " + result);
+            } else if (unit.equals("grain") || unit.equals("missing")) {
+                if (!"EXPLANATION".equals(result.path("type").asText()) || !result.path("text").asText().endsWith("?")
+                        || requests.size() != 1) throw new AssertionError("Expected an author question without a proposal");
+            } else if (!result.path("text").asText().contains("yuan")
+                    || result.path("calcField").path("boundExpression").asText().isBlank()
+                    || !"DETAIL_PASS".equals(result.path("calcField").path("validation").asText()))
+                throw new AssertionError("Unit-specific formula must pass: " + result);
+        }
+        previewMode = "";
+        mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+        System.out.println("PASS calculated-field clarification, confirmed draft semantics, parameterized references and units");
     }
     private static void expectDenied(MockMvc mvc, String opening) throws Exception {
         try {

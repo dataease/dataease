@@ -85,6 +85,28 @@ public final class CalcFieldPreviewRegression {
             var row = (Map<?, ?>) ((List<?>) page.get("data")).getFirst();
             if (!"-".equals(row.get(candidate.getDataeaseName()))) throw new AssertionError("ordinary dash fixture");
 
+            var divisor = new io.dataease.extensions.datasource.dto.CalParam();
+            divisor.setId("params_9210000000000000003"); divisor.setName("Scale"); divisor.setValue("100.0");
+            var converted = field(203, 2, "[101] / [params_9210000000000000003]");
+            converted.setParams(List.of(divisor));
+            var rate = new io.dataease.extensions.datasource.dto.CalParam();
+            rate.setId("params_9210000000000000004"); rate.setName("Rate"); rate.setValue("2.0");
+            candidate.setParams(List.of(rate));
+            candidate.setDeType(3);
+            draft.setAllFields(List.of(raw, text, total, converted, candidate));
+            for (var unit : Map.of("[101] / 100.0 * [params_9210000000000000004]", "0.14",
+                    "[101] * [params_9210000000000000004]", "14",
+                    "[203] * [params_9210000000000000004]", "0.14").entrySet()) {
+                candidate.setOriginName(unit.getKey());
+                assertVerdict(data, draft, 202, "DETAIL_PASS");
+                var preview = (Map<?, ?>) data.previewDataWithLimit(draft, 0, 1, false, false).get("data");
+                var projected = (Map<?, ?>) ((List<?>) preview.get("data")).getFirst();
+                var value = new java.math.BigDecimal(projected.get(candidate.getDataeaseName()).toString());
+                if (value.compareTo(new java.math.BigDecimal(unit.getValue())) != 0)
+                    throw new AssertionError("Unit conversion produced " + value + " for " + unit.getKey());
+            }
+            System.out.println("PASS JDBC cents, yuan and already-converted amount with two independent calculation parameters");
+
             candidate.setOriginName("UNKNOWN_FUNCTION([101])");
             try {
                 data.previewCalcField(draft, 201, System.currentTimeMillis() + 10000);

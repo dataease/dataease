@@ -1,6 +1,7 @@
 export default {
   ai_conversation: {
     calc_title: '计算字段助手',
+    ambiguous_field: '存在同名引用，请从字段列表选择具体字段或参数。',
     new_formula: '另写公式',
     replace_formula: '用这条建议替换当前公式？',
     detail_pass: '预览校验通过',

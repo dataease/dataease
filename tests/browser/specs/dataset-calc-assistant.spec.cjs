@@ -31,6 +31,7 @@ async function backend(page, options = {}) {
         sql: null,
         text: options.text ?? "按行计算差额。",
         calcField: {
+          boundExpression: options.boundExpression,
           expression: options.expression ?? "[orders_id] - [items_id]",
           name: "差额",
           groupType: "q",
@@ -211,4 +212,86 @@ test("failed formulas support authorized copy and follow-up while manual validat
   await expect(page.getByText("字段表达式校验成功")).toBeVisible();
   expect(state.opens).toHaveLength(2);
   await expect(drawer.locator(".cm-content")).toHaveText("5 + 2");
+});
+
+test("a clarified duplicate and calculation parameter keep their exact IDs after save and reopen", async ({
+  page,
+}) => {
+  const first = "9210000000000000001";
+  const second = "9210000000000000002";
+  const param = "params_9210000000000000003";
+  const literal = "9210000000000000004";
+  const stored = `[${first}] * [${param}] + [${literal}]`;
+  const expression = `[金额 #${first} #${first}] * [比例] + [金额 #${first} #${literal}]`;
+  // The model sees one authorized Amount. The local editor also contains its namesake.
+  await backend(page, {
+    expression: `[金额] * [比例] + [金额 #${first} #${literal}]`,
+    boundExpression: stored,
+    text: "逐行使用订单金额（元），无需换算。",
+  });
+  await page.goto("/?dependency=1");
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect.poll(() => page.evaluate(() => !!window.saved)).toBe(true);
+  await page.evaluate(
+    ({ first, second, param, literal }) => {
+      const data = window.saved;
+      for (const field of data.allFields) {
+        if (field.id === "orders1" || field.id === "items1") {
+          field.id = field.id === "orders1" ? first : second;
+          field.name = "金额";
+        } else if (field.id === "orders2") {
+          field.id = literal;
+          field.name = "金额 #" + first;
+        } else if (field.id === "calc") {
+          field.originName = "[" + second + "]";
+          field.params = [{ id: param, name: "比例", value: 2 }];
+        }
+      }
+      const tree = [data.union[0], data.union[0].childrenDs[0]];
+      for (const node of tree)
+        Object.assign(
+          node.currentDsFields[0],
+          data.allFields.find(
+            (f) => f.datasetTableId === node.currentDs.id && f.name === "金额"
+          )
+        );
+      sessionStorage.setItem("savedDataset", JSON.stringify(data));
+    },
+    { first, second, param, literal }
+  );
+  const open = async () => {
+    await page.reload();
+    await page.getByRole("tab", { name: "批量管理" }).click();
+    const row = page.getByRole("row", { name: /计算字段/ });
+    await row.locator("td").last().getByRole("button").last().click();
+    return page.locator(".calc-field-drawer");
+  };
+  const drawer = await open();
+  await expect(drawer.locator(".cm-content")).toHaveText(`[金额 #${second}]`);
+  await drawer.locator(".cm-content").fill("[金额] * [比例]");
+  await drawer.getByRole("button", { name: "确认", exact: true }).click();
+  await expect(
+    page.getByText("存在同名引用，请从字段列表选择具体字段或参数。")
+  ).toBeVisible();
+  await expect(drawer).toBeVisible();
+  await drawer.getByRole("button", { name: "计算字段助手" }).click();
+  await drawer.locator("textarea").fill("选订单里的金额，按元乘以比例");
+  await drawer.getByRole("button", { name: "发送", exact: true }).click();
+  await drawer.getByRole("button", { name: "应用到当前草稿" }).click();
+  await page
+    .locator(".ed-message-box:visible")
+    .getByRole("button", { name: "确定" })
+    .click();
+  await expect(drawer.locator(".cm-content")).toHaveText(expression);
+  await drawer.getByRole("button", { name: "确认", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => window.saved?.allFields.find((f) => f.id === "calc")?.originName
+      )
+    )
+    .toBe(stored);
+  await open();
+  await expect(drawer.locator(".cm-content")).toHaveText(expression);
 });
