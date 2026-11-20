@@ -6,6 +6,9 @@ export default {
     new_formula: 'New formula',
     replace_formula: 'Replace the current formula with this suggestion?',
     detail_pass: 'Preview validation passed',
+    calc_sql_manual:
+      'Save the custom SQL node and its parameters first, or use manual validation in the calculated-field editor.',
+    no_preview_rows: 'The preview returned no rows to validate the detail formula.',
     aggregate_placeholder: 'Verify the aggregate result in a chart',
     calc_failed: 'Preview validation failed',
     copy_formula: 'Copy formula',

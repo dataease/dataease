@@ -173,6 +173,12 @@ const fail = (error: unknown) => {
     isRequestError(error) && error.response?.status === 403
       ? t('ai_service.failure_forbidden')
       : tr('failed')
+  if (
+    isRequestError(error) &&
+    'messageKey' in error &&
+    error.messageKey === 'i18n_ai_calc_sql_manual'
+  )
+    failure.value = tr('calc_sql_manual')
   void refresh()
 }
 // Displayed turn numbers also work as references in a free-text follow-up.

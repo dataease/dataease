@@ -103,6 +103,7 @@ def main():
         sources.extend(root/path for path in [
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/utils/SqlUtil.java',
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/dto/DatasourceRequest.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/dataset/union/DatasetGroupInfoDTO.java',
             'core/core-backend/src/main/java/io/dataease/dataset/manage/DatasetDataManage.java',
             'core/core-backend/src/main/java/io/dataease/engine/trans/Field2SQLObj.java',
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/vo/DatasourceConfiguration.java',

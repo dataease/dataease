@@ -205,7 +205,12 @@ export const getTableField = async (data, queryRequest?: QueryRequest): Promise<
   return request.post({ url: '/datasetData/tableField', data, queryRequest }).then(res => res?.data)
 }
 
-export const getPreviewData = async (data, queryRequest?: QueryRequest): Promise<IResponse> => {
+export const getPreviewData = async (
+  data,
+  queryRequest?: QueryRequest
+): Promise<
+  IResponse & { validation?: 'DETAIL_PASS' | 'NO_PREVIEW_ROWS' | 'AGGREGATE_PLACEHOLDER' }
+> => {
   const copyData = cloneDeep(data)
   originNameHandle(copyData.allFields)
   return request

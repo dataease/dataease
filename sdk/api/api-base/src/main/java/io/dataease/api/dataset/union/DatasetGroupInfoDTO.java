@@ -29,5 +29,8 @@ public class DatasetGroupInfoDTO extends DatasetNodeDTO {
 
     private String updater;
 
+    /** Optional target for the calculated-field editor's manual validation. */
+    private Long previewFieldId;
+
     private Boolean isCross;
 }

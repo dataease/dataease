@@ -22,6 +22,11 @@ public class AiCalcFieldScene implements AiConversationScene {
     private record Draft(long target, String dataset, List<ResourceRevision> sources, Map<Long, CalcFieldAccess.Column> columns,
                          CalcFieldAccess.Grant grant, boolean preserveType) implements SceneState { }
 
+    private final io.dataease.ai.tool.sql.AiSqlStaticValidator sqlValidator = new io.dataease.ai.tool.sql.AiSqlStaticValidator();
+
+    @jakarta.annotation.PreDestroy
+    public void close() { sqlValidator.close(); }
+
     private final AiDatasourceTools metadata;
     private final CalcFieldAccess access;
     private final DatasetDataManage preview;
@@ -49,11 +54,13 @@ public class AiCalcFieldScene implements AiConversationScene {
         if (!isCross && !"mysql".equalsIgnoreCase(resource.type())) throw AiErrors.error("unsupported");
         var scope = AiDatasourceTools.Scope.editor(resource.id(), resource.revision(), isCross);
         var draft = CalcFieldCanvas.copy(CalcFieldCanvas.json(input.dataset()));
-        var canvas = new CalcFieldCanvas(metadata, scope);
-        canvas.rebuild(draft);
+        var canvas = new CalcFieldCanvas(metadata, scope, sqlValidator);
+        var saved = access.authorizedDataset(draft);
+        canvas.rebuild(draft, saved);
         if (draft.getAllFields() == null || draft.getAllFields().size() > 256
                 || draft.getAllFields().stream().anyMatch(Objects::isNull)) throw AiErrors.error("invalid");
-        var grant = access.grant(draft, canvas.columns, input.fieldId());
+        var grant = access.grant(draft, canvas.columns, input.fieldId(), saved);
+        if (canvas.hasDraftSql && (!grant.hidden().isEmpty() || grant.rowRestricted())) throw AiErrors.error("calc_sql_manual");
         CalcFieldInputs.checkNodes(draft.getUnion().getFirst(), grant);
         var fields = new CalcFieldInputs(draft, input.fieldId(), grant, canvas.columns);
         // This is the author-selected editor text, including unfinished input. Only tool candidates execute.
@@ -151,6 +158,7 @@ public class AiCalcFieldScene implements AiConversationScene {
                 return verdict("INVALID", "formula_execution_failed", display);
             }
             guard.run();
+            if ("NO_PREVIEW_ROWS".equals(validation)) return verdict("PREVIEW_FAILED", "no_preview_rows", display);
             return AiToolProtocol.result(Map.of("status", validation, "code", "", "expression", display, "boundExpression", bound));
         };
     }

@@ -40,7 +40,35 @@ public final class AiSqlStaticValidator implements AutoCloseable {
     public Result validate(String sql, String dialect, Metadata metadata, Runnable active) {
         return validate(sql, dialect, metadata, active, System.currentTimeMillis() + 750);
     }
+    public record ColumnProjection(String sql, Set<String> outputs) { }
+
+    /** Reconstruct a direct column projection solely from checked table, column and alias identifiers. */
+    public ColumnProjection columnProjection(String sql, Metadata metadata, long deadline) {
+        var projection = new java.util.concurrent.atomic.AtomicReference<ColumnProjection>();
+        validate(sql, "mysql", metadata, () -> {}, deadline, select -> {
+            if (select.getWhere() != null || select.getOrderByElements() != null) unsupported();
+            var outputs = new LinkedHashSet<String>();
+            var unique = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+            var columns = new StringJoiner(", ");
+            for (var item : select.getSelectItems()) {
+                String column = identifier(((Column) item.getExpression()).getColumnName());
+                String output = item.getAlias() == null ? column : alias(item.getAlias());
+                if (!unique.add(output)) unsupported();
+                outputs.add(output);
+                columns.add("`" + column + "` AS `" + output + "`");
+            }
+            String table = tableName((Table) select.getFromItem());
+            projection.set(new ColumnProjection("SELECT " + columns + " FROM `" + table + "`", Set.copyOf(outputs)));
+        });
+        return projection.get();
+    }
+
     public Result validate(String sql, String dialect, Metadata metadata, Runnable active, long deadline) {
+        return validate(sql, dialect, metadata, active, deadline, null);
+    }
+
+    private Result validate(String sql, String dialect, Metadata metadata, Runnable active, long deadline,
+                            java.util.function.Consumer<PlainSelect> projection) {
         Runnable check = () -> {
             active.run();
             if (Thread.currentThread().isInterrupted()) throw AiErrors.error("cancelled");
@@ -86,6 +114,7 @@ public final class AiSqlStaticValidator implements AutoCloseable {
                 references.column(order.getExpression());
             }
             check.run();
+            if (projection != null) projection.accept(select);
             return result("PASS", "verified");
         } catch (Rejected rejected) { return result(rejected.status, rejected.code); }
         catch (JSQLParserException failure) {

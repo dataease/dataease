@@ -297,8 +297,9 @@ public class DatasetDataManage {
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+        Long target = fieldId == null ? datasetGroupInfoDTO.getPreviewFieldId() : fieldId;
         boolean aggregatePlaceholder = Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap,
-                Utils.getParams(fields), null, pluginManage, false, fieldId);
+                Utils.getParams(fields), null, pluginManage, false, target);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
         String querySQL;
@@ -319,13 +320,15 @@ public class DatasetDataManage {
         applyPreparedParams(datasourceRequest, sqlMap);
         if (fieldId != null) datasourceRequest.setExecutionDeadline(deadline);
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
-        if (fieldId != null) {
-            if (data == null || !(data.get("fields") instanceof List<?> projected) || projected.size() != fields.size())
-                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal");
-            return Map.of("validation", aggregatePlaceholder ? "AGGREGATE_PLACEHOLDER" : "DETAIL_PASS");
-        }
-
         Map<String, Object> map = new LinkedHashMap<>();
+        if (target != null) {
+            if (data == null || !(data.get("fields") instanceof List<?> projected) || projected.size() != fields.size()
+                    || !(data.get("data") instanceof List<?> rows)
+                    || fields.stream().noneMatch(f -> target.equals(f.getId()) && Objects.equals(f.getExtField(), 2)))
+                throw DEException.of(io.dataease.exception.ErrorCategory.UPSTREAM, "i18n_error_internal");
+            map.put("validation", aggregatePlaceholder ? "AGGREGATE_PLACEHOLDER" : rows.isEmpty() ? "NO_PREVIEW_ROWS" : "DETAIL_PASS");
+            if (fieldId != null) return map;
+        }
         // 重新构造data
         Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList, encode);
         map.put("data", previewData);

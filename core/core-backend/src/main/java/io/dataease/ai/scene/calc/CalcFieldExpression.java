@@ -8,21 +8,34 @@ import java.util.function.Function;
 public final class CalcFieldExpression {
     private static final Set<String> FUNCTIONS = Set.of("ABS", "ROUND", "FLOOR", "CEIL", "NULLIF", "COALESCE");
     private static final Set<String> AGGREGATES = Set.of("SUM", "AVG", "MIN", "MAX", "COUNT");
+    private static final Set<String> SIBLING_FUNCTIONS = Set.of("SUBSTRING", "SUBSTR", "LEFT", "RIGHT", "LENGTH",
+            "CHAR_LENGTH", "UPPER", "LOWER", "TRIM", "LTRIM", "RTRIM", "CONCAT", "YEAR", "DAY", "DAYOFMONTH",
+            "HOUR", "MINUTE", "SECOND", "MOD", "POWER", "SQRT", "SIGN");
+    private final boolean sibling;
     private final boolean isCross;
     private final String source;
     private final Function<String, String> references;
     private int position;
     private int tokens;
 
-    private CalcFieldExpression(String source, boolean isCross, Function<String, String> references) {
+    private CalcFieldExpression(String source, boolean isCross, Function<String, String> references, boolean sibling) {
+        this.sibling = sibling;
         this.source = source;
         this.isCross = isCross;
         this.references = references;
     }
 
     public static String bind(String source, boolean isCross, Function<String, String> references) {
+        return bind(source, isCross, references, false);
+    }
+
+    static String bindSibling(String source, boolean isCross, Function<String, String> references) {
+        return bind(source, isCross, references, true);
+    }
+
+    private static String bind(String source, boolean isCross, Function<String, String> references, boolean sibling) {
         if (source == null || source.isBlank() || source.length() > 2048) throw invalid();
-        var parser = new CalcFieldExpression(source, isCross, references);
+        var parser = new CalcFieldExpression(source, isCross, references, sibling);
         String result = parser.expression(0);
         if (parser.peek() != 0 || parser.position != source.length()) throw invalid();
         return result;
@@ -74,7 +87,7 @@ public final class CalcFieldExpression {
             if (!literal.matches("(?:[0-9]{1,32}(?:\\.[0-9]{1,16})?|\\.[0-9]{1,16})")) throw invalid();
             return literal;
         }
-        while (position < source.length() && Character.isLetter(source.charAt(position))) position++;
+        while (position < source.length() && (Character.isLetter(source.charAt(position)) || source.charAt(position) == '_')) position++;
         String function = source.substring(start, position).toUpperCase(Locale.ROOT);
         if (isCross && function.equals("EXTRACT")) {
             require('(');
@@ -91,7 +104,7 @@ public final class CalcFieldExpression {
             return "MONTH(" + date + ")";
         }
         boolean aggregate = AGGREGATES.contains(function);
-        if (!FUNCTIONS.contains(function) && !aggregate) throw invalid();
+        if (!FUNCTIONS.contains(function) && !aggregate && !(sibling && SIBLING_FUNCTIONS.contains(function))) throw invalid();
         require('(');
         StringBuilder args = new StringBuilder(expression(depth + 1));
         while (!aggregate && peek() == ',') {

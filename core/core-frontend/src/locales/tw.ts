@@ -5,6 +5,8 @@ export default {
     new_formula: '另寫公式',
     replace_formula: '用這項建議取代目前公式？',
     detail_pass: '預覽校驗通過',
+    calc_sql_manual: '請先儲存自訂 SQL 節點及其參數，或使用計算欄位編輯器的手動驗證。',
+    no_preview_rows: '預覽未傳回資料列，無法驗證明細公式。',
     aggregate_placeholder: '聚合結果需在圖表中驗證',
     calc_failed: '預覽校驗失敗',
     copy_formula: '複製公式',

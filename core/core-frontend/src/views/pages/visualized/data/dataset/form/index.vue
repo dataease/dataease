@@ -447,7 +447,7 @@ const dfsChild = arr => {
 }
 
 const supportsCalcNode = (node: DatasetNode): boolean =>
-  node.type === 'db' &&
+  (node.type === 'db' || node.type === 'sql') &&
   (isCross.value || node.datasourceId === currentDsId.value) &&
   (node.children || []).every(supportsCalcNode)
 const supportsCalcAssistant = computed(
@@ -1523,9 +1523,17 @@ const verify = () => {
       dfsNodeList(arr, datasetDrag.value.getNodeList())
       datasetPreviewLoading.value = true
       const query = previewQuery.start()
-      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value }, query)
-        .then(() => {
-          if (query.isCurrent()) ElMessage.success(t('data_set.validation_succeeded'))
+      getPreviewData(
+        { union: arr, allFields: allfieldsCopy, isCross: isCross.value, previewFieldId: obj.id },
+        query
+      )
+        .then(result => {
+          if (!query.isCurrent()) return
+          if (result.validation === 'NO_PREVIEW_ROWS')
+            ElMessage.info(t('ai_conversation.no_preview_rows'))
+          else if (result.validation === 'AGGREGATE_PLACEHOLDER')
+            ElMessage.info(t('ai_conversation.aggregate_placeholder'))
+          else ElMessage.success(t('data_set.validation_succeeded'))
         })
         .catch(() => undefined)
         .finally(() => {

@@ -52,11 +52,11 @@ public class CalcFieldAccess {
     }
 
     public record Column(Long source, String table, Long node, String column) {}
-    public record Grant(Long savedVersion, Set<Long> hidden, Map<Long,String> aliases) {
+    public record Grant(Long savedVersion, Set<Long> hidden, Map<Long,String> aliases, boolean rowRestricted) {
         public Grant { hidden = Set.copyOf(hidden); aliases = Map.copyOf(aliases); }
     }
 
-    public Grant grant(DatasetGroupInfoDTO draft, Map<Long, Column> bindings, long target) {
+    DatasetGroupInfoDTO authorizedDataset(DatasetGroupInfoDTO draft) {
         try {
             boolean saved = draft.getId() != null;
             Long id = saved ? draft.getId() : draft.getPid();
@@ -78,14 +78,28 @@ public class CalcFieldAccess {
                     auth.getObject().checkAuth(permission);
                 } else if (!permissions.checkAuth(permission)) throw AiErrors.error("forbidden");
             }
+            if (!saved) return null;
+            var original = groups.getForCount(id);
+            if (original == null || !"dataset".equals(original.getNodeType())) throw AiErrors.error("forbidden");
+            return original;
+        } catch (AiErrors.Failure known) { throw known; }
+        catch (Exception unavailable) { throw AiErrors.error("forbidden"); }
+    }
+
+    public Grant grant(DatasetGroupInfoDTO draft, Map<Long, Column> bindings, long target) {
+        return grant(draft, bindings, target, authorizedDataset(draft));
+    }
+
+    Grant grant(DatasetGroupInfoDTO draft, Map<Long, Column> bindings, long target, DatasetGroupInfoDTO original) {
+        try {
+            Long id = draft.getId();
+            boolean saved = id != null;
             var ids = new HashSet<>(bindings.keySet());
             draft.getAllFields().forEach(f -> ids.add(f.getId()));
             var persisted = fields.selectByFieldIds(new ArrayList<>(ids));
             if (persisted.stream().anyMatch(f -> !saved || !Objects.equals(f.getDatasetGroupId(), id) || f.getChartId() != null))
                 throw AiErrors.error("forbidden");
-            if (!saved) return new Grant(null, Set.of(), Map.of());
-            var original = groups.getForCount(id);
-            if (original == null || !"dataset".equals(original.getNodeType())) throw AiErrors.error("forbidden");
+            if (!saved) return new Grant(null, Set.of(), Map.of(), false);
             var sourceColumns = new HashMap<Long,Column>();
             var savedFields = new LinkedHashMap<Long,DatasetTableFieldDTO>();
             for (var node : original.getUnion()) collect(node, sourceColumns, savedFields);
@@ -113,9 +127,10 @@ public class CalcFieldAccess {
             }
             bindings.forEach((fid, column) -> { if (deniedColumns.contains(physicalKey(column))) hidden.add(fid); });
             if (hidden.contains(target)) throw AiErrors.error("forbidden");
-            for (var rule : policies.getRowPermissionsTree(id, actor.actor()))
+            var rowRules = policies.getRowPermissionsTree(id, identity.capture().actor());
+            for (var rule : rowRules)
                 verifyRowFields(rule.getTree(), bindings, sourceColumns, draft);
-            return new Grant(original.getLastUpdateTime(), hidden, aliases);
+            return new Grant(original.getLastUpdateTime(), hidden, aliases, !rowRules.isEmpty());
         } catch (AiErrors.Failure known) { throw known; }
         catch (Exception unavailable) { throw AiErrors.error("forbidden"); }
     }
