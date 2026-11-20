@@ -957,22 +957,19 @@ public class ChartDataManage {
                 .collect(Collectors.toList());
     }
 
-    public void saveChartViewFromVisualization(String checkData, Long sceneId, Map<Long, ChartViewDTO> chartViewsInfo) {
-        if (!MapUtils.isEmpty(chartViewsInfo)) {
-            List<Long> disuseChartIdList = new ArrayList<>();
-            chartViewsInfo.forEach((key, chartViewDTO) -> {
-                if (checkData.contains(chartViewDTO.getId() + "")) {
-                    try {
-                        chartViewDTO.setSceneId(sceneId);
-                        chartViewManege.save(chartViewDTO);
-                    } catch (Exception e) {
-                        DEException.throwException(e);
-                    }
-                } else {
-                    disuseChartIdList.add(chartViewDTO.getId());
+    public void saveChartViewFromVisualization(Set<Long> activeViewIds, Long sceneId, Map<Long, ChartViewDTO> chartViewsInfo) {
+        if (MapUtils.isEmpty(chartViewsInfo)) {
+            return;
+        }
+        for (ChartViewDTO view : chartViewsInfo.values()) {
+            if (activeViewIds.contains(view.getId())) {
+                try {
+                    view.setSceneId(sceneId);
+                    chartViewManege.save(view);
+                } catch (Exception e) {
+                    DEException.throwException(e);
                 }
-            });
-            // 阈值告警处理 统一在发布时处理
+            }
         }
     }
 

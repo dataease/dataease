@@ -73,7 +73,6 @@ import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.manage.*;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -108,8 +107,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private JPAQueryFactory queryFactory;
     @Resource
-    private EntityManager entityManager;
-    @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
@@ -122,6 +119,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private CoreVisualizationManage coreVisualizationManage;
+
+    @Resource
+    private VisualizationDraftManage visualizationDraftManage;
 
     @Resource
     private ChartDataManage chartDataManage;
@@ -221,15 +221,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             busiFlag = resource.getType();
             request.setBusiFlag(busiFlag);
         }
-        // 如果是编辑查询 则进行镜像检查
         if (DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT.equals(request.getSource())) {
-            Specification<SnapshotDataVisualizationInfo> spec = (root, query, criteriaBuilder) -> {
-                return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), dvId), root.get("status").in(Arrays.asList(CommonConstants.DV_STATUS.UNPUBLISHED, CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)));
-            };
-            if (!snapshotDataVisualizationInfoRepository.exists(spec)) {
-                coreVisualizationManage.dvSnapshotRecover(dvId);
-            }
-
+            visualizationDraftManage.initializeSnapshot(dvId);
         }
         DataVisualizationVO result = coreVisualizationManage.findDvInfo(dvId, busiFlag, resourceTable);
         if (result != null) {
@@ -249,8 +242,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
             //获取图表信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, resourceTable);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
-                // 增加过滤当前使用的图表信息
-                Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().filter(item -> result.getComponentData().indexOf("\"id\":\"" + item.getId()) > 0).collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
+                Set<Long> activeChartIds = VisualizationUtils.activeChartIds(result.getComponentData());
+                Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream()
+                        .filter(item -> activeChartIds.contains(item.getId()))
+                        .collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
             }
             VisualizationWatermark watermark = visualizationWatermarkRepository.findById("system_default").orElse(null);
@@ -697,7 +692,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             });
         }
         //保存图表信息
-        chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, canvasViews);
+        chartDataManage.saveChartViewFromVisualization(VisualizationUtils.activeChartIds(request.getComponentData()), newDvId, canvasViews);
         return newDvId.toString();
     }
 
@@ -743,19 +738,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public DataVisualizationVO updateCanvas(DataVisualizationBaseRequest request) {
-        if (request.getId() == null) {
-            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
-        }
-        // Serialize saves, including legacy callers. Check and all writes share this transaction.
-        DataVisualizationInfo saved = dataVisualizationInfoRepository.lockForSave(request.getId())
-                .filter(info -> !Boolean.TRUE.equals(info.getDeleteFlag()))
-                .orElseThrow(() -> io.dataease.exception.DEException.of(
-                        io.dataease.exception.ErrorCategory.NOT_FOUND, "i18n_error_not_found"));
-        if (Boolean.TRUE.equals(request.getCheckHistory())
-                && !java.util.Objects.equals(saved.getContentId(), request.getExpectedContentId())) {
-            throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.CONFLICT, "i18n_error_conflict")
-                    .setErrorData(java.util.Collections.singletonMap("currentContentId", saved.getContentId()));
-        }
+        DataVisualizationInfo saved = visualizationDraftManage.lockAndCheck(request);
         if (request.getCanvasViewInfo() == null || request.getPid() == null) {
             throw io.dataease.exception.DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
         }
@@ -766,9 +749,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DatasetUtils.viewDecode(ele.getValue());
         }
         Long dvId = request.getId();
-        if (dvId == null) {
-            DEException.throwException("ID can not be null");
-        }
+        Set<Long> activeChartIds = VisualizationUtils.activeChartIds(request.getComponentData());
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         if (request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()) {
@@ -796,7 +777,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setStatus(curStatus == 1 ? CommonConstants.DV_STATUS.SAVED_UNPUBLISHED : curStatus);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
-        chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
+        chartDataManage.saveChartViewFromVisualization(activeChartIds, dvId, request.getCanvasViewInfo());
         return new DataVisualizationVO(visualizationInfo.getStatus());
     }
 
@@ -804,41 +785,45 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
         if (request == null || request.getId() == null || StringUtils.isBlank(request.getName())
-                || request.getStatus() == null || ((request.getStatus() == 0 || request.getStatus() == 1)
-                && request.getActiveViewIds() == null)) {
-            throw DEException.of(io.dataease.exception.ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+                || request.getStatus() == null || request.getStatus() < CommonConstants.DV_STATUS.UNPUBLISHED
+                || request.getStatus() > CommonConstants.DV_STATUS.SAVED_UNPUBLISHED) {
+            throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
         }
-        /**
-         * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
-         * 统一处理为1.删除主表数据，2.将镜像表数据统一copy到主表 不删除镜像数据（发布状态后镜像数据和主表数据是保持一致的）
-         * 其他状态仅更新主表和镜像表状态
-         * */
+        visualizationDraftManage.lockAndCheck(request);
         Long dvId = request.getId();
+        Integer status = request.getStatus();
+        if (status == CommonConstants.DV_STATUS.PUBLISHED
+                && snapshotDataVisualizationInfoRepository.findSnapshotDvInfoEntity(dvId, null).isEmpty()) {
+            throw DEException.of(ErrorCategory.NOT_FOUND, "i18n_error_not_found");
+        }
+
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         visualizationInfo.setMobileLayout(request.getMobileLayout());
         visualizationInfo.setId(dvId);
         visualizationInfo.setName(request.getName());
-        visualizationInfo.setStatus(request.getStatus());
+        visualizationInfo.setStatus(status);
         coreVisualizationManage.innerEdit(visualizationInfo);
-        if (CommonConstants.DV_STATUS.PUBLISHED == request.getStatus()) {
-            coreVisualizationManage.removeDvCore(dvId);
-            // 先执行删除再清理托管状态，保证同 ID 图表从镜像重新插入且发布失败时整体回滚
-            entityManager.flush();
-            entityManager.clear();
-            coreVisualizationManage.dvRestore(dvId);
-            chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
-        } else if (CommonConstants.DV_STATUS.UNPUBLISHED == request.getStatus()) {
-            chartViewManege.publishThreshold(dvId, request.getActiveViewIds());
+        if (status == CommonConstants.DV_STATUS.PUBLISHED) {
+            Set<Long> activeViewIds = coreVisualizationManage.dvRestore(dvId);
+            chartViewManege.publishThreshold(dvId, new ArrayList<>(activeViewIds));
+        } else if (status == CommonConstants.DV_STATUS.UNPUBLISHED) {
+            chartViewManege.publishThreshold(dvId, List.of());
         }
     }
 
     @Override
     @Transactional
     public void recoverToPublished(DataVisualizationBaseRequest request) {
-        coreVisualizationManage.dvSnapshotRecover(request.getId());
+        DataVisualizationInfo current = visualizationDraftManage.lockAndCheck(request);
+        if (!Objects.equals(current.getStatus(), CommonConstants.DV_STATUS.PUBLISHED)
+                && !Objects.equals(current.getStatus(), CommonConstants.DV_STATUS.SAVED_UNPUBLISHED)) {
+            throw DEException.of(ErrorCategory.CONFLICT, "i18n_resource_not_published");
+        }
+        coreVisualizationManage.dvSnapshotRecover(current.getId());
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        visualizationInfo.setId(request.getId());
-        visualizationInfo.setName(request.getName());
+        visualizationInfo.setId(current.getId());
+        visualizationInfo.setName(current.getName());
+        visualizationInfo.setContentId(UUID.randomUUID().toString());
         visualizationInfo.setStatus(CommonConstants.DV_STATUS.PUBLISHED);
         coreVisualizationManage.innerEdit(visualizationInfo);
     }
@@ -852,6 +837,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Transactional
     public void updateBase(DataVisualizationBaseRequest request) {
         if (request.getId() != null) {
+            visualizationDraftManage.lock(request.getId());
             coreVisualizationManage.innerEdit(BeanUtils.copyBean(new DataVisualizationInfo(), request));
         } else {
             DEException.throwException("Id can not be null");
@@ -1227,8 +1213,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         SnapshotDataVisualizationInfo dvInfo = snapshotDataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
-            String componentData = dvInfo.getComponentData();
-            return aggregatedResult.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).toList();
+            Set<Long> activeChartIds = VisualizationUtils.activeChartIds(dvInfo.getComponentData());
+            return aggregatedResult.stream().filter(item -> activeChartIds.contains(item.getId())).toList();
         } else {
             return aggregatedResult;
 
@@ -1457,11 +1443,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
 
         if (CollectionUtils.isNotEmpty(viewIds) && dvInfo != null) {
-            String componentData = dvInfo.getComponentData();
-            result = viewIds.stream()
-                    .filter(viewId -> componentData.indexOf("\"id\":\"" + viewId) > 0)
-                    .collect(Collectors.toList());
-
+            Set<Long> activeChartIds = VisualizationUtils.activeChartIds(dvInfo.getComponentData());
+            result = viewIds.stream().filter(activeChartIds::contains).toList();
         }
         return result;
     }

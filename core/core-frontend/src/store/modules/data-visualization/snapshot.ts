@@ -92,6 +92,7 @@ export const snapshotStore = defineStore('snapshot', {
     initSnapShot() {
       // 切换资源前提交已排队的草稿；任务持有原资源 ID，不跟随新画布变化。
       void flushCanvasDraft()
+      this.snapshotDisableTime = 1
       this.styleChangeTimes = -1
       this.cacheStyleChangeTimes = 0
       this.snapshotCacheTimes = 0

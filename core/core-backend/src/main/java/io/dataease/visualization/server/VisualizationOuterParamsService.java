@@ -26,6 +26,7 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
+import io.dataease.visualization.manage.VisualizationDraftManage;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,7 @@ import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +65,8 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     private CoreDatasetTableRepository coreDatasetTableRepository;
     @Autowired
     private DataVisualizationServer dataVisualizationServer;
+    @Resource
+    private VisualizationDraftManage visualizationDraftManage;
 
 
     private static final QSnapshotVisualizationOuterParams qOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
@@ -147,9 +151,11 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     }
 
     @Override
+    @Transactional
     public void updateOuterParamsSet(VisualizationOuterParamsDTO outerParamsDTO) {
         String visualizationId = outerParamsDTO.getVisualizationId();
         Assert.notNull(visualizationId, "visualizationId cannot be null");
+        visualizationDraftManage.lockForAssociation(Long.valueOf(visualizationId), outerParamsDTO.getRevision());
         Map<String, String> paramsInfoNameIdMap = new HashMap<>();
         QSnapshotVisualizationOuterParamsInfo qSnapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
         QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;

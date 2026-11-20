@@ -1,5 +1,6 @@
 package io.dataease.api.visualization.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
@@ -18,6 +19,9 @@ import java.util.Map;
  */
 @Data
 public class VisualizationLinkageRequest extends VisualizationLinkageVO {
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private VisualizationDraftRevision revision;
 
     /**
      * 仪表板 or 大屏ID
