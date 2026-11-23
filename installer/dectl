@@ -107,6 +107,7 @@ function _healthcheck() {
    echo
    echo "【警告】服务在等待时间内未完全启动！请稍后使用 dectl status 检查服务运行状况。"
    echo
+   return 1
 }
 function _get_current_version() {
    de_current_version=$(grep "^    image:.*dataease:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease:' '{print $2}')
@@ -225,6 +226,36 @@ function _prepare_timezone() {
    de_timezone_resolve || return 1
    de_timezone_save "${DE_RUNNING_BASE}/.env" || return 1
 }
+function _check_container_timezone() {
+   local services=(dataease)
+   local service container_id actual_timezone
+   [[ "$compose_files" != *docker-compose-task.yml* ]] || services+=(task-actuator)
+   [[ "$compose_files" != *docker-compose-apisix.yml* ]] || services+=(apisix)
+   [[ "$compose_files" != *docker-compose-playwright.yml* ]] || services+=(api)
+   for service in "${services[@]}"; do
+      container_id=$(${compose_cmd} ${compose_files} ps -q "$service") || {
+         echo "无法查询服务 $service 的容器，部署时区尚未确认生效" >&2
+         return 1
+      }
+      if [[ -z "$container_id" ]]; then
+         echo "未找到服务 $service 的运行容器，部署时区尚未确认生效" >&2
+         return 1
+      fi
+      # 仅返回 TZ，不输出其他环境变量，避免将密钥写入日志。
+      actual_timezone=$(
+         set -o pipefail
+         docker inspect "$container_id" --format '{{range .Config.Env}}{{println .}}{{end}}' |
+            sed -n 's/^TZ=//p'
+      ) || {
+         echo "无法读取服务 $service 的容器时区" >&2
+         return 1
+      }
+      if [[ "$actual_timezone" != "$DE_RESOLVED_TIMEZONE" ]]; then
+         echo "服务 $service 的容器时区与部署配置不一致，请检查容器是否完成重建" >&2
+         return 1
+      fi
+   done
+}
 function start() {
    echo
    _prepare_timezone || return 1
@@ -237,8 +268,14 @@ function start() {
    fi
    _check_apisix_init
    _generate_compose_file_args
-   cd ${DE_RUNNING_BASE}
-   ${compose_cmd} ${compose_files} up -d
+   cd "${DE_RUNNING_BASE}" || return 1
+   local compose_status=0
+   ${compose_cmd} ${compose_files} up -d || compose_status=$?
+   if [[ "$compose_status" -ne 0 ]]; then
+      echo "容器更新失败，部署配置可能尚未生效，请检查 Compose 错误信息" >&2
+      return "$compose_status"
+   fi
+   _check_container_timezone || return 1
    _healthcheck
 }
 function stop() {
