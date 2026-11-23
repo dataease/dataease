@@ -1011,7 +1011,7 @@ onBeforeUnmount(() => {
     }
 
     .m16 {
-      margin: 16px 0;
+      margin: 16px 0 8px;
     }
     .role-tree-container {
       height: calc(100% - 112px);

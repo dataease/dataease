@@ -606,7 +606,7 @@ onMounted(async () => {
 
   .org-tree-search {
     padding: 0 16px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 
     :deep(.ed-input) {
       width: 100%;
