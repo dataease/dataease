@@ -2224,6 +2224,8 @@ export default {
     table_cell_show_vertical_border: '单元格纵边框线',
     table_col_freeze_tip: '冻结前 n 列',
     table_row_freeze_tip: '冻结前 n 行',
+    table_trailing_col_freeze_tip: '冻结后 n 列',
+    table_trailing_row_freeze_tip: '冻结后 n 行',
     table_freeze: '冻结',
     table_empty_font_color: '无数据提示',
     stripe: '斑马纹',

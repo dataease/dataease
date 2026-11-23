@@ -2327,6 +2327,8 @@ export default {
     table_cell_show_vertical_border: 'Vertical cell border',
     table_col_freeze_tip: 'First n col',
     table_row_freeze_tip: 'First n row',
+    table_trailing_col_freeze_tip: 'Last n columns',
+    table_trailing_row_freeze_tip: 'Last n rows',
     table_freeze: 'Freeze',
     table_empty_font_color: 'No data tip',
     stripe: 'Zebra stripe',

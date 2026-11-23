@@ -151,6 +151,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       'tableFreeze',
       'tableColumnFreezeHead',
       'tableRowFreezeHead',
+      'tableColumnFreezeTail',
+      'tableRowFreezeTail',
       'mergeCells'
     ],
     'summary-selector': ['showSummary', 'summaryLabel']
@@ -335,6 +337,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     if (tableCell.tableFreeze && !tableCell.mergeCells) {
       s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozen.rowCount = tableCell.tableRowFreezeHead ?? 0
+      s2Options.frozen.trailingColCount = tableCell.tableColumnFreezeTail ?? 0
+      s2Options.frozen.trailingRowCount = tableCell.tableRowFreezeTail ?? 0
     }
     // tooltip
     this.configTooltip(chart, s2Options)
@@ -577,8 +581,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
       const heightByField = {}
       heightByField[data.length] = tableHeader.tableTitleHeight
       s2Options.style.rowCell = { heightByField }
-      // 计算汇总加入到数据里，冻结最后一行
-      s2Options.frozen.trailingRowCount = 1
+      // 汇总行单独占一个冻结名额，避免前 N 行把汇总行占掉。
+      s2Options.frozen.rowCount = Math.min(s2Options.frozen.rowCount ?? 0, data.length)
+      s2Options.frozen.trailingRowCount = (s2Options.frozen.trailingRowCount ?? 0) + 1
       const axis = filter(xAxis, axis => [2, 3, 4].includes(axis.deType))
       const summaryObj = getSummaryRow(
         data,
