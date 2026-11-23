@@ -715,7 +715,10 @@ export class Area extends G2ChartView {
                 chart.extTooltip
               )
               if (formatter && isSeriesTooltipFormatterShown(formatterMap, item.fieldId)) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value = valueFormatter(
+                  parseFloat(item.value),
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

@@ -913,7 +913,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
             const [item] = items
             if ((item.left && !hideLeft) || (item.right && !hideRight)) {
               const formatter = getAxisFormatter(item, item.left ? 'yAxis' : 'yAxisExt')
-              const value = valueFormatter(item.value, formatter.formatterCfg)
+              const value = valueFormatter(
+                item.value,
+                formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+              )
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -925,7 +928,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
               const anotherItem = anotherSeries.find(d => d.field === item.field)
               if (anotherItem?.value !== undefined && anotherItem?.value !== null) {
                 const formatter = getAxisFormatter(anotherItem, item.left ? 'yAxisExt' : 'yAxis')
-                const value = valueFormatter(anotherItem.value, formatter.formatterCfg)
+                const value = valueFormatter(
+                  anotherItem.value,
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName
@@ -942,7 +948,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
                 chart.extTooltip
               )
               if (formatter && isSeriesTooltipFormatterShown(formatterMap, item.fieldId)) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value = valueFormatter(
+                  parseFloat(item.value),
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

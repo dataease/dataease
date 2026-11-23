@@ -698,7 +698,10 @@ export class Quadrant extends G2ChartView {
                 bubbleValue(head[field]) === undefined
               const value = invalidBubble
                 ? `${escape(String(head[field]))} (${t('chart.quadrant_bubble_invalid_value')})`
-                : valueFormatter(head[field], formatter.formatterCfg)
+                : valueFormatter(
+                    head[field],
+                    formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                  )
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -707,7 +710,10 @@ export class Quadrant extends G2ChartView {
             head.dynamicTooltipValue?.forEach(item => {
               const formatter = formatterMap[item.fieldId]
               if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value = valueFormatter(
+                  parseFloat(item.value),
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

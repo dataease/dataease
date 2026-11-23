@@ -259,7 +259,10 @@ export class Funnel extends G2ChartView {
             const head = originalItems[0]
             tooltipItems.forEach(item => {
               const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
-              const value = valueFormatter(item.value, formatter.formatterCfg)
+              const value = valueFormatter(
+                item.value,
+                formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+              )
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -268,7 +271,10 @@ export class Funnel extends G2ChartView {
             head.dynamicTooltipValue?.forEach(item => {
               const formatter = formatterMap[item.fieldId]
               if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value = valueFormatter(
+                  parseFloat(item.value),
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

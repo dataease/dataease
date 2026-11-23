@@ -325,7 +325,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
                 const value =
                   item.value === null || item.value === undefined
                     ? ''
-                    : valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                    : valueFormatter(
+                        parseFloat(item.value),
+                        formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                      )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

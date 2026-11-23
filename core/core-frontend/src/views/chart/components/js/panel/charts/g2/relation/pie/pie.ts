@@ -258,7 +258,10 @@ export class Pie extends G2ChartView {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', head.field)
             tooltipItems.forEach(item => {
               const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
-              const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+              const value = valueFormatter(
+                parseFloat(item.value as string),
+                formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+              )
               // sync with label
               const percent = (Math.round(((item.value as number) / total) * 10000) / 100).toFixed(
                 reserveDecimalCount
@@ -276,7 +279,10 @@ export class Pie extends G2ChartView {
                 const percent = (Math.round((item.value / total) * 10000) / 100).toFixed(
                   reserveDecimalCount
                 )
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value = valueFormatter(
+                  parseFloat(item.value),
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

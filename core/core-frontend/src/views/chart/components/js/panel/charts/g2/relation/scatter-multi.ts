@@ -571,7 +571,10 @@ export class MultiScatter extends G2ChartView {
               result.push({
                 color: markerColor,
                 name: getFieldName(chart.yAxis[0]),
-                value: valueFormatter(head.y ?? head.value, formatter.formatterCfg)
+                value: valueFormatter(
+                  head.y ?? head.value,
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
               })
             }
             if (chart.extBubble?.[0]) {
@@ -580,7 +583,10 @@ export class MultiScatter extends G2ChartView {
               result.push({
                 color: markerColor,
                 name: getFieldName(chart.extBubble[0]),
-                value: valueFormatter(head.popSize, formatter.formatterCfg)
+                value: valueFormatter(
+                  head.popSize,
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
               })
             }
             if (chart.yAxisExt?.[0]) {
@@ -589,7 +595,10 @@ export class MultiScatter extends G2ChartView {
               result.push({
                 color: markerColor,
                 name: getFieldName(chart.yAxisExt[0]),
-                value: valueFormatter(head.lightness, formatter.formatterCfg)
+                value: valueFormatter(
+                  head.lightness,
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
               })
             }
             head.dynamicTooltipValue?.forEach(item => {
