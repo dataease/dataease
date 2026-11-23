@@ -58,9 +58,9 @@ const defaultRule = {
       trigger: "blur"
     },
     {
-      min: 2,
-      max: 25,
-      message: t("sync_datasource.input_limit_2_25", [2, 25]),
+      min: 1,
+      max: 64,
+      message: t('sync_datasource.input_limit_1_64', [1, 64]),
       trigger: "blur"
     }
   ]
