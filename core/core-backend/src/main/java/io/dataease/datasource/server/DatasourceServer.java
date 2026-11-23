@@ -39,6 +39,8 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.manage.DatasourceScheduleManage;
 import io.dataease.datasource.manage.DatasourceInvokeManage;
 import io.dataease.datasource.manage.DatasetTableQueryManage;
+import io.dataease.datasource.manage.DatasourceSaveOrchestrator;
+import io.dataease.datasource.strategy.DatasourceWriteStrategy;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.provider.ExcelFileGuard;
@@ -144,6 +146,10 @@ public class DatasourceServer implements DatasourceApi {
     private DatasourceInvokeManage datasourceInvokeManage;
     @Resource
     private DatasetTableQueryManage datasetTableQueryManage;
+    @Resource
+    private DatasourceSaveOrchestrator datasourceSaveOrchestrator;
+    @Resource
+    private List<DatasourceWriteStrategy> datasourceWriteStrategies;
     @Resource
     private CoreUserManage coreUserManage;
     @Resource
@@ -330,7 +336,6 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
-    @Transactional
     @Override
     public DatasourceDTO save(BusiDsRequest busiDsRequest) throws DEException {
         boolean syncImport = busiDsRequest.getSyncSourceId() != null;
@@ -359,111 +364,26 @@ public class DatasourceServer implements DatasourceApi {
         dataSourceDTO.setCreateBy(V3UserUtil.getUid().toString());
         dataSourceDTO.setUpdateBy(V3UserUtil.getUid());
 
+        if (!dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())
+                && !dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name())
+                && !dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
+            checkParams(dataSourceDTO.getConfiguration());
+        }
+
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        dataSourceManage.innerSave(dataSourceDTO);
-
-        if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(dataSourceDTO);
-            List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
-            for (DatasetTableDTO table : tables) {
-                datasourceRequest.setTable(table.getTableName());
-                List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
-                try {
-                    datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
-                } catch (Exception e) {
-                    if (e.getMessage().toLowerCase().contains("Row size too large".toLowerCase())) {
-                        DEException.throwException("文本内容超出最大支持范围： " + datasourceRequest.getTable() + ", " + e.getMessage());
-                    } else {
-                        DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ", " + e.getMessage());
-                    }
-                }
-            }
-            datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
-        } else if (dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(dataSourceDTO);
-            List<DatasetTableDTO> tables = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
-            checkName(tables.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
-            for (DatasetTableDTO api : tables) {
-                datasourceRequest.setTable(api.getTableName());
-                List<TableField> tableFields = (List<TableField>) invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
-                try {
-                    datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
-                } catch (Exception e) {
-                    DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ": " + e.getMessage());
-                }
-            }
-
-            CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
-            BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
-            coreDatasourceTask.setName(coreDatasource.getName() + "-task");
-            coreDatasourceTask.setDsId(coreDatasource.getId());
-            if (coreDatasourceTask.getStartTime() == null) {
-                coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
-            }
-            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
-                coreDatasourceTask.setCron(null);
-            } else {
-                if (coreDatasourceTask.getEndTime() != null && coreDatasourceTask.getEndTime() > 0 && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
-                    DEException.throwException("结束时间不能小于开始时间！");
-                }
-            }
-            coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.name());
-            datasourceTaskServer.insert(coreDatasourceTask);
-            datasourceSyncManage.addSchedule(coreDatasourceTask);
-        } else if (dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(dataSourceDTO);
-            List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
-            for (DatasetTableDTO table : tables) {
-                datasourceRequest.setTable(table.getTableName());
-                List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
-                try {
-                    datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
-                } catch (Exception e) {
-                    if (e.getMessage().toLowerCase().contains("Row size too large".toLowerCase())) {
-                        DEException.throwException("文本内容超出最大支持范围： " + datasourceRequest.getTable() + ", " + e.getMessage());
-                    } else {
-                        DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ", " + e.getMessage());
-                    }
-                }
-            }
-            CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
-            BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
-            coreDatasourceTask.setName(coreDatasource.getName() + "-task");
-            coreDatasourceTask.setDsId(coreDatasource.getId());
-            if (coreDatasourceTask.getStartTime() == null) {
-                coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
-            }
-            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
-                coreDatasourceTask.setCron(null);
-            } else {
-                if (coreDatasourceTask.getEndTime() != null && coreDatasourceTask.getEndTime() > 0 && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
-                    DEException.throwException("结束时间不能小于开始时间！");
-                }
-            }
-            coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.name());
-            datasourceTaskServer.insert(coreDatasourceTask);
-            datasourceSyncManage.addSchedule(coreDatasourceTask);
-        } else {
-            checkParams(dataSourceDTO.getConfiguration());
-            commonThreadPool.addTask(() -> {
-                try {
-                    calciteProvider.update(dataSourceDTO);
-                } catch (Exception e) {
-                    CoreDatasource ds = coreDatasourceRepository.findById(coreDatasource.getId()).orElse(null);
-                    ds.setStatus("Error");
-                    dataSourceManage.innerEditStatus(ds);
-                }
-            });
+        Long executionId = datasourceSaveOrchestrator.commitCreate(dataSourceDTO);
+        try {
+            strategyFor(dataSourceDTO.getType()).executeCreate(dataSourceDTO, coreDatasource, executionId);
+            datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
+        } catch (Exception e) {
+            datasourceSaveOrchestrator.mark(executionId, "EXECUTE", DatasourceSaveOrchestrator.STATUS_FAILED, e.getMessage());
+            throw new RuntimeException(e);
         }
         return dataSourceDTO;
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
-    @Transactional
     @Override
     public DatasourceDTO update(BusiDsRequest busiDsRequest) throws DEException {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
@@ -490,101 +410,31 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource requestDatasource = new CoreDatasource();
         BeanUtils.copyBean(requestDatasource, dataSourceDTO);
 
-        DatasourceRequest sourceTableRequest = new DatasourceRequest();
-        sourceTableRequest.setDatasource(sourceData);
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(dataSourceDTO);
-        List<String> toCreateTables = new ArrayList<>();
-        List<String> toDeleteTables = new ArrayList<>();
         if (dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
             requestDatasource.setEnableDataFill(null);
-            List<DatasetTableDTO> sourceTableDTOs = dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<DatasetTableDTO>) invokeMethod(sourceData.getType(), "getApiTables", DatasourceRequest.class, sourceTableRequest) : ExcelUtils.getTables(sourceTableRequest);
-            List<String> sourceTables = sourceTableDTOs.stream().map(DatasetTableDTO::getTableName).toList();
+            DatasourceRequest sourceTableRequest = new DatasourceRequest();
+            sourceTableRequest.setDatasource(sourceData);
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(dataSourceDTO);
             List<DatasetTableDTO> datasetTableDTOS = dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<DatasetTableDTO>) invokeMethod(sourceData.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest) : ExcelUtils.getTables(datasourceRequest);
-            List<String> tables = datasetTableDTOS.stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
-
-
             checkName(datasetTableDTOS.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
-            toCreateTables = tables.stream().filter(table -> !sourceTables.contains(table)).collect(Collectors.toList());
-            toDeleteTables = sourceTables.stream().filter(table -> !tables.contains(table)).collect(Collectors.toList());
-            for (String table : tables) {
-                for (String sourceTable : sourceTables) {
-                    if (table.equals(sourceTable)) {
-                        datasourceRequest.setTable(table);
-                        List<TableField> tableFieldList = dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<TableField>) invokeMethod(datasourceRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, datasourceRequest) : ExcelUtils.getTableFields(datasourceRequest);
-                        List<String> tableFields = tableFieldList.stream().map(TableField::getName).sorted().collect(Collectors.toList());
-                        sourceTableRequest.setTable(sourceTable);
-                        List<TableField> sourceTableFieldList = dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<TableField>) invokeMethod(sourceTableRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, sourceTableRequest) : ExcelUtils.getTableFields(sourceTableRequest);
-                        List<String> sourceTableFields = sourceTableFieldList.stream().map(TableField::getName).sorted().collect(Collectors.toList());
-                        if (!String.join(",", tableFields).equals(String.join(",", sourceTableFields))) {
-                            toDeleteTables.add(table);
-                            toCreateTables.add(table);
-                        }
-                    }
-                }
-            }
-            CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
-            BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
-            coreDatasourceTask.setName(requestDatasource.getName() + "-task");
-            coreDatasourceTask.setDsId(requestDatasource.getId());
-            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
-                coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
-                coreDatasourceTask.setCron(null);
-            } else {
-                if (coreDatasourceTask.getEndTime() != null && coreDatasourceTask.getEndTime() > 0 && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
-                    DEException.throwException("结束时间不能小于开始时间！");
-                }
-            }
-            coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.toString());
-            datasourceTaskServer.update(coreDatasourceTask);
-            for (String deleteTable : toDeleteTables) {
-                try {
-                    datasourceSyncManage.dropEngineTable(deleteTable);
-                } catch (Exception e) {
-                    DEException.throwException("Failed to drop table " + deleteTable);
-                }
-            }
-            for (String toCreateTable : toCreateTables) {
-                datasourceRequest.setTable(toCreateTable);
-                try {
-                    datasourceSyncManage.createEngineTable(toCreateTable, dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<TableField>) invokeMethod(sourceTableRequest.getDatasource().getType(), "getTableFields", DatasourceRequest.class, datasourceRequest) : ExcelUtils.getTableFields(datasourceRequest));
-                } catch (Exception e) {
-                    DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
-                }
-            }
-            datasourceSyncManage.deleteSchedule(datasourceTaskServer.selectByDSId(dataSourceDTO.getId()));
-            datasourceSyncManage.addSchedule(coreDatasourceTask);
-            dataSourceManage.checkName(dataSourceDTO);
-            dataSourceManage.innerEdit(requestDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             requestDatasource.setEnableDataFill(null);
-            if (Objects.equals(dataSourceDTO.getEditType(), replace)) {
-                datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
-                dataSourceManage.checkName(dataSourceDTO);
-                ExcelUtils.mergeSheets(requestDatasource, sourceData);
-                dataSourceManage.innerEdit(requestDatasource);
-            } else {
-                datasourceSyncManage.extractExcelData(requestDatasource, "add_scope");
-                ExcelUtils.mergeSheets(requestDatasource, sourceData);
-                dataSourceManage.checkName(dataSourceDTO);
-                dataSourceManage.innerEdit(requestDatasource);
-            }
         } else {
             if (!LicenseUtil.licenseValid()) {
                 requestDatasource.setEnableDataFill(null);
             }
             checkParams(dataSourceDTO.getConfiguration());
-            dataSourceManage.checkName(dataSourceDTO);
-            dataSourceManage.innerEdit(requestDatasource);
-            commonThreadPool.addTask(() -> {
-                try {
-                    calciteProvider.update(dataSourceDTO);
-                } catch (Exception e) {
-                    CoreDatasource datasource = coreDatasourceRepository.findById(requestDatasource.getId()).orElse(null);
-                    datasource.setStatus("Error");
-                    dataSourceManage.innerEditStatus(datasource);
-                }
-            });
+        }
+
+        dataSourceManage.checkName(dataSourceDTO);
+        Long executionId = datasourceSaveOrchestrator.commitEdit(requestDatasource);
+        try {
+            strategyFor(dataSourceDTO.getType()).executeUpdate(dataSourceDTO, sourceData, requestDatasource, executionId);
+            datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
+        } catch (Exception e) {
+            datasourceSaveOrchestrator.mark(executionId, "EXECUTE", DatasourceSaveOrchestrator.STATUS_FAILED, e.getMessage());
+            throw new RuntimeException(e);
         }
         return dataSourceDTO;
     }
@@ -1862,5 +1712,15 @@ public class DatasourceServer implements DatasourceApi {
 
     public Object invokeMethod(String dsType, String methodName, Class<?> classes, Object object) {
         return datasourceInvokeManage.invokeMethod(dsType, methodName, classes, object);
+    }
+
+    private DatasourceWriteStrategy strategyFor(String type) {
+        return datasourceWriteStrategies.stream()
+                .filter(strategy -> strategy.supports(type))
+                .findFirst()
+                .orElseGet(() -> {
+                    DEException.throwException("未找到数据源写入策略: " + type);
+                    return null;
+                });
     }
 }
