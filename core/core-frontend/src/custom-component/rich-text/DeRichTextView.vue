@@ -58,6 +58,7 @@ import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import './plugins' //自定义插件
+import { parseRichTextHtml, sanitizeRichTextHtml } from './richTextHtml'
 import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
@@ -205,6 +206,8 @@ const init = ref({
   placeholder: '',
   outer_placeholder: outerPlaceholder,
   inline: true, // 开启内联模式
+  // 粘贴样式由富文本白名单过滤，保留通过校验的字号、颜色等排版。
+  paste_remove_styles_if_webkit: false,
   branding: false,
   relative_urls: false,
   remove_script_host: false,
@@ -216,6 +219,21 @@ const init = ref({
   setup: function (editor) {
     let cloneHandle = null // 用于存储克隆的手柄
     let originalHandle = null // 用于存储原始手柄
+    editor.on('BeforeSetContent', event => {
+      // TinyMCE 的撤销、重做使用已渲染的内部 HTML，保留其选区标记。
+      if (event.format !== 'raw' && event.format !== 'text') {
+        event.content = sanitizeRichTextHtml(event.content)
+      }
+    })
+    editor.on('PastePreProcess', event => {
+      event.content = sanitizeRichTextHtml(event.content)
+    })
+    editor.on('SetContent', event => {
+      // 粘贴插入不一定触发 v-model 默认监听的 input 或 change。
+      if (event.paste && canEdit.value && !event.isDefaultPrevented()) {
+        myValue.value = editor.getContent()
+      }
+    })
     editor.on('init', () => {
       const doc = editor.getDoc()
       // 监测 mouseup、mousedown 和 mousemove 事件
@@ -387,62 +405,59 @@ const initCurFieldsChange = () => {
   }
 }
 
-const jumpTargetAdaptor = () => {
-  setTimeout(() => {
-    const paragraphs = document.querySelectorAll('p')
-    paragraphs.forEach(p => {
-      // 如果 p 标签已经有 onclick 且包含 event.stopPropagation，则跳过
-      if (
-        p.getAttribute('onclick') &&
-        p.getAttribute('onclick').includes('event.stopPropagation()')
-      ) {
-        return // 已经有 stopPropagation，跳过
-      }
-      // 否则添加 onclick 事件
-      p.setAttribute('onclick', 'event.stopPropagation()')
-    })
-  }, 1000)
-}
+const assignment = (templateHtml: string) => {
+  if (!templateHtml) return ''
 
-const assignment = content => {
-  if (content) {
-    // data-mce-content 属性内的占位符只是 tinymce 元数据，展示时无需处理，先移除避免重复匹配
-    content = content.replace(/\sdata-mce-content="[^"]*"/g, '')
-    const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
-    content = content.replace(/\[(.+?)\]/g, itm => {
-      const fieldToken = decodeHTMLEntities(itm)
-      if (!dataRowFiledName.value.includes(fieldToken)) return itm
+  const template = parseRichTextHtml(templateHtml)
+  const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
+  const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT)
+  const textNodes: Text[] = []
+  while (walker.nextNode()) textNodes.push(walker.currentNode as Text)
 
-      const fieldName = fieldToken.slice(1, -1)
+  for (const node of textNodes) {
+    const text = node.data
+    if (!text.includes('[')) continue
+    const fragment = document.createDocumentFragment()
+    let offset = 0
+    for (const match of text.matchAll(/\[(.+?)\]/g)) {
+      const [token, fieldName] = match
+      if (!dataRowFiledName.value.includes(token)) continue
+
+      const { index = 0 } = match
+      fragment.append(text.slice(offset, index))
       const value = dataRowNameSelect.value[fieldName]
-      let targetValue = encodeHTMLEntities(value ? value : state.emptyValue)
-      if (thresholdStyleInfo && thresholdStyleInfo[fieldName]) {
-        const thresholdStyle = thresholdStyleInfo[fieldName]
-        const color = encodeHTMLEntities(thresholdStyle.color)
-        const backgroundColor = encodeHTMLEntities(thresholdStyle.backgroundColor)
-        targetValue = `<span style="color:${color};background-color: ${backgroundColor}">${targetValue}</span>`
+      const thresholdStyle = thresholdStyleInfo?.[fieldName]
+      const replacement = String((value || state.emptyValue) ?? '')
+      if (!initReady.value && !value) {
+        fragment.append('[获取中...]')
+      } else if (thresholdStyle) {
+        const span = document.createElement('span')
+        span.style.color = thresholdStyle.color
+        span.style.backgroundColor = thresholdStyle.backgroundColor
+        span.textContent = replacement
+        fragment.append(span)
+      } else {
+        fragment.append(replacement)
       }
-      return initReady.value || value ? targetValue : '[获取中...]'
-    })
-    content = content.replace('class="base-selected"', '')
-    //De 本地跳转失效问题
-    content = content.replace(/href="#\//g, 'href="/#/')
-    content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
-    content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
-    resetSelect()
-    initFontFamily(content)
-    jumpTargetAdaptor()
+      offset = index + token.length
+    }
+    if (offset > 0) {
+      fragment.append(text.slice(offset))
+      node.replaceWith(fragment)
+    }
   }
 
+  template.content.querySelectorAll('.base-selected').forEach(node => {
+    node.classList.remove('base-selected')
+  })
+  // 预览保留 DataEase 站内跳转地址的转换规则。
+  template.content.querySelectorAll('a[href^="#/"]').forEach(link => {
+    link.setAttribute('href', '/' + link.getAttribute('href'))
+  })
+  const content = template.innerHTML
+  resetSelect()
+  initFontFamily(content)
   return content
-}
-
-const decodeHTMLEntities = text => {
-  if (!text) return text
-
-  const textarea = document.createElement('textarea')
-  textarea.innerHTML = text
-  return textarea.value
 }
 
 const encodeHTMLEntities = (text: unknown): string =>
@@ -476,7 +491,12 @@ const fieldSelect = field => {
   ed.insertContent(attachValue)
   snapshotStore.resetStyleChangeTimes()
 }
-const onClick = () => {
+const onClick = (event: MouseEvent) => {
+  const paragraph = event.target instanceof Element ? event.target.closest('p') : null
+  if (paragraph && (event.currentTarget as HTMLElement).contains(paragraph)) {
+    event.stopPropagation()
+  }
+
   if (canEdit.value) {
     const ed = tinymce.get(tinymceId)
     if (!ed?.selection) {
@@ -489,20 +509,13 @@ const onClick = () => {
 const resetSelect = (node?) => {
   const edInner = tinymce.get(tinymceId)
   if (edInner?.dom) {
-    const nodeArray = edInner.dom.select('.base-selected')
-    if (nodeArray) {
-      nodeArray.forEach(nodeInner => {
-        nodeInner.removeAttribute('class')
-      })
-    }
-    if (node) {
-      const pNode = node.parentElement
-      if (pNode && pNode.id && pNode.id.indexOf('changeText') > -1) {
-        const innerId = '#' + pNode.id
-        const domTest = edInner.dom.select(innerId)[0]
-        domTest.setAttribute('class', 'base-selected')
-        edInner.selection.select(domTest)
-      }
+    edInner.dom.select('.base-selected').forEach(nodeInner => {
+      nodeInner.classList.remove('base-selected')
+    })
+    const field = node?.parentElement
+    if (field?.id.startsWith('changeText-')) {
+      field.classList.add('base-selected')
+      edInner.selection.select(field)
     }
   }
 }
@@ -537,7 +550,7 @@ const setEdit = () => {
     if (computedCanEdit.value && editActive.value) {
       canEdit.value = true
       element.value['editing'] = true
-      myValue.value = element.value.propValue.textValue
+      myValue.value = sanitizeRichTextHtml(element.value.propValue.textValue)
       const ed = tinymce.get(tinymceId)
       ed.setContent(myValue.value)
       reShow()
