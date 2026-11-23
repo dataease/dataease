@@ -218,47 +218,8 @@ function status() {
 
    _healthcheck
 }
-function _prepare_timezone() {
-   source "${DE_RUNNING_BASE}/bin/timezone.sh" || {
-      echo "时区组件加载失败，请从匹配版本安装包恢复 bin/timezone.sh" >&2
-      return 1
-   }
-   de_timezone_resolve || return 1
-   de_timezone_save "${DE_RUNNING_BASE}/.env" || return 1
-}
-function _check_container_timezone() {
-   local services=(dataease)
-   local service container_id actual_timezone
-   [[ "$compose_files" != *docker-compose-task.yml* ]] || services+=(task-actuator)
-   [[ "$compose_files" != *docker-compose-apisix.yml* ]] || services+=(apisix)
-   [[ "$compose_files" != *docker-compose-playwright.yml* ]] || services+=(api)
-   for service in "${services[@]}"; do
-      container_id=$(${compose_cmd} ${compose_files} ps -q "$service") || {
-         echo "无法查询服务 $service 的容器，部署时区尚未确认生效" >&2
-         return 1
-      }
-      if [[ -z "$container_id" ]]; then
-         echo "未找到服务 $service 的运行容器，部署时区尚未确认生效" >&2
-         return 1
-      fi
-      # 仅返回 TZ，不输出其他环境变量，避免将密钥写入日志。
-      actual_timezone=$(
-         set -o pipefail
-         docker inspect "$container_id" --format '{{range .Config.Env}}{{println .}}{{end}}' |
-            sed -n 's/^TZ=//p'
-      ) || {
-         echo "无法读取服务 $service 的容器时区" >&2
-         return 1
-      }
-      if [[ "$actual_timezone" != "$DE_RESOLVED_TIMEZONE" ]]; then
-         echo "服务 $service 的容器时区与部署配置不一致，请检查容器是否完成重建" >&2
-         return 1
-      fi
-   done
-}
 function start() {
    echo
-   _prepare_timezone || return 1
    source "${DE_RUNNING_BASE}/bin/sync-auth.sh" || {
       echo "同步执行器鉴权组件加载失败，请从匹配版本安装包恢复 bin/sync-auth.sh 并检查读取权限，再执行 dectl start" >&2
       return 1
@@ -272,10 +233,9 @@ function start() {
    local compose_status=0
    ${compose_cmd} ${compose_files} up -d || compose_status=$?
    if [[ "$compose_status" -ne 0 ]]; then
-      echo "容器更新失败，部署配置可能尚未生效，请检查 Compose 错误信息" >&2
+      echo "容器更新失败，请检查 Compose 错误信息" >&2
       return "$compose_status"
    fi
-   _check_container_timezone || return 1
    _healthcheck
 }
 function stop() {
@@ -285,7 +245,6 @@ function stop() {
    ${compose_cmd} ${compose_files} down -v ${target}
 }
 function restart() {
-   _prepare_timezone || return 1
    stop || return 1
    start
 }
