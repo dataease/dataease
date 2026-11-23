@@ -37,7 +37,6 @@ import io.dataease.dao.auto.repo.PerBusiResourceRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.manage.DatasetGroupManage;
-import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.datasource.dao.auto.entity.QCoreDatasourceTask;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
@@ -175,7 +174,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private SnapshotDataVisualizationInfoRepository snapshotDataVisualizationInfoRepository;
     @Resource
-    private DatasetSQLManage datasetSQLManage;
     @Autowired
     private VisualizationLinkJumpRepository visualizationLinkJumpRepository;
     @Autowired
@@ -545,7 +543,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                             dsGroup.setUnion(JsonUtil.parseList(dsGroup.getInfo(), new TypeReference<>() {
                             }));
                         }
-                        datasetSQLManage.mergeDatasetCrossDefault(dsGroup);
+                        datasetGroupManage.mergeDatasetCrossDefault(dsGroup);
                     }
                     datasetGroupManage.innerSave(dsGroup);
                 });

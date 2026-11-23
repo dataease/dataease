@@ -30,7 +30,7 @@ import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
 
-import io.dataease.visualization.server.DataVisualizationServer;
+import io.dataease.visualization.manage.VisualizationPathManage;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletResponse;
@@ -68,7 +68,7 @@ public class ExportCenterManage implements BaseExportApi {
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
-    DataVisualizationServer dataVisualizationServer;
+    private VisualizationPathManage visualizationPathManage;
     @Resource
     private ExportCenterDownLoadManage exportCenterDownLoadManage;
     @Resource
@@ -209,7 +209,7 @@ public class ExportCenterManage implements BaseExportApi {
 
     private void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
-            exportTaskDTO.setExportFromName(dataVisualizationServer.getAbsPath(exportTaskDTO.getExportFrom()));
+            exportTaskDTO.setExportFromName(visualizationPathManage.getAbsPath(exportTaskDTO.getExportFrom()));
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
             List<String> fullName = new ArrayList<>();

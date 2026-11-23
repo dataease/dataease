@@ -64,9 +64,11 @@ public class DatasetGroupManage {
     @Resource
     private CoreDatasetGroupRepository coreDatasetGroupRepository;
     @Resource
-    private DatasetSQLManage datasetSQLManage;
+    private DatasetSqlCompiler datasetSqlCompiler;
     @Resource
     private DatasetDataManage datasetDataManage;
+    @Resource
+    private DatasetQueryManage datasetQueryManage;
     @Resource
     private DatasetTableManage datasetTableManage;
     @Resource
@@ -112,7 +114,7 @@ public class DatasetGroupManage {
                     DEException.throwException(Translator.get("i18n_no_fields"));
                 }
                 // get union sql
-                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+                Map<String, Object> sqlMap = datasetSqlCompiler.getUnionSQLForEdit(datasetGroupInfoDTO, null);
                 if (ObjectUtils.isNotEmpty(sqlMap)) {
                     String sql = (String) sqlMap.get("sql");
                     datasetGroupInfoDTO.setUnionSql(sql);
@@ -390,7 +392,7 @@ public class DatasetGroupManage {
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
         if (ObjectUtils.isNotEmpty(allFields)) {
             // 获取内层union sql和字段
-            Map<String, Object> map = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+            Map<String, Object> map = datasetSqlCompiler.getUnionSQLForEdit(datasetGroupInfoDTO, null);
             List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) map.get("field");
 
             for (DatasetTableFieldDTO datasetTableFieldDTO : allFields) {
@@ -432,27 +434,7 @@ public class DatasetGroupManage {
     }
 
     public DatasetGroupInfoDTO getForCount(Long id) throws Exception {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
-        if (coreDatasetGroup == null) {
-            return null;
-        }
-        DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
-        BeanUtils.copyBean(dto, coreDatasetGroup);
-        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
-            dto.setUnion(JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
-            }));
-            // 获取field
-            List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(id);
-            List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
-                DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
-                BeanUtils.copyBean(datasetTableFieldDTO, ele);
-                datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
-                return datasetTableFieldDTO;
-            }).collect(Collectors.toList());
-
-            dto.setAllFields(allFields);
-        }
-        return dto;
+        return datasetQueryManage.getForCount(id);
     }
 
     public DatasetGroupInfoDTO getDetail(Long id) throws Exception {
@@ -494,49 +476,17 @@ public class DatasetGroupManage {
     }
 
     public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
-        if (coreDatasetGroup == null) {
-            return null;
-        }
-        DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
-        BeanUtils.copyBean(dto, coreDatasetGroup);
-        // get creator
-        String userName = coreUserManage.getUserName(Long.valueOf(dto.getCreateBy()));
-        if (StringUtils.isNotBlank(userName)) {
-            dto.setCreator(userName);
-        }
-        String updateUserName = coreUserManage.getUserName(Long.valueOf(dto.getUpdateBy()));
-        if (StringUtils.isNotBlank(updateUserName)) {
-            dto.setUpdater(updateUserName);
-        }
-        dto.setUnionSql(null);
-        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
-            List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
-            });
-            dto.setUnion(unionDTOList);
-
-            // 获取field
-            List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(id);
-            List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
-                DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
-                BeanUtils.copyBean(datasetTableFieldDTO, ele);
-                datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
-                return datasetTableFieldDTO;
-            }).collect(Collectors.toList());
-
-            dto.setAllFields(allFields);
-
-            if ("preview".equalsIgnoreCase(type)) {
-                // 请求数据
-                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true, false);
-                // 获取data,sql
-                Map<String, List> data = (Map<String, List>) map.get("data");
-                String sql = (String) map.get("sql");
-                Long total = (Long) map.get("total");
-                dto.setData(data);
-                dto.setSql(Base64.getEncoder().encodeToString(sql.getBytes()));
-                dto.setTotal(total);
-            }
+        DatasetGroupInfoDTO dto = datasetQueryManage.getDatasetGroupInfoDTO(id, type);
+        if (dto != null && StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset") && "preview".equalsIgnoreCase(type)) {
+            // 请求数据
+            Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true, false);
+            // 获取data,sql
+            Map<String, List> data = (Map<String, List>) map.get("data");
+            String sql = (String) map.get("sql");
+            Long total = (Long) map.get("total");
+            dto.setData(data);
+            dto.setSql(Base64.getEncoder().encodeToString(sql.getBytes()));
+            dto.setTotal(total);
         }
         return dto;
     }
@@ -562,38 +512,7 @@ public class DatasetGroupManage {
     }
 
     public List<SqlVariableDetails> getSqlParams(List<Long> ids) {
-        List<SqlVariableDetails> list = new ArrayList<>();
-        if (ObjectUtils.isEmpty(ids)) {
-            return list;
-        }
-        TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
-        };
-        for (Long id : ids) {
-            List<CoreDatasetTable> datasetTables = datasetTableManage.selectByDatasetGroupId(id);
-            for (CoreDatasetTable datasetTable : datasetTables) {
-                if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
-                    List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(datasetTable.getSqlVariableDetails(), listTypeReference);
-                    if (CollectionUtils.isNotEmpty(defaultsSqlVariableDetails)) {
-                        List<String> fullName = new ArrayList<>();
-                        geFullName(id, fullName);
-                        Collections.reverse(fullName);
-                        List<String> finalFullName = fullName;
-                        defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
-                            sqlVariableDetails.setDatasetGroupId(id);
-                            sqlVariableDetails.setDatasetTableId(datasetTable.getId());
-                            sqlVariableDetails.setDatasetFullName(String.join("/", finalFullName));
-                        });
-                    }
-
-                    list.addAll(defaultsSqlVariableDetails);
-                }
-            }
-        }
-        list.forEach(sqlVariableDetail -> {
-            sqlVariableDetail.setId(sqlVariableDetail.getDatasetTableId() + "|DE|" + sqlVariableDetail.getVariableName());
-            sqlVariableDetail.setDeType(FieldUtils.transType2DeType(sqlVariableDetail.getType().get(0).contains("DATETIME") ? "DATETIME" : sqlVariableDetail.getType().get(0)));
-        });
-        return list;
+        return datasetQueryManage.getSqlParams(ids);
     }
 
     public void checkMove(DatasetGroupInfoDTO datasetGroupInfoDTO) {
@@ -616,17 +535,7 @@ public class DatasetGroupManage {
     }
 
     public void geFullName(Long pid, List<String> fullName) {
-        CoreDatasetGroup parent = coreDatasetGroupRepository.findById(pid).orElse(null);// 查找父级folder
-        if (parent == null) {
-            return;
-        }
-        fullName.add(parent.getName());
-        if (parent.getId().equals(parent.getPid())) {
-            return;
-        }
-        if (parent.getPid() != null && parent.getPid() != 0) {
-            geFullName(parent.getPid(), fullName);
-        }
+        datasetQueryManage.geFullName(pid, fullName);
     }
 
     public List<DatasetTableDTO> getDetailWithPerm(List<Long> ids) {
@@ -700,5 +609,40 @@ public class DatasetGroupManage {
             }
         }
         return list;
+    }
+
+    public void datasetCrossDefault() {
+        List<DatasetGroupInfoDTO> allList = getAllList();
+        for (DatasetGroupInfoDTO ele : allList) {
+            mergeDatasetCrossDefault(ele);
+            CoreDatasetGroup record = new CoreDatasetGroup();
+            BeanUtils.copyBean(record, ele);
+            coreDatasetGroupRepository.saveAndFlush(record);
+        }
+    }
+
+    public void mergeDatasetCrossDefault(DatasetGroupInfoDTO ele) {
+        Set<Long> allDs = getAllDs(ele.getUnion());
+        boolean isCross = allDs.size() > 1;
+        ele.setIsCross(isCross);
+    }
+
+    private Set<Long> getAllDs(List<UnionDTO> union) {
+        Set<Long> set = new HashSet<>();
+        for (UnionDTO unionDTO : union) {
+            Long datasourceId = unionDTO.getCurrentDs().getDatasourceId();
+            set.add(datasourceId);
+            getChildrenDs(unionDTO.getChildrenDs(), set);
+        }
+        return set;
+    }
+
+    private void getChildrenDs(List<UnionDTO> childrenDs, Set<Long> set) {
+        for (UnionDTO unionDTO : childrenDs) {
+            set.add(unionDTO.getCurrentDs().getDatasourceId());
+            if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
+                getChildrenDs(unionDTO.getChildrenDs(), set);
+            }
+        }
     }
 }

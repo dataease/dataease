@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.pie;
 
+import io.dataease.chart.charts.ChartHandlerRegistrar;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.extensions.view.dto.*;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,11 @@ import java.util.stream.Collectors;
 
 @Component
 public class PieHandler extends YoyChartHandler {
-    @Override
     public void init() {
-        chartHandlerManager.registerChartHandler(this.getRender(), "pie", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "pie-rose", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "pie-donut", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "pie-donut-rose", this);
+        ChartHandlerRegistrar.register(this.getRender(), "pie", this);
+        ChartHandlerRegistrar.register(this.getRender(), "pie-rose", this);
+        ChartHandlerRegistrar.register(this.getRender(), "pie-donut", this);
+        ChartHandlerRegistrar.register(this.getRender(), "pie-donut-rose", this);
     }
 
     @Override

@@ -66,7 +66,7 @@ public class ChartDataManage {
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Resource
-    private ChartViewManege chartViewManege;
+    private ChartViewQueryManage chartViewQueryManage;
     @Resource
     private PermissionManage permissionManage;
     @Resource
@@ -169,7 +169,7 @@ public class ChartDataManage {
             view.setChartExtRequest(chartExtRequest);
         }
 
-        chartViewManege.checkLinkChart(view);
+        chartViewQueryManage.checkLinkChart(view);
 
         //excel导出，如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
         if (view.getIsExcelExport()) {
@@ -912,7 +912,7 @@ public class ChartDataManage {
 
     private List<ChartViewFieldDTO> getAllChartFields(ChartViewDTO view) {
         // get all fields
-        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId(), view);
+        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewQueryManage.listByDQ(view.getTableId(), view.getId(), view);
         List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
         List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
         List<ChartViewFieldDTO> allFields = new ArrayList<>();
@@ -965,7 +965,7 @@ public class ChartDataManage {
             if (activeViewIds.contains(view.getId())) {
                 try {
                     view.setSceneId(sceneId);
-                    chartViewManege.save(view);
+                    chartViewQueryManage.save(view);
                 } catch (Exception e) {
                     DEException.throwException(e);
                 }

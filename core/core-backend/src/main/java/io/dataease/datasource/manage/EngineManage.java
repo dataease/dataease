@@ -6,7 +6,6 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
-import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.StarRocks;
 import io.dataease.exception.DEException;
@@ -50,9 +49,11 @@ public class EngineManage {
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
-    private DataSourceManage dataSourceManage;
+    private EngineConfigManage engineConfigManage;
     @Resource
-    private DatasourceServer datasourceServer;
+    private CalciteProvider calciteProvider;
+    @Resource
+    private DataSourceManage dataSourceManage;
     @Value("${dataease.path.engine:jdbc:h2:/opt/dataease3.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
     private String engineUrl;
 
@@ -61,32 +62,16 @@ public class EngineManage {
 
 
     public CoreDeEngine info() throws DEException {
-        List<CoreDeEngine> deEngines = coreDeEngineRepository.findAll();
-        if (CollectionUtils.isEmpty(deEngines)) {
-            DEException.throwException("未完整设置数据引擎");
-        }
-        return deEngines.get(0);
+        return engineConfigManage.info();
     }
 
     public CoreDatasource getDeEngine() {
-        List<CoreDeEngine> deEngines = coreDeEngineRepository.findAll();
-        if (CollectionUtils.isEmpty(deEngines)) {
-            DEException.throwException("未完整设置数据引擎");
-        }
-        CoreDatasource coreDatasource = new CoreDatasource();
-        BeanUtils.copyBean(coreDatasource, deEngines.get(0));
-        return coreDatasource;
+        return engineConfigManage.getDeEngine();
     }
 
 
     public CoreDatasource deEngine() {
-        List<CoreDeEngine> deEngines = coreDeEngineRepository.findAll();
-        CoreDatasource coreDatasource = new CoreDatasource();
-        if (CollectionUtils.isEmpty(deEngines)) {
-            return null;
-        }
-        BeanUtils.copyBean(coreDatasource, deEngines.get(0));
-        return coreDatasource;
+        return engineConfigManage.deEngine();
     }
 
     public void validate(CoreDeEngine engine, boolean updateStatus) throws Exception {
@@ -292,7 +277,11 @@ public class EngineManage {
         initDatasource.setTaskStatus("WaitingForExecution");
         V3UserUtil.setUid(1L);
         coreDatasourceRepository.findById(985188400292302848L).ifPresent(coreDatasource1 -> {
-            datasourceServer.delete(coreDatasource1.getId());
+            coreDatasourceRepository.deleteById(coreDatasource1.getId());
+            boolean notFullDs = List.of("folder", "Excel", "API").stream().allMatch(e -> !StringUtils.contains(coreDatasource1.getType(), e));
+            if (notFullDs) {
+                calciteProvider.delete(coreDatasource1);
+            }
         });
         dataSourceManage.innerSave(initDatasource);
     }

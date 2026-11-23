@@ -1,7 +1,7 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.constant.CacheConstant;
-import io.dataease.datasource.server.DatasourceServer;
+import io.dataease.datasource.manage.DatasetTableQueryManage;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 public class DatasetCacheManage {
     @Resource
-    private DatasourceServer datasourceServer;
+    private DatasetTableQueryManage datasetTableQueryManage;
 
     /**
      * 缓存某个数据源下的所有表
@@ -57,7 +57,7 @@ public class DatasetCacheManage {
         } else {
             DatasetTableDTO dto = new DatasetTableDTO();
             dto.setDatasourceId(datasourceId);
-            List<DatasetTableDTO> tables = datasourceServer.getTables(dto);
+            List<DatasetTableDTO> tables = datasetTableQueryManage.getTables(dto);
             cacheTablesByDatasource(datasourceId, tables);
             return tables.stream().map(DatasetTableDTO::getTableName).toList();
         }

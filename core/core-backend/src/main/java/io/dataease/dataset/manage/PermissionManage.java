@@ -12,18 +12,23 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
+import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.ColumnPermissions;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.permission.util.V3UserUtil;
+import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,7 +53,7 @@ public class PermissionManage {
     @Autowired(required = false)
     private ColumnPermissionsApi columnPermissionsApi = null;
     @Resource
-    private DatasetTableFieldManage datasetTableFieldManage;
+    private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
 
     private RowPermissionsApi getRowPermissionsApi() {
 
@@ -387,7 +392,7 @@ public class PermissionManage {
                 for (DatasetRowPermissionsTreeItem item : tree.getItems()) {
                     if (ObjectUtils.isNotEmpty(item)) {
                         if (StringUtils.equalsIgnoreCase(item.getType(), "item") || ObjectUtils.isEmpty(item.getSubTree())) {
-                            item.setField(datasetTableFieldManage.selectById(item.getFieldId()));
+                            item.setField(selectFieldById(item.getFieldId()));
                         } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree") || (ObjectUtils.isNotEmpty(item.getSubTree()) && StringUtils.isNotEmpty(item.getSubTree().getLogic()))) {
                             getField(item.getSubTree());
                         }
@@ -395,5 +400,25 @@ public class PermissionManage {
                 }
             }
         }
+    }
+
+    private DatasetTableFieldDTO selectFieldById(Long id) {
+        CoreDatasetTableField ele = coreDatasetTableFieldRepository.findById(id).orElse(null);
+        if (ele == null) {
+            return null;
+        }
+        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+        BeanUtils.copyBean(dto, ele);
+        if (StringUtils.isNotEmpty(ele.getParams())) {
+            TypeReference<List<CalParam>> tokenType = new TypeReference<>() {
+            };
+            dto.setParams(JsonUtil.parseList(ele.getParams(), tokenType));
+        }
+        if (StringUtils.isNotEmpty(ele.getGroupList())) {
+            TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
+            };
+            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
+        }
+        return dto;
     }
 }

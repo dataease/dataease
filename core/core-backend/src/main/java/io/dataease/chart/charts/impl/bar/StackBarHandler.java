@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.bar;
 
+import io.dataease.chart.charts.ChartHandlerRegistrar;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
@@ -18,10 +19,10 @@ public class StackBarHandler extends BarHandler {
     private String type = "bar-stack";
     @Override
     public void init() {
-        chartHandlerManager.registerChartHandler(this.getRender(), "bar-stack", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "bar-stack-horizontal", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "percentage-bar-stack", this);
-        chartHandlerManager.registerChartHandler(this.getRender(), "percentage-bar-stack-horizontal", this);
+        ChartHandlerRegistrar.register(this.getRender(), "bar-stack", this);
+        ChartHandlerRegistrar.register(this.getRender(), "bar-stack-horizontal", this);
+        ChartHandlerRegistrar.register(this.getRender(), "percentage-bar-stack", this);
+        ChartHandlerRegistrar.register(this.getRender(), "percentage-bar-stack-horizontal", this);
     }
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {

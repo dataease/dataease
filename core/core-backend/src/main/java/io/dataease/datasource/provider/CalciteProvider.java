@@ -6,7 +6,7 @@ import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
-import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.manage.EngineConfigManage;
 import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.datasource.utils.JdbcParameterUtils;
 import io.dataease.datasource.type.*;
@@ -59,7 +59,7 @@ public class CalciteProvider extends Provider {
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
-    private EngineManage engineManage;
+    private EngineConfigManage engineConfigManage;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
     // The connection owns one mutable Calcite schema tree. getRootSchema() returns new wrappers,
@@ -2154,7 +2154,7 @@ public class CalciteProvider extends Provider {
         // 即使当前只有插件数据源，也要建立 Calcite 上下文，供后续新增内置数据源使用。
         take();
         List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll().stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel", "ExcelRemote").contains(coreDatasource.getType())).collect(Collectors.toList());
-        CoreDatasource engine = engineManage.deEngine();
+        CoreDatasource engine = engineConfigManage.deEngine();
         if (engine != null) {
             coreDatasources.add(engine);
         }

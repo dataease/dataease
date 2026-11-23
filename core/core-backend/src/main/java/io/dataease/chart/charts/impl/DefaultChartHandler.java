@@ -5,7 +5,6 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
-import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
@@ -58,11 +57,7 @@ import java.util.stream.Collectors;
 public class DefaultChartHandler extends AbstractChartPlugin {
     public static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
     @Resource
-    protected ChartHandlerManager chartHandlerManager;
-    @Resource
     protected DatasetTableFieldManage datasetTableFieldManage;
-    @Resource
-    protected ChartViewManege chartViewManege;
     @Resource
     protected ChartFilterTreeService chartFilterTreeService;
     @Getter
@@ -71,11 +66,6 @@ public class DefaultChartHandler extends AbstractChartPlugin {
     private String type = "*";
     @Autowired(required = false)
     public PluginManageApi pluginManage;
-
-    @PostConstruct
-    public void init() {
-        chartHandlerManager.registerChartHandler(this.getRender(), this.getType(), this);
-    }
 
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {

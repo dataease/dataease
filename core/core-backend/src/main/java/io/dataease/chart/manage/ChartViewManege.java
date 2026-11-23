@@ -76,6 +76,8 @@ public class ChartViewManege {
     @Resource
     private ChartDataManage chartDataManage;
     @Resource
+    private ChartViewQueryManage chartViewQueryManage;
+    @Resource
     private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
     @Resource
     private CoreDatasetGroupRepository coreDatasetGroupRepository;
@@ -94,20 +96,7 @@ public class ChartViewManege {
 
     @Transactional
     public ChartViewDTO save(ChartViewDTO chartViewDTO) throws Exception {
-        if (chartViewDTO.getTitle().length() > 100) {
-            DEException.throwException(Translator.get("i18n_name_limit_100"));
-        }
-        Long id = chartViewDTO.getId();
-        if (id == null) {
-            DEException.throwException(Translator.get("i18n_no_id"));
-        }
-        SnapshotCoreChartView coreChartView = snapshotCoreChartViewRepository.findById(id).orElse(null);
-        SnapshotCoreChartView record = transDTO2Record(chartViewDTO);
-        if (ObjectUtils.isEmpty(coreChartView)) {
-            snapshotCoreChartViewRepository.deleteById(record.getId());
-        }
-        snapshotCoreChartViewRepository.saveAndFlush(record);
-        return chartViewDTO;
+        return chartViewQueryManage.save(chartViewDTO);
     }
 
     public void delete(Long id) {
@@ -159,29 +148,7 @@ public class ChartViewManege {
     }
 
     public void checkLinkChart(ChartViewDTO view) {
-        Long resourceId = view.getSceneId();
-        Long viewId = view.getId();
-        Long tableId = view.getTableId();
-
-        String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
-        if (StringUtils.isBlank(linkToken)) {
-            return;
-        }
-
-        DecodedJWT jwt = JWT.decode(linkToken);
-        Long tokenResourceId = jwt.getClaim("resourceId").asLong();
-        if (!tokenResourceId.equals(resourceId)) {
-            DEException.throwException("超出分享链接权限");
-        }
-
-        CoreChartView chartView = coreChartViewRepository.findById(viewId).orElse(null);
-        if (chartView == null) {
-            DEException.throwException(Translator.get("i18n_chart_delete"));
-        }
-
-        if (!chartView.getTableId().equals(tableId)) {
-            DEException.throwException("超出分享链接权限");
-        }
+        chartViewQueryManage.checkLinkChart(view);
     }
 
     /**
@@ -283,79 +250,7 @@ public class ChartViewManege {
     }
 
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId, ChartViewDTO chartViewDTO) {
-        // 历史实例引用的数据集已删除时，不生成孤立的系统记录数字段。
-        if (!coreDatasetGroupRepository.existsById(id)) {
-            return Map.of("dimensionList", List.of(), "quotaList", List.of());
-        }
-        TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
-        };
-        TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
-        };
-        Specification<CoreDatasetTableField> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("datasetGroupId"), id));
-            predicates.add(cb.isTrue(root.get("checked")));
-            predicates.add(cb.isNull(root.get("chartId")));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-        List<CoreDatasetTableField> fields = coreDatasetTableFieldRepository.findAll(spec);
-        List<DatasetTableFieldDTO> collect = fields.stream().map(ele -> {
-            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-            BeanUtils.copyBean(dto, ele);
-            dto.setParams(JsonUtil.parseList(ele.getParams(), typeToken));
-            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
-            return dto;
-        }).collect(Collectors.toList());
-        // 获取图表计算字段
-        List<CoreDatasetTableField> chartFields = new ArrayList<>();
-        if (chartId != null && chartId > 0) {
-            chartFields = coreDatasetTableFieldRepository.findByChartId(chartId);
-        }
-        chartFields.stream().filter(ele -> ele.getDatasetGroupId() == null
-                || Objects.equals(ele.getDatasetGroupId(), id)).forEach(ele -> {
-            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-            BeanUtils.copyBean(dto, ele);
-            dto.setParams(JsonUtil.parseList(ele.getParams(), typeToken));
-            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
-            collect.add(dto);
-        });
-        // 原字段和当前数据集副本一起过滤，副本才能继承来源字段的权限与脱敏。
-        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        List<DatasetTableFieldDTO> datasetTableFieldDTOS = permissionManage.filterColumnPermissions(collect, desensitizationList, id, null);
-        datasetTableFieldDTOS.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
-        int countFieldIndex = (int) datasetTableFieldDTOS.stream().filter(ele -> ele.getChartId() == null).count();
-        datasetTableFieldDTOS.add(countFieldIndex, createCountField(id));
-        List<ChartViewFieldDTO> list = transFieldDTO(datasetTableFieldDTOS);
-
-        // 获取list中的聚合函数，将字段的summary设置成空
-        SQLObj tableObj = new SQLObj();
-        tableObj.setTableAlias("");
-
-        for (ChartViewFieldDTO ele : list) {
-            if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                List<DatasetTableFieldDTO> f = list.stream().map(e -> {
-                    DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-                    BeanUtils.copyBean(dto, e);
-                    return dto;
-                }).collect(Collectors.toList());
-                String originField = Utils.calcFieldRegex(ele, tableObj, f, true, null, Utils.mergeParam(Utils.getParams(f), null), pluginManage);
-                for (String func : FunctionConstant.AGG_FUNC) {
-                    if (Utils.matchFunction(func, originField)) {
-                        ele.setSummary("");
-                        ele.setAgg(true);
-                        break;
-                    }
-                }
-            }
-        }
-
-        List<ChartViewFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
-        List<ChartViewFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
-
-        Map<String, List<ChartViewFieldDTO>> map = new LinkedHashMap<>();
-        map.put("dimensionList", dimensionList);
-        map.put("quotaList", quotaList);
-        return map;
+        return chartViewQueryManage.listByDQ(id, chartId, chartViewDTO);
     }
 
     public void copyField(Long id, Long chartId) {

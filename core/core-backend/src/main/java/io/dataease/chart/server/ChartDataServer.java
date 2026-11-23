@@ -16,6 +16,7 @@ import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
 import io.dataease.exportCenter.manage.ExportCenterManage;
+import io.dataease.exportCenter.manage.ExportContentService;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.*;
@@ -74,7 +75,7 @@ public class ChartDataServer implements ChartDataApi {
     @Resource
     private PermissionManage permissionManage;
     @Resource
-    private DatasetFieldServer datasetFieldServer;
+    private ExportContentService exportContentService;
 
     @Resource(name = "f2CLicLimitedManage")
     private F2CLicLimitedManage f2CLicLimitedManage;
@@ -117,52 +118,7 @@ public class ChartDataServer implements ChartDataApi {
     }
 
     public ChartViewDTO findExcelData(ChartExcelRequest request) {
-        ChartViewDTO chartViewInfo = new ChartViewDTO();
-        try {
-            ChartViewDTO viewDTO = request.getViewInfo();
-            viewDTO.setIsExcelExport(true);
-            String[] dsHeader = null;
-            Integer[] dsTypes = null;
-            //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
-            if ("dataset".equals(request.getDownloadType())) {
-                viewDTO.setExportDatasetOriginData(true);
-                viewDTO.setResultMode(ChartConstants.VIEW_RESULT_MODE.ALL);
-                viewDTO.setType("table-info");
-                viewDTO.setRender("antv");
-                List<DatasetTableFieldDTO> sourceFields = datasetFieldServer.listByDatasetGroup(viewDTO.getTableId());
-                List<String> fileNames = permissionManage.filterColumnPermissions(sourceFields, new HashMap<>(), viewDTO.getTableId(), null).stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
-                sourceFields = sourceFields.stream().filter(datasetTableFieldDTO -> fileNames.contains(datasetTableFieldDTO.getDataeaseName())).collect(Collectors.toList());
-                dsHeader = sourceFields.stream().map(DatasetTableFieldDTO::getName).toArray(String[]::new);
-                dsTypes = sourceFields.stream().map(DatasetTableFieldDTO::getDeType).toArray(Integer[]::new);
-                TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>() {
-                };
-                viewDTO.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(), listTypeReference));
-                viewDTO.getXAxis().forEach(x -> {
-                    if (x.getOrderChecked() != null && x.getOrderChecked()) {
-                        x.setSort("asc");
-                    }
-                });
-            }
-            viewDTO.setResultCount(getExcelExportLimit(request.getDownloadType()));
-            if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
-                chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
-            } else {
-                // 要走明细表的逻辑
-                viewDTO.setIsPlugin(false);
-                chartViewInfo = chartDataManage.calcData(viewDTO);
-            }
-            List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
-            if ("dataset".equals(request.getDownloadType())) {
-                request.setHeader(dsHeader);
-                request.setExcelTypes(dsTypes);
-            }
-            viewDTO.setData(chartViewInfo.getData());
-            request.setDetails(tableRow);
-            request.setData(chartViewInfo.getData());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return chartViewInfo;
+        return exportContentService.findExcelData(request);
     }
 
     private int getExcelExportLimit(String downloadType) {

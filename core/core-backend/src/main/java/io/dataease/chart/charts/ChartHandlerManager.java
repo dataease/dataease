@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ChartHandlerManager {
     @Lazy
-    @Resource
+    @Resource(name = "defaultChartHandler")
     private DefaultChartHandler defaultChartHandler;
     private static final ConcurrentHashMap<String, AbstractChartPlugin> CHART_HANDLER_MAP = new ConcurrentHashMap<>();
 

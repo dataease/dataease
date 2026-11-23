@@ -2,6 +2,7 @@ package io.dataease.chart.charts.impl.map;
 
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.GroupChartHandler;
+import io.dataease.chart.manage.ChartViewQueryManage;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.engine.sql.SQLProvider;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 public class SymbolicMapHandler extends GroupChartHandler {
     @Resource
     private DatasetDataManage datasetDataManage;
+    @Resource
+    private ChartViewQueryManage chartViewQueryManage;
 
     @Getter
     private String type = "symbolic-map";
@@ -65,7 +68,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-        List<ChartViewFieldDTO> countField = chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId())));
+        List<ChartViewFieldDTO> countField = chartViewQueryManage.transFieldDTO(Collections.singletonList(chartViewQueryManage.createCountField(view.getTableId())));
         List<DatasetTableFieldDTO> datasetTableFieldDTOList = FieldUtil.transFields(allFields);
         SQLMeta sqlMeta1 = new SQLMeta();
         BeanUtils.copyBean(sqlMeta1, sqlMeta);

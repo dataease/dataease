@@ -4,7 +4,7 @@ import io.dataease.api.system.request.OnlineMapEditor;
 import io.dataease.api.system.request.SQLBotConfigCreator;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
-import io.dataease.datasource.server.DatasourceServer;
+import io.dataease.datasource.manage.DatasourceScheduleManage;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.font.manage.FontSettingsManage;
@@ -70,7 +70,7 @@ public class SysParameterManage {
     private CoreSysSettingRepository coreSysSettingRepository;
 
     @Resource
-    private DatasourceServer datasourceServer;
+    private DatasourceScheduleManage datasourceScheduleManage;
 
     public String singleVal(String key) {
         Specification<CoreSysSetting> spec = (root, query, cb) -> cb.equal(root.get("pkey"), key);
@@ -349,7 +349,7 @@ public class SysParameterManage {
                 coreSysSettingRepository.flush();
             }
         }
-        datasourceServer.addJob(sysSettings);
+        datasourceScheduleManage.addJob(sysSettings);
     }
 
 

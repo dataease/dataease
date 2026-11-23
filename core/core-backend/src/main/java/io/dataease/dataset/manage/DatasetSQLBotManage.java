@@ -20,7 +20,7 @@ import io.dataease.dao.auto.entity.*;
 import io.dataease.dataset.dao.ext.mapper.DataSetAssistantMapper;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.manage.DataSourceManage;
-import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.manage.EngineConfigManage;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
@@ -70,7 +70,7 @@ public class DatasetSQLBotManage {
     private DataSetAssistantMapper dataSetAssistantMapper;
 
     @Resource
-    private EngineManage engineManage;
+    private EngineConfigManage engineConfigManage;
 
     @Resource
     private Environment environment;
@@ -114,7 +114,7 @@ public class DatasetSQLBotManage {
         if (deEngine == null) {
             synchronized (this) {
                 if (deEngine == null) {
-                    deEngine = engineManage.getDeEngine();
+                    deEngine = engineConfigManage.getDeEngine();
                 }
             }
         }
@@ -613,7 +613,7 @@ public class DatasetSQLBotManage {
                 CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dsId);
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
-                    coreDatasource = engineManage.getDeEngine();
+                    coreDatasource = engineConfigManage.getDeEngine();
                 }
                 if (StringUtils.isNotEmpty(coreDatasource.getStatus()) && !"Error".equalsIgnoreCase(coreDatasource.getStatus())) {
                     BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);

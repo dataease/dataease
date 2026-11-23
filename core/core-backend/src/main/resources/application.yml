@@ -19,8 +19,6 @@ spring:
   messages:
     encoding: UTF-8
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  main:
-    allow-circular-references: true
   cache:
     type: jcache
     jcache:

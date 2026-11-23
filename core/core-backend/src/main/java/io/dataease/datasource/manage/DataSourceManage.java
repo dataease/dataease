@@ -54,7 +54,7 @@ public class DataSourceManage {
     private CoreOptRecentManage coreOptRecentManage;
 
     @Resource
-    private EngineManage engineManage;
+    private EngineConfigManage engineConfigManage;
 
     @Autowired(required = false)
     private PluginManageApi pluginManage;
@@ -217,7 +217,7 @@ public class DataSourceManage {
     public CoreDatasource getCoreDatasource(Long id) {
         CoreDatasource coreDatasource = new CoreDatasource();
         if (id == -1L) {
-            coreDatasource = engineManage.getDeEngine();
+            coreDatasource = engineConfigManage.getDeEngine();
         } else {
             coreDatasource = coreDatasourceRepository.findById(id).orElse(null);
         }

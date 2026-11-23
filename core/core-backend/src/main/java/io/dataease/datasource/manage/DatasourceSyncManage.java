@@ -43,13 +43,13 @@ public class DatasourceSyncManage {
     @Autowired
     private CoreDatasourceRepository coreDatasourceRepository;
     @Resource
-    private EngineManage engineManage;
+    private EngineConfigManage engineConfigManage;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
     private ScheduleManager scheduleManager;
     @Resource
-    private DatasourceServer datasourceServer;
+    private DatasourceInvokeManage datasourceInvokeManage;
 
 
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
@@ -141,11 +141,11 @@ public class DatasourceSyncManage {
     public void extractedData(Long taskId, CoreDatasource coreDatasource, DatasourceServer.UpdateType updateType, String scheduleType) {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
-        List<DatasetTableDTO> tables = (List<DatasetTableDTO>) datasourceServer.invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
+        List<DatasetTableDTO> tables = (List<DatasetTableDTO>) datasourceInvokeManage.invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
         for (DatasetTableDTO api : tables) {
             CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, api.getTableName(), scheduleType);
             datasourceRequest.setTable(api.getTableName());
-            List<TableField> tableFields = (List<TableField>) datasourceServer.invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
+            List<TableField> tableFields = (List<TableField>) datasourceInvokeManage.invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
             try {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                 createEngineTable(datasourceRequest.getTable(), tableFields);
@@ -226,11 +226,11 @@ public class DatasourceSyncManage {
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
-        List<DatasetTableDTO> tables = (List<DatasetTableDTO>) datasourceServer.invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
+        List<DatasetTableDTO> tables = (List<DatasetTableDTO>) datasourceInvokeManage.invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
         for (DatasetTableDTO api : tables) {
             if (api.getTableName().equalsIgnoreCase(tableName)) {
                 datasourceRequest.setTable(api.getTableName());
-                List<TableField> tableFields = (List<TableField>) datasourceServer.invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
+                List<TableField> tableFields = (List<TableField>) datasourceInvokeManage.invokeMethod(coreDatasource.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest);
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     createEngineTable(datasourceRequest.getTable(), tableFields);
@@ -262,9 +262,9 @@ public class DatasourceSyncManage {
     }
 
     private void extractApiData(DatasourceRequest request, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
-        Map<String, Object> result = (Map<String, Object>) datasourceServer.invokeMethod(request.getDatasource().getType(), "fetchApiResultField", DatasourceRequest.class, request);
+        Map<String, Object> result = (Map<String, Object>) datasourceInvokeManage.invokeMethod(request.getDatasource().getType(), "fetchApiResultField", DatasourceRequest.class, request);
         List<String[]> dataList = (List<String[]>) result.get("dataList");
-        CoreDeEngine engine = engineManage.info();
+        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO coreDatasource = new DatasourceDTO();
@@ -292,7 +292,7 @@ public class DatasourceSyncManage {
     }
 
     private void extractExcelData(DatasourceRequest request, DatasourceServer.UpdateType extractType, List<TableField> tableFields) throws Exception {
-        CoreDeEngine engine = engineManage.info();
+        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO coreDatasource = new DatasourceDTO();
@@ -332,7 +332,7 @@ public class DatasourceSyncManage {
     }
 
     private void replaceTable(String tableName) throws Exception {
-        CoreDeEngine engine = engineManage.info();
+        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO coreDatasource = new DatasourceDTO();
@@ -349,7 +349,7 @@ public class DatasourceSyncManage {
     }
 
     public void createEngineTable(String tableName, List<TableField> tableFields) throws Exception {
-        CoreDeEngine engine = engineManage.info();
+        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO coreDatasource = new DatasourceDTO();
@@ -369,7 +369,7 @@ public class DatasourceSyncManage {
     }
 
     public void dropEngineTable(String tableName) throws Exception {
-        CoreDeEngine engine = engineManage.info();
+        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO coreDatasource = new DatasourceDTO();

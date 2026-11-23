@@ -1,6 +1,6 @@
 package io.dataease.listener;
 
-import io.dataease.dataset.manage.DatasetSQLManage;
+import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
 import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
 import jakarta.annotation.Resource;
@@ -25,7 +25,7 @@ public class DatasetCrossListener implements ApplicationListener<ApplicationRead
     @Resource
     private CoreSysStartupJobRepository coreSysStartupJobRepository;
     @Resource
-    private DatasetSQLManage datasetSQLManage;
+    private DatasetGroupManage datasetGroupManage;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -35,7 +35,7 @@ public class DatasetCrossListener implements ApplicationListener<ApplicationRead
         if (ObjectUtils.isNotEmpty(sysStartupJob) && StringUtils.equalsIgnoreCase(sysStartupJob.getStatus(), "ready")) {
             logger.info("====dataset cross listener [doing]====");
 
-            datasetSQLManage.datasetCrossDefault();
+            datasetGroupManage.datasetCrossDefault();
 
             sysStartupJob.setStatus("done");
             coreSysStartupJobRepository.saveAndFlush(sysStartupJob);

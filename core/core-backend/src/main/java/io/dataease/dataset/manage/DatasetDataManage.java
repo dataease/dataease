@@ -23,7 +23,7 @@ import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.DataSourceManage;
-import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.manage.EngineConfigManage;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
@@ -80,9 +80,9 @@ public class DatasetDataManage {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
-    private EngineManage engineManage;
+    private EngineConfigManage engineConfigManage;
     @Resource
-    private DatasetGroupManage datasetGroupManage;
+    private DatasetQueryManage datasetQueryManage;
     @Resource
     private PermissionManage permissionManage;
     @Resource
@@ -119,7 +119,7 @@ public class DatasetDataManage {
             CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
-                coreDatasource = engineManage.getDeEngine();
+                coreDatasource = engineConfigManage.getDeEngine();
             }
             if (StringUtils.isNotEmpty(coreDatasource.getStatus()) && "Error".equalsIgnoreCase(coreDatasource.getStatus())) {
                 DEException.throwException(Translator.get("i18n_invalid_ds"));
@@ -189,7 +189,7 @@ public class DatasetDataManage {
             // check table name
             datasetCacheManage.validateTable(datasetTableDTO.getDatasourceId(), tableInfoDTO.getTable());
             // excel,api
-            CoreDatasource coreDatasource = engineManage.getDeEngine();
+            CoreDatasource coreDatasource = engineConfigManage.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -346,7 +346,7 @@ public class DatasetDataManage {
     }
 
     public Long getDatasetTotal(Long datasetGroupId) throws Exception {
-        DatasetGroupInfoDTO dto = datasetGroupManage.getForCount(datasetGroupId);
+        DatasetGroupInfoDTO dto = datasetQueryManage.getForCount(datasetGroupId);
         if (ObjectUtils.isEmpty(dto)) return 0L;
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
             return getDatasetTotal(dto, null, new ChartExtRequest());
@@ -356,7 +356,7 @@ public class DatasetDataManage {
 
     public Long getDatasetCountWithWhere(Long datasetGroupId) {
         try {
-            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getForCount(datasetGroupId);
+            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetQueryManage.getForCount(datasetGroupId);
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
             String sql = (String) sqlMap.get("sql");
 
@@ -494,7 +494,7 @@ public class DatasetDataManage {
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (DatasourceConfiguration.usesDeEngine(coreDatasource.getType())) {
-            BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
+            BeanUtils.copyBean(datasourceSchemaDTO, engineConfigManage.getDeEngine());
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         }
@@ -772,7 +772,7 @@ public class DatasetDataManage {
             if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             }
-            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
+            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetQueryManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
             String sql = (String) sqlMap.get("sql");
@@ -940,7 +940,7 @@ public class DatasetDataManage {
             if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             }
-            datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
+            datasetGroupInfoDTO = datasetQueryManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
             sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
             String sql = (String) sqlMap.get("sql");
@@ -989,7 +989,7 @@ public class DatasetDataManage {
                 }
 
                 boolean hasParameters = false;
-                List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Arrays.asList(datasetGroupInfoDTO.getId()));
+                List<SqlVariableDetails> sqlVariables = datasetQueryManage.getSqlParams(Arrays.asList(datasetGroupInfoDTO.getId()));
                 if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(sqlVariables)) {
                     for (SqlVariableDetails parameter : Optional.ofNullable(filterDTO.getParameters()).orElse(new ArrayList<>())) {
                         String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
@@ -1172,7 +1172,7 @@ public class DatasetDataManage {
         if (field.getChartId() != null) {
             allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
         }
-        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
+        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetQueryManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
         String sql = (String) sqlMap.get("sql");

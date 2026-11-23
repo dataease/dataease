@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl.bar;
 
+import io.dataease.chart.charts.ChartHandlerRegistrar;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
@@ -20,9 +21,8 @@ public class StackGroupBarHandler extends BarHandler {
     @Getter
     private String type = "bar-group-stack";
 
-    @Override
     public void init() {
-        chartHandlerManager.registerChartHandler(this.getRender(), this.getType(), this);
+        ChartHandlerRegistrar.register(this.getRender(), this.getType(), this);
     }
 
     @Override

@@ -117,7 +117,7 @@ public class ExportCenterDownLoadManage {
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
     @Resource
-    private ChartDataServer chartDataServer;
+    private ExportContentService exportContentService;
     @Resource
     private VisualizationWatermarkRepository watermarkRepository;
     @Resource
@@ -596,11 +596,11 @@ public class ExportCenterDownLoadManage {
                     }
 
                     request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
-                    ChartViewDTO chartViewDTO = chartDataServer.findExcelData(request);
+                    ChartViewDTO chartViewDTO = exportContentService.findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
                         request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        ChartViewDTO pageDto = chartDataServer.findExcelData(request);
+                        ChartViewDTO pageDto = exportContentService.findExcelData(request);
                         details.addAll(request.getDetails());
 
                         if (summaryEnabled) {
@@ -667,7 +667,7 @@ public class ExportCenterDownLoadManage {
     }
 
     private void downloadNotTableInfoData(ChartExcelRequest request, Workbook wb) {
-        chartDataServer.findExcelData(request);
+        exportContentService.findExcelData(request);
         //给单元格设置样式
         CellStyle cellStyle = wb.createCellStyle();
         Font font = wb.createFont();

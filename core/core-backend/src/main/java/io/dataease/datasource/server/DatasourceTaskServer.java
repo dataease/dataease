@@ -9,6 +9,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskLogRepositor
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceTaskRepository;
 import io.dataease.datasource.dao.auto.repository.QrtzTriggersRepository;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
+import io.dataease.datasource.manage.DatasourceScheduleManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.qrtz.dao.auto.repo.entity.QrtzTriggers;
 import io.dataease.utils.IDUtils;
@@ -36,7 +37,7 @@ public class DatasourceTaskServer {
     @Resource
     private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
     @Resource
-    private DatasourceSyncManage datasourceSyncManage;
+    private DatasourceScheduleManage datasourceScheduleManage;
 
 
     public CoreDatasourceTask selectById(Long taskId) {
@@ -73,7 +74,7 @@ public class DatasourceTaskServer {
     public void deleteByDSId(Long dsId) {
         List<CoreDatasourceTask> coreDatasourceTasks = coreDatasourceTaskRepository.findByDsId(dsId);
         if (!CollectionUtils.isEmpty(coreDatasourceTasks)) {
-            datasourceSyncManage.deleteSchedule(coreDatasourceTasks.get(0));
+            datasourceScheduleManage.deleteSchedule(coreDatasourceTasks.get(0));
         }
         coreDatasourceTaskRepository.deleteByDsId(dsId);
     }

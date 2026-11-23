@@ -34,7 +34,11 @@ import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatabaseTimeManage;
 import io.dataease.datasource.manage.DatasourceMetadataAccess;
 import io.dataease.datasource.manage.DatasourceSyncManage;
+import io.dataease.datasource.manage.EngineConfigManage;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.manage.DatasourceScheduleManage;
+import io.dataease.datasource.manage.DatasourceInvokeManage;
+import io.dataease.datasource.manage.DatasetTableQueryManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.provider.ExcelFileGuard;
@@ -58,7 +62,6 @@ import io.dataease.extensions.datasource.vo.Configuration;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.i18n.Translator;
-import io.dataease.job.schedule.CheckDsStatusJob;
 import io.dataease.job.schedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
@@ -79,8 +82,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
-import org.quartz.JobKey;
-import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -115,6 +116,8 @@ public class DatasourceServer implements DatasourceApi {
 
     private static final Pattern ORACLE_RECYCLE_BIN_TABLE_PATTERN = Pattern.compile("^BIN\\$.*\\$[0-9]+$", Pattern.CASE_INSENSITIVE);
     @Resource
+    private EngineConfigManage engineConfigManage;
+    @Resource
     private EngineManage engineManage;
     @Resource
     private DatasourceMetadataAccess datasourceMetadataAccess;
@@ -136,7 +139,11 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DatasetDataManage datasetDataManage;
     @Resource
-    private ScheduleManager scheduleManager;
+    private DatasourceScheduleManage datasourceScheduleManage;
+    @Resource
+    private DatasourceInvokeManage datasourceInvokeManage;
+    @Resource
+    private DatasetTableQueryManage datasetTableQueryManage;
     @Resource
     private CoreUserManage coreUserManage;
     @Resource
@@ -851,25 +858,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void addJob(List<CoreSysSetting> sysSettings) {
-        String type = "minute";
-        String interval = "30";
-        for (CoreSysSetting sysSetting : sysSettings) {
-            if (sysSetting.getPkey().equalsIgnoreCase("basic.dsExecuteTime")) {
-                type = sysSetting.getPval();
-            }
-            if (sysSetting.getPkey().equalsIgnoreCase("basic.dsIntervalTime")) {
-                interval = sysSetting.getPval();
-            }
-        }
-        String cron = "";
-        switch (type) {
-            case "hour":
-                cron = "0 0 0/hour *  * ? *".replace("hour", interval.toString());
-                break;
-            default:
-                cron = "0 0/minute * *  * ? *".replace("minute", interval.toString());
-        }
-        scheduleManager.addOrUpdateCronJob(new JobKey("Datasource", "check_status"), new TriggerKey("Datasource", "check_status"), CheckDsStatusJob.class, cron, new Date(System.currentTimeMillis()), null, new JobDataMap());
+        datasourceScheduleManage.addJob(sysSettings);
     }
 
     @Override
@@ -971,9 +960,9 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains("Excel")) {
-            datasourceRequest.setDatasource(transDTO(engineManage.getDeEngine()));
+            datasourceRequest.setDatasource(transDTO(engineConfigManage.getDeEngine()));
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-            BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
+            BeanUtils.copyBean(datasourceSchemaDTO, engineConfigManage.getDeEngine());
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
@@ -1433,7 +1422,7 @@ public class DatasourceServer implements DatasourceApi {
             datasetCacheManage.validateTable(id, tableName);
         }
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
+        BeanUtils.copyBean(datasourceSchemaDTO, engineConfigManage.getDeEngine());
 
         Configuration configuration = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Configuration.class);
         String schema = StringUtils.isNotEmpty(configuration.getSchema()) ? configuration.getSchema() + "." : "";
@@ -1872,27 +1861,6 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public Object invokeMethod(String dsType, String methodName, Class<?> classes, Object object) {
-        Object resObj = null;
-        try {
-            Method method = getMethod(dsType, methodName, classes);
-            resObj = method.invoke(null, object);
-        } catch (Exception e) {
-            DEException.throwException(msg(e));
-        }
-        return resObj;
-    }
-
-    private String msg(Throwable e) {
-        Throwable exception = e;
-        while (true) {
-            if (exception.getCause() == null) {
-                return exception.getMessage();
-            }
-            if (exception instanceof DEException && (!(exception.getCause() instanceof DEException) && !(exception.getCause() instanceof InvocationTargetException))) {
-                return exception.getMessage();
-            }
-            exception = exception.getCause();
-
-        }
+        return datasourceInvokeManage.invokeMethod(dsType, methodName, classes, object);
     }
 }
