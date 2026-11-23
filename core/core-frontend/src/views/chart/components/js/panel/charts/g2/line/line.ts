@@ -798,7 +798,10 @@ export class Line extends G2ChartView {
               if (showMetric && item.value !== null && item.value !== undefined) {
                 const formatter =
                   formatterMap[fieldId] ?? yAxis.find(axis => axis.id === fieldId) ?? yAxis[0]
-                const value = valueFormatter(item.value, formatter.formatterCfg)
+                const value = valueFormatter(
+                  item.value,
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const color = hasSubCategory ? 'transparent' : item.color
                 metricItems.push(renderItem(getFieldDisplayName(formatter), value, color))
               }
@@ -816,7 +819,10 @@ export class Line extends G2ChartView {
                 dynamicFieldIds.add(dynamicItem.fieldId)
                 let value = ''
                 if (dynamicItem.value !== null && dynamicItem.value !== undefined) {
-                  value = valueFormatter(parseFloat(dynamicItem.value), formatter.formatterCfg)
+                  value = valueFormatter(
+                    parseFloat(dynamicItem.value),
+                    formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                  )
                 }
                 const color = hasSubCategory ? 'transparent' : 'grey'
                 const html = renderItem(getFieldDisplayName(formatter), value, color)

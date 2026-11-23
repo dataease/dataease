@@ -336,7 +336,10 @@ export class Scatter extends G2ChartView {
                 seriesId = `${head.quotaList[1].id}-extBubble`
               }
               const formatter = formatterMap[seriesId] ?? yAxis[0]
-              const value = valueFormatter(head[field], formatter.formatterCfg)
+              const value = valueFormatter(
+                head[field],
+                formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+              )
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -345,7 +348,10 @@ export class Scatter extends G2ChartView {
             head.dynamicTooltipValue?.forEach(item => {
               const formatter = formatterMap[item.fieldId]
               if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value = valueFormatter(
+                  parseFloat(item.value),
+                  formatter.formatterCfg ?? tooltipAttr.tooltipFormatter
+                )
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName

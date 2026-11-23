@@ -495,7 +495,9 @@ export class GroupLineMix extends G2ChartView {
             const result = []
             items.forEach(item => {
               const formatterCfg =
-                formatterMap[quotaIdOf(item)]?.formatterCfg ?? yAxis[0].formatterCfg
+                formatterMap[quotaIdOf(item)]?.formatterCfg ??
+                yAxis[0].formatterCfg ??
+                tooltip.tooltipFormatter
               const value = valueFormatter(item.value, formatterCfg)
               const name = item.category
               const seriesKey = seriesTooltip.keyOf(item)
