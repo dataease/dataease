@@ -3,7 +3,7 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/dataease/apisix:3.20.0-debian
     container_name: apisix
     environment:
-      - TZ=${DE_RESOLVED_TIMEZONE:?请通过 dectl start 初始化部署时区}
+      - TZ=Asia/Shanghai
     restart: always
     volumes:
       - ${DE_BASE}/dataease2.0/apisix/apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
