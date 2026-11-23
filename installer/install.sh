@@ -26,6 +26,7 @@ function prop {
 }
 
 function check_and_prepare_env_params() {
+   source "${CURRENT_DIR}/dataease/bin/timezone.sh" || exit 1
    source "${CURRENT_DIR}/dataease/bin/sync-auth.sh" || {
       echo "同步执行器鉴权组件加载失败，请重新解压完整安装包并检查 dataease/bin/sync-auth.sh 的读取权限后重试" >&2
       exit 1
@@ -75,6 +76,9 @@ function check_and_prepare_env_params() {
       log_content "全新安装"
    fi
    set +a
+
+   # 在停止旧服务前校验时区；systemd 启动时由 dectl 再次读取。
+   de_timezone_resolve || exit 1
 
    read available_disk <<< $(df -H --output=avail "${DE_BASE}" | tail -1)
    disk_num=${available_disk%[KMGTP]}
@@ -139,6 +143,7 @@ function prepare_de_run_base() {
 
    cd $DE_RUN_BASE
    env | grep DE_ >.env
+   de_timezone_save "${DE_RUN_BASE}/.env" || exit 1
 
    # 企业版只通过网关访问；容器网络内的 8100 仍供 APISIX 转发使用。
    if [[ $DE_INSTALL_MODE != "community" ]]; then
