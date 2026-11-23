@@ -29,7 +29,7 @@
           prop="fillType"
           :rules="[requiredRule]"
       >
-        <el-radio-group v-model="formState.fillType" @change="onFillTypeChange">
+        <el-radio-group v-model="formState.fillType">
           <el-radio :label="0">{{
               t("data_fill.form.commit_type_append")
             }}
@@ -47,7 +47,7 @@
           prop="reciVal"
           :rules="[reciValRule]"
       >
-        <reci-select ref="reciSelector" v-model="formState.reciVal" :resource-id="formId" :resource-flag="8" />
+        <reci-select v-model="formState.reciVal" :resource-id="formId" :resource-flag="8" />
       </el-form-item>
 
       <template v-else-if="formState.fillType === 1">
@@ -448,7 +448,7 @@ import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
 import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
 import icon_params_setting from '@/assets/svg/icon_params_setting.svg'
-import {computed, nextTick, onMounted, reactive, ref} from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import { ReciOption } from '../../../../system/report/form/formUtil'
 import {useI18n} from '@/hooks/web/useI18n'
 import {Icon} from '@/components/icon-custom'
@@ -477,7 +477,6 @@ const props = withDefaults(defineProps<{
 })
 
 const rowDataFormRef = ref()
-const reciSelector = ref()
 const allowEditDialogVisible = ref(false)
 const filterVisible = ref(false)
 const templateVisible = ref(false)
@@ -538,21 +537,6 @@ const templateSetting = ref([])
 
 
 // method area
-const setHeight = () => {
-  if(reciSelector?.value?.setHeight) {
-    reciSelector.value.setHeight()
-  }
-};
-
-function setOwnSelectHeight() {
-  setHeight()
-}
-
-function onFillTypeChange() {
-  nextTick(() => {
-    setOwnSelectHeight()
-  })
-}
 
 const getFormData = async () => {
   if (!validateCur()) {
@@ -1074,9 +1058,6 @@ defineExpose({
 });
 onMounted(() => {
   init()
-      .then(() => {
-        setOwnSelectHeight()
-      })
 });
 </script>
 
