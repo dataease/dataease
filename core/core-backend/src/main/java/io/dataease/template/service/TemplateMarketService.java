@@ -22,8 +22,8 @@ public class TemplateMarketService implements TemplateMarketApi {
     @Resource
     private TemplateCenterManage templateCenterManage;
     @Override
-    public MarketBaseResponse searchTemplate() {
-        return templateCenterManage.searchTemplate();
+    public MarketBaseResponse searchTemplate(boolean localOnly) {
+        return localOnly ? templateCenterManage.searchLocalTemplate() : templateCenterManage.searchTemplate();
     }
     @Override
     public MarketBaseResponse searchTemplateRecommend() {

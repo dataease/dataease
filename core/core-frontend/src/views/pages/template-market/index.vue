@@ -2,11 +2,10 @@
   <el-row
     class="template-outer-body"
     :class="{ 'template-outer-body-padding': outPaddingState }"
-    v-loading="state.loading"
     v-show="state.initReady"
   >
     <market-preview-v2
-      v-show="previewModel === 'marketPreview'"
+      v-if="previewModel === 'marketPreview'"
       :preview-id="state.templatePreviewId"
       :create-auth="createAuth"
       @closePreview="closePreview"
@@ -97,21 +96,20 @@
       </el-row>
       <el-row class="template-area">
         <el-scrollbar>
-          <div class="template-left skeleton-left" v-if="categoriesComputed.length === 0">
+          <div v-if="loadingTemplates" class="template-left skeleton-left">
             <div class="skeleton-item" v-for="index in Array(14).fill(1)" :key="index"></div>
           </div>
-          <div v-else-if="state.treeShow && categoriesComputed.length" class="template-left">
+          <div v-else-if="categoriesComputed.length" class="template-left">
             <el-tree
               menu
               class="custom-market-tree"
-              v-model="state.marketActiveTab"
               :data="categoriesComputed"
               :props="state.treeProps"
               node-key="label"
               default-expand-all
               highlight-current
-              :current-node-key="state.marketActiveTab"
-              @node-click="nodeClick"
+              :current-node-key="activeCategory?.label"
+              @node-click="category => (state.selectedCategory = category.label)"
             >
               <template #default="{ data }">
                 <span :title="data.label" class="ed-tree-node__label">{{ data.label }}</span>
@@ -121,20 +119,20 @@
         </el-scrollbar>
 
         <div
-          v-show="state.networkStatus && state.hasResult"
+          v-show="loadingTemplates || activeCategory"
           id="template-show-area"
           class="template-right"
           style="padding-top: 16px"
         >
-          <el-row v-if="state.marketActiveTab === null"
+          <el-row v-if="loadingTemplates"
             ><TemplateSkeleton :width="state.templateCurWidth"
           /></el-row>
-          <template v-else>
-            <el-row v-show="state.marketActiveTab !== t('work_branch.recommend')">
+          <template v-else-if="activeCategory">
+            <el-row v-if="activeCategory.value !== 'suggest'">
               <category-template-v2
                 :search-text="state.searchText"
-                :label="state.marketActiveTab"
-                :full-template-show-list="state.currentMarketTemplateShowList"
+                :label="activeCategory.label"
+                :full-template-show-list="visibleTemplates"
                 :template-span="state.templateSpan"
                 :base-url="state.baseUrl"
                 :template-cur-width="state.templateCurWidth"
@@ -144,20 +142,20 @@
                 @templatePreview="templatePreview"
               />
             </el-row>
-            <el-row v-show="state.marketActiveTab === t('work_branch.recommend')">
+            <el-row v-else>
               <el-row
                 style="display: inline; width: 100%; margin-bottom: 32px"
                 :style="{
-                  marginBottom: categoryItem.label !== t('work_branch.recent') ? '32px' : 0
+                  marginBottom: categoryItem.value !== 'recent' ? '32px' : 0
                 }"
-                v-for="(categoryItem, index) in categoriesComputed"
-                :key="index"
+                v-for="categoryItem in categoriesComputed"
+                :key="categoryItem.value"
               >
                 <category-template-v2
-                  v-if="categoryItem.label !== t('work_branch.recent')"
+                  v-if="categoryItem.value !== 'recent'"
                   :search-text="state.searchText"
                   :label="categoryItem.label"
-                  :full-template-show-list="state.currentMarketTemplateShowList"
+                  :full-template-show-list="visibleTemplates"
                   :template-span="state.templateSpan"
                   :base-url="state.baseUrl"
                   :template-cur-width="state.templateCurWidth"
@@ -170,7 +168,10 @@
             </el-row>
           </template>
         </div>
-        <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
+        <el-row
+          v-if="!loadingTemplates && !activeCategory && state.networkStatus"
+          class="template-empty"
+        >
           <div style="text-align: center">
             <Icon name="no_result"
               ><no_result style="margin-bottom: 16px; font-size: 75px" class="svg-icon"
@@ -179,7 +180,7 @@
             <span>{{ t('work_branch.relevant_templates_found') }}</span>
           </div>
         </el-row>
-        <el-row v-show="!state.networkStatus" class="template-empty">
+        <el-row v-if="!loadingTemplates && !state.networkStatus" class="template-empty">
           {{ t('visualization.market_network_tips', [state.baseUrl]) }}
         </el-row>
       </el-row>
@@ -195,7 +196,15 @@ import { searchMarket } from '@/api/templateMarket'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { nextTick, reactive, watch, onMounted, ref, computed, defineAsyncComponent } from 'vue'
+import {
+  nextTick,
+  reactive,
+  onMounted,
+  onBeforeUnmount,
+  ref,
+  computed,
+  defineAsyncComponent
+} from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import { useCache } from '@/hooks/web/useCache'
@@ -206,7 +215,6 @@ import TemplateSkeleton from '@/views/template-market/component/TemplateSkeleton
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
-import { getActiveCategories } from '@/utils/utils'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
@@ -216,7 +224,7 @@ const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 
-defineProps({
+const props = defineProps({
   isDialog: {
     type: Boolean,
     default: false
@@ -248,7 +256,6 @@ const state = reactive({
   templateType: 'all', // 模板类型 仪表板 数据大屏
   templateSourceType: 'all', // 模板来源 模板市场 模板管理
   templateClassifyType: 'all', // 模板分类 样式模板 应用模板
-  treeShow: true,
   templateClassifyOptions: [
     {
       value: 'all',
@@ -291,15 +298,15 @@ const state = reactive({
       label: t('work_branch.big_data_screen')
     }
   ],
-  loading: false,
-  hasResult: true,
+  loadingLocal: true,
+  loadingMarket: true,
   templateMiniWidth: 250,
   templateCurWidth: 310,
   templateSpan: '25%',
   previewVisible: false,
   templatePreviewId: '',
   marketTabs: [],
-  marketActiveTab: null,
+  selectedCategory: null,
   searchText: null,
   dvCreateForm: {
     resourceName: null,
@@ -321,7 +328,7 @@ const state = reactive({
   curTemplateShowFilter: [],
   curTemplateIndex: 0,
   curTemplate: null,
-  networkStatus: true,
+  networkStatus: false,
   rule: {
     name: [
       {
@@ -348,27 +355,40 @@ const createAuth = computed(() => {
   }
 })
 
+const visibleTemplates = computed(() => state.currentMarketTemplateShowList.filter(templateShow))
 const categoriesComputed = computed(() => {
-  let result
-  if (state.templateSourceType === 'all') {
-    result = state.marketTabs
-  } else {
-    result = state.marketTabs.filter(
-      category => category.source === 'public' || category.source === state.templateSourceType
-    )
-  }
-  return result
+  const labels = new Set(visibleTemplates.value.flatMap(template => template.categoryNames || []))
+  return state.marketTabs.filter(
+    category =>
+      labels.has(category.label) &&
+      (state.templateSourceType === 'all' ||
+        category.source === 'public' ||
+        category.source === state.templateSourceType)
+  )
 })
+const activeCategory = computed(() => {
+  const categories = categoriesComputed.value
+  return (
+    categories.find(category => category.label === state.selectedCategory) ||
+    categories.find(category => category.value === 'suggest') ||
+    categories.find(category => category.value !== 'recent') ||
+    categories[0]
+  )
+})
+const loadingTemplates = computed(
+  () =>
+    !activeCategory.value &&
+    (state.loadingLocal || (state.templateSourceType !== 'manage' && state.loadingMarket))
+)
 
 const curTemplateImg = computed(() => {
-  if (
-    state.curTemplate.thumbnail.indexOf('http') > -1 ||
-    state.curTemplate.thumbnail.indexOf('static-resource') > -1
-  ) {
-    return imgUrlTrans(state.curTemplate.thumbnail)
-  } else {
-    return imgUrlTrans(state.baseUrl + state.curTemplate.thumbnail)
-  }
+  const thumbnail = state.curTemplate?.thumbnail
+  if (!thumbnail) return undefined
+  return imgUrlTrans(
+    thumbnail.includes('http') || thumbnail.includes('static-resource')
+      ? thumbnail
+      : state.baseUrl + thumbnail
+  )
 })
 
 const outPaddingState = computed(() => {
@@ -381,84 +401,54 @@ const optInit = params => {
   state.templateType = params.templateType
   previewModel.value = 'full'
   state.pid = params.pid
+  initMarketTemplate()
   nextTick(() => {
     state.initReady = true
   })
-}
-watch(
-  () => state.searchText,
-  () => {
-    initTemplateShow()
-  }
-)
-
-watch(
-  () => state.templateType,
-  () => {
-    initTemplateShow()
-  }
-)
-
-watch(
-  () => state.templateSourceType,
-  () => {
-    state.treeShow = false
-    initTemplateShow()
-    nextTick(() => {
-      state.treeShow = true
-      initStyle()
-    })
-  }
-)
-watch(
-  () => state.templateClassifyType,
-  () => {
-    state.treeShow = false
-    initTemplateShow()
-    nextTick(() => {
-      state.treeShow = true
-      initStyle()
-    })
-  }
-)
-
-const nodeClick = data => {
-  state.marketActiveTab = data.label
-  initTemplateShow()
 }
 const closePreview = () => {
   previewModel.value = 'full'
 }
 
-const initMarketTemplate = async () => {
-  await searchMarket()
-    .then(rsp => {
-      state.baseUrl = rsp.data.baseUrl
-      state.currentMarketTemplateShowList = rsp.data.contents
-      initStyle()
-      initTemplateShow()
-      const activeCategories = getActiveCategories(state.currentMarketTemplateShowList)
-      state.marketTabs = rsp.data.categories.filter(category =>
-        activeCategories.has(category.label)
-      )
-      state.marketActiveTab = state.marketTabs[1].label
-    })
-    .catch(err => {
+let listRequestId = 0
+const initMarketTemplate = () => {
+  const requestId = ++listRequestId
+  state.loadingLocal = true
+  state.loadingMarket = true
+  state.networkStatus = false
+  state.currentMarketTemplateShowList = []
+  state.marketTabs = []
+  let marketLoaded = false
+  const load = async (localOnly: boolean) => {
+    try {
+      const { data } = await searchMarket(localOnly)
+      if (
+        requestId !== listRequestId ||
+        (localOnly && marketLoaded) ||
+        !Array.isArray(data?.contents) ||
+        !Array.isArray(data?.categories)
+      ) {
+        return
+      }
+      marketLoaded = !localOnly
+      state.networkStatus = true
+      state.baseUrl = data.baseUrl || state.baseUrl
+      state.currentMarketTemplateShowList = data.contents
+      state.marketTabs = data.categories
+    } catch (err) {
       console.error('searchMarket:', err)
-      state.networkStatus = false
-    })
-}
-
-const initStyle = () => {
-  nextTick(() => {
-    const tree = document.querySelector('.custom-market-tree')
-    // 创建横线元素
-    const line = document.createElement('hr')
-    line.classList.add('custom-line')
-
-    // 将横线元素插入到第一个选项后面
-    tree.firstElementChild.appendChild(line)
-  })
+    } finally {
+      if (requestId === listRequestId) {
+        if (localOnly) {
+          state.loadingLocal = false
+        } else {
+          state.loadingMarket = false
+        }
+      }
+    }
+  }
+  void load(true)
+  void load(false)
 }
 
 const preOne = () => {
@@ -502,7 +492,10 @@ const apply = template => {
     templateId: state.dvCreateForm.templateId
   }
   state.curApplyTemplate.recentUseTime = Date.now()
-  state.curApplyTemplate.categoryNames.push(t('work_branch.recent'))
+  const recentLabel = state.marketTabs.find(category => category.value === 'recent')?.label
+  if (recentLabel && !state.curApplyTemplate.categoryNames.includes(recentLabel)) {
+    state.curApplyTemplate.categoryNames.push(recentLabel)
+  }
   const baseUrl =
     (['dataV', 'SCREEN'].includes(state.dvCreateForm.nodeType)
       ? '#/dvCanvas?opt=create&createType=template'
@@ -544,19 +537,6 @@ const initOpenHandler = newWindow => {
   }
 }
 
-const initTemplateShow = () => {
-  let tempHasResult = false
-  state.currentMarketTemplateShowList.forEach(template => {
-    template.showFlag = templateShow(template)
-    if (template.showFlag) {
-      tempHasResult = true
-    }
-  })
-  if (state.currentMarketTemplateShowList.length > 0) {
-    state.hasResult = tempHasResult
-  }
-}
-
 const templateShow = templateItem => {
   let searchMarch = false
   let templateTypeMarch = false
@@ -590,20 +570,24 @@ const templatePreview = previewId => {
     previewModel.value = 'marketPreview'
   } else {
     state.curTemplateShowFilter =
-      state.marketActiveTab === t('work_branch.recommend')
-        ? state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
-        : state.currentMarketTemplateShowList.filter(
-            ele => ele.showFlag && ele.categoryNames?.includes(state.marketActiveTab)
+      activeCategory.value?.value === 'suggest'
+        ? visibleTemplates.value
+        : visibleTemplates.value.filter(ele =>
+            ele.categoryNames?.includes(activeCategory.value?.label)
           )
     state.curTemplateIndex = state.curTemplateShowFilter.findIndex(temp => temp.id === previewId)
-    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
-    previewModel.value = 'createPreview'
+    if (state.curTemplateIndex >= 0) {
+      state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+      previewModel.value = 'createPreview'
+    }
   }
 }
 
 onMounted(() => {
   previewInit()
-  initMarketTemplate()
+  if (!props.isDialog) {
+    initMarketTemplate()
+  }
   const erd = elementResizeDetectorMaker()
   const templateMainDom = document.getElementById('template-show-area')
   // 监听div变动事件
@@ -617,6 +601,10 @@ onMounted(() => {
       })
     })
   }
+})
+
+onBeforeUnmount(() => {
+  listRequestId++
 })
 
 const previewInit = () => {
@@ -806,6 +794,13 @@ defineExpose({
 }
 
 .custom-market-tree {
+  > :deep(.ed-tree-node:first-child:not(:last-child)::after) {
+    content: '';
+    display: block;
+    height: 1px;
+    margin: 4px 0 4px 24px;
+    background: rgba(31, 35, 41, 0.15);
+  }
   ::v-deep(.ed-tree-node__content) {
     .ed-tree-node__label {
       width: 100%;
@@ -814,15 +809,5 @@ defineExpose({
       text-overflow: ellipsis;
     }
   }
-}
-</style>
-
-<style lang="less">
-.custom-line {
-  margin: 4px 0;
-  background: rgba(31, 35, 41, 0.15);
-  border: 0;
-  height: 1px;
-  margin-left: 24px;
 }
 </style>
