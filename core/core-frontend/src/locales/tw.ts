@@ -2208,6 +2208,8 @@ export default {
     table_cell_show_vertical_border: '儲存格縱邊框線',
     table_col_freeze_tip: '凍結前n 列',
     table_row_freeze_tip: '凍結前n 行',
+    table_trailing_col_freeze_tip: '凍結後 n 列',
+    table_trailing_row_freeze_tip: '凍結後 n 行',
     table_freeze: '凍結',
     table_empty_font_color: '無數據提示',
     stripe: '斑馬紋',

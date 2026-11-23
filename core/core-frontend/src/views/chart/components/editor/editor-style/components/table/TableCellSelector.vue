@@ -161,6 +161,13 @@ const init = () => {
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
+const freezeFields = [
+  { field: 'tableColumnFreezeHead', label: 'chart.table_col_freeze_tip' },
+  { field: 'tableRowFreezeHead', label: 'chart.table_row_freeze_tip' },
+  { field: 'tableColumnFreezeTail', label: 'chart.table_trailing_col_freeze_tip' },
+  { field: 'tableRowFreezeTail', label: 'chart.table_trailing_row_freeze_tip' }
+] as const
+
 /**
  * 处理整数输入
  * @param e
@@ -549,17 +556,17 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-row :gutter="8" v-if="showProperty('tableFreeze')">
-      <el-col :span="12">
+      <el-col v-for="{ field, label } in freezeFields" :key="field" :span="12">
         <el-form-item
-          :label="t('chart.table_col_freeze_tip')"
+          :label="t(label)"
           class="form-item"
           :class="'form-item-' + themes"
-          v-if="showProperty('tableColumnFreezeHead')"
+          v-if="showProperty(field)"
         >
           <el-input-number
             :effect="themes"
             controls-position="right"
-            v-model="state.tableCellForm.tableColumnFreezeHead"
+            v-model="state.tableCellForm[field]"
             :disabled="
               (showProperty('mergeCells') && state.tableCellForm.mergeCells) ||
               !state.tableCellForm.tableFreeze
@@ -570,32 +577,7 @@ onMounted(() => {
             :precision="0"
             :value-on-clear="0"
             @beforeinput="handleIntegerInput"
-            @change="changeTableCell('tableColumnFreezeHead')"
-          />
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item
-          :label="t('chart.table_row_freeze_tip')"
-          class="form-item"
-          :class="'form-item-' + themes"
-          v-if="showProperty('tableRowFreezeHead')"
-        >
-          <el-input-number
-            :effect="themes"
-            controls-position="right"
-            v-model="state.tableCellForm.tableRowFreezeHead"
-            :disabled="
-              (showProperty('mergeCells') && state.tableCellForm.mergeCells) ||
-              !state.tableCellForm.tableFreeze
-            "
-            :min="0"
-            :max="100"
-            :step="1"
-            :precision="0"
-            :value-on-clear="0"
-            @beforeinput="handleIntegerInput"
-            @change="changeTableCell('tableRowFreezeHead')"
+            @change="changeTableCell(field)"
           />
         </el-form-item>
       </el-col>

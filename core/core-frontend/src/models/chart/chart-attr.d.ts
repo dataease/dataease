@@ -730,6 +730,8 @@ declare interface ChartTableCellAttr {
    * 冻结行
    */
   tableRowFreezeHead: number
+  tableColumnFreezeTail: number
+  tableRowFreezeTail: number
   /**
    * 合并单元格
    */
