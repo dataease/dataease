@@ -29,6 +29,11 @@ public interface CoreExportTaskRepository extends JpaRepository<CoreExportTask, 
         return findAll(spec);
     }
 
+    default List<CoreExportTask> findByExportStatusIn(List<String> statuses) {
+        Specification<CoreExportTask> spec = (root, query, cb) -> root.get("exportStatus").in(statuses);
+        return findAll(spec);
+    }
+
     @Transactional
     default void deleteByExportTimeLessThan(long threshold) {
         List<CoreExportTask> tasks = findByExportTimeLessThan(threshold);

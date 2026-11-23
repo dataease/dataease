@@ -78,7 +78,8 @@ public class ExportCenterManage implements BaseExportApi {
     @Autowired
     private CoreExportDownloadTaskRepository coreExportDownloadTaskRepository;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
-    private Map<String, Future> Running_Task = new HashMap<>();
+    @Resource
+    private ExportTaskExecutionService exportTaskExecutionService;
     @Autowired(required = false)
     private DataFillingApi dataFillingApi = null;
 
@@ -353,13 +354,12 @@ public class ExportCenterManage implements BaseExportApi {
             return;
         }
         String id = validateExportTaskId(exportTask.getId());
-        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Future> entry = iterator.next();
-            if (entry.getKey().equalsIgnoreCase(id)) {
-                entry.getValue().cancel(true);
-                iterator.remove();
-            }
+        boolean cancelled = exportTaskExecutionService.cancel(id);
+        if (cancelled) {
+            // 取消中：真实 Future 已收到中断，任务退出后再清理文件与记录。
+            exportTask.setExportStatus("IN_PROGRESS");
+            coreExportTaskRepository.saveAndFlush(exportTask);
+            return;
         }
         deleteExportTaskDirectory(resolveExportTaskDirectory(id));
         coreExportTaskRepository.deleteById(id);

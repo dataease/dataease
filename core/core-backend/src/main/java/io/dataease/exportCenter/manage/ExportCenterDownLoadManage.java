@@ -113,9 +113,8 @@ public class ExportCenterDownLoadManage {
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
-    private ThreadPoolExecutor exportThreadPool;
-    private int keepAliveSeconds = 600;
-    private Map<String, Future> Running_Task = new HashMap<>();
+    @Resource
+    private ExportTaskExecutionService exportTaskExecutionService;
     @Resource
     private ExportContentService exportContentService;
     @Resource
@@ -163,28 +162,20 @@ public class ExportCenterDownLoadManage {
         return logApi;
     }
 
-    @PostConstruct
-    public void init() {
-        exportThreadPool = new ThreadPoolExecutor(core, max, keepAliveSeconds, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(Math.max(1, queueSize)), new ThreadPoolExecutor.AbortPolicy());
-    }
-
     @Scheduled(fixedRate = 5000)
     public void checkRunningTask() {
-        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Future> entry = iterator.next();
-            if (entry.getValue().isDone()) {
-                iterator.remove();
-                try {
-                    CoreExportTask exportTask = coreExportTaskRepository.findById(entry.getKey()).orElse(null);
-                    ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
-                    BeanUtils.copyBean(exportTaskDTO, exportTask);
-                    setExportFromName(exportTaskDTO);
-                    WsMessage message = new WsMessage(exportTask.getUserId(), "/task-export-topic", exportTaskDTO);
-                    wsService.releaseMessage(message);
-                } catch (Exception e) {
+        for (String taskId : exportTaskExecutionService.drainCompleted()) {
+            try {
+                CoreExportTask exportTask = coreExportTaskRepository.findById(taskId).orElse(null);
+                if (exportTask == null) {
+                    continue;
                 }
+                ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
+                BeanUtils.copyBean(exportTaskDTO, exportTask);
+                setExportFromName(exportTaskDTO);
+                WsMessage message = new WsMessage(exportTask.getUserId(), "/task-export-topic", exportTaskDTO);
+                wsService.releaseMessage(message);
+            } catch (Exception ignore) {
             }
         }
     }
@@ -218,7 +209,7 @@ public class ExportCenterDownLoadManage {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
-        Future future = exportThreadPool.submit(() -> {
+        exportTaskExecutionService.submit(exportTarget.taskId(), () -> {
             try {
                 LocaleContextHolder.setLocale(parseLocale(request));
                 V3UserUtil.setUid(uid);
@@ -250,7 +241,6 @@ public class ExportCenterDownLoadManage {
                 V3UserUtil.clear();
             }
         });
-        Running_Task.put(exportTarget.taskId(), future);
     }
 
     public void startLogTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, Long userId, HashMap<String, Object> request) {
@@ -262,7 +252,7 @@ public class ExportCenterDownLoadManage {
         Object proxyObj = request.get("proxy");
         Long proxyOid = ObjectUtils.isNotEmpty(proxyObj) ? Long.parseLong(proxyObj.toString()) : null;
         final List<Long> scope = resolveLogScope(request);
-        Future future = exportThreadPool.submit(() -> {
+        exportTaskExecutionService.submit(exportTarget.taskId(), () -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             V3UserUtil.setUid(userId);
             if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -284,7 +274,6 @@ public class ExportCenterDownLoadManage {
                 V3UserUtil.clear();
             }
         });
-        Running_Task.put(exportTarget.taskId(), future);
     }
 
     private List<Long> resolveLogScope(HashMap<String, Object> request) {
@@ -319,7 +308,7 @@ public class ExportCenterDownLoadManage {
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
-        Future future = exportThreadPool.submit(() -> {
+        exportTaskExecutionService.submit(exportTarget.taskId(), () -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -526,7 +515,6 @@ public class ExportCenterDownLoadManage {
                 V3UserUtil.clear();
             }
         });
-        Running_Task.put(exportTarget.taskId(), future);
     }
 
     @DeLog(id = "#p2.viewId", ot = LogOT.EXPORT, st = LogST.PANEL)
@@ -561,7 +549,7 @@ public class ExportCenterDownLoadManage {
         Long uid = V3UserUtil.getUid();
         Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
-        Future future = exportThreadPool.submit(() -> {
+        exportTaskExecutionService.submit(exportTarget.taskId(), () -> {
             try {
                 V3UserUtil.setUid(uid);
                 if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
@@ -652,7 +640,6 @@ public class ExportCenterDownLoadManage {
                 V3UserUtil.clear();
             }
         });
-        Running_Task.put(exportTarget.taskId(), future);
     }
 
     private void updateExportTask(String taskId, String exportStatus, String exportProgress, String msg, Double fileSize, String fileSizeUnit) {
