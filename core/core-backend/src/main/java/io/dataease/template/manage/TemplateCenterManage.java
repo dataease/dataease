@@ -23,7 +23,6 @@ import io.dataease.system.manage.SysParameterManage;
 import io.dataease.template.dao.auto.entity.QVisualizationTemplate;
 import io.dataease.template.dao.auto.entity.QVisualizationTemplateCategory;
 import io.dataease.template.dao.auto.entity.QVisualizationTemplateCategoryMap;
-import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapRepository;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
@@ -122,7 +121,8 @@ public class TemplateCenterManage {
     public MarketBaseResponse searchTemplate() {
         try {
             Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-            return baseResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(), templateParams.get("template.url"));
+            return baseResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(),
+                    templateParams.get("template.url"), getCategoriesObject());
         } catch (Exception e) {
             LogUtil.error(e);
             LogUtil.error(e);
@@ -130,55 +130,47 @@ public class TemplateCenterManage {
         return null;
     }
 
+    public MarketBaseResponse searchLocalTemplate() {
+        List<TemplateManageDTO> categories = findManageCategories();
+        return baseResponseV2Trans(null, searchTemplateFromManage(categories), "",
+                withRecentCategory(toMarketCategories(categories)));
+    }
+
     private List<TemplateMarketDTO> searchTemplateFromManage() {
         try {
-            QVisualizationTemplate visualizationTemplate = QVisualizationTemplate.visualizationTemplate;
-            QVisualizationTemplateCategoryMap visualizationTemplateCategoryMap = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
-            QCoreOptRecent coreOptRecent = QCoreOptRecent.coreOptRecent;
-            List<TemplateManageDTO> manageResult = queryFactory.select(Projections.fields(TemplateManageDTO.class,
-                            visualizationTemplate.id,
-                            visualizationTemplate.name,
-                            visualizationTemplate.pid,
-                            visualizationTemplate.level,
-                            visualizationTemplate.dvType,
-                            visualizationTemplate.nodeType,
-                            visualizationTemplate.createBy,
-                            visualizationTemplate.createTime,
-                            visualizationTemplate.templateType,
-                            visualizationTemplate.snapshot,
-                            visualizationTemplate.useCount,
-                            visualizationTemplateCategoryMap.categoryId,
-                            coreOptRecent.time.as("recentUseTime"))).from(visualizationTemplate)
-                    .leftJoin(visualizationTemplateCategoryMap).on(visualizationTemplate.id.eq(visualizationTemplateCategoryMap.templateId))
-                    .leftJoin(coreOptRecent).on(coreOptRecent.resourceType.eq(6).and(coreOptRecent.resourceName.eq(visualizationTemplate.id)))
-                    .orderBy(visualizationTemplate.useCount.desc(), visualizationTemplate.createTime.desc()).fetch();
-            manageResult.forEach(item -> {
-                item.setCategories(Arrays.asList(item.getCategoryId()));
-            });
-
-            QVisualizationTemplateCategory visualizationTemplateCategory = QVisualizationTemplateCategory.visualizationTemplateCategory;
-            List<TemplateManageDTO> categories = queryFactory.select(Projections.fields(TemplateManageDTO.class,
-                            visualizationTemplateCategory.id,
-                            visualizationTemplateCategory.name,
-                            visualizationTemplateCategory.name.as("label"),
-                            visualizationTemplateCategory.pid,
-                            visualizationTemplateCategory.level,
-                            visualizationTemplateCategory.dvType,
-                            visualizationTemplateCategory.nodeType,
-                            visualizationTemplateCategory.createBy,
-                            visualizationTemplateCategory.createTime,
-                            visualizationTemplateCategory.templateType,
-                            visualizationTemplateCategory.snapshot)).from(visualizationTemplateCategory)
-                    .orderBy(visualizationTemplateCategory.createTime.desc()).fetch();
-
-
-            Map<String, String> categoryMap = categories.stream()
-                    .collect(Collectors.toMap(TemplateManageDTO::getId, TemplateManageDTO::getName));
-            return baseManage2MarketTrans(manageResult, categoryMap);
+            return searchTemplateFromManage(findManageCategories());
         } catch (Exception e) {
             DEException.throwException(e);
         }
         return null;
+    }
+
+    private List<TemplateMarketDTO> searchTemplateFromManage(List<TemplateManageDTO> categories) {
+        QVisualizationTemplate visualizationTemplate = QVisualizationTemplate.visualizationTemplate;
+        QVisualizationTemplateCategoryMap visualizationTemplateCategoryMap = QVisualizationTemplateCategoryMap.visualizationTemplateCategoryMap;
+        QCoreOptRecent coreOptRecent = QCoreOptRecent.coreOptRecent;
+        List<TemplateManageDTO> manageResult = queryFactory.select(Projections.fields(TemplateManageDTO.class,
+                        visualizationTemplate.id,
+                        visualizationTemplate.name,
+                        visualizationTemplate.pid,
+                        visualizationTemplate.level,
+                        visualizationTemplate.dvType,
+                        visualizationTemplate.nodeType,
+                        visualizationTemplate.createBy,
+                        visualizationTemplate.createTime,
+                        visualizationTemplate.templateType,
+                        visualizationTemplate.snapshot,
+                        visualizationTemplate.useCount,
+                        visualizationTemplateCategoryMap.categoryId,
+                        coreOptRecent.time.as("recentUseTime"))).from(visualizationTemplate)
+                .leftJoin(visualizationTemplateCategoryMap).on(visualizationTemplate.id.eq(visualizationTemplateCategoryMap.templateId))
+                .leftJoin(coreOptRecent).on(coreOptRecent.resourceType.eq(6).and(coreOptRecent.resourceName.eq(visualizationTemplate.id)))
+                .orderBy(visualizationTemplate.useCount.desc(), visualizationTemplate.createTime.desc()).fetch();
+        manageResult.forEach(item -> item.setCategories(Arrays.asList(item.getCategoryId())));
+
+        Map<String, String> categoryMap = categories.stream()
+                .collect(Collectors.toMap(TemplateManageDTO::getId, TemplateManageDTO::getName));
+        return baseManage2MarketTrans(manageResult, categoryMap);
     }
 
     private List<TemplateMarketDTO> baseManage2MarketTrans(List<TemplateManageDTO> manageResult, Map<String, String> categoryMap) {
@@ -277,9 +269,12 @@ public class TemplateCenterManage {
         return new MarketBaseResponse(url, categoryVO, contents);
     }
 
-    private MarketBaseResponse baseResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, List<TemplateMarketDTO> contents, String url) {
+    private MarketBaseResponse baseResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse,
+                                                  List<TemplateMarketDTO> contents, String url,
+                                                  List<MarketMetaDataVO> categories) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
-        List<MarketMetaDataVO> categoryVO = getCategoriesObject().stream().filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).collect(Collectors.toList());
+        List<MarketMetaDataVO> categoryVO = categories.stream()
+                .filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).collect(Collectors.toList());
         Map<String, String> categoriesMap = categoryVO.stream()
                 .collect(Collectors.toMap(MarketMetaDataVO::getValue, MarketMetaDataVO::getLabel));
         List<String> activeCategoriesName = new ArrayList<>(Arrays.asList(Translator.get("i18n_template_recent"), Translator.get("i18n_template_recommend")));
@@ -310,8 +305,13 @@ public class TemplateCenterManage {
     }
 
     public List<MarketMetaDataVO> getCategoriesObject() {
-        List<MarketMetaDataVO> result = getCategoriesV2();
-        result.add(0, new MarketMetaDataVO("recent", Translator.get("i18n_template_recent"), CommonConstants.TEMPLATE_SOURCE.PUBLIC));
+        return withRecentCategory(getCategoriesV2());
+    }
+
+    private List<MarketMetaDataVO> withRecentCategory(List<MarketMetaDataVO> categories) {
+        List<MarketMetaDataVO> result = new ArrayList<>();
+        result.add(new MarketMetaDataVO("recent", Translator.get("i18n_template_recent"), CommonConstants.TEMPLATE_SOURCE.PUBLIC));
+        result.addAll(categories);
         return result;
     }
 
@@ -323,24 +323,7 @@ public class TemplateCenterManage {
 
     public List<MarketMetaDataVO> getCategoriesV2() {
         List<MarketMetaDataVO> allCategories = new ArrayList<>();
-        QVisualizationTemplateCategory visualizationTemplateCategory = QVisualizationTemplateCategory.visualizationTemplateCategory;
-        List<TemplateManageDTO> manageCategories = queryFactory.select(Projections.fields(TemplateManageDTO.class,
-                        visualizationTemplateCategory.id,
-                        visualizationTemplateCategory.name,
-                        visualizationTemplateCategory.name.as("label"),
-                        visualizationTemplateCategory.pid,
-                        visualizationTemplateCategory.level,
-                        visualizationTemplateCategory.dvType,
-                        visualizationTemplateCategory.nodeType,
-                        visualizationTemplateCategory.createBy,
-                        visualizationTemplateCategory.createTime,
-                        visualizationTemplateCategory.templateType,
-                        visualizationTemplateCategory.snapshot)).from(visualizationTemplateCategory)
-                .orderBy(visualizationTemplateCategory.createTime.desc()).fetch();
-
-        List<MarketMetaDataVO> manageCategoriesTrans = manageCategories.stream()
-                .map(templateCategory -> new MarketMetaDataVO(templateCategory.getId(), templateCategory.getName(), CommonConstants.TEMPLATE_SOURCE.MANAGE))
-                .collect(Collectors.toList());
+        List<MarketMetaDataVO> manageCategories = toMarketCategories(findManageCategories());
         try {
             Map<String, String> templateParams = sysParameterManage.groupVal("template.");
             String resultStr = marketGet(templateParams.get("template.url") + TEMPLATE_META_DATA_URL, null);
@@ -351,8 +334,20 @@ public class TemplateCenterManage {
             LogUtil.error("模板市场分类获取错误", e);
         }
 
-        return mergeAndDistinctByLabel(allCategories, manageCategoriesTrans);
+        return mergeAndDistinctByLabel(allCategories, manageCategories);
+    }
 
+    private List<TemplateManageDTO> findManageCategories() {
+        QVisualizationTemplateCategory category = QVisualizationTemplateCategory.visualizationTemplateCategory;
+        return queryFactory.select(Projections.fields(TemplateManageDTO.class, category.id, category.name))
+                .from(category)
+                .orderBy(category.createTime.desc()).fetch();
+    }
+
+    private List<MarketMetaDataVO> toMarketCategories(List<TemplateManageDTO> categories) {
+        return categories.stream()
+                .map(category -> new MarketMetaDataVO(category.getId(), category.getName(), CommonConstants.TEMPLATE_SOURCE.MANAGE))
+                .collect(Collectors.toList());
     }
 
     private List<MarketMetaDataVO> mergeAndDistinctByLabel(List<MarketMetaDataVO> list1, List<MarketMetaDataVO> list2) {
