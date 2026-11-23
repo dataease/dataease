@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import type { DataEaseError } from '@/config/axios/error'
 
 export interface IGetTaskInfoReq {
   id?: string
@@ -281,7 +282,11 @@ export interface ISinkFieldNameRules {
 }
 
 export const getDatasourceTableListApi = (dsId: string) => {
-  return request.get({ url: `/sync/datasource/table/list/${dsId}` })
+  return request.get({
+    url: `/sync/datasource/table/list/${dsId}`,
+    handleErrorLocally: (error: DataEaseError) =>
+      ['UPSTREAM', 'UPSTREAM_TIMEOUT', 'INTERNAL'].includes(error.category || '')
+  })
 }
 
 /**

@@ -2,7 +2,7 @@
 import icon_down_outlined1 from "@/assets/svg/icon_down_outlined-1.svg";
 import icon_down_outlined from "@/assets/svg/icon_down_outlined.svg";
 import icon_add_outlined from "@/assets/svg/icon_add_outlined.svg";
-import { computed, reactive, ref, toRefs, watch } from "vue";
+import { computed, onBeforeUnmount, reactive, ref, toRefs, watch } from 'vue'
 import { useI18n } from "@/hooks/web/useI18n";
 import { ElIcon, FormInstance, FormRules } from "element-plus-secondary";
 import { ElForm, ElMessage } from "element-plus-secondary";
@@ -13,6 +13,7 @@ import { CustomPassword } from "@/components/custom-password";
 import { dsTypes, SYNC_DATASOURCE_ROLE } from './option'
 import { Icon } from "@/components/icon-custom";
 import dvInfo from "@/assets/svg/dv-info.svg";
+import { useDatasourceError } from './useDatasourceError'
 
 const { t } = useI18n();
 const prop = withDefaults(defineProps<{ form: any; activeStep: any }>(), {
@@ -240,24 +241,40 @@ const resetForm = () => {
 };
 
 const showSchema = ref(false);
+const { clear: clearSchemaError, present: presentSchemaError } = useDatasourceError()
+let schemaRequest = 0
+watch(
+  () => form.value,
+  () => {
+    schemaRequest++
+    clearSchemaError()
+  },
+  { deep: true }
+)
+onBeforeUnmount(() => schemaRequest++)
 
 const getDsSchema = () => {
-  showSchema.value = true;
-  const validateFrom = dsForm.value?.validate!;
-  validateFrom((val) => {
-    showSchema.value = false;
+  clearSchemaError()
+  const sequence = ++schemaRequest
+  showSchema.value = true
+  const validateFrom = dsForm.value!.validate
+  validateFrom(val => {
+    showSchema.value = false
     if (val) {
-      const request = JSON.parse(JSON.stringify(form.value));
-      request.configuration = Base64.encode(
-        JSON.stringify(request.configuration)
-      );
-      getSchemaApi(request).then((res) => {
-        schemas.value = res.data;
-        ElMessage.success(t("commons.success"));
-      });
+      const request = JSON.parse(JSON.stringify(form.value))
+      request.configuration = Base64.encode(JSON.stringify(request.configuration))
+      getSchemaApi(request, true)
+        .then(res => {
+          if (sequence !== schemaRequest) return
+          schemas.value = res.data
+          ElMessage.success(t('commons.success'))
+        })
+        .catch(error => {
+          if (sequence === schemaRequest) presentSchemaError(error)
+        })
     }
-  });
-};
+  })
+}
 
 const validatorSchema = () => {
   dsForm.value?.validateField("configuration.schema");

@@ -4981,6 +4981,7 @@ export default {
     ds_search_placeholder: 'Search name, description'
   },
   sync_datasource: {
+    operation_failed: 'The database operation failed. Check the connection or try again later.',
     connection_change_title: 'Change connection settings?',
     connection_change_warning:
       'This data source is used by {count} tasks. New executions will use the new connection. Existing executions, retries and recovery will keep their original connection. Tables, SQL, field mappings and incremental rules will remain unchanged. Tasks may fail or synchronize different data; maintenance or new tasks may be required.',

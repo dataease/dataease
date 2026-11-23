@@ -61,6 +61,23 @@ public class SyncSqlException extends DEException {
     }
 
     /**
+     * 页面只展示主要原因链，省略完整 SQL、调用栈和过长消息
+     */
+    public String getBriefDiagnosticMessage() {
+        java.util.List<String> causes = diagnosticMessage.lines()
+                .filter(line -> line.startsWith("Caused by: ")).toList();
+        StringBuilder brief = new StringBuilder(diagnosticMessage.lines().findFirst().orElse(""));
+        for (int index = 0; index < Math.min(causes.size(), 3); index++) {
+            String line = causes.get(index == 2 ? causes.size() - 1 : index)
+                    .replaceFirst("^Caused by: (?:[\\w$]+\\.)*", "Caused by: ")
+                    .replaceAll("(?i)\\b(?:https?|ftp|sftp)://\\S+", "***")
+                    .replaceAll("(?i)\\b(?:select|insert\\s+into|update\\s+\\S+\\s+set|delete\\s+from|merge\\s+into|(?:create|alter|drop)\\s+table)\\b.*", "[SQL omitted]");
+            brief.append("\n").append(line.length() > 400 ? line.substring(0, 400) + "..." : line);
+        }
+        return brief.toString();
+    }
+
+    /**
      * 供 DDL 收尾区分数据库明确拒绝与提交后结果未知，不向调用方暴露未脱敏的异常链
      */
     public boolean isExecutionUncertain() {

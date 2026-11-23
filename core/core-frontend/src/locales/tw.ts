@@ -4765,6 +4765,7 @@ export default {
     ds_search_placeholder: '搜尋名稱,描述'
   },
   sync_datasource: {
+    operation_failed: '資料庫操作失敗，請檢查連線或稍後重試',
     connection_change_title: '確認修改連線設定？',
     connection_change_warning:
       '此資料來源關聯 {count} 個任務。儲存後，新執行使用新連線，已開始的執行及其重試、恢復繼續使用原連線。原有表、SQL、欄位映射和增量規則不變，可能導致執行失敗或同步結果變化，部分情況需要維護或新建任務。',

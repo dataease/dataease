@@ -16,6 +16,11 @@ public class DatasourceDTO {
     private String createByName;
     private String status;
     private String statusRemark;
+    /**
+     * 本次校验的脱敏诊断，仅用于响应，不持久化
+     */
+    private String connectionDiagnostic;
+    private String requestId;
     private Integer datasourceRole;
     private java.util.List<String> unsupportedKeyFieldTypes;
     private String fieldIndexType;

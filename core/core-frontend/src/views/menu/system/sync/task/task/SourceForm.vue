@@ -9,10 +9,11 @@ import {
   ITaskInfoRes
 } from '@/api/sync/syncTask'
 import { Icon } from '@/components/icon-custom'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
+import { ElIcon } from 'element-plus-secondary'
 import { validateByIdApi } from '@/api/sync/syncDatasource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { SYNC_DATASOURCE_ROLE } from '../../ds/form/option'
+import { useDatasourceError } from '../../ds/form/useDatasourceError'
 
 const { t } = useI18n()
 
@@ -51,10 +52,16 @@ const form = computed<ITaskInfoRes>({
 const emits = defineEmits(['update:modelValue', 'changeLoading'])
 let datasourceListSequence = 0
 let tableListSequence = 0
+const {
+  clear: clearTableListError,
+  present: presentTableError,
+  presentStatus
+} = useDatasourceError()
 onBeforeUnmount(() => {
   // 步骤重建或关闭后，旧请求不能回写新任务，也不能结束新任务的加载状态
   datasourceListSequence++
   tableListSequence++
+  clearTableListError()
 })
 
 // 虚拟下拉仅渲染可视项，避免大表量场景创建全部选项节点
@@ -107,6 +114,7 @@ watch(
  * 连接校验和表查询共用一次请求归属，防止旧响应覆盖新连接或新任务
  */
 const getDataSourceTableList = () => {
+  clearTableListError()
   const source = form.value.source
   const datasourceId = source.datasourceId
   const type = source.type
@@ -117,7 +125,7 @@ const getDataSourceTableList = () => {
     datasourceId === source.datasourceId &&
     type === source.type
   emits('changeLoading', true)
-  validateByIdApi(datasourceId)
+  validateByIdApi(datasourceId, true)
     .then(res => {
       if (!isCurrentRequest()) return
       if (res.data?.status === 'Success') {
@@ -141,14 +149,14 @@ const getDataSourceTableList = () => {
       } else {
         source.tables = ''
         source.dsTableList = []
-        ElMessage.error(t('sync_task.msg_source_database_status_is_abnormal'))
+        presentStatus(res.data, t('sync_task.msg_source_database_status_is_abnormal'))
       }
     })
-    .catch(() => {
+    .catch(cause => {
       if (!isCurrentRequest()) return
       source.tables = ''
       source.dsTableList = []
-      ElMessage.error(t('sync_task.msg_get_database_table_failed'))
+      presentTableError(cause, { fallback: t('sync_task.msg_get_database_table_failed') })
     })
     .finally(() => {
       if (isCurrentRequest()) emits('changeLoading', false)
@@ -164,6 +172,7 @@ watch(
 )
 
 const clearSourceForm = () => {
+  clearTableListError()
   tableListSequence++
   emits('changeLoading', false)
   form.value.source.tableExtract = '0'
@@ -195,6 +204,7 @@ const getDataSourceList = () => {
 watch(
   () => form.value.source.tableExtract,
   () => {
+    clearTableListError()
     tableListSequence++
     form.value.source.incrementField = ''
     if (

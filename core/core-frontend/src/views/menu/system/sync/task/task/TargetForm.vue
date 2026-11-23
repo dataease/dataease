@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { presentError } from '@/config/axios/errorPresenter'
 
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasourceListByTypeApi,
@@ -24,6 +24,7 @@ import PluginComponent from '@/components/plugin/src/PluginComponent.vue'
 import { SYNC_DATASOURCE_ROLE } from '../../ds/form/option'
 import { decimalParameterIssue } from './fieldType'
 import { hasSourceField } from './fieldValidation'
+import { useDatasourceError } from '../../ds/form/useDatasourceError'
 
 const { t } = useI18n()
 
@@ -68,6 +69,8 @@ const targetPropertyFormRef = ref()
 const targetFieldFormRef = ref()
 const fieldNameRules = ref<ISinkFieldNameRules | null>()
 let fieldListRequest = 0
+const { clear: clearFieldError, present: presentFieldError } = useDatasourceError()
+onBeforeUnmount(() => fieldListRequest++)
 
 /**
  * 字段属性
@@ -127,10 +130,13 @@ const incrementFieldList = computed(() => {
  * 刷新字段列表
  */
 const refreshFieldList = () => {
+  clearFieldError()
+  const sequence = ++fieldListRequest
   emits('changeLoading', true)
   buildSearchSourceFieldParams.value.targetDbId = form.value.target.datasourceId
-  getFieldListApi(buildSearchSourceFieldParams.value)
+  getFieldListApi(buildSearchSourceFieldParams.value, true)
     .then(res => {
+      if (sequence !== fieldListRequest) return
       // 如果源字段不一样，清空目标字段列表
       const newSourceFieldNameListStr = JSON.stringify(map(res.data.sourceFieldList, 'fieldName'))
       const formSourceFieldNameListStr = JSON.stringify(
@@ -143,7 +149,8 @@ const refreshFieldList = () => {
       emits('changeLoading', false)
     })
     .catch(err => {
-      console.log(err)
+      if (sequence !== fieldListRequest) return
+      presentFieldError(err)
       emits('changeLoading', false)
     })
 }
@@ -151,6 +158,7 @@ const refreshFieldList = () => {
 watch(
   () => form.value.target.datasourceId,
   () => {
+    clearFieldError()
     fieldListRequest++
     fieldNameRules.value = undefined
     form.value.source.targetFieldTypeList = []
@@ -222,13 +230,14 @@ const setSourceFieldAndTargetFieldTypeList = callBack => {
     return
   }
   buildSearchSourceFieldParams.value.targetDbId = form.value.target.datasourceId
+  clearFieldError()
   const requestId = ++fieldListRequest
   const targetId = form.value.target.datasourceId
   const isCurrent = () =>
     requestId === fieldListRequest && targetId === form.value.target.datasourceId
   fieldNameRules.value = undefined
   targetFieldFormRef.value.targetFieldFormLoading = true
-  getFieldListApi(buildSearchSourceFieldParams.value)
+  getFieldListApi(buildSearchSourceFieldParams.value, true)
     .then(res => {
       if (!isCurrent()) return
       fieldNameRules.value = res.data.targetFieldNameRules ?? null
@@ -247,7 +256,7 @@ const setSourceFieldAndTargetFieldTypeList = callBack => {
     .catch(err => {
       if (!isCurrent()) return
       // 读取失败保留已有字段草稿，不能继续使用旧连接或上次读取的规则
-      presentError(err, err.message)
+      presentFieldError(err)
     })
     .finally(() => {
       if (!isCurrent()) return
