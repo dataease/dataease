@@ -3,17 +3,15 @@
     <el-select
         v-model="reciVal"
         multiple
-        ref="select"
         :reserve-keyword="false"
         :placeholder="t('common.selectText')"
-        @change="setHeight"
         popper-class="reci-custom-email-popper"
         @visible-change="handleReciVal"
         style="width: 100%"
         @remove-tag="removeReciTag"
     >
       <template #tag="{ data }">
-        <div ref="tags" class="ed-select__tags" :style="data">
+        <div class="ed-select__tags" :style="data">
           <div class="ed-select-tags-wrapper has-prefix">
             <el-tag
                 @close="removeReciTag(id)"
@@ -239,7 +237,7 @@
 <script setup lang="ts">
 import { ArrowRight } from '@element-plus/icons-vue'
 import { useI18n } from "@/hooks/web/useI18n";
-import { ref, nextTick, reactive, computed, watch, onMounted } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 import { ReciOption } from "./formUtil";
 import role from "@/assets/svg/role.svg";
 import userReci from "@/assets/svg/user-reci.svg";
@@ -257,8 +255,6 @@ const showParent = ref(true);
 const optionFlag = ref(-1);
 const optionLoading = ref(false);
 const dialogVisible = ref(false);
-const select = ref();
-const tags = ref();
 
 const props = defineProps({
   modelValue: {
@@ -309,17 +305,6 @@ watch(
     },
 );
 
-const setHeight = () => {
-  if (!select.value) return;
-  setTimeout(() => {
-    const input = select.value.$el.querySelector("input") as HTMLInputElement;
-    const _tags = tags.value;
-    nextTick(() => {
-      input.style.minHeight = `${_tags.clientHeight + 8}px`;
-    });
-  }, 0);
-};
-
 const removeReciTag = (val) => {
   let len = reciVal.value.length;
   while (len--) {
@@ -328,9 +313,6 @@ const removeReciTag = (val) => {
       reciVal.value.splice(len, 1);
     }
   }
-  nextTick(() => {
-    setHeight();
-  });
 };
 const handleReciVal = (visible: boolean) => {
   if (visible) {
@@ -505,7 +487,6 @@ const validateReci = () => {
 const sureHandler = () => {
   reciVal.value = state.selectedIdList;
   closeDialog();
-  setHeight();
 };
 
 onMounted(() => {
@@ -515,10 +496,6 @@ onMounted(() => {
 watch(() => [props.resourceId, props.resourceFlag], () => {
   reciVal.value = [];
   loadReciOptions();
-});
-
-defineExpose({
-  setHeight,
 });
 </script>
 <style lang="less">
