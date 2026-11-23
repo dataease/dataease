@@ -3099,12 +3099,9 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     size="calc(100% - 60px)"
     append-to-body
     :close-on-click-modal="false"
-    :title="calcTitle"
   >
-    <div v-if="editCalcField" class="calc-field-workspace" ref="calcAssistantHost">
-      <calc-field-edit ref="calcEdit" dataset-references :crossDs="crossDatasources" />
-    </div>
-    <template #footer>
+    <template #header="{ titleId, titleClass }">
+      <h2 :id="titleId" :class="titleClass">{{ calcTitle }}</h2>
       <DatasetEditorAssistant
         v-if="
           editCalcField &&
@@ -3129,6 +3126,9 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
+    <div v-if="editCalcField" class="calc-field-workspace" ref="calcAssistantHost">
+      <calc-field-edit ref="calcEdit" dataset-references :crossDs="crossDatasources" />
+    </div>
   </el-drawer>
   <el-dialog
     class="create-dialog"
@@ -4147,18 +4147,49 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
 .calc-field-drawer {
   --calc-form-width: 100%;
 
+  > .ed-drawer__header {
+    flex: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto;
+    min-height: 57px;
+    padding-block: 12px;
+
+    .ed-button + .ed-button {
+      margin-left: 0;
+    }
+
+    .ed-drawer__close-btn {
+      position: static;
+    }
+  }
+
+  > .ed-drawer__body {
+    display: flex;
+    min-height: 0;
+    padding-bottom: 16px;
+    overflow: hidden;
+  }
+
   .calc-field-workspace {
     display: flex;
-    align-items: stretch;
-    min-height: 100%;
+    flex: 1;
+    min-width: 0;
+
     > .calcu-field {
       flex: 1;
       min-width: 0;
+      overflow: auto;
     }
+
     > aside {
       flex-shrink: 0;
       height: auto;
       margin-left: 12px;
+
+      .conversation {
+        overscroll-behavior: contain;
+      }
     }
   }
 }

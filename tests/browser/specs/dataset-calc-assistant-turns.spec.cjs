@@ -101,6 +101,50 @@ async function completed(drawer, index) {
   return turn;
 }
 
+test("long conversations scroll inside the calculated field drawer", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  const state = await serveTurns(page);
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  const history = drawer.getByRole("log");
+  const editor = drawer.locator(".cm-content");
+  const editorTop = (await editor.boundingBox()).y;
+  for (let i = 1; i <= 5; i++) {
+    await ask(drawer, "第 " + i + " 次调整计算公式");
+    await completed(drawer, i);
+  }
+  expect(
+    await history.evaluate((el) => el.scrollHeight - el.clientHeight)
+  ).toBeGreaterThan(0);
+  const latest = history.getByRole("article").last();
+  await expect(button(latest, "应用到当前草稿")).toBeInViewport({ ratio: 1 });
+  await expect(drawer.locator("textarea")).toBeInViewport({ ratio: 1 });
+  await expect(button(drawer, "发送")).toBeInViewport({ ratio: 1 });
+  await drawer.screenshot({
+    path: test.info().outputPath("calc-field-conversation.png"),
+  });
+
+  let release;
+  const hold = new Promise((resolve) => {
+    release = resolve;
+  });
+  state.beforeResult = () => hold;
+  await ask(drawer, "继续调整公式");
+  const oldest = history.getByRole("article").first();
+  await oldest.scrollIntoViewIfNeeded();
+  release();
+  await completed(drawer, 6);
+  await expect(oldest).toBeInViewport({ ratio: 1 });
+  await expect(drawer.locator("textarea")).toBeInViewport({ ratio: 1 });
+  expect((await editor.boundingBox()).y).toBe(editorTop);
+  const header = drawer.locator("header");
+  for (const action of ["计算字段助手", "取消", "校验", "确认"]) {
+    await expect(button(header, action)).toBeInViewport({ ratio: 1 });
+  }
+});
+
 test("the current formula or any selected turn is frozen as the basis of each question", async ({
   page,
 }) => {

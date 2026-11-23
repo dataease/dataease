@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -77,6 +77,28 @@ const turns = ref<Turn[]>([])
 const selectedBasis = ref<number | 'preview'>()
 const busy = ref(false)
 const applying = ref(false)
+const conversation = ref<HTMLElement>()
+
+if (props.calcFieldDraft) {
+  watch(
+    [expanded, () => turns.value.length, () => turns.value.at(-1)?.cursor, busy],
+    async ([open, count], [wasOpen, previousCount]) => {
+      if (!open) return
+      const log = conversation.value
+      // Follow incoming output only while the author is reading the latest turn.
+      if (
+        wasOpen &&
+        count === previousCount &&
+        log &&
+        log.scrollHeight - log.clientHeight - log.scrollTop > 4
+      )
+        return
+      await nextTick()
+      if (conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight
+    }
+  )
+}
+
 const sessions = new Set<string>()
 let latestSession: AiConversationSession | undefined
 let request: AbortController | undefined
@@ -678,7 +700,7 @@ const apply = async (turn: Turn) => {
       :aria-label="title()"
     >
       <strong>{{ title() }}</strong>
-      <div class="conversation" role="log">
+      <div ref="conversation" class="conversation" role="log">
         <article v-for="(turn, index) in turns" :key="index">
           <p class="question">{{ turn.question }}</p>
           <p v-if="turn.answer">{{ turn.answer }}</p>
