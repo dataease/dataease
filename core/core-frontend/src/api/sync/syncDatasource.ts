@@ -48,12 +48,20 @@ export const validateApi = (data, handleErrorLocally = false) => {
   })
 }
 
-export const getSchemaApi = data => {
-  return request.post({ url: '/sync/datasource/getSchema', data })
+export const getSchemaApi = (data, handleErrorLocally = false) => {
+  return request.post({
+    url: '/sync/datasource/getSchema',
+    data,
+    handleErrorLocally: handleErrorLocally && hasConnectionDiagnostic
+  })
 }
 
-export const saveApi = data => {
-  return request.post({ url: '/sync/datasource/save', data })
+export const saveApi = (data, handleErrorLocally = false) => {
+  return request.post({
+    url: '/sync/datasource/save',
+    data,
+    handleErrorLocally: handleErrorLocally && hasConnectionDiagnostic
+  })
 }
 
 export const getByIdApi = (id: string) => {
@@ -81,12 +89,19 @@ export const batchDelApi = (ids: string[]) => {
 /**
  * 获取源数据库字段集合以及目标数据库数据类型集合
  */
-export const getFieldListApi = data => {
-  return request.post({ url: `/sync/datasource/fields`, data })
+export const getFieldListApi = (data, handleErrorLocally = false) => {
+  return request.post({
+    url: `/sync/datasource/fields`,
+    data,
+    handleErrorLocally: handleErrorLocally && hasConnectionDiagnostic
+  })
 }
 
-export const validateByIdApi = (id: string) => {
-  return request.get({ url: `/sync/datasource/validate/${id}` })
+export const validateByIdApi = (id: string, handleErrorLocally = false) => {
+  return request.get({
+    url: `/sync/datasource/validate/${id}`,
+    handleErrorLocally: handleErrorLocally && hasConnectionDiagnostic
+  })
 }
 
 export const loadSyncPlugin = () => {

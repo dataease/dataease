@@ -4785,6 +4785,7 @@ export default {
     ds_search_placeholder: '搜索名称,描述'
   },
   sync_datasource: {
+    operation_failed: '数据库操作失败，请检查连接或稍后重试',
     connection_change_title: '确认修改连接配置？',
     connection_change_warning:
       '该数据源关联 {count} 个任务。保存后，新执行使用新连接，已开始的执行及其重试、恢复继续使用原连接。原有表、SQL、字段映射和增量规则不变，可能导致执行失败或同步结果变化，部分情况需要维护或新建任务。',

@@ -23,6 +23,7 @@ import { deepCopy } from '@/utils/utils'
 import { loadSyncPlugin, validateByIdApi } from '@/api/sync/syncDatasource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { dsTypes } from '../../ds/form/option'
+import { useDatasourceError } from '../../ds/form/useDatasourceError'
 
 const { t } = useI18n()
 const props = defineProps({
@@ -34,6 +35,7 @@ const props = defineProps({
 const formLoading = ref(false)
 const activeStep = ref(0)
 const taskFormVisible = ref<boolean>(false)
+const { clear: clearTaskError, present: presentTaskError, presentStatus } = useDatasourceError()
 /**
  * 编辑状态
  */
@@ -422,6 +424,7 @@ const onSubmit = () => {
       checkingTarget.value)
   )
     return
+  clearTaskError()
   formLoading.value = true
   const id = props.taskId
   const sequence = taskRequestSequence
@@ -452,11 +455,11 @@ const onSubmit = () => {
       formState.value.schedulerOption.interval + formState.value.schedulerOption.unit
   }
   if (requestData.target.datasourceId) {
-    validateByIdApi(requestData.target.datasourceId)
+    validateByIdApi(requestData.target.datasourceId, true)
       .then(data => {
         if (!isCurrentRequest()) return
         if (data.data?.status !== 'Success') {
-          ElMessage.error(t('sync_task.target_database_status_is_abnormal'))
+          presentStatus(data.data, t('sync_task.target_database_status_is_abnormal'))
           return
         }
         const submitRequest = id ? modifyApi(requestData) : addApi(requestData)
@@ -467,8 +470,8 @@ const onSubmit = () => {
           cancelClick()
         })
       })
-      .catch(() => {
-        // 请求错误提示由公共请求层统一处理
+      .catch(error => {
+        if (isCurrentRequest()) presentTaskError(error)
       })
       .finally(() => {
         if (!isCurrentRequest()) return
@@ -539,6 +542,7 @@ const next = (btn: string) => {
 }
 
 const cancelClick = () => {
+  clearTaskError()
   taskRequestSequence++
   checkingTarget.value = false
   taskFormRef.value?.resetFields()

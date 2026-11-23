@@ -16,7 +16,7 @@ import ExcelDs from "@/assets/svg/Excel-ds.svg";
 import dorisDs from "@/assets/svg/doris-ds.svg";
 import icon_close_outlined from "@/assets/svg/icon_close_outlined.svg";
 import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import { computed, h, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import {ElIcon, ElMessage, ElMessageBox} from "element-plus-secondary";
 import {Icon} from "@/components/icon-custom";
 import DsTypeList from "./DsTypeList.vue";
@@ -38,37 +38,14 @@ import EditorDetail from "./EditorDetail.vue";
 import Elasticsearch from "@/assets/svg/Elasticsearch.svg";
 import PluginComponent from "@/components/plugin/src/PluginComponent.vue";
 
-import ConnectionErrorNotice from './ConnectionErrorNotice.vue'
-import { errorBody, toDataEaseError } from '@/config/axios/error'
+import { useDatasourceError } from './useDatasourceError'
+import { toDataEaseError } from '@/config/axios/error'
 import { wasErrorPresented } from '@/config/axios/errorPresenter'
 
 let formGeneration = 0
-let connectionErrorMessage: ReturnType<typeof ElMessage> | undefined
-const clearConnectionError = () => {
-  connectionErrorMessage?.close()
-  connectionErrorMessage = undefined
-}
-const captureConnectionError = (error: unknown, saving = false) => {
-  if (wasErrorPresented(error)) return
-  const failure = toDataEaseError(error)
-  if (failure.transportCode === 'ERR_CANCELED') return
-  const data = errorBody(failure.response?.data).data
-  if (!data || typeof data !== 'object' || !('connectionDiagnostic' in data)) return
-  if (typeof data.connectionDiagnostic !== 'string' || !data.connectionDiagnostic) return
-  clearConnectionError()
-  connectionErrorMessage = ElMessage({
-    type: 'error',
-    customClass: 'de-message-error de-message-export',
-    message: h(ConnectionErrorNotice, {
-      message: failure.message,
-      diagnostic: data.connectionDiagnostic,
-      saveFailed: saving
-    }),
-    showClose: true,
-    duration: 0
-  })
-  failure.presented = true
-}
+const { clear: clearConnectionError, present: presentConnectionError } = useDatasourceError()
+const captureConnectionError = (error: unknown, saving = false) =>
+  presentConnectionError(error, { saveFailed: saving })
 onBeforeUnmount(() => {
   formGeneration++
   clearConnectionError()
@@ -319,10 +296,16 @@ const currentPluginStatic = computed(() => getPluginStatic(currentDsType.value))
 
 // Schema 请求统一由同步管理外层发起，并覆盖当前页面角色；插件内部即使传入字符串 "2"，
 // 发往 V3 JPA 接口的 datasourceRole 仍保持数字 1/2，避免源目标插件匹配发生偏移。
-const getSyncDatasourcePluginSchema = data => getSchemaApi({
-  ...data,
-  datasourceRole: activeDatasourceRole.value
-})
+const getSyncDatasourcePluginSchema = data => {
+  const generation = formGeneration
+  clearConnectionError()
+  return getSchemaApi({ ...data, datasourceRole: activeDatasourceRole.value }, true).catch(
+    error => {
+      if (generation === formGeneration) captureConnectionError(error)
+      throw error
+    }
+  )
+}
 
 const finishPluginAction = () => {
   loading.value = false
@@ -513,7 +496,7 @@ const doSaveDs = (request): Promise<void> | undefined => {
         if (generation === formGeneration) loading.value = false
       })
   } else {
-    saveApi(request)
+    saveApi(request, true)
       .then(res => {
         if (generation !== formGeneration) return
         if (res !== undefined) {
@@ -522,8 +505,8 @@ const doSaveDs = (request): Promise<void> | undefined => {
           emits('refresh')
         }
       })
-      .catch(() => {
-        if (generation === formGeneration) loading.value = false
+      .catch(error => {
+        if (generation === formGeneration) captureConnectionError(error, true)
       })
       .finally(() => {
         if (generation === formGeneration) loading.value = false
