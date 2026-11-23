@@ -53,6 +53,8 @@ export function findResourceAsBase64(params) {
 export const fetchResourceImage = async (path: string, signal: AbortSignal): Promise<Blob> => {
   const response = await request.get<Promise<AxiosResponse<Blob>>>({
     url: path,
+    // Revalidate protected images without bypassing the browser cache.
+    headers: { 'Cache-Control': 'max-age=0', Pragma: false },
     responseType: 'blob',
     signal,
     handleErrorLocally: true
