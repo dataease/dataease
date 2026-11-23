@@ -2,6 +2,7 @@ services:
   task-actuator:
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease-sync-task:DE_TAG
     environment:
+      TZ: ${DE_RESOLVED_TIMEZONE:?请通过 dectl start 初始化部署时区}
       DE_SYNC_AUTH_ENABLED: ${DE_SYNC_AUTH_ENABLED:-false}
       DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:-}
     container_name: sync-task-actuator

@@ -5,7 +5,7 @@ services:
     privileged: true
     environment:
       - CONCURRENCY=${DE_PLAYWRIGHT_CONCURRENCY}
-      - TZ=Asia/Shanghai
+      - TZ=${DE_RESOLVED_TIMEZONE:?请通过 dectl start 初始化部署时区}
     volumes:
       - ${DE_BASE}/dataease2.0/logs:/opt/app/logs
     restart: unless-stopped

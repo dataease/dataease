@@ -217,8 +217,17 @@ function status() {
 
    _healthcheck
 }
+function _prepare_timezone() {
+   source "${DE_RUNNING_BASE}/bin/timezone.sh" || {
+      echo "时区组件加载失败，请从匹配版本安装包恢复 bin/timezone.sh" >&2
+      return 1
+   }
+   de_timezone_resolve || return 1
+   de_timezone_save "${DE_RUNNING_BASE}/.env" || return 1
+}
 function start() {
    echo
+   _prepare_timezone || return 1
    source "${DE_RUNNING_BASE}/bin/sync-auth.sh" || {
       echo "同步执行器鉴权组件加载失败，请从匹配版本安装包恢复 bin/sync-auth.sh 并检查读取权限，再执行 dectl start" >&2
       return 1
@@ -239,7 +248,8 @@ function stop() {
    ${compose_cmd} ${compose_files} down -v ${target}
 }
 function restart() {
-   stop
+   _prepare_timezone || return 1
+   stop || return 1
    start
 }
 function reload() {
