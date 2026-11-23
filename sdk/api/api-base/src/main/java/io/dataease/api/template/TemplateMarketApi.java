@@ -6,6 +6,7 @@ import io.dataease.api.template.vo.MarketMetaDataVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface TemplateMarketApi {
 
     @GetMapping("/search")
     @Operation(summary = "查询")
-    MarketBaseResponse searchTemplate();
+    MarketBaseResponse searchTemplate(@RequestParam(value = "localOnly", defaultValue = "false") boolean localOnly);
     @GetMapping("/searchRecommend")
     @Operation(summary = "查询基础信息")
     MarketBaseResponse searchTemplateRecommend();

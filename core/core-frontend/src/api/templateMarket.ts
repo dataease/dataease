@@ -1,8 +1,9 @@
 import request from '@/config/axios'
 
-export function searchMarket() {
+export function searchMarket(localOnly = false) {
   return request.get({
-    url: '/templateMarket/search'
+    url: '/templateMarket/search',
+    params: localOnly ? { localOnly } : undefined
   })
 }
 
