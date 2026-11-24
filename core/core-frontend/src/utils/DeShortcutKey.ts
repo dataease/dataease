@@ -183,7 +183,6 @@ function copy() {
 
 function paste() {
   copyStore.paste(false)
-  snapshotStore.recordSnapshotCache('key-paste')
 }
 
 function move(keyCode) {
