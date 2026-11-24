@@ -8,6 +8,8 @@ apisix:
     port: 9092
   data_encryption:
     enable_encrypt_fields: false
+  lua_module_hook: apisix.dataease_log_rotate
+
 deployment:
   admin:
     allow_admin:
@@ -23,3 +25,9 @@ deployment:
       - "http://apisix-etcd:2379"
     prefix: "/apisix"
     timeout: 30
+
+plugin_attr:
+  log-rotate:
+    interval: 86400
+    max_size: 52428800 # 50 MiB per log file
+    max_kept: 5 # Historical files per log

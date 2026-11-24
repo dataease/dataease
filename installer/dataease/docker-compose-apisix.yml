@@ -5,9 +5,15 @@ services:
     environment:
       - TZ=Asia/Shanghai
     restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - ${DE_BASE}/dataease3.0/apisix/apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
       - ${DE_BASE}/dataease3.0/apisix/logs:/usr/local/apisix/logs
+      - ${DE_BASE}/dataease3.0/apisix/hooks/log_rotate.lua:/usr/local/apisix/apisix/dataease_log_rotate.lua:ro
       - ${DE_BASE}/dataease3.0/apisix/plugins/cas-auth.lua:/usr/local/apisix/apisix/plugins/cas-auth.lua
       - ${DE_BASE}/dataease3.0/apisix/plugins/hmac-auth.lua:/usr/local/apisix/apisix/plugins/hmac-auth.lua
     depends_on:
