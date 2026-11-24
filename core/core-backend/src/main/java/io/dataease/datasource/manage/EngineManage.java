@@ -17,10 +17,7 @@ import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.ResultMessage;
 import io.dataease.template.dao.auto.entity.DeTemplateVersion;
 import io.dataease.template.dao.auto.mapper.DeTemplateVersionRepository;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.LocalModelUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +49,8 @@ public class EngineManage {
     private EngineConfigManage engineConfigManage;
     @Resource
     private CalciteProvider calciteProvider;
+    @Resource
+    private CommonThreadPool commonThreadPool;
     @Resource
     private DataSourceManage dataSourceManage;
     @Value("${dataease.path.engine:jdbc:h2:/opt/dataease3.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
@@ -99,9 +98,16 @@ public class EngineManage {
             Provider provider = ProviderFactory.getProvider(engine.getType());
             provider.checkStatus(datasourceRequest);
             status = "success";
-            if (provider instanceof CalciteProvider calciteProvider) {
+            if (provider instanceof CalciteProvider calciteProvider && updateStatus) {
                 calciteProvider.updateDsPoolAfterCheckStatus(datasource);
             }
+            commonThreadPool.addTask(() -> {
+                try {
+                    calciteProvider.updateDsPoolAfterCheckStatus(datasource);
+                } catch (Exception e) {
+                    LogUtil.error("Failed to update ds pool after check status: " + e.getMessage(), e);
+                }
+            });
         } catch (Exception e) {
             status = "Error";
             DEException.throwException("校验失败：" + e.getMessage());
@@ -363,8 +369,8 @@ public class EngineManage {
                     }
                 }
                 config.put("extraParams", Arrays.stream(params.split("&"))
-                        .filter(item -> !item.startsWith("currentSchema="))
-                        .collect(java.util.stream.Collectors.joining("&")));
+                    .filter(item -> !item.startsWith("currentSchema="))
+                    .collect(java.util.stream.Collectors.joining("&")));
             } else {
                 config.put("extraParams", "");
             }
@@ -441,8 +447,8 @@ public class EngineManage {
                     config.put("schema", schemaMatcher.group(2));
                 }
                 config.put("extraParams", Arrays.stream(params.split("&"))
-                        .filter(item -> !item.startsWith("schema="))
-                        .collect(java.util.stream.Collectors.joining("&")));
+                    .filter(item -> !item.startsWith("schema="))
+                    .collect(java.util.stream.Collectors.joining("&")));
             } else {
                 config.put("extraParams", "");
             }
@@ -578,11 +584,11 @@ public class EngineManage {
         }
         Map<String, JdbcUrlParser> map = getParserMap(env);
         return map.entrySet().stream()
-                .filter(e -> url.startsWith(e.getKey()))
-                .map(e -> e.getValue().parse(url, env))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+            .filter(e -> url.startsWith(e.getKey()))
+            .map(e -> e.getValue().parse(url, env))
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
 }
