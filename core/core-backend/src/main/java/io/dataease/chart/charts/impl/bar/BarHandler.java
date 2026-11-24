@@ -3,6 +3,7 @@ import io.dataease.utils.LogUtil;
 
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.ChartHandlerRegistrar;
+import jakarta.annotation.PostConstruct;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -22,6 +23,7 @@ import java.util.Map;
 @Component
 public class BarHandler extends YoyChartHandler {
 
+    @PostConstruct
     public void init() {
         ChartHandlerRegistrar.register(this.getRender(), "bar", this);
         ChartHandlerRegistrar.register(this.getRender(), "bar-horizontal", this);

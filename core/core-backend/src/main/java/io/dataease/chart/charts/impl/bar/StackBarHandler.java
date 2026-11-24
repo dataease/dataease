@@ -1,6 +1,7 @@
 package io.dataease.chart.charts.impl.bar;
 
 import io.dataease.chart.charts.ChartHandlerRegistrar;
+import jakarta.annotation.PostConstruct;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class StackBarHandler extends BarHandler {
     @Getter
     private String type = "bar-stack";
     @Override
+    @PostConstruct
     public void init() {
         ChartHandlerRegistrar.register(this.getRender(), "bar-stack", this);
         ChartHandlerRegistrar.register(this.getRender(), "bar-stack-horizontal", this);

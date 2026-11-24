@@ -1,6 +1,7 @@
 package io.dataease.chart.charts.impl.bar;
 
 import io.dataease.chart.charts.ChartHandlerRegistrar;
+import jakarta.annotation.PostConstruct;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class GroupBarHandler extends BarHandler {
         return result;
     }
 
+    @PostConstruct
     public void init() {
         ChartHandlerRegistrar.register(this.getRender(), this.getType(), this);
     }
