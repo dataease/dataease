@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -44,22 +45,28 @@ public class ExportTaskExecutionService {
     public Future<?> submit(String taskId, Runnable task) {
         ExportTaskHandle handle = new ExportTaskHandle(taskId, ExportTaskState.QUEUED);
         handles.put(taskId, handle);
-        Future<?> future = executor.submit(() -> {
-            handle.state = ExportTaskState.RUNNING;
-            try {
-                task.run();
-                if (handle.state != ExportTaskState.CANCELLING && handle.state != ExportTaskState.CANCELLED) {
-                    handle.state = ExportTaskState.SUCCESS;
+        try {
+            Future<?> future = executor.submit(() -> {
+                handle.state = ExportTaskState.RUNNING;
+                try {
+                    task.run();
+                    if (handle.state != ExportTaskState.CANCELLING && handle.state != ExportTaskState.CANCELLED) {
+                        handle.state = ExportTaskState.SUCCESS;
+                    }
+                } catch (Throwable e) {
+                    handle.state = handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED;
+                    logger.warn("Export task {} failed", taskId, e);
+                } finally {
+                    handles.remove(taskId);
                 }
-            } catch (Throwable e) {
-                handle.state = handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED;
-                logger.warn("Export task {} failed", taskId, e);
-            } finally {
-                handles.remove(taskId);
-            }
-        });
-        handle.future = future;
-        return future;
+            });
+            handle.future = future;
+            return future;
+        } catch (RejectedExecutionException rejected) {
+            // 提交被拒绝时同步回收登记句柄，避免 future 为 null 的残留登记。
+            handles.remove(taskId);
+            throw rejected;
+        }
     }
 
     public ExportTaskHandle get(String taskId) {
