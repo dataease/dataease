@@ -432,9 +432,16 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         dataSourceManage.checkName(dataSourceDTO);
-        Long executionId = datasourceSaveOrchestrator.commitEdit(requestDatasource);
+        boolean excel = dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name());
+        if (excel) {
+            ExcelUtils.mergeSheets(requestDatasource, sourceData);
+        }
+        Long executionId = excel ? datasourceSaveOrchestrator.begin(dataSourceDTO.getId(), null) : datasourceSaveOrchestrator.commitEdit(requestDatasource);
         try {
             strategyFor(dataSourceDTO.getType()).executeUpdate(dataSourceDTO, sourceData, requestDatasource, executionId);
+            if (excel) {
+                datasourceSaveOrchestrator.commitEdit(requestDatasource, executionId);
+            }
             datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         } catch (Exception e) {
             datasourceSaveOrchestrator.markFailure(executionId, "EXECUTE", e.getMessage());

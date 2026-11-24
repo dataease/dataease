@@ -64,12 +64,9 @@ public class ExcelWriteStrategy implements DatasourceWriteStrategy {
         requestDatasource.setEnableDataFill(null);
         if (Objects.equals(dto.getEditType(), REPLACE)) {
             datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
-            ExcelUtils.mergeSheets(requestDatasource, sourceData);
-            orchestrator.mark(executionId, "IMPORT", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         } else {
             datasourceSyncManage.extractExcelData(requestDatasource, "add_scope");
-            ExcelUtils.mergeSheets(requestDatasource, sourceData);
-            orchestrator.mark(executionId, "IMPORT", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         }
+        orchestrator.mark(executionId, "IMPORT", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
     }
 }

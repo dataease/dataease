@@ -36,10 +36,33 @@ public class DatasourceSaveOrchestrator {
     }
 
     @Transactional
-    public Long commitEdit(CoreDatasource record) {
+    public Long begin(Long dsId, String configVersion) {
         Long executionId = IDUtils.snowID();
+        saveExecution(executionId, dsId, configVersion, "PLAN", STATUS_PENDING, null);
+        return executionId;
+    }
+
+    @Transactional
+    public Long commitEdit(CoreDatasource record) {
+        return commitEdit(record, null);
+    }
+
+    @Transactional
+    public Long commitEdit(CoreDatasource record, Long executionId) {
+        if (executionId == null) {
+            executionId = IDUtils.snowID();
+        }
         dataSourceManage.innerEdit(record);
-        saveExecution(executionId, record.getId(), record.getUpdateTime() == null ? null : String.valueOf(record.getUpdateTime()), "COMMIT", STATUS_PENDING, null);
+        CoreDatasourceSaveExecution execution = executionRepository.findById(executionId).orElse(null);
+        if (execution == null) {
+            saveExecution(executionId, record.getId(), record.getUpdateTime() == null ? null : String.valueOf(record.getUpdateTime()), "COMMIT", STATUS_PENDING, null);
+        } else {
+            execution.setStep("COMMIT");
+            execution.setStatus(STATUS_PENDING);
+            execution.setConfigVersion(record.getUpdateTime() == null ? null : String.valueOf(record.getUpdateTime()));
+            execution.setUpdateTime(System.currentTimeMillis());
+            executionRepository.save(execution);
+        }
         return executionId;
     }
 
