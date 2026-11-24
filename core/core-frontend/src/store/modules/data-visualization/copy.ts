@@ -182,54 +182,63 @@ export const copyStore = defineStore('copy', {
       this.isCut = false
     },
 
-    paste(isMouse?) {
+    paste(isMouse = false) {
       if (!this.copyData) {
         return
       }
-      const dataArray = this.copyData.data
-      let i = 0
       const copyDataTemp = this.copyData
-      const moveTime = dataArray.length > 1 ? 300 : 10
-      const timeId = setInterval(function () {
-        if (i >= dataArray.length) {
-          clearInterval(timeId)
-        } else {
-          const data = dataArray[i]
-          if (dvInfo.value.type === 'dataV') {
-            if (isMouse) {
-              data.style.top = menuTop
-              data.style.left = menuLeft
-            } else {
-              data.style.top += 10
-              data.style.left += 10
-            }
+      const dataArray = copyDataTemp.data
+      const canvasType = dvInfo.value.type
+      const pasteComponent = (data, index: number) => {
+        if (canvasType === 'dataV') {
+          if (isMouse) {
+            data.style.top = menuTop.value
+            data.style.left = menuLeft.value
           } else {
-            // 向下移动一个高度矩阵单位
-            data.y = data.y + data.sizeY
+            data.style.top += 10
+            data.style.left += 10
           }
-          // 旧-新ID映射关系
-          const idMap = deepCopy(copyDataTemp.outerIdMap || {})
-          const newComponent = deepCopyHelper(data, idMap)
-          newComponent['category'] = 'base'
-          if (newComponent.canvasId.includes('Group')) {
-            newComponent.canvasId = 'canvas-main'
-          }
-          dvMainStore.addCopyComponent(newComponent, idMap, copyDataTemp.copyCanvasViewInfo)
-          if (dvMainStore.multiplexingStyleAdapt && copyDataTemp.copyFrom === 'multiplexing') {
-            adaptCurThemeCommonStyle(newComponent)
-          }
-          if (dvInfo.value.type === 'dashboard') {
-            eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
-          }
-          if (i === dataArray.length - 1) {
-            dvMainStore.setCurComponent({
-              component: newComponent,
-              index: componentData.value.length - 1
-            })
-          }
-          i++
+        } else {
+          // 向下移动一个高度矩阵单位
+          data.y = data.y + data.sizeY
         }
-      }, moveTime)
+        // 旧-新ID映射关系
+        const idMap = deepCopy(copyDataTemp.outerIdMap || {})
+        const newComponent = deepCopyHelper(data, idMap)
+        newComponent['category'] = 'base'
+        if (newComponent.canvasId.includes('Group')) {
+          newComponent.canvasId = 'canvas-main'
+        }
+        dvMainStore.addCopyComponent(newComponent, idMap, copyDataTemp.copyCanvasViewInfo)
+        if (dvMainStore.multiplexingStyleAdapt && copyDataTemp.copyFrom === 'multiplexing') {
+          adaptCurThemeCommonStyle(newComponent)
+        }
+        if (canvasType === 'dashboard') {
+          eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
+        }
+        if (index === dataArray.length - 1) {
+          dvMainStore.setCurComponent({
+            component: newComponent,
+            index: componentData.value.length - 1
+          })
+        }
+      }
+
+      if (canvasType === 'dataV') {
+        // 大屏粘贴后可能立即保存，组件与图表配置应在此次操作内一并更新。
+        dataArray.forEach(pasteComponent)
+      } else {
+        let index = 0
+        const moveTime = dataArray.length > 1 ? 300 : 10
+        const timeId = setInterval(() => {
+          if (index >= dataArray.length) {
+            clearInterval(timeId)
+            return
+          }
+          pasteComponent(dataArray[index], index)
+          index++
+        }, moveTime)
+      }
       snapshotStore.recordSnapshotCache('paste')
     },
     cut(curComponentData = componentData.value) {
