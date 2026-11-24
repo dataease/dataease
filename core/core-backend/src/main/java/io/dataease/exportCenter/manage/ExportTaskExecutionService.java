@@ -56,8 +56,6 @@ public class ExportTaskExecutionService {
                 } catch (Throwable e) {
                     handle.state = handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED;
                     logger.warn("Export task {} failed", taskId, e);
-                } finally {
-                    handles.remove(taskId);
                 }
             });
             handle.future = future;

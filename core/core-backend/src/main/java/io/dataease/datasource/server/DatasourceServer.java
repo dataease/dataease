@@ -378,7 +378,11 @@ public class DatasourceServer implements DatasourceApi {
             datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         } catch (Exception e) {
             datasourceSaveOrchestrator.mark(executionId, "EXECUTE", DatasourceSaveOrchestrator.STATUS_FAILED, e.getMessage());
-            throw new RuntimeException(e);
+            if (e instanceof DEException de) {
+                throw de;
+            }
+            DEException.throwException(e.getMessage());
+            return dataSourceDTO;
         }
         return dataSourceDTO;
     }
@@ -434,7 +438,11 @@ public class DatasourceServer implements DatasourceApi {
             datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         } catch (Exception e) {
             datasourceSaveOrchestrator.mark(executionId, "EXECUTE", DatasourceSaveOrchestrator.STATUS_FAILED, e.getMessage());
-            throw new RuntimeException(e);
+            if (e instanceof DEException de) {
+                throw de;
+            }
+            DEException.throwException(e.getMessage());
+            return dataSourceDTO;
         }
         return dataSourceDTO;
     }
