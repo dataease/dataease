@@ -25,6 +25,7 @@ import { securityConfig } from './hmac'
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
+    handleErrorLocally?: boolean
   }
 }
 
@@ -48,7 +49,7 @@ export const PATH_URL = embeddedStore.baseUrl ? embeddedStore?.baseUrl + embedde
 
 export interface AxiosInstanceWithLoading extends AxiosInstance {
   <T = any, R = AxiosResponse<T>, D = any>(
-    config: AxiosRequestConfig<D> & { loading?: boolean }
+    config: AxiosRequestConfig<D> & { loading?: boolean; handleErrorLocally?: boolean }
   ): Promise<R>
 }
 
@@ -226,6 +227,8 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosErrorWidthLoading<AxiosError>) => {
+    // Image failures stay local, as with native img requests; never clear the host session.
+    if (error.config?.handleErrorLocally) return Promise.reject(error)
     if (error.message?.includes('timeout of')) {
       requestStore.resetLoadingMap()
       ElMessage({
