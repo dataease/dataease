@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 public class PieHandler extends YoyChartHandler {
     @PostConstruct
     public void init() {
-        ChartHandlerRegistrar.register(this.getRender(), "pie", this);
-        ChartHandlerRegistrar.register(this.getRender(), "pie-rose", this);
-        ChartHandlerRegistrar.register(this.getRender(), "pie-donut", this);
-        ChartHandlerRegistrar.register(this.getRender(), "pie-donut-rose", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "pie", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "pie-rose", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "pie-donut", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "pie-donut-rose", this);
     }
 
     @Override

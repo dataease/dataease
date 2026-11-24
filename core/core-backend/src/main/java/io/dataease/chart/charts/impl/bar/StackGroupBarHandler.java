@@ -24,7 +24,7 @@ public class StackGroupBarHandler extends BarHandler {
 
     @PostConstruct
     public void init() {
-        ChartHandlerRegistrar.register(this.getRender(), this.getType(), this);
+        chartHandlerManager.registerChartHandler(this.getRender(), this.getType(), this);
     }
 
     @Override

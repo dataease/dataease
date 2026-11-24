@@ -21,10 +21,10 @@ public class StackBarHandler extends BarHandler {
     @Override
     @PostConstruct
     public void init() {
-        ChartHandlerRegistrar.register(this.getRender(), "bar-stack", this);
-        ChartHandlerRegistrar.register(this.getRender(), "bar-stack-horizontal", this);
-        ChartHandlerRegistrar.register(this.getRender(), "percentage-bar-stack", this);
-        ChartHandlerRegistrar.register(this.getRender(), "percentage-bar-stack-horizontal", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "bar-stack", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "bar-stack-horizontal", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "percentage-bar-stack", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "percentage-bar-stack-horizontal", this);
     }
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {

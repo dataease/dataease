@@ -3,6 +3,7 @@ package io.dataease.chart.charts.impl;
 import com.beust.jcommander.Strings;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.ChartHandlerManager;
+import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.utils.ChartDataBuild;
@@ -56,6 +57,8 @@ import java.util.stream.Collectors;
 @Component
 public class DefaultChartHandler extends AbstractChartPlugin {
     public static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
+    @Resource
+    protected ChartHandlerManager chartHandlerManager;
     @Resource
     protected DatasetTableFieldManage datasetTableFieldManage;
     @Resource

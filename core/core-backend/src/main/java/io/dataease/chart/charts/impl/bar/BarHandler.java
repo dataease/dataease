@@ -25,8 +25,8 @@ public class BarHandler extends YoyChartHandler {
 
     @PostConstruct
     public void init() {
-        ChartHandlerRegistrar.register(this.getRender(), "bar", this);
-        ChartHandlerRegistrar.register(this.getRender(), "bar-horizontal", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "bar", this);
+        chartHandlerManager.registerChartHandler(this.getRender(), "bar-horizontal", this);
     }
 
     @Override
