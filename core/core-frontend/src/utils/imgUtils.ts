@@ -1,3 +1,4 @@
+import { authenticatedImageUrl, waitForResourceImages } from './resourceImages'
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -20,6 +21,7 @@ export function formatterUrl(url: string) {
   return url.replace('//de2api', '/de2api')
 }
 export function imgUrlTrans(url) {
+  if (url?.startsWith('/static-resource/')) return authenticatedImageUrl(url)
   if (url) {
     if (typeof url === 'string' && url.indexOf('static-resource') > -1) {
       const rawUrl = url
@@ -83,41 +85,47 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
   }
   try {
     findStaticSource(function (staticResource) {
-      html2canvas(canvasDom).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-        const templateName = attachParams?.appName ? attachParams.appName : name
-        if (snapshot !== '') {
-          prePareTemplateBaseData(
-            dvInfo.value.id,
-            function ({ canvasDataResult, canvasStyleResult }) {
-              const templateInfo = {
-                name: templateName,
-                templateType: 'self',
-                snapshot: snapshot,
-                dvType: dvInfo.value.type,
-                nodeType: downloadType,
-                version: 3,
-                canvasStyleData: canvasStyleResult,
-                componentData: canvasDataResult,
-                dynamicData: JSON.stringify(canvasViewDataTemplate),
-                staticResource: JSON.stringify(staticResource || {}),
-                appData: attachParams ? JSON.stringify(attachParams) : null
+      waitForResourceImages(canvasDom)
+        .then(() => html2canvas(canvasDom))
+        .then(canvas => {
+          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+          const templateName = attachParams?.appName ? attachParams.appName : name
+          if (snapshot !== '') {
+            prePareTemplateBaseData(
+              dvInfo.value.id,
+              function ({ canvasDataResult, canvasStyleResult }) {
+                const templateInfo = {
+                  name: templateName,
+                  templateType: 'self',
+                  snapshot: snapshot,
+                  dvType: dvInfo.value.type,
+                  nodeType: downloadType,
+                  version: 3,
+                  canvasStyleData: canvasStyleResult,
+                  componentData: canvasDataResult,
+                  dynamicData: JSON.stringify(canvasViewDataTemplate),
+                  staticResource: JSON.stringify(staticResource || {}),
+                  appData: attachParams ? JSON.stringify(attachParams) : null
+                }
+                const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
+                if (downloadType === 'template') {
+                  FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
+                } else if (downloadType === 'app') {
+                  FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
+                }
+                if (callBack) {
+                  callBack()
+                }
               }
-              const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
-              if (downloadType === 'template') {
-                FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
-              } else if (downloadType === 'app') {
-                FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
-              }
-              if (callBack) {
-                callBack()
-              }
-            }
-          )
-        } else if (callBack) {
-          callBack()
-        }
-      })
+            )
+          } else if (callBack) {
+            callBack()
+          }
+        })
+        .catch(error => {
+          callBack?.()
+          console.error('Template image preparation failed', error)
+        })
     })
   } catch (e) {
     if (callBack) {
@@ -129,7 +137,8 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
 
 export function downloadCanvas(type, canvasDom, name, callBack?) {
   if (canvasDom) {
-    html2canvas(canvasDom)
+    waitForResourceImages(canvasDom)
+      .then(() => html2canvas(canvasDom))
       .then(canvas => {
         const dom = document.body.appendChild(canvas)
         dom.style.display = 'none'
@@ -164,7 +173,8 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
 }
 
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
-  domToPng(canvasDom, { scale: 3 })
+  waitForResourceImages(canvasDom)
+    .then(() => domToPng(canvasDom, { scale: 3 }))
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')
