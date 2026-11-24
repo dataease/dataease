@@ -135,7 +135,7 @@ defineExpose({ open })
         ></template>
       </el-input>
       <el-button text :aria-label="t('data_set.refresh_data')" @click="load">
-        <el-icon><iconRefresh /></el-icon>
+        <el-icon size="16"><iconRefresh /></el-icon>
       </el-button>
     </div>
     <div v-loading="loading" class="table-details-content">
@@ -196,10 +196,15 @@ defineExpose({ open })
   display: flex;
   align-items: center;
   gap: 12px;
+  border-bottom: 1px solid rgba(31, 35, 41, 0.15);
 
   .ed-tabs {
     flex: 1;
     min-width: 0;
+
+    :deep(.ed-tabs__nav-wrap::after) {
+      content: none;
+    }
   }
 
   .ed-input {
@@ -209,6 +214,10 @@ defineExpose({ open })
 
 .table-details-content {
   min-height: 400px;
+
+  :deep(.ed-table__header-wrapper) {
+    border-top: none;
+  }
 
   :deep(.ed-table .cell) {
     font-size: 14px;
