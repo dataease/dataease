@@ -29,6 +29,7 @@ const rules = {
 }
 const subject = ref()
 const subjectDialogShow = ref(false)
+const uploadKey = ref(0)
 const optType = ref('new')
 
 const resetForm = () => {
@@ -42,8 +43,9 @@ const title = computed(() =>
 
 const optInit = (subjectItem, opt) => {
   optType.value = opt
-  subjectDialogShow.value = true
   subjectForm.value = deepCopy(subjectItem)
+  uploadKey.value++
+  subjectDialogShow.value = true
 }
 
 const saveSubject = () => {
@@ -90,7 +92,12 @@ const onImgChange = imgUrl => {
         <template #label>
           <label class="m-label"> {{ t('components.cover') }} </label>
         </template>
-        <de-upload themes="light" :img-url="subjectForm.coverUrl" @onImgChange="onImgChange" />
+        <de-upload
+          :key="uploadKey"
+          themes="light"
+          :img-url="subjectForm.coverUrl"
+          @onImgChange="onImgChange"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
