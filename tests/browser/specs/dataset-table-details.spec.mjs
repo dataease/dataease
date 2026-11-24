@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('table details uses a 16px refresh icon and one border on both table headers', async ({
+test('table details uses a 16px refresh icon, a toolbar divider and single header borders', async ({
   page
 }) => {
   const errors = []
@@ -9,6 +9,10 @@ test('table details uses a 16px refresh icon and one border on both table header
   await page.goto('/')
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()
+
+  const toolbar = dialog.locator('.table-details-toolbar')
+  await expect(toolbar).toHaveCSS('border-bottom-width', '1px')
+  await expect(toolbar).toHaveCSS('border-bottom-color', 'rgba(31, 35, 41, 0.15)')
 
   const refreshIcon = dialog.getByRole('button', { name: '刷新' }).locator('.ed-icon svg')
   await expect(refreshIcon).toHaveCSS('width', '16px')
