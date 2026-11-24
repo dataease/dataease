@@ -1,11 +1,13 @@
 package io.dataease.datasource.strategy;
 
 import io.dataease.dao.auto.entity.CoreDatasource;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.manage.DatasourceInvokeManage;
 import io.dataease.datasource.manage.DatasourceSaveOrchestrator;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.server.DatasourceTaskServer;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -50,7 +52,7 @@ public class ApiWriteStrategy implements DatasourceWriteStrategy {
                 datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
             } catch (Exception e) {
                 orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, "Failed to create table " + datasourceRequest.getTable() + ": " + e.getMessage());
-                return;
+                DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ": " + e.getMessage());
             }
         }
         CoreDatasourceTask coreDatasourceTask = buildTask(dto, coreDatasource);
@@ -92,18 +94,47 @@ public class ApiWriteStrategy implements DatasourceWriteStrategy {
 
         CoreDatasourceTask coreDatasourceTask = buildTask(dto, requestDatasource);
         datasourceTaskServer.update(coreDatasourceTask);
-        for (String deleteTable : toDeleteTables) {
-            datasourceSyncManage.dropEngineTable(deleteTable);
-        }
-        for (String toCreateTable : toCreateTables) {
+
+        List<String> newTables = toCreateTables.stream().filter(t -> !toDeleteTables.contains(t)).collect(java.util.stream.Collectors.toList());
+        List<String> replacedTables = toCreateTables.stream().filter(toDeleteTables::contains).collect(java.util.stream.Collectors.toList());
+
+        // 新增表：先创建，失败不动旧表。
+        for (String toCreateTable : newTables) {
             datasourceRequest.setTable(toCreateTable);
             try {
                 datasourceSyncManage.createEngineTable(toCreateTable, (List<TableField>) datasourceInvokeManage.invokeMethod(dto.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest));
             } catch (Exception e) {
-                orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, "Failed to create table " + toCreateTable + ", " + e.getMessage());
-                return;
+                String message = "Failed to create table " + toCreateTable + ", " + e.getMessage();
+                orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, message);
+                DEException.throwException(message);
             }
         }
+
+        // 结构变化替换表：先建临时表，成功后 replaceTable 切换；失败清理临时表并保留旧表。
+        for (String replacedTable : replacedTables) {
+            String tmpTable = TableUtils.tmpName(replacedTable);
+            datasourceRequest.setTable(replacedTable);
+            try {
+                datasourceSyncManage.createEngineTable(tmpTable, (List<TableField>) datasourceInvokeManage.invokeMethod(dto.getType(), "getTableFields", DatasourceRequest.class, datasourceRequest));
+                datasourceSyncManage.replaceEngineTable(replacedTable);
+            } catch (Exception e) {
+                try {
+                    datasourceSyncManage.dropEngineTable(tmpTable);
+                } catch (Exception ignore) {
+                }
+                String message = "Failed to replace table " + replacedTable + ", " + e.getMessage();
+                orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, message);
+                DEException.throwException(message);
+            }
+        }
+
+        // 删除旧表（纯删除，不在替换集合中）。
+        for (String deleteTable : toDeleteTables) {
+            if (!replacedTables.contains(deleteTable)) {
+                datasourceSyncManage.dropEngineTable(deleteTable);
+            }
+        }
+
         datasourceSyncManage.deleteSchedule(datasourceTaskServer.selectByDSId(dto.getId()));
         datasourceSyncManage.addSchedule(coreDatasourceTask);
         orchestrator.mark(executionId, "SCHEDULE", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);

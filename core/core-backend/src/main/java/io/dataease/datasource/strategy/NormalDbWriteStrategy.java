@@ -5,6 +5,7 @@ import io.dataease.datasource.manage.DatasourceSaveOrchestrator;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.utils.LogUtil;
@@ -61,5 +62,6 @@ public class NormalDbWriteStrategy implements DatasourceWriteStrategy {
         }
         orchestrator.mark(executionId, step, DatasourceSaveOrchestrator.STATUS_FAILED, e.getMessage());
         LogUtil.error(e);
+        DEException.throwException(e.getMessage());
     }
 }

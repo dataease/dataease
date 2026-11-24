@@ -4,6 +4,7 @@ import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.manage.DatasourceSaveOrchestrator;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.provider.ExcelUtils;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -44,12 +45,14 @@ public class ExcelWriteStrategy implements DatasourceWriteStrategy {
             try {
                 datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
             } catch (Exception e) {
+                String message;
                 if (e.getMessage() != null && e.getMessage().toLowerCase().contains("Row size too large".toLowerCase())) {
-                    orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, "文本内容超出最大支持范围： " + datasourceRequest.getTable() + ", " + e.getMessage());
+                    message = "文本内容超出最大支持范围： " + datasourceRequest.getTable() + ", " + e.getMessage();
                 } else {
-                    orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, "Failed to create table " + datasourceRequest.getTable() + ", " + e.getMessage());
+                    message = "Failed to create table " + datasourceRequest.getTable() + ", " + e.getMessage();
                 }
-                return;
+                orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, message);
+                DEException.throwException(message);
             }
         }
         datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");

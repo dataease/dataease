@@ -331,8 +331,11 @@ public class DatasourceSyncManage {
         return selectedIndexes;
     }
 
-    private void replaceTable(String tableName) throws Exception {
-        CoreDeEngine engine = engineConfigManage.info();
+    public void replaceEngineTable(String tableName) throws Exception {
+        replaceTable(tableName);
+    }
+
+    private void replaceTable(String tableName) throws Exception {        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceDTO coreDatasource = new DatasourceDTO();

@@ -59,6 +59,23 @@ public class DatasourceSaveOrchestrator {
         executionRepository.save(execution);
     }
 
+    /** 只在当前不是 FAILED 时写失败，保留首个失败步骤与原因。 */
+    @Transactional
+    public void markFailure(Long executionId, String step, String result) {
+        if (executionId == null) {
+            return;
+        }
+        CoreDatasourceSaveExecution execution = executionRepository.findById(executionId).orElse(null);
+        if (execution == null || STATUS_FAILED.equals(execution.getStatus())) {
+            return;
+        }
+        execution.setStep(step);
+        execution.setStatus(STATUS_FAILED);
+        execution.setResult(result);
+        execution.setUpdateTime(System.currentTimeMillis());
+        executionRepository.save(execution);
+    }
+
     public List<CoreDatasourceSaveExecution> pendingExecutions() {
         return executionRepository.findByStatus(STATUS_PENDING);
     }
