@@ -82,6 +82,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -232,10 +238,18 @@ public class ExportCenterDownLoadManage {
                         .setSearchParams(searchParams)
                         .setWithoutLogs(true),
                     userId, org);
-                updateExportTaskSuccess(exportTarget, "100");
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTaskSuccess(exportTarget, "100");
+                    }
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                    }
             } finally {
                 LocaleContextHolder.resetLocaleContext();
                 V3UserUtil.clear();
@@ -264,10 +278,18 @@ public class ExportCenterDownLoadManage {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 LogGridRequest logGridRequest = JsonUtil.parseObject(request.get("logGridRequest").toString(), LogGridRequest.class);
                 getLogApi().writeExcel(exportTarget.filePath(), logGridRequest, scope);
-                updateExportTaskSuccess(exportTarget, "100");
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTaskSuccess(exportTarget, "100");
+                    }
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                    }
             } finally {
                 LocaleContextHolder.resetLocaleContext();
                 IPUtils.remove();
@@ -505,11 +527,19 @@ public class ExportCenterDownLoadManage {
                     fileOutputStream.flush();
                 }
                 wb.close();
-                updateExportTaskSuccess(exportTarget, "100");
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTaskSuccess(exportTarget, "100");
+                    }
 
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                    }
             } finally {
                 IPUtils.remove();
                 V3UserUtil.clear();
@@ -631,10 +661,18 @@ public class ExportCenterDownLoadManage {
                     outputStream.flush();
                 }
                 wb.close();
-                updateExportTaskSuccess(exportTarget, "100");
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTaskSuccess(exportTarget, "100");
+                    }
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                if (isCancelled(exportTarget.taskId())) {
+                        cleanupCancelledTask(exportTarget);
+                    } else {
+                        updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+                    }
             } finally {
                 IPUtils.remove();
                 V3UserUtil.clear();
@@ -707,6 +745,42 @@ public class ExportCenterDownLoadManage {
         } catch (IOException e) {
             DEException.throwException(e);
         }
+    }
+
+    private boolean isCancelled(String taskId) {
+        ExportTaskExecutionService.ExportTaskHandle handle = exportTaskExecutionService.get(taskId);
+        return handle == null
+                || handle.state == ExportTaskState.CANCELLING
+                || handle.state == ExportTaskState.CANCELLED;
+    }
+
+    private void cleanupCancelledTask(ExportTaskFileTarget exportTarget) {
+        String taskId = exportTarget.taskId();
+        try {
+            Path exportBasePath = Paths.get(exportData_path).toAbsolutePath().normalize();
+            Path exportTaskPath = exportBasePath.resolve(taskId).normalize();
+            if (exportTaskPath.startsWith(exportBasePath) && Files.exists(exportTaskPath)) {
+                Files.walkFileTree(exportTaskPath, new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        Files.deleteIfExists(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        if (exc != null) {
+                            throw exc;
+                        }
+                        Files.deleteIfExists(dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
+        } catch (IOException e) {
+            LogUtil.error("Failed to cleanup cancelled export task " + taskId, e);
+        }
+        coreExportTaskRepository.deleteById(taskId);
     }
 
     public void addWatermarkTools(Workbook wb) {
