@@ -792,7 +792,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
     }
     :deep(.field-type-drift-tip) {
       position: absolute;
-      right: 26px;
+      right: 38px;
       top: 50%;
       transform: translateY(-50%);
     }

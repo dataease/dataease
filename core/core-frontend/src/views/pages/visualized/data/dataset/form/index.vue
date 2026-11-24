@@ -2328,9 +2328,20 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             @command="handleNodeCommand"
           />
         </div>
-        <div v-show="editorStep === 'process'" class="sql-result" style="height: 100%">
+        <div
+          v-show="editorStep === 'process'"
+          class="sql-result"
+          :class="{ 'has-drift-bar': pendingTypeDriftCount }"
+          style="height: 100%"
+        >
           <div class="sql-title">
             <div class="field-data">
+              <el-checkbox
+                v-if="tabActive === 'manage' && pendingTypeDriftCount"
+                v-model="onlyPendingDrift"
+              >
+                {{ t('dataset.only_type_change_pending') }}
+              </el-checkbox>
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
@@ -2362,12 +2373,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               </template>
             </el-tab-pane>
           </el-tabs>
-          <div
-            v-if="pendingTypeDriftCount"
-            class="field-type-drift-bar"
-            :class="{ 'is-full-width': tabActive === 'preview' }"
-            role="status"
-          >
+          <div v-if="pendingTypeDriftCount" class="field-type-drift-bar" role="status">
             <span class="field-type-drift-bar-text">
               <el-icon
                 ><Icon><icon_warning_colorful class="svg-icon" /></Icon
@@ -2407,6 +2413,12 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
+                      <field-type-drift-tip
+                        v-if="getFieldTypeDrift(data) !== null"
+                        :current-type="getFieldTypeDriftBaseline(data)"
+                        :detected-type="getFieldTypeDrift(data)"
+                        @keep="confirmFieldTypeDrift(data)"
+                      />
                       <div class="operate child">
                         <field-more
                           :extField="data.extField"
@@ -2441,6 +2453,12 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
+                      <field-type-drift-tip
+                        v-if="getFieldTypeDrift(data) !== null"
+                        :current-type="getFieldTypeDriftBaseline(data)"
+                        :detected-type="getFieldTypeDrift(data)"
+                        @keep="confirmFieldTypeDrift(data)"
+                      />
                       <div class="operate child">
                         <field-more
                           :trans-type="t('data_set.convert_to_dimension')"
@@ -2500,11 +2518,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           </div>
           <div v-show="tabActive !== 'preview' && !!allfields.length" class="batch-area">
             <div class="manage-container">
-              <div v-if="pendingTypeDriftCount" class="field-type-drift-filter">
-                <el-checkbox v-model="onlyPendingDrift">{{
-                  t('dataset.only_type_change_pending')
-                }}</el-checkbox>
-              </div>
               <el-collapse v-model="state.fieldCollapse" class="style-collapse">
                 <el-collapse-item
                   v-if="!onlyPendingDrift || batchDimensions.length"
@@ -3727,7 +3740,16 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             top: 13px;
             width: 50%;
             z-index: 2;
-            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            :deep(.ed-checkbox) {
+              margin-right: 0;
+            }
+            :deep(.ed-checkbox__label) {
+              font-weight: 400;
+            }
           }
 
           .drag {
@@ -3755,6 +3777,18 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           .border-bottom-tab(24px);
           :deep(.ed-tabs__header::after) {
             display: none;
+          }
+        }
+
+        &.has-drift-bar {
+          .table-preview {
+            height: calc(100% - 142px);
+          }
+          .batch-area {
+            height: calc(100% - 141px);
+          }
+          .manage-container {
+            padding-top: 0;
           }
         }
 
@@ -3801,6 +3835,12 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               display: none;
             }
 
+            :deep(.ed-tree-node__expand-icon.is-leaf) {
+              box-sizing: border-box;
+              width: 15px;
+              padding: 6px 0;
+            }
+
             .custom-tree-node {
               width: calc(100% - 32px);
               display: flex;
@@ -3808,9 +3848,14 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               padding-right: 8px;
               box-sizing: content-box;
 
+              :deep(.field-type-drift-tip) {
+                flex-shrink: 0;
+                margin-left: 8px;
+              }
+
               .label-tooltip {
                 margin-left: 5.33px;
-                width: 70%;
+                max-width: 70%;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -3953,29 +3998,20 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin: 0 24px;
-  padding: 7px 10px;
-  border: 1px solid #ebc383;
-  border-radius: 4px;
-  background: #fff7e9;
-  color: #8c5108;
-  font-size: 13px;
-  &.is-full-width {
-    margin-inline: 0;
-  }
+  height: 54px;
+  box-sizing: border-box;
+  margin: 16px 24px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #fff5e6;
+  color: #1f2329;
+  font-size: 14px;
   .field-type-drift-bar-text {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     min-width: 0;
   }
-}
-
-.field-type-drift-filter {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  min-height: 34px;
 }
 
 .batch-manage-tab {
@@ -4024,7 +4060,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   }
   :deep(.field-type-drift-tip) {
     position: absolute;
-    right: 26px;
+    right: 38px;
     top: 50%;
     transform: translateY(-50%);
   }

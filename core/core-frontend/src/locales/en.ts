@@ -3394,7 +3394,7 @@ export default {
     batch_manage: 'Batch management',
     type_change_pending: '{count} field type(s) to confirm',
     type_change_pending_title: 'Field type to confirm',
-    only_type_change_pending: 'Only pending',
+    only_type_change_pending: 'Show only pending',
     type_change_not_auto: 'dataset field types were not changed automatically',
     current_field_type: 'Current field type',
     last_saved_field_type: 'Last saved field type',
