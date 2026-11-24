@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,9 +131,9 @@ public abstract class Provider {
 
 
     @Getter
-    private static final Map<Long, Integer> lPorts = new HashMap<>();
+    private static final Map<Long, Integer> lPorts = new ConcurrentHashMap<>();
     @Getter
-    private static final Map<Long, Session> sessions = new HashMap<>();
+    private static final Map<Long, Session> sessions = new ConcurrentHashMap<>();
 
     public Statement getStatement(Connection connection, int queryTimeout) {
         if (connection == null) {

@@ -4,18 +4,27 @@ import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import org.apache.calcite.adapter.jdbc.JdbcSchema;
+import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,6 +36,8 @@ public class Regression {
     private static final int ITERATIONS = 2000;
     private static final CountDownLatch QUERY_STARTED = new CountDownLatch(1);
     private static final CountDownLatch QUERY_RELEASE = new CountDownLatch(1);
+    private static final CountDownLatch CROSS_STARTED = new CountDownLatch(1);
+    private static final CountDownLatch CROSS_RELEASE = new CountDownLatch(1);
 
     private static DatasourceSchemaDTO datasource(long id) {
         var datasource = new DatasourceSchemaDTO();
@@ -62,9 +73,12 @@ public class Regression {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static void assertCrossResult(CalciteProvider provider) {
-        var result = provider.fetchResultField(crossRequest());
+        assertCrossResult(provider.fetchResultField(crossRequest()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void assertCrossResult(Map<String, Object> result) {
         assertFields((List<TableField>) result.get("fields"), "ORDER_ID", "ORDER_AMOUNT");
         var rows = (List<String[]>) result.get("data");
         if (rows.size() != 1 || !List.of(rows.getFirst()).equals(List.of("7", "99.25"))) {
@@ -216,6 +230,114 @@ public class Regression {
         return 1;
     }
 
+    private static void assertChartAmount(CalciteProvider provider, long id, String expected) {
+        var query = request(id);
+        query.setQuery("SELECT AMOUNT FROM OWNED_ORDERS");
+        var rows = (List<?>) provider.fetchResultField(query).get("data");
+        if (rows.size() != 1 || !expected.equals(((String[]) rows.getFirst())[0])) {
+            throw new AssertionError("Unexpected chart data for source " + id);
+        }
+    }
+
+    public static int waitForCrossRelease() throws InterruptedException {
+        CROSS_STARTED.countDown();
+        if (!CROSS_RELEASE.await(10, TimeUnit.SECONDS)) {
+            throw new AssertionError("Cross-source chart was not released");
+        }
+        return 7;
+    }
+
+    private static void blockedCrossChart(CalciteProvider provider, Connection anchor) throws Exception {
+        try (var sql = anchor.createStatement(); var workers = Executors.newVirtualThreadPerTaskExecutor()) {
+            var root = provider.take().unwrap(CalciteConnection.class).getRootSchema();
+            var oldPool = (BasicDataSource) root.getSubSchema("s_a_1").unwrap(JdbcSchema.class).getDataSource();
+            sql.execute("CREATE ALIAS CROSS_WAIT FOR 'Regression.waitForCrossRelease'");
+            sql.execute("CREATE VIEW OWNED_SLOW AS SELECT CROSS_WAIT() AS MARKER FROM OWNED_ORDERS");
+            var slow = crossRequest();
+            slow.setQuery("SELECT a.MARKER, b.AMOUNT FROM s_a_1.OWNED_SLOW a "
+                    + "JOIN s_a_2.OWNED_ORDERS b ON a.MARKER = b.ID");
+            var chart = workers.submit(() -> provider.fetchResultField(slow));
+            Future<?> refresh;
+            try {
+                if (!CROSS_STARTED.await(5, TimeUnit.SECONDS)) {
+                    if (chart.isDone()) chart.get();
+                    throw new AssertionError("Cross-source chart did not enter the database");
+                }
+                var singleChart = workers.submit(() -> assertChartAmount(provider, 2, "99.25"));
+                var crossChart = workers.submit(() -> assertCrossResult(provider));
+                var fields = workers.submit(() -> assertFields(provider.fetchTableField(crossRequest()), "ORDER_ID", "ORDER_AMOUNT"));
+                for (var other : List.of(singleChart, crossChart, fields)) {
+                    assertFinishes(other, "A slow cross-source chart blocked an independent query");
+                }
+                var switchSource = new FutureTask<Void>(() -> {
+                    var switched = datasource(1);
+                    switched.setConfiguration(datasource(2).getConfiguration());
+                    provider.update(switched);
+                    return null;
+                });
+                refresh = switchSource;
+                var refreshing = Thread.ofPlatform().daemon().start(switchSource);
+                awaitFrame(refreshing, "update", switchSource);
+                // Source 3 is independent even when a refresh is waiting on the running query.
+                assertFinishes(workers.submit(() -> assertChartAmount(provider, 3, "12.50")),
+                        "Refresh of a busy source blocked an unrelated chart");
+                if (oldPool.isClosed()) throw new AssertionError("Refresh closed a pool used by the running chart");
+            } finally {
+                CROSS_RELEASE.countDown();
+            }
+            var rows = (List<?>) chart.get().get("data");
+            if (rows.size() != 1 || !List.of((String[]) rows.getFirst()).equals(List.of("7", "99.25"))) {
+                throw new AssertionError("Incorrect result from the slow chart");
+            }
+            assertFinishes(refresh, "Refresh did not finish after cross-source SQL");
+            if (!oldPool.isClosed()) throw new AssertionError("Refresh leaked the previous pool");
+            assertChartAmount(provider, 1, "99.25");
+            provider.update(datasource(1));
+            sql.execute("DROP VIEW OWNED_SLOW");
+        }
+        System.out.println("PASS: single-source and overlapping cross-source chart/field requests finish during slow cross-source SQL");
+    }
+
+    private static void assertFinishes(Future<?> future, String message) throws Exception {
+        try {
+            future.get(3, TimeUnit.SECONDS);
+        } catch (TimeoutException timeout) {
+            throw new AssertionError(message, timeout);
+        }
+    }
+
+    private static void awaitFrame(Thread thread, String method, Future<?> task) throws Exception {
+        long end = System.nanoTime() + TimeUnit.SECONDS.toNanos(3);
+        while (Arrays.stream(thread.getStackTrace()).noneMatch(frame -> frame.getMethodName().equals(method))) {
+            if (task.isDone()) {
+                task.get();
+                throw new AssertionError("Request finished before it could be observed in " + method);
+            }
+            if (System.nanoTime() >= end) throw new AssertionError("Did not reach " + method);
+            Thread.sleep(5);
+        }
+    }
+
+    private static void exhaustedPool(CalciteProvider provider) throws Exception {
+        try (var workers = Executors.newVirtualThreadPerTaskExecutor()) {
+            var held = new ArrayList<Connection>();
+            var task = new FutureTask<Void>(() -> assertChartAmount(provider, 1, "12.50"), null);
+            try {
+                for (int i = 0; i < 4; i++) {
+                    held.add(provider.getWriteConnection(datasource(1)).getConnection());
+                }
+                var thread = Thread.ofPlatform().name("chart-waiting-for-pool").daemon().start(task);
+                awaitFrame(thread, "borrowObject", task);
+                assertFinishes(workers.submit(() -> assertChartAmount(provider, 2, "99.25")),
+                        "Waiting for a connection to source 1 blocked single-source queries on source 2");
+            } finally {
+                for (var connection : held) connection.close();
+            }
+            assertFinishes(task, "Borrower did not finish after a connection became available");
+        }
+        System.out.println("PASS: an exhausted source pool does not stall another source's JDBC queries");
+    }
+
     private static void sourceQueryDoesNotBlockSchema(CalciteProvider provider) throws Exception {
         var failure = new AtomicReference<Throwable>();
         var queryDone = new CountDownLatch(1);
@@ -223,7 +345,10 @@ public class Regression {
         query.setQuery("SELECT OWNED_WAIT() AS RESULT");
         var thread = new Thread(() -> {
             try {
-                provider.fetchResultField(query);
+                var rows = (List<?>) provider.fetchResultField(query).get("data");
+                if (rows.size() != 1 || !"1".equals(((String[]) rows.getFirst())[0])) {
+                    throw new AssertionError("Incorrect result from already-borrowed JDBC connection");
+                }
             } catch (Throwable error) {
                 failure.set(error);
             } finally {
@@ -239,6 +364,9 @@ public class Regression {
             var refreshDone = new CountDownLatch(1);
             var refresh = new Thread(() -> {
                 try {
+                    assertChartAmount(provider, 1, "12.50");
+                    provider.update(datasource(1));
+                    assertChartAmount(provider, 1, "12.50");
                     provider.update(datasource(3));
                     assertTables(provider, 3);
                 } catch (Throwable error) {
@@ -258,7 +386,7 @@ public class Regression {
         if (!queryDone.await(3, TimeUnit.SECONDS) || failure.get() != null) {
             throw new AssertionError("Owned blocked source query failed", failure.get());
         }
-        System.out.println("PASS: blocked single-source JDBC execution does not block schema refresh/table read");
+        System.out.println("PASS: with pool capacity a second chart on the same source and an unrelated refresh both finish during slow JDBC SQL");
     }
 
     public static void main(String[] args) {
@@ -284,9 +412,24 @@ public class Regression {
                 provider.update(datasource(id));
             }
             assertTables(provider, 1);
+            sourceQueryDoesNotBlockSchema(provider);
+            exhaustedPool(provider);
+            blockedCrossChart(provider, anchor);
+            var legacy = crossRequest();
+            legacy.setDsList(null);
+            assertCrossResult(provider.fetchResultField(legacy));
+            var invalid = crossRequest();
+            invalid.setQuery("SELECT MISSING_COLUMN FROM s_a_1.OWNED_ORDERS");
+            try {
+                provider.fetchResultField(invalid);
+                throw new AssertionError("Invalid SQL should fail");
+            } catch (DEException expected) {
+                provider.update(datasource(1));
+                assertCrossResult(provider);
+            }
+            System.out.println("PASS: legacy cross-source requests and refresh after a failed query");
             concurrentRefreshAndTables(provider);
             concurrentLifecycleAndQueries(provider);
-            sourceQueryDoesNotBlockSchema(provider);
             for (long id = 1; id <= ALIASES; id++) {
                 provider.delete(deletion(id));
             }
