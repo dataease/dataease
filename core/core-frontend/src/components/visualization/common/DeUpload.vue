@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { reactive, ref, toRefs, watch } from 'vue'
 import { imageUploadItem } from '@/utils/resourceImages'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -61,7 +61,6 @@ const props = defineProps({
 })
 
 const { themes, imgUrl } = toRefs(props)
-const imgUrlInner = ref(null)
 
 const state = reactive({
   fileList: [],
@@ -70,18 +69,8 @@ const state = reactive({
   uploadDisabled: false
 })
 
-const init = () => {
-  imgUrlInner.value = imgUrl.value
-  if (imgUrlInner.value) {
-    state.fileList.push(imageUploadItem(imgUrlInner.value))
-  } else {
-    state.fileList = []
-  }
-}
-
 const handleRemove = () => {
   state.uploadDisabled = false
-  imgUrlInner.value = null
   state.fileList = []
   emits('onImgChange')
 }
@@ -92,7 +81,6 @@ const handlePictureCardPreview = file => {
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
     snapshotStore.recordSnapshotCache('deUpload')
-    imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })
 }
@@ -105,7 +93,6 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     snapshotStore.recordSnapshotCache('uploadFileResult')
-    imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })
 }
@@ -114,15 +101,12 @@ const sizeMessage = () => {
   ElMessage.error(t('visualization.pic_size_error'))
 }
 
-onMounted(() => {
-  init()
-})
-
 watch(
-  () => imgUrl.value,
-  () => {
-    init()
-  }
+  imgUrl,
+  url => {
+    state.fileList = url ? [imageUploadItem(url)] : []
+  },
+  { immediate: true }
 )
 </script>
 
