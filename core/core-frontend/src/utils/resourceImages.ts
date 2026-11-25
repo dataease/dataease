@@ -1,4 +1,4 @@
-import { computed, effectScope, reactive, watch } from 'vue'
+import { computed, effectScope, reactive, ref, watch } from 'vue'
 import { getActivePinia } from 'pinia'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -7,6 +7,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { clearResourceImages, resourceImage } from './resourceImageCache'
 
 const importPreviews = new Map<string, string>()
+const isPageActive = ref(true)
 export const registerMaterialPreviews = (bundle?: {
   files: { reference: string; format: string; content: string }[]
 }) => {
@@ -69,7 +70,14 @@ const initialize = () => {
   window.addEventListener('pagehide', clearMaterialPreviews)
   window.addEventListener('hashchange', clearMaterialPreviews)
   window.addEventListener('popstate', clearMaterialPreviews)
-  window.addEventListener('pagehide', clearResourceImages)
+  window.addEventListener('pagehide', () => {
+    // Clearing the reactive cache can render image consumers again before the page unloads.
+    isPageActive.value = false
+    clearResourceImages()
+  })
+  window.addEventListener('pageshow', () => {
+    isPageActive.value = true
+  })
   window.addEventListener('hashchange', clearResourceImages)
   window.addEventListener('popstate', clearResourceImages)
   window.addEventListener('storage', event => {
@@ -90,6 +98,7 @@ export const authenticatedImageUrl = (url: string): string => {
   }
   if (!url?.startsWith('/static-resource/')) return url
   initialize()
+  if (!isPageActive.value) return ''
   const file = url.slice('/static-resource/'.length)
   if (!file || /[/\\?#%]/.test(file) || file.includes('..')) return ''
   const path = '/static-resource/' + encodeURIComponent(file)
