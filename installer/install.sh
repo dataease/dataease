@@ -140,6 +140,11 @@ function prepare_de_run_base() {
    cd $DE_RUN_BASE
    env | grep DE_ >.env
 
+   # 企业版只通过网关访问；容器网络内的 8100 仍供 APISIX 转发使用。
+   if [[ $DE_INSTALL_MODE != "community" ]]; then
+      sed -i '/^    ports:$/,+1d' docker-compose.yml
+   fi
+
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
    mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report,report-artifacts}
    mkdir -p ${DE_RUN_BASE}/apisix/logs

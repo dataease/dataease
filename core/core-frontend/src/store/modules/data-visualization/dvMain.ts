@@ -1597,6 +1597,17 @@ export const dvMainStore = defineStore('dataVisualization', {
                   }
                   filterItem['defaultMapValue'] = queryMapParams
                   filterItem['mapValue'] = queryMapParams
+                  if (sourceData.option === 'jump') {
+                    // 首次枚举请求前同步级联查询值，避免依赖上级组件重新选择。
+                    element.cascade?.forEach(cascade => {
+                      cascade.forEach(item => {
+                        if (item.datasetId.split('--')[1] === filterItem.id) {
+                          item.selectValue = [...queryMapParams]
+                          item.currentSelectValue = [...queryMapParams]
+                        }
+                      })
+                    })
+                  }
                 } else if (filterItem.displayType === '1') {
                   // 1 时间类型
                   filterItem['selectValue'] = queryParams[0]

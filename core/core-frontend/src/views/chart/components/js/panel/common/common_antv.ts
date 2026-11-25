@@ -35,6 +35,7 @@ import type { Plot } from '@antv/g2plot'
 import type { PickOptions } from '@antv/g2plot/lib/core/plot'
 import { assign, defaults, filter, find, isEmpty, merge } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { isMobile } from '@/utils/utils'
 import { GaodeMap, MapLibre, TMap, TencentMap } from '@antv/l7-maps'
 import {
@@ -2161,7 +2162,7 @@ const G2_TOOLTIP_WRAPPER = 'g2-tooltip-wrapper'
 const G2_TOOLTIP_VIEWPORT_GAP = 12
 const tooltipLayoutFrames = new WeakMap<HTMLElement, number>()
 
-function updateTooltipLayout(container: HTMLElement) {
+function updateTooltipLayout(container: HTMLElement, boundaryElement?: HTMLElement | null) {
   const previousFrame = tooltipLayoutFrames.get(container)
   if (previousFrame) {
     window.cancelAnimationFrame(previousFrame)
@@ -2170,6 +2171,38 @@ function updateTooltipLayout(container: HTMLElement) {
     tooltipLayoutFrames.delete(container)
     if (!container.isConnected || container.style.display === 'none') {
       return
+    }
+
+    const viewport = window.visualViewport
+    const viewportLeft = viewport?.offsetLeft ?? 0
+    const viewportTop = viewport?.offsetTop ?? 0
+    const viewportRight = viewportLeft + (viewport?.width ?? window.innerWidth)
+    const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight)
+    const boundary = boundaryElement?.getBoundingClientRect()
+    const minLeft = Math.max(viewportLeft, boundary?.left ?? viewportLeft) + G2_TOOLTIP_VIEWPORT_GAP
+    const minTop = Math.max(viewportTop, boundary?.top ?? viewportTop) + G2_TOOLTIP_VIEWPORT_GAP
+    const maxRight =
+      Math.min(viewportRight, boundary?.right ?? viewportRight) - G2_TOOLTIP_VIEWPORT_GAP
+    const maxBottom =
+      Math.min(viewportBottom, boundary?.bottom ?? viewportBottom) - G2_TOOLTIP_VIEWPORT_GAP
+
+    const transition = container.style.transition
+    if (boundary) {
+      if (maxRight <= minLeft || maxBottom <= minTop) {
+        container.style.display = 'none'
+        return
+      }
+      // 先停止位置过渡，避免按过渡中的坐标修正后仍越界
+      container.style.transition = 'none'
+      container.style.overflowX = 'auto'
+      // 提示框挂在 body 下，同页嵌入时仍需按所属容器限制尺寸
+      container.style.setProperty('--de-tooltip-max-width', `${maxRight - minLeft}px`)
+      container.style.setProperty('--de-tooltip-max-height', `${maxBottom - minTop}px`)
+    } else {
+      // 悬停和放大后恢复原有尺寸上限
+      container.style.overflowX = 'hidden'
+      container.style.removeProperty('--de-tooltip-max-width')
+      container.style.removeProperty('--de-tooltip-max-height')
     }
 
     container.querySelectorAll<HTMLElement>('.g2-tooltip-name').forEach(element => {
@@ -2182,15 +2215,6 @@ function updateTooltipLayout(container: HTMLElement) {
     })
 
     const rect = container.getBoundingClientRect()
-    const viewport = window.visualViewport
-    const viewportLeft = viewport?.offsetLeft ?? 0
-    const viewportTop = viewport?.offsetTop ?? 0
-    const viewportRight = viewportLeft + (viewport?.width ?? window.innerWidth)
-    const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight)
-    const minLeft = viewportLeft + G2_TOOLTIP_VIEWPORT_GAP
-    const minTop = viewportTop + G2_TOOLTIP_VIEWPORT_GAP
-    const maxRight = viewportRight - G2_TOOLTIP_VIEWPORT_GAP
-    const maxBottom = viewportBottom - G2_TOOLTIP_VIEWPORT_GAP
     let offsetX = rect.right > maxRight ? maxRight - rect.right : 0
     let offsetY = rect.bottom > maxBottom ? maxBottom - rect.bottom : 0
 
@@ -2205,6 +2229,11 @@ function updateTooltipLayout(container: HTMLElement) {
     }
     if (offsetY) {
       container.style.top = `${Number.parseFloat(container.style.top || '0') + offsetY}px`
+    }
+    if (boundary) {
+      // 立即应用边界校正后恢复过渡，避免新位置再次参与动画
+      container.getBoundingClientRect()
+      container.style.transition = transition
     }
   })
   tooltipLayoutFrames.set(container, frame)
@@ -2229,10 +2258,10 @@ export function getTooltipContainer(id, chartContainer?: string) {
   // 优先按内容自然宽度展开，达到视口上限后再触发提示项换行
   g2Tooltip.style.width = 'max-content'
   g2Tooltip.style.boxSizing = 'border-box'
-  g2Tooltip.style.maxHeight = '50%'
+  g2Tooltip.style.maxHeight = 'min(50%, var(--de-tooltip-max-height, 100vh))'
   g2Tooltip.style.maxWidth = useMobileTooltipLayout()
-    ? 'calc(100vw - 24px)'
-    : 'min(33.333333vw, calc(100vw - 24px))'
+    ? 'min(calc(100vw - 24px), var(--de-tooltip-max-width, 100vw))'
+    : 'min(33.333333vw, calc(100vw - 24px), var(--de-tooltip-max-width, 100vw))'
   g2Tooltip.style.overflowX = 'hidden'
   g2Tooltip.style.overflowY = 'auto'
   g2Tooltip.style.display = 'none'
@@ -2417,7 +2446,15 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     const { x, y } = calculateTooltipPosition(chart, isCarousel, tooltipCtl, chartElement, event)
     plot.chart.getTheme().components.tooltip.x = x
     plot.chart.getTheme().components.tooltip.y = y
-    container && updateTooltipLayout(container)
+    // Vue 挂载节点对应当前嵌入实例，避免误用宿主页面或其他嵌入实例的边界
+    const embeddedContainer =
+      isCarousel &&
+      !enlargeElement &&
+      !document.fullscreenElement &&
+      useAppStoreWithOut().getIsDataEaseBi
+        ? plot.chart.ele.closest<HTMLElement>('[data-v-app]')
+        : null
+    container && updateTooltipLayout(container, embeddedContainer)
   })
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#hideTooltip
   plot.on('plot:leave', () => {

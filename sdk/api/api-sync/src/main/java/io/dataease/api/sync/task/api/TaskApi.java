@@ -63,6 +63,11 @@ public interface TaskApi {
     @DePermit("m:read")
     TaskInfoVO getOneById(@PathVariable(value = "id") String id) throws DEException;
 
+    @Operation(hidden = true)
+    @GetMapping("/basic/{id}")
+    @DePermit("m:read")
+    TaskInfoVO getBasicById(@PathVariable(value = "id") String id) throws DEException;
+
     @Operation(summary = "执行一次任务")
     @GetMapping("/execute/{id}")
     @DePermit("m:manage")

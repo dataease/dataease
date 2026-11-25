@@ -67,7 +67,7 @@ public class WhereTree2Str {
         if (ObjectUtils.isEmpty(tree)) {
             return null;
         }
-        String logic = tree.getLogic();
+        String logic = Utils.transLogic(tree.getLogic());
         List<DatasetRowPermissionsTreeItem> items = tree.getItems();
         List<String> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(items)) {

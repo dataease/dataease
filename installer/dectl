@@ -107,6 +107,7 @@ function _healthcheck() {
    echo
    echo "【警告】服务在等待时间内未完全启动！请稍后使用 dectl status 检查服务运行状况。"
    echo
+   return 1
 }
 function _get_current_version() {
    de_current_version=$(grep "^    image:.*dataease:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease:' '{print $2}')
@@ -228,8 +229,13 @@ function start() {
    fi
    _check_apisix_init
    _generate_compose_file_args
-   cd ${DE_RUNNING_BASE}
-   ${compose_cmd} ${compose_files} up -d
+   cd "${DE_RUNNING_BASE}" || return 1
+   local compose_status=0
+   ${compose_cmd} ${compose_files} up -d || compose_status=$?
+   if [[ "$compose_status" -ne 0 ]]; then
+      echo "容器更新失败，请检查 Compose 错误信息" >&2
+      return "$compose_status"
+   fi
    _healthcheck
 }
 function stop() {
@@ -239,7 +245,7 @@ function stop() {
    ${compose_cmd} ${compose_files} down -v ${target}
 }
 function restart() {
-   stop
+   stop || return 1
    start
 }
 function reload() {

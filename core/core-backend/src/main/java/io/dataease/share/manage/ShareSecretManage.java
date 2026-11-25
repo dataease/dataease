@@ -11,6 +11,7 @@ import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component("shareSecretManage")
+@Profile("!desktop")
 public class ShareSecretManage {
 
     private static final String SECRET_KEY = "linkPwd";

@@ -65,11 +65,12 @@ public class WhitelistUtils {
         if (StringUtils.startsWith(requestURI, AuthConstant.DE_OIDCAPI_PREFIX)) {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_OIDCAPI_PREFIX, "");
         }
+        // Uploaded images must authenticate before legacy static suffix rules are evaluated.
+        if (StringUtils.startsWith(requestURI, "/static-resource/")) return false;
         return WHITE_PATH.contains(requestURI)
                 || StringUtils.endsWithAny(requestURI, ".gif",".ico", "js", ".css", "svg", "png", "jpg", "js.map", ".otf", ".ttf", ".woff2")
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
-                || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
                 || StringUtils.startsWithAny(requestURI, "/share/validate")

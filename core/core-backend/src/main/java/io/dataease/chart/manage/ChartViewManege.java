@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.dao.ext.entity.ChartBasePO;
@@ -36,6 +37,7 @@ import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -269,10 +271,7 @@ public class ChartViewManege {
         if (details == null) {
             return null;
         }
-        if (details.getSceneId() != null
-                && !corePermissionManage.checkAuth(new BusiPerCheckDTO(details.getSceneId(), AuthEnum.READ))) {
-            DEException.throwException(Translator.get("i18n_no_permission"));
-        }
+        checkSceneReadPermission(details.getSceneId());
         if (forThreshold) {
             ChartExtRequest chartExtRequest = details.getChartExtRequest();
             if (chartExtRequest == null) {
@@ -291,12 +290,33 @@ public class ChartViewManege {
         return getChart(id, resourceTable, false);
     }
 
+    private void checkSceneReadPermission(Long sceneId) {
+        if (sceneId == null) {
+            return;
+        }
+        DataVisualizationInfo visualization = visualizationInfoMapper.selectById(sceneId);
+        boolean allowed = false;
+        if (visualization != null && Boolean.FALSE.equals(visualization.getDeleteFlag())) {
+            if (Objects.equals(visualization.getPid(), -1L)) {
+                // 复制后尚未正式保存的画布没有权限资源记录，仅允许当前组织内的创建者读取。
+                TokenUserBO user = AuthUtils.getUser();
+                allowed = user != null && user.getUserId() != null && user.getDefaultOid() != null
+                        && Objects.equals(visualization.getCreateBy(), user.getUserId().toString())
+                        && Objects.equals(visualization.getOrgId(), user.getDefaultOid());
+            } else {
+                allowed = corePermissionManage.checkAuth(new BusiPerCheckDTO(sceneId, AuthEnum.READ));
+            }
+        }
+        if (!allowed) {
+            DEException.throwException(Translator.get("i18n_no_permission"));
+        }
+    }
+
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId, ChartViewDTO chartViewDTO) {
         if (chartId != null) {
             CoreChartView chart = coreChartViewMapper.selectById(chartId);
-            if (chart != null && chart.getSceneId() != null
-                    && !corePermissionManage.checkAuth(new BusiPerCheckDTO(chart.getSceneId(), AuthEnum.READ))) {
-                DEException.throwException(Translator.get("i18n_no_permission"));
+            if (chart != null) {
+                checkSceneReadPermission(chart.getSceneId());
             }
         }
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();

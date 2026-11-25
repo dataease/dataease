@@ -31,6 +31,8 @@ import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,8 +72,8 @@ public class CoreVisualizationManage {
     @Resource
     private ChartViewManege chartViewManege;
 
-    @Resource
-    private XpackShareManage xpackShareManage;
+    @Autowired
+    private ObjectProvider<XpackShareManage> xpackShareManage;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -133,7 +135,7 @@ public class CoreVisualizationManage {
 
         if(!ModelUtils.isDesktop()){
             // 删除分享相关资源
-            xpackShareManage.deleteByResource(id);
+            xpackShareManage.getObject().deleteByResource(id);
         }
 
         // 删除可视化资源

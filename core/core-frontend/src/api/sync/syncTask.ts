@@ -113,6 +113,7 @@ export interface ITarget {
   incrementFieldType: string
   remarks: string
   faultToleranceRate: number
+  dorisBatchSize?: number | null
   incrementOffset: number
   incrementOffsetUnit: string
 }
@@ -222,6 +223,10 @@ export const batchRemoveApi = (taskIds: string[]) => {
 
 export const modifyApi = (data: ITaskInfoUpdateReq) => {
   return request.post({ url: `/sync/task/update`, data: data })
+}
+
+export const findTaskBasicInfoByIdApi = (taskId: string) => {
+  return request.get({ url: `/sync/task/basic/${taskId}` })
 }
 
 export const findTaskInfoByIdApi = (taskId: string) => {

@@ -59,17 +59,19 @@ const props = defineProps({
 })
 
 const classBackground = computed(() => {
+  const url = imgUrlTrans(thumbnailUrl.value)
   return {
     width: props.width + 'px',
     height: props.width * 0.58 + 'px',
-    background: `url(${imgUrlTrans(thumbnailUrl.value)
-      .replace(/\(/g, '%28')
-      .replace(/\)/g, '%29')}) no-repeat`,
+    background: url
+      ? `url(${url.replace(/\(/g, '%28').replace(/\)/g, '%29')}) no-repeat`
+      : undefined,
     'background-size': `100% 100%`
   }
 })
 
 const thumbnailUrl = computed(() => {
+  if (!props.template.thumbnail) return undefined
   if (
     props.template.thumbnail.indexOf('http') > -1 ||
     props.template.thumbnail.indexOf('static-resource') > -1

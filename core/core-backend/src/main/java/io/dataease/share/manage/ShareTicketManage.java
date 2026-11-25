@@ -22,6 +22,7 @@ import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@Profile("!desktop")
 public class ShareTicketManage {
 
     @Resource

@@ -48,3 +48,13 @@ export function findResourceAsBase64(params) {
     data: params
   })
 }
+
+export const fetchResourceImage = async (path: string, signal: AbortSignal): Promise<Blob> => {
+  const response = await request.get<Promise<{ data: Blob }>>({
+    url: path,
+    responseType: 'blob',
+    signal,
+    handleErrorLocally: true
+  })
+  return response.data
+}
