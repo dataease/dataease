@@ -3,8 +3,9 @@ import {
   authenticatedImageUrl,
   waitForResourceImages
 } from '@/utils/resourceImages'
-import { user, embedded, link } from './boundary.js'
+import { user, embedded, link, useCache } from './boundary.js'
 window.fixture = {
+  cache: useCache().wsCache,
   user,
   embedded,
   link,
