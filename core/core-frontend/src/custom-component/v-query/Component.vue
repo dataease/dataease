@@ -1121,6 +1121,13 @@ const autoStyle = computed(() => {
     height: v-bind(boxHeight);
   }
 
+  /* element-plus hardcodes line-height/height at 24px, which clips the custom font size */
+  :deep(.ed-select__input),
+  :deep(.ed-select__placeholder) {
+    height: auto;
+    line-height: normal;
+  }
+
   .ed-button--primary {
     --ed-button-bg-color: v-bind(btnHoverStyle.rawColor);
     --ed-button-border-color: v-bind(btnHoverStyle.rawColor);
