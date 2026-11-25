@@ -1,95 +1,38 @@
 <script setup lang="ts">
-import {
-  toRefs,
-  computed,
-  ref,
-  effectScope,
-  onMounted,
-  onBeforeUnmount,
-  type CSSProperties
-} from 'vue'
-import { throttle } from 'lodash-es'
-import { useEventListener } from '@vueuse/core'
+import { computed, ref } from 'vue'
+
 const props = defineProps({
   modelValue: Boolean,
-  imageUrl: String
-})
-
-type ImageViewerAction = 'zoomIn' | 'zoomOut' | 'clockwise' | 'anticlockwise'
-
-const transform = ref({
-  scale: 1
-})
-const scopeEventListener = effectScope()
-const { modelValue, imageUrl } = toRefs(props)
-const imgStyle = computed(() => {
-  const { scale } = transform.value
-  const style: CSSProperties = {
-    transform: `scale(${scale})`
-  }
-  return style
-})
-
-const handleActions = (action: ImageViewerAction, options = {}) => {
-  const { zoomRate } = {
-    zoomRate: 1.4,
-    ...options
-  }
-  switch (action) {
-    case 'zoomOut':
-      if (transform.value.scale > 0.2) {
-        transform.value.scale = Number.parseFloat((transform.value.scale / zoomRate).toFixed(3))
-      }
-      break
-    case 'zoomIn':
-      if (transform.value.scale < 7) {
-        transform.value.scale = Number.parseFloat((transform.value.scale * zoomRate).toFixed(3))
-      }
-      break
-  }
-}
-
-const mousewheelHandler = throttle((e: WheelEvent | any /* TODO: wheelDelta is deprecated */) => {
-  const delta = e.wheelDelta ? e.wheelDelta : -e.detail
-  if (delta > 0) {
-    handleActions('zoomIn', {
-      zoomRate: 1.2,
-      enableTransition: false
-    })
-  } else {
-    handleActions('zoomOut', {
-      zoomRate: 1.2,
-      enableTransition: false
-    })
-  }
-})
-
-onMounted(() => {
-  scopeEventListener.run(() => {
-    useEventListener(document, 'mousewheel', mousewheelHandler)
-  })
-})
-onBeforeUnmount(() => {
-  scopeEventListener.stop()
+  imageUrl: String,
+  fitToWindow: Boolean
 })
 const emits = defineEmits(['update:modelValue'])
-const HandleBeforeClose = () => {
-  transform.value.scale = 1
-  modelValue.value = false
-  emits('update:modelValue', false)
+
+const scale = ref(1)
+const imgStyle = computed(() =>
+  props.fitToWindow ? undefined : { transform: `scale(${scale.value})` }
+)
+
+const handleWheel = (event: WheelEvent) => {
+  if (props.fitToWindow || !event.deltaY) return
+  event.preventDefault()
+  const ratio = event.deltaY < 0 ? 1.2 : 1 / 1.2
+  scale.value = Math.min(7, Math.max(0.2, Number((scale.value * ratio).toFixed(3))))
 }
 </script>
 
 <template>
   <el-dialog
-    class="img-enlarge-dialog"
+    :class="fitToWindow ? undefined : 'img-enlarge-dialog'"
+    :width="fitToWindow ? 'min(960px, calc(100% - 32px))' : undefined"
+    :align-center="fitToWindow"
     append-to-body
-    :before-close="HandleBeforeClose"
     destroy-on-close
-    close-on-click-modal
-    v-model="modelValue"
+    :model-value="modelValue"
+    @update:model-value="emits('update:modelValue', $event)"
+    @closed="scale = 1"
   >
-    <div class="img-content 13">
+    <div class="img-content" :class="{ 'img-content--fit': fitToWindow }" @wheel="handleWheel">
       <img :style="imgStyle" :src="imageUrl" alt="Preview Image" />
     </div>
   </el-dialog>
@@ -105,6 +48,24 @@ const HandleBeforeClose = () => {
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+}
+
+.img-content--fit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: min(720px, calc(100dvh - 112px));
   }
 }
 </style>
