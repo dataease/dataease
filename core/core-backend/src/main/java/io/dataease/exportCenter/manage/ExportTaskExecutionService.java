@@ -47,14 +47,15 @@ public class ExportTaskExecutionService {
         handles.put(taskId, handle);
         try {
             Future<?> future = executor.submit(() -> {
-                handle.state = ExportTaskState.RUNNING;
+                if (!handle.tryStart()) {
+                    // 排队阶段已被原子取消，不执行任务体。
+                    return;
+                }
                 try {
                     task.run();
-                    if (handle.state != ExportTaskState.CANCELLING && handle.state != ExportTaskState.CANCELLED) {
-                        handle.state = ExportTaskState.SUCCESS;
-                    }
+                    handle.complete(ExportTaskState.SUCCESS);
                 } catch (Throwable e) {
-                    handle.state = handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED;
+                    handle.complete(handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED);
                     logger.warn("Export task {} failed", taskId, e);
                 }
             });
@@ -71,21 +72,13 @@ public class ExportTaskExecutionService {
         return handles.get(taskId);
     }
 
-    public boolean cancel(String taskId) {
+    /** 原子判断并取消任务，返回实际取消的是排队任务还是运行中任务。 */
+    public CancelResult cancel(String taskId) {
         ExportTaskHandle handle = handles.get(taskId);
         if (handle == null) {
-            return false;
+            return CancelResult.NOT_FOUND;
         }
-        if (handle.state == ExportTaskState.QUEUED) {
-            handle.state = ExportTaskState.CANCELLED;
-            handles.remove(taskId);
-            return handle.future == null || handle.future.cancel(false);
-        }
-        if (handle.state == ExportTaskState.RUNNING) {
-            handle.state = ExportTaskState.CANCELLING;
-            return handle.future.cancel(true);
-        }
-        return false;
+        return handle.cancel();
     }
 
     /** 返回已结束并被移除的 taskId，供上层推送状态与清理。 */
@@ -109,6 +102,12 @@ public class ExportTaskExecutionService {
         logger.info("Export task execution metrics: active={}", handles.size());
     }
 
+    public enum CancelResult {
+        QUEUED_CANCELLED,
+        RUNNING_MARKED,
+        NOT_FOUND
+    }
+
     public static class ExportTaskHandle {
         public final String taskId;
         public volatile ExportTaskState state;
@@ -117,6 +116,44 @@ public class ExportTaskExecutionService {
         ExportTaskHandle(String taskId, ExportTaskState state) {
             this.taskId = taskId;
             this.state = state;
+        }
+
+        /** 排队→运行 的原子切换；若排队阶段已被取消则返回 false，任务体不执行。 */
+        synchronized boolean tryStart() {
+            if (state == ExportTaskState.QUEUED) {
+                state = ExportTaskState.RUNNING;
+                return true;
+            }
+            return false;
+        }
+
+        /** 原子判断当前状态并取消，返回实际取消的是排队任务还是运行中任务。 */
+        synchronized CancelResult cancel() {
+            if (state == ExportTaskState.QUEUED) {
+                state = ExportTaskState.CANCELLED;
+                if (future != null) {
+                    future.cancel(false);
+                }
+                return CancelResult.QUEUED_CANCELLED;
+            }
+            if (state == ExportTaskState.RUNNING) {
+                state = ExportTaskState.CANCELLING;
+                if (future != null) {
+                    future.cancel(true);
+                }
+                return CancelResult.RUNNING_MARKED;
+            }
+            return CancelResult.NOT_FOUND;
+        }
+
+        synchronized void complete(ExportTaskState terminalState) {
+            if (state == ExportTaskState.CANCELLING) {
+                state = ExportTaskState.CANCELLED;
+                return;
+            }
+            if (state != ExportTaskState.CANCELLED) {
+                state = terminalState;
+            }
         }
     }
 }

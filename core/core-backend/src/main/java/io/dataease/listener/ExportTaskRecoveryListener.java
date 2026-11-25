@@ -22,12 +22,22 @@ public class ExportTaskRecoveryListener implements ApplicationListener<Applicati
     @Resource
     private CoreExportTaskRepository coreExportTaskRepository;
 
+    @org.springframework.beans.factory.annotation.Value("${dataease.export.instance-id:}")
+    private String exportInstanceId;
+
+    private static final long STALE_TASK_MILLIS = 30 * 60 * 1000L;
+
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        String hostName = hostName();
+        String instanceId = instanceId();
+        long now = System.currentTimeMillis();
         List<CoreExportTask> pending = coreExportTaskRepository.findByExportStatusIn(List.of("PENDING", "IN_PROGRESS"));
         for (CoreExportTask task : pending) {
-            if (task.getExportMachineName() != null && !task.getExportMachineName().equals(hostName)) {
+            String owner = task.getExportMachineName();
+            boolean orphaned = owner == null || owner.isBlank()
+                    || owner.equals(instanceId)
+                    || (task.getExportTime() != null && now - task.getExportTime() > STALE_TASK_MILLIS);
+            if (!orphaned) {
                 continue;
             }
             task.setExportStatus("FAILED");
@@ -35,6 +45,13 @@ public class ExportTaskRecoveryListener implements ApplicationListener<Applicati
             coreExportTaskRepository.saveAndFlush(task);
             LogUtil.warn("Recovered export task " + task.getId() + " after restart, marked FAILED for manual retry");
         }
+    }
+
+    private String instanceId() {
+        if (exportInstanceId != null && !exportInstanceId.isBlank()) {
+            return exportInstanceId;
+        }
+        return hostName();
     }
 
     private String hostName() {

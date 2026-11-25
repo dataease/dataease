@@ -75,6 +75,8 @@ public class ExportCenterManage implements BaseExportApi {
     private SysParameterManage sysParameterManage;
     @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
+    @Value("${dataease.export.instance-id:}")
+    private String exportInstanceId;
     @Autowired
     private CoreExportDownloadTaskRepository coreExportDownloadTaskRepository;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
@@ -232,6 +234,9 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     private String hostName() {
+        if (StringUtils.isNotBlank(exportInstanceId)) {
+            return exportInstanceId;
+        }
         String hostname = null;
         try {
             InetAddress localMachine = InetAddress.getLocalHost();
@@ -354,10 +359,8 @@ public class ExportCenterManage implements BaseExportApi {
             return;
         }
         String id = validateExportTaskId(exportTask.getId());
-        ExportTaskExecutionService.ExportTaskHandle handle = exportTaskExecutionService.get(id);
-        boolean queued = handle != null && handle.state == ExportTaskState.QUEUED;
-        boolean cancelled = exportTaskExecutionService.cancel(id);
-        if (cancelled && !queued) {
+        ExportTaskExecutionService.CancelResult result = exportTaskExecutionService.cancel(id);
+        if (result == ExportTaskExecutionService.CancelResult.RUNNING_MARKED) {
             // 运行中：真实 Future 已收到中断，任务退出后再清理文件与记录。
             exportTask.setExportStatus("IN_PROGRESS");
             coreExportTaskRepository.saveAndFlush(exportTask);

@@ -11,6 +11,7 @@ import io.dataease.datasource.provider.*;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.ConnectionObj;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -31,6 +32,8 @@ import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -358,18 +361,31 @@ public class DatasourceSyncManage {
         }
     }
 
-    private void replaceTable(String tableName) throws Exception {        CoreDeEngine engine = engineConfigManage.info();
+    private void replaceTable(String tableName) throws Exception {
+        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        DatasourceDTO coreDatasource = new DatasourceDTO();
-        BeanUtils.copyBean(coreDatasource, engine);
-        datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         String[] replaceTableSql = engineProvider.replaceTable(tableName, engine).split(";");
-        for (int i = 0; i < replaceTableSql.length; i++) {
-            if (StringUtils.isNotEmpty(replaceTableSql[i])) {
-                datasourceRequest.setQuery(replaceTableSql[i]);
-                provider.execDDL(datasourceRequest);
+        DatasourceDTO coreDatasource = new DatasourceDTO();
+        BeanUtils.copyBean(coreDatasource, engine);
+        try (ConnectionObj conObj = provider.getConnection(coreDatasource)) {
+            Connection connection = conObj.getConnection();
+            boolean autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try {
+                for (String sql : replaceTableSql) {
+                    if (StringUtils.isNotEmpty(sql)) {
+                        try (Statement statement = connection.createStatement()) {
+                            statement.execute(sql);
+                        }
+                    }
+                }
+                connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(autoCommit);
             }
         }
     }
