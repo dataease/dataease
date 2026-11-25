@@ -118,3 +118,79 @@ test('export waits; late old response cannot overwrite new identity', async ({
   await page.evaluate(() => window.fixture.wait())
   await loaded(page)
 })
+
+// Use real useCache storage prefixes and real cross-page storage events.
+test('unrelated and unchanged storage writes preserve loaded images', async ({
+  page,
+  context
+}) => {
+  let requests = 0
+  await context.route('**/de2api/static-resource/*', async (route) => {
+    const target = route.request().frame().page() === page
+    if (target) requests++
+    await route.fulfill({ contentType: 'image/png', body: png })
+  })
+  await page.goto('/')
+  await loaded(page)
+  const writer = await context.newPage()
+  await writer.goto('/')
+  await loaded(writer)
+  await page.evaluate(() => {
+    window.storageEvents = 0
+    window.addEventListener('storage', () => window.storageEvents++)
+  })
+  await writer.evaluate(() =>
+    localStorage.setItem('unrelated-preference', 'dark')
+  )
+  await expect.poll(() => page.evaluate(() => window.storageEvents)).toBe(1)
+  await loaded(page)
+  expect(requests).toBe(1)
+
+  await writer.evaluate(() => window.fixture.cache.set('user.token', 'login-a'))
+  await expect.poll(() => requests).toBe(2)
+  await loaded(page)
+  // Change serialized storage without changing the cached token value.
+  await writer.evaluate(() => {
+    const key = Object.keys(localStorage).find((key) =>
+      key.endsWith('user.token')
+    )
+    localStorage.setItem(key, localStorage.getItem(key) + ' ')
+  })
+  await expect.poll(() => page.evaluate(() => window.storageEvents)).toBe(3)
+  await loaded(page)
+  expect(requests).toBe(2)
+})
+
+test('cross-page identity change and cache clear invalidate pending images', async ({
+  page,
+  context
+}) => {
+  let requests = 0
+  let release
+  const gate = new Promise((resolve) => {
+    release = resolve
+  })
+  await context.route('**/de2api/static-resource/*', async (route) => {
+    const target = route.request().frame().page() === page
+    if (target) requests++
+    if (target && requests === 1) await gate
+    await route.fulfill({ contentType: 'image/png', body: png }).catch(() => {})
+  })
+  await page.goto('/')
+  await expect.poll(() => requests).toBe(1)
+  const writer = await context.newPage()
+  await writer.goto('/')
+  await loaded(writer)
+  await writer.evaluate(() => window.fixture.cache.set('user.token', 'login-b'))
+  await expect.poll(() => requests).toBe(2)
+  await loaded(page)
+  release()
+  await page.evaluate(() => window.fixture.wait())
+  await loaded(page)
+  await writer.evaluate(() => window.fixture.cache.set('user.oid', '2'))
+  await expect.poll(() => requests).toBe(3)
+  await loaded(page)
+  await writer.evaluate(() => localStorage.clear())
+  await expect.poll(() => requests).toBe(4)
+  await loaded(page)
+})

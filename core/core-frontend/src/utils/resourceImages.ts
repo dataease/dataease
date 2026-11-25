@@ -61,7 +61,10 @@ export const authenticatedImageUrl = (path: string): string => {
     window.addEventListener('pagehide', clearResourceImages)
     window.addEventListener('hashchange', clearResourceImages)
     window.addEventListener('popstate', clearResourceImages)
-    window.addEventListener('storage', clearResourceImages)
+    window.addEventListener('storage', () => {
+      // Other tabs may write unrelated metadata without changing image authorization.
+      if (scope && identity() !== scope) clearResourceImages()
+    })
   }
   const current = identity()
   if (scope !== current) {

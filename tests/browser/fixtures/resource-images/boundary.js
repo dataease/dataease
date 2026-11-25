@@ -1,4 +1,6 @@
 import { reactive } from 'vue'
+import { useCache } from '../../../../core/core-frontend/src/hooks/web/useCache'
+export { useCache }
 export const user = reactive({ getToken: 'login-a', getUid: '1', getOid: '1' })
 export const embedded = reactive({
   token: '',
@@ -8,7 +10,7 @@ export const link = reactive({ getLinkToken: '' })
 export const useUserStoreWithOut = () => user
 export const useEmbedded = () => embedded
 export const useLinkStoreWithOut = () => link
-export const useCache = () => ({ wsCache: { get: () => null } })
+
 export const fetchResourceImage = async (path, signal) => {
   const response = await fetch('/de2api' + path, {
     signal,
