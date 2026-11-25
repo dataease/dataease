@@ -100,20 +100,9 @@ const initUniver = () => {
  * Get current snapshot data
  */
 const getSheetData = (): string => {
-  if (!univerInstance?.univer) {
-    return serializeSheetData(createDefaultWorkbookData())
-  }
-
-  // Get snapshot from univer instance
-  try {
-    const univerApi = univerInstance.univerApi
-    const workbook = univerApi.getActiveWorkbook()
-    if (!workbook) return serializeSheetData(createDefaultWorkbookData())
-    const snapshot = workbook.save()
-    return serializeSheetData(snapshot)
-  } catch (e) {}
-
-  return serializeSheetData(createDefaultWorkbookData())
+  const workbook = univerInstance?.univerApi.getActiveWorkbook()
+  // 实例初始化期间使用传入的导入稿；已就绪的实例取快照失败时由调用方中止保存。
+  return serializeSheetData(workbook ? workbook.save() : workbookData)
 }
 
 /**

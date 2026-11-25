@@ -33,6 +33,17 @@ import type {
 } from '@/views/menu/spreadsheet/api/index'
 import UniverSheet from '@/views/menu/spreadsheet/components/UniverSheet.vue'
 import SpreadsheetToolbar from '@/views/menu/spreadsheet/components/SpreadsheetToolbar.vue'
+import SpreadsheetExcelImportDialog from '@/views/menu/spreadsheet/components/SpreadsheetExcelImportDialog.vue'
+import {
+  appendImportedSheets,
+  getCurrentSheetNames
+} from '@/views/menu/spreadsheet/excel-import/append'
+import {
+  takeEmbeddedImportDraft,
+  takeImportDraft,
+  type ExcelImportDraft
+} from '@/views/menu/spreadsheet/excel-import/draft'
+import type { ImportedSheet } from '@/views/menu/spreadsheet/excel-import/protocol'
 import SpreadsheetResourceGroupOpt from '@/views/menu/spreadsheet/components/SpreadsheetResourceGroupOpt.vue'
 import PluginActionToolbar from '@/views/menu/spreadsheet/components/PluginActionToolbar.vue'
 import PluginRenderIndicator from '@/views/menu/spreadsheet/components/PluginRenderIndicator.vue'
@@ -44,12 +55,13 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useResizeObserver } from '@vueuse/core'
 import { onInitReady } from '@/utils/canvasUtils'
-import type { IWorkbookData } from '@univerjs/core'
+import { mergeWorksheetSnapshotWithDefault, type IWorkbookData } from '@univerjs/core'
 import { ISidebarService } from '@univerjs/ui'
 import {
   createDefaultWorkbookData,
   parseSheetData,
-  serializeSheetData
+  serializeSheetData,
+  type UniverInstance
 } from '@/views/menu/spreadsheet/utils/univerConfig'
 import { loadSpreadsheetBindingContext } from '@/views/menu/spreadsheet/utils/binding-context'
 import { SPREADSHEET_EVENTS } from '@/views/menu/spreadsheet/utils/events'
@@ -84,6 +96,7 @@ const isEmbedded = appStore.getIsDataEaseBi || appStore.getIsIframe
 const session = reactive({
   id: router.currentRoute.value.query.id as string | undefined,
   mode: router.currentRoute.value.query.opt as string | undefined,
+  importId: router.currentRoute.value.query.importId as string | undefined,
   pid: router.currentRoute.value.query.pid as string | undefined
 })
 if (isEmbedded) {
@@ -108,11 +121,13 @@ const routePid = computed(() => {
   return router.currentRoute.value.query.pid as string | undefined
 })
 const editorRoutePath = router.currentRoute.value.path
+const routeImportId = computed(() => router.currentRoute.value.query.importId as string | undefined)
 const sessionMatchesRoute = computed(
   () =>
     isEmbedded ||
     (router.currentRoute.value.path === editorRoutePath &&
       session.id === routeSheetId.value &&
+      session.importId === routeImportId.value &&
       session.mode === routeMode.value)
 )
 let sessionRevision = 0
@@ -157,6 +172,39 @@ const closePreviewOnFullscreenExit = ref(false)
 const datasetReplacementVisible = ref(false)
 const datasetReplacementScope = ref<DatasetReplacementScope>('workbook')
 const datasetReplacementComponentId = ref<string>()
+const importTarget = shallowRef<UniverInstance>()
+const importDateSystem = computed(() =>
+  importTarget.value?.univerApi.getActiveWorkbook()?.getWorkbook().getDateSystem()
+)
+const importVisible = ref(false)
+const importExistingNames = ref<string[]>([])
+let applyingImport = false
+
+const openExcelImport = () => {
+  const instance = univerSheetRef.value?.getUniverInstance()
+  if (!instance || !sessionAvailable.value || mutating.value || previewVisible.value) return
+  importTarget.value = instance
+  importExistingNames.value = getCurrentSheetNames(instance)
+  importVisible.value = true
+}
+
+const appendFromExcel = (sheets: ImportedSheet[]) => {
+  const target = importTarget.value
+  if (!target || target !== univerInstanceRef.value || !sessionAvailable.value || mutating.value) {
+    throw new Error(t('spreadsheet.excel_import.applyFailed'))
+  }
+  // 仅在整批追加成功后标记草稿，回滚中的 Univer 事件不能触发保存。
+  applyingImport = true
+  try {
+    if (!appendImportedSheets(target, sheets)) {
+      importExistingNames.value = getCurrentSheetNames(target)
+      throw new Error(t('spreadsheet.excel_import.applyFailed'))
+    }
+  } finally {
+    applyingImport = false
+  }
+  markSpreadsheetChanged()
+}
 
 const resourceGroupOpt = ref()
 const resourceGroupOptShow = ref(false)
@@ -231,8 +279,10 @@ const syncDraftCache = async () => {
   }
 
   const currentRevision = draftCheckRevision
+  let rawSheetData: string | undefined
   try {
-    const currentSheetData = await cleanSheetData(getCurrentRawSheetData())
+    rawSheetData = getCurrentRawSheetData()
+    const currentSheetData = await cleanSheetData(rawSheetData)
     if (currentRevision !== draftCheckRevision) {
       return
     }
@@ -252,13 +302,13 @@ const syncDraftCache = async () => {
     }
     draftCheckPending = false
     hasChanges.value = true
-    cacheCurrentDraft(getCurrentRawSheetData())
+    if (rawSheetData) cacheCurrentDraft(rawSheetData)
     console.warn('[Spreadsheet] Failed to compare spreadsheet draft:', error)
   }
 }
 
 const markSpreadsheetChanged = () => {
-  if (loading.value) {
+  if (loading.value || applyingImport) {
     return
   }
   if (session.mode !== 'edit' || !session.id) {
@@ -296,7 +346,11 @@ const cacheRawDraftBeforeUnload = () => {
     return
   }
   // 页面卸载阶段不能等待异步清理；恢复时会再次经过快照清理器。
-  cacheCurrentDraft(getCurrentRawSheetData())
+  try {
+    cacheCurrentDraft(getCurrentRawSheetData())
+  } catch (error) {
+    console.warn('[Spreadsheet] Failed to capture spreadsheet draft:', error)
+  }
 }
 
 const handleBeforeCreateDataset = async (): Promise<boolean> => {
@@ -380,6 +434,8 @@ const applyPluginEditorPayload = (payload: PluginEditPayload | null): void => {
 
 const resetWorkbookEditor = () => {
   loading.value = true
+  importVisible.value = false
+  importTarget.value = undefined
   outerParamsVisible.value = false
   openingOuterParams.value = false
   stopDraftCheck()
@@ -550,9 +606,7 @@ const persistSpreadsheet = async (
   try {
     await flushDraftBeforeLeaving()
     if (!isCurrentSession(revision)) return undefined
-    const rawSheetDataStr =
-      univerSheetRef.value?.getSheetData() ||
-      JSON.stringify(workbookData.value || createLocalizedDefaultWorkbookData())
+    const rawSheetDataStr = getCurrentRawSheetData()
     const cleanedSheetData = await pluginSnapshotCleaningService.clean(JSON.parse(rawSheetDataStr))
     if (!isCurrentSession(revision)) return undefined
     const currentSheetDataStr = serializeSheetData(cleanedSheetData)
@@ -579,6 +633,7 @@ const persistSpreadsheet = async (
     session.id = String(result.id)
     session.pid = String(result.pid ?? 0)
     session.mode = 'edit'
+    session.importId = undefined
     spreadsheetStatus.value = result.status ?? SpreadsheetPublishStatus.Unpublished
     spreadsheetRemark.value = result.remark ?? spreadsheetRemark.value
     spreadsheetVersion.value = result.version ?? spreadsheetVersion.value
@@ -917,7 +972,7 @@ const handlePreview = async (fullscreen = false) => {
 
   try {
     if (!isCurrentSession(revision)) return
-    const rawSnapshot = univerSheetRef.value?.getSheetData()
+    const rawSnapshot = getCurrentRawSheetData()
     const snapshot = parseSheetData(rawSnapshot) ?? createLocalizedDefaultWorkbookData()
     const cleanedSnapshot = await pluginSnapshotCleaningService.clean(snapshot)
     if (!isCurrentSession(revision)) return
@@ -931,6 +986,8 @@ const handlePreview = async (fullscreen = false) => {
     closePreviewOnFullscreenExit.value = enteredFullscreen
     previewVisible.value = true
     previewOpened = true
+  } catch (error) {
+    if (isCurrentSession(revision)) presentError(error, t('spreadsheet.load_error'))
   } finally {
     if (!previewOpened && enteredFullscreen && document.fullscreenElement === editorRootRef.value) {
       await document.exitFullscreen()
@@ -1020,6 +1077,7 @@ const loadSpreadsheet = async () => {
   closePreviewOnFullscreenExit.value = false
   session.id = routeSheetId.value
   session.mode = routeMode.value
+  session.importId = routeImportId.value
   session.pid = routePid.value
   if (editorRootRef.value && document.fullscreenElement === editorRootRef.value) {
     await document.exitFullscreen().catch(error => console.warn(error))
@@ -1030,7 +1088,37 @@ const loadSpreadsheet = async () => {
 
   const sheetId = session.id
   if (!sheetId) {
-    workbookData.value = createLocalizedDefaultWorkbookData()
+    try {
+      let draft: ExcelImportDraft | undefined
+      if (isEmbedded) {
+        draft = takeEmbeddedImportDraft()
+      } else if (session.importId) {
+        draft = await takeImportDraft(session.importId)
+        if (!isCurrentSession(revision)) return
+        if (!draft) {
+          ElMessage.error(t('spreadsheet.excel_import.draftUnavailable'))
+          await handleBack()
+          return
+        }
+      }
+      const workbook = createLocalizedDefaultWorkbookData()
+      if (draft) {
+        spreadsheetName.value = draft.name
+        workbook.name = draft.name
+        workbook.sheetOrder = draft.sheets.map(sheet => sheet.id)
+        workbook.sheets = Object.fromEntries(
+          draft.sheets.map(sheet => [sheet.id, mergeWorksheetSnapshotWithDefault(sheet)])
+        )
+        hasChanges.value = true
+      }
+      workbookData.value = workbook
+    } catch (error) {
+      if (isCurrentSession(revision)) {
+        presentError(error, t('spreadsheet.excel_import.applyFailed'))
+        await handleBack()
+      }
+      return
+    }
     loading.value = false
     return
   }
@@ -1072,13 +1160,24 @@ const loadSpreadsheet = async () => {
 
 if (!isEmbedded) {
   onBeforeRouteUpdate((to, from) => {
-    if (to.query.id === from.query.id && to.query.opt === from.query.opt) return true
+    if (
+      to.query.id === from.query.id &&
+      to.query.opt === from.query.opt &&
+      to.query.importId === from.query.importId
+    )
+      return true
     // 新建保存只补充当前会话的 ID，不属于切换资源。
-    if (!loading.value && to.query.id === session.id && to.query.opt === session.mode) return true
+    if (
+      !loading.value &&
+      to.query.id === session.id &&
+      to.query.opt === session.mode &&
+      to.query.importId === session.importId
+    )
+      return true
     return confirmLeave()
   })
   onBeforeRouteLeave(() => discardAndLeave || confirmLeave())
-  watch([routeSheetId, routeMode], () => {
+  watch([routeSheetId, routeMode, routeImportId], () => {
     if (router.currentRoute.value.path !== editorRoutePath) return
     if (!loading.value && sessionMatchesRoute.value) return
     void loadSpreadsheet()
@@ -1122,6 +1221,7 @@ onBeforeUnmount(() => {
       :status="spreadsheetStatus"
       @back="handleBack"
       @save="handleSave"
+      @import-excel="openExcelImport"
       @export="handleExport"
       @preview="handlePreview"
       @fullscreen-preview="handleFullscreenPreview"
@@ -1156,6 +1256,15 @@ onBeforeUnmount(() => {
         />
       </div>
     </div>
+    <SpreadsheetExcelImportDialog
+      v-if="importVisible"
+      v-model="importVisible"
+      mode="append"
+      :target-name="spreadsheetName"
+      :existing-names="importExistingNames"
+      :date-system="importDateSystem"
+      :apply="appendFromExcel"
+    />
     <SpreadsheetResourceGroupOpt
       v-if="resourceGroupOptShow"
       ref="resourceGroupOpt"
