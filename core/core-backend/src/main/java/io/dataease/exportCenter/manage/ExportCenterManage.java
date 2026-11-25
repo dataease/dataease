@@ -354,9 +354,11 @@ public class ExportCenterManage implements BaseExportApi {
             return;
         }
         String id = validateExportTaskId(exportTask.getId());
+        ExportTaskExecutionService.ExportTaskHandle handle = exportTaskExecutionService.get(id);
+        boolean queued = handle != null && handle.state == ExportTaskState.QUEUED;
         boolean cancelled = exportTaskExecutionService.cancel(id);
-        if (cancelled) {
-            // 取消中：真实 Future 已收到中断，任务退出后再清理文件与记录。
+        if (cancelled && !queued) {
+            // 运行中：真实 Future 已收到中断，任务退出后再清理文件与记录。
             exportTask.setExportStatus("IN_PROGRESS");
             coreExportTaskRepository.saveAndFlush(exportTask);
             return;

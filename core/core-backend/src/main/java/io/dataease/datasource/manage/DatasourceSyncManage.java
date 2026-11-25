@@ -335,6 +335,29 @@ public class DatasourceSyncManage {
         replaceTable(tableName);
     }
 
+    public void restoreEngineTable(String tableName) {
+        try {
+            CoreDeEngine engine = engineConfigManage.info();
+            Provider provider = ProviderFactory.getProvider(engine.getType());
+            EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+            String restoreSql = engineProvider.restoreTable(tableName, engine);
+            if (StringUtils.isNotEmpty(restoreSql)) {
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                DatasourceDTO coreDatasource = new DatasourceDTO();
+                BeanUtils.copyBean(coreDatasource, engine);
+                datasourceRequest.setDatasource(coreDatasource);
+                for (String sql : restoreSql.split(";")) {
+                    if (StringUtils.isNotEmpty(sql)) {
+                        datasourceRequest.setQuery(sql);
+                        provider.execDDL(datasourceRequest);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error("Failed to restore engine table " + tableName, e);
+        }
+    }
+
     private void replaceTable(String tableName) throws Exception {        CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();

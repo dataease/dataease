@@ -3,11 +3,9 @@ package io.dataease.chart.charts.impl;
 import com.beust.jcommander.Strings;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.ChartHandlerManager;
-import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
-import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.constant.SQLConstants;
+import io.dataease.chart.utils.ChartDataBuild;import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.sql.SQLProvider;
@@ -69,6 +67,11 @@ public class DefaultChartHandler extends AbstractChartPlugin {
     private String type = "*";
     @Autowired(required = false)
     public PluginManageApi pluginManage;
+
+    @PostConstruct
+    public void init() {
+        chartHandlerManager.registerChartHandler(this.getRender(), this.getType(), this);
+    }
 
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {

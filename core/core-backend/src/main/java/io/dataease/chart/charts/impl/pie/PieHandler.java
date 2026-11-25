@@ -1,6 +1,5 @@
 package io.dataease.chart.charts.impl.pie;
 
-import io.dataease.chart.charts.ChartHandlerRegistrar;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import jakarta.annotation.PostConstruct;
 import io.dataease.extensions.view.dto.*;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PieHandler extends YoyChartHandler {
-    @PostConstruct
+    @Override
     public void init() {
         chartHandlerManager.registerChartHandler(this.getRender(), "pie", this);
         chartHandlerManager.registerChartHandler(this.getRender(), "pie-rose", this);

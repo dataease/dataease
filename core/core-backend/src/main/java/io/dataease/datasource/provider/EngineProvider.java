@@ -64,6 +64,11 @@ public abstract class EngineProvider {
 
     public abstract String replaceTable(String name, CoreDeEngine engine);
 
+    /** 换表失败后的补偿 SQL；返回 null 表示该方言不提供自动恢复。 */
+    public String restoreTable(String name, CoreDeEngine engine) {
+        return null;
+    }
+
     public abstract String createTableSql(String name, List<TableField> tableFields, CoreDeEngine engine);
 
     public abstract String insertSql(String dsType, String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, int page, int pageNumber, List<TableField> tableFields, CoreDeEngine engine);

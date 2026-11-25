@@ -24,12 +24,24 @@ public class ExportTaskRecoveryListener implements ApplicationListener<Applicati
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        String hostName = hostName();
         List<CoreExportTask> pending = coreExportTaskRepository.findByExportStatusIn(List.of("PENDING", "IN_PROGRESS"));
         for (CoreExportTask task : pending) {
+            if (task.getExportMachineName() != null && !task.getExportMachineName().equals(hostName)) {
+                continue;
+            }
             task.setExportStatus("FAILED");
             task.setExportProgress("0");
             coreExportTaskRepository.saveAndFlush(task);
             LogUtil.warn("Recovered export task " + task.getId() + " after restart, marked FAILED for manual retry");
+        }
+    }
+
+    private String hostName() {
+        try {
+            return java.net.InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            return "";
         }
     }
 }

@@ -1,6 +1,5 @@
 package io.dataease.chart.charts.impl.bar;
 
-import io.dataease.chart.charts.ChartHandlerRegistrar;
 import jakarta.annotation.PostConstruct;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
@@ -14,15 +13,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static io.dataease.extensions.view.dto.ChartAxis.extStack;
-import static io.dataease.extensions.view.dto.ChartAxis.xAxisExt;
 
 @Component
 public class StackGroupBarHandler extends BarHandler {
     @Getter
     private String type = "bar-group-stack";
 
-    @PostConstruct
+    @Override
     public void init() {
         chartHandlerManager.registerChartHandler(this.getRender(), this.getType(), this);
     }

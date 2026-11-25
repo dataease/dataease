@@ -51,6 +51,7 @@ public class EngineManage {
     private CalciteProvider calciteProvider;
     @Resource
     private CommonThreadPool commonThreadPool;
+    private final Set<String> pendingPoolRefresh = java.util.concurrent.ConcurrentHashMap.newKeySet();
     @Resource
     private DataSourceManage dataSourceManage;
     @Value("${dataease.path.engine:jdbc:h2:/opt/dataease3.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE}")
@@ -98,16 +99,7 @@ public class EngineManage {
             Provider provider = ProviderFactory.getProvider(engine.getType());
             provider.checkStatus(datasourceRequest);
             status = "success";
-            if (provider instanceof CalciteProvider calciteProvider && updateStatus) {
-                calciteProvider.updateDsPoolAfterCheckStatus(datasource);
-            }
-            commonThreadPool.addTask(() -> {
-                try {
-                    calciteProvider.updateDsPoolAfterCheckStatus(datasource);
-                } catch (Exception e) {
-                    LogUtil.error("Failed to update ds pool after check status: " + e.getMessage(), e);
-                }
-            });
+            schedulePoolRefresh(engine, datasource);
         } catch (Exception e) {
             status = "Error";
             DEException.throwException("校验失败：" + e.getMessage());
@@ -119,6 +111,30 @@ public class EngineManage {
                     coreDeEngineRepository.saveAndFlush(engine);
                 }
             }
+        }
+    }
+
+    private void schedulePoolRefresh(CoreDeEngine engine, DatasourceDTO datasource) {
+        if (!(ProviderFactory.getProvider(engine.getType()) instanceof CalciteProvider calciteProvider)) {
+            return;
+        }
+        String key = engine.getId() == null ? "engine-" + System.identityHashCode(engine) : String.valueOf(engine.getId());
+        if (!pendingPoolRefresh.add(key)) {
+            return;
+        }
+        try {
+            commonThreadPool.addTask(() -> {
+                try {
+                    calciteProvider.updateDsPoolAfterCheckStatus(datasource);
+                } catch (Exception e) {
+                    LogUtil.error("Failed to update ds pool after check status: " + e.getMessage(), e);
+                } finally {
+                    pendingPoolRefresh.remove(key);
+                }
+            });
+        } catch (RuntimeException rejected) {
+            pendingPoolRefresh.remove(key);
+            LogUtil.error("Engine pool refresh rejected by shared queue: " + rejected.getMessage(), rejected);
         }
     }
 

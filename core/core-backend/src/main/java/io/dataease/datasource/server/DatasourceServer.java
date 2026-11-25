@@ -381,7 +381,8 @@ public class DatasourceServer implements DatasourceApi {
             if (e instanceof DEException de) {
                 throw de;
             }
-            DEException.throwException(e.getMessage());
+            LogUtil.error("Datasource operation failed", e);
+            DEException.throwException(Translator.get("i18n_error_internal"));
             return dataSourceDTO;
         }
         return dataSourceDTO;
@@ -433,13 +434,11 @@ public class DatasourceServer implements DatasourceApi {
 
         dataSourceManage.checkName(dataSourceDTO);
         boolean excel = dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name());
-        if (excel) {
-            ExcelUtils.mergeSheets(requestDatasource, sourceData);
-        }
         Long executionId = excel ? datasourceSaveOrchestrator.begin(dataSourceDTO.getId(), null) : datasourceSaveOrchestrator.commitEdit(requestDatasource);
         try {
             strategyFor(dataSourceDTO.getType()).executeUpdate(dataSourceDTO, sourceData, requestDatasource, executionId);
             if (excel) {
+                ExcelUtils.mergeSheets(requestDatasource, sourceData);
                 datasourceSaveOrchestrator.commitEdit(requestDatasource, executionId);
             }
             datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
@@ -448,7 +447,8 @@ public class DatasourceServer implements DatasourceApi {
             if (e instanceof DEException de) {
                 throw de;
             }
-            DEException.throwException(e.getMessage());
+            LogUtil.error("Datasource operation failed", e);
+            DEException.throwException(Translator.get("i18n_error_internal"));
             return dataSourceDTO;
         }
         return dataSourceDTO;

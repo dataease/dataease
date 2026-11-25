@@ -122,6 +122,7 @@ public class ApiWriteStrategy implements DatasourceWriteStrategy {
                     datasourceSyncManage.dropEngineTable(tmpTable);
                 } catch (Exception ignore) {
                 }
+                datasourceSyncManage.restoreEngineTable(replacedTable);
                 String message = "Failed to replace table " + replacedTable + ", " + e.getMessage();
                 orchestrator.mark(executionId, "TABLE_CREATE", DatasourceSaveOrchestrator.STATUS_FAILED, message);
                 DEException.throwException(message);

@@ -115,6 +115,14 @@ public class PgEngineProvider extends EngineProvider {
     }
 
     @Override
+    public String restoreTable(String name, CoreDeEngine engine) {
+        String table = quoteIdentifier(name, '"');
+        String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '"');
+        String oldTable = quoteIdentifier(name + "_tmp", '"');
+        return "ALTER TABLE IF EXISTS " + oldTable + " RENAME TO " + table + "; DROP TABLE IF EXISTS " + tmpTable;
+    }
+
+    @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
         String quotedTable = quoteIdentifier(tableName, '"');
         String columnSql = createTableSql(tableFields);
