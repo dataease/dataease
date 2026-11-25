@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class CoreApplication {
 
     public static void main(String[] args) {
-        TimeZoneUtils.normalizeDefaultTimeZone();
         System.setProperty("AMAZON_REDSHIFT_JDBC_INI_FILE", "null");
         System.setProperty("java.io.tmpdir", "null");
         SpringApplication context = new SpringApplication(CoreApplication.class);
