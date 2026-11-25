@@ -193,6 +193,11 @@ export function getComponentRotatedStyle(style) {
   return style
 }
 
+const resolveCanvasBackgroundUrl = (enabled: boolean, background: unknown) => {
+  const path = typeof background === 'string' ? background.trim() : ''
+  return enabled && path ? imgUrlTrans(path) : undefined
+}
+
 export function getCanvasStyle(canvasStyleData, canvasId = 'canvas-main') {
   const {
     backgroundColorSelect,
@@ -210,20 +215,22 @@ export function getCanvasStyle(canvasStyleData, canvasId = 'canvas-main') {
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
     }
-    if (backgroundImageEnable) {
-      style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${colorRGBA}`
+    const backgroundUrl = resolveCanvasBackgroundUrl(backgroundImageEnable, background)
+    if (backgroundUrl) {
+      style['background'] = `url(${backgroundUrl}) no-repeat ${colorRGBA}`
     } else {
       style['background-color'] = colorRGBA
     }
 
     if (dvMainStore.mobileInPc && mobileSetting?.customSetting) {
       const { backgroundColorSelect, color, backgroundImageEnable, background } = mobileSetting
-      if (backgroundColorSelect && backgroundImageEnable && typeof background === 'string') {
-        style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${color}`
+      const backgroundUrl = resolveCanvasBackgroundUrl(backgroundImageEnable, background)
+      if (backgroundUrl) {
+        style['background'] = `url(${backgroundUrl}) no-repeat${
+          backgroundColorSelect ? ` ${color}` : ''
+        }`
       } else if (backgroundColorSelect) {
         style['background-color'] = color
-      } else if (backgroundImageEnable) {
-        style['background'] = `url(${imgUrlTrans(background)}) no-repeat`
       }
     }
     style['font-family'] = fontFamily + '!important'
