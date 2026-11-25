@@ -49,7 +49,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.InetAddress;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,8 +74,8 @@ public class ExportCenterManage implements BaseExportApi {
     private SysParameterManage sysParameterManage;
     @Value("${dataease.path.exportData:/opt/dataease3.0/data/exportData/}")
     private String exportData_path;
-    @Value("${dataease.export.instance-id:}")
-    private String exportInstanceId;
+    @Resource
+    private ExportNodeIdentity exportNodeIdentity;
     @Autowired
     private CoreExportDownloadTaskRepository coreExportDownloadTaskRepository;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
@@ -234,17 +233,11 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     private String hostName() {
-        if (StringUtils.isNotBlank(exportInstanceId)) {
-            return exportInstanceId;
-        }
-        String hostname = null;
-        try {
-            InetAddress localMachine = InetAddress.getLocalHost();
-            hostname = localMachine.getHostName();
-        } catch (Exception e) {
+        String instanceId = exportNodeIdentity.currentInstanceId();
+        if ("unknown".equals(instanceId)) {
             DEException.throwException("请设置主机名！");
         }
-        return hostname;
+        return instanceId;
     }
 
     public void addTask(String exportFrom, String exportFromType, ChartExcelRequest request, String busiFlag) {
@@ -363,6 +356,16 @@ public class ExportCenterManage implements BaseExportApi {
         if (result == ExportTaskExecutionService.CancelResult.RUNNING_MARKED) {
             // 运行中：真实 Future 已收到中断，任务退出后再清理文件与记录。
             exportTask.setExportStatus("IN_PROGRESS");
+            coreExportTaskRepository.saveAndFlush(exportTask);
+            return;
+        }
+        String nodeId = exportNodeIdentity.currentInstanceId();
+        if (result == ExportTaskExecutionService.CancelResult.NOT_FOUND
+                && StringUtils.isNotBlank(exportTask.getExportMachineName())
+                && !exportTask.getExportMachineName().equals(nodeId)
+                && "IN_PROGRESS".equalsIgnoreCase(exportTask.getExportStatus())) {
+            // 任务运行在其他节点：置取消标记，由运行节点心跳检测后停止并清理。
+            exportTask.setCancelFlag(true);
             coreExportTaskRepository.saveAndFlush(exportTask);
             return;
         }

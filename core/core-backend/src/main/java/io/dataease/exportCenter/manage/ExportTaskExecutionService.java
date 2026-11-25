@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 导出任务统一执行服务：提交、登记、查询、移除执行句柄。
@@ -35,6 +36,11 @@ public class ExportTaskExecutionService {
 
     private ThreadPoolExecutor executor;
     private final ConcurrentHashMap<String, ExportTaskHandle> handles = new ConcurrentHashMap<>();
+    private final AtomicLong submittedTotal = new AtomicLong();
+    private final AtomicLong completedSuccess = new AtomicLong();
+    private final AtomicLong completedFailed = new AtomicLong();
+    private final AtomicLong cancelledTotal = new AtomicLong();
+    private final AtomicLong rejectedTotal = new AtomicLong();
 
     @PostConstruct
     public void init() {
@@ -45,6 +51,7 @@ public class ExportTaskExecutionService {
     public Future<?> submit(String taskId, Runnable task) {
         ExportTaskHandle handle = new ExportTaskHandle(taskId, ExportTaskState.QUEUED);
         handles.put(taskId, handle);
+        submittedTotal.incrementAndGet();
         try {
             Future<?> future = executor.submit(() -> {
                 if (!handle.tryStart()) {
@@ -53,9 +60,9 @@ public class ExportTaskExecutionService {
                 }
                 try {
                     task.run();
-                    handle.complete(ExportTaskState.SUCCESS);
+                    recordCompletion(handle.complete(ExportTaskState.SUCCESS));
                 } catch (Throwable e) {
-                    handle.complete(handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED);
+                    recordCompletion(handle.complete(handle.state == ExportTaskState.CANCELLING ? ExportTaskState.CANCELLED : ExportTaskState.FAILED));
                     logger.warn("Export task {} failed", taskId, e);
                 }
             });
@@ -63,8 +70,19 @@ public class ExportTaskExecutionService {
             return future;
         } catch (RejectedExecutionException rejected) {
             // 提交被拒绝时同步回收登记句柄，避免 future 为 null 的残留登记。
+            rejectedTotal.incrementAndGet();
             handles.remove(taskId);
             throw rejected;
+        }
+    }
+
+    private void recordCompletion(ExportTaskState finalState) {
+        if (finalState == ExportTaskState.SUCCESS) {
+            completedSuccess.incrementAndGet();
+        } else if (finalState == ExportTaskState.FAILED) {
+            completedFailed.incrementAndGet();
+        } else if (finalState == ExportTaskState.CANCELLED) {
+            cancelledTotal.incrementAndGet();
         }
     }
 
@@ -99,7 +117,9 @@ public class ExportTaskExecutionService {
 
     @org.springframework.scheduling.annotation.Scheduled(fixedRate = 60000)
     public void logMetrics() {
-        logger.info("Export task execution metrics: active={}", handles.size());
+        logger.info("Export task execution metrics: active={} queue={} submitted={} success={} failed={} cancelled={} rejected={}",
+                handles.size(), executor.getQueue().size(), submittedTotal.get(),
+                completedSuccess.get(), completedFailed.get(), cancelledTotal.get(), rejectedTotal.get());
     }
 
     public enum CancelResult {
@@ -146,14 +166,15 @@ public class ExportTaskExecutionService {
             return CancelResult.NOT_FOUND;
         }
 
-        synchronized void complete(ExportTaskState terminalState) {
+        synchronized ExportTaskState complete(ExportTaskState terminalState) {
             if (state == ExportTaskState.CANCELLING) {
                 state = ExportTaskState.CANCELLED;
-                return;
+                return state;
             }
             if (state != ExportTaskState.CANCELLED) {
                 state = terminalState;
             }
+            return state;
         }
     }
 }

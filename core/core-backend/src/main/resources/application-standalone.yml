@@ -24,3 +24,5 @@ spring:
       ddl-auto: update
     show-sql: true
 
+quartz:
+    properties.org.quartz.scheduler.instanceId: AUTO

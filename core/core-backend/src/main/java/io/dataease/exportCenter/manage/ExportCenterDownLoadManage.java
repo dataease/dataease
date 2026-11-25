@@ -122,6 +122,8 @@ public class ExportCenterDownLoadManage {
     @Resource
     private ExportTaskExecutionService exportTaskExecutionService;
     @Resource
+    private ExportNodeIdentity exportNodeIdentity;
+    @Resource
     private ExportContentService exportContentService;
     @Resource
     private VisualizationWatermarkRepository watermarkRepository;
@@ -170,6 +172,7 @@ public class ExportCenterDownLoadManage {
 
     @Scheduled(fixedRate = 5000)
     public void checkRunningTask() {
+        pollCancelRequests();
         for (String taskId : exportTaskExecutionService.drainCompleted()) {
             try {
                 CoreExportTask exportTask = coreExportTaskRepository.findById(taskId).orElse(null);
@@ -184,6 +187,30 @@ public class ExportCenterDownLoadManage {
             } catch (Exception ignore) {
             }
         }
+    }
+
+    /**
+     * 处理其他节点下发的取消标记：本节点任务收到 cancel_flag 后原子取消；
+     * 排队任务取消后没有工作线程清理，需要在这里直接删除目录和记录。
+     */
+    private void pollCancelRequests() {
+        List<CoreExportTask> cancelRequests = coreExportTaskRepository.findByCancelFlagTrue();
+        String nodeId = exportNodeIdentity.currentInstanceId();
+        for (CoreExportTask task : cancelRequests) {
+            if (task.getExportMachineName() == null || !task.getExportMachineName().equals(nodeId)) {
+                continue;
+            }
+            ExportTaskExecutionService.CancelResult result = exportTaskExecutionService.cancel(task.getId());
+            if (result == ExportTaskExecutionService.CancelResult.QUEUED_CANCELLED
+                    || result == ExportTaskExecutionService.CancelResult.NOT_FOUND) {
+                cleanupCancelledTask(exportTarget(task.getId()));
+            }
+        }
+    }
+
+    private ExportTaskFileTarget exportTarget(String taskId) {
+        Path base = Paths.get(exportData_path).toAbsolutePath().normalize();
+        return new ExportTaskFileTarget(taskId, base.resolve(taskId).resolve(taskId + ".xlsx"));
     }
 
     private void setExportFromName(ExportTaskDTO exportTaskDTO) {

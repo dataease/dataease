@@ -34,6 +34,11 @@ public interface CoreExportTaskRepository extends JpaRepository<CoreExportTask, 
         return findAll(spec);
     }
 
+    default List<CoreExportTask> findByCancelFlagTrue() {
+        Specification<CoreExportTask> spec = (root, query, cb) -> cb.isTrue(root.get("cancelFlag"));
+        return findAll(spec);
+    }
+
     @Transactional
     default void deleteByExportTimeLessThan(long threshold) {
         List<CoreExportTask> tasks = findByExportTimeLessThan(threshold);

@@ -28,11 +28,12 @@ dataease:
       limit: ${DE_EXPORT_VIEWS_LIMIT}
     dataset:
       limit: ${DE_EXPORT_DATASET_LIMIT}
-    instance-id: ${DE_EXPORT_INSTANCE_ID:}
   origin-list: ${DE_ORIGIN_LIST}
   login_timeout: ${DE_LOGIN_TIMEOUT}
   dataease-servers: ${DE_SERVERS}
   playwright-server: ${DE_PLAYWRIGHT_SERVER}
+quartz:
+    properties.org.quartz.scheduler.instanceId: ${DE_INSTANCE_ID:AUTO}
 task:
   executor:
     address: http://sync-task-actuator:9001

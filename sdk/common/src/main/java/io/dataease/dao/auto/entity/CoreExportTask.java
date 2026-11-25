@@ -72,4 +72,8 @@ public class CoreExportTask {
 
     @Column(name = "msg", length = 16777216)
     private String msg;
+
+    @Comment("取消标记：跨节点删除时置为 true，由运行节点检测后停止并清理")
+    @Column(name = "cancel_flag")
+    private Boolean cancelFlag;
 }
