@@ -4305,6 +4305,11 @@ export default {
     add_field: 'Add field',
     edit_field: 'Edit field',
     add_all_field: 'Add all fields',
+    doris_batch_size: 'Rows per batch',
+    doris_batch_size_inherit: 'Use system setting',
+    doris_batch_size_tip:
+      'Maximum number of rows sent to Doris per batch. A smaller value reduces the data sent in each batch but may slow down synchronization. Leave blank to use the system setting, or 100000 rows if not configured. Changes take effect from the next run.',
+    doris_batch_size_invalid: 'Enter an integer from 1 to 2147483647',
     fault_tolerance_rate: 'Fault tolerance rate',
     fault_tolerance_rate_tip:
       '0～1, the default is 0, which means that when there is an error data in the synchronization batch data, the import task of the entire batch will fail. ',
