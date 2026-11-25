@@ -9,6 +9,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { formatDataEaseBi, getResourceBaseUrl } from '@/utils/url'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue' // 编辑器引入
+import 'tinymce/models/dom' // TinyMCE 6 必须显式引入 dom 模型，否则会尝试从 URL 加载
 import 'tinymce/themes/silver/theme' // 编辑器主题
 import 'tinymce/icons/default' // 引入编辑器图标icon，不引入则不显示对应图标
 // 引入编辑器插件（基本免费插件都在这儿了）
@@ -66,7 +67,7 @@ const init = ref({
     `${getResourceBaseUrl()}tinymce-dataease-private/skins/content/default/content.css`
   ),
   plugins:
-    'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
+    'advlist autolink link image lists charmap  media wordcount table directionality pagebreak', // 插件
   // 工具栏
   toolbar:
     'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough | splitDateButton lineheight| formatselect |' +
