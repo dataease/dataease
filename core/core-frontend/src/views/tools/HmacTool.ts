@@ -64,23 +64,12 @@ export const securityConfig = async (config: AxiosRequestConfig, uri: string) =>
   const keyId = 'dataease-key'
   const gmtTime = new Date().toUTCString()
   const requestMethod = (config.method || 'get').toUpperCase()
-  let requestPath = uri
-  if (/^https?:\/\//.test(requestPath)) {
-    const target = new URL(requestPath)
-    requestPath = target.pathname + target.search
-  }
-  if (requestPath.startsWith('/api')) {
-    requestPath = '/de2api' + requestPath.substring(4)
-  }
-  if (requestPath.startsWith('./de2api')) {
-    requestPath = location.pathname.replace('mobile.html', '') + requestPath.substring(2)
-  }
-  if (requestPath.includes('/casbi')) {
-    requestPath = requestPath.replace('/casbi', '')
-  }
-  if (requestPath.includes('/oidcbi')) {
-    requestPath = requestPath.replace('/oidcbi', '')
-  }
+  const target = new URL(uri, document.baseURI)
+  let path = target.pathname
+  // These aliases are rewritten by the development/identity proxy before APISIX signs.
+  path = path.replace(/^\/api(?=\/|$)/, '/de2api')
+  path = path.replace(/\/(casbi|oidcbi)(?=\/de2api(?:\/|$))/, '')
+  const requestPath = path + target.search
   // Generate the date after asynchronous initialization, so slow bootstrap cannot age the signature.
   const signingString = `${keyId}\n${requestMethod} ${requestPath}\nX-Date: ${gmtTime}\n`
   const signature = await secretKey(signingString)

@@ -32,6 +32,8 @@ const identityScope = () => {
   return JSON.stringify([
     user.getToken,
     wsCache.get('user.token'),
+    wsCache.get('user.uid'),
+    wsCache.get('user.oid'),
     user.getUid,
     user.getOid,
     user.getProxyInfo,
@@ -56,17 +58,16 @@ const imageScope = () => {
 const initialize = () => {
   if (initialized) return
   initialized = true
+  let previousIdentity = identityScope()
+  const reconcileIdentity = () => {
+    const current = identityScope()
+    if (current === previousIdentity) return
+    previousIdentity = current
+    clearResourceImages()
+    clearMaterialPreviews()
+  }
   // Shared by multiple pages/components; must not stop when the first image component unmounts.
-  effectScope(true).run(() =>
-    watch(
-      identityScope,
-      () => {
-        clearResourceImages()
-        clearMaterialPreviews()
-      },
-      { flush: 'sync' }
-    )
-  )
+  effectScope(true).run(() => watch(identityScope, reconcileIdentity, { flush: 'sync' }))
   window.addEventListener('pagehide', clearMaterialPreviews)
   window.addEventListener('hashchange', clearMaterialPreviews)
   window.addEventListener('popstate', clearMaterialPreviews)
@@ -81,7 +82,7 @@ const initialize = () => {
   window.addEventListener('hashchange', clearResourceImages)
   window.addEventListener('popstate', clearResourceImages)
   window.addEventListener('storage', event => {
-    if (!event.key || /user\.(token|uid|oid|proxyInfo)$/.test(event.key)) clearResourceImages()
+    if (event.storageArea === localStorage) reconcileIdentity()
   })
 }
 
