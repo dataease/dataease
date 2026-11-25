@@ -136,3 +136,38 @@ test('network errors and legacy responses never become an unsigned success', asy
   await page.route('**/perSetting/hmac/info', route => route.fulfill({ json: { code: 0, data: 'legacy-obfuscated-key' } }))
   await expect(sign(page)).rejects.toThrow('initialization_failed')
 })
+
+test('signs resolved request targets without modifying query values', async ({ page, request }) => {
+  await intercept(page, request)
+  const cases = [
+    [
+      'https://example.test/fit2cloud/de2api/chart?b=%2Fcasbi&a=1&a=2',
+      '/fit2cloud/de2api/chart?b=%2Fcasbi&a=1&a=2'
+    ],
+    ['//example.test/a/b/de2api/chart?q=/oidcbi', '/a/b/de2api/chart?q=/oidcbi'],
+    ['/apiary/chart?q=/casbi', '/apiary/chart?q=/casbi'],
+    ['/api/chart?b=2&a=%2f', '/de2api/chart?b=2&a=%2f'],
+    ['./de2api/chart?q=/casbi', '/fit2cloud/de2api/chart?q=/casbi'],
+    ['/fit2cloud/casbi/de2api/chart?q=/casbi', '/fit2cloud/de2api/chart?q=/casbi'],
+    ['/fit2cloud/oidcbi/de2api/chart?q=/oidcbi', '/fit2cloud/de2api/chart?q=/oidcbi']
+  ]
+  for (const entry of ['index.html', 'mobile.html']) {
+    await page.evaluate(entry => {
+      document.querySelector('base')?.remove()
+      const base = document.createElement('base')
+      base.href = `/fit2cloud/${entry}`
+      document.head.append(base)
+    }, entry)
+    for (const [uri, target] of cases) {
+      const headers = await page.evaluate(async uri => {
+        const config = { baseURL: '/api', method: 'get', headers: {} }
+        await window.hmacFixture.securityConfig(config, uri)
+        return config.headers
+      }, uri)
+      const expected = createHmac('sha256', secret)
+        .update(`dataease-key\nGET ${target}\nX-Date: ${headers['X-Date']}\n`)
+        .digest('base64')
+      expect(headers.Authorization).toContain(`signature="${expected}"`)
+    }
+  }
+})
