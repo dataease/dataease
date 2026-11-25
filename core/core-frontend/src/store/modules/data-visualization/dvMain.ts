@@ -392,6 +392,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setCanvasViewInfo(canvasViewInfo) {
       this.canvasViewInfo = canvasViewInfo
+      this.ensureVQueryViewInfo()
     },
     getAppDataInfo() {
       return this.appData
@@ -637,49 +638,72 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.initUserView(component, currentFont)
       }
       if (component.component === 'VQuery') {
-        const { color, titleColor, labelColor, borderColor, bgColor, text, titleLayout, layout } =
-          this.canvasStyleData.component.filterStyle || {}
-        const newView = {
-          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
-          id: component.id,
-          title: t('visualization.query_component'),
-          type: component.innerType,
-          customStyle: {
-            component: {
-              show: true,
-              color,
-              titleShow: false,
-              text,
-              textColorShow: false,
-              labelColor,
-              borderColor,
-              title: '',
-              borderWidth: 1,
-              bgColor,
-              titleColor,
-              titleLayout,
-              layout,
-              btnList: ['sure'],
-              fontSize: '14',
-              labelShow: true,
-              fontWeight: '',
-              fontStyle: '',
-              fontSizeBtn: '14',
-              fontWeightBtn: '',
-              fontStyleBtn: '',
-              queryConditionWidth: 227,
-              nameboxSpacing: 8,
-              placeholderShow: true,
-              placeholderSize: 14,
-              queryConditionSpacing: 16,
-              queryConditionHeight: 32,
-              labelColorBtn: '#ffffff',
-              btnColor: '#3370ff'
-            }
+        this.initVQueryView(component)
+      }
+    },
+    initVQueryView(component) {
+      const { color, titleColor, labelColor, borderColor, bgColor, text, titleLayout, layout } =
+        this.canvasStyleData.component.filterStyle || {}
+      const newView = {
+        ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
+        id: component.id,
+        title: t('visualization.query_component'),
+        type: component.innerType,
+        customStyle: {
+          component: {
+            show: true,
+            color,
+            titleShow: false,
+            text,
+            textColorShow: false,
+            labelColor,
+            borderColor,
+            title: '',
+            borderWidth: 1,
+            bgColor,
+            titleColor,
+            titleLayout,
+            layout,
+            btnList: ['sure'],
+            fontSize: '14',
+            labelShow: true,
+            fontWeight: '',
+            fontStyle: '',
+            fontSizeBtn: '14',
+            fontWeightBtn: '',
+            fontStyleBtn: '',
+            queryConditionWidth: 227,
+            nameboxSpacing: 8,
+            placeholderShow: true,
+            placeholderSize: 14,
+            queryConditionSpacing: 16,
+            queryConditionHeight: 32,
+            labelColorBtn: '#ffffff',
+            btnColor: '#3370ff'
           }
         }
-        this.canvasViewInfo[component.id] = newView
       }
+      this.canvasViewInfo[component.id] = newView
+      return newView
+    },
+    // 查询组件的样式存在视图里，历史画布缺失视图时补一份默认配置，保证样式面板可用
+    ensureVQueryViewInfo() {
+      if (!this.canvasViewInfo) return
+      const walk = list => {
+        if (!list) return
+        list.forEach(component => {
+          if (component.component === 'VQuery') {
+            if (!this.canvasViewInfo[component.id]) {
+              this.initVQueryView(component)
+            }
+          } else if (component.component === 'Group') {
+            walk(component.propValue)
+          } else if (component.component === 'DeTabs') {
+            component.propValue?.forEach(tab => walk(tab.componentData))
+          }
+        })
+      }
+      walk(this.componentData)
     },
     setLinkageTargetInfo(targetLinkageInfo) {
       this.linkageSettingStatus = true

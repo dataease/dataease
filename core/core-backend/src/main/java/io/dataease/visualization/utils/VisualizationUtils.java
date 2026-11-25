@@ -14,6 +14,15 @@ import java.util.Set;
 public class VisualizationUtils {
 
     public static Set<Long> activeChartIds(String componentData) {
+        return viewIds(componentData, false);
+    }
+
+    /** 需要随画布保存、回读的视图 ID：查询组件的自定义样式存放在视图上，不能按图表过滤掉。 */
+    public static Set<Long> canvasViewIds(String componentData) {
+        return viewIds(componentData, true);
+    }
+
+    private static Set<Long> viewIds(String componentData, boolean includeQuery) {
         Set<Long> ids = new LinkedHashSet<>();
         if (componentData == null || componentData.isBlank()) {
             return ids;
@@ -22,34 +31,43 @@ public class VisualizationUtils {
         if (components == null || !components.isArray()) {
             throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
         }
-        collectChartIds(components, ids);
+        collectViewIds(components, ids, includeQuery);
         return ids;
     }
 
-    private static void collectChartIds(JsonNode components, Set<Long> ids) {
+    private static void collectViewIds(JsonNode components, Set<Long> ids, boolean includeQuery) {
         if (!components.isArray()) {
             return;
         }
         for (JsonNode component : components) {
             switch (component.path("component").asText()) {
-                case "UserView" -> {
-                    if (!"VQuery".equals(component.path("innerType").asText())) {
-                        Long id = chartId(component.path("id"));
-                        if (id != null) {
-                            ids.add(id);
-                        }
+                case "VQuery" -> {
+                    if (includeQuery) {
+                        addViewId(component, ids);
                     }
                 }
-                case "Group" -> collectChartIds(component.path("propValue"), ids);
+                case "UserView" -> {
+                    if (includeQuery || !"VQuery".equals(component.path("innerType").asText())) {
+                        addViewId(component, ids);
+                    }
+                }
+                case "Group" -> collectViewIds(component.path("propValue"), ids, includeQuery);
                 case "DeTabs" -> {
                     JsonNode tabs = component.path("propValue");
                     if (tabs.isArray()) {
-                        tabs.forEach(tab -> collectChartIds(tab.path("componentData"), ids));
+                        tabs.forEach(tab -> collectViewIds(tab.path("componentData"), ids, includeQuery));
                     }
                 }
                 default -> {
                 }
             }
+        }
+    }
+
+    private static void addViewId(JsonNode component, Set<Long> ids) {
+        Long id = chartId(component.path("id"));
+        if (id != null) {
+            ids.add(id);
         }
     }
 
