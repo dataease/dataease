@@ -245,7 +245,11 @@ const prepareCanvasDraft = async resourceId => {
   if (!isCurrentDraftResource(resourceId) || !draft) return
   let draftOutdated = !draft.dvInfo?.contentId
   if (state.opt !== 'copy' && !draftOutdated) {
-    const response = await checkCanvasChange({ id: resourceId, contentId: draft.dvInfo.contentId })
+    const response = await checkCanvasChange({
+      id: resourceId,
+      contentId: draft.dvInfo.contentId,
+      type: 'dashboard'
+    })
     if (!isCurrentDraftResource(resourceId)) return
     if (response?.data !== 'Success' && response?.data !== 'Repeat') return
     draftOutdated = response.data === 'Repeat'
