@@ -17,6 +17,7 @@ import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
+import io.dataease.exportCenter.manage.ExportNodeIdentity;
 import io.dataease.dataset.manage.DatasetCacheManage;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
@@ -1442,14 +1443,14 @@ public class DatasourceServer implements DatasourceApi {
     private void doUpdate() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateRepository.findAll();
         Timestamp currentTimestamp = databaseTimeManage.getCurrentDatabaseTime();
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > currentTimestamp.getTime()).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > currentTimestamp.getTime()).map(QrtzSchedulerState::getInstanceName).map(ExportNodeIdentity::normalizeQuartzInstanceName).collect(Collectors.toList());
 
         List<CoreDatasource> datasources = coreDatasourceRepository.findByTaskStatus(TaskStatus.UnderExecution.name());
 
         List<CoreDatasource> syncCoreDatasources = new ArrayList<>();
         List<CoreDatasource> jobStoppedCoreDatasources = new ArrayList<>();
         datasources.forEach(coreDatasource -> {
-            if (StringUtils.isNotEmpty(coreDatasource.getQrtzInstance()) && !activeQrtzInstances.contains(coreDatasource.getQrtzInstance().substring(0, coreDatasource.getQrtzInstance().length() - 13))) {
+            if (StringUtils.isNotEmpty(coreDatasource.getQrtzInstance()) && !activeQrtzInstances.contains(ExportNodeIdentity.normalizeQuartzInstanceName(coreDatasource.getQrtzInstance()))) {
                 jobStoppedCoreDatasources.add(coreDatasource);
             } else {
                 syncCoreDatasources.add(coreDatasource);

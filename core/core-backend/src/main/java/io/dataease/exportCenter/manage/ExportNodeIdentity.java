@@ -31,4 +31,22 @@ public class ExportNodeIdentity {
             return "unknown";
         }
     }
+
+    /**
+     * 规范化 Quartz 实例名：AUTO 生成的 hostname + 13 位时间戳 只保留 hostname；
+     * 自定义 instanceId 原样保留。用于把任务记录的 qrtzInstance 与
+     * QRTZ_SCHEDULER_STATE.INSTANCE_NAME 对齐比较。
+     */
+    public static String normalizeQuartzInstanceName(String instanceName) {
+        if (instanceName == null) {
+            return null;
+        }
+        if (instanceName.length() > 13) {
+            String suffix = instanceName.substring(instanceName.length() - 13);
+            if (suffix.chars().allMatch(Character::isDigit)) {
+                return instanceName.substring(0, instanceName.length() - 13);
+            }
+        }
+        return instanceName;
+    }
 }

@@ -72,16 +72,12 @@ public class ExportTaskRecoveryListener implements ApplicationListener<Applicati
 
     /**
      * owner 为稳定的节点名（配置值或 hostname）。QRTZ 中 AUTO 生成的实例名为
-     * hostname + 13 位时间戳，两者都视为该节点存活。
+     * hostname + 13 位时间戳，规范化后与 owner 比较。
      */
     private boolean ownerAlive(String owner, List<String> liveInstances) {
+        String normalizedOwner = ExportNodeIdentity.normalizeQuartzInstanceName(owner);
         for (String instanceName : liveInstances) {
-            if (instanceName.equals(owner)) {
-                return true;
-            }
-            if (instanceName.length() == owner.length() + 13
-                    && instanceName.startsWith(owner)
-                    && instanceName.substring(owner.length()).chars().allMatch(Character::isDigit)) {
+            if (normalizedOwner.equals(ExportNodeIdentity.normalizeQuartzInstanceName(instanceName))) {
                 return true;
             }
         }
