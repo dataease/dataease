@@ -7,6 +7,7 @@ const previewQuery = useLatestQuery('table-preview')
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid, type Field } from './util'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
 import iconSearch from '@/assets/svg/icon_search-outline_outlined.svg'
 import iconRefresh from '@/assets/svg/icon_refresh_outlined.svg'
@@ -134,8 +135,13 @@ defineExpose({ open })
           ><el-icon><iconSearch /></el-icon
         ></template>
       </el-input>
-      <el-button text :aria-label="t('data_set.refresh_data')" @click="load">
-        <el-icon size="16"><iconRefresh /></el-icon>
+      <el-button :loading="loading" secondary @click="load">
+        <template #icon>
+          <el-icon>
+            <Icon name="icon_refresh_outlined"><iconRefresh class="svg-icon" /></Icon>
+          </el-icon>
+        </template>
+        {{ t('data_set.refresh_data') }}
       </el-button>
     </div>
     <div v-loading="loading" class="table-details-content">
@@ -205,6 +211,12 @@ defineExpose({ open })
     :deep(.ed-tabs__nav-wrap::after) {
       content: none;
     }
+  }
+
+  .ed-input,
+  .ed-button {
+    align-self: flex-end;
+    margin-bottom: 12px;
   }
 
   .ed-input {

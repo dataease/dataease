@@ -643,7 +643,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 .node-tabs-row {
   position: relative;
   flex-shrink: 0;
-  margin-top: -4px;
+  margin-top: 0;
   margin-bottom: 16px;
 }
 .node-tabs {
@@ -665,8 +665,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 .node-field-search {
   position: absolute;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 12px;
   width: 240px;
 }
 
@@ -757,7 +756,7 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   font-size: 14px;
 }
 .node-title {
-  margin-bottom: 6px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
