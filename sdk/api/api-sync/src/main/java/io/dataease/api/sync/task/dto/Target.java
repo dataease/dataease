@@ -26,6 +26,10 @@ public class Target {
     private String remarks;
     private Long incrementOffset;
     private String incrementOffsetUnit;
+    /**
+     * 空值表示继承部署配置，保留后续调整全局批次的能力
+     */
+    private Integer dorisBatchSize;
 
     public Target() {
     }
@@ -46,5 +50,6 @@ public class Target {
         this.remarks = target.remarks;
         this.incrementOffset = target.incrementOffset;
         this.incrementOffsetUnit = target.incrementOffsetUnit;
+        this.dorisBatchSize = target.dorisBatchSize;
     }
 }

@@ -113,6 +113,7 @@ export interface ITarget {
   incrementFieldType: string
   remarks: string
   faultToleranceRate: number
+  dorisBatchSize?: number | null
   incrementOffset: number
   incrementOffsetUnit: string
 }

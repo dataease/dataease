@@ -4171,6 +4171,11 @@ export default {
     add_field: '新增欄位',
     edit_field: '編輯欄位',
     add_all_field: '新增所有欄位',
+    doris_batch_size: '每批寫入行數',
+    doris_batch_size_inherit: '留空繼承系統設定',
+    doris_batch_size_tip:
+      '每次向 Doris 提交的最多資料行數。調小可減少單次提交的資料量，但可能降低同步速度。留空使用系統設定，未設定時為 100000 行。修改後從下次執行生效。',
+    doris_batch_size_invalid: '請輸入 1～2147483647 之間的整數',
     fault_tolerance_rate: '容錯率',
     fault_tolerance_rate_tip:
       '0～1，預設為0，即表示同步批次資料有錯誤資料時，整個批次的匯入任務將會失敗。 ',
