@@ -240,9 +240,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
             //获取图表信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId, resourceTable);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
-                Set<Long> activeChartIds = VisualizationUtils.activeChartIds(result.getComponentData());
+                Set<Long> viewIds = VisualizationUtils.canvasViewIds(result.getComponentData());
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream()
-                        .filter(item -> activeChartIds.contains(item.getId()))
+                        .filter(item -> viewIds.contains(item.getId()))
                         .collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
             }
@@ -690,7 +690,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             });
         }
         //保存图表信息
-        chartDataManage.saveChartViewFromVisualization(VisualizationUtils.activeChartIds(request.getComponentData()), newDvId, canvasViews);
+        chartDataManage.saveChartViewFromVisualization(VisualizationUtils.canvasViewIds(request.getComponentData()), newDvId, canvasViews);
         return newDvId.toString();
     }
 
@@ -747,7 +747,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DatasetUtils.viewDecode(ele.getValue());
         }
         Long dvId = request.getId();
-        Set<Long> activeChartIds = VisualizationUtils.activeChartIds(request.getComponentData());
+        Set<Long> viewIds = VisualizationUtils.canvasViewIds(request.getComponentData());
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         if (request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()) {
@@ -775,7 +775,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setStatus(curStatus == 1 ? CommonConstants.DV_STATUS.SAVED_UNPUBLISHED : curStatus);
         coreVisualizationManage.innerEdit(visualizationInfo);
         //保存图表信息
-        chartDataManage.saveChartViewFromVisualization(activeChartIds, dvId, request.getCanvasViewInfo());
+        chartDataManage.saveChartViewFromVisualization(viewIds, dvId, request.getCanvasViewInfo());
         return new DataVisualizationVO(visualizationInfo.getStatus());
     }
 
