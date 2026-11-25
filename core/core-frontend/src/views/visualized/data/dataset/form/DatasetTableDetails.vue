@@ -137,11 +137,11 @@ defineExpose({ open })
       </el-input>
       <el-button :loading="loading" secondary @click="load">
         <template #icon>
-          <el-icon>
+          <el-icon size="16">
             <Icon name="icon_refresh_outlined"><iconRefresh class="svg-icon" /></Icon>
           </el-icon>
         </template>
-        {{ t('data_set.refresh_data') }}
+        {{ t('common.refresh') }}
       </el-button>
     </div>
     <div v-loading="loading" class="table-details-content">
@@ -226,6 +226,7 @@ defineExpose({ open })
 
 .table-details-content {
   min-height: 400px;
+  margin-top: 16px;
 
   :deep(.ed-table__header-wrapper) {
     border-top: none;
