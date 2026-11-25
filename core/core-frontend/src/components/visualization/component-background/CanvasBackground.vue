@@ -111,7 +111,7 @@
 
           <img-view-dialog
             v-model="state.dialogVisible"
-            :image-url="state.dialogImageUrl"
+            :image-url="state.dialogVisible ? imgUrlTrans(state.dialogImageUrl) : undefined"
             :fit-to-window="dvInfo.type === 'dashboard'"
           />
         </div>
@@ -158,7 +158,7 @@
 
 <script setup lang="ts">
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -219,17 +219,8 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     canvasStyleData.value.background = fileUrl
-    state.fileList = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
     onBackgroundChange()
   })
-}
-
-const init = () => {
-  if (canvasStyleData.value.background) {
-    state.fileList.push({ url: imgUrlTrans(canvasStyleData.value.background) })
-  } else {
-    state.fileList = []
-  }
 }
 
 const handleRemove = () => {
@@ -239,7 +230,7 @@ const handleRemove = () => {
   onBackgroundChange()
 }
 const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
+  state.dialogImageUrl = file.sourceUrl || file.url
   state.dialogVisible = true
 }
 const upload = file => {
@@ -257,15 +248,14 @@ const bgForm = ref()
 
 const computedBackgroundColorPickerWidth = 50
 
-onMounted(() => {
-  init()
-})
-
 watch(
   () => canvasStyleData.value.background,
-  () => {
-    init()
-  }
+  url => {
+    state.fileList = url
+      ? [reactive({ sourceUrl: url, url: computed(() => imgUrlTrans(url)) })]
+      : []
+  },
+  { immediate: true }
 )
 </script>
 
