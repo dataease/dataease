@@ -26,6 +26,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'back'): void
   (e: 'save'): void
+  (e: 'import-excel'): void
   (e: 'export'): void
   (e: 'preview'): void
   (e: 'fullscreen-preview'): void
@@ -170,6 +171,10 @@ const handleOuterParams = () => {
             </Icon>
           </button>
         </el-tooltip>
+
+        <el-button class="preview-button" :disabled="mutating" @click="emit('import-excel')">
+          {{ t('spreadsheet.import_excel') }}
+        </el-button>
 
         <!-- Export button -->
         <!-- <el-tooltip effect="dark" :content="t('chart.export')" placement="bottom">

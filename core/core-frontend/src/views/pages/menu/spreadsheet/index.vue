@@ -13,6 +13,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_spreadsheet from '@/assets/svg/icon_spreadsheet.svg'
+import icon_fileExcel_colorful from '@/assets/svg/icon_file-excel_colorful.svg'
 import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
 import dvPreviewOuter from '@/assets/svg/dv-preview-outer.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
@@ -71,6 +72,14 @@ import UniverSheet from '@/views/menu/spreadsheet/components/UniverSheet.vue'
 import PluginRenderIndicator from '@/views/menu/spreadsheet/components/PluginRenderIndicator.vue'
 import SpreadsheetDetailInfo from '@/views/menu/spreadsheet/components/SpreadsheetDetailInfo.vue'
 import SpreadsheetFolderDialog from '@/views/menu/spreadsheet/components/SpreadsheetFolderDialog.vue'
+import SpreadsheetExcelImportDialog from '@/views/menu/spreadsheet/components/SpreadsheetExcelImportDialog.vue'
+import {
+  setEmbeddedImportDraft,
+  stageImportDraft,
+  discardImportDraft,
+  type ExcelImportDraft
+} from '@/views/menu/spreadsheet/excel-import/draft'
+import type { ImportedSheet } from '@/views/menu/spreadsheet/excel-import/protocol'
 import {
   createDefaultWorkbookData,
   parseSheetData
@@ -257,6 +266,8 @@ const sortTypeTip = computed(() => {
 
 const spreadsheetListTree = ref()
 const spreadsheetFolderDialogRef = ref<InstanceType<typeof SpreadsheetFolderDialog>>()
+const excelImportVisible = ref(false)
+const excelImportFolder = shallowRef<BusiTreeNode>()
 const nickName = ref('')
 const { filterNode: filterResourceNode } = useResourceTreeSearch(spreadsheetListTree, nickName, {
   canView: data => data.weight > 0
@@ -325,6 +336,11 @@ const spreadsheetTypeList = computed(() => {
       label: t('spreadsheet.new_spreadsheet'),
       svgName: icon_spreadsheet,
       command: 'spreadsheet'
+    },
+    {
+      label: t('spreadsheet.import_excel'),
+      svgName: icon_fileExcel_colorful,
+      command: 'importExcel'
     },
     {
       label: t('spreadsheet.new_folder'),
@@ -430,27 +446,42 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
   }, 300)
 }
 
-const createNewSpreadsheet = (data?: BusiTreeNode) => {
+const createNewSpreadsheet = async (data?: BusiTreeNode, draft?: ExcelImportDraft) => {
   // 嵌入模式在当前容器内切换页面，沿用仪表板的组件切换事件。
   if (isEmbedded.value) {
     embeddedStore.clearState()
+    setEmbeddedImportDraft(draft)
     embeddedStore.setOpt('create')
     embeddedStore.setPid(String(data?.id || 0))
     emitter.emit('changeCurrentComponent', 'SpreadsheetEditor')
     return
   }
   const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
+  const importId = draft ? await stageImportDraft(draft) : undefined
   const routeObj = {
     path: '/spreadsheet-editor',
-    query: { opt: 'create', pid: data?.id || 0 }
+    query: { opt: 'create', pid: data?.id || 0, importId }
   }
-  if (openType === '_self') {
-    router.push(routeObj)
-  } else {
-    const routeData = router.resolve(routeObj)
-    window.open(routeData.href, openType)
+  try {
+    if (importId && !excelImportVisible.value) {
+      await discardImportDraft(importId)
+      return
+    }
+    if (openType === '_blank') {
+      const editorWindow = window.open(router.resolve(routeObj).href, openType)
+      if (editorWindow || !draft) return
+    }
+    // 异步转换后浏览器可能拦截新标签页，此时在本页接续同一份导入稿。
+    const failure = await router.push(routeObj)
+    if (failure && importId) throw failure
+  } catch (error) {
+    if (importId) await discardImportDraft(importId)
+    throw error
   }
 }
+
+const createFromExcel = (sheets: ImportedSheet[], name: string) =>
+  createNewSpreadsheet(excelImportFolder.value, { name, sheets })
 
 const handleEdit = (id: number) => {
   if (isEmbedded.value) {
@@ -657,6 +688,11 @@ const handleSpreadsheetTree = (cmd: string, data?: BusiTreeNode) => {
   if (cmd === 'spreadsheet') {
     createNewSpreadsheet(data)
   }
+  if (cmd === 'importExcel') {
+    // 顶部入口使用根目录，文件夹入口使用被点击的节点。
+    excelImportFolder.value = data
+    excelImportVisible.value = true
+  }
   if (cmd === 'folder') {
     spreadsheetFolderDialogRef.value?.open(data)
   }
@@ -763,6 +799,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  excelImportVisible.value = false
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
   clearTimeout(requestId)
   ++previewRequestVersion
@@ -817,21 +854,38 @@ onBeforeUnmount(() => {
                   <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                popper-class="new-folder_tip"
-                offset="14"
-                arrow-offset="10"
-                :content="t('spreadsheet.new_spreadsheet')"
-                placement="top"
+              <el-dropdown
+                placement="bottom-start"
+                popper-class="menu-outer-dv_popper"
+                trigger="hover"
+                @command="cmd => handleSpreadsheetTree(cmd)"
               >
-                <el-icon class="custom-icon btn" @click="createNewSpreadsheet()">
+                <el-icon
+                  class="custom-icon btn"
+                  :aria-label="t('spreadsheet.new_spreadsheet')"
+                  @click="createNewSpreadsheet()"
+                >
                   <Icon name="icon_file-add_outlined"
                     ><icon_fileAdd_outlined class="svg-icon"
                   /></Icon>
                 </el-icon>
-              </el-tooltip>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="spreadsheet">
+                      <el-icon class="handle-icon">
+                        <Icon><icon_spreadsheet class="svg-icon" /></Icon>
+                      </el-icon>
+                      {{ t('work_branch.new_empty') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item command="importExcel">
+                      <el-icon class="handle-icon">
+                        <Icon><icon_fileExcel_colorful class="svg-icon" /></Icon>
+                      </el-icon>
+                      {{ t('spreadsheet.import_excel') }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </div>
           <el-input
@@ -1105,6 +1159,14 @@ onBeforeUnmount(() => {
     </div>
 
     <SpreadsheetFolderDialog ref="spreadsheetFolderDialogRef" @success="getSpreadsheetTree" />
+    <SpreadsheetExcelImportDialog
+      v-if="excelImportVisible"
+      v-model="excelImportVisible"
+      mode="create"
+      :target-name="excelImportFolder?.name || t('spreadsheet.root_folder')"
+      :existing-names="[]"
+      :apply="createFromExcel"
+    />
 
     <!-- Dialog for move -->
     <el-dialog
@@ -1416,6 +1478,7 @@ onBeforeUnmount(() => {
 }
 
 .custom-tree-node {
+  position: relative;
   width: calc(100% - 30px);
   display: flex;
   align-items: center;
@@ -1428,17 +1491,21 @@ onBeforeUnmount(() => {
   }
 
   .icon-more {
-    margin-left: auto;
-    display: none;
+    // 移出树节点后，关闭动画仍需读取按钮位置；绝对定位也给长名称留出空间。
+    position: absolute;
+    right: 4px;
+    display: inline-flex;
+    visibility: hidden;
   }
 
-  &:hover {
+  &:hover,
+  &:focus-within {
     .label-tooltip {
       width: calc(100% - 78px);
     }
 
     .icon-more {
-      display: inline-flex;
+      visibility: visible;
     }
   }
 }
