@@ -2334,7 +2334,20 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           :class="{ 'has-drift-bar': pendingTypeDriftCount }"
           style="height: 100%"
         >
-          <div class="sql-title">
+          <div class="preview-header">
+            <el-tabs class="padding-24" v-model="tabActive" @tab-change="tabChange">
+              <el-tab-pane :label="t('chart.data_preview')" name="preview" />
+              <el-tab-pane name="manage">
+                <template #label>
+                  <span class="batch-manage-tab">
+                    {{ t('dataset.batch_manage') }}
+                    <span v-if="pendingTypeDriftCount" class="batch-manage-count">{{
+                      pendingTypeDriftCount
+                    }}</span>
+                  </span>
+                </template>
+              </el-tab-pane>
+            </el-tabs>
             <div class="field-data">
               <el-checkbox
                 v-if="tabActive === 'manage' && pendingTypeDriftCount"
@@ -2360,19 +2373,6 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               </el-button>
             </div>
           </div>
-          <el-tabs class="padding-24" v-model="tabActive" @tab-change="tabChange">
-            <el-tab-pane :label="t('chart.data_preview')" name="preview" />
-            <el-tab-pane name="manage">
-              <template #label>
-                <span class="batch-manage-tab">
-                  {{ t('dataset.batch_manage') }}
-                  <span v-if="pendingTypeDriftCount" class="batch-manage-count">{{
-                    pendingTypeDriftCount
-                  }}</span>
-                </span>
-              </template>
-            </el-tab-pane>
-          </el-tabs>
           <div v-if="pendingTypeDriftCount" class="field-type-drift-bar" role="status">
             <span class="field-type-drift-bar-text">
               <el-icon
@@ -3727,21 +3727,18 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           z-index: 4;
         }
 
-        .sql-title {
+        .preview-header {
+          display: flex;
+          align-items: center;
+          height: 56px;
+          box-sizing: border-box;
+          padding-right: 24px;
+          border-bottom: 1px solid rgba(31, 35, 41, 0.15);
           user-select: none;
-          height: 10px;
-          position: relative;
-          z-index: 5;
           color: var(--deTextPrimary, #1f2329);
 
           .field-data {
-            position: absolute;
-            right: 24px;
-            top: 13px;
-            width: 50%;
-            z-index: 2;
             display: flex;
-            justify-content: flex-end;
             align-items: center;
             gap: 16px;
             :deep(.ed-checkbox) {
@@ -3751,31 +3748,24 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               font-weight: 400;
             }
           }
-
-          .drag {
-            position: absolute;
-            top: 4px;
-            left: 0;
-            height: 7px;
-            width: 100%;
-            cursor: row-resize;
-            &::after {
-              content: '';
-              height: 7px;
-              width: 100px;
-              border-radius: 3.5px;
-              position: absolute;
-              left: 50%;
-              top: 0;
-              transform: translateX(-50%);
-              background: rgba(31, 35, 41, 0.1);
-            }
-          }
         }
 
         .padding-24 {
-          .border-bottom-tab(24px);
-          :deep(.ed-tabs__header::after) {
+          flex: 1;
+          min-width: 0;
+          margin-left: 24px;
+          align-self: stretch;
+          :deep(.ed-tabs__header),
+          :deep(.ed-tabs__nav-wrap),
+          :deep(.ed-tabs__nav-scroll),
+          :deep(.ed-tabs__nav),
+          :deep(.ed-tabs__item) {
+            height: 100%;
+          }
+          :deep(.ed-tabs__header) {
+            align-items: stretch;
+          }
+          :deep(.ed-tabs__nav-wrap::after) {
             display: none;
           }
         }

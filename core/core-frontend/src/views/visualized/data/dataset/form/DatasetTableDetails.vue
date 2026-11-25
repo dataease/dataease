@@ -213,12 +213,6 @@ defineExpose({ open })
     }
   }
 
-  .ed-input,
-  .ed-button {
-    align-self: flex-end;
-    margin-bottom: 12px;
-  }
-
   .ed-input {
     width: 200px;
   }
