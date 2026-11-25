@@ -114,7 +114,11 @@
             </el-row>
           </div>
 
-          <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
+          <img-view-dialog
+            v-model="state.dialogVisible"
+            :image-url="state.dialogImageUrl"
+            :fit-to-window="dvInfo.type === 'dashboard'"
+          />
         </div>
       </div>
       <el-divider class="m-divider" :class="'m-divider-' + themes"></el-divider>
