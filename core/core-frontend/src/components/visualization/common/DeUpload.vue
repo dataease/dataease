@@ -30,12 +30,12 @@
       v-on:change="reUpload"
     />
 
-    <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
+    <img-view-dialog v-model="state.dialogVisible" :image-url="imgUrlTrans(state.dialogImageUrl)" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, toRefs, watch } from 'vue'
+import { computed, reactive, ref, toRefs, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -71,7 +71,7 @@ const handleRemove = () => {
   emits('onImgChange')
 }
 const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
+  state.dialogImageUrl = file.sourceUrl || file.url
   state.dialogVisible = true
 }
 const upload = file => {
@@ -100,7 +100,9 @@ const sizeMessage = () => {
 watch(
   imgUrl,
   url => {
-    state.fileList = url ? [{ url: imgUrlTrans(url) }] : []
+    state.fileList = url
+      ? [reactive({ sourceUrl: url, url: computed(() => imgUrlTrans(url)) })]
+      : []
   },
   { immediate: true }
 )
