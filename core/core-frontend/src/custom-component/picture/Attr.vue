@@ -5,7 +5,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch, PropType } from 'vue'
+import { computed, reactive, ref, onMounted, onBeforeUnmount, watch, PropType } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
@@ -33,11 +33,11 @@ const files = ref(null)
 const maxImageSize = 15000000
 
 const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.url
+  dialogImageUrl.value = file.sourceUrl || file.url
   dialogVisible.value = true
 }
 
-const handleRemove = (_, fileList) => {
+const handleRemove = () => {
   uploadDisabled.value = false
   curComponent.value.propValue.url = null
   fileList.value = []
@@ -67,30 +67,24 @@ const reUpload = e => {
   uploadFileResult(file, fileUrl => {
     snapshotStore.recordSnapshotCache('uploadFileResult')
     curComponent.value.propValue.url = fileUrl
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
   })
 }
 
 const sizeMessage = () => {
   ElMessage.error('图片大小不能超过15M')
 }
-const init = () => {
-  if (curComponent.value.propValue.url) {
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
-  } else {
-    fileList.value = []
-  }
-}
 
 watch(
-  () => curComponent.value.propValue.url,
-  () => {
-    init()
-  }
+  () => curComponent.value?.propValue?.url,
+  url => {
+    fileList.value = url
+      ? [reactive({ sourceUrl: url, url: computed(() => imgUrlTrans(url)) })]
+      : []
+  },
+  { immediate: true }
 )
 
 onMounted(() => {
-  init()
   eventBus.on('uploadImg', goFile)
 })
 onBeforeUnmount(() => {
@@ -142,7 +136,10 @@ onBeforeUnmount(() => {
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
+            <img-view-dialog
+              v-model="dialogVisible"
+              :image-url="dialogVisible ? imgUrlTrans(dialogImageUrl) : undefined"
+            />
           </el-col>
         </el-row>
         <el-row>
