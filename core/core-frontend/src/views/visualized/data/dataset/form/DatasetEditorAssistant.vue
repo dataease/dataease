@@ -137,7 +137,6 @@ if (props.calcFieldDraft) {
   )
 }
 
-const sessions = new Map<string, string>()
 let latestSession: AiConversationSession | undefined
 const pendingRetry = ref<Turn>()
 let latestRetryExecution: string | undefined
@@ -150,6 +149,7 @@ let disposed = false
 
 const identityScope = () =>
   JSON.stringify([user.uid, user.oid, user.proxyInfo?.proxy, user.proxyInfo?.proxyOid])
+const sessions = new Map<string, ReturnType<typeof identityScope>>()
 const uncertainResponse = (error: unknown) => {
   if (!isRequestError(error)) return false
   if (!error.response) {
