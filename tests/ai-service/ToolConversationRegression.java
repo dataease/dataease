@@ -114,7 +114,12 @@ public final class ToolConversationRegression {
                     exchange.getResponseBody().write(rejected); exchange.close(); return;
                 }
                 String content;
-                if (mode.get().startsWith("calc-")) {
+                if (mode.get().startsWith("text-clarification-")) {
+                    var delta = new LinkedHashMap<String, Object>();
+                    delta.put("content", "您想查询哪些数据？");
+                    if (mode.get().endsWith("empty")) delta.put("tool_calls", List.of());
+                    content = frame(delta, "stop");
+                } else if (mode.get().startsWith("calc-")) {
                     content = calculated.respond(mode.get(), sent.size());
                 } else if (mode.get().equals("selection-followup")) {
                     var last = body.path("messages").get(body.path("messages").size() - 1);
@@ -362,6 +367,27 @@ public final class ToolConversationRegression {
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
             calculated.verify(mvc, mode, sent, secondResourceAllowed);
+            for (String shape : List.of("omitted", "empty")) {
+                mode.set("text-clarification-" + shape);
+                sent.clear();
+                var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11",
+                                "editorId", "clarify-" + shape, "sql", "")))).andReturn().getResponse().getContentAsString());
+                var reply = terminal(mvc, start(mvc, session, "查询")).path("result");
+                if (sent.size() != 1 || !"EXPLANATION".equals(reply.path("type").asText())
+                        || !"您想查询哪些数据？".equals(reply.path("text").asText()) || reply.hasNonNull("sql"))
+                    throw new AssertionError("Plain clarification with " + shape + " tool calls must reach the author: " + reply);
+                var path = "/ai/conversations/" + session.path("sessionId").asText() + "/executions";
+                var next = JSON.readTree(mvc.perform(post(path).locale(Locale.TAIWAN).contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("contextVersion", session.path("contextVersion").asText(), "text", "2"))))
+                        .andReturn().getResponse().getContentAsString());
+                terminal(mvc, path + "/" + next.path("executionId").asText());
+                var messages = sent.getLast().path("messages");
+                if (!messages.get(0).path("content").asText().contains("zh-TW")
+                        || !messages.toString().contains("您想查询哪些数据？") || !messages.get(messages.size() - 1).path("content").asText().contains("2"))
+                    throw new AssertionError("A numeric follow-up needs the previous dialogue and the current UI language as fallback");
+                mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            }
             reads.clear(); readTargets.clear();
             DatasetSqlDialectRegression.main(new String[0]);
             mode.set("dataset-guide");

@@ -62,6 +62,8 @@ interface Turn {
   draftRevision: number
   question: string
   answer: string
+  choices?: string[]
+  selectedChoice?: string
   session?: AiConversationSession
   cursor?: number
   executionId?: string
@@ -71,6 +73,7 @@ interface Turn {
 const available = ref(false)
 const expanded = ref(false)
 const input = ref('')
+const composing = ref(false)
 const failure = ref('')
 const turns = ref<Turn[]>([])
 // Zero starts a new query. Positive numbers identify displayed turns.
@@ -361,6 +364,23 @@ const checkedSuggestion = async (turn: Turn, target: string, referenceOnly = fal
   }
   return checked
 }
+// Only a question followed by a final numbered list is an invitation to choose.
+const clarification = (text: string) => {
+  const lines = text.trimEnd().split(/\r?\n/)
+  const choices: string[] = []
+  let number = 0
+  while (lines.length) {
+    const match = /^\s*(\d+)[.)、]\s*(\S.*)$/.exec(lines[lines.length - 1])
+    if (!match || (number && Number(match[1]) !== number - 1)) break
+    choices.unshift(match[2].trimEnd())
+    number = Number(match[1])
+    lines.pop()
+  }
+  const question = lines.join('\n').trimEnd()
+  if (number === 1 && choices.length >= 2 && /[?？؟]$/.test(question)) {
+    return { question, choices }
+  }
+}
 const applyPage = (turn: Turn, page: AiConversationEvents) => {
   if (
     page.sessionId !== turn.session?.sessionId ||
@@ -380,7 +400,9 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
   turn.status = page.status
   if (page.status === 'COMPLETED' && page.result) {
     turn.result = page.result
-    turn.answer = page.result.text
+    const options = page.result.type === 'EXPLANATION' && clarification(page.result.text)
+    turn.answer = options ? options.question : page.result.text
+    if (options) turn.choices = options.choices
   }
   if (page.status === 'FAILED') {
     failure.value ||= tr('failed')
@@ -471,6 +493,12 @@ const send = async () => {
   const source = props.resourceId
   const calcField = props.calcFieldDraft?.()
   const isCross = props.isCross
+  const previous = turns.value.at(-1)
+  if (previous?.choices) {
+    previous.selectedChoice = previous.choices.find(
+      (label, index) => question === label || question === String(index + 1)
+    )
+  }
   const index =
     turns.value.push({
       question,
@@ -574,6 +602,23 @@ const send = async () => {
       request = undefined
     }
   }
+}
+const answerChoice = (turn: Turn, choice: string) => {
+  if (turn !== turns.value.at(-1) || busy.value || applying.value) return
+  input.value = choice
+  void send()
+}
+const keydown = (event: KeyboardEvent) => {
+  if (
+    event.key !== 'Enter' ||
+    event.shiftKey ||
+    event.isComposing ||
+    composing.value ||
+    event.keyCode === 229
+  )
+    return
+  event.preventDefault()
+  if (!event.repeat) void send()
 }
 const stopRun = async (turn: Turn, token: number) => {
   turn.status = 'STOPPING'
@@ -704,6 +749,17 @@ const apply = async (turn: Turn) => {
         <article v-for="(turn, index) in turns" :key="index">
           <p class="question">{{ turn.question }}</p>
           <p v-if="turn.answer">{{ turn.answer }}</p>
+          <div v-if="turn.choices" class="clarification-choices">
+            <el-button
+              v-for="(choice, i) in turn.choices"
+              :key="i"
+              :aria-pressed="turn.selectedChoice === choice"
+              :type="turn.selectedChoice === choice ? 'primary' : undefined"
+              :disabled="index !== turns.length - 1 || busy || applying"
+              @click="answerChoice(turn, choice)"
+              >{{ choice }}</el-button
+            >
+          </div>
           <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
           <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
           <details v-if="calcFieldDraft || turn.result">
@@ -834,8 +890,11 @@ const apply = async (turn: Turn) => {
         v-model="input"
         :aria-label="tr('message')"
         :placeholder="tr('message')"
-        @keydown.ctrl.enter.prevent="send"
+        @compositionstart="composing = true"
+        @compositionend="composing = false"
+        @keydown="keydown"
       />
+      <small>{{ tr('send_shortcut') }}</small>
       <el-button
         v-if="!busy && turns.at(-1)?.status === 'UNREACHABLE'"
         data-testid="dataset-sql-assistant-resume"

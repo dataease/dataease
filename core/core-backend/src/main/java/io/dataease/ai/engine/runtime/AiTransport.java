@@ -345,9 +345,9 @@ public class AiTransport {
                 if (generated > (allocation > 0 ? Math.min(262144L, allocation * 16L) : 262144L)) throw AiErrors.error("output_limit");
                 if ("content".equals(key) && !part.isEmpty()) { text.append(part); delta.accept(part); }
             }
-            if (chunk.hasNonNull("tool_calls")) {
+            var calls = chunk.path("tool_calls");
+            if (chunk.hasNonNull("tool_calls") && !(calls.isArray() && calls.isEmpty())) {
                 sawTool = true;
-                var calls = chunk.path("tool_calls");
                 // Deliberate first capability: one serial tool per model step. Never mis-correlate a batch.
                 if (!calls.isArray() || calls.size() != 1 || !calls.get(0).path("index").isInt() || calls.get(0).path("index").asInt() != 0) throw AiErrors.error("unsupported");
                 var call = calls.get(0);

@@ -113,7 +113,7 @@ async function backend(page, options = {}) {
     const result = {
       ...sc,
       type: state.explain ? "EXPLANATION" : "SQL_SUGGESTION",
-      text: "已核对两笔已支付订单。",
+      text: state.answer ?? "已核对两笔已支付订单。",
       sql: state.explain
         ? null
         : sc.resourceId === "second"
@@ -123,6 +123,7 @@ async function backend(page, options = {}) {
     };
     if (path.endsWith("/executions")) {
       state.starts = (state.starts ?? 0) + 1;
+      state.lastQuestion = body.text;
       return reply(run);
     }
     if (path.endsWith("/check-application")) {
@@ -167,6 +168,32 @@ async function backend(page, options = {}) {
   });
   return state;
 }
+test("clarification accepts keyboard input and one choice on the current question", async ({ page }) => {
+  const state = await backend(page, { explain: true, answer: "您想查询哪些数据？\n1. 订单数量\n2. 销售金额" });
+  await enter(page);
+  await expand(page);
+  const panel = control(page, "panel");
+  const input = panel.locator("textarea");
+  await input.fill("查询");
+  await input.dispatchEvent("keydown", { key: "Enter", isComposing: true });
+  await expect(input).toHaveValue("查询");
+  await input.press("Shift+Enter");
+  await expect(input).toHaveValue("查询\n");
+  await input.press("Enter");
+  const first = panel.getByRole("article").first();
+  const choice = first.getByRole("button", { name: "销售金额", exact: true });
+  await expect(choice).toBeEnabled();
+  expect(state.starts).toBe(1);
+  await choice.click();
+  await expect(choice).toBeDisabled();
+  await expect(choice).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => state.lastQuestion).toBe("销售金额");
+  await expect(panel.getByRole("article").nth(1).getByRole("button", { name: "订单数量", exact: true })).toBeEnabled();
+  await input.fill("只统计已支付的订单");
+  await input.press("Enter");
+  await expect.poll(() => state.lastQuestion).toBe("只统计已支付的订单");
+  expect(state.starts).toBe(3);
+});
 async function assertUnrun(page, state) {
   expect(state.previews).toEqual([]);
   expect(await page.evaluate(() => window.saved)).toBeUndefined();
