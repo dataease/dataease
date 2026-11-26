@@ -195,7 +195,7 @@ H2 证明事务和跨 JVM 回归，不代表 MySQL/GreatSQL、PostgreSQL、SQL S
 
 编辑器回答语言回归使用 `AI_EDITOR_LANGUAGE_BROWSER=1 uv run python tests/ai-service/run.py --conversation-socket --ai-classpath <依赖类路径文件>`。独立 Chrome 在真实 SQL 编辑器和计算字段抽屉分别使用简体中文、繁体中文、英文界面，经本机 Tomcat 和受控上游核对提问当轮的界面语言、明确要求和连续对话原文。受控上游按固定对话返回可区分的三语回复。实际场景的提示词、工具校验和续调通过 `--recovery-tools` 验证。
 
-正式 SQL 编辑器的历史字段回归使用 `--recovery-tools`。受控数据源在第一步返回 80 个独立标记字段，第二步中途停止。用步骤号追问两个时间字段时，回归逐一检查独立上游收到的首个请求和工具续调请求，分别计数业务元数据读取、数据源 READ 权限检查和从会话中选取的步骤快照。设置 `AI_SQL_HISTORY_BROWSER=1` 可让 Chrome 的正式编辑器通过同一服务执行该场景，`DATASET_SQL_ASSISTANT_PORT` 可指定夹具端口。设置 `AI_SQL_HISTORY_EVIDENCE` 为已有的临时目录，可保存该合成场景的完整上游请求体及计数。
+正式 SQL 编辑器的历史字段回归使用 `--recovery-tools`。受控数据源在第一步返回 80 个独立标记字段，第二步中途停止。用步骤号追问其中两列时，首个模型请求没有历史字段明细，工具续调只收到所问的两列。回归另行计数业务元数据读取、数据源 READ 权限检查和从会话中选取的步骤快照。设置 `AI_SQL_HISTORY_BROWSER=1` 可让 Chrome 的正式编辑器通过同一服务执行该场景，`DATASET_SQL_ASSISTANT_PORT` 可指定夹具端口。设置 `AI_SQL_HISTORY_EVIDENCE` 为已有的临时目录，可保存该合成场景的完整上游请求体及计数。
 
 连续对话回归：`--conversation` 检查首次绑定、切换、清空数据源和修改 SQL 后的真实模型请求历史、原始有效期、幂等续接及运行中拒绝续接；`--recovery-tools` 检查实际 SQL 场景的历史来源标注、切库后仅操作当前库、清空目标后保留工具历史但不开放工具、开头 system 消息中的 NONE 状态且状态提示不累积入历史、历史资源撤权后拒绝新请求和结果交付。`--recovery-tools` 还重放“有工具历史 → 清空选择 → 再查询 → 重新选择 → 再试试”，检查无工具时的 `tool_choice: none`、最新问题绑定当前目标、实际元数据调用目标、原始用户历史保留，以及伪造选择 JSON 只能作为用户文本。两条 Java 回归的受控模型均以 HTTP 400 拒绝历史中间的 system 消息，覆盖未选数据源提问后选择数据源追问、同步 turns 和工具续调的消息顺序兼容性。模型使用本机受控 HTTP 夹具，不代表真实模型回答质量验收。
 

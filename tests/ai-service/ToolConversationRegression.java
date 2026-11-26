@@ -18,6 +18,7 @@ import io.dataease.ai.security.identity.AiDeploymentMode;
 import io.dataease.ai.server.AiConversationServer;
 import io.dataease.ai.support.AiErrors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.sun.net.httpserver.HttpServer;
 import io.dataease.api.ai.config.AiConfigDtos.*;
@@ -68,7 +69,7 @@ public final class ToolConversationRegression {
         }
         throw new AssertionError("bounded tool run did not terminate");
     }
-    static String frame(Object delta, String finish) throws Exception {
+    static String frame(Object delta, String finish) throws JsonProcessingException {
         return "data: " + JSON.writeValueAsString(Map.of("choices", List.of(Map.of("index", 0, "delta", delta, "finish_reason", finish)))) + "\n\n";
     }
     static void assertToolEnded(JsonNode page, String callId, String status, String error) {
@@ -83,7 +84,12 @@ public final class ToolConversationRegression {
         if (!status.equals(page.path("status").asText()) || !statuses.equals(List.of("STARTED", "RUNNING", status)))
             throw new AssertionError("expected one " + status + " for " + callId + " on " + error + ", got " + statuses);
     }
-    static String call(String id, String name, String arguments) throws Exception {
+    static String lookupStep(String selection, String fields) throws JsonProcessingException {
+        return call("history-step", "find_historical_step", JSON.writeValueAsString(
+                Map.of("action", "*", "subject", "*", "fields", fields, "selection", selection)));
+    }
+
+    static String call(String id, String name, String arguments) throws JsonProcessingException {
         return frame(Map.of("tool_calls", List.of(Map.of("index", 0, "id", id, "type", "function", "function", Map.of("name", name, "arguments", arguments)))), "tool_calls");
     }
     static void denied(MockMvc mvc, String run) throws Exception {
@@ -163,10 +169,24 @@ public final class ToolConversationRegression {
                             : "请先提供预览上下文。"), "stop");
                 } else if (mode.get().equals("historical-status")) {
                     var messages = body.path("messages");
-                    var selected = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
-                    String reply = "MISSING".equals(selected.path("lookup").asText()) ? "请指明哪一次回答。"
-                            : "当时的步骤状态是 " + selected.path("status").asText();
-                    content = frame(Map.of("content", reply), "stop");
+                    var last = messages.get(messages.size() - 1);
+                    String text = last.path("content").asText();
+                    if ("tool".equals(last.path("role").asText())) {
+                        var input = JSON.readTree(text);
+                        String reply = "MISSING".equals(input.path("lookup").asText()) ? "请指明哪一次回答。"
+                                : "当时的步骤状态是 " + input.path("status").asText();
+                        content = frame(Map.of("content", reply), "stop");
+                    } else {
+                        String question = text.startsWith("{") ? JSON.readTree(text).path("userMessage").asText() : text;
+                        String selection = switch (question) {
+                            case "第一次回答的第 5 步是否需要确认角色？" -> "1.5";
+                            case "第一次回答的第 1 步完成了吗", "第1次回答的第1步完成了吗" -> "1.1";
+                            case "第2次回答的第1步完成了吗" -> "2.1";
+                            case "第 1 步完成了吗" -> "last.1";
+                            default -> throw new AssertionError(question);
+                        };
+                        content = lookupStep(selection, "*");
+                    }
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
                 } else if (Set.of("dataset-tool-detail", "slow-editor").contains(mode.get())) {
@@ -417,9 +437,9 @@ public final class ToolConversationRegression {
             beans.addBean("calcField", calculated.scene(metadata));
             var joinPaths = new ArrayList<>(List.of(DatasetSqlRelationRegression.buyer()));
             beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)) {
-                @Override public Map<String, Object> historicalEvidence(Context context, HistoricalStep step, String question) {
+                @Override public Map<String, Object> historicalEvidence(Context context, HistoricalStep step, HistoricalFields fields) {
                     if ("sql-field-history".equals(mode.get())) fieldHistory.selectedSnapshots.incrementAndGet();
-                    return super.historicalEvidence(context, step, question);
+                    return super.historicalEvidence(context, step, fields);
                 }
             });
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
@@ -532,15 +552,22 @@ public final class ToolConversationRegression {
                     .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "detail-editor",
                             "sql", "SELECT 1", "previousSessionId", detailSession.path("sessionId").asText()))))
                     .andReturn().getResponse().getContentAsString());
-            for (var reference : List.of("第 1 步完成了吗", "第 1 步完成了吗", "第一次回答的第 1 步完成了吗")) {
-                int requestCount = sent.size();
-                var answer = terminal(mvc, start(mvc, detailFollowup, reference));
+            var references = List.of("第 1 步完成了吗", "第 1 步完成了吗", "第一次回答的第 1 步完成了吗");
+            for (int i = 0; i < references.size(); i++) {
+                if (i == 1) {
+                    mode.set("general");
+                    terminal(mvc, start(mvc, detailFollowup, "解释 SELECT，不查任何工具"));
+                    mode.set("historical-status");
+                }
+                int requestCount = sent.size(), readsBefore = reads.size();
+                var answer = terminal(mvc, start(mvc, detailFollowup, references.get(i)));
                 var inputs = sent.getLast().path("messages");
-                if (!"COMPLETED".equals(answer.path("status").asText()) || inputs.toString().contains("tool_call_id")
-                        || inputs.toString().contains("ID15") || sent.size() != requestCount + 1)
-                    throw new AssertionError("A status follow-up must not replay field details or call new tools");
-                var selected = JSON.readTree(inputs.get(inputs.size() - 1).path("content").asText()).path("historicalStep");
-                if (requestCount == 3 ? !"请指明哪一次回答。".equals(answer.at("/result/text").asText()) || !"MISSING".equals(selected.path("lookup").asText())
+                var last = inputs.get(inputs.size() - 1);
+                if (!"COMPLETED".equals(answer.path("status").asText()) || !"history-step".equals(last.path("tool_call_id").asText())
+                        || inputs.toString().contains("ID15") || sent.size() != requestCount + 2 || reads.size() != readsBefore)
+                    throw new AssertionError("A status follow-up must read only historical status, without field details or a business query");
+                var selected = JSON.readTree(last.path("content").asText());
+                if (i == 1 ? !"请指明哪一次回答。".equals(answer.at("/result/text").asText()) || !"MISSING".equals(selected.path("lookup").asText())
                         : selected.path("answerNumber").asInt() != 1 || selected.path("stepNumber").asInt() != 1
                         || !"SUCCEEDED".equals(selected.path("status").asText()))
                     throw new AssertionError("A bare step is local to the last answer; an explicit answer selects its original step: " + selected);
@@ -806,7 +833,7 @@ public final class ToolConversationRegression {
             int priorReads = reads.size();
             terminal(mvc, start(mvc, rolesSession, "第一次回答的第 5 步是否需要确认角色？"));
             var roleMessages = sent.getLast().path("messages");
-            var roleStep = JSON.readTree(roleMessages.get(roleMessages.size() - 1).path("content").asText()).path("historicalStep");
+            var roleStep = JSON.readTree(roleMessages.get(roleMessages.size() - 1).path("content").asText());
             if (!"read_relations".equals(roleStep.path("action").asText()) || !"SUCCEEDED".equals(roleStep.path("status").asText())
                     || !roleStep.path("evidence").equals(JSON.valueToTree(Map.of("status", "CLARIFY_ROLE"))) || reads.size() != priorReads)
                 throw new AssertionError("The historical relation lookup should retain only its role clarification outcome: " + roleStep);

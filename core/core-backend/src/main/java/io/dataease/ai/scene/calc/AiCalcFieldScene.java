@@ -208,7 +208,7 @@ public class AiCalcFieldScene implements AiConversationScene {
         } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
     }
 
-    @Override public Map<String, Object> historicalEvidence(Context original, HistoricalStep step, String question) {
+    @Override public Map<String, Object> historicalEvidence(Context original, HistoricalStep step, HistoricalFields fields) {
         if (!(PROPOSE.equals(step.name()) || REVALIDATE.equals(step.name())) || !"SUCCEEDED".equals(step.status()) || step.result() == null) return Map.of();
         try {
             var feedback = CalcFieldCanvas.JSON.readTree(modelToolResult(step.name(), step.result()));

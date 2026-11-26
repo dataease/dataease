@@ -19,6 +19,10 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
     final AtomicInteger authorizationChecks = new AtomicInteger();
     final AtomicInteger selectedSnapshots = new AtomicInteger();
     private volatile int snapshotsBeforeNaturalLookup;
+    // The controlled model is told which structured call to make for the current test utterance.
+    private record NumberedLookup(String question, String selection, String fields) { }
+    private volatile NumberedLookup scriptedLookup;
+
     private volatile CountDownLatch secondRead = new CountDownLatch(1);
     private volatile CountDownLatch release = new CountDownLatch(1);
 
@@ -31,7 +35,7 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
         }
         if (!"orders".equals(table)) throw new AssertionError(table);
         var fields = new ArrayList<TableField>();
-        var names = List.of("paid_at", "created_at", "type", "step", "date", "id", "and", "include", "present");
+        var names = List.of("paid_at", "created_at", "type", "step", "date", "id", "and", "include", "present", "temporal", "column,part", "#count");
         for (int i = 0; i < 80; i++) {
             var field = new TableField();
             field.setOriginName(i < names.size() ? names.get(i) : "other_column_" + i);
@@ -93,19 +97,22 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
                 default -> frame(Map.of("content", "已完成核对"), "stop");
             };
         }
-        if (question.endsWith("的业务结论？"))
-            return frame(Map.of("content", "当时的结论是 " + envelope.at("/historicalStep/evidence/status").asText("未记录")), "stop");
         if (INSPECT.equals(question)) {
             boolean first = !"tool".equals(last.path("role").asText());
             return call(first ? "order-fields" : "item-fields", "get_table_fields", first ? "{\"table\":\"orders\"}" : "{\"table\":\"items\"}");
         }
-        if (QUESTION.equals(question)) {
-            release.countDown();
-            if (!"tool".equals(last.path("role").asText())) return call("current-guide", "read_sql_guide", "{\"topic\":\"projection\"}");
-            var selected = envelope.at("/historicalStep/evidence/fields");
-            var answer = new ArrayList<String>();
-            for (var field : selected) answer.add(field.path("name").asText() + " " + field.path("type").asText());
-            return frame(Map.of("content", answer.isEmpty() ? "缺少原记录" : String.join(", ", answer)), "stop");
+        var lookup = QUESTION.equals(question) ? new NumberedLookup(QUESTION, "last.1", "paid_at,created_at") : scriptedLookup;
+        if (lookup != null && lookup.question().equals(question)) {
+            if (QUESTION.equals(question)) release.countDown();
+            if (!"tool".equals(last.path("role").asText())) return lookupStep(lookup.selection(), lookup.fields());
+            var evidence = JSON.readTree(last.path("content").asText()).path("evidence");
+            if (evidence.has("status")) return frame(Map.of("content", "当时的结论是 " + evidence.path("status").asText()), "stop");
+            if (QUESTION.equals(question)) {
+                var answer = new ArrayList<String>();
+                for (var field : evidence.path("fields")) answer.add(field.path("name").asText() + " " + field.path("type").asText());
+                return frame(Map.of("content", String.join(", ", answer)), "stop");
+            }
+            return frame(Map.of("content", "已核对历史记录"), "stop");
         }
         return frame(Map.of("content", "好的"), "stop");
     }
@@ -116,19 +123,37 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
             throw new AssertionError("Original scope must be required: " + response.statusCode() + " " + response.body());
     }
 
+    private static void assertInitialQuestion(JsonNode messages) throws Exception {
+        var last = messages.get(messages.size() - 1);
+        var content = last.path("content").asText();
+        if (!"user".equals(last.path("role").asText())
+                || content.startsWith("{") && JSON.readTree(content).has("historicalStep")
+                || !messages.findValues("tool_call_id").isEmpty())
+            throw new AssertionError("Initial request must contain the user question without historical tools or snapshot evidence: " + messages);
+    }
+
     private void verifyRequests(String clientName, List<JsonNode> calls, int reads, int checks, int snapshots) throws Exception {
         if (calls.size() != 2 || reads != 0 || checks < 1 || snapshots != 1)
             throw new AssertionError("Unexpected model/metadata/authorization/selected-snapshot counts: " + List.of(calls.size(), reads, checks, snapshots));
         var record = new ArrayList<Object>();
-        for (var request : calls) {
+        for (int index = 0; index < calls.size(); index++) {
+            var request = calls.get(index);
             var messages = request.path("messages");
-            var latest = messages.findParents("role").stream().filter(m -> "user".equals(m.path("role").asText())).reduce((a,b) -> b).orElseThrow();
-            var step = JSON.readTree(latest.path("content").asText()).path("historicalStep");
-            var evidence = step.path("evidence");
-            if (step.path("answerNumber").asInt() != 1 || step.path("stepNumber").asInt() != 1
-                    || !"COMPLETE".equals(evidence.path("coverage").asText()) || evidence.path("fields").size() != 2
-                    || !request.toString().contains(marker(0)) || !request.toString().contains(marker(1)))
-                throw new AssertionError("Both and only requested physical fields must reach every upstream request: " + step);
+            var last = messages.get(messages.size() - 1);
+            boolean initial = index == 0;
+            var step = initial ? JSON.createObjectNode() : JSON.readTree(last.path("content").asText());
+            if (initial) {
+                assertInitialQuestion(messages);
+                if (request.toString().contains(marker(0)) || request.toString().contains(marker(1)))
+                    throw new AssertionError("First request must let the model interpret the question before any snapshot data: " + last);
+            } else {
+                var evidence = step.path("evidence");
+                if (!"tool".equals(last.path("role").asText()) || !"history-step".equals(last.path("tool_call_id").asText())
+                        || step.path("answerNumber").asInt() != 1 || step.path("stepNumber").asInt() != 1
+                        || !"COMPLETE".equals(evidence.path("coverage").asText()) || evidence.path("fields").size() != 2
+                        || !request.toString().contains(marker(0)) || !request.toString().contains(marker(1)))
+                    throw new AssertionError("Only the explicitly requested original evidence must reach the continuation: " + step);
+            }
             for (int i = 2; i < 80; i++) if (request.toString().contains(marker(i)))
                 throw new AssertionError("Unrelated field marker " + i + " reached upstream");
             if (request.toString().contains("order-fields") || request.toString().contains("item-fields"))
@@ -147,16 +172,64 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
         var answer = finish(startTurn(session, version, question));
         if (!"COMPLETED".equals(answer.path("status").asText()) || sent.size() != before + 2)
             throw new AssertionError(question + " must make one tool call: " + answer);
+        assertInitialQuestion(sent.get(before).path("messages"));
         var messages = sent.getLast().path("messages");
         var last = messages.get(messages.size() - 1);
         if (!"tool".equals(last.path("role").asText())) throw new AssertionError(last);
-        return JSON.readTree(last.path("content").asText());
+        var evidence = JSON.readTree(last.path("content").asText());
+        if (question.endsWith("的业务结论？") && !("当时的结论是 " + evidence.at("/evidence/status").asText())
+                .equals(answer.at("/result/text").asText())) throw new AssertionError(answer);
+        return evidence;
+    }
+
+    private JsonNode numberedEvidence(String session, String version, String question, String selection, String fields,
+                                      List<JsonNode> sent) throws Exception {
+        scriptedLookup = new NumberedLookup(question, selection, fields);
+        try {
+            var step = turnEvidence(session, version, question, sent);
+            if (!"FOUND".equals(step.path("lookup").asText())) throw new AssertionError(step);
+            return step;
+        } finally {
+            scriptedLookup = null;
+        }
     }
 
     private static void assertCount(JsonNode evidence, String coverage, Integer expectedCount) {
         var expected = JSON.createObjectNode().put("coverage", coverage);
         if (expectedCount != null) expected.put("fieldCount", expectedCount);
         if (!expected.equals(evidence)) throw new AssertionError("Expected historical count " + expected + ", received " + evidence);
+    }
+
+    private void verifySynchronousLookup(String base, List<JsonNode> sent, List<String> reads) throws Exception {
+        var source = ok("POST", base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "sync-history"));
+        String session = base + "/" + source.path("sessionId").asText();
+        String version = source.path("contextVersion").asText();
+        secondRead = new CountDownLatch(1);
+        release = new CountDownLatch(1);
+        try {
+            String original = startTurn(session, version, INSPECT);
+            if (!secondRead.await(6, TimeUnit.SECONDS)) throw new AssertionError("Expected an incomplete first turn");
+            ok("POST", original + "/stop", null);
+            release.countDown();
+            int readsBefore = reads.size(), first = sent.size();
+            var answer = ok("POST", session + "/turns", Map.of("contextVersion", version, "text", QUESTION));
+            if (!"paid_at TIMESTAMP, created_at DATETIME".equals(answer.path("text").asText()) || sent.size() != first + 2)
+                throw new AssertionError("Synchronous follow-up must recover the completed step of a stopped turn: " + answer);
+            var definitions = sent.get(first).path("tools");
+            if (definitions.size() != 1 || !"find_historical_step".equals(definitions.at("/0/function/name").asText()))
+                throw new AssertionError("The synchronous endpoint may expose only the historical lookup");
+            scriptedLookup = new NumberedLookup("Le premier champ de la première étape ?", "1.1", "paid_at");
+            ok("POST", session + "/turns", Map.of("contextVersion", version, "text", scriptedLookup.question()));
+            var messages = sent.getLast().path("messages");
+            var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("evidence");
+            if (sent.size() != first + 4 || reads.size() != readsBefore || !"paid_at".equals(evidence.at("/fields/0/name").asText()))
+                throw new AssertionError("A subsequent synchronous lookup must still reuse the original evidence");
+        } finally {
+            release.countDown();
+            scriptedLookup = null;
+            ok("DELETE", session, null);
+        }
+        System.out.println("PASS two synchronous history lookups after an interrupted first turn, only the historical tool, no business reads");
     }
 
     private void verifyNatural(String base, List<JsonNode> sent, List<String> reads) throws Exception {
@@ -190,17 +263,15 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
                 || !refresh.toString().contains("second-source-paid") || refresh.toString().contains(marker(1))
                 || !reads.subList(count, reads.size()).equals(List.of("tables", "orders")))
             throw new AssertionError("Refresh must read once from current target and expose only paid_at: " + refresh + reads.subList(count, reads.size()));
-        finish(startTurn(session, version, "第1步的 paid_at 和 unrecorded_note 当时有记录吗"));
-        var messages = sent.getLast().path("messages");
-        var selected = JSON.readTree(messages.get(messages.size()-1).path("content").asText()).path("historicalStep");
+        var selected = numberedEvidence(session, version, "第1步的 paid_at 和 unrecorded_note 当时有记录吗",
+                "last.1", "paid_at,unrecorded_note", sent);
         var partial = selected.path("evidence");
         if (!"PARTIAL".equals(partial.path("coverage").asText()) || !"second-source-paid".equals(partial.at("/fields/0/comment").asText())
                 || !"unrecorded_note".equals(partial.at("/unrecordedFields/0").asText()) || partial.has("absentFields"))
             throw new AssertionError("A targeted refresh remains a partial snapshot for a subsequent historical question: " + partial);
-        finish(startTurn(session, version, "第" + selected.path("answerNumber").asInt() + "次回答的第1步读到了多少个字段？"));
-        var countMessages = sent.getLast().path("messages");
-        assertCount(JSON.readTree(countMessages.get(countMessages.size()-1).path("content").asText()).at("/historicalStep/evidence"),
-                "PARTIAL", 1);
+        int originalAnswer = selected.path("answerNumber").asInt();
+        assertCount(numberedEvidence(session, version, "第" + originalAnswer + "次回答的第1步读到了多少个字段？",
+                originalAnswer + ".1", "#count", sent).path("evidence"), "PARTIAL", 1);
         ok("DELETE", session, null);
         var fresh = ok("POST", base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "new-history"));
         session = base + "/" + fresh.path("sessionId").asText();
@@ -222,16 +293,13 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
         int readsBefore = reads.size();
         var expected = List.of("INVALID", "NOT_RUN", "NO_CONFIRMED_PATH", "NO_MATCH");
         for (int i = 0; i < expected.size(); i++) {
-            int sentBefore = sent.size();
-            var reply = finish(startTurn(session, version, "第一次回答的第 " + (i + 1) + " 步的业务结论？"));
+            var step = numberedEvidence(session, version, "第一次回答的第 " + (i + 1) + " 步的业务结论？",
+                    "1." + (i + 1), "*", sent);
             var request = sent.getLast();
-            var messages = request.path("messages");
-            var step = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
             if (!"SUCCEEDED".equals(step.path("status").asText())
                     || !step.path("evidence").equals(JSON.valueToTree(Map.of("status", expected.get(i))))
-                    || !("当时的结论是 " + expected.get(i)).equals(reply.at("/result/text").asText())
-                    || sent.size() != sentBefore + 1 || reads.size() != readsBefore
-                    || request.toString().contains("original_projection_marker") || request.toString().contains("unknown_search_marker"))
+                    || reads.size() != readsBefore || request.toString().contains("original_projection_marker")
+                    || request.toString().contains("unknown_search_marker"))
                 throw new AssertionError("Expected only the original business outcome " + expected.get(i) + ": " + step);
         }
         ok("DELETE", session, null);
@@ -261,18 +329,24 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
             verifyRequests("http", List.copyOf(sent.subList(first, sent.size())), reads.size() - count,
                     authorizationChecks.get() - checks, selectedSnapshots.get() - snapshots);
             if (!"paid_at TIMESTAMP, created_at DATETIME".equals(answered.at("/result/text").asText())) throw new AssertionError(answered);
+            var spelling = numberedEvidence(session, version, "Les colonnes paid_at et PAID_AT existent-elles ?",
+                    "1.1", "paid_at,PAID_AT", sent).path("evidence");
+            if (!spelling.path("fields").findValuesAsText("name").equals(List.of("paid_at"))
+                    || !spelling.path("absentFields").equals(JSON.valueToTree(List.of("PAID_AT"))))
+                throw new AssertionError("Physical names in a case-sensitive snapshot retain their exact spelling: " + spelling);
+            record Example(String question, String fields, List<String> names) { }
             for (var query : List.of(
-                    Map.entry("What is the type of paid_at and created_at in step 1 of the first answer?", List.of("paid_at", "created_at")),
-                    Map.entry("Are there any date fields in step 1 of the first answer?", List.of("paid_at", "created_at")),
-                    Map.entry("What are the types of type and id in step 1 of the first answer?", List.of("type", "id")),
-                    Map.entry("In step 1 of the first answer, describe the columns `and` and `step`.", List.of("step", "and")),
-                    Map.entry("Is the date column in step 1 of the first answer an integer?", List.of("date")))) {
-                finish(startTurn(session, version, query.getKey()));
-                var messages = sent.getLast().path("messages");
-                var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
-                var fields = evidence.path("fields");
-                if (!fields.findValuesAsText("name").equals(query.getValue()) || reads.size() != count || evidence.has("absentFields"))
-                    throw new AssertionError("Unexpected historical fields for " + query.getKey() + ": " + fields.findValuesAsText("name"));
+                    new Example("第一次回答的第 1 步中有哪些时间字段？", "temporal", List.of("paid_at", "created_at")),
+                    new Example("Quels champs temporels ont été lus à la première étape de la première réponse ?",
+                            "temporal", List.of("paid_at", "created_at")),
+                    new Example("What are the types of type and id in step 1 of the first answer?", "type,id", List.of("type", "id")),
+                    new Example("In step 1 of the first answer, describe the columns `and` and `step`.", "and,step", List.of("step", "and")),
+                    new Example("Is the date column in step 1 of the first answer an integer?", "date", List.of("date")),
+                    new Example("最初の回答で temporal と column,part と #count の型は何でしたか？",
+                            JSON.writeValueAsString(List.of("temporal", "column,part", "#count")), List.of("temporal", "column,part", "#count")))) {
+                var evidence = numberedEvidence(session, version, query.question(), "1.1", query.fields(), sent).path("evidence");
+                if (!evidence.path("fields").findValuesAsText("name").equals(query.names()) || reads.size() != count || evidence.has("absentFields"))
+                    throw new AssertionError("Unexpected historical fields for " + query.question() + ": " + evidence);
             }
             finish(startTurn(session, version, "请解释 SQL"));
             String unrelated = sent.getLast().toString();
@@ -284,47 +358,41 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
             }
             if (unrelated.contains(marker(0)) || replaysStep || unrelated.contains("tool_call_id"))
                 throw new AssertionError("Unrelated question must not replay past evidence or calls");
-            for (String question : List.of("第一次回答的第 1 步中有哪些时间字段？", "第一次回答的第 1 步里是否有 missing_code 和 paid_at？")) {
-                finish(startTurn(session, version, question));
-                var messages = sent.getLast().path("messages");
-                var historical = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
-                if (question.contains("时间字段")) {
-                    if (historical.path("fields").size() != 2 || !historical.toString().contains(marker(1)) || historical.toString().contains(marker(2)))
-                        throw new AssertionError("Historical temporal fields must use the original types: " + historical);
-                } else if (historical.path("fields").size() != 1 || !historical.toString().contains(marker(0))
-                        || !historical.path("absentFields").toString().equals("[\"missing_code\"]"))
-                    throw new AssertionError("A complete read records the absence of the named column: " + historical);
-            }
-            finish(startTurn(session, version, "第一次回答的第 2 步有记录 missing_code 吗？"));
-            var partialMessages = sent.getLast().path("messages");
-            var partial = JSON.readTree(partialMessages.get(partialMessages.size() - 1).path("content").asText()).path("historicalStep");
+            var historical = numberedEvidence(session, version, "第一次回答的第 1 步里是否有 missing_code 和 paid_at？",
+                    "1.1", "missing_code,paid_at", sent).path("evidence");
+            if (historical.path("fields").size() != 1 || !historical.toString().contains(marker(0))
+                    || !historical.path("absentFields").equals(JSON.valueToTree(List.of("missing_code"))))
+                throw new AssertionError("A complete read records the absence of the named column: " + historical);
+            var partial = numberedEvidence(session, version, "第一次回答的第 2 步有记录 missing_code 吗？",
+                    "1.2", "missing_code", sent);
             if (!"CANCELLED".equals(partial.path("status").asText()) || !"PARTIAL".equals(partial.at("/evidence/coverage").asText())
                     || partial.at("/evidence/fields").size() != 0 || !"missing_code".equals(partial.at("/evidence/unrecordedFields/0").asText())
                     || !partial.at("/evidence/absentFields").isMissingNode())
                 throw new AssertionError("A stopped read cannot prove column absence: " + partial);
-            for (String question : List.of("第一次回答的第1步读到了多少个字段？", "How many columns were returned in step 1 of the first answer?",
-                    "第一次回答的第2步读到了多少个字段？")) {
-                finish(startTurn(session, version, question));
-                var request = sent.getLast();
-                var messages = request.path("messages");
-                var tally = JSON.readTree(messages.get(messages.size()-1).path("content").asText()).at("/historicalStep/evidence");
-                boolean stoppedRead = question.contains("第2步");
-                assertCount(tally, stoppedRead ? "PARTIAL" : "COMPLETE", stoppedRead ? null : 80);
-                if (reads.size() != count || request.toString().contains(marker(0))) throw new AssertionError("Count leaked fields or queried again");
-            }
-            for (var query : List.of(
-                    Map.entry("第一次回答的第 1 步里有 price 吗？", "absentFields"),
-                    Map.entry("Does step 1 of the first answer include price?", "absentFields"),
-                    Map.entry("Is price present in step 1 of the first answer?", "absentFields"),
-                    Map.entry("第 1 次回答的第 2 步有记录 price 吗？", "unrecordedFields"),
-                    Map.entry("Is there a price column in step 2 of the first answer?", "unrecordedFields"))) {
-                finish(startTurn(session, version, query.getKey()));
-                var messages = sent.getLast().path("messages");
-                var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
-                if (!evidence.path(query.getValue()).equals(JSON.valueToTree(List.of("price")))
-                        || !evidence.path("fields").isEmpty() || reads.size() != count)
-                    throw new AssertionError("Historical field coverage for " + query.getKey() + ": " + evidence);
-            }
+            assertCount(numberedEvidence(session, version, "How many columns were returned in step 1 of the first answer?",
+                    "1.1", "#count", sent).path("evidence"), "COMPLETE", 80);
+            assertCount(numberedEvidence(session, version, "第一次回答的第2步读到了多少个字段？",
+                    "1.2", "#count", sent).path("evidence"), "PARTIAL", null);
+            var combined = numberedEvidence(session, version,
+                    "Combien de colonnes à la première étape de la première réponse, et quels étaient leurs noms ?",
+                    "1.1", "#count,#names", sent).path("evidence");
+            if (combined.path("fieldCount").asInt() != 80 || combined.path("fieldNames").size() != 80
+                    || !"paid_at".equals(combined.at("/fieldNames/0").asText()) || !"other_column_79".equals(combined.at("/fieldNames/79").asText())
+                    || combined.has("fields") || sent.getLast().toString().contains(marker(0)) || reads.size() != count)
+                throw new AssertionError("Compound projection must return both recorded count and names without full field details: " + combined);
+            var countAndField = numberedEvidence(session, version, "一共有几列？其中 paid_at 的类型是什么？",
+                    "1.1", "#count,paid_at", sent).path("evidence");
+            if (countAndField.path("fieldCount").asInt() != 80 || countAndField.path("fields").size() != 1
+                    || !"TIMESTAMP".equals(countAndField.at("/fields/0/type").asText()) || countAndField.has("fieldNames")
+                    || sent.getLast().toString().contains(marker(1)) || reads.size() != count)
+                throw new AssertionError("Counting should preserve the requested field details: " + countAndField);
+            var absent = numberedEvidence(session, version, "Does step 1 of the first answer include price?",
+                    "1.1", "price", sent).path("evidence");
+            var unrecorded = numberedEvidence(session, version, "第 1 次回答的第 2 步有记录 price 吗？",
+                    "1.2", "price", sent).path("evidence");
+            if (!absent.path("absentFields").equals(JSON.valueToTree(List.of("price"))) || !absent.path("fields").isEmpty()
+                    || !unrecorded.path("unrecordedFields").equals(JSON.valueToTree(List.of("price"))) || reads.size() != count)
+                throw new AssertionError("Named field coverage must retain the difference between complete and partial reads");
             var supplemental = turnEvidence(session, version, "现在只补查 items 的 missing_code", sent);
             if (!"CURRENT_READ".equals(supplemental.path("source").asText())
                     || !supplemental.path("absentFields").toString().equals("[\"missing_code\"]")
@@ -344,6 +412,7 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
             ok("DELETE", session, null);
             verifyNatural(base, sent, reads);
             verifyHistoricalOutcomes(base, sent, reads);
+            verifySynchronousLookup(base, sent, reads);
             if ("1".equals(System.getenv("AI_SQL_HISTORY_BROWSER"))) {
                 secondRead = new CountDownLatch(1); release = new CountDownLatch(1);
                 int browserCalls = sent.size();

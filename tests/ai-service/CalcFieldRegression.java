@@ -219,6 +219,10 @@ final class CalcFieldRegression {
                     JSON.writeValueAsString(Map.of("action", "propose_calc_field", "subject", "*", "fields", "*", "selection", mode.endsWith("latest") ? "latest" : "any")));
             return frame(Map.of("content", mode.endsWith("ambiguous") ? "你指的是哪一次校验？" : "Historical validation"), "stop");
         }
+        if (Set.of("calc-history-first", "calc-history-second", "calc-history-interrupted").contains(mode)) {
+            if (step == 1) return lookupStep(mode.equals("calc-history-second") ? "2.1" : "1.1", "*");
+            return frame(Map.of("content", "Historical validation"), mode.equals("calc-history-interrupted") ? "length" : "stop");
+        }
         if ("calc-history-choices".equals(mode)) return frame(Map.of("content", "Which revenue convention?\n1. UNSELECTED_GROSS_MARKER\n2. Paid orders only"), "stop");
         if ("calc-history".equals(mode)) return frame(Map.of("content", "Historical validation"), "stop");
         String explanation = switch (mode) {
@@ -472,9 +476,9 @@ final class CalcFieldRegression {
         editor.put("previousSessionId", original.path("sessionId").asText());
         var edited = http.ok("POST", base, editor);
         requests.clear();
-        mode.set("calc-history");
+        mode.set("calc-history-first");
         var explained = http.ask(base, edited, "第一次回答的第 1 步校验的是哪个公式？");
-        if (requests.size() != 1 || previews.get() != originalPreviews || !"EXPLANATION".equals(explained.at("/result/type").asText()))
+        if (previews.get() != originalPreviews || !"EXPLANATION".equals(explained.at("/result/type").asText()))
             throw new AssertionError("Historical explanation must not validate or recommend the edited formula");
         var messages = requests.getFirst().path("messages");
         String outbound = messages.toString();
@@ -486,7 +490,7 @@ final class CalcFieldRegression {
         if (scopes.size() != 1 || scopes.get(0).path("fromInclusive").asInt(-1) != 0
                 || scopes.get(0).path("toExclusive").asInt(-1) != messages.size() - 2)
             throw new AssertionError("Resource ranges must index the actual retained history: " + scopes);
-        var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
+        var evidence = historicalResult(requests).path("evidence");
         if (!formula.equals(evidence.path("expression").asText()) || !"DETAIL_PASS".equals(evidence.path("status").asText())
                 || !messages.get(0).path("content").asText().contains("[Price] + 77"))
             throw new AssertionError("The prior validation must identify its submitted expression, separately from the edited basis: " + evidence);
@@ -506,21 +510,20 @@ final class CalcFieldRegression {
         if (!"tool".equals(lookupMessage.path("role").asText()) || !formula.equals(found.at("/evidence/expression").asText())
                 || !"DETAIL_PASS".equals(found.at("/evidence/status").asText()) || found.path("answerNumber").asInt() != 1)
             throw new AssertionError("Last validation must skip intervening explanations and identify the exact proposal: " + found);
-        mode.set("retry-truncated");
+        mode.set("calc-history-interrupted");
         requests.clear();
         String interrupted = start(mvc, edited, "第一次回答的第 1 步校验结果");
         var failure = terminal(mvc, interrupted);
-        var frozenMessages = requests.getFirst().path("messages");
-        var frozenStep = JSON.readTree(frozenMessages.get(frozenMessages.size() - 1).path("content").asText()).path("historicalStep");
+        var frozenStep = historicalResult(requests);
         requests.clear();
-        mode.set("calc-history");
+        mode.set("calc-history-first");
         var retry = JSON.readTree(mvc.perform(post(interrupted + "/retry").contentType(MediaType.APPLICATION_JSON)
                 .content(JSON.writeValueAsBytes(Map.of("retryKey", "retry-history-question", "expectedAttemptId", failure.get("attemptId").asText()))))
                 .andReturn().getResponse().getContentAsByteArray());
         terminal(mvc, "/ai/conversations/" + edited.get("sessionId").asText() + "/executions/" + retry.get("executionId").asText());
         var retryMessages = requests.getFirst().path("messages");
         var retryInput = JSON.readTree(retryMessages.get(retryMessages.size() - 1).path("content").asText());
-        if (!frozenStep.path("evidence").has("expression") || !frozenStep.equals(retryInput.path("historicalStep"))
+        if (!frozenStep.path("evidence").has("expression") || !frozenStep.equals(historicalResult(requests))
                 || !retryInput.path("previousAttemptDiagnostics").hasNonNull("reason") || previews.get() != originalPreviews)
             throw new AssertionError("Retrying a historical question must preserve its original evidence alongside the failure diagnostic");
         mode.set("calc-refresh-current");
@@ -557,12 +560,13 @@ final class CalcFieldRegression {
         editor.remove("previousSessionId");
         var fresh = http.ok("POST", base, editor);
         requests.clear();
+        mode.set("calc-history-first");
         http.ask(base, fresh, "第一次回答的第 1 步");
-        var freshMessages = requests.getFirst().path("messages");
-        var lookup = JSON.readTree(freshMessages.get(freshMessages.size() - 1).path("content").asText()).path("historicalStep");
+        var lookup = historicalResult(requests);
         if (!"MISSING".equals(lookup.path("lookup").asText()) || lookup.has("evidence"))
             throw new AssertionError("New conversation exposed an earlier formula validation");
         // The selected reply is the first retained message. Its list of choices has just been compacted.
+        mode.set("calc-history");
         terminal(mvc, start(mvc, fresh, "UNRELATED_LONG_PASTE ".repeat(220) + "\nConfirmed: exclude service_fee."));
         terminal(mvc, start(mvc, fresh, "Second independent example"));
         mode.set("calc-history-choices");
@@ -604,18 +608,33 @@ final class CalcFieldRegression {
         if (!rerun.path("events").toString().contains("Check the field references"))
             throw new AssertionError("The editor should receive the detailed validation message");
         var count = previews.get();
-        mode.set("calc-history");
         for (var entry : List.of(Map.entry(1, "DETAIL_PASS"), Map.entry(2, "INVALID"))) {
             requests.clear();
+            mode.set(entry.getKey() == 1 ? "calc-history-first" : "calc-history-second");
             http.ask(base, session, entry.getKey() == 1 ? "第1轮回答的第 1 步原公式结果" : "第二輪回答的第 1 步原公式结果");
-            var messages = requests.getFirst().path("messages");
-            var step = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
-            if (!entry.getValue().equals(step.at("/evidence/status").asText()) || previews.get() != count
+            var step = historicalResult(requests);
+            if (step.path("answerNumber").asInt() != entry.getKey() || !entry.getValue().equals(step.at("/evidence/status").asText()) || previews.get() != count
                     || requests.toString().contains("Check the field references"))
                 throw new AssertionError("Stopped and retried answers must retain separate model-visible validation facts: " + step);
         }
         mvc.perform(delete("/ai/conversations/" + session.get("sessionId").asText()));
         System.out.println("PASS historical formula A/B, stopped answer and retry, no new preview, editor-only detail, revoked access and new conversation");
+    }
+
+    private static JsonNode historicalResult(List<JsonNode> requests) throws Exception {
+        if (requests.size() != 2) throw new AssertionError("Expected a history lookup then one continuation: " + requests.size());
+        var initial = requests.getFirst().path("messages");
+        var first = initial.get(initial.size() - 1);
+        String firstText = first.path("content").asText();
+        if (!"user".equals(first.path("role").asText()) || firstText.startsWith("{") && JSON.readTree(firstText).has("historicalStep")
+                || initial.toString().contains("tool_call_id"))
+            throw new AssertionError("The initial request may not replay a historical step");
+        var continued = requests.getLast().path("messages");
+        var result = continued.get(continued.size() - 1);
+        if (!"tool".equals(result.path("role").asText()) || !"history-step".equals(result.path("tool_call_id").asText())
+                || result.toString().contains("boundExpression") || result.toString().contains("[102] * 2"))
+            throw new AssertionError("Expected only public historical formula evidence in the lookup reply");
+        return JSON.readTree(result.path("content").asText());
     }
 
     private void assertPrivateBindingAbsent(List<JsonNode> requests) {

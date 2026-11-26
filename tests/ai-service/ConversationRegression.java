@@ -291,6 +291,14 @@ public final class ConversationRegression {
             if (body.path("stream").asBoolean() && !"normal".equals(protocol.get())) {
                 String kind = protocol.get();
                 String content = switch (kind) {
+                    case "step-status" -> {
+                        var messages = body.path("messages");
+                        var last = messages.get(messages.size() - 1);
+                        if ("user".equals(last.path("role").asText()))
+                            yield ToolConversationRegression.lookupStep("last.1", "*") + "data: [DONE]\n\n";
+                        var selected = json.readTree(last.path("content").asText());
+                        yield chunk("步骤状态 " + selected.path("status").asText(), "stop") + "data: [DONE]\n\n";
+                    }
                     case "editor-language" -> chunk(languageReply(body.path("messages"), json), "stop") + "data: [DONE]\n\n";
                     case "fast-private-burst" -> "data: {\"choices\":[{\"index\":0,\"delta\":{\"reasoning\":\"private-burst\"}}]}\n\n".repeat(120)
                             + chunk("字", null).repeat(80) + chunk("完成", "stop") + "data: [DONE]\n\n";
@@ -423,8 +431,8 @@ public final class ConversationRegression {
             var runtime = new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, keys, transport, json, dialogueAccess);
             beans.addBean("runtime", runtime);
             if (Boolean.getBoolean("ai.test.conversationSocket")) {
-                ConversationSocketRegression.run(manage, allowed, sent, streamRelease, active -> {
-                    unknownTool.set(active); protocol.set(active ? "unknown-write" : "normal");
+                ConversationSocketRegression.run(manage, allowed, sent, streamRelease, mode -> {
+                    unknownTool.set("unknown-write".equals(mode)); protocol.set(mode);
                 }, seconds -> configuration.saveSettings(new SettingsChange(configuration.setting().getRowVersion(), true, saved.id(),
                         false, seconds, 30000, 4096, 5, 2, configuration.impact("SETTINGS", saved.id() + ":true").token())));
                 return;

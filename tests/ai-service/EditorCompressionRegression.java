@@ -17,6 +17,7 @@ final class EditorCompressionRegression {
                 .reduce((first, second) -> second).orElseThrow().path("content").asText();
         var envelope = latest.startsWith("{") ? JSON.readTree(latest) : JSON.createObjectNode();
         String question = envelope.path("userMessage").asText(latest);
+        boolean lookupReply = "tool".equals(last.path("role").asText()) && "history-step".equals(last.path("tool_call_id").asText());
         String system = messages.get(0).path("content").asText();
         boolean calc = system.contains("计算字段编辑器");
         String reply = "继续";
@@ -37,21 +38,23 @@ final class EditorCompressionRegression {
             if (List.of("这次用英文", "用日文", "French", "German", "For this turn")
                     .stream().anyMatch(notes::contains))
                 return frame(Map.of("content", "一次性回答语言仍在请求中"), "stop");
-            if (messages.size() > 8 || !envelope.path("earlierDialogue").isArray()
+            if (messages.size() > (lookupReply ? 10 : 8) || !envelope.path("earlierDialogue").isArray()
                     || !envelope.path("earlierDialogue").toString().contains("exclude chargebacks")
                     || !envelope.path("earlierDialogue").toString().contains("Paid orders only")
                     || !envelope.path("earlierDialogue").toString().contains("接下来都用英文")
                     || !envelope.path("earlierDialogue").toString().contains("用繁體中文回答")
                     || messages.toString().contains("UNSELECTED_GROSS_MARKER")
                     || messages.toString().contains("old-schema") || messages.toString().contains("old-validation")
-                    || messages.toString().contains("boundExpression") || messages.toString().contains("tool_call_id"))
+                    || messages.toString().contains("boundExpression") || envelope.has("historicalStep")
+                    || !lookupReply && messages.toString().contains("tool_call_id"))
                 return frame(Map.of("content", "历史未压缩或口径丢失"), "stop");
             var selected = envelope.path("selectedSuggestion");
             var basis = envelope.path("generationBasis");
             if (selected.path("number").asInt() != 1 || !(calc ? FORMULA : SQL).equals(selected.path("text").asText()))
                 reply = "缺少作者选定的建议";
             else if (question.startsWith("第一次回答")) {
-                var evidence = envelope.at("/historicalStep/evidence");
+                if (!lookupReply) return lookupStep("1.1", calc ? "*" : "ID");
+                var evidence = JSON.readTree(last.path("content").asText()).path("evidence");
                 boolean found = calc ? FORMULA.equals(evidence.path("expression").asText()) && "DETAIL_PASS".equals(evidence.path("status").asText())
                         : "ID".equals(evidence.at("/fields/0/name").asText()) && evidence.path("fields").size() == 1;
                 reply = found && "DRAFT".equals(basis.path("kind").asText()) && system.contains(calc ? "[Price] + 77" : "SELECT 77")
@@ -93,8 +96,9 @@ final class EditorCompressionRegression {
             reply = past.contains("接下来都用英文") && past.contains("用繁體中文回答") && !past.contains("这次用英文")
                     && system.contains("跨话题沿用") ? "Purchase definition" : "Missing conversation preference";
         } else if (question.equals("新会话的步骤 1？")) {
+            if (!lookupReply) return lookupStep("last.1", "*");
             reply = !envelope.has("earlierDialogue") && !envelope.has("selectedSuggestion")
-                    && "MISSING".equals(envelope.at("/historicalStep/lookup").asText()) ? "新对话无此步骤" : "新对话带入旧依据";
+                    && "MISSING".equals(JSON.readTree(last.path("content").asText()).path("lookup").asText()) ? "新对话无此步骤" : "新对话带入旧依据";
         }
         return frame(Map.of("content", reply), "stop");
     }
@@ -106,7 +110,7 @@ final class EditorCompressionRegression {
             service.start();
             ConversationSocketRegression.browserSuite(service.getPort(), "dataset-calc-assistant-compression.spec.cjs");
             int calls = requests.size() - first;
-            if (calls != 41) throw new AssertionError("Expected exactly 41 accepted model calls for the editor scenarios: " + calls);
+            if (calls != 45) throw new AssertionError("Expected 41 model requests plus four history continuations: " + calls);
             var evidenceFile = System.getenv("AI_EDITOR_COMPRESSION_EVIDENCE");
             if (evidenceFile != null) {
                 var evidence = new ArrayList<Object>();
@@ -114,9 +118,14 @@ final class EditorCompressionRegression {
                     var messages = call.path("messages");
                     var last = messages.get(messages.size() - 1);
                     String text = last.path("content").asText();
-                    if (!"user".equals(last.path("role").asText()) || !text.startsWith("{")) continue;
-                    var envelope = JSON.readTree(text);
-                    if (envelope.has("historicalStep") || "现在呢？".equals(envelope.path("userMessage").asText())) {
+                    if ("tool".equals(last.path("role").asText()) && "history-step".equals(last.path("tool_call_id").asText())) {
+                        evidence.add(Map.of("roles", messages.findValuesAsText("role"), "historyResult", JSON.readTree(text)));
+                        continue;
+                    }
+                    if (!"user".equals(last.path("role").asText())) continue;
+                    var envelope = text.startsWith("{") ? JSON.readTree(text) : JSON.getNodeFactory().textNode(text);
+                    String question = envelope.path("userMessage").asText(text);
+                    if (question.startsWith("第一次回答") || question.equals("新会话的步骤 1？") || question.equals("现在呢？")) {
                         evidence.add(Map.of("roles", messages.findValuesAsText("role"),
                                 "scene", messages.get(0).path("content").asText().contains("计算字段编辑器") ? "dataset-calc-field" : "dataset-sql",
                                 "user", envelope));
@@ -124,7 +133,7 @@ final class EditorCompressionRegression {
                 }
                 java.nio.file.Files.writeString(java.nio.file.Path.of(evidenceFile), JSON.writerWithDefaultPrettyPrinter().writeValueAsString(evidence));
             }
-            System.out.println("PASS both Chrome editors via real HTTP and production scenes: 41 received model requests, selected suggestion, compacted business and language context, historical field/original validation, current draft revalidation, retried manual preview, workspace denial and new chat");
+            System.out.println("PASS both Chrome editors via real HTTP and production scenes: 45 received model requests, selected suggestion, compacted business and language context, historical field/original validation, current draft revalidation, retried manual preview, workspace denial and new chat");
         } finally { service.stop(); service.destroy(); }
     }
 }
