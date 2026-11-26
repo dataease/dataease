@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
 import AssistantProcess from './AssistantProcess.vue'
+import AssistantAnswer from './AssistantAnswer.vue'
 import { applyProcessEvent, type AnswerProcess } from './assistantProcess'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -687,14 +688,15 @@ const stop = async () => {
   busy.value = true
   await stopRun(turn, version)
 }
-const copyFormula = async (turn: Turn) => {
-  if (busy.value || applying.value || !failedFormula(turn.result)) return
+const copySuggestion = async (turn: Turn) => {
+  if (busy.value || applying.value || !suggestionText(turn.result)) return
   const token = version
   applying.value = true
   try {
     const result = await checkedSuggestion(turn, props.resourceId, true)
-    if (token !== version || !result.calcField) return
-    await toClipboard(result.calcField.expression)
+    const text = suggestionText(result)
+    if (token !== version || !text) return
+    await toClipboard(text)
     ElMessage.success(t('data_set.copied_successfully'))
   } catch (error) {
     if (token === version) fail(error)
@@ -802,7 +804,11 @@ const apply = async (turn: Turn) => {
             @update:open="turn.process.open = $event"
             @detail-error="error => accessLost(error) && fail(error)"
           />
-          <p v-if="turn.answer">{{ turn.answer }}</p>
+          <AssistantAnswer
+            v-if="turn.answer"
+            :text="turn.answer"
+            :suggestion="suggestionText(turn.result)"
+          />
           <div v-if="turn.choices" class="clarification-choices">
             <el-button
               v-for="(choice, i) in turn.choices"
@@ -823,12 +829,7 @@ const apply = async (turn: Turn) => {
             <p v-if="failedFormula(turn.result) && turn.result.calcField.reason">
               {{ tr(turn.result.calcField.reason) }}
             </p>
-            <el-button
-              v-if="failedFormula(turn.result)"
-              text
-              :disabled="busy || applying"
-              @click="copyFormula(turn)"
-            >
+            <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
               {{ tr('copy_formula') }}
             </el-button>
             <el-button
@@ -840,6 +841,9 @@ const apply = async (turn: Turn) => {
           <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small>
             <pre>{{ turn.result.sql }}</pre>
+            <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
+              {{ tr('copy_sql') }}
+            </el-button>
             <details>
               <summary>{{ tr('sql_evidence') }}</summary>
               <p v-if="!turn.result.evidence?.length">{{ tr('no_sql_evidence') }}</p>

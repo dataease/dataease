@@ -81,6 +81,7 @@
     "jsencrypt": "3.3.2",
     "jspdf": "^4.2.0",
     "lodash-es": "^4.17.21",
+    "marked": "15.0.12",
     "mathjs": "^15.2.0",
     "mitt": "^3.0.0",
     "modern-screenshot": "^4.6.6",

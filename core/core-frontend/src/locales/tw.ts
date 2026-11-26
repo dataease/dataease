@@ -1,5 +1,8 @@
 export default {
   ai_conversation: {
+    copy_code: '複製程式碼',
+    copy_sql: '複製 SQL',
+    copy_code_failed: '複製失敗',
     send_shortcut: 'Enter 傳送，Shift+Enter 換行',
     new_conversation: '新對話',
     include_basis: '本輪引用',

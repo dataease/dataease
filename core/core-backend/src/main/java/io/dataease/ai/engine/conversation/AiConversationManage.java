@@ -610,7 +610,9 @@ public class AiConversationManage implements AiToolConversationFeature {
                     + "When the goal is unclear, ask the author for the missing information in plain text. "
                     + "When offering concrete alternatives, end with the question and a numbered list, one choice per line. "
                     + "Use their next answer or option number together with the previous question. "
-                    + "When the goal and required information are clear, proceed with the editor's generation rules.";
+                    + "When the goal and required information are clear, proceed with the editor's generation rules. "
+                    + "After proposing SQL or a formula through its tool, explain the suggestion in prose. "
+                    + "The editor displays the full suggestion separately. Use code blocks for short examples.";
         }
         if (state.historyTargets.isEmpty()) return instructions;
         var ranges = new ArrayList<Map<String, Object>>();

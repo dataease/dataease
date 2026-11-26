@@ -121,6 +121,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "CodeMirror.vue",
               "DatasetEditorAssistant.vue",
               "AssistantProcess.vue",
+              "AssistantAnswer.vue",
               "AssistantToolResult.vue",
             ].includes(path.basename(id))
           )
@@ -187,7 +188,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
           "@codemirror/commands",
           "codemirror",
           "vue-types",
-          ...(formalSql ? ["js-base64", "vue-clipboard3"] : []),
+          ...(formalSql ? ["js-base64", "vue-clipboard3", "marked", "dompurify"] : []),
         ].map((find) => ({
           find,
           replacement: ["element-plus-secondary", "dayjs"].includes(find)

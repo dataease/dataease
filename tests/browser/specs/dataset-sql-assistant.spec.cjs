@@ -194,6 +194,30 @@ test("clarification accepts keyboard input and one choice on the current questio
   await expect.poll(() => state.lastQuestion).toBe("只统计已支付的订单");
   expect(state.starts).toBe(3);
 });
+test("Markdown examples and the authorized SQL proposal can each be copied once", async ({page, context}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  const snippet = "SUM(\n  actual_amt\n)";
+  const state = await backend(page, {
+    answer: ["- 金额示例", "", "> 分组后求和", "", "| 字段 | 单位 |", "| --- | --- |", "| actual_amt | 元 |", "",
+      "```sql", snippet, "```", "", "```sql", proposal, "```", "", "<button>外来按钮</button>"].join("\n"),
+  });
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  const article = control(page, "panel").getByRole("article");
+  await expect(article.getByRole("cell", {name: "actual_amt"})).toBeVisible();
+  await expect(article.getByRole("listitem").filter({hasText: "金额示例"})).toBeVisible();
+  await expect(article.locator("blockquote")).toContainText("分组后求和");
+  await expect(article.getByRole("button", {name: "外来按钮"})).toHaveCount(0);
+  await expect(article.getByText(proposal, {exact: true})).toHaveCount(1);
+  await article.getByRole("button", {name: "复制代码"}).click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(snippet);
+  await article.getByRole("button", {name: "复制 SQL"}).click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(proposal);
+  expect(state.checks).toBe(1);
+  await expect(editor(page).locator(".cm-content")).toHaveText(initial);
+});
+
 async function assertUnrun(page, state) {
   expect(state.previews).toEqual([]);
   expect(await page.evaluate(() => window.saved)).toBeUndefined();

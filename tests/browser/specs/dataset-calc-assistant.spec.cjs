@@ -213,6 +213,7 @@ test("failed formulas support authorized copy and follow-up while manual validat
   const state = await backend(page, {
     validation: "INVALID",
     reason: "invalid_formula",
+    text: "公式引用无效。\n\n> 请检查字段名称。\n\n```\n[orders_id] - [items_id]\n```",
   });
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/");
@@ -224,6 +225,8 @@ test("failed formulas support authorized copy and follow-up while manual validat
   await expect(
     drawer.getByText("请检查字段引用、函数和公式语法。")
   ).toBeVisible();
+  await expect(drawer.locator("blockquote")).toHaveText("请检查字段名称。");
+  await expect(drawer.getByRole("article").getByText("[orders_id] - [items_id]", {exact: true})).toHaveCount(1);
   await expect(
     drawer.getByRole("button", { name: "应用到当前草稿" })
   ).toBeDisabled();

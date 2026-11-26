@@ -1,5 +1,8 @@
 export default {
   ai_conversation: {
+    copy_code: 'Copy code',
+    copy_sql: 'Copy SQL',
+    copy_code_failed: 'Copy failed',
     send_shortcut: 'Enter to send, Shift+Enter for a new line',
     new_conversation: 'New conversation',
     include_basis: 'Use this reference',
