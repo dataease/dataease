@@ -868,3 +868,15 @@ test('model length limits accept K/M, reject invalid input and persist follow-mo
   await expect(dialog.getByRole('radio', { name: '跟随模型', exact: true }).last()).toBeChecked()
   await expect(dialog.getByText(/不会自动读取模型容量/)).toBeVisible()
 })
+
+test('retired SQL assistant development route has no matching page', async ({ page }) => {
+  await page.route('**/route-check', route =>
+    route.fulfill({ contentType: 'text/html', body: '<div id="app"></div>' })
+  )
+  await page.goto('/route-check#/demo/ai-assistant')
+  const matched = await page.evaluate(async () => {
+    const { default: router } = await import('/src/router/index.ts')
+    return router.resolve(location.hash.slice(1)).matched.map(route => route.path)
+  })
+  expect(matched).toEqual([])
+})

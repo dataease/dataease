@@ -1,6 +1,6 @@
 # AI 对话助手开发说明
 
-本文描述数据集自定义 SQL 编辑器和开发 Demo 的多轮会话、工具执行与增量输出，以及数据源详情页的[表关联与语义后台任务](#数据源表关联与语义后台任务)。同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
+本文描述数据集自定义 SQL 编辑器和计算字段抽屉的多轮会话、工具执行与增量输出，以及数据源详情页的[表关联与语义后台任务](#数据源表关联与语义后台任务)。同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
 
 自定义 SQL 编辑器和计算字段抽屉使用平台已认证的 WebSocket 接收前台增量。
 提问、停止、手动重试、应用核验沿用 HTTP。
@@ -25,8 +25,6 @@ WebSocket 和 HTTP 指向不同节点时，可由原节点的 HTTP 补齐。
 进程重启会丢失临时执行。
 原节点持续不可达时，编辑器提示状态未确认，恢复联网后可继续核对。
 主动新对话或关闭编辑器会释放旧订阅并结束该会话。
-
-Demo 的可用性、后台任务和完成通知在页面可见且在线时同步：首次进入、重新聚焦、恢复可见或网络恢复时立即读取；空闲时每 30 秒同步一次，有进行中后台任务或待追加原对话的结果时每 2 秒更新后台进度。提交、重试或定位任务会唤醒后台读取，同一组件不并发启动重复轮询；同轮已读到的任务状态直接复用。隐藏标签页或断网暂停这些定时读取，离开页面清理定时器及事件监听；暂停读取不取消持久后台任务。前台执行仅在运行中读取增量，有新内容时间隔 500 毫秒，无新内容时逐步放缓至 2 秒；隐藏标签页时保留 5 秒读取以续租，确认终态后停止。空闲页的配置开关变化最迟在下一次同步反映，实际调用和结果交付仍由后端即时鉴权。
 
 前台每次提问（含一次性辅助、同步 turns 和手动重试）受理时重新检查一次当前用户启用状态及 AI 使用资格，校验当前 AI 开关及适用空间策略，并固定模型、凭据、输入/输出限额、超时、恢复及审计配置。该轮模型请求、自动重试和工具续调使用同一快照，不因模型编辑、全局/空间 AI 关闭或关闭后重开而换模或失效；下一次提问和手动重试读取最新配置。已受理操作的幂等重发只核对原执行，不创建新快照。前台增量读取、结果应用和活动巡检不再查询用户启用状态、AI 设置、空间策略或模型配置。打开新上下文及资源列表入口仍检查当前使用资格；继续在同一上下文提问必须重新检查，不以会话已存在代替新提问准入。
 
@@ -116,7 +114,7 @@ sequenceDiagram
 
 场景指令要求模型在生成或修改 SQL 前调用 `read_sql_guide`。提示词与工具共用方言名称解析逻辑。内置连接器取数据源枚举的名称，已加载的插件取配置中的 `name`。例如达梦单源查询的执行方言是“达梦”，同一个连接器在跨源模式下的执行方言是 Apache Calcite。Excel 和 API 数据源使用配置的数据引擎方言。[场景指令](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AiDatasetSqlScene.java) · [方言指南](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/DatasetSqlGuide.java)
 
-图中的 `propose_sql` 属于正式编辑器的 `dataset-sql` 场景。`NOT_RUN` 表示候选 SQL 已通过单条只读规则，可供作者应用；实际数据库执行由作者点击“运行”触发。开发 Demo 的 `sql` 场景注册了另一个同名工具，使用静态校验器的 `PASS` 作为可应用条件。[建议结果组装](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AbstractSqlConversationScene.java) · [Demo 工具定义](../../core/core-backend/src/main/java/io/dataease/ai/tool/sql/AiSqlTools.java)
+图中的 `propose_sql` 属于正式编辑器的 `dataset-sql` 场景。`NOT_RUN` 表示候选 SQL 已通过单条只读规则，可供作者应用；实际数据库执行由作者点击“运行”触发。通用 `sql` 场景注册了另一个同名工具，使用静态校验器的 `PASS` 作为可应用条件。[建议结果组装](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AbstractSqlConversationScene.java) · [通用 SQL 工具定义](../../core/core-backend/src/main/java/io/dataease/ai/tool/sql/AiSqlTools.java)
 
 ## 目录与扩展位置
 
@@ -147,15 +145,11 @@ ai/
 └── service/          # 既有 AI 基础服务
 ```
 
-SQL Demo 页面位于 `core/core-frontend/src/views/demo/ai-assistant/sql/`，包含 `index.vue` 和 `BackgroundTasks.vue`；开发路由仍为 `#/demo/ai-assistant`。SDK 中 `api/ai/conversation`、`api/ai/task` 和 `api/ai/runtime` 的公共包名、HTTP 路径和已有请求行为保持。
-
 后端已取消笼统的 `manage/` 目录；类名暂时保留既有命名，Spring Bean 名、HTTP 路径和持久化格式不变。配置或安全能力修改应进入对应职责目录，不重新建立集中业务逻辑目录。`AiOutboundPolicy` 处理模型地址规范化和端点路径，随传输放在 `engine/runtime/`，不把它当作资源授权模块。
 
 SDK 的 `AiOwnerContext` 统一位于 `sdk/common/src/main/java/io/dataease/ai/security/identity/`，身份安装仍为包内方法，只由经过校验的核心身份作用域调用。旧 `manage` 路径及兼容转发类已删除，主仓库与 XPack 消费者统一迁移到同一个类。本次是包路径变更，需要 SDK、核心和 XPack 配套重新构建与交付，不支持混用旧扩展二进制；HTTP 路径和持久化格式不变。
 
-新增场景适配放到对应的 `scene/<业务场景>/`。对话场景通过 `AiConversationScene` 定义业务上下文、授权、允许的工具集合与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。可复用工具实现放到 `tool/<业务领域>/`，场景显式组合所需工具，不依赖另一个具体场景。新的 Demo 放到前端对应业务子目录，按实际需要注册路由；不提前创建数据集、图表等空目录，也不要求每个场景复制一套 Controller 或执行引擎。
-
-本次是职责导航和包路径整理，不代表已实现任意资源对话。当前 `Open/Invoke` 的场景校验及 SQL 输入字段、资源列表和建议应用入口、会话的当前数据源提示，以及任务引擎中受控结构场景的表选择适配仍带有 SQL Demo 约束。接入第二种资源时，应根据真实场景扩展这些契约并将对应业务适配移到场景/入口层；不能只新增一个类就宣称完整接入。多种资源同时参与一轮对话仍需单独设计。
+新增场景适配放到对应的 `scene/<业务场景>/`。对话场景通过 `AiConversationScene` 定义业务上下文、授权、允许的工具集合与结果；注册由 `AiConversationManage` 收集 Spring 场景 Bean 并按 `code()` 分发。可复用工具实现放到 `tool/<业务领域>/`，场景显式组合所需工具，不依赖另一个具体场景。
 
 包名迁移后，本地开发应由 IDE 执行后端模块 Rebuild 再启动，或使用项目适用的干净模块构建；普通增量编译可能留下旧包的 Spring 组件。不要手改生成类或启动两个不同包下的同名旧/新组件。
 
@@ -183,19 +177,13 @@ SDK 的 `AiOwnerContext` 统一位于 `sdk/common/src/main/java/io/dataease/ai/s
 
 两个场景由 `AiDatasourceMetadataScenes` 注册为 `AiBusinessTaskScene`，场景码分别为 `datasource-relations` 和 `datasource-semantics`。前端共用 `DatasourceMetadataAi.vue` 抽屉。业务接口为 `/datasource/metadata/{datasourceId}/ai/{kind}`，`kind` 取 `RELATION` 或 `SEMANTIC`。用 POST 提交表名数组，用 GET 查询状态。两种操作都校验数据源管理权限。
 
-任务按数据源和生成类型互斥。同一类型已有任务排队或运行时，即使改选了表，再次提交也会返回现有任务。两种类型可分别受理，共享后台调度容量。关闭抽屉后任务继续执行。再次打开时，不带 `taskId` 的 GET 可找回当前活动任务。有管理权限的其他用户也能查看其状态。抽屉拿到 ID 后按 ID 轮询至终态并刷新业务列表，这些任务不进入 SQL Demo 的进行中列表或完成通知。
+任务按数据源和生成类型互斥。同一类型已有任务排队或运行时，即使改选了表，再次提交也会返回现有任务。两种类型可分别受理，共享后台调度容量。关闭抽屉后任务继续执行。再次打开时，不带 `taskId` 的 GET 可找回当前活动任务。有管理权限的其他用户也能查看其状态。抽屉拿到 ID 后按 ID 轮询至终态并刷新业务列表。
 
 模型调用通过任务引擎的 `Execution.call` 发起，`Execution.write` 在同一事务内写入业务元数据和累计摘要。关联发现按批写入，摘要按新增和跳过的关联条数统计。语义补全按表提交，`written` 统计有更新的表记录和字段记录，`skipped`、`failed` 按表计数。部分表失败时，已提交的建议仍可在语义管理页核对。抽屉终态为 `SUCCESS`、`PARTIAL` 或 `FAILED`。
 
-## 开发入口与页面生命周期
+## 编辑器与数据源入口
 
-Demo 刷新后创建新会话，不恢复聊天历史；卸载前仅在当前标签页的 sessionStorage 暂存编辑器标识，并且只在刷新导航中一次性复用。即使卸载时关闭请求未送达，后端也可按同身份、同编辑器退役遗留的空闲上下文，避免反复刷新耗尽每用户 4 个会话名额。普通导航及新标签页生成独立标识，不复用复制的标签页存储；进行中的执行仍受原并发及读取租约约束。HTTP 错误优先按已知安全 messageKey 展示，并发限制不再误报为配置变化。
-
-In the Vite development application, authenticated users can open `#/demo/ai-assistant` (no product navigation item). The page title explicitly identifies it as a demo. Select a readable datasource in the current workspace, enter SQL and ask successive questions. The page displays actual upstream text increments and execution IDs. Stop retains partial output as incomplete and keeps previously completed history for follow-up. Hiding the assistant keeps polling and does not cancel it. Changing SQL or datasource affects subsequent requests; active output retains its original target. Stopping or ending an active execution and route navigation require confirmation; cancelling the confirmation preserves the execution and draft. Leaving or refreshing uses the browser interruption confirmation. Identity changes end the activity; short offline loss uses bounded reads of the original execution. No candidate SQL is executed or saved. The registered metadata tools read actual authorized table/field structure through existing DE APIs. The registered `validate_sql` tool returns real PASS/INVALID/UNSUPPORTED static verdicts, and the model can correct and revalidate within the same bounded round. Suggestions cannot be applied automatically.
-
-The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/sql/`; its marked route block in `src/router/index.ts` is registered only in development. The `/demo` parent and `ai-assistant` child match the application's segment-based `pathValid` page admission check; registering the whole URL as a flat route would be rejected even though Vue Router resolves it. Browser regression covers that actual route table/permission-store check and renders the page through RouterView. The dataset editor uses the separate dataset-sql scene. The development route and its tests continue to exercise the original Demo contract. The shared conversation API, backend engine, SQL scene and Java behavior regressions have a separate lifecycle and can be reused by formal entry points.
-
-连续读取失败只表示页面暂时无法确认执行状态。只要仍持有未确认终态的执行或受理结果未知的提交，停止、结束会话、路由离开及刷新仍要求中断确认；取消确认保留部分输出和原执行读取或同次提交核对入口。确认终态后解除此保护，不自动重新提交模型请求。
+数据集作者从自定义 SQL 编辑器或计算字段抽屉打开助手。数据源维护者从数据源详情的「表关联」或「语义管理」提交后台任务。
 
 ## HTTP 契约与事件
 
@@ -219,19 +207,19 @@ execution, the UI drains missing events before showing it as complete. Timeout,
 unsupported capability, malformed response and permission failures use the
 existing safe error translations.
 
-Demo 的页面聊天保持连续对话：普通追问复用当前会话；选择、切换或清空数据源，以及修改 SQL 草稿时，通过 `POST /ai/conversations` 的可选 `previousSessionId` 由后端续接已完成的文本/工具历史，并更新执行上下文快照。历史消息按范围记录原数据源，系统提示区分历史来源与当前目标；在开头唯一的 system 消息中提供本轮权威选择状态（NONE/SELECTED），明确对应本次请求的最新用户问题，短追问以此解释。普通流式、同步 turns 与工具调用均不在历史消息中间追加 system 消息，兼容要求 system 只能位于开头的模型接口。续接后的最新 user 消息使用服务端生成的 JSON 将 `currentTarget` 与原始 `userMessage` 绑定；模型按该状态解释短追问，重新读取请求需调用当前允许的工具，不能用旧回答声称已重新查询。用户输入始终作为字符串转义，不能覆盖服务端选择；完成历史仍保存用户原文，手动重试保留原任务请求快照。工具协议没有当前可用工具时显式发送 `tool_choice: none`，避免模型从历史工具消息推断仍可调用；后端继续拒绝任何未授权工具。该提示仅属于当前请求，不写入完成历史或改变历史范围索引；旧表信息不能被当成当前库的元数据或访问授权。工具定义、实际执行和新结果仅绑定当前目标；清空数据源后不提供资源工具，但保留工具调用及结果历史用于纯对话。旧结果仍绑定原目标，客户端不上传或拼装历史。续接必须同身份、同编辑器、同场景，来源未关闭、未过期、未退役且没有正在执行的请求。当前范围和历史涉及的资源范围在模型、工具及交付边界重新鉴权，重复资源范围合并检查，退役快照的旧结果及重试也保留历史资源鉴权信息；历史资源撤权或版本失效时拒绝继续使用并清理会话，不能通过切库绕过。身份/工作空间变化和显式结束仍清理会话，单次辅助按钮不参与聊天历史。续接保留原过期时间和累计轮次，不借更新目标延长会话或绕过轮次限制。需要独立会话的业务入口显式不传 `previousSessionId`；数据源变化本身不自动定义会话边界。旧客户端不传该字段时沿用原 Open 行为，新前端须配套新 SDK/后端；未改动 XPack 契约或实现。
+通用 SQL 会话通过服务端上下文支持连续对话：普通追问复用当前会话；选择、切换或清空数据源，以及修改 SQL 草稿时，通过 `POST /ai/conversations` 的可选 `previousSessionId` 由后端续接已完成的文本/工具历史，并更新执行上下文快照。历史消息按范围记录原数据源，系统提示区分历史来源与当前目标；在开头唯一的 system 消息中提供本轮权威选择状态（NONE/SELECTED），明确对应本次请求的最新用户问题，短追问以此解释。普通流式、同步 turns 与工具调用均不在历史消息中间追加 system 消息，兼容要求 system 只能位于开头的模型接口。续接后的最新 user 消息使用服务端生成的 JSON 将 `currentTarget` 与原始 `userMessage` 绑定；模型按该状态解释短追问，重新读取请求需调用当前允许的工具，不能用旧回答声称已重新查询。用户输入始终作为字符串转义，不能覆盖服务端选择；完成历史仍保存用户原文，手动重试保留原任务请求快照。工具协议没有当前可用工具时显式发送 `tool_choice: none`，避免模型从历史工具消息推断仍可调用；后端继续拒绝任何未授权工具。该提示仅属于当前请求，不写入完成历史或改变历史范围索引；旧表信息不能被当成当前库的元数据或访问授权。工具定义、实际执行和新结果仅绑定当前目标；清空数据源后不提供资源工具，但保留工具调用及结果历史用于纯对话。旧结果仍绑定原目标，客户端不上传或拼装历史。续接必须同身份、同编辑器、同场景，来源未关闭、未过期、未退役且没有正在执行的请求。当前范围和历史涉及的资源范围在模型、工具及交付边界重新鉴权，重复资源范围合并检查，退役快照的旧结果及重试也保留历史资源鉴权信息；历史资源撤权或版本失效时拒绝继续使用并清理会话，不能通过切库绕过。身份/工作空间变化和显式结束仍清理会话，单次辅助按钮不参与聊天历史。续接保留原过期时间和累计轮次，不借更新目标延长会话或绕过轮次限制。需要独立会话的业务入口显式不传 `previousSessionId`；数据源变化本身不自动定义会话边界。旧客户端不传该字段时沿用原 Open 行为，新前端须配套新 SDK/后端；未改动 XPack 契约或实现。
 
 ## 共享 SQL 辅助能力与结果应用
 
 `AiConversationScene` is the registered business boundary: `capability`, `resolve`, `authorize`, `tools(context)`, `execute` and `result` select reusable tools and retain authorized SQL context and typed result semantics. Metadata and validation implementations live in `tool/datasource` and `tool/sql`. These business operations do not require chat history or a polling lease; execution owners must perform their own identity/configuration checks and supply cancellation/deadline guards. The conversation HTTP execution lifecycle remains foreground and process-local. The persistent task owner supplies its own durable identity and lifecycle rather than extending this foreground lease.
 
-The Demo provides a one-shot button through `POST /ai/conversations/capabilities/sql.assist` with `scene`, `resourceId`, `editorId`, `sql` and `text`. No conversation ID or client identity is accepted. Its returned execution includes the bound `context`; the same JSON event/stop endpoints deliver actual model and tool increments. A one-shot activity never commits chat history and refuses follow-up turns. Finished one-shot activities release interactive capacity. At most ten terminal one-shot results per identity are retained, within the shared 200-activity/30-minute envelope; new admissions may evict the oldest terminal one-shot results. Running one-shot activities still count toward the existing four foreground activities per identity. These temporary results are not a background task/history service.
+Clients can request one-shot SQL assistance through `POST /ai/conversations/capabilities/sql.assist` with `scene`, `resourceId`, `editorId`, `sql` and `text`. No conversation ID or client identity is accepted. Its returned execution includes the bound `context`; the same JSON event/stop endpoints deliver actual model and tool increments. A one-shot activity never commits chat history and refuses follow-up turns. Finished one-shot activities release interactive capacity. At most ten terminal one-shot results per identity are retained, within the shared 200-activity/30-minute envelope; new admissions may evict the oldest terminal one-shot results. Running one-shot activities still count toward the existing four foreground activities per identity. These temporary results are not a background task/history service.
 
 An empty datasource selection permits ordinary SQL explanations, with no resource tools registered. Requests requiring actual structure or SQL generation first require the user to select a datasource. Model tools cannot select or enlarge the target: extra datasource/identity arguments and unregistered capabilities are rejected. Selecting another datasource only affects the next request.
 
 Completed event reads carry a typed `result`: `EXPLANATION`, or `SQL_SUGGESTION` with the exact candidate, explanation, original resource ID/name/revision, editor ID and source draft fingerprint. Both entry points use the same result projection. `propose_sql` runs the existing static validator; only a PASS proposal becomes applicable. Prose and fenced SQL remain explanation, and INVALID/UNSUPPORTED cannot become an applicable suggestion. The existing static-validation limits and no-execution/no-sample boundary still apply.
 
-Generation never applies or saves SQL. An explicit `POST /{id}/executions/{execution}/check-application` checks ownership, current authority, resource revision, original context and draft fingerprint before returning the original completed suggestion. The Demo also compares its selected datasource and editor content both before and after that request, so a late application check cannot overwrite a newer draft. Application only replaces the Demo editor text; saving a business resource remains outside this entry point. Session and execution JSON fields are additive, existing DTO constructors and the synchronous conversation/native SDK paths remain compatible.
+Generation never applies or saves SQL. An explicit `POST /{id}/executions/{execution}/check-application` checks ownership, current authority, resource revision, original context and draft fingerprint before returning the original completed suggestion.
 
 ## 身份与授权边界
 
@@ -249,7 +237,7 @@ Streaming is an explicit feature opt-in and uses a runtime-owned detached handle
 停止、关闭会话或关闭应用会中止任务及上游 HTTP 请求，响应关闭后释放并发名额。
 每秒的扫描也会处理阻塞读取期间的执行到期和会话过期。
 
-开发 Demo 的读取租约为 15 秒，由鉴权的进度读取续约。
+通用 SQL 场景的读取租约为 15 秒，由鉴权的进度读取续约。
 租约过期会取消执行、移除会话历史并释放名额。
 两个正式数据集编辑器采用上文的 30 秒恢复规则。
 宽限到期后，在原会话有效且仍有权限时，作者可以查看已有内容并主动重新回答。
@@ -282,9 +270,7 @@ Every typed model request conservatively counts the entire serialized JSON in Un
 
 ## 独立持久后台任务
 
-Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不使用前台轮询租期。离开、刷新、退出登录和停止页面轮询均不取消已受理任务；取消必须显式调用任务取消接口。页面重新打开只恢复本人当前身份/空间的进行中任务，终态时从列表移除。成功、失败、取消和中断均持久保存待投递完成消息，离线返回后以 toast 提示；失败、取消和中断提示提供绑定原尝试的安全重试操作。结果和待投递消息默认保留 7 天，由既有 AI 服务设置中的留存参数调整，过期在后端读取边界拒绝，不等待物理清理。没有已完成任务列表、历史任务页面或待读列表。后台结果不会自动应用、保存或执行候选 SQL。
-
-成功提示提供“查看结果”，在当前页面保留到手动关闭（同时最多保留十条提示）。点击后重新调用任务详情接口复核权限及有效期，在弹窗展示正文、原目标、执行 ID 和只读候选 SQL；不要求先开启前台对话。读取失败可单独重新读取，不触发模型执行；过期和无权限有明确提示。关闭弹窗、切换身份或离开页面会清除正文及在途读取。提示仍遵循原有去重与确认机制，已确认提示不会因刷新重新出现，不持久保存前端结果正文。
+共享后台任务通过 `/ai/tasks` 提交。调用方离开页面后，已受理任务继续运行。结果和待投递消息默认保留 7 天，后端在读取时核对身份、资源权限和有效期。
 
 `POST /ai/tasks` 接收 `submissionKey`、`capability`、`scene`、`resourceId`、`editorId`、`sql`、`text`，可选 `origin={sessionId,contextVersion}`。服务端验证原会话身份、场景、编辑器、资源及版本，客户端不能指定任意结果接收会话；无 origin 的旧七字段幂等指纹保持兼容。同一身份下，同次提交重发返回同一个持久任务；同键不同输入拒绝，修改输入应使用新键创建新任务。`GET /ai/tasks` 只列本人进行中任务，`GET /ai/tasks/{id}` 返回当前尝试的状态、固定模型版本及经当前资源权限复核的结果。所有 Long 任务/尝试 ID 以字符串传输。`POST /{id}/cancel` 先持久撤销执行归属，再停止本地模型工作；它只返回不含资源、模型或结果的安全状态投影。完成先胜出时仍返回已完成状态，受保护结果须单独经过 GET 的权限复核。`POST /{id}/retry` 接收 `retryKey` 和 `expectedAttemptId`，仅对 FAILED/CANCELLED/INTERRUPTED 创建下一尝试；重复相同操作只创建一次，复用键却改变原尝试拒绝。重试不会修改原任务输入。
 
@@ -312,7 +298,7 @@ Demo 的“后台 SQL 辅助”使用 `/ai/tasks`，不创建聊天会话，不�
 
 ## Bounded recovery and foreground tasks
 
-The Demo now sends an `openKey` for one context-opening operation and a `submissionKey` for each accepted chat/button task. Reconcile an unknown HTTP acceptance response with those original keys. A duplicate key with changed input is a conflict; a normal new user submission uses a new key. The legacy synchronous `/turns` contract and Java DTO constructors remain compatible; clients omitting keys do not gain submission idempotency.
+Clients can send an `openKey` for one context-opening operation and a `submissionKey` for each accepted chat/button task. Reconcile an unknown HTTP acceptance response with those original keys. A duplicate key with changed input is a conflict; a normal new user submission uses a new key. The legacy synchronous `/turns` contract and Java DTO constructors remain compatible; clients omitting keys do not gain submission idempotency.
 
 Foreground tasks remain bounded in memory and expire with their temporary session. Unknown submissions keep their original immutable keys in a bounded ten-operation page cache; explicitly changed input may create a different task without discarding earlier unknown operations. The cache rejects new unknown operations at capacity. A closed-key tombstone retains only owner/key/fingerprint/expiry through the original 30-minute window, rejects replay after closing and does not retain prompt/history/result data. The global operation-key bound rejects new keys rather than discarding live idempotency facts. The page does not resubmit an expired reconciliation key. Each task freezes its original context, complete server-built prompt or tool input, and history version. `POST /ai/conversations/{id}/executions/{execution}/retry` accepts only `retryKey` and `expectedAttemptId`: it creates a new attempt of the same task, with a new execution and current model/recovery settings. Replaying the retry key returns that attempt. A single-use button still rejects follow-up, but can retry its own safe failed/cancelled task. An older failed branch can return an independent result without overwriting a later successful conversation. Closing, refreshing or changing identity clears temporary foreground state; background notifications never restore it.
 
@@ -332,7 +318,7 @@ Recovery policy is captured when a new background attempt is accepted as `QUEUED
 
 Ordinary SQL assistance and foreground conversations declare no table lock. The controlled structure scene is server-declared `backgroundOnly`; foreground open/invoke/execution routes cannot select it or substitute its capability. A trusted `AiConversationScene.resourceClaims` declaration identifies an operation class, DE datasource ID and exact canonical physical table name. It is prepared with current resource authorization outside metadata transactions. Different DE datasource IDs remain independent, even when their connections point at the same database. Canonical names come from DE metadata; quoted/case-sensitive names are never blindly lowercased.
 
-The explicitly marked `structure-mutex.assist` Demo is read-only structure/resource-mutex acceptance. Select an authorized datasource and a batch of up to 32 tables. The background button and the current-message action submit the same capability through `POST /ai/tasks`, with optional `selectedTables`; both use identical admission and ownership rules. It shares the datasource tool module's DE READ authorization and table/field projection with the SQL scene, without depending on that scene. It does not implement semantic generation, read samples, execute candidate SQL or save business resources. Its result is an explanation with no applicable SQL, and is not imported into an unrelated SQL conversation. The ordinary SQL background option remains available without declarations.
+The background capability `structure-mutex.assist` accepts up to 32 authorized physical tables through `POST /ai/tasks`. It shares the datasource READ authorization and metadata projection with the SQL scene. Its result describes the selected structure.
 
 Each resource can have only one current owner across all nodes. Under the existing scheduling coordinator, duplicate submission/retry keys return their original task/attempt before checking conflicts or capacity. New overlapping requests are rejected immediately as `i18n_ai_task_resource_busy`, without a queue row. A batch either claims all resources and creates its attempt in the same short transaction, or claims nothing. Queue-capacity failures cannot leave partial claims. Same-owner conflicts may contain only a string `data.taskId` for locating the current task; other actors, workspaces or proxy contexts receive no task identifier or content. The conflict response only retains this locator after checking the original task snapshot outside the acceptance transaction; stale or inaccessible snapshots receive no locator. Every subsequent task read still requires current authorization.
 
@@ -366,7 +352,7 @@ Audit persistence uses short independent transactions with at most two writes pe
 
 对持久后台任务，关闭全局 AI 或某个适用空间的使用策略，会在配置事务中撤销受影响的排队/运行尝试 fence，按原任务和尝试释放资源；终态保留 `disabled` / `organization_disabled` 原因。后台巡检及模型、工具、提交和交付边界继续检查账号、原空间真实成员关系、资源权限及上下文。关闭期间拒绝新建、重试和普通交付，独立管理员审计及有权限的系统设置仍可访问。容量、恢复和留存配置不触发关闭，也不删除已受理队列。
 
-全局和空间使用策略各自维护 `usage_epoch`，只在对应策略由开启转为关闭时递增。后台任务和通用原生 SDK 模型上下文保留该版本围栏；前台对话每次提问固定执行配置，不再以会话级版本清理历史。`GET /ai/availability` 仍投影当前可信身份/空间的使用状态及版本。Demo 关闭新提问、手动重试和后台入口，同时保留已受理前台回答的读取、停止及历史；没有前台活动时隐藏助手。重新开启后恢复入口及原有效期内未确认 toast，保留消息草稿和业务 SQL 草稿，不恢复后台旧执行。身份/空间变化、权限拒绝和显式结束仍清理临时聊天。
+全局和空间使用策略各自维护 `usage_epoch`，只在对应策略由开启转为关闭时递增。后台任务和通用原生 SDK 模型上下文保留该版本围栏；前台对话每次提问固定执行配置，不再以会话级版本清理历史。`GET /ai/availability` 仍投影当前可信身份/空间的使用状态及版本。
 
 后台身份始终来自持久任务。只由已验证的服务器身份作用域安装 SDK 的 `AiOwnerContext` 原空间投影，账号严格匹配且在嵌套、异常和线程结束时恢复；HTTP 参数和请求头不能选择该投影。它不授予权限、不模拟管理员代理，也不改变普通非 AI 请求的当前空间。原账号、成员关系和资源授权仍需在操作前后复核；用户退出登录、离开页面或切换当前空间本身不取消后台。
 
