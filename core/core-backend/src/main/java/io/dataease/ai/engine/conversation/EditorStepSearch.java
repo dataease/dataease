@@ -1,19 +1,23 @@
 package io.dataease.ai.engine.conversation;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.engine.conversation.AiConversationScene.HistoricalFields;
 import io.dataease.ai.engine.conversation.AiConversationScene.HistoricalStep;
 import io.dataease.ai.engine.conversation.EditorStepHistory.Answer;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 /** The model supplies the author's clues; only matching records from this conversation may leave it. */
 final class EditorStepSearch {
+    private static final ObjectMapper JSON = new ObjectMapper();
     static final AiToolProtocol.Definition TOOL = new AiToolProtocol.Definition("find_historical_step",
-            "Find prior editor evidence by action and clues in the author's question. No business query.",
-            Map.of("action", "Original tool name, e.g. get_table_fields or propose_calc_field",
+            "Look up an earlier step of this conversation by number or clues. Use the author's requested evidence; no business query.",
+            Map.of("action", "Original tool name, or * for an exact step number when its action is unknown",
                     "subject", "Exact table, proposed formula name or expression; * when unspecified",
-                    "fields", "Requested physical column names separated by commas, temporal for date/time columns, #count for the number of returned columns, or * for step status",
-                    "selection", "any when versions may differ; latest for an explicitly last matching call; source:<exact datasource name>, answer number, or answer.step from a clarification"),
+                    "fields", "Use exact physical names (up to 32, comma-separated), temporal for date/time fields, #count for the recorded column count, #names for recorded names, or * for status. For literal names with commas or reserved words, pass a string encoding a JSON array of names.",
+                    "selection", "last.N for step N of the most recent answer; A.N for step N of answer A. Otherwise any, latest for the last matching action, source:<exact datasource name>, or an answer number."),
             AiToolProtocol.RetrySafety.READ_ONLY);
 
     private record Match(int answer, Answer original, HistoricalStep step, Map<String, Object> evidence) {
@@ -31,21 +35,46 @@ final class EditorStepSearch {
     private record Facts(String resource, boolean cross, String table, Map<String, String> parameters, String status, String error,
                          Map<String, Object> evidence) { }
 
+    private static HistoricalFields fields(String value) {
+        var names = new LinkedHashSet<String>();
+        boolean temporal = false, count = false, listNames = false;
+        if (value.stripLeading().startsWith("[")) {
+            try {
+                var array = JSON.reader().with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(value);
+                if (!array.isArray() || array.isEmpty() || array.size() > 32) return null;
+                for (var name : array) {
+                    if (!name.isTextual()) return null;
+                    names.add(name.textValue());
+                }
+            } catch (IOException invalid) {
+                return null;
+            }
+        } else if (!"*".equals(value)) {
+            for (String part : value.split("[,，]", -1)) {
+                switch (part.strip()) {
+                    case "temporal" -> temporal = true;
+                    case "#count" -> count = true;
+                    case "#names" -> listNames = true;
+                    default -> names.add(part.strip());
+                }
+            }
+        }
+        if (names.size() > 32 || names.stream().anyMatch(name -> name.isBlank() || name.length() > 256)) return null;
+        return new HistoricalFields(List.copyOf(names), temporal, count, listNames);
+    }
+
     static Map<String, Object> find(List<Answer> answers, AiConversationScene scene, Map<String, String> clues) {
         String action = clues.get("action");
         String subject = clues.get("subject");
         String fields = clues.get("fields");
         String selection = clues.get("selection");
+        if (selection.startsWith("last.")) selection = answers.size() + selection.substring(4);
+        boolean exactStep = selection.matches("[1-9][0-9]*\\.[1-9][0-9]*");
         String source = selection.startsWith("source:") ? selection.substring(7).strip() : null;
-        if (source == null && !selection.matches("any|latest|[1-9][0-9]*(?:\\.[1-9][0-9]*)?") || TOOL.name().equals(action))
-            return Map.of("lookup", "MISSING");
-        String projection = switch (fields) {
-            case "*" -> "";
-            case "temporal" -> "temporal columns";
-            case "#count" -> "how many columns";
-            default -> Arrays.stream(fields.split("[,，]")).map(String::strip).filter(s -> !s.isEmpty())
-                    .map(s -> "`" + s + "`").collect(Collectors.joining(" "));
-        };
+        if (source == null && !exactStep && !selection.matches("any|latest|[1-9][0-9]*")
+                || !exactStep && ("*".equals(action) || TOOL.name().equals(action))) return Map.of("lookup", "MISSING");
+        var projection = fields(fields);
+        if (projection == null) return Map.of("status", "INVALID", "code", "fields");
         var matches = new ArrayList<Match>();
         var seen = new HashSet<Facts>();
         var authorized = Collections.newSetFromMap(new IdentityHashMap<AiConversationScene.Context, Boolean>());
@@ -54,7 +83,7 @@ final class EditorStepSearch {
             if (source != null && !source.equals(answer.context().resourceName())) continue;
             int answerNumber = i + 1;
             for (var step : answer.steps().reversed()) {
-                boolean sameAction = action.equals(step.name())
+                boolean sameAction = "*".equals(action) || action.equals(step.name())
                         || "propose_calc_field".equals(action) && "revalidate_current_formula".equals(step.name())
                         || "get_table_fields".equals(action) && "get_named_table_fields".equals(step.name());
                 if (!sameAction) continue;
@@ -67,7 +96,8 @@ final class EditorStepSearch {
                 if (authorized.add(answer.context())) scene.authorize(answer.context());
                 var evidence = scene.historicalEvidence(answer.context(), step, projection);
                 if (namedSubject && !knownSubject && !subject.equalsIgnoreCase(Objects.toString(evidence.get("expression"), ""))) continue;
-                if (!namedSubject && !"*".equals(fields) && !("#count".equals(fields) && evidence.containsKey("coverage"))
+                if (!exactStep && !namedSubject && !"*".equals(fields)
+                        && !((projection.count() || projection.listNames()) && evidence.containsKey("coverage"))
                         && (!(evidence.get("fields") instanceof List<?> selected) || selected.isEmpty())) continue;
                 var facts = new Facts(answer.context().resourceId(), answer.context().isCross(), step.parameters().get("table"),
                         evidence.isEmpty() ? step.parameters() : Map.of(), step.status(), step.error(), evidence);

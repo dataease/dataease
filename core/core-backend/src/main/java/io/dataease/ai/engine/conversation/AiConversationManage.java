@@ -78,13 +78,15 @@ public class AiConversationManage implements AiToolConversationFeature {
         final Prompt prompt;
         final AiToolProtocol.Input input;
         final boolean toolConversation;
+        final boolean synchronousHistory;
         final int priorAnswers;
         final EditorDialogue editorDialogue;
         final Map<String, Object> selectedSuggestion;
         long historyVersion;
         final Map<String, Run> retries = new HashMap<>();
         Run first, latest;
-        Task(State state, Turn request, Prompt prompt, AiToolProtocol.Input input, long historyVersion, EditorDialogue editorDialogue) {
+        Task(State state, Turn request, Prompt prompt, AiToolProtocol.Input input, long historyVersion, EditorDialogue editorDialogue, boolean synchronousHistory) {
+            this.synchronousHistory = synchronousHistory;
             this.editorDialogue = editorDialogue;
             this.selectedSuggestion = selection(state, request);
             this.state = state; this.request = request; this.prompt = prompt; this.input = input; this.historyVersion = historyVersion;
@@ -127,7 +129,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         Run(State state, Task task, AiRuntimeManage.StreamHandle stream, long startedNanos, boolean editor) {
             this.startedNanos = startedNanos;
             leaseMillis = editor ? EDITOR_GRACE_MILLIS : LEASE_MILLIS;
-            lease = System.currentTimeMillis() + leaseMillis;
+            lease = task.synchronousHistory ? stream.deadline() : System.currentTimeMillis() + leaseMillis;
             this.state = state; this.task = task; this.question = task.request.text(); this.stream = stream;
             sourceAttemptId = task.latest == null ? null : task.latest.attemptId;
             attemptNumber = task.latest == null ? 1 : task.latest.attemptNumber + 1;
@@ -393,12 +395,20 @@ public class AiConversationManage implements AiToolConversationFeature {
         if (state.single) throw AiErrors.error("unsupported");
         if (request == null || request.text() == null || request.text().isBlank() || request.text().length() > 30000
                 || !Objects.equals(request.contextVersion(), state.view.contextVersion())) throw AiErrors.error("scope_changed");
+        Run lookup = null;
         synchronized (sessions) {
             synchronized (state) {
                 if (state.retired) throw AiErrors.error("scope_changed");
-                if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
+                if (state.toolHistory.isEmpty() && scene(state.view.scene()).editorConversation()
+                        && state.stepHistory.answers().stream().anyMatch(answer -> !answer.steps().isEmpty())) {
+                    // A stopped execution can have recorded steps before any tool conversation was committed.
+                    var task = prepareTask(state, request, List.of(EditorStepSearch.TOOL), true);
+                    launch(state, task);
+                    lookup = task.first;
+                } else if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
             }
         }
+        if (lookup != null) return awaitSynchronousAnswer(lookup);
         try {
             authorized(state, () -> { check(state); return null; });
             if (state.turns >= MAX_TURNS || state.stepHistory.size() >= MAX_TURNS) throw AiErrors.error("input_limit");
@@ -425,6 +435,37 @@ public class AiConversationManage implements AiToolConversationFeature {
             return new Answer(id, execution.executionId(), state.view.contextVersion(), "COMPLETED", text);
         } finally { state.executing.set(false); }
     }
+    private Answer awaitSynchronousAnswer(Run run) {
+        State state = run.state;
+        synchronized (state) {
+            try {
+                while ("RUNNING".equals(run.status)) {
+                    long remaining = run.stream.deadline() - System.currentTimeMillis();
+                    if (remaining <= 0) terminate(run, "FAILED", "timeout");
+                    else state.wait(remaining);
+                }
+                authorized(state, () -> { check(state); return null; });
+                if (!"COMPLETED".equals(run.status)) throw AiErrors.error(run.failureCode);
+                return new Answer(state.view.sessionId(), run.stream.executionId(), state.view.contextVersion(),
+                        run.status, run.result.text());
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                terminate(run, "CANCELLED", "cancelled");
+                throw AiErrors.error("cancelled");
+            } finally {
+                state.runs.remove(run.stream.executionId());
+            }
+        }
+    }
+
+    private Task prepareTask(State state, Turn request, List<AiToolProtocol.Definition> definitions, boolean synchronousHistory) {
+        var dialogue = editorDialogue(state, request.text());
+        var messages = promptHistory(state, dialogue);
+        String question = authorized(state, () -> currentQuestion(state, request, dialogue));
+        messages.add(new UserMessage(question));
+        return new Task(state, request, new Prompt(List.copyOf(messages)),
+                toolInput(state, messages.getFirst().getText(), question, definitions, dialogue), state.historyVersion, dialogue, synchronousHistory);
+    }
     public Execution start(String id, Turn request) {
         State state = owned(id);
         if (request == null || request.text() == null || request.text().isBlank() || request.text().length() > 30000
@@ -443,12 +484,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             if (state.retired || state.single && !state.runs.isEmpty()) throw AiErrors.error("unsupported");
             if (state.turns >= MAX_TURNS || state.tasks.size() >= 50) throw AiErrors.error("input_limit");
-            var dialogue = editorDialogue(state, request.text());
-            var messages = promptHistory(state, dialogue);
-            String question = authorized(state, () -> currentQuestion(state, request, dialogue));
-            messages.add(new UserMessage(question));
-            var definitions = availableTools(state);
-            var task = new Task(state, request, new Prompt(List.copyOf(messages)), toolInput(state, messages.getFirst().getText(), question, definitions, dialogue), state.historyVersion, dialogue);
+            var task = prepareTask(state, request, availableTools(state), false);
             var binding = bind(state, "task", request.submissionKey(), accepted, task);
             if (binding != null && binding.task != task) throw AiErrors.error("conflict");
             state.tasks.put(task.id, task);
@@ -684,7 +720,11 @@ public class AiConversationManage implements AiToolConversationFeature {
                 if (recordHistory) {
                     // A retry can finish after this editor has moved to another question. Rebuild
                     // its branch from the original task, including the answer to which a user can reply.
-                    if (run.stream instanceof AiRuntimeManage.ToolStreaming && scene(run.state.view.scene()).editorConversation()) {
+                    if (run.task.synchronousHistory) {
+                        run.task.editorDialogue.original().forEach(message -> run.state.history.add(chatMessage(message)));
+                        run.state.history.add(new UserMessage(run.task.request.text()));
+                        run.state.history.add(new AssistantMessage(Objects.toString(finalText, run.text.toString())));
+                    } else if (run.stream instanceof AiRuntimeManage.ToolStreaming && scene(run.state.view.scene()).editorConversation()) {
                         run.state.toolHistory.addAll(run.task.editorDialogue.original());
                         run.state.toolHistory.add(AiToolProtocol.Message.text("user", run.task.request.text()));
                         run.state.toolHistory.add(AiToolProtocol.Message.text("assistant", Objects.toString(finalText, run.text.toString())));
@@ -803,7 +843,6 @@ public class AiConversationManage implements AiToolConversationFeature {
         String question = request.text();
         var scene = scene(state.view.scene());
         if (scene.editorConversation()) {
-            var step = EditorStepHistory.resolve(state.stepHistory.answers(), scene, question);
             var envelope = new LinkedHashMap<String, Object>();
             var basis = request.generationBasis();
             if (basis != null) {
@@ -815,7 +854,6 @@ public class AiConversationManage implements AiToolConversationFeature {
             if (!state.selectedSuggestion.isEmpty() && (basis == null || basis.kind() != BasisKind.NONE))
                 envelope.put("selectedSuggestion", state.selectedSuggestion);
             if (dialogue.omitted() > 0) envelope.put("earlierDialogue", dialogue.notes());
-            if (!step.isEmpty()) envelope.put("historicalStep", step);
             if (!envelope.isEmpty()) {
                 envelope.put("currentTarget", targetData(state.context));
                 envelope.put("userMessage", question);
@@ -843,6 +881,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         authorize(context);
         State state = sessions.get(context.scope().reference());
         if (state == null) throw AiErrors.error("scope_changed");
+        if (!state.single && scene(state.view.scene()).editorConversation() && input.tools().equals(List.of(EditorStepSearch.TOOL))) return;
         // An older task can be retried with the original tool set even after new answers were recorded.
         if (!scene(state.view.scene()).tools(state.context).equals(input.tools()) && !availableTools(state).equals(input.tools()))
             throw AiErrors.error("scope_changed");
@@ -995,6 +1034,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         }
         run.steps.clear();
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
+        if (run.task.synchronousHistory) run.state.notifyAll();
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }
         run.resultTools.clear(); run.tools = null; run.question = null; run.transcript = new ArrayList<>(); run.toolIds.clear(); run.toolRequests.clear(); run.retainedFailures.clear();

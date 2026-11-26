@@ -1,6 +1,7 @@
 package io.dataease.ai.scene.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.ai.engine.conversation.AiConversationScene.HistoricalFields;
 import io.dataease.api.ai.conversation.AiConversationDtos.*;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -37,103 +38,53 @@ final class DatasetSqlEvidence {
         }
     }
 
-    private static final Pattern FIELD_COUNT_QUESTION = Pattern.compile(
-            "(?:多少|几|幾)\\s*(?:个|個)?\\s*(?:字段|欄位|栏位|列)|(?:字段|欄位|栏位|列)(?:数量|數量|总数|總數)"
-                    + "|\\b(?:how many|(?:the )?number of)\\s+(?:fields?|columns?)\\b|\\b(?:field|column) count\\b",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern TEMPORAL_QUESTION = Pattern.compile(
-            "(?:时间|時間|日期|時刻|时刻)(?:类型的?|類型的?)?(?:字段|欄位|列)|\\b(?:time|date|temporal|timestamp|datetime)[ -]+(?:fields?|columns?)\\b",
-            Pattern.CASE_INSENSITIVE);
     private static final Pattern TEMPORAL_TYPE = Pattern.compile(
             "\\b(?:date(?:32|64)?|(?:small)?datetime(?:2|64|offset)?|timestamp(?:tz|_(?:ltz|ntz|tz))?|timetz|time|year)\\b",
             Pattern.CASE_INSENSITIVE);
-    // Quoted identifiers and physical snake_case names are distinguishable from ordinary prose.
-    private static final Pattern IDENTIFIER_HINT = Pattern.compile(
-            "[`\"]([^`\"\\r\\n]{1,256})[`\"]|\\[([^\\]\\r\\n]{1,256})\\]|(?<![a-zA-Z0-9_$])([a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)+)(?![a-zA-Z0-9_$])");
-
-    private static final String BARE_NAME = "[a-z][a-z0-9]*";
-    private static final String NAME_SEPARATOR = "\\s*(?:[,，、]|和|与|與|及|\\band\\b|\\bor\\b)\\s*";
-    private static final String BARE_NAMES = "(" + BARE_NAME + "(?:" + NAME_SEPARATOR + BARE_NAME + ")*+)";
-    private static final Pattern FIELD_QUESTION = Pattern.compile(
-            "(?:(?:有|包含|包括|存在|记录|記錄|字段|欄位)\\s*|\\b(?:includes?|contains?|has|have|records?|lists?|mentions?"
-                    + "|(?:types?|names?|units?|formats?|meanings?|descriptions?)\\s+of)\\s+(?:(?:an?|the)\\s+)?)"
-                    + BARE_NAMES + "(?![a-z0-9_$])|(?<![a-z0-9_$])" + BARE_NAMES
-                    + "\\s+(?:(?:fields?|columns?|present|recorded|listed|available|exists?)\\b|in\\s+step\\b)",
-            Pattern.CASE_INSENSITIVE);
-
-    // Leave bare physical names in place, including "type" in "the type of type".
-    // Plural "date columns" asks about a category; singular "the date column" may name a column.
-    private static final Pattern ENGLISH_FIELD_SYNTAX = Pattern.compile(
-            "\\b(?:step\\s*#?\\s*\\d+|(?:first|second|third|\\d+(?:st|nd|rd|th)?)\\s+(?:answer|reply|response)"
-                    + "|(?:answer|reply|response)\\s*#?\\s*\\d+|(?:date|time|temporal|timestamp|datetime)[ -]+(?:fields|columns)"
-                    + "|(?:data\\s+)?(?:types?|names?|units?|formats?|meanings?|descriptions?|status)\\s+(?:of|for)"
-                    + "|(?:what|which)\\s+(?:data\\s+)?types?\\b|what|which|the|a|an|is|are|was|were|do|does|did"
-                    + "|there|any|and|or|in|on|at|from|of|for|columns?|fields?)\\b",
-            Pattern.CASE_INSENSITIVE);
-
-    /** An interrupted table read has no recorded columns. Completed reads use the original structure. */
-    static Map<String, Object> historicalFields(String expectedTable, String result, String question) {
-        if (expectedTable == null) return Map.of();
+    /** Completed reads expose only the requested facts; interrupted reads may have no recorded fields. */
+    static Map<String, Object> historicalFields(String expectedTable, String result, HistoricalFields selection) {
+        boolean details = selection.temporal() || !selection.names().isEmpty();
+        if (expectedTable == null || !details && !selection.count() && !selection.listNames()) return Map.of();
         try {
             var data = result == null ? JSON.createObjectNode().put("table", expectedTable) : JSON.readTree(result);
             if (!expectedTable.equals(data.path("table").asText())) return Map.of();
-            if (FIELD_COUNT_QUESTION.matcher(question).find()) {
-                var fields = data.path("fields");
-                if (!fields.isArray()) return Map.of("coverage", "PARTIAL");
-                return Map.of("coverage", data.path("inspected").asBoolean(false) ? "COMPLETE" : "PARTIAL",
-                        "fieldCount", fields.size());
+            var rows = data.path("fields");
+            boolean complete = rows.isArray() && data.path("inspected").asBoolean(false);
+            var evidence = new LinkedHashMap<String, Object>();
+            evidence.put("coverage", complete ? "COMPLETE" : "PARTIAL");
+            if (selection.count() && rows.isArray()) evidence.put("fieldCount", rows.size());
+            if (selection.listNames() && rows.isArray()) {
+                var names = new ArrayList<String>();
+                for (var row : rows) names.add(row.path("name").asText());
+                evidence.put("fieldNames", names);
             }
+            if (!details) return evidence;
+
+            var fields = rows.isArray() ? Arrays.asList(JSON.treeToValue(rows, FieldEvidence[].class)) : List.<FieldEvidence>of();
+            var requested = new HashSet<>(selection.names());
+            var selected = fields.stream().filter(field -> requested.contains(field.name())
+                    || selection.temporal() && field.type() != null && TEMPORAL_TYPE.matcher(field.type()).find()).toList();
+            evidence.put("source", "HISTORICAL_STEP");
+            evidence.put("table", expectedTable);
+            evidence.put("fields", selected);
+
+            var found = new HashSet<String>();
+            selected.forEach(field -> found.add(field.name()));
             var verifiedAbsent = new HashSet<String>();
             data.path("absentFields").forEach(field -> verifiedAbsent.add(field.asText()));
-            var snapshot = new TableEvidence(data.path("table").asText(), data.path("inspected").asBoolean(false), null, null,
-                    data.path("fields").isArray() ? Arrays.asList(JSON.treeToValue(data.get("fields"), FieldEvidence[].class)) : List.of());
-            var missing = new LinkedHashSet<String>();
-            var hints = IDENTIFIER_HINT.matcher(question);
-            while (hints.find()) {
-                String name = hints.group();
-                if (name.startsWith("`") || name.startsWith("\"") || name.startsWith("["))
-                    name = name.substring(1, name.length() - 1);
-                missing.add(name);
+            var absent = new ArrayList<String>();
+            var unrecorded = new ArrayList<String>();
+            for (String name : selection.names()) {
+                if (found.contains(name)) continue;
+                if (complete || verifiedAbsent.contains(name)) absent.add(name);
+                else unrecorded.add(name);
             }
-            String unquoted = hints.replaceAll(" ");
-            String meaningfulWords = ENGLISH_FIELD_SYNTAX.matcher(unquoted).replaceAll(" ");
-            // A field-existence question identifies its object. Its verb can also be a physical column name.
-            var positions = FIELD_QUESTION.matcher(unquoted);
-            while (positions.find()) {
-                String names = positions.group(1) != null ? positions.group(1) : positions.group(2);
-                for (String name : names.split("(?i)" + NAME_SEPARATOR))
-                    if (mentioned(meaningfulWords, name)) missing.add(name);
-            }
-            String prose = ENGLISH_FIELD_SYNTAX.matcher(positions.replaceAll(" ")).replaceAll(" ");
-            var identifiers = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-            identifiers.addAll(missing);
-            var named = snapshot.fields().stream()
-                    .filter(field -> identifiers.contains(field.name()) || mentioned(prose, field.name())).toList();
-            missing.removeIf(expectedTable::equalsIgnoreCase);
-            for (var field : named) missing.removeIf(field.name()::equalsIgnoreCase);
-            boolean temporal = named.isEmpty() && missing.isEmpty() && TEMPORAL_QUESTION.matcher(question).find();
-            if (!temporal && named.isEmpty() && missing.isEmpty()) return Map.of();
-            var selected = temporal ? snapshot.fields().stream().filter(field -> field.type() != null
-                    && TEMPORAL_TYPE.matcher(field.type()).find()).toList() : named;
-            var evidence = new LinkedHashMap<String, Object>();
-            evidence.put("source", "HISTORICAL_STEP");
-            evidence.put("table", snapshot.table());
-            evidence.put("coverage", snapshot.inspected() ? "COMPLETE" : "PARTIAL");
-            evidence.put("fields", selected);
-            var absent = missing.stream().filter(name -> snapshot.inspected() || verifiedAbsent.contains(name)).toList();
             if (!absent.isEmpty()) evidence.put("absentFields", absent);
-            missing.removeAll(absent);
-            if (!missing.isEmpty()) evidence.put("unrecordedFields", missing);
+            if (!unrecorded.isEmpty()) evidence.put("unrecordedFields", unrecorded);
             return evidence;
         } catch (java.io.IOException invalid) {
             return Map.of();
         }
-    }
-
-    private static boolean mentioned(String question, String name) {
-        if (name == null || name.isBlank()) return false;
-        return Pattern.compile("(?<![a-zA-Z0-9_$])" + Pattern.quote(name) + "(?![a-zA-Z0-9_$])",
-                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(question).find();
     }
 
     static Map<String, Object> lineage(String sql) {

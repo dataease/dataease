@@ -305,7 +305,7 @@ public final class ConversationSocketRegression {
         });
     }
 
-    static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode, java.util.function.IntConsumer timeout) throws Exception {
+    static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<String> modelMode, java.util.function.IntConsumer timeout) throws Exception {
         var service = editorServer(manage);
         var client = new WebSocketStompClient(new StandardWebSocketClient());
         client.setMessageConverter(new MappingJackson2MessageConverter());
@@ -370,7 +370,7 @@ public final class ConversationSocketRegression {
             // Reuse the controlled tool protocol and public run lifecycle, including its failure terminal.
             resourceAllowed.set(true);
             release.get().countDown();
-            toolMode.accept(true);
+            modelMode.accept("unknown-write");
             try (var toolTab = Tab.open(service.getPort(), client, "writer")) {
                 var session = post(base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "tool-tab"), true);
                 String path = base + "/" + session.path("sessionId").asText() + "/executions";
@@ -392,20 +392,31 @@ public final class ConversationSocketRegression {
                 }
                 if (!statuses.equals(List.of("STARTED", "RUNNING", "FAILED", "FAILED")))
                     throw new AssertionError("each state of the real tool and the final execution appear once: " + statuses);
-                toolMode.accept(false);
+                modelMode.accept("step-status");
                 String sessionUrl = base + "/" + session.path("sessionId").asText();
                 String version = session.path("contextVersion").asText();
+                int beforeStatus = modelRequests.size();
                 var followup = post(path, Map.of("contextVersion", version, "text", "第 1 步完成了吗"), true);
                 var current = new Accepted(sessionUrl, path + "/" + followup.path("executionId").asText(), "tool-tab", version);
                 for (int i = 0; i < 200 && "RUNNING".equals(read(current, 0).path("status").asText()); i++) Thread.sleep(30);
+                var answer = read(current, 0);
+                var initial = modelRequests.get(beforeStatus).path("messages");
                 var messages = modelRequests.getLast().path("messages");
-                var step = json.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
-                if (!"COMPLETED".equals(read(current, 0).path("status").asText()) || step.path("stepNumber").asInt() != 1
-                        || !"FAILED".equals(step.path("status").asText()) || messages.toString().contains("tool_call_id"))
+                var last = messages.get(messages.size() - 1);
+                var first = initial.get(initial.size() - 1);
+                String firstText = first.path("content").asText();
+                if (modelRequests.size() != beforeStatus + 2 || !"user".equals(first.path("role").asText())
+                        || firstText.startsWith("{") && json.readTree(firstText).has("historicalStep")
+                        || initial.toString().contains("tool_call_id") || !"tool".equals(last.path("role").asText())
+                        || !"history-step".equals(last.path("tool_call_id").asText()))
+                    throw new AssertionError("The initial request must ask the question and the continuation must carry the lookup result");
+                var step = json.readTree(last.path("content").asText());
+                if (!answer.toString().contains("步骤状态 FAILED") || !"COMPLETED".equals(answer.path("status").asText())
+                        || step.path("stepNumber").asInt() != 1 || !"FAILED".equals(step.path("status").asText()))
                     throw new AssertionError("Public HTTP follow-up must locate the failed step, without replaying its protocol");
                 close(current);
                 System.out.println("PASS stable numbered tool states over STOMP and a status-only follow-up over HTTP");
-            } finally { toolMode.accept(false); }
+            } finally { modelMode.accept("normal"); }
             grace(base, service.getPort(), client, modelRequests, release);
             changedScope(base, service.getPort(), client, modelRequests, release);
             crossNode(base, service.getPort(), client, modelRequests, release);
