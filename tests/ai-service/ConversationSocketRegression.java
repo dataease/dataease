@@ -231,6 +231,19 @@ public final class ConversationSocketRegression {
         System.out.println("PASS actual HTTP/STOMP rejects changed workspace and proxy identities, two questions / two model requests");
     }
 
+    private static void browserSuite(int port, String spec) throws Exception {
+        var browser = new ProcessBuilder("node", "node_modules/@playwright/test/cli.js", "test", "-c",
+                "playwright.dataset-calc-assistant.config.cjs", spec);
+        browser.directory(new java.io.File("tests/browser"));
+        browser.environment().put("DATASET_ASSISTANT_BACKEND", "http://127.0.0.1:" + port);
+        var process = browser.inheritIO().start();
+        if (!process.waitFor(200, TimeUnit.SECONDS)) {
+            process.destroyForcibly();
+            throw new AssertionError("editor timeout: " + spec);
+        }
+        if (process.exitValue() != 0) throw new AssertionError("editor browser exited " + process.exitValue() + ": " + spec);
+    }
+
     static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode, java.util.function.IntConsumer timeout) throws Exception {
         var factory = new TomcatServletWebServerFactory(0);
         factory.setAddress(InetAddress.getByName("127.0.0.1"));
@@ -258,6 +271,12 @@ public final class ConversationSocketRegression {
         client.setMessageConverter(new MappingJackson2MessageConverter());
         try {
             service.start();
+            if ("1".equals(System.getenv("AI_EDITOR_LANGUAGE_BROWSER"))) {
+                browserSuite(service.getPort(), "dataset-calc-assistant-language.spec.cjs");
+                if (modelRequests.size() != 20) throw new AssertionError("unexpected language model requests: " + modelRequests.size());
+                System.out.println("PASS 6 Chrome editor/locale combinations, 20 actual conversation HTTP/model requests, scoped directives and new-conversation reset");
+                return;
+            }
             String ready = System.getProperty("ai.test.peerFile");
             if (ready != null) {
                 Files.writeString(Path.of(ready), Integer.toString(service.getPort()));
@@ -366,15 +385,8 @@ public final class ConversationSocketRegression {
                 release.get().countDown();
                 release.set(new CountDownLatch(1));
                 int before = modelRequests.size();
-                var browser = new ProcessBuilder("node", "node_modules/@playwright/test/cli.js", "test", "-c",
-                        "playwright.dataset-calc-assistant.config.cjs", "dataset-calc-assistant-transport.spec.cjs");
-                browser.directory(new java.io.File("tests/browser"));
-                browser.environment().put("DATASET_ASSISTANT_BACKEND", "http://127.0.0.1:" + service.getPort());
-                var process = browser.inheritIO().start();
-                if (!process.waitFor(200, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("editor timeout"); }
+                browserSuite(service.getPort(), "dataset-calc-assistant-transport.spec.cjs");
                 int calls = modelRequests.size() - before;
-                if (process.exitValue() != 0)
-                    throw new AssertionError("editor Playwright suite exited " + process.exitValue() + "; observed model requests: " + calls);
                 if (calls != 10)
                     throw new AssertionError("nine editor scenarios must make nine initial model requests and one explicit retry; actual: " + calls);
                 System.out.println("PASS both real editors, 9 scenarios: ten-second streams, zero connected progress GETs, gap repair, reconnect, offline completion, explicit retry, stop, new conversation and drawer close; 9 starts + 1 manual retry = 10 model requests");

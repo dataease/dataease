@@ -1,4 +1,7 @@
 export const DEFAULT_LOCALE = 'zh-CN'
+const requestLanguageTags: Record<string, string> = { en: 'en-US', tw: 'zh-TW' }
+export const requestLanguageTag = (locale: string) => requestLanguageTags[locale] || locale
+
 export const BUILTIN_LOCALES = ['zh-CN', 'en', 'tw']
 let supportedLocales = [...BUILTIN_LOCALES]
 

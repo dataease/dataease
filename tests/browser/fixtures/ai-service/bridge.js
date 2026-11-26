@@ -1,8 +1,10 @@
 import { reactive } from 'vue'
 import zh from '@/locales/zh-CN'
+import { requestLanguageTag } from '@/utils/locale'
 import tw from '@/locales/tw'
 import en from '@/locales/en'
-const language = { 'zh-CN': zh, tw, en }[new URLSearchParams(location.search).get('language')] ?? zh
+const uiLocale = new URLSearchParams(location.search).get('language') || 'zh-CN'
+const language = { 'zh-CN': zh, tw, en }[uiLocale] ?? zh
 export const useI18n = () => ({
   t: (key, args = {}) => {
     const text = key.split('.').reduce((value, part) => value?.[part], language) ?? key
@@ -23,7 +25,7 @@ const send = async (method, option) => {
   const response = await fetch('/fixture-api' + option.url + (query.size ? '?' + query : ''), {
     method,
     body: option.data === undefined ? undefined : JSON.stringify(option.data),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Accept-Language': requestLanguageTag(uiLocale) },
     signal: option.signal
   }).catch(error => {
     if (error.name === 'AbortError') throw error

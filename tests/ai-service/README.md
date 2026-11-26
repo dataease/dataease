@@ -191,6 +191,8 @@ H2 证明事务和跨 JVM 回归，不代表 MySQL/GreatSQL、PostgreSQL、SQL S
 
 运行 `uv run python tests/ai-service/run.py --conversation-socket --ai-classpath <依赖类路径文件>`，在本机临时 Tomcat 和 H2 上核对 HTTP 受理、STOMP 增量、工具状态、标签页隔离、不同用户及资源撤权。设置 `AI_SOCKET_BROWSER=1` 时，回归在同一服务运行两个真实编辑器的 Playwright 用例，核对约十秒的受控模型调用、正常进度 GET 数、游标补读、收起、停止、新对话和关闭编辑器后的迟到消息。回归使用独立 JVM 启动第二个 HTTP/STOMP 节点，覆盖跨节点误路由及原节点补偿。受控社区与多空间身份分别核对用户、空间和代理拒绝。18 秒、31 秒实际断线和 5 秒调用期限使用真实时钟，并按受理和显式重答核对模型请求数。浏览器夹具使用已安装的前端依赖和 Chrome，可用 `DATASET_CALC_ASSISTANT_PORT` 选择空闲端口。
 
+编辑器回答语言回归使用 `AI_EDITOR_LANGUAGE_BROWSER=1 uv run python tests/ai-service/run.py --conversation-socket --ai-classpath <依赖类路径文件>`。独立 Chrome 在真实 SQL 编辑器和计算字段抽屉分别使用简体中文、繁体中文、英文界面，经本机 Tomcat 和受控上游核对提问当轮的界面语言、明确要求和连续对话原文。受控上游按固定对话返回可区分的三语回复。实际场景的提示词、工具校验和续调通过 `--recovery-tools` 验证。
+
 连续对话回归：`--conversation` 检查首次绑定、切换、清空数据源和修改 SQL 后的真实模型请求历史、原始有效期、幂等续接及运行中拒绝续接；`--recovery-tools` 检查实际 SQL 场景的历史来源标注、切库后仅操作当前库、清空目标后保留工具历史但不开放工具、开头 system 消息中的 NONE 状态且状态提示不累积入历史、历史资源撤权后拒绝新请求和结果交付。`--recovery-tools` 还重放“有工具历史 → 清空选择 → 再查询 → 重新选择 → 再试试”，检查无工具时的 `tool_choice: none`、最新问题绑定当前目标、实际元数据调用目标、原始用户历史保留，以及伪造选择 JSON 只能作为用户文本。两条 Java 回归的受控模型均以 HTTP 400 拒绝历史中间的 system 消息，覆盖未选数据源提问后选择数据源追问、同步 turns 和工具续调的消息顺序兼容性。模型使用本机受控 HTTP 夹具，不代表真实模型回答质量验收。
 
 `--conversation` 同时保留未执行会话、多轮完成及退役上下文、已完成的一次性结果，观察真实会话定时器跨越两次扫描的 2.2 秒空闲窗口，断言隔离 Hibernate SQL 和身份校验次数均为零；用户停用后仍能读取已受理结果，但新提问拒绝；资源撤权后读取仍被拒绝，已检测资源撤权的会话不能在恢复权限后复活。
