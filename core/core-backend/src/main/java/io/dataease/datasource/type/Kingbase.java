@@ -20,8 +20,9 @@ public class Kingbase extends Pg {
     @Override
     public String getJdbc() {
         if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
+            String decodedJdbcUrl = URLDecoder.decode(getJdbcUrl());
             for (String illegalParameter : illegalParameters) {
-                if (URLDecoder.decode(getJdbcUrl()).contains(illegalParameter)) {
+                if (JdbcUrlSecurityPolicy.containsJdbcParameterName(decodedJdbcUrl, illegalParameter)) {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
@@ -54,8 +55,9 @@ public class Kingbase extends Pg {
                 jdbcUrl += "&currentSchema=\"" + getSchema().trim() + "\"";
             }
         }
+        String decodedJdbcUrl = URLDecoder.decode(jdbcUrl);
         for (String illegalParameter : illegalParameters) {
-            if (URLDecoder.decode(jdbcUrl).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
+            if (JdbcUrlSecurityPolicy.containsJdbcParameterName(decodedJdbcUrl, illegalParameter)) {
                 DEException.throwException("Illegal parameter: " + illegalParameter);
             }
         }

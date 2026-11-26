@@ -87,6 +87,14 @@ public final class JdbcUrlSecurityPolicy {
             "DATABASE_TO_UPPER"
     );
 
+    /**
+     * 只按完整参数名匹配的片段：驱动通过 URL 查询参数或 extraParams 读取，
+     * 不能因为库名、Schema 名或参数值恰好包含该词就拦截。
+     */
+    private static final Set<String> PARAMETER_NAME_ONLY_FRAGMENTS = Set.of(
+            "configurepath"
+    );
+
     private static final Set<String> H2_ALLOWED_MODES = Set.of(
             "MySQL",
             "REGULAR",
@@ -130,7 +138,14 @@ public final class JdbcUrlSecurityPolicy {
         Set<String> dangerousFragments = new LinkedHashSet<>(COMMON_DANGEROUS_FRAGMENTS);
         dangerousFragments.addAll(TYPE_DANGEROUS_FRAGMENTS.getOrDefault(normalizedType, Set.of()));
         for (String fragment : dangerousFragments) {
-            if (containsIgnoreCase(normalizedUrl, fragment) || containsIgnoreCase(normalizedExtraParams, fragment)) {
+            boolean found;
+            if (PARAMETER_NAME_ONLY_FRAGMENTS.contains(fragment)) {
+                found = containsJdbcParameterName(normalizedUrl, fragment)
+                        || containsJdbcParameterName(normalizedExtraParams, fragment);
+            } else {
+                found = containsIgnoreCase(normalizedUrl, fragment) || containsIgnoreCase(normalizedExtraParams, fragment);
+            }
+            if (found) {
                 DEException.throwException("Illegal parameter: " + fragment);
             }
         }
@@ -193,6 +208,35 @@ public final class JdbcUrlSecurityPolicy {
             }
         }
         return false;
+    }
+
+    /**
+     * 匹配 JDBC URL / extraParams 中的完整参数名（大小写不敏感）。
+     * 参数名必须紧跟参数分隔符（或位于字符串开头），并且后接 '='。
+     * 避免库名、Schema 名或参数值中包含同名片段时被误拦截。
+     */
+    public static boolean containsJdbcParameterName(String value, String parameterName) {
+        if (StringUtils.isEmpty(value) || StringUtils.isEmpty(parameterName) || parameterName.length() > value.length()) {
+            return false;
+        }
+        int idx = 0;
+        while (true) {
+            int start = indexOfIgnoreCase(value, parameterName, idx);
+            if (start < 0) {
+                return false;
+            }
+            boolean boundaryBefore = start == 0 || isJdbcParameterDelimiter(value.charAt(start - 1));
+            int end = start + parameterName.length();
+            boolean boundaryAfter = end < value.length() && value.charAt(end) == '=';
+            if (boundaryBefore && boundaryAfter) {
+                return true;
+            }
+            idx = Math.max(end, start + 1);
+        }
+    }
+
+    private static boolean isJdbcParameterDelimiter(char c) {
+        return c == '?' || c == '&' || c == ';' || c == ',' || Character.isWhitespace(c);
     }
 
     /**

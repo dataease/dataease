@@ -136,4 +136,24 @@ public class JdbcUrlSecurityPolicyTest {
         kingbase.setJdbcUrl("jdbc:kingbase8://127.0.0.1:1/db?ConfigurePath=./dataease-configurepath-canary.properties");
         assertThrows(DEException.class, kingbase::getJdbc);
     }
+
+    @Test
+    public void validateAllowsKingbaseDatabaseAndSchemaNamedConfigurepath() {
+        assertEquals("jdbc:kingbase8://127.0.0.1:1/configurepath_demo?currentSchema=public",
+                JdbcUrlSecurityPolicy.validate("kingbase", "com.kingbase8.Driver",
+                        "jdbc:kingbase8://127.0.0.1:1/configurepath_demo?currentSchema=public", ""));
+        assertEquals("jdbc:kingbase8://127.0.0.1:1/db?currentSchema=configurepath_demo",
+                JdbcUrlSecurityPolicy.validate("kingbase", "com.kingbase8.Driver",
+                        "jdbc:kingbase8://127.0.0.1:1/db?currentSchema=configurepath_demo", ""));
+    }
+
+    @Test
+    public void validateAllowsConfigurepathInParameterValue() {
+        assertEquals("jdbc:kingbase8://127.0.0.1:1/db?currentSchema=configurepath_demo",
+                JdbcUrlSecurityPolicy.validate("kingbase", "com.kingbase8.Driver",
+                        "jdbc:kingbase8://127.0.0.1:1/db?currentSchema=configurepath_demo", ""));
+        assertEquals("jdbc:kingbase8://127.0.0.1:1/db",
+                JdbcUrlSecurityPolicy.validate("kingbase", "com.kingbase8.Driver",
+                        "jdbc:kingbase8://127.0.0.1:1/db", "currentSchema=configurepath_demo"));
+    }
 }
