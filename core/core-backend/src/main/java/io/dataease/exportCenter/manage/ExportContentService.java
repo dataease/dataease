@@ -50,6 +50,8 @@ public class ExportContentService {
                 viewDTO.setResultMode(ChartConstants.VIEW_RESULT_MODE.ALL);
                 viewDTO.setType("table-info");
                 viewDTO.setRender("antv");
+                // 要走明细表的逻辑
+                viewDTO.setIsPlugin(false);
                 List<DatasetTableFieldDTO> sourceFields = datasetTableFieldManage.selectByDatasetGroupId(viewDTO.getTableId());
                 DatasetUtils.listEncode(sourceFields);
                 List<String> fileNames = permissionManage.filterColumnPermissions(sourceFields, new HashMap<>(), viewDTO.getTableId(), null).stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
@@ -69,8 +71,6 @@ public class ExportContentService {
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
                 chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
             } else {
-                // 要走明细表的逻辑
-                viewDTO.setIsPlugin(false);
                 chartViewInfo = chartDataManage.calcData(viewDTO);
             }
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
