@@ -323,8 +323,15 @@ public class AiConversationManage implements AiToolConversationFeature {
         previous.put("reason", rejectedFormula(source) ? source.result.calcField().reason() : source.failureCode);
         previous.put("proposal", rejectedFormula(source) ? source.result.calcField().expression() : source.proposedContent);
         var question = JSON.createObjectNode();
-        question.put("userMessage", task.request.text());
-        question.set("currentTarget", JSON.valueToTree(targetData(task.state.context)));
+        String frozen = task.input.messages().getLast().content();
+        if (frozen.equals(task.request.text())) {
+            // Raw author text stays a string, even when it looks like our JSON envelope.
+            question.put("userMessage", frozen);
+            question.set("currentTarget", JSON.valueToTree(targetData(task.state.context)));
+        } else {
+            try { question = JSON.readValue(frozen, com.fasterxml.jackson.databind.node.ObjectNode.class); }
+            catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw AiErrors.error("invalid"); }
+        }
         question.set("previousAttemptDiagnostics", previous);
         return question.toString();
     }
