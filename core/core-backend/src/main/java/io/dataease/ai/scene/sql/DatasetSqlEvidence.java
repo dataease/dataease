@@ -51,6 +51,16 @@ final class DatasetSqlEvidence {
     private static final Pattern IDENTIFIER_HINT = Pattern.compile(
             "[`\"]([^`\"\\r\\n]{1,256})[`\"]|\\[([^\\]\\r\\n]{1,256})\\]|(?<![a-zA-Z0-9_$])([a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)+)(?![a-zA-Z0-9_$])");
 
+    private static final String BARE_NAME = "[a-z][a-z0-9]*";
+    private static final String NAME_SEPARATOR = "\\s*(?:[,，、]|和|与|與|及|\\band\\b|\\bor\\b)\\s*";
+    private static final String BARE_NAMES = "(" + BARE_NAME + "(?:" + NAME_SEPARATOR + BARE_NAME + ")*+)";
+    private static final Pattern FIELD_QUESTION = Pattern.compile(
+            "(?:(?:有|包含|包括|存在|记录|記錄|字段|欄位)\\s*|\\b(?:includes?|contains?|has|have|records?|lists?|mentions?"
+                    + "|(?:types?|names?|units?|formats?|meanings?|descriptions?)\\s+of)\\s+(?:(?:an?|the)\\s+)?)"
+                    + BARE_NAMES + "(?![a-z0-9_$])|(?<![a-z0-9_$])" + BARE_NAMES
+                    + "\\s+(?:(?:fields?|columns?|present|recorded|listed|available|exists?)\\b|in\\s+step\\b)",
+            Pattern.CASE_INSENSITIVE);
+
     // Leave bare physical names in place, including "type" in "the type of type".
     // Plural "date columns" asks about a category; singular "the date column" may name a column.
     private static final Pattern ENGLISH_FIELD_SYNTAX = Pattern.compile(
@@ -85,9 +95,18 @@ final class DatasetSqlEvidence {
                     name = name.substring(1, name.length() - 1);
                 missing.add(name);
             }
+            String unquoted = hints.replaceAll(" ");
+            String meaningfulWords = ENGLISH_FIELD_SYNTAX.matcher(unquoted).replaceAll(" ");
+            // A field-existence question identifies its object. Its verb can also be a physical column name.
+            var positions = FIELD_QUESTION.matcher(unquoted);
+            while (positions.find()) {
+                String names = positions.group(1) != null ? positions.group(1) : positions.group(2);
+                for (String name : names.split("(?i)" + NAME_SEPARATOR))
+                    if (mentioned(meaningfulWords, name)) missing.add(name);
+            }
+            String prose = ENGLISH_FIELD_SYNTAX.matcher(positions.replaceAll(" ")).replaceAll(" ");
             var identifiers = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
             identifiers.addAll(missing);
-            String prose = ENGLISH_FIELD_SYNTAX.matcher(hints.replaceAll(" ")).replaceAll(" ");
             var named = snapshot.fields().stream()
                     .filter(field -> identifiers.contains(field.name()) || mentioned(prose, field.name())).toList();
             missing.removeIf(expectedTable::equalsIgnoreCase);
