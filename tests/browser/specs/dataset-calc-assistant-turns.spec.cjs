@@ -252,7 +252,7 @@ test("the current formula or any selected turn is frozen as the basis of each qu
 
 test("asking about a previous validation preserves the edited formula and original step", async ({ page }) => {
   const state = await serveTurns(page);
-  const question = "第一次回答的第 1 步校验的是哪个公式？";
+  const question = "第一条回答的第 1 步校验的是哪个公式？";
   const submits = [];
   page.on("request", request => {
     if (request.method() === "POST" && new URL(request.url()).pathname.endsWith("/executions"))

@@ -312,6 +312,11 @@ const fail = (error: unknown, turn?: Turn) => {
 }
 // Displayed turn numbers also work as references in a free-text follow-up.
 const referencedTurn = (question: string, latest: number) => {
+  // Answer ordinals address evidence. Only proposal ordinals choose a generation basis.
+  question = question.replace(
+    /(?:第\s*[0-9一二三四五六七八九十兩两]+|上一?)\s*[轮輪版条條次个個]?\s*(?:回答|答复|答覆|回复|回覆)/g,
+    ''
+  )
   const digits = question.match(
     /(?:建议|建議|suggestion|proposal)\s*#?\s*(\d+)|第\s*(\d+)\s*[轮輪版条條]/i
   )

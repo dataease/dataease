@@ -77,11 +77,13 @@ public class AiConversationManage implements AiToolConversationFeature {
         final Prompt prompt;
         final AiToolProtocol.Input input;
         final boolean toolConversation;
+        final int priorAnswers;
         long historyVersion;
         final Map<String, Run> retries = new HashMap<>();
         Run first, latest;
         Task(State state, Turn request, Prompt prompt, AiToolProtocol.Input input, long historyVersion) {
             this.state = state; this.request = request; this.prompt = prompt; this.input = input; this.historyVersion = historyVersion;
+            priorAnswers = state.stepHistory.size();
             toolConversation = !input.tools().isEmpty() || !state.toolHistory.isEmpty();
         }
     }
@@ -437,7 +439,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             messages.addAll(state.history);
             String question = authorized(state, () -> currentQuestion(state, request.text()));
             messages.add(new UserMessage(question));
-            var definitions = scene(state.view.scene()).tools(state.context);
+            var definitions = availableTools(state);
             var task = new Task(state, request, new Prompt(List.copyOf(messages)), toolInput(state, question, definitions), state.historyVersion);
             var binding = bind(state, "task", request.submissionKey(), accepted, task);
             if (binding != null && binding.task != task) throw AiErrors.error("conflict");
@@ -780,7 +782,18 @@ public class AiConversationManage implements AiToolConversationFeature {
     @Override public void authorizeToolInput(AiExecutionContext context, AiToolProtocol.Input input) {
         authorize(context);
         State state = sessions.get(context.scope().reference());
-        if (state == null || !scene(state.view.scene()).tools(state.context).equals(input.tools())) throw AiErrors.error("scope_changed");
+        if (state == null) throw AiErrors.error("scope_changed");
+        // An older task can be retried with the original tool set even after new answers were recorded.
+        if (!scene(state.view.scene()).tools(state.context).equals(input.tools()) && !availableTools(state).equals(input.tools()))
+            throw AiErrors.error("scope_changed");
+    }
+    private List<AiToolProtocol.Definition> availableTools(State state) {
+        var scene = scene(state.view.scene());
+        var business = scene.tools(state.context);
+        if (state.single || !scene.editorConversation() || state.stepHistory.size() == 0) return business;
+        var tools = new ArrayList<>(business);
+        tools.add(EditorStepSearch.TOOL);
+        return tools;
     }
     private void toolEvent(Run run, AiToolProtocol.Call call, String status, Map<String, String> arguments, String result, String error) {
         synchronized (run.state) {
@@ -822,7 +835,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             if (step.calls().size() != 1 || run.toolSteps >= stream.maxToolSteps()) throw AiErrors.error("output_limit");
             var call = step.calls().get(0); var scene = scene(run.state.view.scene());
-            var definition = scene.tools(run.state.context).stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
+            var definition = run.task.input.tools().stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
             Map<String, String> arguments;
             try { arguments = AiToolProtocol.arguments(definition, call); }
             catch (AiErrors.Failure malformed) {
@@ -859,7 +872,10 @@ public class AiConversationManage implements AiToolConversationFeature {
                 java.util.function.Supplier<String> execute = () -> authorized(run.state, () -> {
                     progress(run); check(run.state); stream.verifyStep();
                     toolEvent(run, call, "RUNNING", arguments, null, null);
-                    String value = tools.execute(call.name(), arguments, () -> progress(run), run.stream.deadline());
+                    String value = EditorStepSearch.TOOL.name().equals(call.name())
+                            ? AiToolProtocol.result(EditorStepSearch.find(run.state.stepHistory.answers().subList(0, run.task.priorAnswers),
+                                    scene, arguments))
+                            : tools.execute(call.name(), arguments, () -> progress(run), run.stream.deadline());
                     progress(run); check(run.state); stream.verifyStep(); return value;
                 });
                 result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
@@ -887,7 +903,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             if (finish) { complete(run, true, ""); return; }
             // The previous response/permit is already closed. Enqueue the next step, without waiting on this worker.
-            var input = new AiToolProtocol.Input(run.transcript, scene.tools(run.state.context));
+            var input = new AiToolProtocol.Input(run.transcript, run.task.input.tools());
             stream.send(input, () -> progress(run), text -> append(run, text), next -> toolStep(run, next), failure -> fail(run, failure));
         } catch (RuntimeException failure) { fail(run, failure); }
     }
