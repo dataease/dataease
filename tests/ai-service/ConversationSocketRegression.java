@@ -26,6 +26,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import java.lang.reflect.Type;
 import java.net.*;
 import java.net.http.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,7 +70,110 @@ public final class ConversationSocketRegression {
         public void close() { if (socket.isConnected()) socket.disconnect(); }
     }
 
-    static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode) throws Exception {
+    private record Accepted(String session, String execution, String editor, String version) { }
+    private static Accepted start(String base, String editor, String question) throws Exception {
+        var session = post(base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", editor), true);
+        String url = base + "/" + session.path("sessionId").asText();
+        String version = session.path("contextVersion").asText();
+        var run = post(url + "/executions", Map.of("contextVersion", version, "text", question), true);
+        return new Accepted(url, url + "/executions/" + run.path("executionId").asText(), editor, version);
+    }
+
+    private static JsonNode read(Accepted run, long cursor) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create(run.execution + "/events?after=" + cursor))
+                .header("X-Test-Identity", "writer").GET().build();
+        var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) throw new AssertionError("original execution must remain readable: " + response.statusCode());
+        return json.readTree(response.body());
+    }
+
+    private static JsonNode bindAndRead(Accepted run, Tab tab, long after) throws Exception {
+        post(run.execution + "/subscriptions", Map.of("subscription", tab.challenge, "editorId", run.editor, "after", after), true);
+        for (;;) {
+            var page = tab.messages.poll(5, TimeUnit.SECONDS);
+            if (page == null) throw new AssertionError("missing original execution after reconnect");
+            if (!page.path("events").isEmpty() || !"RUNNING".equals(page.path("status").asText())) return page;
+        }
+    }
+
+    private static void close(Accepted run) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create(run.session)).header("X-Test-Identity", "writer").DELETE().build();
+        if (HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.discarding()).statusCode() != 200)
+            throw new AssertionError("editor close must retire its context");
+    }
+
+    private static void grace(String base, int port, WebSocketStompClient client, List<JsonNode> modelRequests,
+                              java.util.concurrent.atomic.AtomicReference<CountDownLatch> release) throws Exception {
+        int before = modelRequests.size();
+        release.set(new CountDownLatch(1));
+        Accepted expires = start(base, "lost-route", "hold beyond grace");
+        Accepted resumes = start(base, "resumed-route", "hold beyond grace");
+        long resumeAfter;
+        try (var first = Tab.open(port, client, "writer"); var second = Tab.open(port, client, "writer")) {
+            if (!bindAndRead(expires, first, 0).toString().contains("星河")) throw new AssertionError("first partial answer");
+            resumeAfter = bindAndRead(resumes, second, 0).path("cursor").asLong();
+        }
+        Thread.sleep(18000);
+        if (!"RUNNING".equals(read(resumes, resumeAfter).path("status").asText())) throw new AssertionError("original run survives 18 seconds offline");
+        Thread.sleep(13000);
+        var interrupted = read(expires, 0);
+        if (!"FAILED".equals(interrupted.path("status").asText()) || !interrupted.toString().contains("星河")
+                || !interrupted.toString().contains("connection_interrupted") || !interrupted.path("retryEligible").asBoolean())
+            throw new AssertionError("confirmed interruption retains the authorized partial answer and explicit retry");
+        release.get().countDown();
+        try (var restored = Tab.open(port, client, "writer")) {
+            var page = bindAndRead(resumes, restored, resumeAfter);
+            if (!"COMPLETED".equals(read(resumes, 0).path("status").asText())
+                    || page.path("events").get(0).path("sequence").asLong() != resumeAfter + 1)
+                throw new AssertionError("completed original run replays only unread events");
+        }
+        if (modelRequests.size() - before != 2) throw new AssertionError("two accepted questions produce exactly two model requests");
+        close(expires); close(resumes);
+        System.out.println("PASS real 18s reconnect, 31s lease interruption, one model request per accepted question");
+    }
+
+    private static void crossNode(String base, int origin, WebSocketStompClient client, List<JsonNode> modelRequests,
+                                  java.util.concurrent.atomic.AtomicReference<CountDownLatch> release) throws Exception {
+        Path ready = Files.createTempFile("ai-recovery-peer", ".port");
+        var peer = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+                "-Dai.test.conversationSocket=true", "-Dai.test.conversationOnly=true", "-Dai.test.peerFile=" + ready,
+                "-cp", System.getProperty("java.class.path"), Regression.class.getName()).redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT).start();
+        try {
+            long end = System.nanoTime() + TimeUnit.SECONDS.toNanos(40);
+            while (Files.size(ready) == 0 && peer.isAlive() && System.nanoTime() < end) Thread.sleep(100);
+            int other = Integer.parseInt(Files.readString(ready));
+            int before = modelRequests.size();
+            release.set(new CountDownLatch(1));
+            Accepted run = start(base, "origin-node-tab", "routed editor");
+            long cursor;
+            try (var owner = Tab.open(origin, client, "writer"); var misplaced = Tab.open(other, client, "writer")) {
+                cursor = bindAndRead(run, owner, 0).path("cursor").asLong();
+                post(run.execution + "/subscriptions", Map.of("subscription", misplaced.challenge, "editorId", run.editor, "after", cursor), false);
+                var wrongRoute = URI.create(run.execution.replace(":" + origin + "/", ":" + other + "/") + "/events?after=0");
+                var response = HttpClient.newHttpClient().send(HttpRequest.newBuilder(wrongRoute).header("X-DE-Error-Contract", "2")
+                        .header("X-Test-Identity", "writer").GET().build(), HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() != 502 || !response.body().contains("i18n_ai_execution_route_unavailable")
+                        || response.body().contains("星河") || misplaced.messages.peek() != null)
+                    throw new AssertionError("a different JVM must report a temporary route failure without disclosing execution state");
+            }
+            release.get().countDown();
+            try (var restored = Tab.open(origin, client, "writer")) {
+                var page = bindAndRead(run, restored, cursor);
+                if (!page.toString().contains("继续") || page.path("events").get(0).path("sequence").asLong() != cursor + 1)
+                    throw new AssertionError("restoring the origin route resumes the same cursor");
+            }
+            close(run);
+            if (modelRequests.size() - before != 1) throw new AssertionError("cross-node repair regenerated an answer");
+            System.out.println("PASS two independent JVM HTTP/STOMP nodes, origin delivery, wrong route rejected and cursor replay, one accepted model request");
+        } finally {
+            peer.getOutputStream().close();
+            try { if (!peer.waitFor(8, TimeUnit.SECONDS)) peer.destroyForcibly().waitFor(); }
+            finally { Files.deleteIfExists(ready); }
+        }
+    }
+
+    static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode, java.util.function.IntConsumer timeout) throws Exception {
         var factory = new TomcatServletWebServerFactory(0);
         factory.setAddress(InetAddress.getByName("127.0.0.1"));
         factory.addContextCustomizers(ctx -> ctx.addServletContainerInitializer(new WsSci(), Set.of()));
@@ -77,7 +181,7 @@ public final class ConversationSocketRegression {
             var context = new GenericWebApplicationContext(servlet);
             context.getBeanFactory().registerSingleton("conversation", manage);
             context.getBeanFactory().registerSingleton("socketIdentity", (WebSocketAuthService) ConversationSocketRegression::actor);
-            new AnnotatedBeanDefinitionReader(context).register(WebConfiguration.class, CorsConfig.class, WsConfig.class, AiConversationServer.class, io.dataease.ai.server.AiConversationSocket.class);
+            new AnnotatedBeanDefinitionReader(context).register(WebConfiguration.class, CorsConfig.class, io.dataease.exception.GlobalExceptionHandler.class, WsConfig.class, AiConversationServer.class, io.dataease.ai.server.AiConversationSocket.class);
             var mvc = servlet.addServlet("editor", new DispatcherServlet(context));
             mvc.setLoadOnStartup(1); mvc.addMapping("/");
             var filter = servlet.addFilter("owned-identities", (Filter) (req, res, chain) -> {
@@ -93,6 +197,13 @@ public final class ConversationSocketRegression {
         client.setMessageConverter(new MappingJackson2MessageConverter());
         try {
             service.start();
+            String ready = System.getProperty("ai.test.peerFile");
+            if (ready != null) {
+                Files.writeString(Path.of(ready), Integer.toString(service.getPort()));
+                System.in.read();
+                if (!modelRequests.isEmpty()) throw new AssertionError("misrouted reads must never reach the model");
+                return;
+            }
             String base = "http://127.0.0.1:" + service.getPort() + "/de2api/ai/conversations";
             try (var original = Tab.open(service.getPort(), client, "writer");
                  var sibling = Tab.open(service.getPort(), client, "writer");
@@ -161,6 +272,19 @@ public final class ConversationSocketRegression {
                     throw new AssertionError("each state of the real tool and the final execution appear once: " + statuses);
                 System.out.println("PASS same execution delivered every tool state and terminal exactly once");
             } finally { toolMode.accept(false); }
+            grace(base, service.getPort(), client, modelRequests, release);
+            crossNode(base, service.getPort(), client, modelRequests, release);
+            timeout.accept(5);
+            release.set(new CountDownLatch(1));
+            int beforeTimeout = modelRequests.size();
+            Accepted limited = start(base, "short-deadline", "hold beyond grace");
+            try (var tab = Tab.open(service.getPort(), client, "writer")) { bindAndRead(limited, tab, 0); }
+            Thread.sleep(5500);
+            var timedOut = read(limited, 0);
+            if (!"FAILED".equals(timedOut.path("status").asText()) || !timedOut.toString().contains("timeout")
+                    || modelRequests.size() - beforeTimeout != 1) throw new AssertionError("original deadline wins during disconnect");
+            close(limited); timeout.accept(60);
+            System.out.println("PASS original 5s model deadline during the 30s grace, one model request");
             if ("1".equals(System.getenv("AI_SOCKET_BROWSER"))) {
                 resourceAllowed.set(true);
                 release.get().countDown();
@@ -171,8 +295,8 @@ public final class ConversationSocketRegression {
                 browser.directory(new java.io.File("tests/browser"));
                 browser.environment().put("DATASET_ASSISTANT_BACKEND", "http://127.0.0.1:" + service.getPort());
                 var process = browser.inheritIO().start();
-                if (!process.waitFor(100, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("editor timeout"); }
-                if (process.exitValue() != 0 || modelRequests.size() - before != 3)
+                if (!process.waitFor(170, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("editor timeout"); }
+                if (process.exitValue() != 0 || modelRequests.size() - before != 6)
                     throw new AssertionError("each editor scenario should accept one model request, including after gap recovery");
                 System.out.println("PASS both real editors, ten-second model streams, zero progress GETs while connected, duplicate/out-of-order delivery and single cursor repair");
             }
