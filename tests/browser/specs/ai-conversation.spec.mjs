@@ -746,6 +746,7 @@ test('SQL changes retain the original output and identity changes clear it while
 test('stop aborts an in-flight poll without closing the context and late completion cannot replace cancellation', async ({
   page
 }) => {
+  const tool = { callId: 'tables', name: 'list_tables', parameters: {} }
   let openCount = 0,
     starts = 0,
     polls = 0,
@@ -769,8 +770,11 @@ test('stop aborts an in-flight poll without closing the context and late complet
         json: {
           ...run,
           status: 'CANCELLED',
-          cursor: 2,
-          events: [{ sequence: 2, type: 'CANCELLED' }]
+          cursor: 4,
+          events: [
+            { sequence: 3, type: 'TOOL', tool: { ...tool, status: 'CANCELLED' }, error: 'cancelled' },
+            { sequence: 4, type: 'CANCELLED' }
+          ]
         }
       })
     if (url.pathname.endsWith('/events')) {
@@ -790,7 +794,9 @@ test('stop aborts an in-flight poll without closing the context and late complet
               type: 'TEXT',
               text: starts === 1 ? 'Partial answer' : 'New answer'
             },
-            ...(starts > 1 ? [{ sequence: 2, type: 'COMPLETED' }] : [])
+            starts > 1
+              ? { sequence: 2, type: 'COMPLETED' }
+              : { sequence: 2, type: 'TOOL', tool: { ...tool, status: 'RUNNING' } }
           ]
         }
       })
@@ -812,9 +818,12 @@ test('stop aborts an in-flight poll without closing the context and late complet
   await selectResource(page)
   await send(page, 'Partial question')
   await pending
+  const detail = page.locator('details[data-tool-id="tables"]')
+  await expect(detail.locator('summary')).toContainText('执行中')
   await page.getByRole('button', { name: '停止生成' }).click()
   await page.getByRole('button', { name: '确认中断', exact: true }).click()
   await expect(page.getByText('· 未完成')).toBeVisible()
+  await expect(detail.locator('summary')).toContainText('已取消')
   await send(page, 'Continue please')
   release()
   await expect(page.getByText('New answer', { exact: true })).toBeVisible()

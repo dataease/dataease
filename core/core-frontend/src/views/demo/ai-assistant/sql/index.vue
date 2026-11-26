@@ -615,7 +615,8 @@ const applyEvents = (events: AiConversationEvents, index: number, cursor: number
     if (event.type === 'TEXT' && event.text) message.text += event.text
     else if (event.type === 'TOOL' && event.tool) {
       const tool = event.tool
-      if (!['STARTED', 'RUNNING', 'SUCCEEDED', 'FAILED'].includes(tool.status)) continue
+      if (!['STARTED', 'RUNNING', 'SUCCEEDED', 'FAILED', 'CANCELLED'].includes(tool.status))
+        continue
       const tools = (message.tools ??= [])
       const existing = tools.findIndex(item => item.callId === tool.callId)
       if (existing >= 0) tools[existing] = tool
