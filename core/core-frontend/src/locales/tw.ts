@@ -4661,6 +4661,21 @@ export default {
     back_parent: '返回上一層'
   },
   plugin: {
+    current_password: '目前使用者密碼',
+    close: '關閉',
+    password_incorrect_install: '目前帳號密碼錯誤，請重新輸入後繼續上傳外掛。',
+    password_incorrect_update: '目前帳號密碼錯誤，請重新輸入後繼續更新外掛。',
+    password_incorrect_uninstall: '目前帳號密碼錯誤，請重新輸入後繼續解除安裝外掛。',
+    password_incorrect_confirm: '目前帳號密碼錯誤，請重新輸入後確認外掛安裝。',
+    password_locked: '外掛操作的密碼驗證次數過多，請稍後再試。',
+    password_unavailable: '目前帳號使用第三方驗證，暫不支援驗證密碼以執行外掛操作。',
+    verification_failed: '暫時無法完成外掛操作的身分驗證，請稍後再試。',
+    operation_forbidden: '目前帳號無權執行此外掛操作。',
+
+    verify_continue: '驗證並繼續',
+    confirm_title: '確認外掛操作',
+    confirm_warning:
+      '外掛會在伺服器上執行程式碼，請確認來源並輸入目前帳號密碼。此確認不代表外掛已通過安全審核。',
     'flag-all': '全部',
     'flag-ds': '資料來源插件',
     'flag-view': '圖表插件',

@@ -4,6 +4,7 @@
 import { h } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import request from '@/config/axios'
+import { confirmPluginOperation } from './operationConfirmation'
 
 /*
  * 上传预检查响应，名称仅用于展示，operation 用于确认或取消暂存安装
@@ -120,6 +121,18 @@ export async function confirmDependencies(
       }
     }
   }
-  await request.post({ url: '/plugin/confirm', data: { operation: check.operation, choices } })
+  let ticket: string
+  try {
+    ticket = await confirmPluginOperation('confirm', check.operation, t)
+  } catch (error) {
+    await request.post({ url: `/plugin/cancel/${check.operation}` })
+    if (error === 'cancel' || error === 'close') return false
+    throw error
+  }
+  await request.post({
+    url: '/plugin/confirm',
+    data: { operation: check.operation, choices },
+    headers: { 'X-DE-Plugin-Confirmation': ticket }
+  })
   return true
 }

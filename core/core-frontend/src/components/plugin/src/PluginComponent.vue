@@ -6,7 +6,7 @@ import { loadPluginApi, xpackModelApi } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
-import axios from 'axios'
+import { pluginAxios } from './pluginAxios'
 import * as Pinia from 'pinia'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -140,7 +140,7 @@ onMounted(async () => {
       plugin.value = xpack.default
     } else {
       window['VueDe'] = Vue
-      window['AxiosDe'] = axios
+      window['AxiosDe'] = pluginAxios
       window['PiniaDe'] = Pinia
       window['vueRouterDe'] = router
       window['MittAllDe'] = useEmitt().emitter.all

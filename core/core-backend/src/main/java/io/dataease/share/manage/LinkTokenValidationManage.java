@@ -79,6 +79,11 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
         if (Set.of("/user/ipInfo", "/datasetData/enumValue", "/datasetData/enumValueObj",
                 "/datasetData/getFieldTree", "/dekey", "/share/validate",
                 "/sysParameter/queryOnlineMap", "/xpackComponent/viewPlugins").contains(path)) return;
+        if (path.startsWith("/xpackComponent/pluginStaticInfo/")) {
+            if (!"GET".equalsIgnoreCase(method)) throw new IllegalArgumentException("Unsupported plugin request");
+            checkPluginModule(V3UserUtil.getLink(), path.substring("/xpackComponent/pluginStaticInfo/".length()));
+            return;
+        }
         if (path.startsWith("/static-resource/") && method.equalsIgnoreCase("GET")) {
             checkStaticResource(V3UserUtil.getLink(), path);
             return;
@@ -106,6 +111,25 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
                     .parse(pattern.startsWith("/de2api/") ? pattern.substring(7) : pattern).matches(requestPath))) return;
         }
         throw new IllegalArgumentException("Endpoint outside share scope");
+    }
+
+    private void checkPluginModule(LinkIdentity identity, String module) {
+        if (identity == null || !module.matches("[A-Za-z0-9_.-]+")) throw new IllegalArgumentException("Invalid plugin request");
+        var resource = visualizations.findById(identity.resourceId()).orElseThrow(() -> new IllegalArgumentException("Share unavailable"));
+        Set<String> chartIds = new HashSet<>();
+        try { collectChartIds(new ObjectMapper().readTree(resource.getComponentData()), chartIds); }
+        catch (com.fasterxml.jackson.core.JsonProcessingException e) { throw new IllegalArgumentException("Invalid canvas", e); }
+        for (var chart : charts.findBySceneId(identity.resourceId())) {
+            if (!Boolean.TRUE.equals(chart.getIsPlugin()) || !chartIds.contains(chart.getId().toString())) continue;
+            for (var plugin : io.dataease.extensions.view.factory.PluginsChartFactory.getViewConfigList()) {
+                if (!java.util.Objects.equals(chart.getType(), plugin.getChartValue()) || plugin.getStaticMap() == null) continue;
+                for (String entry : plugin.getStaticMap().values()) {
+                    String path = new String(java.util.Base64.getDecoder().decode(entry), java.nio.charset.StandardCharsets.UTF_8);
+                    if (path.startsWith(module + "/")) return;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Plugin outside share scope");
     }
 
     private void checkCustomGeoArea(LinkIdentity identity, String areaId) {

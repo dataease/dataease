@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script type="module">
+      import axios from "axios";
+      import { pluginAxios } from "@/components/plugin/src/pluginAxios";
+      import { invalidateHmac } from "@/views/tools/HmacTool";
+      window.fixture = {
+        embedded: { baseUrl: "", token: "" },
+        link: "",
+        token: "host-test-token",
+        cache: {},
+        contextCalls: 0,
+        messages: [],
+      };
+      window.rawAxios = axios;
+      window.AxiosDe = pluginAxios;
+      window.invalidateHmac = invalidateHmac;
+      window.ready = true;
+    </script>
+  </body>
+</html>

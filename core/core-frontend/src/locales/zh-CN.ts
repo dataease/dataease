@@ -4681,6 +4681,21 @@ export default {
     back_parent: '返回上一级'
   },
   plugin: {
+    current_password: '当前用户密码',
+    close: '关闭',
+    password_incorrect_install: '当前账号密码错误，请重新输入后继续上传插件。',
+    password_incorrect_update: '当前账号密码错误，请重新输入后继续更新插件。',
+    password_incorrect_uninstall: '当前账号密码错误，请重新输入后继续卸载插件。',
+    password_incorrect_confirm: '当前账号密码错误，请重新输入后确认插件安装。',
+    password_locked: '插件操作的密码验证次数过多，请稍后重试。',
+    password_unavailable: '当前账号使用第三方认证，暂不支持验证密码以执行插件操作。',
+    verification_failed: '暂时无法完成插件操作的身份验证，请稍后重试。',
+    operation_forbidden: '当前账号无权执行此插件操作。',
+
+    verify_continue: '验证并继续',
+    confirm_title: '确认插件操作',
+    confirm_warning:
+      '插件会在服务器上执行代码，请确认来源并输入当前账号密码。此确认不代表插件已通过安全审核。',
     'flag-all': '全部',
     'flag-ds': '数据源插件',
     'flag-view': '图表插件',

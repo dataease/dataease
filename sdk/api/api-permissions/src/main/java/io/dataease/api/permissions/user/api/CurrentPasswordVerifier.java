@@ -4,6 +4,14 @@ package io.dataease.api.permissions.user.api;
 public interface CurrentPasswordVerifier {
     void verify(String password);
 
+    default void verifyPluginPassword(String password) {
+        verify(password);
+    }
+
+    default void verifyPluginPermission() {
+        throw new UnsupportedOperationException("Plugin authorization unavailable");
+    }
+
     /** Enforce the same system-parameter manage permission as engine editing. */
     void verifyEnginePermission();
 }

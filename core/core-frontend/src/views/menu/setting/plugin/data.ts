@@ -14,6 +14,9 @@ export const loadPluginApi = () => {
   return request.get({ url: '/plugin/query' })
 }
 
-export const unInstallApi = id => {
-  return request.post({ url: `/plugin/uninstall/${id}` })
+export const unInstallApi = (id, ticket: string) => {
+  return request.post({
+    url: `/plugin/uninstall/${id}`,
+    headers: { 'X-DE-Plugin-Confirmation': ticket }
+  })
 }
