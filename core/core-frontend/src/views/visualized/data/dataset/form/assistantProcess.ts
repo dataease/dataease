@@ -1,8 +1,9 @@
 import type { AiConversationEvents, AiConversationTool } from '@/api/aiConversation'
 
 export type ProcessEntry =
-  | { sequence: number; text: string; tool?: never }
+  | { kind: 'text'; sequence: number; text: string; tool?: never }
   | {
+      kind: 'tool'
       sequence: number
       tool: AiConversationTool
       error?: string
@@ -26,14 +27,14 @@ export function applyProcessEvent(
   if (event.type !== 'TOOL' || !tool) return
   const entries = turn.process.entries
   const entry = entries.find(item => item.tool?.callId === tool.callId)
-  if (entry?.tool) {
+  if (entry?.kind === 'tool') {
     entry.tool = tool
     entry.error = event.error
     return
   }
   if (turn.answer) {
-    entries.push({ sequence: event.sequence, text: turn.answer })
+    entries.push({ kind: 'text', sequence: event.sequence, text: turn.answer })
     turn.answer = ''
   }
-  entries.push({ sequence: event.sequence, tool, error: event.error })
+  entries.push({ kind: 'tool', sequence: event.sequence, tool, error: event.error })
 }
