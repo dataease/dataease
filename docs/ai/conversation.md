@@ -58,7 +58,9 @@ SQL 追问选取相关字段。计算字段追问返回原步骤提交的公式�
 
 按名称、字段或执行动作追问时，会话工具 `find_historical_step` 在当前权限下查找原回答。唯一结果只发送本题相关的证据；同名数据源或不同公式版本可用来源名或回答与步骤号区分。询问最后一次校验时跳过中间的解释。作者要求重新校验当前公式时，`revalidate_current_formula` 直接校验发问时固定的草稿。
 
-SQL 助手补查或刷新点名字段时使用 `get_named_table_fields`。H2、MySQL、MariaDB 和 TiDB 在当前数据源的列目录查询中绑定表及字段名；其余连接器沿用原有的授权表元数据读取。发给模型的本轮结果列出所问字段和已确认缺失的字段，之后按局部快照引用。明确刷新整表时使用原有的整表工具。
+SQL 助手补查或刷新点名字段时使用 `get_named_table_fields`。H2、MySQL、MariaDB、TiDB、PostgreSQL、GaussDB、Kingbase、Oracle、SQL Server、Db2、ClickHouse、已配置 schema 的 Redshift 和使用原生列目录的 Doris、StarRocks 会在当前表的目录查询中绑定字段名。文件、API、扩展及只提供整表元数据的连接器（如 Impala 的 DESCRIBE、Mongo 和外部 catalog）沿用已授权的表读取，再按物理列名筛选。
+
+本轮只返回所问字段和已确认缺失的字段。SQL 建议的依据合并建议前的整表和按名读取，按核验先后更新对应字段。历史追问字段数量时只给出原步骤的字段数和覆盖范围。局部读取保留该次返回数量，中止且未产出结果的步骤无法给出数量。作者明确刷新整表时使用整表工具。
 
 ## 数据集自定义 SQL 编辑器
 

@@ -37,6 +37,7 @@ public final class PhysicalTableCatalog {
     }
     public List<TableField> fields(String table, List<String> names) {
         if (!labels.containsKey(table)) throw new IllegalArgumentException("Table is outside this datasource catalog");
+        if (names.isEmpty()) return List.of();
         // File-backed and extension providers may expose only a table-granular metadata reader.
         var rows = namedReader == null ? reader.apply(table) : namedReader.apply(table, names);
         return rows.stream().filter(row -> names.contains(Objects.toString(row.getOriginName(), row.getName()))).toList();
