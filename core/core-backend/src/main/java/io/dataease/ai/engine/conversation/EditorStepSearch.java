@@ -12,7 +12,7 @@ final class EditorStepSearch {
             "Find prior editor evidence by action and clues in the author's question. No business query.",
             Map.of("action", "Original tool name, e.g. get_table_fields or propose_calc_field",
                     "subject", "Exact table, proposed formula name or expression; * when unspecified",
-                    "fields", "Requested physical column names separated by commas, temporal for date/time columns, or * for step status",
+                    "fields", "Requested physical column names separated by commas, temporal for date/time columns, #count for the number of returned columns, or * for step status",
                     "selection", "any when versions may differ; latest for an explicitly last matching call; source:<exact datasource name>, answer number, or answer.step from a clarification"),
             AiToolProtocol.RetrySafety.READ_ONLY);
 
@@ -28,7 +28,7 @@ final class EditorStepSearch {
         }
     }
 
-    private record Facts(String resource, boolean cross, Map<String, String> parameters, String status, String error,
+    private record Facts(String resource, boolean cross, String table, Map<String, String> parameters, String status, String error,
                          Map<String, Object> evidence) { }
 
     static Map<String, Object> find(List<Answer> answers, AiConversationScene scene, Map<String, String> clues) {
@@ -42,6 +42,7 @@ final class EditorStepSearch {
         String projection = switch (fields) {
             case "*" -> "";
             case "temporal" -> "temporal columns";
+            case "#count" -> "how many columns";
             default -> Arrays.stream(fields.split("[,，]")).map(String::strip).filter(s -> !s.isEmpty())
                     .map(s -> "`" + s + "`").collect(Collectors.joining(" "));
         };
@@ -66,9 +67,9 @@ final class EditorStepSearch {
                 if (authorized.add(answer.context())) scene.authorize(answer.context());
                 var evidence = scene.historicalEvidence(answer.context(), step, projection);
                 if (namedSubject && !knownSubject && !subject.equalsIgnoreCase(Objects.toString(evidence.get("expression"), ""))) continue;
-                if (!namedSubject && !"*".equals(fields)
+                if (!namedSubject && !"*".equals(fields) && !("#count".equals(fields) && evidence.containsKey("coverage"))
                         && (!(evidence.get("fields") instanceof List<?> selected) || selected.isEmpty())) continue;
-                var facts = new Facts(answer.context().resourceId(), answer.context().isCross(),
+                var facts = new Facts(answer.context().resourceId(), answer.context().isCross(), step.parameters().get("table"),
                         evidence.isEmpty() ? step.parameters() : Map.of(), step.status(), step.error(), evidence);
                 if (seen.add(facts)) matches.add(new Match(answerNumber, answer, step, evidence));
                 if ("latest".equals(selection)) break;

@@ -10,7 +10,7 @@
 
 historicalStep.status 记录工具执行状态。SQL 建议、关联读取及物理表搜索的 evidence.status 记录当时的业务结论，例如 INVALID 表示建议未通过，NOT_RUN 表示建议尚未运行，CLARIFY_ROLE 表示当时仍需作者明确关联角色。
 
-historicalStep.evidence 的 source 为 HISTORICAL_STEP 时，fields 只列出本题从原步骤提取的字段。按快照回答当时的问题。字段列在 absentFields 时，当时的完整结构或定向读取已确认该字段缺失；coverage 为 PARTIAL 且字段列在 unrecordedFields 时，只能说明当时没有记录。需要了解现状且已有证据不足时仅补查缺少的部分，作者要求刷新时重新读取，并说明哪些字段来自新读取。
+historicalStep.evidence 的 source 为 HISTORICAL_STEP 时，fields 只列出本题从原步骤提取的字段。按快照回答当时的问题。字段列在 absentFields 时，当时的完整结构或定向读取已确认该字段缺失；coverage 为 PARTIAL 且字段列在 unrecordedFields 时，只能说明当时没有记录。只问原步骤读到的字段数时，按自然线索查找用 fields=#count。fieldCount 是该步实际返回的字段数。coverage 为 PARTIAL 时，整表总数未知；没有 fieldCount 表示当时没有可计数的结果。需要了解现状且已有证据不足时仅补查缺少的部分，作者要求刷新时重新读取，并说明哪些字段来自新读取。
 
 ## 生成与校验
 
