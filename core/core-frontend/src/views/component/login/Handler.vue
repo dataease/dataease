@@ -1,6 +1,6 @@
 <template>
-  <div v-if="loginCategory.qrcode" :class="{'de-qr-hidden': !qrStatus}">
-    <QrTab 
+  <div v-if="loginCategory.qrcode" :class="{ 'de-qr-hidden': !qrStatus }">
+    <QrTab
       v-if="qrStatus"
       :wecom="loginCategory.wecom"
       :dingtalk="loginCategory.dingtalk"
@@ -8,25 +8,27 @@
       :larksuite="loginCategory.larksuite"
     />
   </div>
-  <el-divider v-if="anyEnable" class="de-other-login-divider">{{ t('login.other_login') }}</el-divider>
+  <el-divider v-if="anyEnable" class="de-other-login-divider">{{
+    t('login.other_login')
+  }}</el-divider>
   <el-form-item v-if="anyEnable" class="other-login-item">
-    <div class="login-list" >
-      <QrcodeLdap 
-        v-if="loginCategory.qrcode || loginCategory.ldap" 
-        ref="qrcodeLdapHandler" 
-        :qrcode="loginCategory.qrcode" 
+    <div class="login-list">
+      <QrcodeLdap
+        v-if="loginCategory.qrcode || loginCategory.ldap"
+        ref="qrcodeLdapHandler"
+        :qrcode="loginCategory.qrcode"
         :ldap="loginCategory.ldap"
         @status-change="qrStatusChange"
       />
-      <Oidc v-if="loginCategory.oidc" @switch-category="switcherCategory"/>
-      <Oauth2 ref="oauth2Handler" v-if="loginCategory.oauth2" @switch-category="switcherCategory"/>
-      <Cas v-if="loginCategory.cas" @switch-category="switcherCategory"/>
-      <Saml2 ref="saml2Handler" v-if="loginCategory.saml2"  @switch-category="switcherCategory"/>
+      <Oidc v-if="loginCategory.oidc" @switch-category="switcherCategory" />
+      <Oauth2 ref="oauth2Handler" v-if="loginCategory.oauth2" @switch-category="switcherCategory" />
+      <Cas v-if="loginCategory.cas" @switch-category="switcherCategory" />
+      <Saml2 ref="saml2Handler" v-if="loginCategory.saml2" @switch-category="switcherCategory" />
     </div>
   </el-form-item>
 
-  <mfa-step v-if="showMfa" :mfa-data="state.mfaData" @close="showMfa = false"/>
-  <platform-error v-if="platformLoginMsg" :msg="platformLoginMsg"/>
+  <mfa-step v-if="showMfa" :mfa-data="state.mfaData" @close="showMfa = false" />
+  <platform-error v-if="platformLoginMsg" :msg="platformLoginMsg" />
 </template>
 
 <script lang="ts" setup>
@@ -53,7 +55,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { getQueryString, isLarkPlatform, isPlatformClient, checkPlatform } from '@/utils/utils'
 import { loadClient, LoginCategory } from './PlatformClient'
 import MfaStep from './MfaStep.vue'
-import { logoutHandler } from "@/utils/logout";
+import { logoutHandler } from '@/utils/logout'
 import { useI18n } from '@/hooks/web/useI18n'
 import PlatformError from './PlatformError.vue'
 
@@ -79,30 +81,32 @@ const state = reactive({
   } as MfaData
 })
 const emits = defineEmits(['switchTab', 'autoCallback'])
-const init = (cb) => {
-  queryCategoryStatus().then(res => {
-    if (res['data']) {
-      const list: any[] = res['data'] as any[]
-      list.forEach(item => {
-        loginCategory.value[item.name] = item.enable
-        if (item.enable) {
-          anyEnable.value = true
-        }
-      })
-    }
-    if (res?.code === 0) {
-      wsCache.delete('oidc-error')
-      !loadClient(loginCategory.value) && cb && cb()
-    } else if (!wsCache.get('oidc-error')) {
-      wsCache.set('oidc-error', 1)
-      window.location.reload()
-    }
-  }).catch(() => {
-    if (!wsCache.get('oidc-error')) {
-      wsCache.set('oidc-error', 1)
-      window.location.reload()
-    }
-  })
+const init = cb => {
+  queryCategoryStatus()
+    .then(res => {
+      if (res['data']) {
+        const list: any[] = res['data'] as any[]
+        list.forEach(item => {
+          loginCategory.value[item.name] = item.enable
+          if (item.enable) {
+            anyEnable.value = true
+          }
+        })
+      }
+      if (res?.code === 0) {
+        wsCache.delete('oidc-error')
+        !loadClient(loginCategory.value) && cb && cb()
+      } else if (!wsCache.get('oidc-error')) {
+        wsCache.set('oidc-error', 1)
+        window.location.reload()
+      }
+    })
+    .catch(() => {
+      if (!wsCache.get('oidc-error')) {
+        wsCache.set('oidc-error', 1)
+        window.location.reload()
+      }
+    })
 }
 
 const qrStatusChange = (activeComponent: string) => {
@@ -123,11 +127,11 @@ const toMfa = (mfa: MfaData) => {
 }
 const ssoLogin = category => {
   const array = [
-    {category: 'ldap', proxy: ''},
-    {category: 'oidc', proxy: '/oidcbi/#'},
-    {category: 'cas', proxy: '/casbi/#'},
-    {category: 'oauth2', proxy: '/#'},
-    {category: 'saml2', proxy: '/#'},
+    { category: 'ldap', proxy: '' },
+    { category: 'oidc', proxy: '/oidcbi/#' },
+    { category: 'cas', proxy: '/casbi/#' },
+    { category: 'oauth2', proxy: '/#' },
+    { category: 'saml2', proxy: '/#' }
   ]
   if (category) {
     if (category === 1) {
@@ -138,7 +142,7 @@ const ssoLogin = category => {
 }
 
 const switcherCategory = (param: Categoryparam) => {
-  const {category, proxy} = param
+  const { category, proxy } = param
   const curOrigin = window.location.origin
   const curLocation = getCurLocation()
   if (!category || category === 'simple' || category === 'ldap') {
@@ -178,44 +182,47 @@ const getCurLocation = () => {
   return queryRedirectPath
 }
 
-const platformLogin = origin => {  
-  platformLoginApi(origin, userStore.getToken).then(res => {
-    const mfa = res.data?.mfa
-    if (mfa?.enabled) {
-      mfa['origin'] = origin
-      toMfa(mfa)
-      return
-    }
-    const token = res.data.token
-    if (token && isPlatformClient()) {
-     wsCache.set('de-platform-client', true)
-    }
-    userStore.setToken(token)
-    userStore.setExp(res.data.exp)
-    userStore.setTime(Date.now())
-    if (origin === 10 || isLarkPlatform()) {
-      let locationHash = window.location.hash
-      if (locationHash?.startsWith('#/login?redirect=/')) {
-        locationHash = locationHash.replace('#/login?redirect=/', '#/')
+const platformLogin = origin => {
+  platformLoginApi(origin, userStore.getToken)
+    .then(res => {
+      const mfa = res.data?.mfa
+      if (mfa?.enabled) {
+        mfa['origin'] = origin
+        toMfa(mfa)
+        return
       }
-      window.location.href = window.location.origin + window.location.pathname + locationHash
-    } else {
-      const queryRedirectPath = getCurLocation()
-      router.push({ path: queryRedirectPath }) 
-    }
-  }).catch((e: any) => {
-    userStore.setToken('')
-    if (isLarkPlatform()) {
-      setTimeout(() => {
-        window.location.href = window.location.origin + window.location.pathname + window.location.hash
-      }, 2000)
-    } else {
-      setTimeout(() => {
-        logoutHandler(true, true)
-        platformLoginMsg.value = e?.message || e
-      }, 1500);
-    }
-  })
+      const token = res.data.token
+      if (token && isPlatformClient()) {
+        wsCache.set('de-platform-client', true)
+      }
+      userStore.setToken(token)
+      userStore.setExp(res.data.exp)
+      userStore.setTime(Date.now())
+      if (origin === 10 || isLarkPlatform()) {
+        let locationHash = window.location.hash
+        if (locationHash?.startsWith('#/login?redirect=/')) {
+          locationHash = locationHash.replace('#/login?redirect=/', '#/')
+        }
+        window.location.href = window.location.origin + window.location.pathname + locationHash
+      } else {
+        const queryRedirectPath = getCurLocation()
+        router.push({ path: queryRedirectPath })
+      }
+    })
+    .catch((e: any) => {
+      userStore.setToken('')
+      if (isLarkPlatform()) {
+        setTimeout(() => {
+          window.location.href =
+            window.location.origin + window.location.pathname + window.location.hash
+        }, 2000)
+      } else {
+        setTimeout(() => {
+          logoutHandler(true, true)
+          platformLoginMsg.value = e?.message || e
+        }, 1500)
+      }
+    })
 }
 
 const queryCategoryStatus = () => {
@@ -245,7 +252,7 @@ const larkToken = async () => {
   return res.data
 }
 
-const saml2Token = (cb) => {
+const saml2Token = cb => {
   const token = getQueryString('saml2Token')
   if (!token) {
     return
@@ -254,18 +261,20 @@ const saml2Token = (cb) => {
   cb && cb()
 }
 
-const oauth2Token = (cb) => {
+const oauth2Token = cb => {
   const state = getQueryString('state') || ''
   const code = getQueryString(oauth2CodeKey(state))
-  exchangeOauth2Token(code, state).then(res => {
-    userStore.setToken(res.data.token)
-    cb && cb()
-  }).catch(() => {
-    setTimeout(() => {
-      window.location.href = window.location.origin + window.location.pathname + window.location.hash
-    }, 2000)
-  })
-  
+  exchangeOauth2Token(code, state)
+    .then(res => {
+      userStore.setToken(res.data.token)
+      cb && cb()
+    })
+    .catch(() => {
+      setTimeout(() => {
+        window.location.href =
+          window.location.origin + window.location.pathname + window.location.hash
+      }, 2000)
+    })
 }
 
 const larksuiteToken = async () => {
@@ -315,7 +324,8 @@ const auto2Platform = async () => {
       } else {
         resultParam.loadingText = '加载中...'
         document.getElementsByClassName('ed-loading-text')?.length &&
-          (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = resultParam.loadingText)
+          (document.getElementsByClassName('ed-loading-text')[0]['innerText'] =
+            resultParam.loadingText)
       }
       nextTick(() => {
         ssoLogin(res.data)
@@ -345,7 +355,7 @@ onMounted(() => {
       platformLogin(3)
     } else if (window.location.pathname.includes('/oidcbi/')) {
       platformLogin(2)
-    } else if(state?.includes('dingtalk')) {
+    } else if (state?.includes('dingtalk')) {
       await dingtalkToken()
       platformLogin(5)
     } else if (state?.includes('larksuite')) {
@@ -372,9 +382,9 @@ onMounted(() => {
 })
 
 defineExpose({
-  ssoLogin, toMfa
+  ssoLogin,
+  toMfa
 })
-
 </script>
 
 <style lang="less" scoped>
@@ -389,7 +399,7 @@ defineExpose({
   display: none;
 }
 .de-other-login-divider {
-  border-top: 1px solid #1F232926;
+  border-top: 1px solid #1f232926;
 }
 .other-login-item {
   margin-bottom: 0;
