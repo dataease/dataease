@@ -45,7 +45,7 @@ final class CalcFieldRegression {
     private CountDownLatch previewRelease;
     private final CountDownLatch awaitingHistoryStop = new CountDownLatch(1);
     private final CountDownLatch releaseHistoryReply = new CountDownLatch(1);
-    private volatile String previewMode = "";
+    volatile String previewMode = "";
     private CountDownLatch datasetRead;
     private CountDownLatch releaseRead;
     private DatasetGroupInfoDTO savedDataset;
@@ -124,6 +124,10 @@ final class CalcFieldRegression {
                 if ("current-formula".equals(previewMode)) {
                     if (!"[102] + 77".equals(value)) throw new AssertionError("Provider received an earlier expression: " + value);
                     previews.incrementAndGet();
+                    return "DETAIL_PASS";
+                }
+                if ("editor-compaction".equals(previewMode)) {
+                    if (!"[102] * 2".equals(value)) throw new AssertionError("Unexpected bound browser formula " + value);
                     return "DETAIL_PASS";
                 }
                 if ("calc-column-policy".equals(previewMode)) {
@@ -476,6 +480,11 @@ final class CalcFieldRegression {
         if (messages.size() > 10 || outbound.contains("UNSELECTED_GROSS_MARKER") || !outbound.contains("Paid orders only")
                 || !outbound.contains("排除退款") || !outbound.contains("接下來都用英文"))
             throw new AssertionError("Long dialogue must compact early turns, preserve confirmed/selected terms and omit discarded options");
+        String instructions = messages.get(0).path("content").asText();
+        var scopes = JSON.readTree(instructions.substring(instructions.lastIndexOf("\n") + 1)).path("historicalTargets");
+        if (scopes.size() != 1 || scopes.get(0).path("fromInclusive").asInt(-1) != 0
+                || scopes.get(0).path("toExclusive").asInt(-1) != messages.size() - 2)
+            throw new AssertionError("Resource ranges must index the actual retained history: " + scopes);
         var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
         if (!formula.equals(evidence.path("expression").asText()) || !"DETAIL_PASS".equals(evidence.path("status").asText())
                 || !messages.get(0).path("content").asText().contains("[Price] + 77"))
@@ -552,6 +561,21 @@ final class CalcFieldRegression {
         var lookup = JSON.readTree(freshMessages.get(freshMessages.size() - 1).path("content").asText()).path("historicalStep");
         if (!"MISSING".equals(lookup.path("lookup").asText()) || lookup.has("evidence"))
             throw new AssertionError("New conversation exposed an earlier formula validation");
+        // The selected reply is the first retained message. Its list of choices has just been compacted.
+        terminal(mvc, start(mvc, fresh, "UNRELATED_LONG_PASTE ".repeat(220) + "\nConfirmed: exclude service_fee."));
+        terminal(mvc, start(mvc, fresh, "Second independent example"));
+        mode.set("calc-history-choices");
+        terminal(mvc, start(mvc, fresh, "Which convention?"));
+        mode.set("calc-history");
+        terminal(mvc, start(mvc, fresh, "2"));
+        terminal(mvc, start(mvc, fresh, "Continue please"));
+        terminal(mvc, start(mvc, fresh, "Tell me more"));
+        requests.clear();
+        terminal(mvc, start(mvc, fresh, "What did I choose?"));
+        var boundary = requests.getFirst().path("messages");
+        if (!boundary.toString().contains("Paid orders only") || !boundary.toString().contains("exclude service_fee")
+                || boundary.toString().contains("UNRELATED_LONG_PASTE") || boundary.toString().contains("UNSELECTED_GROSS_MARKER"))
+            throw new AssertionError("The compacted clarification must still resolve the first retained numeric reply");
         http.ok("DELETE", base + "/" + fresh.path("sessionId").asText(), null);
         verifyStoppedFormula(mvc, mode, requests, opening);
     }

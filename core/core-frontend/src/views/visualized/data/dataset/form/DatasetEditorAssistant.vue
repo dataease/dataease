@@ -28,7 +28,8 @@ import {
   type AiCalcFieldSuggestion,
   type AiConversationEvents,
   type AiSqlPreview,
-  type AiConversationSession
+  type AiConversationSession,
+  type AiGenerationBasis
 } from '@/api/aiConversation'
 
 const props = defineProps<{
@@ -656,6 +657,17 @@ const send = async () => {
     failure.value = tr('unavailable_reference')
     return
   }
+  const generationBasis: AiGenerationBasis = {
+    kind: basis.prior
+      ? 'SUGGESTION'
+      : basis.preview
+      ? 'MANUAL_PREVIEW'
+      : basis.sql
+      ? 'DRAFT'
+      : 'NONE',
+    number: basis.prior ? turns.value.indexOf(basis.prior) + 1 : undefined,
+    matchesDraft: props.readDraft() === basis.sql
+  }
   const token = version
   const read = new AbortController()
   request = read
@@ -770,7 +782,14 @@ const send = async () => {
       submitted = true
       const { sessionId, contextVersion } = session
       const run = await replayOperation(
-        () => startConversationExecution(sessionId, contextVersion, question, submissionKey),
+        () =>
+          startConversationExecution(
+            sessionId,
+            contextVersion,
+            question,
+            submissionKey,
+            generationBasis
+          ),
         active
       )
       if (!active()) {

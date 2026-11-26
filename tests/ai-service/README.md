@@ -191,6 +191,8 @@ H2 证明事务和跨 JVM 回归，不代表 MySQL/GreatSQL、PostgreSQL、SQL S
 
 运行 `uv run python tests/ai-service/run.py --conversation-socket --ai-classpath <依赖类路径文件>`，在本机临时 Tomcat 和 H2 上核对 HTTP 受理、STOMP 增量、工具状态、标签页隔离、不同用户及资源撤权。设置 `AI_SOCKET_BROWSER=1` 时，回归在同一服务运行两个真实编辑器的 Playwright 用例，核对约十秒的受控模型调用、正常进度 GET 数、游标补读、收起、停止、新对话和关闭编辑器后的迟到消息。回归使用独立 JVM 启动第二个 HTTP/STOMP 节点，覆盖跨节点误路由及原节点补偿。受控社区与多空间身份分别核对用户、空间和代理拒绝。18 秒、31 秒实际断线和 5 秒调用期限使用真实时钟，并按受理和显式重答核对模型请求数。浏览器夹具使用已安装的前端依赖和 Chrome，可用 `DATASET_CALC_ASSISTANT_PORT` 选择空闲端口。
 
+长对话回归使用 `AI_EDITOR_COMPRESSION_BROWSER=1 uv run python tests/ai-service/run.py --recovery-tools --ai-classpath <依赖类路径文件>`。Chrome 从两个正式编辑器提交问题到本机 Tomcat，实际 SQL 和计算字段场景使用合成元数据、权限及预览适配器与受控 HTTP 模型。用例检查长对话压缩后的原步骤、选定建议、手工草稿、有效语言、空引用、工作空间切换和新会话。`AI_EDITOR_COMPRESSION_EVIDENCE` 可指定写入合成上游摘录的本地 JSON 文件。
+
 编辑器回答语言回归使用 `AI_EDITOR_LANGUAGE_BROWSER=1 uv run python tests/ai-service/run.py --conversation-socket --ai-classpath <依赖类路径文件>`。独立 Chrome 在真实 SQL 编辑器和计算字段抽屉分别使用简体中文、繁体中文、英文界面，经本机 Tomcat 和受控上游核对提问当轮的界面语言、明确要求和连续对话原文。受控上游按固定对话返回可区分的三语回复。实际场景的提示词、工具校验和续调通过 `--recovery-tools` 验证。
 
 正式 SQL 编辑器的历史字段回归使用 `--recovery-tools`。受控数据源在第一步返回 80 个独立标记字段，第二步中途停止。用步骤号追问两个时间字段时，回归逐一检查独立上游收到的首个请求和工具续调请求，分别计数业务元数据读取、数据源 READ 权限检查和从会话中选取的步骤快照。设置 `AI_SQL_HISTORY_BROWSER=1` 可让 Chrome 的正式编辑器通过同一服务执行该场景，`DATASET_SQL_ASSISTANT_PORT` 可指定夹具端口。设置 `AI_SQL_HISTORY_EVIDENCE` 为已有的临时目录，可保存该合成场景的完整上游请求体及计数。

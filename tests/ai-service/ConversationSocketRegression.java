@@ -267,7 +267,7 @@ public final class ConversationSocketRegression {
         System.out.println("PASS actual HTTP/STOMP rejects changed workspace and proxy identities, two questions / two model requests");
     }
 
-    private static void browserSuite(int port, String spec) throws Exception {
+    static void browserSuite(int port, String spec) throws Exception {
         var browser = new ProcessBuilder("node", "node_modules/@playwright/test/cli.js", "test", "-c",
                 "playwright.dataset-calc-assistant.config.cjs", spec);
         browser.directory(new java.io.File("tests/browser"));

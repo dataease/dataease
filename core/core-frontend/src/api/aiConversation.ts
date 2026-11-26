@@ -199,16 +199,22 @@ export interface AiConversationEvents {
     tool?: AiConversationTool
   }[]
 }
+export interface AiGenerationBasis {
+  kind: 'DRAFT' | 'SUGGESTION' | 'MANUAL_PREVIEW' | 'NONE'
+  number?: number
+  matchesDraft: boolean
+}
 export const startConversationExecution = (
   id: string,
   contextVersion: string,
   text: string,
-  submissionKey?: string
+  submissionKey?: string,
+  generationBasis?: AiGenerationBasis
 ) =>
   data<AiConversationExecution>(
     request.post({
       url: `/ai/conversations/${id}/executions`,
-      data: { contextVersion, text, submissionKey },
+      data: { contextVersion, text, submissionKey, generationBasis },
       handleErrorLocally: true
     })
   )

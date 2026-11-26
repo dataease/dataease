@@ -2,6 +2,7 @@ package io.dataease.ai.engine.conversation;
 
 import io.dataease.ai.engine.runtime.AiToolProtocol.Message;
 
+import java.text.BreakIterator;
 import java.util.*;
 import java.util.function.IntFunction;
 import java.util.regex.Pattern;
@@ -11,13 +12,13 @@ record EditorDialogue(List<Message> original, int omitted, List<Map<String, Obje
     private static final int HISTORY_CHARACTERS = 6000, RECENT_CHARACTERS = 3200;
     private static final int NOTE_CHARACTERS = 384;
     private static final Pattern OPTION = Pattern.compile("^\\s*(\\d{1,2})[.)、]\\s*(\\S.*)$");
-    private static final Pattern AGREED = Pattern.compile("(?iu)^(?:yes|agreed|correct|confirmed|exactly|是的?|对的?|對的?|没错|沒錯|同意|确认|確認)[.!。！\\s]*$");
-    private static final Pattern SENTENCES = Pattern.compile("[^。！？!?；;\\r\\n]+(?:[。！？!?；;]|$)|[^。！？!?；;\\r\\n]+");
-    private static final Pattern LANGUAGE = Pattern.compile("(?iu)(?:回答|答复|答覆|回[复覆應应]|請?用|请用|都用|改用|[中英法德日西韩韓]文|中文|[体體][字中]|\\b(?:reply|respond|answer|speak|language|english|chinese)\\b)");
+    private static final Pattern AGREED = Pattern.compile("(?iu)^(?:yes|ok|okay|sure|agreed|correct|confirmed|exactly|是的?|对的?|對的?|没错|沒錯|同意|确认|確認)[.!。！\\s]*$");
+    private static final Pattern LANGUAGE = Pattern.compile("(?iu)(?:回答|答复|答覆|回[复覆應应]|[中英法德日西韩韓]文|中文|[体體][字中]|\\b(?:reply|respond|answer|speak|language|english|chinese)\\b)");
     private static final Pattern ONCE = Pattern.compile("(?iu)(?:仅?这[一轮次]|僅?這[一輪次]|本[轮輪次]|this (?:time|reply|answer|turn)|just (?:this|for now))");
+    private static final Pattern CONTINUATION = Pattern.compile("(?iu)^(?:continue(?: please| example)?|tell me more|next(?: example)?|再举例|再舉例|请解释|請解釋|继续|繼續)(?:\\s*#?\\d+)?[。.!！]?$");
     private static final Pattern QUESTION = Pattern.compile("(?iu)^(?:how|what|why|when|where|which|can|could|would|please explain|continue|explain|show me)\\b|[?？]$");
 
-    static EditorDialogue project(List<Message> messages, IntFunction<Map<String, String>> source) {
+    static EditorDialogue project(List<Message> messages, String question, IntFunction<String> resourceId) {
         var original = List.copyOf(messages);
         int total = original.stream().mapToInt(message -> message.content().length()).sum();
         if (original.size() <= 12 && total <= HISTORY_CHARACTERS) return new EditorDialogue(original, 0, List.of());
@@ -29,23 +30,27 @@ record EditorDialogue(List<Message> original, int omitted, List<Map<String, Obje
             omitted -= 2;
         }
         var notes = new ArrayList<Map<String, Object>>();
-        for (int i = 0; i < omitted; i += 2) {
-            String author = original.get(i).content().strip();
+        boolean languageContext = false;
+        // Include the first retained author's selection if the matching clarification was removed.
+        // With one oversized last answer, that author may be asking the current question.
+        for (int i = 0; i <= omitted; i += 2) {
+            String author = i == original.size() ? question.strip() : original.get(i).content().strip();
             String previous = i == 0 ? "" : original.get(i - 1).content();
             var selected = selectedOption(previous, author);
             var note = new LinkedHashMap<String, Object>();
             if (selected != null) note.put("selectedOption", selected);
-            else {
-                String statement = excerpt(author);
+            else if (AGREED.matcher(author).matches()) {
+                String confirmed = excerpt(previous, true);
+                if (!confirmed.isEmpty()) note.put("confirmedReply", confirmed);
+            } else if (i < omitted) {
+                // Later questions establish whether an earlier language request still concerns this topic.
+                languageContext |= LANGUAGE.matcher(author).find() && !ONCE.matcher(author).find();
+                String statement = excerpt(author, languageContext);
                 if (!statement.isEmpty()) note.put("author", statement);
-                if (AGREED.matcher(author).matches()) {
-                    String confirmed = excerpt(previous);
-                    if (!confirmed.isEmpty()) note.put("confirmedReply", confirmed);
-                }
             }
             if (!note.isEmpty()) {
-                note.put("exchange", i / 2 + 1);
-                note.put("resourceId", source.apply(i).get("resourceId"));
+                int sourceIndex = selected != null || note.containsKey("confirmedReply") ? i - 1 : i;
+                note.put("resourceId", resourceId.apply(sourceIndex));
                 notes.add(Map.copyOf(note));
             }
         }
@@ -75,19 +80,23 @@ record EditorDialogue(List<Message> original, int omitted, List<Map<String, Obje
     }
 
     // Extract intact short statements. Never turn a shortened code block or an identifier fragment into a business fact.
-    private static String excerpt(String text) {
+    private static String excerpt(String text, boolean keepQuestions) {
         var result = new StringJoiner(" ");
+        var sentences = BreakIterator.getSentenceInstance(Locale.ROOT);
         boolean code = false;
         for (String line : text.split("\\R")) {
             if (line.stripLeading().startsWith("```")) { code = !code; continue; }
             if (code || line.stripLeading().matches("(?i)^(?:select|with)\\b.*")) continue;
-            var parts = SENTENCES.matcher(line);
-            while (parts.find()) {
-                String part = parts.group().strip();
-                boolean language = LANGUAGE.matcher(part).find();
-                if (part.isBlank() || part.length() > NOTE_CHARACTERS || result.length() + part.length() > NOTE_CHARACTERS
-                        || language && ONCE.matcher(part).find() || !language && QUESTION.matcher(part).find()) continue;
-                result.add(part);
+            for (String clause : line.split("[；;]")) {
+                sentences.setText(clause);
+                int start = sentences.first();
+                for (int end = sentences.next(); end != BreakIterator.DONE; start = end, end = sentences.next()) {
+                    String part = clause.substring(start, end).strip();
+                    boolean language = LANGUAGE.matcher(part).find();
+                    if (part.isBlank() || CONTINUATION.matcher(part).matches() || result.length() + part.length() > NOTE_CHARACTERS
+                            || language && ONCE.matcher(part).find() || !keepQuestions && QUESTION.matcher(part).find()) continue;
+                    result.add(part);
+                }
             }
         }
         return result.toString();
