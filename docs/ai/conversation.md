@@ -202,7 +202,9 @@ Streaming is an explicit feature opt-in and uses a runtime-owned detached handle
 
 ## 取消、租约与会话
 
-Each execution has one fixed configured deadline, including queue wait. Stop/close/application shutdown abort both the task and its Apache request; permits remain held until the response closes. The Demo uses a 15-second client lease that starts at registration and renews on an authorized event poll. The two dataset editors use the 30-second recovery rules above. Losing that lease cancels the execution and removes its whole abandoned session/history, releasing per-user capacity. The parser also retires a lease-expired session while private/heartbeat frames keep arriving; the one-second sweep covers blocked reads and enforces session expiry and execution deadlines. Hiding the panel continues polling, but browser background-tab suspension or a network stall exceeding the lease can intentionally end the session. Pagehide closure is best effort; the lease and deadline bound an unreachable browser.
+每次执行从受理起使用固定期限，排队时间计入其中。停止、关闭会话或关闭应用会中止任务及上游 HTTP 请求，响应关闭后释放并发名额。每秒的扫描也会处理阻塞读取期间的执行到期和会话过期。
+
+开发 Demo 的读取租约为 15 秒，由鉴权的进度读取续约。租约过期会取消执行、移除会话历史并释放名额。两个正式数据集编辑器采用上文的 30 秒恢复规则。宽限到期后，在原会话有效且仍有权限时，作者可以查看已有内容并主动重新回答。
 
 Sessions are process-local, fixed at 30 minutes, at most 200 per process and four per current identity/workspace, and at most 50 completed turns. Concurrent executions on one session are rejected. Failed/cancelled turns never enter model history. Successful tool rounds atomically retain the complete user → assistant tool_calls → correlated role=tool result(s) → final assistant transcript for follow-up. The compatible synchronous conversation endpoint explicitly refuses a session containing TOOL history; native synchronous SDK policy and its refusal of tools/options are unchanged.
 
