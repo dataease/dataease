@@ -417,16 +417,21 @@ test("the author can choose an older basis or start another query with the same 
   await ask(page);
   await expect(control(page, "apply")).toHaveCount(2);
   expect(state.opens[1].sql).toBe(proposal);
-  await control(page, "new-query").click();
+  await control(page, "panel")
+    .getByRole("checkbox", { name: "本轮引用" })
+    .uncheck();
   await ask(page);
   await expect(control(page, "apply")).toHaveCount(3);
   expect(state.opens[2]).toMatchObject({
     sql: "",
     previousSessionId: "session-2",
   });
-  await expect(control(page, "panel").locator("article").last()).toContainText(
-    "另写查询"
-  );
+  await expect(
+    control(page, "panel")
+      .locator("article")
+      .last()
+      .getByText(/生成依据/)
+  ).toHaveCount(0);
 });
 
 test("a revoked source cannot supply history or deliver an older suggestion into the new draft", async ({
@@ -695,7 +700,12 @@ test("a manual preview failure can be repaired after editing and manually rerun"
   await expect.poll(() => state.previews.length).toBe(1);
   await draft.fill("SELECT 99");
   await expand(page);
-  await ask(page, "刚才为什么报错");
+  const panel = control(page, "panel");
+  await panel.getByRole("textbox").fill("刚才为什么报错");
+  const reference = panel.getByRole("button", { name: /查看完整引用/ });
+  await expect(reference).toContainText("失败预览");
+  await expect(reference).toContainText(failedSql);
+  await control(page, "send").click();
   await expect(control(page, "apply")).toHaveCount(1);
   expect(state.opens[0]).toMatchObject({
     sql: failedSql,
@@ -937,6 +947,84 @@ test("a new custom SQL node can apply its first suggestion before preview or sav
   await control(page, "apply").click();
   await expect(editor(page).locator(".cm-content")).toHaveText(proposal);
   expect(state.opens[0].sql).toBe("");
+  const panel = control(page, "panel");
+  await panel.getByRole("button", { name: "新对话" }).click();
+  await expect(panel.getByRole("article")).toHaveCount(0);
+  await expect(
+    panel.getByRole("button", { name: /查看完整引用/ })
+  ).toContainText(proposal);
+  await ask(page, "解释当前 SQL");
+  await expect(control(page, "apply")).toHaveCount(1);
+  expect(state.opens[1]).toMatchObject({ sql: proposal, resourceId: "source" });
+  expect(state.opens[1].previousSessionId).toBeUndefined();
   expect(state.previews).toHaveLength(0);
   expect(await page.evaluate(() => window.saved)).toBeUndefined();
+});
+
+test("inspect the selected SQL before sending and keep its exact snapshot on the answer", async ({
+  page,
+}) => {
+  await backend(page);
+  await enter(page);
+  const sql = "\nSELECT actual_amt\n    FROM orders";
+  const draft = editor(page).locator(".cm-content");
+  await draft.fill("SELECT actual_amt\n    FROM orders");
+  await draft.press("ControlOrMeta+Home");
+  await draft.press("Enter");
+  await expand(page);
+  const panel = control(page, "panel");
+  const check = panel.getByRole("checkbox", { name: "本轮引用" });
+  const reference = panel.getByRole("button", { name: /查看完整引用/ });
+  await expect(check).toBeChecked();
+  await expect(reference).toContainText("编辑器草稿");
+  await expect(reference).toContainText("SELECT actual_amt…");
+  await reference.hover();
+  const full = panel.getByRole("tooltip");
+  await expect(full).toBeVisible();
+  expect(await full.textContent()).toBe(sql);
+  await check.hover();
+  await expect(full).toBeHidden();
+  await reference.focus();
+  await expect(full).toBeVisible();
+  await reference.press("Escape");
+  await expect(full).toBeHidden();
+  await reference.click();
+  await expect(full).toBeVisible();
+  await expect(check).toBeChecked();
+  await ask(page);
+  const turn = panel.getByRole("article");
+  const snapshot = turn.locator("details").filter({ hasText: "生成依据" });
+  await snapshot.locator("summary").click();
+  await draft.fill("SELECT 88");
+  expect(await snapshot.locator("pre").textContent()).toBe(sql);
+});
+
+test.describe("touch reference inspection", () => {
+  test.use({ hasTouch: true, viewport: { width: 960, height: 720 } });
+  test("a long single-line SQL preview stays within the sidebar and opens in full on tap", async ({
+    page,
+  }) => {
+    await backend(page);
+    await enter(page);
+    const sql = "SELECT " + "actual_amt + ".repeat(45) + "0 FROM orders";
+    await editor(page).locator(".cm-content").fill(sql);
+    await expand(page);
+    const panel = control(page, "panel");
+    const reference = panel.getByRole("button", { name: /查看完整引用/ });
+    const line = reference.locator("code");
+    expect(
+      await line.evaluate(
+        (el) =>
+          el.scrollWidth > el.clientWidth &&
+          getComputedStyle(el).textOverflow === "ellipsis"
+      )
+    ).toBe(true);
+    await reference.tap();
+    const full = panel.getByRole("tooltip");
+    await expect(full).toBeVisible();
+    expect(await full.textContent()).toBe(sql);
+    await expect(
+      panel.getByRole("checkbox", { name: "本轮引用" })
+    ).toBeChecked();
+  });
 });

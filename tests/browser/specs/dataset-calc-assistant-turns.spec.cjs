@@ -190,7 +190,7 @@ test("the current formula or any selected turn is frozen as the basis of each qu
   await ask(drawer, "除以十");
   await completed(drawer, 4);
   expect(state.opens[3]).toMatchObject({ previousSessionId: "s3", sql: first });
-  await button(drawer, "另写公式").click();
+  await drawer.getByRole("checkbox", { name: "本轮引用" }).uncheck();
   await ask(drawer, "每条记录计为一");
   await completed(drawer, 5);
   expect(state.opens[4].sql).toBe("");
@@ -341,4 +341,76 @@ test("a changed calculation parameter invalidates a proposal's field bindings", 
   await expect(drawer.getByRole("alert")).toBeVisible();
   await expect(drawer.locator(".cm-content")).toHaveText("");
   expect(state.checks).toEqual([]);
+});
+
+test("a single blank basis keeps the discussion and recomputes the next formula reference", async ({
+  page,
+}) => {
+  const state = await serveTurns(page);
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await drawer.locator(".cm-content").fill(manual);
+  const checkbox = drawer.getByRole("checkbox", { name: "本轮引用" });
+  const reference = drawer.getByRole("button", { name: /查看完整引用/ });
+  await expect(reference).toContainText(manual);
+  await ask(drawer, "按订单统计");
+  const original = await completed(drawer, 1);
+  await expect(reference).toContainText("建议 #1");
+  await expect(reference).toContainText(first);
+  await checkbox.uncheck();
+  await ask(drawer, "沿用这个业务口径");
+  const without = await completed(drawer, 2);
+  expect(state.opens[1]).toMatchObject({ previousSessionId: "s1", sql: "" });
+  await expect(without.getByText(/生成依据/)).toHaveCount(0);
+  await expect(checkbox).toBeChecked();
+  await expect(reference).toContainText(second);
+  await button(original, "基于此建议追问").click();
+  await ask(drawer, "请从头写，沿用刚才确定的口径");
+  const scratch = await completed(drawer, 3);
+  expect(state.opens[2]).toMatchObject({ previousSessionId: "s2", sql: "" });
+  await expect(scratch.getByText(/生成依据/)).toHaveCount(0);
+});
+
+test("new conversation closes a running formula reply and starts from the current field", async ({
+  page,
+}) => {
+  const state = await serveTurns(page);
+  let release;
+  const pending = new Promise((resolve) => {
+    release = resolve;
+  });
+  let oldReply;
+  state.beforeResult = async (n) => {
+    if (n === 1) {
+      oldReply = true;
+      await pending;
+    }
+  };
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "旧对话的问题");
+  await expect.poll(() => oldReply).toBe(true);
+  await drawer.locator(".cm-content").fill(manual);
+  try {
+    await button(drawer, "新对话").click({ timeout: 3000 });
+    await expect(drawer.getByRole("article")).toHaveCount(0);
+    await expect.poll(() => state.closed).toEqual(["s1"]);
+    await expect(drawer.locator(".cm-content")).toHaveText(manual);
+    await expect(
+      drawer.getByRole("checkbox", { name: "本轮引用" })
+    ).toBeChecked();
+    await ask(drawer, "新的问题");
+    await completed(drawer, 1);
+    expect(state.opens[1]).toMatchObject({
+      sql: manual,
+      resourceId: state.opens[0].resourceId,
+    });
+    expect(state.opens[1].previousSessionId).toBeUndefined();
+    expect(state.opens[1].editorId).not.toBe(state.opens[0].editorId);
+  } finally {
+    release();
+  }
+  await expect.poll(() => state.replied).toContain("s1");
+  await expect(drawer.getByRole("article")).toHaveCount(1);
+  await expect(drawer.getByRole("log")).not.toContainText("旧对话的问题");
 });

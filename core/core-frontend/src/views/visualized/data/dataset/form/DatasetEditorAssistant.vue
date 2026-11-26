@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -54,7 +54,7 @@ const failedFormula = (result?: AiAssistanceResult) =>
   result?.calcField?.validation === 'INVALID' || result?.calcField?.validation === 'PREVIEW_FAILED'
 const { toClipboard } = useClipboard()
 const user = useUserStoreWithOut()
-const editorId = uuid.v4()
+let editorId = uuid.v4()
 interface Turn {
   basis: string
   baseSql: string
@@ -76,8 +76,10 @@ const input = ref('')
 const composing = ref(false)
 const failure = ref('')
 const turns = ref<Turn[]>([])
-// Zero starts a new query. Positive numbers identify displayed turns.
+// Positive numbers identify displayed turns.
 const selectedBasis = ref<number | 'preview'>()
+const includeBasis = ref(true)
+const showFullBasis = ref(false)
 const busy = ref(false)
 const applying = ref(false)
 const conversation = ref<HTMLElement>()
@@ -118,16 +120,24 @@ const clearHistory = () => {
   sessions.clear()
   latestSession = undefined
   selectedBasis.value = undefined
+  includeBasis.value = true
+  showFullBasis.value = false
   turns.value = []
 }
-const reset = () => {
+const newConversation = () => {
   version++
-  emit('invalidate-preview')
+  // A delayed open for the old editorId must never retire the new conversation on the server.
+  editorId = uuid.v4()
   request?.abort()
   request = undefined
   clearHistory()
-  busy.value = applying.value = expanded.value = false
+  busy.value = applying.value = false
   input.value = failure.value = ''
+}
+const reset = () => {
+  newConversation()
+  expanded.value = false
+  emit('invalidate-preview')
 }
 const refresh = async () => {
   if (disposed || document.hidden || availabilityRead) return
@@ -223,13 +233,16 @@ const referencedTurn = (question: string, latest: number) => {
   if (/\bfirst (?:proposal|suggestion|version)\b/i.test(question)) return 1
   if (/上一[轮輪版条條]|(?:previous|last) (?:suggestion|proposal)/i.test(question)) return latest
 }
+const selectBasis = (basis: number | 'preview') => {
+  selectedBasis.value = basis
+  includeBasis.value = true
+}
 const chooseBasis = (question: string) => {
+  const revision = props.draftRevision
   if (
-    selectedBasis.value === 0 ||
-    (selectedBasis.value === undefined &&
-      /(?:^|[，,。.!！]\s*)(?:请|請|please\s+)?(?:另写|另寫|从头写|從頭寫|重新写一|重新寫一|from scratch|start (?:over|afresh))/i.test(
-        question
-      ))
+    /(?:^|[，,。.!！?？;；]\s*)(?:(?:请|請|帮我|幫我|麻烦|麻煩|这次|這次)\s*)*(?:另写|另寫|从头写|從頭寫|重新写一|重新寫一)|(?:^|[,.!?]\s*)(?:please\s+)?(?:from scratch|start (?:over|afresh|from scratch)|(?:write|rewrite|generate|create)\b[^.!?]*?\bfrom scratch)/i.test(
+      question
+    )
   ) {
     return { label: newDraftLabel(), sql: '' }
   }
@@ -262,7 +275,7 @@ const chooseBasis = (question: string) => {
       tr('draft_revision') +
       ' ' +
       preview.revision +
-      (props.draftRevision !== preview.revision ? ' · ' + tr('preview_draft_changed') : '')
+      (revision !== preview.revision ? ' · ' + tr('preview_draft_changed') : '')
     return {
       label,
       sql,
@@ -270,20 +283,18 @@ const chooseBasis = (question: string) => {
         ...facts,
         currentResourceId: props.resourceId,
         currentIsCross: props.isCross,
-        currentRevision: props.draftRevision
+        currentRevision: revision
       }
     }
   }
-  if (requested === 'preview') throw new Error('unavailable_reference')
+  if (requested === 'preview') return
   const index = (requested ?? latest) - 1
   const prior = turns.value[index]
-  if (requested !== undefined && !suggestionText(prior?.result))
-    throw new Error('unavailable_reference')
+  if (requested !== undefined && !suggestionText(prior?.result)) return
   if (
     suggestionText(prior?.result) &&
     (requested !== undefined ||
-      (prior.session?.resourceId === props.resourceId &&
-        prior.draftRevision === props.draftRevision))
+      (prior.session?.resourceId === props.resourceId && prior.draftRevision === revision))
   ) {
     return {
       label: tr('numbered_suggestion') + ' #' + (index + 1),
@@ -293,6 +304,17 @@ const chooseBasis = (question: string) => {
   }
   const sql = props.readDraft()
   return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
+}
+const currentBasis = computed(() => chooseBasis(input.value.trim()))
+const leaveBasis = (event: FocusEvent | MouseEvent) => {
+  const container = event.currentTarget as HTMLElement
+  const focus = event.type === 'focusout' ? event.relatedTarget : document.activeElement
+  if (!(focus instanceof Node) || !container.contains(focus)) showFullBasis.value = false
+}
+const firstLine = (text: string) => {
+  const lines = text.split(/\r\n|\r|\n/)
+  const index = lines.findIndex(line => line.trim())
+  return index < 0 ? '' : lines[index].trim() + (index < lines.length - 1 ? '…' : '')
 }
 watch(
   () => props.preview,
@@ -478,10 +500,8 @@ const send = async () => {
     turns.value.at(-1)?.status === 'UNREACHABLE'
   )
     return
-  let basis: ReturnType<typeof chooseBasis>
-  try {
-    basis = chooseBasis(question)
-  } catch {
+  const basis = includeBasis.value ? currentBasis.value : { label: newDraftLabel(), sql: '' }
+  if (!basis) {
     failure.value = tr('unavailable_reference')
     return
   }
@@ -490,6 +510,8 @@ const send = async () => {
   request = read
   const current = () => token === version && !read.signal.aborted
   selectedBasis.value = undefined
+  includeBasis.value = true
+  showFullBasis.value = false
   const source = props.resourceId
   const calcField = props.calcFieldDraft?.()
   const isCross = props.isCross
@@ -744,10 +766,20 @@ const apply = async (turn: Turn) => {
       data-testid="dataset-sql-assistant-panel"
       :aria-label="title()"
     >
-      <strong>{{ title() }}</strong>
+      <div class="assistant-heading">
+        <strong>{{ title() }}</strong>
+        <el-button text @click="newConversation">{{ tr('new_conversation') }}</el-button>
+      </div>
       <div ref="conversation" class="conversation" role="log">
         <article v-for="(turn, index) in turns" :key="index">
           <p class="question">{{ turn.question }}</p>
+          <details v-if="turn.baseSql.trim()">
+            <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
+            <pre>{{ turn.baseSql }}</pre>
+            <small v-if="turn.session"
+              >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
+            >
+          </details>
           <p v-if="turn.answer">{{ turn.answer }}</p>
           <div v-if="turn.choices" class="clarification-choices">
             <el-button
@@ -762,13 +794,6 @@ const apply = async (turn: Turn) => {
           </div>
           <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
           <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
-          <details v-if="calcFieldDraft || turn.result">
-            <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
-            <pre v-if="turn.baseSql">{{ turn.baseSql }}</pre>
-            <small v-if="turn.session"
-              >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
-            >
-          </details>
           <template v-if="turn.result?.type === 'CALC_FIELD_SUGGESTION' && turn.result.calcField">
             <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
             <pre>{{ turn.result.calcField.expression }}</pre>
@@ -854,35 +879,60 @@ const apply = async (turn: Turn) => {
             text
             :disabled="busy || applying"
             data-testid="dataset-sql-assistant-reference"
-            @click="selectedBasis = index + 1"
+            @click="selectBasis(index + 1)"
             >{{ tr('refer_to_suggestion') }}</el-button
           >
         </article>
       </div>
       <p v-if="failure" role="alert">{{ failure }}</p>
-      <div v-if="(turns.length || props.preview) && !busy">
+      <div v-if="(props.preview || selectedBasis !== undefined) && !busy">
         <el-button
           v-if="props.preview && selectedBasis === undefined"
           text
-          @click="selectedBasis = 'preview'"
+          @click="selectBasis('preview')"
           >{{ tr('refer_to_preview') }}</el-button
         >
-        <el-button
-          v-if="selectedBasis === undefined"
-          text
-          data-testid="dataset-sql-assistant-new-query"
-          @click="selectedBasis = 0"
-          >{{ newDraftLabel() }}</el-button
-        >
-        <el-tag v-else closable @close="selectedBasis = undefined">
+        <el-tag v-if="selectedBasis !== undefined" closable @close="selectedBasis = undefined">
           {{
             selectedBasis === 'preview'
               ? tr('refer_to_preview')
-              : selectedBasis
-              ? tr('numbered_suggestion') + ' #' + selectedBasis
-              : newDraftLabel()
+              : tr('numbered_suggestion') + ' #' + selectedBasis
           }}
         </el-tag>
+      </div>
+      <div v-if="!busy && currentBasis?.sql.trim()" class="basis-row">
+        <label>
+          <input v-model="includeBasis" type="checkbox" />
+          {{ tr('include_basis') }}
+        </label>
+        <div
+          class="basis-content"
+          @mouseenter="showFullBasis = true"
+          @mouseleave="leaveBasis"
+          @focusin="showFullBasis = true"
+          @focusout="leaveBasis"
+          @keydown.esc.stop="showFullBasis = false"
+        >
+          <button
+            type="button"
+            class="basis-preview"
+            :aria-label="tr('view_full_basis') + ' · ' + currentBasis.label"
+            :aria-expanded="showFullBasis"
+            :aria-describedby="showFullBasis ? editorId + '-basis' : undefined"
+            @click="showFullBasis = true"
+          >
+            <span>{{ currentBasis.label }}</span>
+            <code>{{ firstLine(currentBasis.sql) }}</code>
+          </button>
+          <pre
+            v-if="showFullBasis"
+            role="tooltip"
+            class="basis-full"
+            tabindex="0"
+            :id="editorId + '-basis'"
+            >{{ currentBasis.sql }}</pre
+          >
+        </div>
       </div>
       <el-input
         type="textarea"
@@ -930,6 +980,60 @@ const apply = async (turn: Turn) => {
   flex-direction: column;
   gap: 12px;
 
+  .assistant-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .basis-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    label {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+  }
+  .basis-content {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .basis-preview {
+    width: 100%;
+    min-width: 0;
+    padding: 4px 8px;
+    text-align: left;
+    background: var(--ed-fill-color-light);
+    color: inherit;
+    border: 1px solid var(--ed-border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    span,
+    code {
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .basis-full {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: max-content;
+    max-width: min(440px, 80vw);
+    max-height: 35vh;
+    overflow: auto;
+    margin: 0;
+    padding: 8px;
+    z-index: 1;
+    background: var(--ed-bg-color-overlay);
+    border: 1px solid var(--ed-border-color);
+    border-radius: 4px;
+  }
   .conversation {
     flex: 1;
     overflow: auto;
