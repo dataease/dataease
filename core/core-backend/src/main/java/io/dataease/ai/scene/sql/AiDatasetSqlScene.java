@@ -125,6 +125,10 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
                 result.resourceVersion(), editorId, draftVersion, DatasetSqlEvidence.forProposal(tools, result.sql()));
     }
 
+    @Override public String proposedContent(String tool, Map<String, String> arguments) {
+        return "propose_sql".equals(tool) ? arguments.get("sql") : null;
+    }
+
     private static AiTool<AiDatasourceTools.Scope> proposal(AiDatasourceTools metadata) {
         var definition = new AiToolProtocol.Definition("propose_sql",
                 "Offer one complete read-only query as an unrun editor draft. No execution, preview, or save.",

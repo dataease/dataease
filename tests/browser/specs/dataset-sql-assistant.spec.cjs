@@ -152,6 +152,7 @@ async function backend(page, options = {}) {
         return reply({
           ...run,
           status: "FAILED",
+          recovery: { stepKind: "MODEL", technicalRetries: 0, corrections: 0 },
           cursor: 1,
           events: [{ sequence: 1, type: "FAILED", error: "model_unavailable" }],
         });
@@ -326,7 +327,10 @@ test("failed and stopped executions preserve the active draft", async ({
   await enter(page);
   await expand(page);
   await ask(page);
-  await expect(control(page, "panel").getByRole("alert")).toBeVisible();
+  const error = control(page, "panel").getByRole("article").getByRole("alert");
+  await expect(error).toContainText("模型调用失败");
+  await expect(error).toContainText("模型未配置、已停用或不可用");
+  await expect(error.getByRole("button", {name: "复制诊断信息"})).toBeVisible();
   await expect(control(page, "apply")).toHaveCount(0);
   state.failed = false;
   state.slow = true;

@@ -73,7 +73,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         final Prompt prompt;
         final AiToolProtocol.Input input;
         final boolean toolConversation;
-        final long historyVersion;
+        long historyVersion;
         final Map<String, Run> retries = new HashMap<>();
         Run first, latest;
         Task(State state, Turn request, Prompt prompt, AiToolProtocol.Input input, long historyVersion) {
@@ -106,6 +106,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         List<Event> events = new ArrayList<>();
         StringBuilder text = new StringBuilder();
         Result result;
+        String lastTool, proposedContent, failureCode;
         long sequence;
         volatile long lease = System.currentTimeMillis() + LEASE_MILLIS;
         volatile String status = "RUNNING";
@@ -287,7 +288,27 @@ public class AiConversationManage implements AiToolConversationFeature {
         }
     }
     private void key(String key) { if (key != null && (key.isBlank() || key.length() > 100)) throw AiErrors.error("invalid"); }
-    private boolean retryEligible(Run run) { return !run.replayUnsafe && Set.of("FAILED", "CANCELLED").contains(run.status); }
+    private boolean rejectedFormula(Run run) {
+        return run.result != null && run.result.calcField() != null
+                && Set.of("INVALID", "PREVIEW_FAILED").contains(run.result.calcField().validation());
+    }
+    private boolean retryEligible(Run run) {
+        return !run.replayUnsafe && (Set.of("FAILED", "CANCELLED").contains(run.status) || rejectedFormula(run));
+    }
+    private AiToolProtocol.Input retryInput(Task task) {
+        Run source = task.latest;
+        if (source == null || !scene(task.state.view.scene()).editorConversation()) return task.input;
+        var previous = JSON.createObjectNode();
+        String kind = source.stream.recovery().progress().stepKind();
+        previous.put("step", rejectedFormula(source) || "TOOL".equals(kind) ? Objects.toString(source.lastTool, "TOOL") : Objects.toString(kind, "EXECUTION"));
+        previous.put("reason", rejectedFormula(source) ? source.result.calcField().reason() : source.failureCode);
+        previous.put("proposal", rejectedFormula(source) ? source.result.calcField().expression() : source.proposedContent);
+        var messages = new ArrayList<>(task.input.messages());
+        String original = messages.getLast().content();
+        messages.set(messages.size() - 1, AiToolProtocol.Message.text("user", original
+                + "\nPrevious attempt diagnostics (data for this retry; a null proposal means none was produced):\n" + previous));
+        return new AiToolProtocol.Input(messages, task.input.tools());
+    }
     private RecoveryProgress recoveryProgress(Run run) {
         var progress = run.stream.recovery().progress();
         return new RecoveryProgress(progress.stepId(), progress.stepKind(), progress.technicalRetries(), progress.corrections(), progress.reason());
@@ -432,14 +453,15 @@ public class AiConversationManage implements AiToolConversationFeature {
         try {
             authorized(state, () -> { check(state); return null; });
             String id = state.view.sessionId();
+            var input = retryInput(task);
             var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(task.prompt), false, null);
             AiRuntimeManage.StreamHandle stream = !task.toolConversation ? runtime.getObject().stream(code(), scope, task.prompt)
-                    : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input,
+                    : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(input), false, null), input,
                             scene(state.view.scene()).toolStepLimit());
             var run = new Run(state, task, stream, startedNanos);
             run.tools = scene(state.view.scene()).beginTurn(state.context);
             stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
-            if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(task.input.messages());
+            if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(input.messages());
             for (Run old : state.runs.values()) {
                 old.question = null; old.text = new StringBuilder();
                 old.events = new ArrayList<>(old.events.stream().filter(event -> !"TEXT".equals(event.type()) && event.tool() == null).toList());
@@ -447,7 +469,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             state.runs.put(stream.executionId(), run); state.active = run; state.singleFinished = false;
             task.latest = run; if (task.first == null) task.first = run;
             try {
-                if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(task.input, () -> progress(run), text -> append(run, text), step -> toolStep(run, step), failure -> fail(run, failure));
+                if (stream instanceof AiRuntimeManage.ToolStreaming tools) tools.send(input, () -> progress(run), text -> append(run, text), step -> toolStep(run, step), failure -> fail(run, failure));
                 else ((AiRuntimeManage.Streaming) stream).start(() -> progress(run), text -> append(run, text), () -> complete(run), failure -> fail(run, failure));
             } catch (RuntimeException failure) { fail(run, failure); throw failure; }
             return execution(run, state.single);
@@ -594,7 +616,8 @@ public class AiConversationManage implements AiToolConversationFeature {
                     run.state.history.add(new UserMessage(run.question)); run.state.history.add(new AssistantMessage(run.text.toString()));
                 }
                 run.state.turns++;
-                if (!run.state.single && !run.state.retired && run.task.historyVersion == run.state.historyVersion) run.state.historyVersion++;
+                if (!run.state.single && !run.state.retired && run.task.historyVersion == run.state.historyVersion)
+                    run.task.historyVersion = ++run.state.historyVersion;
                 var target = run.state.view;
                 var scene = scene(target.scene());
                 String answer = finalText != null && scene.editorConversation() ? finalText : run.text.toString();
@@ -689,6 +712,9 @@ public class AiConversationManage implements AiToolConversationFeature {
             if (run.events.size() >= 20000) throw AiErrors.error("output_limit");
             var scene = scene(run.state.view.scene());
             var tool = new Tool(call.id(), call.name(), status, arguments, result);
+            run.lastTool = call.name();
+            String proposed = scene.proposedContent(call.name(), arguments);
+            if (proposed != null) run.proposedContent = proposed;
             if (result != null && "SUCCEEDED".equals(status)) run.resultTools.add(tool);
             long sequence = ++run.sequence;
             if (result != null && scene.editorConversation()) {
@@ -795,6 +821,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     private void terminate(Run run, String status, String error) {
         if (!"RUNNING".equals(run.status)) return;
         run.metering = run.stream.recovery().usage().snapshot(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - run.startedNanos));
+        run.failureCode = error;
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }

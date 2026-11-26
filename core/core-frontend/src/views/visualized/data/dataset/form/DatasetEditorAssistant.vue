@@ -3,6 +3,8 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
 import AssistantProcess from './AssistantProcess.vue'
 import AssistantAnswer from './AssistantAnswer.vue'
+import AssistantFailure from './AssistantFailure.vue'
+import type { AnswerFailure } from './assistantFailure'
 import { applyProcessEvent, type AnswerProcess } from './assistantProcess'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -17,6 +19,7 @@ import {
   getAiAvailability,
   getConversationEvents,
   openConversation,
+  retryConversationExecution,
   startConversationExecution,
   stopConversationExecution,
   type AiAssistanceResult,
@@ -63,6 +66,7 @@ const { toClipboard } = useClipboard()
 const user = useUserStoreWithOut()
 let editorId = uuid.v4()
 interface Turn {
+  questionId: string
   basis: string
   baseSql: string
   calcScope?: string
@@ -76,6 +80,11 @@ interface Turn {
   session?: AiConversationSession
   cursor?: number
   executionId?: string
+  attemptId?: string
+  retryEligible?: boolean
+  retryKey?: string
+  issue?: AnswerFailure
+  recovery?: AiConversationEvents['recovery']
   result?: AiAssistanceResult
   status: string
 }
@@ -85,6 +94,15 @@ const input = ref('')
 const composing = ref(false)
 const failure = ref('')
 const turns = ref<Turn[]>([])
+const questionGroups = computed(() => {
+  const groups = new Map<string, { turn: Turn; index: number }[]>()
+  turns.value.forEach((turn, index) => {
+    const group = groups.get(turn.questionId)
+    if (group) group.push({ turn, index })
+    else groups.set(turn.questionId, [{ turn, index }])
+  })
+  return [...groups.values()]
+})
 // Positive numbers identify displayed turns.
 const selectedBasis = ref<number | 'preview'>()
 const includeBasis = ref(true)
@@ -208,12 +226,12 @@ const accessLost = (error: unknown) =>
   isRequestError(error) &&
   ([401, 403, 404].includes(error.response?.status) ||
     ('messageKey' in error && error.messageKey === 'i18n_ai_scope_changed'))
-const fail = (error: unknown) => {
+const fail = (error: unknown, turn?: Turn) => {
   if (accessLost(error) || (error instanceof Error && error.message === 'scope_changed')) {
     emit('invalidate-preview')
     clearHistory()
   }
-  failure.value =
+  let message =
     isRequestError(error) && error.response?.status === 403
       ? t('ai_service.failure_forbidden')
       : tr('failed')
@@ -222,7 +240,18 @@ const fail = (error: unknown) => {
     'messageKey' in error &&
     error.messageKey === 'i18n_ai_calc_sql_manual'
   )
-    failure.value = tr('calc_sql_manual')
+    message = tr('calc_sql_manual')
+  if (turn && turns.value.includes(turn)) {
+    const code =
+      isRequestError(error) && 'messageKey' in error
+        ? error.messageKey?.replace(/^i18n_ai_/, '')
+        : undefined
+    const key = aiFailureKey(code || null)
+    turn.issue = {
+      step: turn.executionId ? 'progress_step' : 'submission_step',
+      reason: key === 'test_failed' ? message : t('ai_service.' + key)
+    }
+  } else failure.value = message
   void refresh()
 }
 // Displayed turn numbers also work as references in a free-text follow-up.
@@ -419,13 +448,35 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
     page.contextVersion !== turn.session.contextVersion
   )
     throw new Error('scope_changed')
+  if (turn.status !== 'FAILED' && turn.issue?.step === 'progress_step') turn.issue = undefined
+  turn.attemptId = page.attemptId ?? turn.attemptId
+  turn.retryEligible = page.retryEligible
+  turn.recovery = page.recovery ?? turn.recovery
   for (const event of page.events) {
     if (event.sequence <= (turn.cursor ?? 0)) continue
     applyProcessEvent(turn, event)
     turn.cursor = event.sequence
     if (event.type === 'FAILED') {
       const key = aiFailureKey(event.error ?? null)
-      failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
+      const tool = turn.process.entries.filter(entry => entry.tool).at(-1)?.tool
+      const kind = turn.recovery?.stepKind
+      turn.issue = {
+        step:
+          event.error === 'connection_interrupted'
+            ? 'progress_step'
+            : kind === 'TOOL'
+            ? 'tool_step'
+            : kind === 'MODEL'
+            ? 'model_step'
+            : 'execution_step',
+        tool: kind === 'TOOL' ? tool?.name : undefined,
+        reason:
+          event.error === 'connection_interrupted'
+            ? tr('connection_interrupted')
+            : key === 'test_failed'
+            ? tr('unknown_failure')
+            : t(`ai_service.${key}`)
+      }
     }
   }
   if (page.metering) turn.metering = page.metering
@@ -433,18 +484,24 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
   turn.status = page.status
   if (page.status === 'COMPLETED' && page.result) {
     turn.result = page.result
+    if (failedFormula(turn.result)) {
+      turn.issue = {
+        step: 'validation_step',
+        reason: tr(turn.result.calcField?.reason || 'unknown_failure')
+      }
+    }
     const options = page.result.type === 'EXPLANATION' && clarification(page.result.text)
     turn.answer = options ? options.question : page.result.text
     if (options) turn.choices = options.choices
   }
   if (page.status === 'FAILED') {
-    failure.value ||= tr('failed')
+    turn.issue ??= { step: 'execution_step', reason: tr('unknown_failure') }
     void refresh()
   }
 }
 const unreachable = (turn: Turn) => {
   turn.status = 'UNREACHABLE'
-  failure.value = tr('progress_unreachable')
+  turn.issue = { step: 'progress_step', reason: tr('progress_unreachable') }
 }
 const poll = async (turn: Turn, read: AbortController) => {
   const finished = await followConversationSocket({
@@ -477,7 +534,7 @@ const poll = async (turn: Turn, read: AbortController) => {
         unreachable(turn)
         return
       }
-      failure.value = tr('progress_recovering') + ` (${failures}/3)`
+      turn.issue = { step: 'progress_step', reason: tr('progress_recovering') }
       await new Promise(resolve => window.setTimeout(resolve, failures * 400))
       continue
     } finally {
@@ -501,7 +558,7 @@ const resume = async (turn: Turn) => {
   try {
     await poll(turn, read)
   } catch (error) {
-    if (!read.signal.aborted) fail(error)
+    if (!read.signal.aborted) fail(error, turn)
   } finally {
     if (!read.signal.aborted) {
       busy.value = false
@@ -542,6 +599,7 @@ const send = async () => {
   }
   const index =
     turns.value.push({
+      questionId: uuid.v4(),
       question,
       basis: basis.label,
       baseSql: basis.sql,
@@ -628,6 +686,7 @@ const send = async () => {
       return
     }
     turn.executionId = run.executionId
+    turn.attemptId = run.attemptId
     if (!current()) {
       await stopRun(turn, token)
       return
@@ -636,10 +695,76 @@ const send = async () => {
   } catch (error) {
     if (current()) {
       turn.status = 'FAILED'
-      fail(error)
+      fail(error, turn)
     }
   } finally {
     if (current() || (token === version && request === read && !turn.executionId)) {
+      busy.value = false
+      request = undefined
+    }
+  }
+}
+const retryAnswer = async (source: Turn) => {
+  const session = source.session
+  if (
+    busy.value ||
+    applying.value ||
+    turns.value.at(-1)?.status === 'UNREACHABLE' ||
+    !source.retryEligible ||
+    !source.attemptId ||
+    !source.executionId ||
+    !session
+  )
+    return
+  const token = version
+  const read = new AbortController()
+  busy.value = true
+  request = read
+  const key = (source.retryKey ??= uuid.v4())
+  let next: Turn | undefined
+  try {
+    const run = await retryConversationExecution(
+      session.sessionId,
+      source.executionId,
+      source.attemptId,
+      key
+    )
+    if (token !== version || read.signal.aborted) {
+      await stopConversationExecution(session.sessionId, run.executionId).catch(() => undefined)
+      return
+    }
+    source.retryEligible = false
+    const index =
+      turns.value.push({
+        questionId: source.questionId,
+        question: source.question,
+        basis: source.basis,
+        baseSql: source.baseSql,
+        draftRevision: source.draftRevision,
+        calcScope: source.calcScope,
+        session,
+        executionId: run.executionId,
+        attemptId: run.attemptId,
+        process: { entries: [] },
+        answer: '',
+        status: 'RUNNING'
+      }) - 1
+    next = turns.value[index]
+    await poll(next, read)
+  } catch (error) {
+    if (token !== version || read.signal.aborted) return
+    if (!next && !accessLost(error) && source.issue) {
+      const code =
+        isRequestError(error) && 'messageKey' in error
+          ? error.messageKey?.replace(/^i18n_ai_/, '')
+          : undefined
+      const key = aiFailureKey(code || null)
+      source.issue.retryMessage =
+        key === 'test_failed' ? tr('retry_unknown') : t('ai_service.' + key)
+    } else if (next && !accessLost(error)) unreachable(next)
+    else fail(error)
+  } finally {
+    if (token === version && request === read && !read.signal.aborted) {
       busy.value = false
       request = undefined
     }
@@ -686,6 +811,12 @@ const stop = async () => {
   const turn = turns.value.at(-1)
   if (!turn || turn.status === 'STOPPING' || (!busy.value && turn.status !== 'UNREACHABLE')) return
   request?.abort()
+  // A retry POST can be in flight before the new execution ID is available.
+  if (turn.status === 'FAILED' || turn.status === 'COMPLETED') {
+    busy.value = false
+    request = undefined
+    return
+  }
   if (!turn.session || !turn.executionId) {
     turn.status = 'CANCELLED'
     return
@@ -792,139 +923,168 @@ const apply = async (turn: Turn) => {
         <el-button text @click="newConversation">{{ tr('new_conversation') }}</el-button>
       </div>
       <div ref="conversation" class="conversation" role="log">
-        <article v-for="(turn, index) in turns" :key="index">
-          <p class="question">{{ turn.question }}</p>
-          <details v-if="turn.baseSql.trim()">
-            <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
-            <pre>{{ turn.baseSql }}</pre>
-            <small v-if="turn.session"
-              >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
-            >
-          </details>
-          <AssistantProcess
-            :process="turn.process"
-            :elapsed="turn.metering && elapsedLabel(turn.metering.elapsedMillis)"
-            :status="turn.status"
-            :session-id="turn.session?.sessionId"
-            :execution-id="turn.executionId"
-            @update:open="turn.process.open = $event"
-            @detail-error="error => accessLost(error) && fail(error)"
-          />
-          <AssistantAnswer
-            v-if="turn.answer"
-            :text="turn.answer"
-            :suggestion="suggestionText(turn.result)"
-          />
-          <div v-if="turn.choices" class="clarification-choices">
-            <el-button
-              v-for="(choice, i) in turn.choices"
-              :key="i"
-              :aria-pressed="turn.selectedChoice === choice"
-              :type="turn.selectedChoice === choice ? 'primary' : undefined"
-              :disabled="index !== turns.length - 1 || busy || applying"
-              @click="answerChoice(turn, choice)"
-              >{{ choice }}</el-button
-            >
-          </div>
-          <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
-          <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
-          <template v-if="turn.result?.type === 'CALC_FIELD_SUGGESTION' && turn.result.calcField">
-            <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
-            <pre>{{ turn.result.calcField.expression }}</pre>
-            <span>{{ validationLabel(turn.result.calcField.validation) }}</span>
-            <p v-if="failedFormula(turn.result) && turn.result.calcField.reason">
-              {{ tr(turn.result.calcField.reason) }}
-            </p>
-            <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
-              {{ tr('copy_formula') }}
-            </el-button>
-            <el-button
-              :disabled="busy || applying || !canApplyCalcField(turn.result.calcField.validation)"
-              @click="apply(turn)"
-              >{{ tr('apply') }}</el-button
-            >
-          </template>
-          <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
-            <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small>
-            <pre>{{ turn.result.sql }}</pre>
-            <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
-              {{ tr('copy_sql') }}
-            </el-button>
-            <details>
-              <summary>{{ tr('sql_evidence') }}</summary>
-              <p v-if="!turn.result.evidence?.length">{{ tr('no_sql_evidence') }}</p>
-              <div v-for="table in turn.result.evidence" :key="table.table">
-                <strong>{{ table.table }}</strong>
-                <small>{{ tr(table.inspected ? 'verified_structure' : 'sql_reference') }}</small>
-                <p v-if="table.description">{{ table.description }}</p>
-                <p v-if="table.grain">{{ table.grain }}</p>
-                <div v-for="relation in table.relations" :key="JSON.stringify(relation)">
-                  <p>
-                    {{ tr('confirmed_join') }} · {{ relation.name }} · {{ relation.cardinality }}
-                  </p>
-                  <code
-                    >{{ relation.leftTable }} {{ relation.joinType }} JOIN
-                    {{ relation.rightTable }}</code
-                  >
-                  <p v-if="relation.actual">
-                    {{ tr('actual_join') }} ·
-                    <code
-                      >{{ relation.actual.leftTable }} {{ relation.actual.joinType }} JOIN
-                      {{ relation.actual.rightTable }}</code
-                    >
-                  </p>
-                  <p
-                    v-for="pair in relation.conditions"
-                    :key="pair.leftField + '=' + pair.rightField"
-                  >
-                    {{ relation.leftTable }}.{{ pair.leftField }} = {{ relation.rightTable }}.{{
-                      pair.rightField
-                    }}
-                  </p>
-                </div>
-                <ul v-if="table.fields.length">
-                  <li v-for="field in table.fields" :key="field.name">
-                    <code>{{ field.name }}</code> {{ field.type }}
-                    <span v-if="field.comment && field.comment !== field.name">{{
-                      field.comment
-                    }}</span>
-                    <p v-if="field.businessName || field.description">
-                      {{ tr('confirmed_meaning') }} · {{ field.businessName }}
-                      {{ field.description }}
-                    </p>
-                    <p v-for="value in field.values" :key="value.value">
-                      {{ value.value }} → {{ value.meaning }}
-                    </p>
-                  </li>
-                </ul>
-              </div>
-            </details>
-            <el-button
-              data-testid="dataset-sql-assistant-apply"
-              :disabled="busy || applying"
-              @click="apply(turn)"
-              >{{ tr('apply') }}</el-button
-            >
-          </template>
-          <el-button
-            v-if="suggestionText(turn.result)"
-            text
-            :disabled="busy || applying"
-            data-testid="dataset-sql-assistant-reference"
-            @click="selectBasis(index + 1)"
-            >{{ tr('refer_to_suggestion') }}</el-button
+        <article v-for="group in questionGroups" :key="group[0].turn.questionId">
+          <p class="question">{{ group[0].turn.question }}</p>
+          <component
+            :is="attempt < group.length - 1 ? 'details' : 'div'"
+            v-for="({ turn, index }, attempt) in group"
+            :key="index"
           >
-          <footer v-if="turn.metering" class="answer-metering">
-            <span v-if="!turn.process.entries.length">{{
-              elapsedLabel(turn.metering.elapsedMillis)
-            }}</span>
-            <span v-if="turn.metering.usageStatus === 'MISSING'">{{ tr('usage_missing') }}</span>
-            <template v-else>
-              <span>{{ tr('input_tokens') }} {{ turn.metering.inputTokens ?? '—' }}</span>
-              <span>{{ tr('output_tokens') }} {{ turn.metering.outputTokens ?? '—' }}</span>
-              <span v-if="turn.metering.usageStatus === 'PARTIAL'">{{ tr('usage_partial') }}</span>
+            <summary v-if="attempt < group.length - 1">
+              {{ tr('previous_answer') }} ·
+              {{ turn.issue ? tr(turn.issue.step) : tr('incomplete') }}
+            </summary>
+            <details v-if="turn.baseSql.trim()">
+              <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
+              <pre>{{ turn.baseSql }}</pre>
+              <small v-if="turn.session"
+                >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
+              >
+            </details>
+            <AssistantProcess
+              :process="turn.process"
+              :elapsed="turn.metering && elapsedLabel(turn.metering.elapsedMillis)"
+              :status="turn.status"
+              :session-id="turn.session?.sessionId"
+              :execution-id="turn.executionId"
+              @update:open="turn.process.open = $event"
+              @detail-error="error => accessLost(error) && fail(error)"
+            />
+            <AssistantAnswer
+              v-if="turn.answer"
+              :text="turn.answer"
+              :suggestion="suggestionText(turn.result)"
+            />
+            <div v-if="turn.choices" class="clarification-choices">
+              <el-button
+                v-for="(choice, i) in turn.choices"
+                :key="i"
+                :aria-pressed="turn.selectedChoice === choice"
+                :type="turn.selectedChoice === choice ? 'primary' : undefined"
+                :disabled="index !== turns.length - 1 || busy || applying"
+                @click="answerChoice(turn, choice)"
+                >{{ choice }}</el-button
+              >
+            </div>
+            <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
+            <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
+            <p v-if="turn.recovery?.technicalRetries || turn.recovery?.corrections">
+              {{ tr('technical_retries') }} {{ turn.recovery.technicalRetries }} ·
+              {{ tr('corrections') }} {{ turn.recovery.corrections }}
+            </p>
+            <AssistantFailure
+              v-if="turn.issue"
+              :issue="turn.issue"
+              :execution-id="turn.executionId"
+              :can-retry="turn.retryEligible && !!turn.attemptId"
+              :disabled="busy || applying"
+              :no-formula="
+                !!calcFieldDraft &&
+                turn.status === 'FAILED' &&
+                turn.issue.step === 'model_step' &&
+                !turn.process.entries.some(entry => entry.tool?.name === 'propose_calc_field')
+              "
+              @retry="retryAnswer(turn)"
+            />
+            <template v-if="turn.result?.type === 'CALC_FIELD_SUGGESTION' && turn.result.calcField">
+              <small>{{ tr('numbered_suggestion') }} #{{ index + 1 }}</small>
+              <pre>{{ turn.result.calcField.expression }}</pre>
+              <span>{{ validationLabel(turn.result.calcField.validation) }}</span>
+              <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
+                {{ tr('copy_formula') }}
+              </el-button>
+              <el-button
+                :disabled="busy || applying || !canApplyCalcField(turn.result.calcField.validation)"
+                @click="apply(turn)"
+                >{{ tr('apply') }}</el-button
+              >
             </template>
-          </footer>
+            <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
+              <small
+                >{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small
+              >
+              <pre>{{ turn.result.sql }}</pre>
+              <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
+                {{ tr('copy_sql') }}
+              </el-button>
+              <details>
+                <summary>{{ tr('sql_evidence') }}</summary>
+                <p v-if="!turn.result.evidence?.length">{{ tr('no_sql_evidence') }}</p>
+                <div v-for="table in turn.result.evidence" :key="table.table">
+                  <strong>{{ table.table }}</strong>
+                  <small>{{ tr(table.inspected ? 'verified_structure' : 'sql_reference') }}</small>
+                  <p v-if="table.description">{{ table.description }}</p>
+                  <p v-if="table.grain">{{ table.grain }}</p>
+                  <div v-for="relation in table.relations" :key="JSON.stringify(relation)">
+                    <p>
+                      {{ tr('confirmed_join') }} · {{ relation.name }} · {{ relation.cardinality }}
+                    </p>
+                    <code
+                      >{{ relation.leftTable }} {{ relation.joinType }} JOIN
+                      {{ relation.rightTable }}</code
+                    >
+                    <p v-if="relation.actual">
+                      {{ tr('actual_join') }} ·
+                      <code
+                        >{{ relation.actual.leftTable }} {{ relation.actual.joinType }} JOIN
+                        {{ relation.actual.rightTable }}</code
+                      >
+                    </p>
+                    <p
+                      v-for="pair in relation.conditions"
+                      :key="pair.leftField + '=' + pair.rightField"
+                    >
+                      {{ relation.leftTable }}.{{ pair.leftField }} = {{ relation.rightTable }}.{{
+                        pair.rightField
+                      }}
+                    </p>
+                  </div>
+                  <ul v-if="table.fields.length">
+                    <li v-for="field in table.fields" :key="field.name">
+                      <code>{{ field.name }}</code> {{ field.type }}
+                      <span v-if="field.comment && field.comment !== field.name">{{
+                        field.comment
+                      }}</span>
+                      <p v-if="field.businessName || field.description">
+                        {{ tr('confirmed_meaning') }} · {{ field.businessName }}
+                        {{ field.description }}
+                      </p>
+                      <p v-for="value in field.values" :key="value.value">
+                        {{ value.value }} → {{ value.meaning }}
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </details>
+              <el-button
+                data-testid="dataset-sql-assistant-apply"
+                :disabled="busy || applying"
+                @click="apply(turn)"
+                >{{ tr('apply') }}</el-button
+              >
+            </template>
+            <el-button
+              v-if="suggestionText(turn.result)"
+              text
+              :disabled="busy || applying"
+              data-testid="dataset-sql-assistant-reference"
+              @click="selectBasis(index + 1)"
+              >{{ tr('refer_to_suggestion') }}</el-button
+            >
+            <footer v-if="turn.metering" class="answer-metering">
+              <span v-if="!turn.process.entries.length">{{
+                elapsedLabel(turn.metering.elapsedMillis)
+              }}</span>
+              <span v-if="turn.metering.usageStatus === 'MISSING'">{{ tr('usage_missing') }}</span>
+              <template v-else>
+                <span>{{ tr('input_tokens') }} {{ turn.metering.inputTokens ?? '—' }}</span>
+                <span>{{ tr('output_tokens') }} {{ turn.metering.outputTokens ?? '—' }}</span>
+                <span v-if="turn.metering.usageStatus === 'PARTIAL'">{{
+                  tr('usage_partial')
+                }}</span>
+              </template>
+            </footer>
+          </component>
         </article>
       </div>
       <p v-if="failure" role="alert">{{ failure }}</p>
