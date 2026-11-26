@@ -42,7 +42,8 @@ const confirm = async () => {
       i18n_plugin_password_incorrect: `plugin.password_incorrect_${props.operation}`,
       i18n_plugin_password_locked: 'plugin.password_locked',
       i18n_sensitive_password_unavailable: 'plugin.password_unavailable',
-      i18n_error_forbidden: 'plugin.operation_forbidden'
+      i18n_error_forbidden: 'plugin.operation_forbidden',
+      i18n_plugin_confirmation_expired: 'plugin.confirmation_expired'
     }
     if (current === generation) {
       error.value = props.t(

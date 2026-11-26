@@ -4879,6 +4879,7 @@ export default {
       'This account uses external authentication. Password verification for plugin operations is unavailable.',
     verification_failed:
       'Unable to verify your identity for this plugin operation. Please try again later.',
+    confirmation_expired: 'Plugin operation confirmation has expired. Start the operation again.',
     operation_forbidden: 'Your account does not have permission to perform this plugin operation.',
 
     verify_continue: 'Verify and continue',

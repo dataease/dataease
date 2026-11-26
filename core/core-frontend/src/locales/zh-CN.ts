@@ -4690,6 +4690,7 @@ export default {
     password_locked: '插件操作的密码验证次数过多，请稍后重试。',
     password_unavailable: '当前账号使用第三方认证，暂不支持验证密码以执行插件操作。',
     verification_failed: '暂时无法完成插件操作的身份验证，请稍后重试。',
+    confirmation_expired: '插件操作确认已过期，请重新发起操作。',
     operation_forbidden: '当前账号无权执行此插件操作。',
 
     verify_continue: '验证并继续',

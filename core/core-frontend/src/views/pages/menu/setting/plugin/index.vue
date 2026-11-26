@@ -220,7 +220,7 @@ const uninstall = item => {
     showClose: false
   }).then(() => {
     confirmPluginOperation('uninstall', item['id'], t)
-      .then(ticket => unInstallApi(item['id'], ticket))
+      .then(authorization => unInstallApi(item['id'], authorization))
       .then(() => {
         loadPlugin()
         ElMessage.success(t('system.uninstall_successful'))

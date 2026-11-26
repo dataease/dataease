@@ -4,12 +4,24 @@ import request from '@/config/axios'
 import { ensureDekey, rsaEncryp } from '@/utils/encryption'
 import CryptoJS from 'crypto-js/crypto-js'
 
+export interface PluginOperationAuthorization {
+  sessionId: string
+  ticket: string
+  expiresAt: number
+}
+
+export const pluginOperationHeaders = (authorization: PluginOperationAuthorization) => ({
+  'X-DE-Plugin-Session': authorization.sessionId,
+  'X-DE-Plugin-Confirmation': authorization.ticket
+})
+
 export async function confirmPluginOperation(
   action: string,
   target: string,
   t: (key: string) => string,
-  file?: File
-): Promise<string> {
+  file?: File,
+  sessionId?: string
+): Promise<PluginOperationAuthorization> {
   let digest = ''
   if (file) {
     const hash = CryptoJS.algo.SHA256.create()
@@ -22,7 +34,8 @@ export async function confirmPluginOperation(
     }
     digest = hash.finalize().toString()
   }
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<PluginOperationAuthorization>((resolve, reject) => {
+    let authorization: PluginOperationAuthorization
     const host = document.createElement('div')
     document.body.appendChild(host)
     const cleanup = () => {
@@ -45,13 +58,26 @@ export async function confirmPluginOperation(
           const response = await request.post({
             url: '/plugin/authorize',
             handleErrorLocally: true,
+            headers: sessionId ? { 'X-DE-Plugin-Session': sessionId } : {},
             data: { password: rsaEncryp(password), action, target, digest }
           })
-          return response.data
+          const grant = response.data
+          if (
+            !grant ||
+            typeof grant.sessionId !== 'string' ||
+            !grant.sessionId ||
+            typeof grant.ticket !== 'string' ||
+            !grant.ticket ||
+            typeof grant.expiresAt !== 'number' ||
+            (sessionId && grant.sessionId !== sessionId)
+          )
+            throw new Error('Invalid plugin authorization')
+          authorization = grant
+          return grant.ticket
         },
-        onConfirmed: (ticket: string) => {
+        onConfirmed: () => {
           cleanup()
-          resolve(ticket)
+          resolve(authorization)
         },
         onCancel: () => {
           cleanup()

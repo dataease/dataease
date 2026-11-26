@@ -1,4 +1,5 @@
 import path from 'path'
+import pkg from '../package.json'
 import { materialExtension } from './material'
 import { hmacObfuscation } from './hmac-obfuscation'
 import { resolve } from 'path'
@@ -23,6 +24,10 @@ export function pathResolve(dir: string) {
 }
 export default {
   base: './',
+  // 插件代理缓存按构建版本失效，升级后不再命中旧路径
+  define: {
+    __DE_PLUGIN_CACHE_VERSION__: JSON.stringify(`${pkg.version}-${Date.now().toString(36)}`)
+  },
   plugins: [
     hmacObfuscation(),
     materialExtension(),

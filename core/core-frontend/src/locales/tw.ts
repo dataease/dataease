@@ -4670,6 +4670,7 @@ export default {
     password_locked: '外掛操作的密碼驗證次數過多，請稍後再試。',
     password_unavailable: '目前帳號使用第三方驗證，暫不支援驗證密碼以執行外掛操作。',
     verification_failed: '暫時無法完成外掛操作的身分驗證，請稍後再試。',
+    confirmation_expired: '外掛操作確認已過期，請重新發起操作。',
     operation_forbidden: '目前帳號無權執行此外掛操作。',
 
     verify_continue: '驗證並繼續',
