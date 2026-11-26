@@ -272,6 +272,12 @@ final class CalcFieldRegression {
         requests.clear(); mode.set("calc-invalid");
         var bad = terminal(mvc, start(mvc, session, "Use a missing field"));
         assertPrivateBindingAbsent(requests);
+        for (var request : requests) {
+            String system = request.at("/messages/0/content").asText();
+            if (!system.contains("回答语言") || !system.contains("计算字段编辑器") || system.contains("自定义 SQL 编辑器")
+                    || !system.contains("本次对话") || !system.contains("直接追问"))
+                throw new AssertionError("Calculated-field validation and its continuation need the editor language policy and formula instructions");
+        }
         if (!"COMPLETED".equals(bad.path("status").asText()) || previews.get() != 1 || requests.size() != 2
                 || !"INVALID".equals(bad.at("/result/calcField/validation").asText())
                 || !"[Unknown] * 2".equals(bad.at("/result/calcField/expression").asText()))

@@ -153,7 +153,7 @@ public final class ToolConversationRegression {
                     content = call("args-" + sent.size(), "get_table_fields", sent.size() == 1 ? "{\"table\":\"\"}" : "{\"table\":\"AI_PROBE\"}");
                 } else if (mode.get().equals("preview-duplicates")) {
                     String basis = body.path("messages").get(0).path("content").asText();
-                    content = frame(Map.of("content", basis.contains("SUCCESS") && basis.contains("cardinality")
+                    content = frame(Map.of("content", basis.contains("SUCCESS") && basis.contains("关系基数")
                             ? "一对多关联可能使订单行重复。请手动按订单键分组计数核对。"
                             : "请先提供预览上下文。"), "stop");
                 } else if (mode.get().equals("historical-status")) {
@@ -588,6 +588,12 @@ public final class ToolConversationRegression {
                 sent.clear();
                 editorProposal.set(candidateSql);
                 var checked = terminal(mvc, start(mvc, editor, "Propose an editor query"));
+                for (var request : sent) {
+                    String system = request.at("/messages/0/content").asText();
+                    if (!system.contains("回答语言") || !system.contains("自定义 SQL 编辑器")
+                            || system.contains("计算字段编辑器") || !system.contains("propose_sql"))
+                        throw new AssertionError("Rejected SQL proposals require both SQL and shared editor rules throughout validation");
+                }
                 if ("SQL_SUGGESTION".equals(checked.path("result").path("type").asText()))
                     throw new AssertionError("only a single unrun read-only query may be applied: " + candidateSql);
             }
@@ -626,11 +632,12 @@ public final class ToolConversationRegression {
             var repair = terminal(mvc, start(mvc, repairSession, "刚才为什么报错"));
             if (!repair.path("result").path("type").asText().equals("SQL_SUGGESTION") || sent.isEmpty()
                     || !repair.path("result").path("resourceId").asText().equals("11")
-                    || !sent.getFirst().path("messages").toString().contains("editor currently selects datasource 12 (Calcite)")
-                    || !sent.getFirst().path("messages").toString().contains("UNKNOWN_COLUMN")
-                    || !sent.getFirst().path("messages").toString().contains("SELECT typoo FROM AI_PROBE")
-                    || !sent.getFirst().path("messages").toString().contains("revision 3")
-                    || !sent.getFirst().path("messages").toString().contains("revision 4"))
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("\"currentResourceId\":\"12\"")
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("\"currentIsCross\":true")
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("UNKNOWN_COLUMN")
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("SELECT typoo FROM AI_PROBE")
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("\"revision\":3")
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("\"currentRevision\":4"))
                 throw new AssertionError("a repair must bind the classified failure and exact earlier SQL to the model request");
             var crossFollowOpen = new HashMap<String, Object>(repairOpen);
             crossFollowOpen.put("previousSessionId", repairSession.path("sessionId").asText());
@@ -658,7 +665,7 @@ public final class ToolConversationRegression {
             if (!"EXPLANATION".equals(explanation.path("result").path("type").asText())
                     || !explanation.path("result").path("text").asText().contains("可能")
                     || previewMessages.contains("SQL basis for this request (not executed)")
-                    || !previewMessages.contains("SUCCESS") || !previewMessages.contains("cardinality") || !previewMessages.contains("hypotheses")
+                    || !previewMessages.contains("SUCCESS") || !previewMessages.contains("关系基数") || !previewMessages.contains("区分观察与推测")
                     || previewMessages.contains("private-row-value") || previewMessages.contains("private-variable-value") || previewMessages.contains("private-driver-password"))
                 throw new AssertionError("success explanation must distinguish evidence from hypotheses and exclude preview row, variables and raw driver errors");
             int sentBeforeDenial = sent.size();

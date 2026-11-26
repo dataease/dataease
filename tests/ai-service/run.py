@@ -94,7 +94,7 @@ def main():
         libraries = [license_sdk, *[file for file in libraries if not file.name.startswith('dataease-license-sdk-')]]
         classes = work / 'classes'
         classes.mkdir()
-        classpath = os.pathsep.join(map(str, [classes, *[path for path in libraries if path.is_dir()], boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
+        classpath = os.pathsep.join(map(str, [classes, root/'core/core-backend/src/main/resources', *[path for path in libraries if path.is_dir()], boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
         # The isolated task fixture supplies its own business scenes. The product datasource
         # scene is compiled by the backend build together with the current datasource classes.
         product_only = {'AiBaseService.java', 'AiDatasourceMetadataScenes.java'}

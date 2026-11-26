@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class AiConversationManage implements AiToolConversationFeature {
     private static final com.fasterxml.jackson.databind.ObjectMapper JSON = new com.fasterxml.jackson.databind.ObjectMapper();
+    private static final String EDITOR_INSTRUCTION = io.dataease.ai.support.AiPromptResources.read("editor-shared.md");
     private static final long SESSION_MILLIS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSIONS = 200, MAX_USER_SESSIONS = 4, MAX_TURNS = 50, MAX_SINGLE_RESULTS = 10;
     private record OperationKey(AiAccess.Identity owner, String kind, String key) { }
@@ -696,17 +697,9 @@ public class AiConversationManage implements AiToolConversationFeature {
     /** Attribute historical messages without promoting stale metadata to the current tool scope. */
     private String instruction(State state) {
         String instructions = state.context.instruction();
-        if ("dataset-sql".equals(state.view.scene()) || "dataset-calc-field".equals(state.view.scene())) {
-            instructions += "\nFollow the author's explicit language request, otherwise use the natural language of the current question. "
-                    + "For code, a formula, or an option number alone, continue in the conversation language. "
-                    + "If there is no conversation language yet, use the interface language "
-                    + org.springframework.context.i18n.LocaleContextHolder.getLocale().toLanguageTag() + ". Preserve identifiers verbatim. "
-                    + "When the goal is unclear, ask the author for the missing information in plain text. "
-                    + "When offering concrete alternatives, end with the question and a numbered list, one choice per line. "
-                    + "Use their next answer or option number together with the previous question. "
-                    + "When the goal and required information are clear, proceed with the editor's generation rules. "
-                    + "After proposing SQL or a formula through its tool, explain the suggestion in prose. "
-                    + "The editor displays the full suggestion separately. Use code blocks for short examples.";
+        if (scene(state.view.scene()).editorConversation()) {
+            String locale = org.springframework.context.i18n.LocaleContextHolder.getLocale().toLanguageTag();
+            instructions = EDITOR_INSTRUCTION + "\n本轮界面语言：" + locale + "\n\n" + instructions;
         }
         if (state.historyTargets.isEmpty()) return instructions;
         var ranges = new ArrayList<Map<String, Object>>();
@@ -714,6 +707,9 @@ public class AiConversationManage implements AiToolConversationFeature {
         for (var target : state.historyTargets) {
             ranges.add(Map.of("fromInclusive", start, "toExclusive", target.endExclusive(), "target", targetData(target.context())));
             start = target.endExclusive();
+        }
+        if (scene(state.view.scene()).editorConversation()) {
+            return instructions + "\n" + AiToolProtocol.result(Map.of("currentTarget", targetData(state.context), "historicalTargets", ranges));
         }
         return instructions
                 + "\nThis is one continuous conversation, even when the selected datasource or SQL changes. "

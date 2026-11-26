@@ -208,6 +208,32 @@ public final class ConversationRegression {
             statistics.setStatisticsEnabled(statisticsEnabled);
         }
     }
+    // The controlled provider interprets only the fixed questions in the browser scenario. Its
+    // reply exposes whether the actual request contains the locale, scope rules and original turns.
+    private static String languageReply(com.fasterxml.jackson.databind.JsonNode messages, ObjectMapper json) throws java.io.IOException {
+        String system = messages.path(0).path("content").asText();
+        if (!system.contains("仅覆盖这一条回答") || !system.contains("直接追问") || !system.contains("跨话题沿用"))
+            return "missing scoped language instructions";
+        String conversation = system.contains("本轮界面语言：zh-CN") ? "字段说明"
+                : system.contains("本轮界面语言：zh-TW") ? "欄位說明"
+                : system.contains("本轮界面语言：en-US") ? "Field description" : "missing UI language";
+        String topic = null, once = null;
+        for (var message : messages) {
+            if (!"user".equals(message.path("role").asText())) continue;
+            String user = message.path("content").asText();
+            if (user.startsWith("{")) user = json.readTree(user).path("userMessage").asText();
+            once = null;
+            switch (user) {
+                case "接下来都用英文。解释 paid_at" -> { conversation = "Field description"; topic = null; }
+                case "用简体中文回答。怎样筛选日期？" -> topic = "字段说明";
+                case "这次用繁体中文。请举例" -> once = "欄位說明";
+                case "换个话题，解释客户数" -> topic = null;
+                default -> { }
+            }
+        }
+        return (once != null ? once : topic != null ? topic : conversation) + " · paid_at";
+    }
+
     public static void run(AiConfigurationManage configuration, CoreAiOrgPolicyRepository policies,
                            AiSecrets keys, AiAdmission admission, AiAccess access) throws Exception {
         var json = new ObjectMapper();
@@ -228,7 +254,7 @@ public final class ConversationRegression {
         var truncated = new AtomicBoolean();
         var reasoning = new AtomicBoolean();
         var beforeFirst = new AtomicBoolean();
-        var protocol = new AtomicReference<String>("normal");
+        var protocol = new AtomicReference<String>("1".equals(System.getenv("AI_EDITOR_LANGUAGE_BROWSER")) ? "editor-language" : "normal");
         var temporaryFailures = new AtomicInteger();
         var unknownTool = new AtomicBoolean();
         var uncertainWrites = new AtomicInteger();
@@ -265,6 +291,7 @@ public final class ConversationRegression {
             if (body.path("stream").asBoolean() && !"normal".equals(protocol.get())) {
                 String kind = protocol.get();
                 String content = switch (kind) {
+                    case "editor-language" -> chunk(languageReply(body.path("messages"), json), "stop") + "data: [DONE]\n\n";
                     case "fast-private-burst" -> "data: {\"choices\":[{\"index\":0,\"delta\":{\"reasoning\":\"private-burst\"}}]}\n\n".repeat(120)
                             + chunk("字", null).repeat(80) + chunk("完成", "stop") + "data: [DONE]\n\n";
                     case "reasoning-alias" -> "data: {\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"}}]}\n\n"

@@ -23,7 +23,10 @@ let server, dir, url;
 ${formalSql ? `export {getPreviewSql} from '${editorBridge}';` : ""}
 import {ref} from 'vue';
 import zh from '${frontend}/src/locales/zh-CN';
-export const useI18n=(prefix='')=>({t:(key,params={})=>String((prefix?prefix+'.'+key:key).split('.').reduce((v,k)=>v?.[k],zh)||key).replace(/{([a-zA-Z]+)}/g,(token,key)=>params[key]??token)});
+import tw from '${frontend}/src/locales/tw';
+import en from '${frontend}/src/locales/en';
+const messages = {en, tw}[new URLSearchParams(location.search).get('language')] ?? zh;
+export const useI18n=(prefix='')=>({t:(key,args={})=>((prefix?prefix+'.'+key:key).split('.').reduce((v,k)=>v?.[k],messages)||key).replace(/\\{(\\w+)\\}/g,(original,k)=>args[k]??original)});
 export const useAppStoreWithOut=()=>({});export const useEmbedded=()=>({});export const useAppearanceStoreWithOut=()=>({});
 export const useCache=()=>({wsCache:{get(key){return ${transportBackend ? "({'user.uid':'1','user.token':'writer'})[key]" : "undefined"}},set(){}}});export const useEmitt=()=>({emitter:{emit(){}}});
 export const useRoute=()=>({query:location.search.includes('create')?{datasourceId:'source'}:{id:'dataset'},params:{}});export const useRouter=()=>({push(value){window.navigations??=[];window.navigations.push(value)}});export const cancelMap={};

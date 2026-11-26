@@ -17,6 +17,7 @@ import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
 import { isMobile, getLocale, isLink } from '@/utils/utils'
+import { requestLanguageTag } from '@/utils/locale'
 import { useI18n } from '@/hooks/web/useI18n'
 // 注意：不得在模块顶层 const { t } = useI18n() —— 本模块求值早于 setupI18n，
 // 顶层捕获会永久得到降级透传 t（永远返回 key）。必须在函数体内实时调用 useI18n()。
@@ -118,11 +119,6 @@ const service: AxiosInstanceWithLoading = axios.create({
   baseURL: PATH_URL, // api 的 base_url
   timeout: time ? time * 1000 : config.request_timeout // 请求超时时间
 })
-const mapping = {
-  'zh-CN': 'zh-CN',
-  en: 'en-US',
-  tw: 'zh-TW'
-}
 const permissionStore = usePermissionStoreWithOut()
 const linkStore = useLinkStoreWithOut()
 let reloadingLink = false
@@ -181,8 +177,7 @@ service.interceptors.request.use(
     }
     const locale = getLocale()
     if (locale) {
-      const val = mapping[locale] || locale
-      ;(config.headers as AxiosRequestHeaders)['Accept-Language'] = val
+      ;(config.headers as AxiosRequestHeaders)['Accept-Language'] = requestLanguageTag(locale)
     }
 
     if (config.method === 'get' && config.params) {
