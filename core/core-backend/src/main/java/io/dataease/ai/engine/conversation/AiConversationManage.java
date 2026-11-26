@@ -450,7 +450,34 @@ public class AiConversationManage implements AiToolConversationFeature {
         } catch (RuntimeException failure) { state.executing.set(false); throw failure; }
     }
     public Events events(String id, String execution, long after) {
+        return events(owned(id), execution, after);
+    }
+
+    public interface Delivery {
+        Events read(long after, boolean heartbeat, java.util.function.BooleanSupplier authenticated);
+    }
+
+    /** Bind from the authorized HTTP request. Subsequent delivery uses only that verified owner and resource. */
+    public Delivery subscribe(String id, String execution, String editor, long actor, long after) {
         State state = owned(id);
+        synchronized (state) {
+            if (!Objects.equals(state.owner.actor(), actor) || !Objects.equals(state.view.editorId(), editor))
+                throw AiErrors.error("forbidden");
+            Run run = run(state, execution);
+            if (after < 0 || after > run.sequence) throw AiErrors.error("invalid");
+            check(state);
+            return (cursor, heartbeat, authenticated) -> {
+                synchronized (state) {
+                    if (state.closed) throw AiErrors.error("scope_changed");
+                    if (!heartbeat && cursor == run.sequence && "RUNNING".equals(run.status)) return null;
+                    if (!authenticated.getAsBoolean()) throw AiErrors.error("forbidden");
+                    return events(state, execution, cursor);
+                }
+            };
+        }
+    }
+
+    private Events events(State state, String execution, long after) {
         synchronized (state) {
             Run run = run(state, execution);
             if (after < 0 || after > run.sequence) throw AiErrors.error("invalid");

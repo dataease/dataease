@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ET
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model-limits', action='store_true', help='model defaults and optional per-request length limits')
+    parser.add_argument('--conversation-socket', action='store_true', help='real authenticated HTTP and platform STOMP with a paced model')
     parser.add_argument('--conversation', action='store_true', help='complete public conversation protocol regression')
     parser.add_argument('--runtime', action='store_true', help='native Java model policy and off/on epoch boundary')
     parser.add_argument('--retention', action='store_true', help='public settings and production retention cleanup on isolated H2')
@@ -100,6 +101,9 @@ def main():
         sources = [file for file in (root/'core/core-backend/src/main/java/io/dataease/ai').rglob('*.java')
                    if file.name not in product_only]
         sources.extend((root/'sdk/api/api-base/src/main/java/io/dataease/api/ai').rglob('*.java'))
+        sources.extend(root/path for path in [
+            'core/core-backend/src/main/java/io/dataease/websocket/config/WsConfig.java',
+            'core/core-backend/src/main/java/io/dataease/websocket/handler/DeHandshakeInterceptor.java'])
         sources.extend(root/path for path in [
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/utils/SqlUtil.java',
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/dto/DatasourceRequest.java',
@@ -191,7 +195,9 @@ def main():
 
         if args.model_limits:
             java.append('-Dai.test.modelLimitsOnly=true')
-        if args.conversation:
+        if args.conversation_socket:
+            java.append('-Dai.test.conversationSocket=true')
+        if args.conversation or args.conversation_socket:
             java.append('-Dai.test.conversationOnly=true')
         if args.runtime:
             java.append('-Dai.test.runtimeOnly=true')

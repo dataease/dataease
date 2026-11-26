@@ -8,6 +8,7 @@ import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { followConversationSocket } from '@/api/aiConversationDelivery'
 import { aiFailureKey } from '@/api/aiService'
 import {
   checkSqlApplication,
@@ -416,6 +417,7 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
   for (const event of page.events) {
     if (event.sequence <= (turn.cursor ?? 0)) continue
     applyProcessEvent(turn, event)
+    turn.cursor = event.sequence
     if (event.type === 'FAILED') {
       const key = aiFailureKey(event.error ?? null)
       failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
@@ -439,6 +441,14 @@ const unreachable = (turn: Turn) => {
   failure.value = tr('progress_unreachable')
 }
 const poll = async (turn: Turn, read: AbortController) => {
+  const finished = await followConversationSocket({
+    session: turn.session!,
+    executionId: turn.executionId!,
+    cursor: () => turn.cursor ?? 0,
+    update: page => applyPage(turn, page),
+    signal: read.signal
+  })
+  if (finished) return
   let failures = 0
   while (!read.signal.aborted) {
     let page: AiConversationEvents

@@ -244,6 +244,20 @@ export const getConversationToolDetail = (
       handleErrorLocally: true
     })
   )
+export const bindConversationSubscription = (
+  session: AiConversationSession,
+  execution: string,
+  subscription: string,
+  after: number,
+  signal: AbortSignal
+) =>
+  request.post({
+    url: `/ai/conversations/${session.sessionId}/executions/${execution}/subscriptions`,
+    data: { subscription, editorId: session.editorId, after },
+    signal,
+    handleErrorLocally: true
+  })
+
 export const stopConversationExecution = (id: string, execution: string) =>
   data<AiConversationEvents>(
     request.post({

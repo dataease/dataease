@@ -309,7 +309,7 @@ public final class ConversationRegression {
                     if (beforeFirst.get()) { firstChunk.get().countDown(); release.await(20, TimeUnit.SECONDS); }
                     exchange.getResponseBody().write(("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"星河\"" + (reasoning.get() ? ",\"reasoning_content\":\"private-thought\"" : "") + "},\"finish_reason\":null}]}\n\n").getBytes(StandardCharsets.UTF_8));
                     exchange.getResponseBody().flush(); streamFirst.countDown(); firstChunk.get().countDown();
-                    release.await(20, TimeUnit.SECONDS);
+                    release.await(Boolean.getBoolean("ai.test.conversationSocket") ? 10 : 20, TimeUnit.SECONDS);
                     exchange.getResponseBody().write("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"继续\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n".getBytes(StandardCharsets.UTF_8));
                 } catch (InterruptedException failure) { Thread.currentThread().interrupt(); }
                 finally { exchange.close(); }
@@ -368,10 +368,25 @@ public final class ConversationRegression {
                 }
             };
             var beans = new StaticListableBeanFactory(); beans.addBean("scene", scene);
+            if (Boolean.getBoolean("ai.test.conversationSocket")) {
+                for (String editor : List.of("dataset-sql", "dataset-calc-field"))
+                    beans.addBean(editor, new AiConversationScene() {
+                        public String code() { return editor; }
+                        public List<Resource> resources() { return scene.resources(); }
+                        public Context resolve(String id, String sql) { return scene.resolve(id, sql); }
+                        public void authorize(Context context) { scene.authorize(context); }
+                    });
+            }
             var manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess);
             beans.addBean("conversation", manage);
             var runtime = new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, policies, keys, transport, json, dialogueAccess);
             beans.addBean("runtime", runtime);
+            if (Boolean.getBoolean("ai.test.conversationSocket")) {
+                ConversationSocketRegression.run(manage, allowed, sent, streamRelease, active -> {
+                    unknownTool.set(active); protocol.set(active ? "unknown-write" : "normal");
+                });
+                return;
+            }
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
             var configMvc = MockMvcBuilders.standaloneSetup(new io.dataease.ai.server.AiConfigurationServer(configuration, null)).build();
             var recoverySettings = json.readTree(configMvc.perform(get("/ai/settings")).andReturn().getResponse().getContentAsString());
