@@ -794,6 +794,14 @@ public final class ToolConversationRegression {
             if (!selected.path("sql").asText().contains("o.ship_customer_id = c.cid")
                     || selected.path("evidence").toString().contains("下单客户"))
                 throw new AssertionError("role choice applies to this suggestion: " + selected);
+            mode.set("historical-status");
+            int priorReads = reads.size();
+            terminal(mvc, start(mvc, rolesSession, "第一次回答的第 5 步是否需要确认角色？"));
+            var roleMessages = sent.getLast().path("messages");
+            var roleStep = JSON.readTree(roleMessages.get(roleMessages.size() - 1).path("content").asText()).path("historicalStep");
+            if (!"read_relations".equals(roleStep.path("action").asText()) || !"SUCCEEDED".equals(roleStep.path("status").asText())
+                    || !roleStep.path("evidence").equals(JSON.valueToTree(Map.of("status", "CLARIFY_ROLE"))) || reads.size() != priorReads)
+                throw new AssertionError("The historical relation lookup should retain only its role clarification outcome: " + roleStep);
             mvc.perform(delete("/ai/conversations/" + rolesSession.path("sessionId").asText()));
             DatasetSqlRelationRegression.main(new String[0]);
             System.out.println("PASS registered composite JOIN through 7 model requests, relation evidence, ambiguity and stale key filtering");

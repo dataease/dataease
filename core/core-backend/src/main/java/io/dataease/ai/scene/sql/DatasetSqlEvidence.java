@@ -21,6 +21,22 @@ final class DatasetSqlEvidence {
     private static final ObjectMapper JSON = new ObjectMapper();
     private DatasetSqlEvidence() {}
 
+    private static final Map<String, Set<String>> HISTORICAL_OUTCOMES = Map.of(
+            "propose_sql", Set.of("INVALID", "NOT_RUN"),
+            "read_relations", Set.of("CONFIRMED", "NO_CONFIRMED_PATH", "CLARIFY_ROLE"),
+            "search_physical_tables", Set.of("MATCHED", "NO_MATCH", "EMPTY_CATALOG"));
+
+    static Map<String, Object> historicalOutcome(String tool, String result) {
+        var allowed = HISTORICAL_OUTCOMES.get(tool);
+        if (allowed == null || result == null) return Map.of();
+        try {
+            String status = JSON.readTree(result).path("status").asText("");
+            return allowed.contains(status) ? Map.of("status", status) : Map.of();
+        } catch (java.io.IOException invalid) {
+            return Map.of();
+        }
+    }
+
     private static final Pattern TEMPORAL_QUESTION = Pattern.compile(
             "(?:时间|時間|日期|時刻|时刻)(?:类型的?|類型的?)?(?:字段|欄位|列)|\\b(?:time|date|temporal|timestamp|datetime)[ -]+(?:fields?|columns?)\\b",
             Pattern.CASE_INSENSITIVE);
