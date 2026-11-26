@@ -414,3 +414,106 @@ test("new conversation closes a running formula reply and starts from the curren
   await expect(drawer.getByRole("article")).toHaveCount(1);
   await expect(drawer.getByRole("log")).not.toContainText("旧对话的问题");
 });
+
+test("formula correction shows both validation outcomes and keeps the detail being read", async ({
+  page,
+}) => {
+  await serveTurns(page);
+  const tool = (sequence, callId, status, expression, verdict) => ({
+    sequence,
+    type: "TOOL",
+    tool: {
+      callId,
+      name: "propose_calc_field",
+      status,
+      parameters: { expression },
+      result: verdict && JSON.stringify(verdict),
+    },
+  });
+  let finish, entered;
+  const hold = new Promise((resolve) => {
+    finish = resolve;
+  });
+  const waiting = new Promise((resolve) => {
+    entered = resolve;
+  });
+  await page.route("**/executions/e1/events**", async (route) => {
+    const after = Number(
+      new URL(route.request().url()).searchParams.get("after")
+    );
+    const scope = { sessionId: "s1", contextVersion: "v1", executionId: "e1" };
+    if (!after)
+      return route.fulfill({
+        json: {
+          ...scope,
+          status: "RUNNING",
+          cursor: 5,
+          events: [
+            { sequence: 1, type: "TEXT", text: "检查原公式。" },
+            tool(2, "one", "STARTED", "[missing]"),
+            tool(3, "one", "SUCCEEDED", "[missing]", {
+              status: "INVALID",
+              message: "字段不存在",
+            }),
+            { sequence: 4, type: "TEXT", text: "改用订单字段。" },
+            tool(5, "two", "RUNNING", "[orders_id]"),
+          ],
+        },
+      });
+    entered();
+    await hold;
+    return route.fulfill({
+      json: {
+        ...scope,
+        status: "COMPLETED",
+        cursor: 8,
+        events: [
+          tool(6, "two", "SUCCEEDED", "[orders_id]", { status: "DETAIL_PASS" }),
+          { sequence: 7, type: "TEXT", text: "已校验修正后的公式。" },
+          { sequence: 8, type: "COMPLETED" },
+        ],
+        result: {
+          type: "CALC_FIELD_SUGGESTION",
+          text: "已校验修正后的公式。",
+          calcField: { expression: "[orders_id]", validation: "DETAIL_PASS" },
+        },
+      },
+    });
+  });
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "检查订单公式");
+  const process = drawer
+    .locator("details")
+    .filter({ has: page.locator("summary", { hasText: "执行过程" }) })
+    .first();
+  const rejected = drawer
+    .locator("details")
+    .filter({ has: page.locator("summary", { hasText: "校验公式 · 未通过" }) })
+    .last();
+  const running = drawer
+    .locator("details")
+    .filter({ has: page.locator("summary", { hasText: "校验公式 · 执行中" }) })
+    .last();
+  try {
+    await expect(rejected.locator("summary")).toBeVisible({ timeout: 3000 });
+    await expect(rejected).not.toHaveAttribute("open", "");
+    await expect(running).toHaveAttribute("open", "");
+    await rejected.locator("summary").click();
+    await expect(rejected).toContainText("字段不存在");
+    await waiting;
+  } finally {
+    finish();
+  }
+  await expect(button(drawer, "应用到当前草稿")).toBeEnabled();
+  await expect(process).toHaveAttribute("open", "");
+  await expect(rejected).toHaveAttribute("open", "");
+  await expect(process.locator("details")).toHaveCount(2);
+  const passed = process.locator("details").last();
+  await expect(passed.locator("summary")).toHaveText("校验公式 · 通过");
+  await expect(passed).not.toHaveAttribute("open", "");
+  await expect(process).not.toContainText("已校验修正后的公式。");
+  await expect(
+    drawer.getByText("已校验修正后的公式。", { exact: true })
+  ).toBeVisible();
+});

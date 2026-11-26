@@ -302,6 +302,15 @@ final class CalcFieldRegression {
             if (!expected.equals(field.path("validation").asText()) || requests.size() != sends
                     || report.toString().contains("private-driver-value") || requests.toString().contains("private-driver-value"))
                 throw new AssertionError(scenario + " " + field + " sends=" + requests.size());
+            if ("calc-repair".equals(scenario)) {
+                var validations = report.path("events").findParents("callId").stream()
+                        .filter(tool -> "SUCCEEDED".equals(tool.path("status").asText())).toList();
+                if (validations.size() != 2 || validations.get(0).path("callId").equals(validations.get(1).path("callId"))
+                        || !"INVALID".equals(JSON.readTree(validations.getFirst().path("result").asText()).path("status").asText())
+                        || !"DETAIL_PASS".equals(JSON.readTree(validations.getLast().path("result").asText()).path("status").asText())
+                        || validations.toString().contains("boundExpression"))
+                    throw new AssertionError("Both actual formula validations must be visible without private bindings");
+            }
             if ("calc-comment".equals(scenario) && !"[Price] - (-2)".equals(field.path("expression").asText()))
                 throw new AssertionError("application must return the validated arithmetic");
             if (!"DETAIL_PASS".equals(expected)) {

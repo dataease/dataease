@@ -117,6 +117,8 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "AddSql.vue",
               "CodeMirror.vue",
               "DatasetEditorAssistant.vue",
+              "AssistantProcess.vue",
+              "AssistantToolResult.vue",
             ].includes(path.basename(id))
           )
             return;

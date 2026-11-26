@@ -45,7 +45,7 @@ public class AiCalcFieldScene implements AiConversationScene {
     @Override public List<Resource> resources() { return List.of(); }
     @Override public Context resolve(String resourceId, String input) { throw AiErrors.error("invalid"); }
     @Override public List<AiToolProtocol.Definition> tools() { return List.of(TOOL); }
-    @Override public boolean retainEveryTurn() { return true; }
+    @Override public boolean editorConversation() { return true; }
 
     @Override public Context resolve(Open editor) {
         var input = editor.calcField();
@@ -211,6 +211,14 @@ public class AiCalcFieldScene implements AiConversationScene {
             if ("CLARIFY_FIELD".equals(feedback.path("status").asText())) return result;
             return AiToolProtocol.result(Map.of("status", feedback.path("status").asText(), "code", feedback.path("code").asText()));
         } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
+    }
+
+    @Override public String visibleToolResult(String name, String result) {
+        try {
+            var visible = (com.fasterxml.jackson.databind.node.ObjectNode) CalcFieldCanvas.JSON.readTree(result);
+            visible.remove("boundExpression");
+            return visible.toString();
+        } catch (java.io.IOException invalid) { throw AiErrors.error("response_invalid"); }
     }
 
     @Override public boolean retainToolFailure(String name, String result) {

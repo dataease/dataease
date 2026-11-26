@@ -130,6 +130,8 @@ export interface AiConversationTool {
   status: 'STARTED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED'
   parameters: Record<string, string>
   result?: string
+  resultSequence?: number
+  outcome?: string
 }
 export interface AiSqlTableEvidence {
   table: string
@@ -225,6 +227,19 @@ export const getConversationEvents = (
     request.get({
       url: `/ai/conversations/${id}/executions/${execution}/events`,
       params: { after },
+      signal,
+      handleErrorLocally: true
+    })
+  )
+export const getConversationToolDetail = (
+  id: string,
+  execution: string,
+  sequence: number,
+  signal: AbortSignal
+) =>
+  data<AiConversationTool>(
+    request.get({
+      url: `/ai/conversations/${id}/executions/${execution}/tools/${sequence}`,
       signal,
       handleErrorLocally: true
     })

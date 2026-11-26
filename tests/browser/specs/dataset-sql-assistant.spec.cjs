@@ -258,6 +258,7 @@ test("only a suggestion applies to a blank draft", async ({ page }) => {
   await expand(page);
   await ask(page);
   await expect(control(page, "panel")).toContainText("已核对两笔已支付订单。");
+  await expect(control(page, "panel").locator(".assistant-process")).toHaveCount(0);
   await expect(control(page, "apply")).toHaveCount(0);
   await assertUnrun(page, state);
   state.explain = false;
@@ -1027,4 +1028,88 @@ test.describe("touch reference inspection", () => {
       panel.getByRole("checkbox", { name: "本轮引用" })
     ).toBeChecked();
   });
+});
+
+test("completed SQL process preserves event order and reads a large field result when expanded", async ({
+  page,
+}) => {
+  await backend(page);
+  const scope = {
+    sessionId: "session-1",
+    contextVersion: "context-session-1",
+    executionId: "run-session-1",
+  };
+  const field = "last_authorized_field";
+  let reads = 0;
+  await page.route("**/tools/4", (route) => {
+    reads++;
+    return route.fulfill({
+      json: {
+        callId: "fields",
+        name: "get_table_fields",
+        status: "SUCCEEDED",
+        parameters: { table: "orders" },
+        result: JSON.stringify({ fields: [{ name: field }] }),
+      },
+    });
+  });
+  await page.route("**/executions/*/events**", (route) =>
+    route.fulfill({
+      json: {
+        ...scope,
+        status: "COMPLETED",
+        cursor: 6,
+        events: [
+          { sequence: 1, type: "TEXT", text: "定位订单表。" },
+          {
+            sequence: 2,
+            type: "TOOL",
+            tool: {
+              callId: "tables",
+              name: "search_semantics",
+              status: "SUCCEEDED",
+              parameters: { terms: "订单" },
+              result: '{"tables":["orders"]}',
+            },
+          },
+          { sequence: 3, type: "TEXT", text: "核对订单表字段。" },
+          {
+            sequence: 4,
+            type: "TOOL",
+            tool: {
+              callId: "fields",
+              name: "get_table_fields",
+              status: "SUCCEEDED",
+              parameters: { table: "orders" },
+              resultSequence: 4,
+            },
+          },
+          { sequence: 5, type: "TEXT", text: "订单字段已核对。" },
+          { sequence: 6, type: "COMPLETED" },
+        ],
+        result: { type: "EXPLANATION", text: "订单字段已核对。" },
+      },
+    })
+  );
+  await enter(page);
+  await expand(page);
+  await ask(page, "检查订单表");
+  const article = control(page, "panel").getByRole("article");
+  const process = article.locator(".assistant-process");
+  await expect(
+    article.getByText("订单字段已核对。", { exact: true })
+  ).toBeVisible();
+  await expect(process).not.toHaveAttribute("open", "");
+  await process.locator(":scope > summary").click();
+  await expect(process.locator(":scope > :is(p,details)")).toHaveText([
+    "定位订单表。",
+    /search_semantics/,
+    "核对订单表字段。",
+    /get_table_fields/,
+  ]);
+  expect(reads).toBe(0);
+  const fields = process.locator("details").last();
+  await fields.locator("summary").click();
+  await expect(fields.getByText(new RegExp(field))).toBeVisible();
+  expect(reads).toBe(1);
 });

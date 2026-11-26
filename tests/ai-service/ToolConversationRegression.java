@@ -143,6 +143,10 @@ public final class ToolConversationRegression {
                             : "请先提供预览上下文。"), "stop");
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
+                } else if (mode.get().equals("dataset-tool-detail")) {
+                    content = sent.size() == 1 ? frame(Map.of("content", "Reading the fields."), "").replace("\"finish_reason\":\"\"", "\"finish_reason\":null")
+                            + call("fields", "get_table_fields", "{\"table\":\"AI_PROBE\"}")
+                            : frame(Map.of("content", "The fields are ready."), "stop");
                 } else if (mode.get().equals("dataset-guide") && sent.size() == 1) {
                     String topic = body.path("messages").toString().contains("monthly totals") ? "monthly" : "projection";
                     content = call("guide", "read_sql_guide", JSON.writeValueAsString(Map.of("topic", topic)));
@@ -314,7 +318,7 @@ public final class ToolConversationRegression {
                     }
                     if (!Objects.equals(request.getDatasourceId(), 11L) || !request.getTableName().matches("AI_PROBE[234]?")) throw new AssertionError("field scope expanded");
                     reads.add("fields");
-                    if (mode.get().equals("input-results")) {
+                    if (Set.of("input-results", "dataset-tool-detail").contains(mode.get())) {
                         var fields = new ArrayList<TableField>();
                         for (int index = 0; index < 16; index++) { var value = new TableField(); value.setOriginName("ID" + index); value.setName("c".repeat(200)); value.setType("BIGINT"); fields.add(value); }
                         yield fields;
@@ -390,6 +394,47 @@ public final class ToolConversationRegression {
             }
             reads.clear(); readTargets.clear();
             DatasetSqlDialectRegression.main(new String[0]);
+            sent.clear();
+            mode.set("dataset-tool-detail");
+            var detailOpening = post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "detail-editor", "sql", "")));
+            var detailSession = JSON.readTree(mvc.perform(detailOpening).andReturn().getResponse().getContentAsString());
+            var detailRun = start(mvc, detailSession, "Read the field definitions");
+            var detailPage = terminal(mvc, detailRun);
+            var detailEvents = detailPage.path("events");
+            var succeeded = detailEvents.findParents("callId").stream().filter(tool -> "SUCCEEDED".equals(tool.path("status").asText())).findFirst().orElseThrow();
+            if (succeeded.path("resultSequence").asLong() <= 0 || !succeeded.path("result").isNull()
+                    || !"Reading the fields.".equals(detailEvents.get(0).path("text").asText())
+                    || !"The fields are ready.".equals(detailPage.at("/result/text").asText()))
+                throw new AssertionError("Large field details must be available separately, and the final answer must contain only its own text");
+            String detailPath = detailRun + "/tools/" + succeeded.path("resultSequence").asLong();
+            mvc.perform(detailOpening); // another question retires this context
+            var detail = JSON.readTree(mvc.perform(get(detailPath)).andReturn().getResponse().getContentAsString());
+            var modelMessages = sent.getLast().path("messages");
+            if (!JSON.readTree(detail.path("result").asText()).equals(JSON.readTree(modelMessages.get(modelMessages.size() - 1).path("content").asText()))
+                    || !detail.path("parameters").path("table").asText().equals("AI_PROBE"))
+                throw new AssertionError("Author did not receive the complete authorized tool projection");
+            V3UserUtil.clear(); V3UserUtil.setUid(2L);
+            try {
+                if (mvc.perform(get(detailPath)).andReturn().getResponse().getStatus() < 400)
+                    throw new AssertionError("A different user read the original tool details");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure)) throw denied;
+            } finally {
+                V3UserUtil.clear(); V3UserUtil.setUid(1L);
+            }
+            firstResourceAllowed.set(false);
+            try {
+                if (mvc.perform(get(detailPath)).andReturn().getResponse().getStatus() < 400)
+                    throw new AssertionError("Revocation must reject deferred details");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure)) throw denied;
+            } finally {
+                firstResourceAllowed.set(true);
+            }
+            mvc.perform(delete("/ai/conversations/" + detailSession.path("sessionId").asText()));
+            reads.clear(); readTargets.clear();
+
             mode.set("dataset-guide");
             for (boolean cross : List.of(false, true)) {
                 for (String question : List.of("Show a plain column projection", "Show monthly totals")) {
