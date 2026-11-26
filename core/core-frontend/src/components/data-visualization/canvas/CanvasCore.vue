@@ -968,11 +968,11 @@ function movePlayer(item, position) {
   }
 }
 
-function removeItemById(componentId) {
+function removeItemById(componentId, preserveLinkage = false) {
   if (componentId) {
     componentData.value.forEach((component, index) => {
       if (componentId === component['id']) {
-        removeItem(index)
+        removeItem(index, preserveLinkage)
       }
     })
     if (!isMainCanvas(canvasId.value)) {
@@ -1012,16 +1012,16 @@ function removeItemComponent(item) {
   }
 }
 
-function removeItem(index) {
+function removeItem(index, preserveLinkage = false) {
   let item = componentData.value[index]
   if (item && isSameCanvas(item, canvasId.value)) {
     removeItemComponent(item)
-    dvMainStore.removeLinkageInfo(item['id'])
     if (isMainCanvas(canvasId.value)) {
       // 主画布中存在隐藏组件 直接从原始componentData中进行删除
-      dvMainStore.deleteComponentById(item.id, undefined, false)
+      dvMainStore.deleteComponentById(item.id, undefined, false, preserveLinkage)
     } else {
       componentData.value.splice(index, 1)
+      if (!preserveLinkage) dvMainStore.removeCanvasComponentLinkage(item)
     }
   }
 }
@@ -1686,6 +1686,7 @@ onMounted(() => {
   subscribe('removeMatrixItem', removeItem)
   subscribe('removeMatrixItemPosition', removeItemComponent)
   subscribe('removeMatrixItemById', removeItemById)
+  subscribe('removeMovedMatrixItemById', id => removeItemById(id, true))
   subscribe('addDashboardItem', addItemBox)
   subscribe('snapshotChange', canvasInit)
   subscribe('doCanvasInit', canvasInit)

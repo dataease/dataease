@@ -41,6 +41,7 @@ const state = reactive({})
 
 const onDatasetUpdate = (tableId: ChartObj['tableId']) => {
   const target = view.value
+  dvMainStore.invalidateChartLinkage(target.id)
   nextTick(async () => {
     if (view.value !== target || target.tableId !== tableId) return
     target.xAxis = []

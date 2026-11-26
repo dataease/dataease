@@ -515,21 +515,26 @@ const saveLinkageSetting = () => {
       return
     }
   }
+  const canvas = dvInfo.value
   const request = {
-    dvId: dvInfo.value.id,
+    dvId: canvas.id,
     sourceViewId: curLinkageView.value.id,
     linkageInfo: targetLinkageInfo.value
   }
+  const isCurrent = () => dvInfo.value === canvas && canvas.id === request.dvId
   saveLinkage(request).then(() => {
+    if (!isCurrent()) return
+    dvMainStore.clearViewLinkage(request.sourceViewId)
+    useEmitt().emitter.emit('clearPanelLinkage', { viewId: request.sourceViewId })
     ElMessage.success(t('commons.save_success'))
     // 刷新联动信息
-    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
-      dvMainStore.setNowPanelTrackInfo(rsp.data)
+    getPanelAllLinkageInfo(request.dvId).then(rsp => {
+      if (isCurrent()) dvMainStore.setNowPanelTrackInfo(rsp.data)
     })
     cancelLinkageSetting()
     // 刷新跳转信息
-    queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
-      dvMainStore.setNowPanelJumpInfo(rsp.data)
+    queryVisualizationJumpInfo(request.dvId).then(rsp => {
+      if (isCurrent()) dvMainStore.setNowPanelJumpInfo(rsp.data)
     })
   })
 }

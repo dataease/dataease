@@ -1,4 +1,5 @@
 import { useCache } from '@/hooks/web/useCache'
+import { clearCanvasLinkageFilters, clearCanvasViewLinkageFilters } from './canvasComponentTree'
 
 interface CanvasDraftSnapshot {
   dvInfo: {
@@ -14,6 +15,7 @@ interface CanvasDraftSnapshot {
     snapshotCacheViewCalc: any[]
     snapshotCacheViewRender: any[]
   }
+  invalidatedLinkageViewIds?: Record<string, number>
   [key: string]: any
 }
 
@@ -187,6 +189,13 @@ const withoutMaterialBundle = (snapshot: CanvasDraftSnapshot): CanvasDraftSnapsh
   return { ...snapshot, dvInfo }
 }
 
+const restoreStoredSnapshot = (snapshot?: CanvasDraftSnapshot): CanvasDraftSnapshot | undefined => {
+  if (!snapshot) return undefined
+  clearCanvasLinkageFilters(snapshot.componentData)
+  clearCanvasViewLinkageFilters(snapshot.canvasViewInfo)
+  return withoutMaterialBundle(snapshot)
+}
+
 const isSnapshot = (value: unknown, resourceId: string): value is CanvasDraftSnapshot => {
   if (!value || typeof value !== 'object') return false
   const snapshot = value as CanvasDraftSnapshot
@@ -315,7 +324,9 @@ export const getCanvasDraft = async (
   const failedRecord = failed.get(resourceId)?.record
   if (failedRecord) {
     try {
-      return failedRecord.deleted ? undefined : structuredClone(failedRecord.snapshot)
+      return failedRecord.deleted
+        ? undefined
+        : restoreStoredSnapshot(structuredClone(failedRecord.snapshot))
     } catch {
       reportError(resourceId)
       return undefined
@@ -335,7 +346,7 @@ export const getCanvasDraft = async (
         record.sourceContentId === contentKey(record.snapshot.dvInfo.contentId)
       ) {
         reportedErrors.delete(resourceId)
-        return withoutMaterialBundle(record.snapshot)
+        return restoreStoredSnapshot(record.snapshot)
       }
       reportError(resourceId)
       return undefined
@@ -352,7 +363,7 @@ export const getCanvasDraft = async (
       return undefined
     }
     reportedErrors.delete(resourceId)
-    return withoutMaterialBundle(legacy)
+    return restoreStoredSnapshot(legacy)
   } catch {
     reportError(resourceId)
     return undefined

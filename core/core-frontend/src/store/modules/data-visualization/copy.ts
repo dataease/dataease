@@ -314,6 +314,7 @@ function deepCopyHelper(data, idMap) {
   delete result.mStyle
   delete result.mEvents
   delete result.mCommonBackground
+  delete result.linkageFilters
   if (result.component === 'VQuery') {
     const idMapValues = new Set(Object.values(idMap))
     result.propValue?.forEach(queryItem => {

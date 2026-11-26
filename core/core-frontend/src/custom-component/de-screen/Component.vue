@@ -166,7 +166,6 @@ import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
 import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
-import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
 import { deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -390,7 +389,10 @@ function deleteCur(param) {
   let len = screenTabs.value.length
   while (len--) {
     if (screenTabs.value[len].name === param.name) {
-      screenTabs.value.splice(len, 1)
+      const [deletedTab] = screenTabs.value.splice(len, 1)
+      deletedTab.componentData?.forEach(component =>
+        dvMainStore.removeCanvasComponentLinkage(component)
+      )
       const tabs = screenTabs.value
       element.value.editableTabsValue = tabs.length
         ? tabs[(len - 1 + tabs.length) % tabs.length].name
@@ -437,24 +439,12 @@ function handleCommand(command) {
   }
 }
 
-const reloadLinkage = () => {
-  // 刷新联动信息
-  if (dvInfo.value.id) {
-    const resourceTable = ['canvas', 'canvasDataV', 'edit'].includes(showPosition.value)
-      ? 'snapshot'
-      : 'core'
-    getPanelAllLinkageInfo(dvInfo.value.id, resourceTable).then(rsp => {
-      dvMainStore.setNowPanelTrackInfo(rsp.data)
-    })
-  }
-}
-
 const componentMoveIn = component => {
   screenTabs.value.forEach((tabItem, index) => {
     if (element.value.editableTabsValue === tabItem.name) {
       //获取主画布当前组件的index
       if (isDashboard()) {
-        eventBus.emit('removeMatrixItemById-canvas-main', component.id)
+        eventBus.emit('removeMovedMatrixItemById-canvas-main', component.id)
         dvMainStore.setCurComponent({ component: null, index: null })
         component.canvasId = element.value.id + '--' + tabItem.name
         const refInstance = currentInstance.refs['tabCanvas_' + index][0]
@@ -473,8 +463,7 @@ const componentMoveIn = component => {
         }
       } else {
         const curIndex = findComponentIndexById(component.id)
-        // 从主画布删除
-        dvMainStore.deleteComponent(curIndex)
+        dvMainStore.deleteComponent(curIndex, undefined, true)
         dvMainStore.setCurComponent({ component: null, index: null })
         component.canvasId = element.value.id + '--' + tabItem.name
         dataVTabComponentAdd(component, element.value)
@@ -482,8 +471,6 @@ const componentMoveIn = component => {
       }
     }
   })
-
-  reloadLinkage()
 }
 
 const componentMoveOut = component => {
@@ -491,7 +478,7 @@ const componentMoveOut = component => {
     canvasChangeAdaptor(component, bashMatrixInfo.value, true)
   }
   // 从Tab画布中移除
-  eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
+  eventBus.emit('removeMovedMatrixItemById-' + component.canvasId, component.id)
   dvMainStore.setCurComponent({ component: null, index: null })
   // 主画布中添加
   if (isDashboard()) {
@@ -499,7 +486,6 @@ const componentMoveOut = component => {
   } else {
     addToMain(component)
   }
-  reloadLinkage()
 }
 
 const addToMain = component => {

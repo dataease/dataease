@@ -983,7 +983,7 @@ onMounted(() => {
   useEmitt({
     name: 'clearPanelLinkage',
     callback: function (param) {
-      if (param.viewId === 'all' || param.viewId === element.value.id) {
+      if (param.viewId === 'all' || String(param.viewId) === String(element.value.id)) {
         chartComponent?.value?.clearLinkage?.()
       }
     }
