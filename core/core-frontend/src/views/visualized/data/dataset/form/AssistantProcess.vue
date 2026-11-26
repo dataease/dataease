@@ -39,6 +39,8 @@ const format = (value: unknown) =>
   typeof value === 'string' ? value : JSON.stringify(value, null, 2)
 const verdict = (tool: AiConversationTool) => {
   if (active(tool)) return tr('tool_running')
+  if (tool.status === 'CANCELLED') return tr('tool_cancelled')
+  if (tool.status === 'FAILED') return tr('tool_failed')
   switch (tool.outcome ?? parseResult(tool.result)?.status) {
     case 'INVALID':
     case 'PREVIEW_FAILED':
@@ -54,7 +56,7 @@ const verdict = (tool: AiConversationTool) => {
     case 'CLARIFY_FIELD':
       return tr('validation_clarify')
     default:
-      return tr(tool.status === 'FAILED' ? 'tool_failed' : 'tool_succeeded')
+      return tr('tool_succeeded')
   }
 }
 const title = (tool: AiConversationTool) => {
@@ -103,8 +105,15 @@ const toggleTool = (entry: ProcessEntry) => {
             </dd>
           </template>
           <template v-if="entry.error">
-            <dt>{{ tr('tool_failed') }}</dt>
-            <dd>{{ t(`ai_service.${aiFailureKey(entry.error)}`) }} ({{ entry.error }})</dd>
+            <dt>{{ tr('tool_end_reason') }}</dt>
+            <dd>
+              {{
+                entry.error === 'connection_interrupted'
+                  ? tr(entry.error)
+                  : t(`ai_service.${aiFailureKey(entry.error)}`)
+              }}
+              ({{ entry.error }})
+            </dd>
           </template>
         </dl>
       </details>

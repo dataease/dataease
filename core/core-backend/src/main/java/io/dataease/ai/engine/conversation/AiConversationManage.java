@@ -109,7 +109,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         StringBuilder text = new StringBuilder();
         Result result;
         String lastTool, proposedContent, failureCode;
-        long sequence;
+        long sequence, cursorBeforeTermination;
         final long leaseMillis;
         volatile long lease;
         volatile String status = "RUNNING";
@@ -567,7 +567,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             terminate(run, "CANCELLED", "cancelled");
             try { authorized(state, () -> { check(state); return null; }); }
             catch (RuntimeException failure) { invalidate(state); throw failure; }
-            return view(run, run.sequence - 1);
+            return view(run, run.cursorBeforeTermination);
         }
     }
     private Run run(State state, String execution) {
@@ -843,6 +843,13 @@ public class AiConversationManage implements AiToolConversationFeature {
         run.metering = run.stream.recovery().usage().snapshot(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - run.startedNanos));
         run.failureCode = error;
         if ("connection_interrupted".equals(error)) run.state.interrupted = true;
+        run.cursorBeforeTermination = run.sequence;
+        // Model text resumes only after the current tool ends. Use the visible event so a cleared projection stays cleared.
+        Tool active = run.events.isEmpty() ? null : run.events.getLast().tool();
+        if (error != null && !run.state.closed && active != null && Set.of("STARTED", "RUNNING").contains(active.status())) {
+            var ended = new Tool(active.callId(), active.name(), status, active.parameters(), null);
+            run.events.add(new Event(++run.sequence, "TOOL", null, error, ended));
+        }
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }

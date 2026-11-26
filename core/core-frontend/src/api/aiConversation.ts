@@ -127,7 +127,7 @@ export const aiRecoveryReasonKey = (reason: string) => {
 export interface AiConversationTool {
   callId: string
   name: string
-  status: 'STARTED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED'
+  status: 'STARTED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED'
   parameters: Record<string, string>
   result?: string
   resultSequence?: number

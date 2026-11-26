@@ -462,6 +462,85 @@ test("new conversation closes a running formula reply and starts from the curren
   await expect(drawer.getByRole("log")).not.toContainText("旧对话的问题");
 });
 
+for (const [status, error, label, reason] of [
+  ["CANCELLED", "cancelled", "已取消", "AI 请求已取消"],
+  ["FAILED", "connection_interrupted", "失败", "连接中断超过 30 秒"],
+]) {
+  test(`a running tool shows its terminal reason and respects the open detail after ${error}`, async ({
+    page,
+  }) => {
+    await serveTurns(page);
+    const scope = { sessionId: "s1", contextVersion: "v1", executionId: "e1" };
+    const tool = {
+      callId: "formula",
+      name: "propose_calc_field",
+      parameters: { expression: first },
+    };
+    const ended = {
+      ...scope,
+      status,
+      cursor: 3,
+      events: [
+        { sequence: 2, type: "TOOL", tool: { ...tool, status }, error },
+        { sequence: 3, type: status, error },
+      ],
+    };
+    let finish = false;
+    await page.route("**/executions/e1/events**", (route) => {
+      const after = Number(
+        new URL(route.request().url()).searchParams.get("after")
+      );
+      return route.fulfill({
+        json: finish
+          ? ended
+          : {
+              ...scope,
+              status: "RUNNING",
+              cursor: 1,
+              events: after
+                ? []
+                : [
+                    {
+                      sequence: 1,
+                      type: "TOOL",
+                      tool: { ...tool, status: "RUNNING" },
+                    },
+                  ],
+            },
+      });
+    });
+    await page.route("**/executions/e1/stop", (route) =>
+      route.fulfill({ json: ended })
+    );
+    await page.goto("/");
+    const drawer = await openDrawer(page);
+    await ask(drawer, "检查正在执行的工具");
+    const process = drawer.locator(".assistant-process");
+    const detail = process.locator("details");
+    const summary = detail.locator("summary");
+    await expect(summary).toHaveText("校验公式 · 执行中");
+    await expect(detail).toHaveAttribute("open", "");
+    if (status === "CANCELLED") {
+      // Reopen the tool explicitly so the final event preserves the author's choice.
+      await summary.click();
+      await summary.click();
+      await button(drawer, "停止生成").click();
+      await expect(summary).toHaveText("校验公式 · " + label);
+      await expect(process).toHaveAttribute("open", "");
+      await expect(detail).toHaveAttribute("open", "");
+    } else {
+      finish = true;
+      await expect(summary).toHaveText("校验公式 · " + label);
+      await expect(process).not.toHaveAttribute("open", "");
+      await expect(detail).not.toHaveAttribute("open", "");
+      await process.locator(":scope > summary").click();
+      await summary.click();
+    }
+    await expect(detail).toHaveCount(1);
+    await expect(detail.getByText(reason, { exact: false })).toBeVisible();
+  });
+}
+
 test("formula correction shows both validation outcomes and keeps the detail being read", async ({
   page,
 }) => {

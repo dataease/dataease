@@ -156,6 +156,8 @@ export default {
     tool_running: 'Running',
     tool_succeeded: 'Succeeded',
     tool_failed: 'Failed',
+    tool_cancelled: 'Cancelled',
+    tool_end_reason: 'Reason',
     elapsed_time: 'Total time',
     input_tokens: 'Input tokens',
     output_tokens: 'Output tokens',

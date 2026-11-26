@@ -139,6 +139,8 @@ export default {
     tool_running: '執行中',
     tool_succeeded: '成功',
     tool_failed: '失敗',
+    tool_cancelled: '已取消',
+    tool_end_reason: '原因',
     elapsed_time: '總耗時',
     input_tokens: '輸入 Token',
     output_tokens: '輸出 Token',

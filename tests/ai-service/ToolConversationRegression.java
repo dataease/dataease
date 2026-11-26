@@ -71,6 +71,18 @@ public final class ToolConversationRegression {
     static String frame(Object delta, String finish) throws Exception {
         return "data: " + JSON.writeValueAsString(Map.of("choices", List.of(Map.of("index", 0, "delta", delta, "finish_reason", finish)))) + "\n\n";
     }
+    static void assertToolEnded(JsonNode page, String callId, String status, String error) {
+        var statuses = new ArrayList<String>();
+        for (var event : page.path("events")) if (event.hasNonNull("tool")) {
+            if (!callId.equals(event.at("/tool/callId").asText())) throw new AssertionError("termination created another tool call");
+            String toolStatus = event.at("/tool/status").asText();
+            statuses.add(toolStatus);
+            if (status.equals(toolStatus) && (!error.equals(event.path("error").asText()) || event.path("tool").hasNonNull("result")))
+                throw new AssertionError("terminated tool must expose the safe reason without fabricating a result: " + event);
+        }
+        if (!status.equals(page.path("status").asText()) || !statuses.equals(List.of("STARTED", "RUNNING", status)))
+            throw new AssertionError("expected one " + status + " for " + callId + " on " + error + ", got " + statuses);
+    }
     static String call(String id, String name, String arguments) throws Exception {
         return frame(Map.of("tool_calls", List.of(Map.of("index", 0, "id", id, "type", "function", "function", Map.of("name", name, "arguments", arguments)))), "tool_calls");
     }
@@ -144,7 +156,7 @@ public final class ToolConversationRegression {
                             : "请先提供预览上下文。"), "stop");
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
-                } else if (mode.get().equals("dataset-tool-detail")) {
+                } else if (Set.of("dataset-tool-detail", "slow-editor").contains(mode.get())) {
                     content = sent.size() == 1 ? frame(Map.of("content", "Reading the fields."), "").replace("\"finish_reason\":\"\"", "\"finish_reason\":null")
                             + call("fields", "get_table_fields", "{\"table\":\"AI_PROBE\"}")
                             : frame(Map.of("content", "The fields are ready."), "stop");
@@ -277,7 +289,7 @@ public final class ToolConversationRegression {
                     if (mode.get().equals("chain-retry") && transientMetadata.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw AiErrors.error("connection_failed");
                     if (mode.get().equals("preview-revoke")) secondResourceAllowed.set(false);
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
-                    if (Set.of("slow", "validate-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
+                    if (Set.of("slow", "validate-stop", "slow-editor").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
                     if (mode.get().equals("dataset-channel")) {
@@ -926,15 +938,45 @@ public final class ToolConversationRegression {
             sent.clear(); reads.clear(); mode.set("repeat"); session = open(mvc); result = terminal(mvc, start(mvc, session, "Repeat tools"));
             if (!result.path("status").asText().equals("FAILED") || sent.size() != 2 || reads.size() != 1) throw new AssertionError("repeated requests must terminate without executing again");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            for (String reason : List.of("timeout", "connection_interrupted")) {
+                boolean timeout = reason.equals("timeout");
+                setting = config.setting(); config.saveSettings(new SettingsChange(setting.getRowVersion(), true, saved.id(), false, timeout ? 5 : 60, 30000, 4096, 5, 2, null));
+                toolEntered.set(new CountDownLatch(1)); toolRelease.set(new CountDownLatch(1));
+                sent.clear(); reads.clear(); mode.set("slow-editor");
+                session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", reason, "sql", ""))))
+                        .andReturn().getResponse().getContentAsString());
+                String expired = start(mvc, session, "Inspect the fields");
+                try {
+                    if (!toolEntered.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("editor tool never started");
+                    if (!timeout) Thread.sleep(31000); // No editor polls or subscriptions renew the lease.
+                    assertToolEnded(terminal(mvc, expired), "fields", "FAILED", reason);
+                    var stopAfterExpiry = JSON.readTree(mvc.perform(post(expired + "/stop")).andReturn().getResponse().getContentAsString());
+                    if (!"fields".equals(stopAfterExpiry.at("/events/0/tool/callId").asText())
+                            || !reason.equals(stopAfterExpiry.at("/events/0/error").asText()))
+                        throw new AssertionError("a racing stop must return the original tool failure: " + stopAfterExpiry.path("events"));
+                } finally { toolRelease.get().countDown(); }
+                mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
+            }
             for (String boundary : List.of("slow", "validate-stop")) {
                 toolEntered.set(new CountDownLatch(1)); toolRelease.set(new CountDownLatch(1));
                 sent.clear(); reads.clear(); mode.set(boundary); session = open(mvc); String stopped = start(mvc, session, "Slow tool metadata");
                 if (!toolEntered.get().await(5, TimeUnit.SECONDS)) throw new AssertionError("metadata execution never started");
                 result = JSON.readTree(mvc.perform(post(stopped + "/stop")).andReturn().getResponse().getContentAsString());
                 if (!result.path("status").asText().equals("CANCELLED")) throw new AssertionError("stop must finish while tool is blocked");
+                String callId = boundary.equals("slow") ? "call-tables" : "validation-boundary";
+                var stoppedEvents = result.path("events");
+                if (stoppedEvents.size() != 2 || !stoppedEvents.get(0).at("/tool/callId").asText().equals(callId)
+                        || !stoppedEvents.get(0).at("/tool/status").asText().equals("CANCELLED")
+                        || !stoppedEvents.get(0).path("error").asText().equals("cancelled")
+                        || !stoppedEvents.get(1).path("type").asText().equals("CANCELLED"))
+                    throw new AssertionError("stop must return the active tool cancellation followed by the execution cancellation: " + stoppedEvents);
                 mode.set("tables"); toolRelease.get().countDown(); Thread.sleep(100);
                 result = terminal(mvc, stopped);
                 if (sent.size() != 1 || result.toString().contains("SUCCEEDED")) throw new AssertionError("late tool result escaped cancellation");
+                assertToolEnded(result, callId, "CANCELLED", "cancelled");
+                var repeated = JSON.readTree(mvc.perform(post(stopped + "/stop")).andReturn().getResponse().getContentAsString());
+                if (!stoppedEvents.equals(repeated.path("events"))) throw new AssertionError("repeated stop lost the tool cancellation");
                 result = terminal(mvc, start(mvc, session, "Follow up after stop"));
                 if (!result.path("status").asText().equals("COMPLETED") || sent.get(1).path("messages").size() != 2) throw new AssertionError("cancelled tool transcript entered history");
                 mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
