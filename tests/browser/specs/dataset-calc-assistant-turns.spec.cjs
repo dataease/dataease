@@ -288,6 +288,19 @@ test("asking about a previous validation preserves the edited formula and origin
   await expect(drawer.locator(".cm-content")).toHaveText(manual);
 });
 
+test("explicit revalidation uses the current draft even with a pending suggestion", async ({ page }) => {
+  const state = await serveTurns(page);
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await drawer.locator(".cm-content").fill(manual);
+  await ask(drawer, "给这个公式提一个建议");
+  await completed(drawer, 1);
+  await ask(drawer, "重新校验当前公式");
+  await completed(drawer, 2);
+  expect(state.opens[1].sql).toBe(manual);
+  expect(state.checks).toEqual([]);
+});
+
 test("an edit made during generation is preserved until the author confirms an older suggestion", async ({
   page,
 }) => {

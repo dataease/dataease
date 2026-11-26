@@ -13,7 +13,7 @@ final class EditorStepSearch {
             Map.of("action", "Original tool name, e.g. get_table_fields or propose_calc_field",
                     "subject", "Exact table, proposed formula name or expression; * when unspecified",
                     "fields", "Requested physical column names separated by commas, temporal for date/time columns, or * for step status",
-                    "selection", "any when versions may differ; latest for an explicitly last matching call; answer number, or answer.step from a clarification"),
+                    "selection", "any when versions may differ; latest for an explicitly last matching call; source:<exact datasource name>, answer number, or answer.step from a clarification"),
             AiToolProtocol.RetrySafety.READ_ONLY);
 
     private record Match(int answer, Answer original, HistoricalStep step, Map<String, Object> evidence) {
@@ -28,12 +28,16 @@ final class EditorStepSearch {
         }
     }
 
+    private record Facts(String resource, boolean cross, Map<String, String> parameters, String status, String error,
+                         Map<String, Object> evidence) { }
+
     static Map<String, Object> find(List<Answer> answers, AiConversationScene scene, Map<String, String> clues) {
         String action = clues.get("action");
         String subject = clues.get("subject");
         String fields = clues.get("fields");
         String selection = clues.get("selection");
-        if (!selection.matches("any|latest|[1-9][0-9]*(?:\\.[1-9][0-9]*)?") || TOOL.name().equals(action))
+        String source = selection.startsWith("source:") ? selection.substring(7).strip() : null;
+        if (source == null && !selection.matches("any|latest|[1-9][0-9]*(?:\\.[1-9][0-9]*)?") || TOOL.name().equals(action))
             return Map.of("lookup", "MISSING");
         String projection = switch (fields) {
             case "*" -> "";
@@ -42,19 +46,31 @@ final class EditorStepSearch {
                     .map(s -> "`" + s + "`").collect(Collectors.joining(" "));
         };
         var matches = new ArrayList<Match>();
+        var seen = new HashSet<Facts>();
+        var authorized = Collections.newSetFromMap(new IdentityHashMap<AiConversationScene.Context, Boolean>());
         for (int i = answers.size() - 1; i >= 0; i--) {
             Answer answer = answers.get(i);
+            if (source != null && !source.equals(answer.context().resourceName())) continue;
+            int answerNumber = i + 1;
             for (var step : answer.steps().reversed()) {
-                if (!action.equals(step.name())) continue;
-                if (!"any".equals(selection) && !"latest".equals(selection)
-                        && !selection.equals(String.valueOf(i + 1)) && !selection.equals((i + 1) + "." + step.number())) continue;
-                if (!"*".equals(subject) && List.of("table", "name", "expression", "topic", "fromTable", "toTable").stream()
-                        .noneMatch(key -> subject.equalsIgnoreCase(step.parameters().get(key)))) continue;
-                scene.authorize(answer.context());
+                boolean sameAction = action.equals(step.name())
+                        || "propose_calc_field".equals(action) && "revalidate_current_formula".equals(step.name())
+                        || "get_table_fields".equals(action) && "get_named_table_fields".equals(step.name());
+                if (!sameAction) continue;
+                if (source == null && !"any".equals(selection) && !"latest".equals(selection)
+                        && !selection.equals(String.valueOf(answerNumber)) && !selection.equals(answerNumber + "." + step.number())) continue;
+                boolean namedSubject = !"*".equals(subject);
+                boolean knownSubject = List.of("table", "name", "expression", "topic", "fromTable", "toTable").stream()
+                        .anyMatch(key -> subject.equalsIgnoreCase(step.parameters().get(key)));
+                if (namedSubject && !knownSubject && !"revalidate_current_formula".equals(step.name())) continue;
+                if (authorized.add(answer.context())) scene.authorize(answer.context());
                 var evidence = scene.historicalEvidence(answer.context(), step, projection);
-                if ("*".equals(subject) && !"*".equals(fields)
+                if (namedSubject && !knownSubject && !subject.equalsIgnoreCase(Objects.toString(evidence.get("expression"), ""))) continue;
+                if (!namedSubject && !"*".equals(fields)
                         && (!(evidence.get("fields") instanceof List<?> selected) || selected.isEmpty())) continue;
-                matches.add(new Match(i + 1, answer, step, evidence));
+                var facts = new Facts(answer.context().resourceId(), answer.context().isCross(),
+                        evidence.isEmpty() ? step.parameters() : Map.of(), step.status(), step.error(), evidence);
+                if (seen.add(facts)) matches.add(new Match(answerNumber, answer, step, evidence));
                 if ("latest".equals(selection)) break;
             }
             if ("latest".equals(selection) && !matches.isEmpty()) break;

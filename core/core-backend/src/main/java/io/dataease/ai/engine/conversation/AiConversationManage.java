@@ -819,7 +819,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     private List<AiToolProtocol.Definition> availableTools(State state) {
         var scene = scene(state.view.scene());
         var business = scene.tools(state.context);
-        if (state.single || !scene.editorConversation() || state.stepHistory.size() == 0) return business;
+        if (state.single || !scene.editorConversation() || business.isEmpty() && state.stepHistory.size() == 0) return business;
         var tools = new ArrayList<>(business);
         tools.add(EditorStepSearch.TOOL);
         return tools;

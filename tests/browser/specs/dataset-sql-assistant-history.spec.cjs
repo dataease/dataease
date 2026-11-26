@@ -47,6 +47,9 @@ test("SQL editor follows up on two fields after stopping a later read", async ({
   await expect(control("panel").getByRole("article").nth(1)).toContainText(
     "paid_at TIMESTAMP, created_at DATETIME"
   );
+  await control("input").fill("刚才 orders 的时间字段");
+  await control("send").click();
+  await expect(control("panel").getByRole("article").nth(2)).toContainText("当时的时间字段");
   await expect(
     page.locator(".sql-drawer-fullscreen:visible .cm-content")
   ).toHaveText("select 1");

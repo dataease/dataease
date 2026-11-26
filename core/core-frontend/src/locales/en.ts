@@ -167,6 +167,8 @@ export default {
     answer_process: 'Execution details',
     step_number: 'Step {number}',
     fields_count: '{count} fields',
+    find_historical_step: 'Look up previous step {object}',
+    read_named_fields: 'Read selected columns of {object}',
     read_table_fields: 'Read {object} table structure',
     validate_formula_object: 'Validate formula {object}',
     search_semantics: 'Search business semantics for {object}',

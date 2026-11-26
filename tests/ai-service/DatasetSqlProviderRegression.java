@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class DatasetSqlProviderRegression {
     private static final class ObservedPool extends BasicDataSource {
         int catalogs, types;
+        List<String> selectedColumns;
 
         @Override public Connection getConnection() throws SQLException {
             var connection = super.getConnection();
@@ -37,13 +38,16 @@ public final class DatasetSqlProviderRegression {
         }
 
         private Statement observe(Statement stmt, String preparedSql) {
+            var bindings = new TreeMap<Integer, String>();
             Class<?> api = preparedSql == null ? Statement.class : PreparedStatement.class;
             return (Statement) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{api}, (proxy, method, args) -> {
                 try {
                     var value = method.invoke(stmt, args);
+                    if (method.getName().equals("setString")) bindings.put((Integer) args[0], (String) args[1]);
                     if (method.getName().equals("executeQuery")) {
                         var query = (preparedSql == null ? (String) args[0] : preparedSql).toUpperCase(Locale.ROOT);
                         if (query.contains("INFORMATION_SCHEMA.COLUMNS")) catalogs++;
+                        if (query.contains("COLUMN_NAME IN (")) selectedColumns = List.copyOf(bindings.values());
                         if (query.contains("ZZ_CHANNEL_") && (query.contains("LIMIT 0") || query.contains("FETCH NEXT 0")
                                 || query.contains("FETCH FIRST 0"))) types++;
                     }
@@ -101,6 +105,15 @@ public final class DatasetSqlProviderRegression {
                 }
                 if (enumerations.get() != 1 || pool.catalogs != 2 || pool.types != 2)
                     throw new AssertionError("Provider.getTables=" + enumerations + " column-catalog reads=" + pool.catalogs + " zero-row type reads=" + pool.types);
+                var fresh = scene.beginTurn(scene.resolve("11", ""));
+                var partial = fresh.execute("get_named_table_fields", Map.of("table", "ZZ_Channel_Live", "fields", "CHANNEL_ID,OUTSIDE_SCOPE"), () -> {}, Long.MAX_VALUE);
+                var projected = ToolConversationRegression.JSON.readTree(partial);
+                if (enumerations.get() != 2 || pool.catalogs != 3 || pool.types != 2 || pool.selectedColumns == null
+                        || !pool.selectedColumns.subList(pool.selectedColumns.size()-3, pool.selectedColumns.size()).equals(List.of("ZZ_Channel_Live", "CHANNEL_ID", "OUTSIDE_SCOPE"))
+                        || !projected.at("/fields/0/name").asText().equals("CHANNEL_ID") || projected.path("fields").size() != 1
+                        || !projected.at("/absentFields/0").asText().equals("OUTSIDE_SCOPE"))
+                    throw new AssertionError("Refresh must bind the named fields on the authorized source and schema in one JDBC catalog read: " + partial);
+                System.out.println("PASS real JDBC targeted refresh used one bound column-catalog query with [CHANNEL_ID, OUTSIDE_SCOPE], no zero-row table probe");
                 System.out.println("PASS " + schema.getType() + " 302-table catalog; 2 candidates, 1 Provider.getTables, 2 column-catalog queries + 2 zero-row type queries for 2 distinct tables");
             }
         }

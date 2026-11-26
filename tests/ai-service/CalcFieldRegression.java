@@ -2,6 +2,7 @@ package io.dataease.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dataease.ai.scene.calc.AiCalcFieldScene;
+import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.ai.scene.calc.CalcFieldAccess;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
 import io.dataease.api.ds.DatasourceSemanticApi.*;
@@ -120,6 +121,11 @@ final class CalcFieldRegression {
         var preview = new DatasetDataManage() {
             @Override public String previewCalcField(DatasetGroupInfoDTO draft, long fieldId, long deadline) throws Exception {
                 String value = draft.getAllFields().stream().filter(f -> f.getId() == fieldId).findFirst().orElseThrow().getOriginName();
+                if ("current-formula".equals(previewMode)) {
+                    if (!"[102] + 77".equals(value)) throw new AssertionError("Provider received an earlier expression: " + value);
+                    previews.incrementAndGet();
+                    return "DETAIL_PASS";
+                }
                 if ("calc-column-policy".equals(previewMode)) {
                     if (!columnPolicy.isEmpty()) throw new AssertionError("Restricted field reached the provider");
                     return "DETAIL_PASS";
@@ -201,10 +207,12 @@ final class CalcFieldRegression {
             awaitingHistoryStop.countDown();
             if (!releaseHistoryReply.await(10, TimeUnit.SECONDS)) throw new AssertionError("unreleased formula reply");
         }
-        if ("calc-history-latest".equals(mode)) {
+        if ("calc-refresh-current".equals(mode))
+            return step == 1 ? call("recheck", "revalidate_current_formula", "{}") : frame(Map.of("content", "已重新校验"), "stop");
+        if (Set.of("calc-history-latest", "calc-history-ambiguous").contains(mode)) {
             if (step == 1) return call("find-validation", "find_historical_step",
-                    JSON.writeValueAsString(Map.of("action", "propose_calc_field", "subject", "*", "fields", "*", "selection", "latest")));
-            return frame(Map.of("content", "Historical validation"), "stop");
+                    JSON.writeValueAsString(Map.of("action", "propose_calc_field", "subject", "*", "fields", "*", "selection", mode.endsWith("latest") ? "latest" : "any")));
+            return frame(Map.of("content", mode.endsWith("ambiguous") ? "你指的是哪一次校验？" : "Historical validation"), "stop");
         }
         if ("calc-history-choices".equals(mode)) return frame(Map.of("content", "Which revenue convention?\n1. UNSELECTED_GROSS_MARKER\n2. Paid orders only"), "stop");
         if ("calc-history".equals(mode)) return frame(Map.of("content", "Historical validation"), "stop");
@@ -244,7 +252,7 @@ final class CalcFieldRegression {
                 : frame(Map.of("content", explanation), "stop");
     }
 
-    void verify(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, AtomicBoolean secondResourceAllowed) throws Exception {
+    void verify(AiConversationManage manage, MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, AtomicBoolean secondResourceAllowed) throws Exception {
         String opening = """
                 {"scene":"dataset-calc-field","resourceId":"11","editorId":"calc-301","sql":"","isCross":false,
                  "calcField":{"fieldId":"301","preserveType":true,"dataset":{"pid":"0","isCross":false,
@@ -429,17 +437,24 @@ final class CalcFieldRegression {
             throw new AssertionError("manual formula basis missing in model request");
         mvc.perform(delete("/ai/conversations/" + manualSession.path("sessionId").asText()));
         verifyUnits(mvc, mode, requests, opening);
-        verifyHistoricalValidation(mvc, mode, requests, opening);
+        var service = ConversationSocketRegression.editorServer(manage);
+        try {
+            service.start();
+            verifyHistoricalValidation(mvc, mode, requests, opening, "http://127.0.0.1:" + service.getPort() + "/de2api/ai/conversations");
+        } finally {
+            service.stop();
+            service.destroy();
+        }
         System.out.println("PASS calculated-field HTTP conversation, bounded private preview, correction/exhaustion/duplicate, safe failure classification, canonical application, cancellation and revocation");
     }
-    private void verifyHistoricalValidation(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+    private void verifyHistoricalValidation(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening, String base) throws Exception {
+        var http = new ConversationSocketRegression.EditorHttp();
         var editor = JSON.readValue(opening, com.fasterxml.jackson.databind.node.ObjectNode.class);
         editor.put("editorId", "history-calc");
-        var original = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
-                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        var original = http.ok("POST", base, editor);
         requests.clear();
         mode.set("calc-detail");
-        var first = terminal(mvc, start(mvc, original, "Double the price"));
+        var first = http.ask(base, original, "Double the price");
         if (!"DETAIL_PASS".equals(first.at("/result/calcField/validation").asText())) throw new AssertionError(first);
         int originalPreviews = previews.get();
         mode.set("calc-history-choices");
@@ -450,11 +465,10 @@ final class CalcFieldRegression {
         for (int i = 0; i < 6; i++) terminal(mvc, start(mvc, original, "Continue example " + i));
         editor.put("sql", "[Price] + 77");
         editor.put("previousSessionId", original.path("sessionId").asText());
-        var edited = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
-                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        var edited = http.ok("POST", base, editor);
         requests.clear();
         mode.set("calc-history");
-        var explained = terminal(mvc, start(mvc, edited, "第一次回答的第 1 步校验的是哪个公式？"));
+        var explained = http.ask(base, edited, "第一次回答的第 1 步校验的是哪个公式？");
         if (requests.size() != 1 || previews.get() != originalPreviews || !"EXPLANATION".equals(explained.at("/result/type").asText()))
             throw new AssertionError("Historical explanation must not validate or recommend the edited formula");
         var messages = requests.getFirst().path("messages");
@@ -474,7 +488,7 @@ final class CalcFieldRegression {
         }
         mode.set("calc-history-latest");
         requests.clear();
-        var lastValidation = terminal(mvc, start(mvc, edited, "上一次校验的公式是什么？"));
+        var lastValidation = http.ask(base, edited, "上一次校验的公式是什么？");
         if (!"COMPLETED".equals(lastValidation.path("status").asText()) || requests.size() != 2 || previews.get() != originalPreviews)
             throw new AssertionError("Looking up the last validation must return its evidence without another preview: " + lastValidation);
         var lookupMessage = requests.getLast().path("messages").get(requests.getLast().path("messages").size() - 1);
@@ -499,31 +513,46 @@ final class CalcFieldRegression {
         if (!frozenStep.path("evidence").has("expression") || !frozenStep.equals(retryInput.path("historicalStep"))
                 || !retryInput.path("previousAttemptDiagnostics").hasNonNull("reason") || previews.get() != originalPreviews)
             throw new AssertionError("Retrying a historical question must preserve its original evidence alongside the failure diagnostic");
+        mode.set("calc-refresh-current");
+        requests.clear();
+        previewMode = "current-formula";
+        var refreshed = http.ask(base, edited, "重新校验当前公式");
+        if (requests.size() != 2 || previews.get() != originalPreviews + 1 || !"COMPLETED".equals(refreshed.path("status").asText())
+                || !refreshed.toString().contains("DETAIL_PASS") || !refreshed.toString().contains("[Price] + 77"))
+            throw new AssertionError("Fresh validation must preview the current frozen formula once: " + refreshed);
+        previewMode = "";
+        originalPreviews = previews.get();
+        mode.set("calc-history-ambiguous");
+        requests.clear();
+        var clarified = http.ask(base, edited, "之前校验的那个公式是哪一版？");
+        var matches = requests.getLast().path("messages");
+        var versions = JSON.readTree(matches.get(matches.size()-1).path("content").asText());
+        if (!"COMPLETED".equals(clarified.path("status").asText()) || !"AMBIGUOUS".equals(versions.path("lookup").asText())
+                || versions.path("candidates").size() != 2 || !versions.toString().contains("[Price] + 77")
+                || !versions.toString().contains(formula) || versions.toString().contains("[102]") || previews.get() != originalPreviews)
+            throw new AssertionError("Several prior validations require one question identifying the two visible versions: " + versions);
+        mode.set("calc-history");
         String id = edited.path("sessionId").asText();
         requests.clear();
         writable.set(false);
         try {
-            try {
-                start(mvc, edited, "第一次回答的第 1 步");
-                throw new AssertionError("A revoked editor requested a historical formula");
-            } catch (jakarta.servlet.ServletException denied) {
-                if (!(denied.getCause() instanceof AiErrors.Failure)) throw denied;
-            }
+            var denied = http.request("POST", base + "/" + id + "/executions", Map.of("contextVersion",
+                    edited.path("contextVersion").asText(), "text", "上一次校验的公式"), "writer", null);
+            if (denied.statusCode() != 403) throw new AssertionError("Revoked historical formula: " + denied);
             if (!requests.isEmpty() || previews.get() != originalPreviews)
                 throw new AssertionError("Revoked history reached the model or preview");
         } finally { writable.set(true); }
-        mvc.perform(delete("/ai/conversations/" + id));
+        http.ok("DELETE", base + "/" + id, null);
 
         editor.remove("previousSessionId");
-        var fresh = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
-                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        var fresh = http.ok("POST", base, editor);
         requests.clear();
-        terminal(mvc, start(mvc, fresh, "第一次回答的第 1 步"));
+        http.ask(base, fresh, "第一次回答的第 1 步");
         var freshMessages = requests.getFirst().path("messages");
         var lookup = JSON.readTree(freshMessages.get(freshMessages.size() - 1).path("content").asText()).path("historicalStep");
         if (!"MISSING".equals(lookup.path("lookup").asText()) || lookup.has("evidence"))
             throw new AssertionError("New conversation exposed an earlier formula validation");
-        mvc.perform(delete("/ai/conversations/" + fresh.path("sessionId").asText()));
+        http.ok("DELETE", base + "/" + fresh.path("sessionId").asText(), null);
         verifyStoppedFormula(mvc, mode, requests, opening);
     }
 

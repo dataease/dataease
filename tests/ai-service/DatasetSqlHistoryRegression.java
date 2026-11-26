@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.dataease.ai.engine.conversation.AiConversationManage;
 import io.dataease.extensions.datasource.dto.TableField;
 
-import java.net.URI;
-import java.net.http.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -14,12 +12,12 @@ import java.util.concurrent.atomic.*;
 import static io.dataease.ai.ToolConversationRegression.*;
 
 /** Exercises the actual editor HTTP endpoints and checks the independently received model bodies. */
-final class DatasetSqlHistoryRegression {
+final class DatasetSqlHistoryRegression extends ConversationSocketRegression.EditorHttp {
     private static final String INSPECT = "先读取 orders 再读取 items";
     private static final String QUESTION = "步骤 1 里的 paid_at 和 created_at 各是什么类型？";
-    private final HttpClient client = HttpClient.newHttpClient();
     final AtomicInteger authorizationChecks = new AtomicInteger();
     final AtomicInteger selectedSnapshots = new AtomicInteger();
+    private volatile int snapshotsBeforeNaturalLookup;
     private volatile CountDownLatch secondRead = new CountDownLatch(1);
     private volatile CountDownLatch release = new CountDownLatch(1);
 
@@ -51,6 +49,35 @@ final class DatasetSqlHistoryRegression {
         String latest = Objects.requireNonNull(user).path("content").asText();
         JsonNode envelope = latest.startsWith("{") ? JSON.readTree(latest) : JSON.createObjectNode();
         String question = envelope.path("userMessage").asText(latest);
+        if (question.equals("现在只补查 items 的 missing_code") || question.equals("刷新 orders 的 paid_at")) {
+            if (!"tool".equals(last.path("role").asText())) {
+                boolean items = question.contains("items");
+                return call("read-current-fields", "get_named_table_fields", JSON.writeValueAsString(Map.of(
+                        "table", items ? "items" : "orders", "fields", items ? "missing_code" : "paid_at")));
+            }
+            return frame(Map.of("content", "来自本轮读取"), "stop");
+        }
+        if (question.equals("现在读取 orders 全表结构")) {
+            if (!"tool".equals(last.path("role").asText())) return call("read-orders", "get_table_fields", "{\"table\":\"orders\"}");
+            return frame(Map.of("content", "已读取当前结构"), "stop");
+        }
+        if (question.equals("刚才 orders 的时间字段") || question.equals("选择 Probe 11")) {
+            if (!"tool".equals(last.path("role").asText())) {
+                snapshotsBeforeNaturalLookup = selectedSnapshots.get();
+                return call("lookup", "find_historical_step", JSON.writeValueAsString(
+                    Map.of("action", "get_table_fields", "subject", "orders", "fields", "temporal",
+                            "selection", question.contains("选择") ? "source:Probe 11" : "any")));
+            }
+            var record = JSON.readTree(last.path("content").asText());
+            if ("AMBIGUOUS".equals(record.path("lookup").asText())) {
+                StringJoiner options = new StringJoiner("\n", "要查询哪一次读取？\n", "");
+                int index = 0;
+                for (var candidate : record.path("candidates"))
+                    options.add(++index + ". " + candidate.path("resourceName").asText() + " · 回答 " + candidate.path("answerNumber").asInt());
+                return frame(Map.of("content", options.toString()), "stop");
+            }
+            return frame(Map.of("content", "FOUND".equals(record.path("lookup").asText()) ? "当时的时间字段" : "本对话没有记录"), "stop");
+        }
         if (INSPECT.equals(question)) {
             boolean first = !"tool".equals(last.path("role").asText());
             return call(first ? "order-fields" : "item-fields", "get_table_fields", first ? "{\"table\":\"orders\"}" : "{\"table\":\"items\"}");
@@ -64,34 +91,6 @@ final class DatasetSqlHistoryRegression {
             return frame(Map.of("content", answer.isEmpty() ? "缺少原记录" : String.join(", ", answer)), "stop");
         }
         return frame(Map.of("content", "好的"), "stop");
-    }
-
-    private HttpResponse<String> request(String method, String path, Object body, String user, String workspace) throws Exception {
-        var builder = HttpRequest.newBuilder(URI.create(path)).header("X-Test-Identity", user)
-                .header("X-DE-Error-Contract", "2").header("Content-Type", "application/json");
-        if (workspace != null) builder.header("X-Test-Scope", workspace);
-        return client.send(builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
-                : HttpRequest.BodyPublishers.ofByteArray(JSON.writeValueAsBytes(body))).build(), HttpResponse.BodyHandlers.ofString());
-    }
-
-    private JsonNode ok(String method, String path, Object body) throws Exception {
-        var response = request(method, path, body, "writer", null);
-        if (response.statusCode() != 200) throw new AssertionError(method + " " + path + " -> " + response.statusCode() + " " + response.body());
-        return JSON.readTree(response.body());
-    }
-
-    private String startTurn(String session, String version, String text) throws Exception {
-        String path = session + "/executions";
-        return path + "/" + ok("POST", path, Map.of("contextVersion", version, "text", text)).path("executionId").asText();
-    }
-
-    private JsonNode finish(String run) throws Exception {
-        for (int i = 0; i < 240; i++) {
-            var events = ok("GET", run + "/events?after=0", null);
-            if (!"RUNNING".equals(events.path("status").asText())) return events;
-            Thread.sleep(20);
-        }
-        throw new AssertionError("no terminal event for " + run);
     }
 
     private void assertDenied(String method, String path, Object body, String user, String workspace) throws Exception {
@@ -124,6 +123,61 @@ final class DatasetSqlHistoryRegression {
         System.out.println("PASS SQL history " + JSON.writeValueAsString(result));
         String directory = System.getenv("AI_SQL_HISTORY_EVIDENCE");
         if (directory != null) Files.writeString(Path.of(directory, clientName + ".json"), JSON.writeValueAsString(Map.of("observations", result, "bodies", calls)));
+    }
+
+    private JsonNode turnEvidence(String session, String version, String question, List<JsonNode> sent) throws Exception {
+        int before = sent.size();
+        var answer = finish(startTurn(session, version, question));
+        if (!"COMPLETED".equals(answer.path("status").asText()) || sent.size() != before + 2)
+            throw new AssertionError(question + " must make one tool call: " + answer);
+        var messages = sent.getLast().path("messages");
+        var last = messages.get(messages.size() - 1);
+        if (!"tool".equals(last.path("role").asText())) throw new AssertionError(last);
+        return JSON.readTree(last.path("content").asText());
+    }
+
+    private void verifyNatural(String base, List<JsonNode> sent, List<String> reads) throws Exception {
+        var first = ok("POST", base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "search-history"));
+        String session = base + "/" + first.path("sessionId").asText(), version = first.path("contextVersion").asText();
+        turnEvidence(session, version, "现在读取 orders 全表结构", sent);
+        int count = reads.size();
+        var lookup = turnEvidence(session, version, "刚才 orders 的时间字段", sent);
+        if (!"FOUND".equals(lookup.path("lookup").asText()) || lookup.at("/evidence/fields").size() != 2
+                || !lookup.toString().contains(marker(1)) || lookup.toString().contains(marker(2)) || reads.size() != count)
+            throw new AssertionError("Natural table and type clues must select only the historical time columns without querying: " + lookup);
+        var second = ok("POST", base, Map.of("scene", "dataset-sql", "resourceId", "12", "editorId", "search-history",
+                "previousSessionId", first.path("sessionId").asText()));
+        session = base + "/" + second.path("sessionId").asText();
+        version = second.path("contextVersion").asText();
+        turnEvidence(session, version, "现在读取 orders 全表结构", sent);
+        count = reads.size();
+        var ambiguous = turnEvidence(session, version, "刚才 orders 的时间字段", sent);
+        if (!"AMBIGUOUS".equals(ambiguous.path("lookup").asText()) || ambiguous.path("candidates").size() != 2
+                || ambiguous.toString().contains(marker(0)) || ambiguous.at("/candidates/0/resourceName").equals(ambiguous.at("/candidates/1/resourceName")))
+            throw new AssertionError("Same table in different sources needs only authorized distinguishing labels: " + ambiguous);
+        var choice = turnEvidence(session, version, "选择 Probe 11", sent);
+        if (choice.path("answerNumber").asInt() != 1 || choice.at("/evidence/fields").size() != 2 || reads.size() != count)
+            throw new AssertionError("Selecting the original source must use its snapshot without a query: " + choice);
+        var refresh = turnEvidence(session, version, "刷新 orders 的 paid_at", sent);
+        if (!"CURRENT_READ".equals(refresh.path("source").asText()) || refresh.path("fields").size() != 1
+                || !refresh.toString().contains("second-source-paid") || refresh.toString().contains(marker(1))
+                || !reads.subList(count, reads.size()).equals(List.of("tables", "orders")))
+            throw new AssertionError("Refresh must read once from current target and expose only paid_at: " + refresh + reads.subList(count, reads.size()));
+        finish(startTurn(session, version, "第1步的 paid_at 和 unrecorded_note 当时有记录吗"));
+        var messages = sent.getLast().path("messages");
+        var partial = JSON.readTree(messages.get(messages.size()-1).path("content").asText()).at("/historicalStep/evidence");
+        if (!"PARTIAL".equals(partial.path("coverage").asText()) || !"second-source-paid".equals(partial.at("/fields/0/comment").asText())
+                || !"unrecorded_note".equals(partial.at("/unrecordedFields/0").asText()) || partial.has("absentFields"))
+            throw new AssertionError("A targeted refresh remains a partial snapshot for a subsequent historical question: " + partial);
+        ok("DELETE", session, null);
+        var fresh = ok("POST", base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "new-history"));
+        session = base + "/" + fresh.path("sessionId").asText();
+        count = reads.size();
+        var missing = turnEvidence(session, fresh.path("contextVersion").asText(), "刚才 orders 的时间字段", sent);
+        if (!"MISSING".equals(missing.path("lookup").asText()) || missing.has("candidates") || reads.size() != count)
+            throw new AssertionError("A fresh conversation cannot recover old candidates or trigger a business read: " + missing);
+        ok("DELETE", session, null);
+        System.out.println("PASS natural SQL history, source ambiguity and selection with zero business reads, current single-field refresh and full table refresh");
     }
 
     void verify(AiConversationManage manage, List<JsonNode> sent, List<String> reads, AtomicBoolean allowed) throws Exception {
@@ -190,6 +244,12 @@ final class DatasetSqlHistoryRegression {
                     || partial.at("/evidence/fields").size() != 0 || !"missing_code".equals(partial.at("/evidence/unrecordedFields/0").asText())
                     || !partial.at("/evidence/absentFields").isMissingNode())
                 throw new AssertionError("A stopped read cannot prove column absence: " + partial);
+            var supplemental = turnEvidence(session, version, "现在只补查 items 的 missing_code", sent);
+            if (!"CURRENT_READ".equals(supplemental.path("source").asText())
+                    || !supplemental.path("absentFields").toString().equals("[\"missing_code\"]")
+                    || !reads.subList(count, reads.size()).equals(List.of("tables", "items")))
+                throw new AssertionError("The incomplete old read should be supplemented only on the requested table: " + supplemental);
+            count = reads.size();
             int beforeDeny = sent.size();
             for (String scope : List.of("foreign", "workspace", "revoked")) {
                 allowed.set(!"revoked".equals(scope));
@@ -201,6 +261,7 @@ final class DatasetSqlHistoryRegression {
             if (reads.size() != count || sent.size() != beforeDeny) throw new AssertionError("Denied history reached model or datasource");
             allowed.set(true);
             ok("DELETE", session, null);
+            verifyNatural(base, sent, reads);
             if ("1".equals(System.getenv("AI_SQL_HISTORY_BROWSER"))) {
                 secondRead = new CountDownLatch(1); release = new CountDownLatch(1);
                 int browserCalls = sent.size();
@@ -214,9 +275,15 @@ final class DatasetSqlHistoryRegression {
                     count = reads.size(); checks = authorizationChecks.get(); snapshots = selectedSnapshots.get();
                     if (!process.waitFor(60, TimeUnit.SECONDS) || process.exitValue() != 0)
                         throw new AssertionError("Chrome editor did not complete the historical follow-up");
-                    if (sent.size() != browserCalls + 4) throw new AssertionError("Expected two original and two follow-up calls");
-                    verifyRequests("chrome", List.copyOf(sent.subList(browserCalls + 2, sent.size())), reads.size() - count,
-                            authorizationChecks.get() - checks, selectedSnapshots.get() - snapshots);
+                    if (sent.size() != browserCalls + 6) throw new AssertionError("Expected two original, two numbered and two natural lookup calls");
+                    verifyRequests("chrome", List.copyOf(sent.subList(browserCalls + 2, browserCalls + 4)), reads.size() - count,
+                            authorizationChecks.get() - checks, snapshotsBeforeNaturalLookup - snapshots);
+                    var messages = sent.getLast().path("messages");
+                    var lookup = JSON.readTree(messages.get(messages.size()-1).path("content").asText());
+                    if (!"FOUND".equals(lookup.path("lookup").asText()) || lookup.at("/evidence/fields").size() != 2
+                            || lookup.toString().contains(marker(2)))
+                        throw new AssertionError("Formal SQL editor did not reuse the two original temporal fields: " + lookup);
+
                 } finally { if (process.isAlive()) process.destroyForcibly(); }
             }
         } finally { release.countDown(); allowed.set(true); service.stop(); service.destroy(); }

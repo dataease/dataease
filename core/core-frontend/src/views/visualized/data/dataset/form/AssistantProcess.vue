@@ -63,6 +63,9 @@ const title = (tool: AiConversationTool) => {
   const params = tool.parameters
   const labels: Record<string, [string, string | undefined]> = {
     get_table_fields: ['read_table_fields', params.table],
+    get_named_table_fields: ['read_named_fields', params.table],
+    find_historical_step: ['find_historical_step', params.subject === '*' ? '' : params.subject],
+    revalidate_current_formula: ['validate_formula', undefined],
     propose_calc_field: ['validate_formula_object', params.name || params.expression],
     search_semantics: ['search_semantics', params.terms],
     search_physical_tables: ['search_physical_tables', params.terms],

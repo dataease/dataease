@@ -52,6 +52,10 @@ SQL 追问选取相关字段。计算字段追问返回原步骤提交的公式�
 
 三份 UTF-8 Markdown 资源位于 `core/core-backend/src/main/resources/ai/prompts`。维护共通的澄清、回答语言和步骤引用规则时修改 `editor-shared.md`；SQL 和计算字段专属规则分别在 `editor-dataset-sql.md` 和 `editor-calc-field.md`。
 
+按名称、字段或执行动作追问时，会话工具 `find_historical_step` 在当前权限下查找原回答。唯一结果只发送本题相关的证据；同名数据源或不同公式版本可用来源名或回答与步骤号区分。询问最后一次校验时跳过中间的解释。作者要求重新校验当前公式时，`revalidate_current_formula` 直接校验发问时固定的草稿。
+
+SQL 助手补查或刷新点名字段时使用 `get_named_table_fields`。H2、MySQL、MariaDB 和 TiDB 在当前数据源的列目录查询中绑定表及字段名；其余连接器沿用原有的授权表元数据读取。发给模型的本轮结果列出所问字段和已确认缺失的字段，之后按局部快照引用。明确刷新整表时使用原有的整表工具。
+
 ## 数据集自定义 SQL 编辑器
 
 新增自定义 SQL 节点和编辑已有节点都从 `DatasetUnion.vue` 打开 `AddSql.vue`。作者在弹框中展开「SQL 助手」后，可针对完整草稿提问。收起面板会保留本次对话，关闭弹框会结束编辑活动。身份、工作空间和资源读取权限沿用共享会话的检查。

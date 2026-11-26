@@ -329,9 +329,11 @@ public final class ToolConversationRegression {
                     yield tables; }
                 case "getTableField" -> {
                     var request = (DatasetTableFieldRequest) args[0];
-                    if (mode.get().equals("sql-field-history") && request.getDatasourceId() == 11L) {
+                    if (mode.get().equals("sql-field-history")) {
                         reads.add(request.getTableName());
-                        yield fieldHistory.fields(request.getTableName());
+                        var observed = fieldHistory.fields(request.getTableName());
+                        if (request.getDatasourceId() == 12L && !observed.isEmpty()) observed.getFirst().setName("second-source-paid");
+                        yield observed;
                     }
                     if (mode.get().equals("dataset-channel") && request.getDatasourceId() == 11L && "channel_live".equals(request.getTableName())) {
                         reads.add(request.getTableName());
@@ -424,7 +426,7 @@ public final class ToolConversationRegression {
             mode.set("sql-field-history");
             fieldHistory.verify(manage, sent, reads, firstResourceAllowed);
             mode.set("general"); sent.clear(); reads.clear(); readTargets.clear();
-            calculated.verify(mvc, mode, sent, secondResourceAllowed);
+            calculated.verify(manage, mvc, mode, sent, secondResourceAllowed);
             for (String resource : List.of("", "11")) {
                 mode.set("general");
                 var opening = new LinkedHashMap<>(Map.of("scene", "dataset-sql", "resourceId", resource, "editorId", "retry-envelope", "sql", "SELECT 42"));

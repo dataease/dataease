@@ -507,6 +507,23 @@ test("a revoked source cannot supply history or deliver an older suggestion into
   await assertUnrun(page, state);
 });
 
+test("a natural reference cannot restart on a different datasource after history permission is lost", async ({ page }) => {
+  const state = await backend(page);
+  await enter(page);
+  await expand(page);
+  await ask(page);
+  await expect(control(page, "apply")).toBeVisible();
+  await editor(page).locator(".ds-list").click();
+  await page.getByRole("treeitem", { name: "Warehouse B" }).click();
+  state.denyHistory = true;
+  await ask(page, "刚才 orders 的时间字段");
+  await expect.poll(() => state.opens.length).toBe(2);
+  await control(page, "input").fill("新问题");
+  await expect(control(page, "send")).toBeEnabled();
+  expect(state.starts).toBe(1);
+  expect(state.opens[1].previousSessionId).toBe("session-1");
+});
+
 test("a written reference to the first version overrides a later hand edit", async ({
   page,
 }) => {
