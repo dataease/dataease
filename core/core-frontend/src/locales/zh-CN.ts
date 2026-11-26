@@ -1,6 +1,9 @@
 export default {
   ai_conversation: {
     send_shortcut: 'Enter 发送，Shift+Enter 换行',
+    new_conversation: '新对话',
+    include_basis: '本轮引用',
+    view_full_basis: '查看完整引用',
     calc_title: '计算字段助手',
     ambiguous_field: '存在同名引用，请从字段列表选择具体字段或参数。',
     new_formula: '另写公式',
