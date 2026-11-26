@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script type="module">
+      import axios from "axios";
+      import { pluginAxios } from "@/components/plugin/src/pluginAxios";
+      window.fixture = {
+        embedded: { baseUrl: "", token: "" },
+        link: "",
+        token: "synthetic-host-token",
+        enabled: true,
+        signatures: [],
+      };
+      window.rawAxios = axios;
+      window.AxiosDe = pluginAxios;
+      window.ready = true;
+    </script>
+  </body>
+</html>
