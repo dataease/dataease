@@ -40,7 +40,7 @@ core/core-frontend/.stylelintcache
 core/core-frontend/src/assets/fsSvg.js
 core/core-frontend/src/assets/fsSvg.html
 .flattened-pom.xml
-/core/core-backend/
+/core/core-backend/.*
 /core/frontend/
 /core/mobile/
 /sdk/dataease-plugin-common/
@@ -69,3 +69,5 @@ docs/ai/*
 .codex/**/.env.local
 .codex/**/browser-profile/
 .codex/**/output/
+.reasonix/
+reasonix.toml
