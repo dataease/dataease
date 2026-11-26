@@ -23,6 +23,8 @@ export function followConversationSocket(options: ConversationDelivery): Promise
   return new Promise(resolve => {
     if (signal.aborted) return resolve(true)
     let closed = false
+    let binding: string | undefined
+    let lastReceipt = 0
     let timer: number
     const read = new AbortController()
     const finish = (done: boolean) => {
@@ -31,7 +33,7 @@ export function followConversationSocket(options: ConversationDelivery): Promise
       read.abort()
       signal.removeEventListener('abort', abort)
       window.clearTimeout(timer)
-      unsubscribe?.()
+      subscription?.close()
       resolve(done)
     }
     const abort = () => finish(true)
@@ -44,6 +46,7 @@ export function followConversationSocket(options: ConversationDelivery): Promise
     const receive = async (frame: Frame) => {
       if (closed) return
       if ('subscription' in frame) {
+        binding = frame.subscription
         await bindConversationSubscription(
           session,
           executionId,
@@ -84,10 +87,14 @@ export function followConversationSocket(options: ConversationDelivery): Promise
       update(page)
       if (page.status !== 'RUNNING') finish(true)
       else if ('denied' in frame) finish(false)
+      else if (binding && Date.now() - lastReceipt >= 3000) {
+        lastReceipt = Date.now()
+        subscription?.received(binding)
+      }
     }
     // Serialize initial catch-up, push batches and gap reads so a late response cannot rewind a turn.
     let handling = Promise.resolve()
-    const unsubscribe = subscribeConversationSocket(
+    const subscription = subscribeConversationSocket(
       body => {
         if (closed) return
         deadline(8500)
@@ -95,34 +102,36 @@ export function followConversationSocket(options: ConversationDelivery): Promise
       },
       () => finish(false)
     )
-    if (!unsubscribe) return finish(false)
+    if (!subscription) return finish(false)
     signal.addEventListener('abort', abort, { once: true })
     deadline(2500)
   })
 }
 
 // Only a successful authenticated read confirms the state of a disconnected execution.
-export async function followConversation(
-  options: ConversationDelivery,
-  modelDeadline: number | undefined,
-  readFirst: boolean,
-  recovering: (value: boolean) => void,
+interface ConversationRecovery extends ConversationDelivery {
+  modelDeadline?: number
+  readFirst: boolean
+  recovering: (value: boolean) => void
   terminalReadError: (error: unknown) => boolean
-): Promise<boolean> {
+}
+
+export async function followConversation(options: ConversationRecovery): Promise<boolean> {
+  const { modelDeadline, readFirst, recovering, terminalReadError } = options
   const { session, executionId, cursor, signal, update } = options
   const wait = (ms: number) => new Promise(resolve => window.setTimeout(resolve, ms))
+  const socket = () =>
+    followConversationSocket({
+      ...options,
+      update: page => {
+        recovering(false)
+        update(page)
+      }
+    })
+  if (!readFirst && (await socket())) return true
   let disconnectedAt = Date.now()
   let nextSocket = disconnectedAt + 4000
   let delay = 500
-  const socket = () => followConversationSocket({
-    ...options,
-    update: page => {
-      recovering(false)
-      update(page)
-    }
-  })
-  if (!readFirst && await socket()) return true
-  disconnectedAt = Date.now()
   recovering(true)
   while (!signal.aborted) {
     const read = new AbortController()

@@ -47,7 +47,7 @@ const copy = async () => {
     <div>
       <el-button text @click="copy">{{ tr('copy_diagnostic') }}</el-button>
       <el-button v-if="canRetry" :disabled="disabled" @click="$emit('retry')">{{
-        tr('retry_answer')
+        tr(issue.step === 'progress_step' ? 'answer_again' : 'retry_answer')
       }}</el-button>
     </div>
   </div>

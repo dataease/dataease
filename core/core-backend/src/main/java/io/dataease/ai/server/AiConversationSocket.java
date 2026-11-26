@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.*;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.messaging.support.MessageBuilder;
@@ -86,6 +87,19 @@ public class AiConversationSocket implements AiConversationSubscriptionApi {
         }
     }
 
+    public record Receipt(String subscription) { }
+
+    @MessageMapping("/ai/conversation/received")
+    public void received(@Header("simpSessionId") String session, Receipt receipt) {
+        if (receipt == null || receipt.subscription() == null) return;
+        Client client = clients.get(receipt.subscription());
+        if (client == null || !client.session.equals(session)) return;
+        synchronized (client) {
+            if (clients.get(client.key) == client && client.delivery != null && client.authenticated.getAsBoolean())
+                client.delivery.renewLease();
+        }
+    }
+
     private void deliver(Client client) {
         synchronized (client) {
             if (clients.get(client.key) != client) return;
@@ -132,7 +146,7 @@ public class AiConversationSocket implements AiConversationSubscriptionApi {
         clients.values().stream().filter(c -> c.session.equals(session) && (subscription == null || c.subscription.equals(subscription)))
                 .forEach(client -> {
                     synchronized (client) {
-                        if (client.delivery != null) client.delivery.disconnected();
+                        if (client.delivery != null) client.delivery.renewLease();
                         remove(client);
                     }
                 });

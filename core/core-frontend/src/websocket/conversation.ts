@@ -15,10 +15,29 @@ export function subscribeConversationSocket(
 ) {
   const client = connection
   if (!client?.connected) return
-  const subscription = client.subscribe('/app/ai/conversation', message => receive(message.body))
+  let subscription: ReturnType<Stomp.Client['subscribe']>
+  try {
+    subscription = client.subscribe('/app/ai/conversation', message => receive(message.body))
+  } catch {
+    return
+  }
   listeners.add(disconnected)
-  return () => {
-    listeners.delete(disconnected)
-    if (client.connected) subscription.unsubscribe()
+  return {
+    received(binding: string) {
+      if (client.connected)
+        client.send(
+          '/app/ai/conversation/received',
+          { 'content-type': 'application/json' },
+          JSON.stringify({ subscription: binding })
+        )
+    },
+    close() {
+      listeners.delete(disconnected)
+      try {
+        if (client.connected) subscription.unsubscribe()
+      } catch {
+        // The transport can close before STOMP has observed the disconnect.
+      }
+    }
   }
 }

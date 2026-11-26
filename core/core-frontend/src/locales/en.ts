@@ -85,8 +85,10 @@ export default {
     retry_configuration_confirm:
       'Verify and repair model authentication, balance or configuration first. Confirm the repair to create a new attempt for the original task with current settings.',
     progress_unreachable: 'Progress is temporarily unreachable; execution status is unconfirmed.',
+    answer_again: 'Answer again',
     editor_recovering: 'Connection interrupted. Reconnecting.',
-    connection_interrupted: 'The connection was lost for 30 seconds. This answer ended and the partial response is shown here.',
+    connection_interrupted:
+      'The connection was lost for 30 seconds. This answer ended and the partial response is shown here.',
     progress_recovering: 'Reconnecting to the same execution',
     submission_unknown: 'Acceptance is unconfirmed. Check the same submission.',
     resume_submission: 'Check same submission',

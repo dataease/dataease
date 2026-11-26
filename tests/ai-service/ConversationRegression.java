@@ -234,7 +234,7 @@ public final class ConversationRegression {
         var uncertainWrites = new AtomicInteger();
         var firstChunk = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        var providerWorkers = Executors.newFixedThreadPool(4, task -> { Thread thread = new Thread(task, "synthetic-provider"); thread.setDaemon(true); return thread; });
+        var providerWorkers = Boolean.getBoolean("ai.test.conversationSocket") ? Executors.newVirtualThreadPerTaskExecutor() : Executors.newFixedThreadPool(4, task -> { Thread thread = new Thread(task, "synthetic-provider"); thread.setDaemon(true); return thread; });
         server.setExecutor(providerWorkers);
         server.createContext("/v1/chat/completions", exchange -> {
             var body = json.readTree(exchange.getRequestBody());
@@ -310,7 +310,7 @@ public final class ConversationRegression {
                     exchange.getResponseBody().write(("data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"星河\"" + (reasoning.get() ? ",\"reasoning_content\":\"private-thought\"" : "") + "},\"finish_reason\":null}]}\n\n").getBytes(StandardCharsets.UTF_8));
                     exchange.getResponseBody().flush(); streamFirst.countDown(); firstChunk.get().countDown();
                     if (body.toString().contains("断线停止")) {
-                        Thread.sleep(650);
+                        Thread.sleep(1800);
                         exchange.getResponseBody().write(chunk("途中", null).getBytes(StandardCharsets.UTF_8));
                         exchange.getResponseBody().flush();
                     }
@@ -337,7 +337,7 @@ public final class ConversationRegression {
             candidate.setModelIdentifier("general-chat"); candidate.setApiKey("synthetic-key");
             candidate.setTestProof(configuration.testProof(configuration.candidate(candidate, true)));
             var saved = configuration.save(candidate, true); var s = configuration.setting();
-            configuration.saveSettings(new SettingsChange(s.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 5, 2, configuration.impact("SETTINGS", saved.id() + ":true").token()));
+            configuration.saveSettings(new SettingsChange(s.getRowVersion(), true, saved.id(), false, 60, 30000, 4096, 5, Boolean.getBoolean("ai.test.conversationSocket") ? 3 : 2, configuration.impact("SETTINGS", saved.id() + ":true").token()));
             AiConversationScene scene = new AiConversationScene() {
                 public String code() { return "sql"; }
                 public List<AiToolProtocol.Definition> tools() { return unknownTool.get() ? List.of(new AiToolProtocol.Definition("controlled_write", "Synthetic uncertain side effect, never business SQL", Map.of())) : List.of(); }
@@ -366,10 +366,16 @@ public final class ConversationRegression {
             var authorizationBeans = new StaticListableBeanFactory(Map.of("authorization", authorization));
             // Exercise real AiAccess verification; only the external authorization SPI is synthetic.
             var dialogueAccess = new SyntheticAccess(authorizationBeans.getBeanProvider(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class), null) {
-                public AiDeploymentMode.State mode() { return access.mode(); }
+                public AiDeploymentMode.State mode() {
+                    return System.getProperty("ai.test.peerFile") == null ? access.mode()
+                            : new AiDeploymentMode.State(AiDeploymentMode.Mode.COMMUNITY, "controlled-community");
+                }
                 public Identity capture() {
                     Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
-                    return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode());
+                    Long actor = V3UserUtil.getUid();
+                    Long workspace = io.dataease.ai.security.identity.AiOwnerContext.organization(actor,
+                            proxy == null ? ConversationSocketRegression.workspace() : proxy);
+                    return new Identity(actor, workspace, proxy, mode());
                 }
             };
             var beans = new StaticListableBeanFactory(); beans.addBean("scene", scene);

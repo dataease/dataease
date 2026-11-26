@@ -483,12 +483,12 @@ public class AiConversationManage implements AiToolConversationFeature {
         } catch (RuntimeException failure) { state.executing.set(false); throw failure; }
     }
     public Events events(String id, String execution, long after) {
-        return events(owned(id), execution, after);
+        return events(owned(id), execution, after, true);
     }
 
     public interface Delivery {
         Events read(long after, boolean heartbeat, java.util.function.BooleanSupplier authenticated);
-        void disconnected();
+        void renewLease();
     }
 
     /** Bind from the authorized HTTP request. Subsequent delivery uses only that verified owner and resource. */
@@ -506,10 +506,10 @@ public class AiConversationManage implements AiToolConversationFeature {
                         if (state.closed) throw AiErrors.error("scope_changed");
                         if (!heartbeat && cursor == run.sequence && "RUNNING".equals(run.status)) return null;
                         if (!authenticated.getAsBoolean()) throw AiErrors.error("forbidden");
-                        return events(state, execution, cursor);
+                        return events(state, execution, cursor, run.leaseMillis != EDITOR_GRACE_MILLIS);
                     }
                 }
-                @Override public void disconnected() {
+                @Override public void renewLease() {
                     synchronized (state) {
                         long now = System.currentTimeMillis();
                         if (run.leaseMillis == EDITOR_GRACE_MILLIS && now < run.lease && "RUNNING".equals(run.status))
@@ -520,7 +520,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         }
     }
 
-    private Events events(State state, String execution, long after) {
+    private Events events(State state, String execution, long after, boolean renewLease) {
         synchronized (state) {
             Run run = run(state, execution);
             if (after < 0 || after > run.sequence) throw AiErrors.error("invalid");
@@ -541,7 +541,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             }
             long now = System.currentTimeMillis();
             enforceDeadline(run, now);
-            run.lease = now + run.leaseMillis;
+            if (renewLease) run.lease = now + run.leaseMillis;
             return view(run, after);
         }
     }
