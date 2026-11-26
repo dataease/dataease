@@ -75,7 +75,7 @@ watchEffect(
       button.textContent = t('ai_conversation.copy_code')
       pre.after(button)
     }
-    for (const link of fragment.querySelectorAll('a[href]')) {
+    for (const link of fragment.querySelectorAll<HTMLAnchorElement>('a[href]')) {
       link.target = '_blank'
       link.rel = 'noopener noreferrer'
     }

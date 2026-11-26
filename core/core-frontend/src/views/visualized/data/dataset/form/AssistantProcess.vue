@@ -25,7 +25,7 @@ const expanded = computed(
     props.process.open ??
     (props.status === 'RUNNING' ||
       props.status === 'UNREACHABLE' ||
-      props.process.entries.some(item => item.tool && item.open))
+      props.process.entries.some(item => item.kind === 'tool' && item.open))
 )
 const parseResult = (value?: string) => {
   if (!value) return value
@@ -62,7 +62,7 @@ const title = (tool: AiConversationTool) => {
   return name + ' · ' + verdict(tool)
 }
 const toggleTool = (entry: ProcessEntry) => {
-  if (entry.tool) entry.open = !(entry.open ?? active(entry.tool))
+  if (entry.kind === 'tool') entry.open = !(entry.open ?? active(entry.tool))
 }
 </script>
 
@@ -71,11 +71,8 @@ const toggleTool = (entry: ProcessEntry) => {
     <summary @click.prevent="emit('update:open', !expanded)">
       {{ tr('answer_process') }}<span v-if="elapsed"> · {{ elapsed }}</span>
     </summary>
-    <template
-      v-for="entry in process.entries"
-      :key="entry.sequence + (entry.tool ? '-tool' : '-text')"
-    >
-      <details v-if="entry.tool" :open="entry.open ?? active(entry.tool)">
+    <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
+      <details v-if="entry.kind === 'tool'" :open="entry.open ?? active(entry.tool)">
         <summary @click.prevent="toggleTool(entry)">
           {{ title(entry.tool) }}
         </summary>
