@@ -15,7 +15,7 @@ import java.util.List;
 public class Kingbase extends Pg {
     private String driver = "com.kingbase8.Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName", "logger", "loggerFile", "loggerLevel");
+    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName", "logger", "loggerFile", "loggerLevel", "ConfigurePath");
 
     @Override
     public String getJdbc() {

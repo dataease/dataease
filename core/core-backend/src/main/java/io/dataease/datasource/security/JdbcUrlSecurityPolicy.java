@@ -73,7 +73,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("db2", Set.of("tracefile", "tracedirectory", "tracelevel", "tracefileappend")),
             Map.entry("gaussdb", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger")),
             Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
-            Map.entry("kingbase", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel")),
+            Map.entry("kingbase", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger", "loggerfile", "loggerlevel", "configurepath")),
             Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile", "logger", "loggerfile", "loggerlevel")),
             Map.entry("h2", Set.of("init=", "runscript")),
             Map.entry("ck", Set.of())
