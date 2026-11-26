@@ -41,6 +41,16 @@ public final class DatasetSqlPhysicalRegression {
                 }
                 return new PhysicalTableCatalog(tables, name -> {
                     reads.add(name);
+                    if ("T304".equals(name)) {
+                        var fields = new ArrayList<TableField>();
+                        for (int n = 0; n <= 256; n++) {
+                            var column = new TableField();
+                            column.setOriginName("column_" + n);
+                            column.setFieldType("INT");
+                            fields.add(column);
+                        }
+                        return fields;
+                    }
                     var f = new TableField(); f.setOriginName("channel_id"); f.setFieldType("INT"); return List.of(f);
                 });
             }
@@ -61,6 +71,10 @@ public final class DatasetSqlPhysicalRegression {
         call(turn, "get_table_fields", "table", "T300");
         call(turn, "get_table_fields", "table", "Channel_Live");
         if (!reads.equals(List.of("directory", "Channel_Live", "T300"))) throw new AssertionError(reads);
+        var selected = json.readTree(turn.execute("get_named_table_fields", Map.of("table", "T304", "fields", "column_256"),
+                () -> {}, Long.MAX_VALUE));
+        if (selected.path("fields").size() != 1 || !"column_256".equals(selected.at("/fields/0/name").asText()))
+            throw new AssertionError("A table with more than 256 columns must still allow a bounded projection: " + selected);
         try {
             call(turn, "get_table_fields", "table", "channel_live");
             throw new AssertionError("case-insensitive lookup expanded the exact selection");
@@ -74,7 +88,7 @@ public final class DatasetSqlPhysicalRegression {
         empty.set(true);
         var next = scene.beginTurn(scene.resolve("11", ""));
         if (!call(next, "search_physical_tables", "terms", "渠道").contains("EMPTY_CATALOG")
-                || reads.size() != 4) throw new AssertionError(reads);
+                || !reads.equals(List.of("directory", "Channel_Live", "T300", "T304", "directory"))) throw new AssertionError(reads);
     }
 
     private static String call(AiConversationScene.ToolExecution turn, String name, String key, String value) {

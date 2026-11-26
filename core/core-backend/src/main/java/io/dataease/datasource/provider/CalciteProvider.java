@@ -483,38 +483,14 @@ public class CalciteProvider extends Provider {
         var listing = new DatasourceRequest();
         listing.setDatasource(schema);
         var tables = getTables(listing).stream().filter(t -> include.test(t.getTableName(), t.getName())).toList();
-        java.util.function.Function<String, DatasourceRequest> tableRequest = name -> {
+        return new PhysicalTableCatalog(tables, name -> {
             var request = new DatasourceRequest();
             request.setDatasource(schema);
             request.setDsList(Map.of(schema.getId(), schema));
             request.setTable(name);
             // PhysicalTableCatalog.fields verified the exact name in this source's enumeration.
-            return request;
-        };
-        return new PhysicalTableCatalog(tables, name -> fetchFields(tableRequest.apply(name)),
-                (name, columns) -> fetchNamedFields(tableRequest.apply(name), columns));
-    }
-
-    private List<TableField> fetchNamedFields(DatasourceRequest request, List<String> columns) {
-        var query = tableFieldQuery(request, columns);
-        if (query == null) return fetchFields(request);
-        try (var connection = getConnectionFromPool(request.getDatasource().getId());
-             var statement = connection.prepareStatement(query.sql())) {
-            for (int i = 0; i < query.params().size(); i++) statement.setString(i + 1, query.params().get(i));
-            try (var rows = statement.executeQuery()) {
-                var result = new ArrayList<TableField>();
-                while (rows.next()) {
-                    var field = new TableField();
-                    field.setOriginName(rows.getString(1));
-                    field.setFieldType(rows.getString(2).toUpperCase(Locale.ROOT));
-                    field.setName(rows.getString(3));
-                    result.add(field);
-                }
-                return result;
-            }
-        } catch (SQLException failure) {
-            throw DEException.getException(failure.getMessage());
-        }
+            return fetchFields(request);
+        });
     }
 
     @Override
@@ -578,7 +554,7 @@ public class CalciteProvider extends Provider {
                         resultSet = statement.executeQuery("desc " + quoteName(table, '`'));
                     }
                 } else {
-                    QueryAndParams queryAndParams = tableFieldQuery(datasourceRequest, List.of());
+                    QueryAndParams queryAndParams = getTableFiledSql(datasourceRequest);
                     preparedStatement = con.prepareStatement(queryAndParams.sql());
                     for (int i = 0; i < queryAndParams.params().size(); i++) {
                         preparedStatement.setString(i + 1, queryAndParams.params().get(i));
@@ -1753,11 +1729,8 @@ public class CalciteProvider extends Provider {
         return Arrays.asList("mysql", "mariadb", "TiDB", "StarRocks", "doris", "mongo", "ck").contains(type);
     }
 
-    /** A null selection query means the connector supplies only table-level metadata. */
-    private QueryAndParams tableFieldQuery(DatasourceRequest datasourceRequest, List<String> columns) {
+    private QueryAndParams getTableFiledSql(DatasourceRequest datasourceRequest) {
         String sql = "";
-        String physicalColumn = null;
-        String orderBy = "";
         List<String> bindParams = new ArrayList<>();
         DatasourceConfiguration configuration = null;
         String database = "";
@@ -1781,13 +1754,11 @@ public class CalciteProvider extends Provider {
                 if (database.contains(".")) {
                     sql = "select * from " + quoteName(datasourceRequest.getTable(), '`') + " limit 0 offset 0 ";
                 } else {
-                    physicalColumn = "COLUMN_NAME";
                     sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s", bindParams, database, datasourceRequest.getTable());
                 }
                 break;
-            case mongo:
-                if (!columns.isEmpty()) return null;
             case mysql:
+            case mongo:
             case mariadb:
             case TiDB:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
@@ -1803,12 +1774,9 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                physicalColumn = "COLUMN_NAME";
                 sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s", bindParams, database, datasourceRequest.getTable());
                 break;
             case oracle:
-                physicalColumn = "tc.COLUMN_NAME";
-                orderBy = " ORDER BY tc.TABLE_NAME, tc.COLUMN_ID";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
@@ -1840,10 +1808,10 @@ public class CalciteProvider extends Provider {
                                            ON tc.owner = cc.owner AND tc.table_name = cc.table_name AND tc.column_name = cc.column_name
                         WHERE tc.TABLE_NAME = %s
                           AND tc.OWNER = %s
+                        ORDER BY tc.TABLE_NAME, tc.COLUMN_ID
                         """, bindParams, datasourceRequest.getTable(), datasourceRequest.getTable(), configuration.getSchema());
                 break;
             case db2:
-                physicalColumn = "COLNAME";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
@@ -1851,8 +1819,6 @@ public class CalciteProvider extends Provider {
                 sql = bindQuery("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = %s AND TABNAME = %s ", bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case sqlServer:
-                physicalColumn = "c.name";
-                orderBy = " ORDER BY c.column_id";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
@@ -1886,11 +1852,10 @@ public class CalciteProvider extends Provider {
                         ) pk ON c.object_id = pk.object_id AND c.column_id = pk.column_id
                         WHERE o.name = %s
                           AND s.name = %s
+                        ORDER BY c.column_id
                         """, bindParams, datasourceRequest.getTable(), configuration.getSchema());
                 break;
             case pg:
-                physicalColumn = "a.attname";
-                orderBy = " ORDER BY a.attnum";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
@@ -1905,7 +1870,7 @@ public class CalciteProvider extends Provider {
                                    END,
                                CASE
                                    WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
-                        """ + (columns.isEmpty() && datasourceRequest.getDsVersion() > 9 ? """
+                        """ + (datasourceRequest.getDsVersion() > 9 ? """
                                    WHEN a.attidentity = 'd' THEN 1
                                    WHEN a.attidentity = 'a' THEN 1
                         """ : "") + """
@@ -1921,11 +1886,10 @@ public class CalciteProvider extends Provider {
                           AND c.relname = %s
                           AND a.attnum > 0
                           AND NOT a.attisdropped
+                        ORDER BY a.attnum;
                         """, bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case gaussdb:
-                physicalColumn = "a.attname";
-                orderBy = " ORDER BY a.attnum";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), GaussDB.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
@@ -1940,7 +1904,7 @@ public class CalciteProvider extends Provider {
                                    END,
                                CASE
                                    WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
-                        """ + (columns.isEmpty() && datasourceRequest.getDsVersion() > 9 ? """
+                        """ + (datasourceRequest.getDsVersion() > 9 ? """
                                    WHEN a.attidentity = 'd' THEN 1
                                    WHEN a.attidentity = 'a' THEN 1
                         """ : "") + """
@@ -1956,11 +1920,10 @@ public class CalciteProvider extends Provider {
                           AND c.relname = %s
                           AND a.attnum > 0
                           AND NOT a.attisdropped
+                        ORDER BY a.attnum;
                         """, bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case kingbase:
-                physicalColumn = "a.attname";
-                orderBy = " ORDER BY a.attnum";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Kingbase.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
@@ -1975,7 +1938,7 @@ public class CalciteProvider extends Provider {
                                    END,
                                CASE
                                    WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
-                        """ + (columns.isEmpty() && datasourceRequest.getDsVersion() > 9 ? """
+                        """ + (datasourceRequest.getDsVersion() > 9 ? """
                                    WHEN a.attidentity = 'd' THEN 1
                                    WHEN a.attidentity = 'a' THEN 1
                         """ : "") + """
@@ -1991,28 +1954,14 @@ public class CalciteProvider extends Provider {
                           AND c.relname = %s
                           AND a.attnum > 0
                           AND NOT a.attisdropped
+                        ORDER BY a.attnum;
                         """, bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case redshift:
-                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Redshift.class);
-                physicalColumn = "a.attname";
-                orderBy = " ORDER BY a.attnum";
-                sql = """
-                        SELECT a.attname, t.typname, b.description, 0, 0
-                        FROM pg_class c
-                            JOIN pg_attribute a ON a.attrelid = c.oid
-                            LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
-                            JOIN pg_type t ON a.atttypid = t.oid
-                        WHERE a.attnum > 0 AND NOT a.attisdropped
-                        """;
-                if (!columns.isEmpty()) {
-                    if (StringUtils.isBlank(configuration.getSchema())) return null;
-                    sql += bindQuery(" AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = %s)", bindParams, configuration.getSchema());
-                }
-                sql += bindQuery(" AND c.relname = %s", bindParams, datasourceRequest.getTable());
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
+                sql = bindQuery("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = %s\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", bindParams, datasourceRequest.getTable());
                 break;
             case ck:
-                physicalColumn = "name";
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
 
                 if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
@@ -2030,19 +1979,13 @@ public class CalciteProvider extends Provider {
                 sql = "DESCRIBE " + quoteName(datasourceRequest.getTable(), '`');
                 break;
             case h2:
-                physicalColumn = "COLUMN_NAME";
                 sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = CURRENT_SCHEMA AND TABLE_NAME = %s", bindParams, datasourceRequest.getTable());
                 break;
             default:
                 break;
         }
 
-        if (!columns.isEmpty()) {
-            if (physicalColumn == null) return null;
-            sql += " AND " + physicalColumn + " IN (" + String.join(",", Collections.nCopies(columns.size(), "?")) + ")";
-            bindParams.addAll(columns);
-        }
-        return new QueryAndParams(sql + orderBy, bindParams);
+        return new QueryAndParams(sql, bindParams);
     }
 
     private List<String> getTablesSql(DatasourceRequest datasourceRequest) throws DEException {
