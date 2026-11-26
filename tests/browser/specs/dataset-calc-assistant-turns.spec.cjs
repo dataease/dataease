@@ -250,6 +250,44 @@ test("the current formula or any selected turn is frozen as the basis of each qu
   await expect(drawer.locator(".cm-content")).toHaveText(manual);
 });
 
+test("asking about a previous validation preserves the edited formula and original step", async ({ page }) => {
+  const state = await serveTurns(page);
+  const question = "第一次回答的第 1 步校验的是哪个公式？";
+  const submits = [];
+  page.on("request", request => {
+    if (request.method() === "POST" && new URL(request.url()).pathname.endsWith("/executions"))
+      submits.push(request.postDataJSON().text);
+  });
+  await page.route("**/executions/e1/events?*", route => route.fulfill({ json: {
+    sessionId: "s1", executionId: "e1", contextVersion: "v1", status: "COMPLETED", cursor: 2,
+    events: [{ sequence: 1, type: "TOOL", tool: {
+      callId: "validation-a", name: "propose_calc_field", status: "SUCCEEDED", stepNumber: 1,
+      parameters: { expression: first }, result: JSON.stringify({ status: "DETAIL_PASS" })
+    } }, { sequence: 2, type: "COMPLETED" }],
+    result: { type: "CALC_FIELD_SUGGESTION", text: "已校验原公式", calcField: {
+      expression: first, name: "差额", groupType: "q", deType: 3, validation: "DETAIL_PASS"
+    } }
+  } }));
+  const explanation = "当时校验通过的是 " + first;
+  await page.route("**/executions/e2/events?*", route => route.fulfill({ json: {
+    sessionId: "s2", executionId: "e2", contextVersion: "v2", status: "COMPLETED", cursor: 1,
+    events: [{ sequence: 1, type: "COMPLETED" }], result: { type: "EXPLANATION", text: explanation }
+  } }));
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "校验原公式");
+  const original = await completed(drawer, 1);
+  await expect(original).toContainText("步骤 1");
+  await drawer.locator(".cm-content").fill(manual);
+  await ask(drawer, question);
+  const answer = drawer.getByRole("article").nth(1);
+  await expect(answer).toContainText(explanation);
+  expect(submits.at(-1)).toContain(question);
+  expect(state.opens[1]).toMatchObject({ previousSessionId: "s1", sql: manual });
+  await expect(button(answer, "应用到当前草稿")).toHaveCount(0);
+  await expect(drawer.locator(".cm-content")).toHaveText(manual);
+});
+
 test("an edit made during generation is preserved until the author confirms an older suggestion", async ({
   page,
 }) => {

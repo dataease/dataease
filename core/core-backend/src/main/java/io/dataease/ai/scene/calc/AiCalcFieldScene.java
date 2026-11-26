@@ -201,6 +201,20 @@ public class AiCalcFieldScene implements AiConversationScene {
         } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
     }
 
+    @Override public Map<String, Object> historicalEvidence(Context original, HistoricalStep step, String question) {
+        if (!PROPOSE.equals(step.name()) || !"SUCCEEDED".equals(step.status()) || step.result() == null) return Map.of();
+        try {
+            var feedback = CalcFieldCanvas.JSON.readTree(modelToolResult(step.name(), step.result()));
+            var evidence = new LinkedHashMap<String, Object>();
+            // The model supplied this expression. The normalized display and private binding belong to the editor.
+            evidence.put("expression", step.parameters().get("expression"));
+            evidence.put("status", feedback.path("status").asText());
+            if (feedback.hasNonNull("code") && !feedback.path("code").asText().isBlank())
+                evidence.put("code", feedback.get("code").asText());
+            return evidence;
+        } catch (java.io.IOException malformed) { throw AiErrors.error("response_invalid"); }
+    }
+
     @Override public String visibleToolResult(String name, String result) {
         try {
             var visible = (com.fasterxml.jackson.databind.node.ObjectNode) CalcFieldCanvas.JSON.readTree(result);

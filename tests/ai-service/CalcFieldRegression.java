@@ -195,6 +195,7 @@ final class CalcFieldRegression {
     }
 
     String respond(String mode, int step) throws Exception {
+        if ("calc-history".equals(mode)) return frame(Map.of("content", "Historical validation"), "stop");
         String explanation = switch (mode) {
             case "calc-unit-ask" -> "Which Amount do you mean, the source column or the calculated field? What is its unit?";
             case "calc-unit-grain" -> "Do you want a row-level amount or a grouped total?";
@@ -416,8 +417,42 @@ final class CalcFieldRegression {
             throw new AssertionError("manual formula basis missing in model request");
         mvc.perform(delete("/ai/conversations/" + manualSession.path("sessionId").asText()));
         verifyUnits(mvc, mode, requests, opening);
+        verifyHistoricalValidation(mvc, mode, requests, opening);
         System.out.println("PASS calculated-field HTTP conversation, bounded private preview, correction/exhaustion/duplicate, safe failure classification, canonical application, cancellation and revocation");
     }
+    private void verifyHistoricalValidation(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        var editor = JSON.readValue(opening, com.fasterxml.jackson.databind.node.ObjectNode.class);
+        editor.put("editorId", "history-calc");
+        var original = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        requests.clear();
+        mode.set("calc-detail");
+        var first = terminal(mvc, start(mvc, original, "Double the price"));
+        if (!"DETAIL_PASS".equals(first.at("/result/calcField/validation").asText())) throw new AssertionError(first);
+        int originalPreviews = previews.get();
+        editor.put("sql", "[Price] + 77");
+        editor.put("previousSessionId", original.path("sessionId").asText());
+        var edited = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        requests.clear();
+        mode.set("calc-history");
+        var explained = terminal(mvc, start(mvc, edited, "第一次回答的第 1 步校验的是哪个公式？"));
+        if (requests.size() != 1 || previews.get() != originalPreviews || !"EXPLANATION".equals(explained.at("/result/type").asText()))
+            throw new AssertionError("Historical explanation must not validate or recommend the edited formula");
+        var messages = requests.getFirst().path("messages");
+        var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
+        if (!formula.equals(evidence.path("expression").asText()) || !"DETAIL_PASS".equals(evidence.path("status").asText())
+                || !messages.get(0).path("content").asText().contains("[Price] + 77"))
+            throw new AssertionError("The prior validation must identify its submitted expression, separately from the edited basis: " + evidence);
+        for (var message : messages) {
+            if (message.has("tool_calls") || "tool".equals(message.path("role").asText())
+                    || message.path("content").asText().contains("private-context-value")
+                    || message.path("content").asText().contains("boundExpression") || message.path("content").asText().contains("[102] * 2"))
+                throw new AssertionError("A historical explanation replayed tool data or private formula bindings");
+        }
+        mvc.perform(delete("/ai/conversations/" + edited.path("sessionId").asText()));
+    }
+
     private void assertPrivateBindingAbsent(List<JsonNode> requests) {
         for (var request : requests) for (var message : request.path("messages")) {
             if (!"tool".equals(message.path("role").asText())) continue;
