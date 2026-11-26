@@ -5456,6 +5456,11 @@ export default {
     add_field: '添加字段',
     edit_field: '编辑字段',
     add_all_field: '添加所有字段',
+    doris_batch_size: '每批写入行数',
+    doris_batch_size_inherit: '留空继承系统配置',
+    doris_batch_size_tip:
+      '留空时继承主服务配置；系统未配置时为 100000 行。填写后仅对当前任务生效，清空可恢复继承。修改后在下一次执行生效，不重建目标表。',
+    doris_batch_size_invalid: '请输入 1～2147483647 之间的整数',
     fault_tolerance_rate: '容错率',
     fault_tolerance_rate_tip:
       '0～1，默认为0，即表示同步批次数据有一条错误数据时，整个批次的导入任务将会失败。',

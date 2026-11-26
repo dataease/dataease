@@ -120,6 +120,7 @@ export interface ITarget {
   tableName: string
   datasourceId: string
   targetProperty: string
+  dorisBatchSize?: number | null
   fieldMappingVersion?: number
   dsList?: {
     id: string

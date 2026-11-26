@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
 import icon_warning_colorful from '@/assets/svg/icon_warning_colorful.svg'
+import dvInfo from '@/assets/svg/dv-info.svg'
 import { computed, defineEmits, reactive, ref, watch } from 'vue'
 import {
   addApi,
@@ -143,6 +144,7 @@ const emit = defineEmits(['taskAddVisibleClose', 'refreshList'])
  * 任务表单对象
  */
 const taskFormRef = ref<FormInstance>()
+const dorisBatchFormRef = ref<FormInstance>()
 const sourceConfigRef = ref()
 const targetConfigRef = ref()
 const defaultFormState = {
@@ -405,6 +407,18 @@ const rules = reactive({
         trigger: 'blur'
       }
     ],
+    dorisBatchSize: [
+      {
+        validator: (_rule: any, value: number | null | undefined, callback: any) => {
+          if (value != null && (!Number.isInteger(value) || value < 1 || value > 2147483647)) {
+            callback(new Error(t('sync_task.doris_batch_size_invalid')))
+            return
+          }
+          callback()
+        },
+        trigger: 'change'
+      }
+    ],
     remarks: [
       {
         max: 255,
@@ -533,6 +547,12 @@ const next = (btn: string) => {
       const targetValid = await targetConfigRef.value?.validate()
       if (sequence !== taskRequestSequence) return
       if (valid && targetValid) {
+        const batchValid = await dorisBatchFormRef.value?.validate().catch(() => false)
+        if (sequence !== taskRequestSequence) return
+        if (batchValid === false) {
+          formLoading.value = false
+          return
+        }
         onSubmit()
       } else {
         formLoading.value = false
@@ -834,6 +854,45 @@ defineExpose({ taskFormVisible })
             <!--target 配置结束-->
           </div>
         </el-form>
+        <el-form
+          v-if="activeStep === 2 && formState.target.type === 'doris'"
+          ref="dorisBatchFormRef"
+          class="doris-batch-form"
+          :model="formState.target"
+          :rules="rules.target"
+          label-position="top"
+          :disabled="formLoading || checkingTarget"
+          @submit.prevent
+        >
+          <el-row :gutter="24">
+            <el-col :span="6">
+              <el-form-item prop="dorisBatchSize">
+                <template #label>
+                  <span class="item-label-class">
+                    <span>{{ t('sync_task.doris_batch_size') }}</span>
+                    <el-tooltip effect="dark" placement="right-start">
+                      <template #content>
+                        <p style="max-width: 320px">{{ t('sync_task.doris_batch_size_tip') }}</p>
+                      </template>
+                      <el-icon>
+                        <Icon name="dv-info"><dvInfo class="svg-icon" /></Icon>
+                      </el-icon>
+                    </el-tooltip>
+                  </span>
+                </template>
+                <el-input-number
+                  v-model="formState.target.dorisBatchSize"
+                  :placeholder="t('sync_task.doris_batch_size_inherit')"
+                  :min="1"
+                  :max="2147483647"
+                  :precision="0"
+                  :controls="false"
+                  :value-on-clear="null"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
       </div>
     </div>
     <div class="task-form-footer">
@@ -883,6 +942,23 @@ defineExpose({ taskFormVisible })
   </el-drawer>
 </template>
 <style lang="less">
+.task-form-container .doris-batch-form {
+  padding: 0 24px 16px;
+
+  .ed-input-number {
+    width: 100%;
+  }
+
+  .item-label-class {
+    display: inline-flex;
+    align-items: center;
+
+    i {
+      margin-left: 4.67px;
+    }
+  }
+}
+
 .task-form-drawer-fullscreen {
   .target-check-notice {
     padding-top: 24px;
