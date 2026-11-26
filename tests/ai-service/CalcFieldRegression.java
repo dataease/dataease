@@ -281,6 +281,7 @@ final class CalcFieldRegression {
             mode.set(scenario);
             previewMode = scenario;
             String data = opening;
+            if ("calc-exhaust".equals(scenario)) data = data.replace("\"sql\":\"\"", "\"sql\":\"[Price] + 123\"");
             if (scenario.endsWith("sibling")) data = opening.replace("{\"id\":\"301\",\"name\":\"\"", """
                     {"id":"302","name":"Other","extField":2,"deType":2,"checked":true,"originName":"%s"},{"id":"301","name":""
                     """.strip().formatted(scenario.equals("calc-sibling") ? "1 / 0" : "unsupported()"));
@@ -303,6 +304,9 @@ final class CalcFieldRegression {
                     || report.toString().contains("private-driver-value") || requests.toString().contains("private-driver-value"))
                 throw new AssertionError(scenario + " " + field + " sends=" + requests.size());
             if ("calc-repair".equals(scenario)) {
+                if (!requests.get(1).toString().contains("invalid_formula") || !requests.get(1).toString().contains("[Missing] + 1")
+                        || report.path("attemptNumber").asInt() != 1)
+                    throw new AssertionError("automatic correction must use the rejected formula in this answer");
                 var validations = report.path("events").findParents("callId").stream()
                         .filter(tool -> "SUCCEEDED".equals(tool.path("status").asText())).toList();
                 if (validations.size() != 2 || validations.get(0).path("callId").equals(validations.get(1).path("callId"))
@@ -310,6 +314,23 @@ final class CalcFieldRegression {
                         || !"DETAIL_PASS".equals(JSON.readTree(validations.getLast().path("result").asText()).path("status").asText())
                         || validations.toString().contains("boundExpression"))
                     throw new AssertionError("Both actual formula validations must be visible without private bindings");
+            }
+            if ("calc-exhaust".equals(scenario)) {
+                if (!report.path("retryEligible").asBoolean()) throw new AssertionError("exhausted validation should allow manual retry");
+                requests.clear(); mode.set("calc-detail");
+                var retried = JSON.readTree(mvc.perform(post(path + "/retry").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("expectedAttemptId", report.path("attemptId").asText(),
+                                "retryKey", "retry-exhausted-formula")))).andReturn().getResponse().getContentAsByteArray());
+                var next = terminal(mvc, "/ai/conversations/" + isolated.path("sessionId").asText() + "/executions/" + retried.path("executionId").asText());
+                var messages = requests.getFirst().path("messages");
+                String userInput = messages.get(messages.size() - 1).path("content").asText();
+                if (!report.path("taskId").equals(next.path("taskId")) || !report.path("attemptId").equals(next.path("sourceAttemptId"))
+                        || !messages.get(0).path("content").asText().contains("[Price] + 123")
+                        || !userInput.contains("Calculate the field") || !userInput.contains("[Missing3] + 1")
+                        || !userInput.contains("invalid_formula") || !userInput.contains("propose_calc_field")
+                        || !"DETAIL_PASS".equals(next.at("/result/calcField/validation").asText()))
+                    throw new AssertionError("manual retry must retain question, rejected candidate, validation reason and attempt lineage");
+                assertPrivateBindingAbsent(requests);
             }
             if ("calc-comment".equals(scenario) && !"[Price] - (-2)".equals(field.path("expression").asText()))
                 throw new AssertionError("application must return the validated arithmetic");

@@ -104,6 +104,53 @@ async function completed(drawer, index) {
   return turn;
 }
 
+test("a timed-out model answer retains its original formula and retries under the same question", async ({ page, context }) => {
+  const state = await serveTurns(page);
+  const retryRequests = [];
+  await page.route("**/executions/e1/events?*", route => route.fulfill({ json: {
+    sessionId: "s1", executionId: "e1", contextVersion: "v1", attemptId: "a1",
+    retryEligible: true, status: "FAILED", cursor: 1,
+    recovery: { stepKind: "MODEL", technicalRetries: 1, corrections: 0 },
+    events: [{ sequence: 1, type: "FAILED", error: "timeout" }]
+  }}));
+  await page.route("**/executions/e1/retry", route => {
+    retryRequests.push(route.request().postDataJSON());
+    return route.fulfill({ json: { sessionId: "s1", executionId: "e2", contextVersion: "v1", attemptId: "a2", sourceAttemptId: "a1", status: "RUNNING" } });
+  });
+  await page.route("**/executions/e2/events?*", route => route.fulfill({ json: {
+    sessionId: "s1", executionId: "e2", contextVersion: "v1", status: "COMPLETED", cursor: 1,
+    events: [], result: { type: "EXPLANATION", text: "请确认分母字段。" }
+  }}));
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  const editor = drawer.locator(".cm-content");
+  await editor.fill(first);
+  await ask(drawer, "用这个公式算增长率");
+  const question = drawer.getByRole("article");
+  const error = question.getByRole("alert");
+  await expect(error).toContainText("模型调用");
+  await expect(error).toContainText("超时");
+  await expect(error).toContainText("尚未生成公式");
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await button(error, "复制诊断信息").click();
+  const diagnostic = await page.evaluate(() => navigator.clipboard.readText());
+  expect(diagnostic).toContain("模型调用失败");
+  expect(diagnostic).toContain("尚未生成公式");
+  expect(diagnostic).toContain("e1");
+  expect(diagnostic).not.toContain(first);
+  await editor.fill(manual);
+  await button(error, "重试").click();
+  await expect(question.getByText("请确认分母字段。")).toBeVisible();
+  await expect(question).toHaveCount(1);
+  await expect(question.getByText("用这个公式算增长率", { exact: true })).toHaveCount(1);
+  await expect(error).toBeHidden();
+  await question.locator("summary").filter({hasText:"上次回答"}).click();
+  await expect(error).toBeVisible();
+  await expect(editor).toHaveText(manual);
+  expect(state.opens.map(open => open.sql)).toEqual([first]);
+  expect(retryRequests).toEqual([{expectedAttemptId: "a1", retryKey: expect.any(String)}]);
+});
+
 test("clarification accepts a free-text calculation period before suggesting a formula", async ({ page }) => {
   const state = await serveTurns(page);
   state.clarification = "增长率应对比哪个期间？\n1. 上月\n2. 去年同期";

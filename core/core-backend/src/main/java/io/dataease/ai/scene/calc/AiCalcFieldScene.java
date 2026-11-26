@@ -205,6 +205,10 @@ public class AiCalcFieldScene implements AiConversationScene {
                 "message", "Check the field references, expression syntax and suggested properties, then submit a corrected candidate."));
     }
 
+    @Override public String proposedContent(String tool, Map<String, String> arguments) {
+        return PROPOSE.equals(tool) ? arguments.get("expression") : null;
+    }
+
     @Override public String modelToolResult(String name, String result) {
         try {
             var feedback = CalcFieldCanvas.JSON.readTree(result);

@@ -42,6 +42,8 @@ public interface AiConversationScene {
     default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
     /** A formal editor presents and retains each answer and its author-visible process. */
     default boolean editorConversation() { return false; }
+    /** The authored SQL/formula offered by a proposal tool, without internal application bindings. */
+    default String proposedContent(String tool, Map<String, String> arguments) { return null; }
     /** Projection shared with the model and retained in its conversation history. */
     default String modelToolResult(String name, String result) { return result; }
     /** Author-visible projection, excluding any internal application bindings. */
