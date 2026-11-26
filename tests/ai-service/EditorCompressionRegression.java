@@ -54,6 +54,17 @@ final class EditorCompressionRegression {
                         && !basis.path("matchesDraft").asBoolean(true) && system.contains(calc ? FORMULA : SQL)
                         ? "本輪依據為建議一，草稿另有修改" : "本轮依据不清楚";
             }
+        } else if (question.equals("重新校验当前公式")) {
+            if (!"SUGGESTION".equals(envelope.at("/generationBasis/kind").asText())
+                    || envelope.at("/generationBasis/number").asInt() != 1 || !system.contains(FORMULA)
+                    || messages.toString().contains("[Price] + 77")) {
+                reply = "生成依据错误或额外发送了草稿";
+            } else if (!"tool".equals(last.path("role").asText())) {
+                return call("draft-validation", "revalidate_current_formula", "{}");
+            } else {
+                reply = "no_preview_rows".equals(JSON.readTree(last.path("content").asText()).path("code").asText())
+                        ? "当前草稿预览无数据" : "校验了其它公式";
+            }
         } else if (question.equals("仅沿用已确认口径")) {
             reply = "NONE".equals(envelope.at("/generationBasis/kind").asText()) && !envelope.has("selectedSuggestion")
                     && envelope.path("earlierDialogue").toString().contains("exclude chargebacks")
@@ -76,7 +87,7 @@ final class EditorCompressionRegression {
             service.start();
             ConversationSocketRegression.browserSuite(service.getPort(), "dataset-calc-assistant-compression.spec.cjs");
             int calls = requests.size() - first;
-            if (calls != 35) throw new AssertionError("Expected exactly 35 accepted model calls for the two editor scenarios: " + calls);
+            if (calls != 37) throw new AssertionError("Expected exactly 37 accepted model calls for the two editor scenarios: " + calls);
             var evidenceFile = System.getenv("AI_EDITOR_COMPRESSION_EVIDENCE");
             if (evidenceFile != null) {
                 var evidence = new ArrayList<Object>();
@@ -94,7 +105,7 @@ final class EditorCompressionRegression {
                 }
                 java.nio.file.Files.writeString(java.nio.file.Path.of(evidenceFile), JSON.writerWithDefaultPrettyPrinter().writeValueAsString(evidence));
             }
-            System.out.println("PASS both Chrome editors via real HTTP and production scenes: 35 received model requests, selected suggestion, compacted business and language context, historical field/original validation, workspace denial and new chat");
+            System.out.println("PASS both Chrome editors via real HTTP and production scenes: 37 received model requests, selected suggestion, compacted business and language context, historical field/original validation, workspace denial and new chat");
         } finally { service.stop(); service.destroy(); }
     }
 }

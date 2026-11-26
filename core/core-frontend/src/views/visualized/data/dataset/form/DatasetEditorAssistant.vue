@@ -658,6 +658,7 @@ const send = async () => {
     failure.value = tr('unavailable_reference')
     return
   }
+  const draft = props.readDraft()
   const generationBasis: AiGenerationBasis = basis.frozenBasis ?? {
     kind: basis.prior
       ? 'SUGGESTION'
@@ -667,7 +668,7 @@ const send = async () => {
       ? 'DRAFT'
       : 'NONE',
     number: basis.prior ? turns.value.indexOf(basis.prior) + 1 : undefined,
-    matchesDraft: props.readDraft() === basis.sql
+    matchesDraft: draft === basis.sql
   }
   const token = version
   const read = new AbortController()
@@ -709,7 +710,8 @@ const send = async () => {
     if (!current()) return
     let opening = {
       scene: calcField ? ('dataset-calc-field' as const) : ('dataset-sql' as const),
-      calcField,
+      calcField:
+        calcField && draft !== sql ? { ...calcField, currentExpression: draft } : calcField,
       resourceId: basis.preview?.resourceId ?? source,
       isCross: basis.preview?.isCross ?? isCross,
       preview: basis.preview,
