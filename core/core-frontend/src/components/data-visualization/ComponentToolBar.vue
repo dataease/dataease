@@ -6,10 +6,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import {
-  changeSizeWithScale,
-  changeSizeWithScaleAdaptor
-} from '@/utils/changeComponentsSizeWithScale'
+import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
@@ -28,7 +25,6 @@ const handleScaleChange = () => {
       scale.value = scale.value < 10 ? 10 : scale.value
       scale.value = scale.value > 200 ? 200 : scale.value
       changeSizeWithScale(scale.value)
-      changeSizeWithScaleAdaptor(scale.value)
       scaleChangeReady.value = true
     }, 150)
   }
