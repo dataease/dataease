@@ -150,6 +150,8 @@ export default {
     answer_process: '执行过程',
     step_number: '步骤 {number}',
     fields_count: '{count} 个字段',
+    find_historical_step: '查找历史步骤 {object}',
+    read_named_fields: '读取 {object} 的指定字段',
     read_table_fields: '读取 {object} 表结构',
     validate_formula_object: '校验公式 {object}',
     search_semantics: '检索业务语义 {object}',

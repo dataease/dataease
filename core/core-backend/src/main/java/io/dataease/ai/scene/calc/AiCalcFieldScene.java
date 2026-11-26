@@ -16,6 +16,10 @@ import java.util.*;
 @Component
 public class AiCalcFieldScene implements AiConversationScene {
     private static final String INSTRUCTION = AiPromptResources.read("editor-calc-field.md");
+    private static final String REVALIDATE = "revalidate_current_formula";
+    private static final AiToolProtocol.Definition CURRENT_FORMULA = new AiToolProtocol.Definition(REVALIDATE,
+            "Preview the unchanged current editor formula on explicit request, using this question's frozen draft.",
+            Map.of(), AiToolProtocol.RetrySafety.READ_ONLY);
     private static final String PROPOSE = "propose_calc_field";
     private static final AiToolProtocol.Definition TOOL = new AiToolProtocol.Definition(PROPOSE,
             "Propose one detail or aggregate calculated field. Preview checks this expression in a private copy of the current dataset.",
@@ -23,7 +27,7 @@ public class AiCalcFieldScene implements AiConversationScene {
                     "groupType", "d for dimension, q for measure", "deType", "0 text, 1 date, 2 integer, 3 decimal, 5 geography or 7 URL"),
             AiToolProtocol.RetrySafety.READ_ONLY);
     private record Draft(long target, String dataset, List<ResourceRevision> sources, Map<Long, CalcFieldAccess.Column> columns,
-                         CalcFieldAccess.Grant grant, boolean preserveType) implements SceneState { }
+                         CalcFieldAccess.Grant grant, boolean preserveType, String currentExpression) implements SceneState { }
 
     private final io.dataease.ai.tool.sql.AiSqlStaticValidator sqlValidator = new io.dataease.ai.tool.sql.AiSqlStaticValidator();
 
@@ -46,7 +50,7 @@ public class AiCalcFieldScene implements AiConversationScene {
     @Override public String code() { return "dataset-calc-field"; }
     @Override public List<Resource> resources() { return List.of(); }
     @Override public Context resolve(String resourceId, String input) { throw AiErrors.error("invalid"); }
-    @Override public List<AiToolProtocol.Definition> tools() { return List.of(TOOL); }
+    @Override public List<AiToolProtocol.Definition> tools() { return List.of(TOOL, CURRENT_FORMULA); }
     @Override public boolean editorConversation() { return true; }
 
     @Override public Context resolve(Open editor) {
@@ -83,7 +87,7 @@ public class AiCalcFieldScene implements AiConversationScene {
         String revision = AiPromptFingerprint.of(new Prompt(snapshot + CalcFieldCanvas.json(fields.projection) + CalcFieldCanvas.json(tableMeanings)
                 + CalcFieldCanvas.json(sources) + grant.savedVersion() + input.fieldId()));
         return new Context(resource.id(), resource.name(), revision, instruction, null, isCross, null,
-                new Draft(input.fieldId(), snapshot, sources, Map.copyOf(canvas.columns), grant, Boolean.TRUE.equals(input.preserveType())));
+                new Draft(input.fieldId(), snapshot, sources, Map.copyOf(canvas.columns), grant, Boolean.TRUE.equals(input.preserveType()), basis));
     }
 
     @Override public void authorize(Context context) {
@@ -98,21 +102,22 @@ public class AiCalcFieldScene implements AiConversationScene {
         var scope = (Draft) context.sceneState();
         var clarification = new java.util.concurrent.atomic.AtomicReference<String>();
         return (name, args, active, deadline) -> {
-            if (!PROPOSE.equals(name)) throw AiErrors.error("unsupported");
+            boolean current = REVALIDATE.equals(name);
+            if (!current && !PROPOSE.equals(name)) throw AiErrors.error("unsupported");
             active.run();
             authorize(context);
             if (clarification.get() != null) return clarification.get();
             var draft = CalcFieldCanvas.copy(scope.dataset());
-            String expression = args.get("expression");
+            var fields = new CalcFieldInputs(draft, scope.target(), scope.grant(), scope.columns(), null);
+            String expression = current ? scope.currentExpression() : args.get("expression");
             String fieldName = args.get("name");
             String group = args.get("groupType");
             String type = args.get("deType");
-            if (fieldName == null || fieldName.isBlank() || fieldName.length() > 128 || !("q".equals(group) || "d".equals(group))
-                    || type == null || !type.matches("[012357]")) return invalid();
-            var fields = new CalcFieldInputs(draft, scope.target(), scope.grant(), scope.columns(), null);
+            if (!current && (fieldName == null || fieldName.isBlank() || fieldName.length() > 128 || !("q".equals(group) || "d".equals(group))
+                    || type == null || !type.matches("[012357]"))) return invalid();
             String display;
             try {
-                display = fields.candidate(expression, Integer.parseInt(type), scope.preserveType());
+                display = fields.candidate(expression, current ? 0 : Integer.parseInt(type), current || scope.preserveType());
             } catch (CalcFieldInputs.Ambiguous ambiguity) {
                 String question = AiToolProtocol.result(Map.of("status", "CLARIFY_FIELD", "choices", ambiguity.options));
                 clarification.set(question);
@@ -194,7 +199,7 @@ public class AiCalcFieldScene implements AiConversationScene {
     }
 
     @Override public String modelToolResult(String name, String result) {
-        if (!PROPOSE.equals(name)) return result;
+        if (!PROPOSE.equals(name) && !REVALIDATE.equals(name)) return result;
         try {
             var feedback = CalcFieldCanvas.JSON.readTree(result);
             if ("CLARIFY_FIELD".equals(feedback.path("status").asText())) return result;
@@ -203,12 +208,12 @@ public class AiCalcFieldScene implements AiConversationScene {
     }
 
     @Override public Map<String, Object> historicalEvidence(Context original, HistoricalStep step, String question) {
-        if (!PROPOSE.equals(step.name()) || !"SUCCEEDED".equals(step.status()) || step.result() == null) return Map.of();
+        if (!(PROPOSE.equals(step.name()) || REVALIDATE.equals(step.name())) || !"SUCCEEDED".equals(step.status()) || step.result() == null) return Map.of();
         try {
             var feedback = CalcFieldCanvas.JSON.readTree(modelToolResult(step.name(), step.result()));
             var evidence = new LinkedHashMap<String, Object>();
             // The model supplied this expression. The normalized display and private binding belong to the editor.
-            evidence.put("expression", step.parameters().get("expression"));
+            evidence.put("expression", REVALIDATE.equals(step.name()) ? ((Draft) original.sceneState()).currentExpression() : step.parameters().get("expression"));
             evidence.put("status", feedback.path("status").asText());
             if (feedback.hasNonNull("code") && !feedback.path("code").asText().isBlank())
                 evidence.put("code", feedback.get("code").asText());

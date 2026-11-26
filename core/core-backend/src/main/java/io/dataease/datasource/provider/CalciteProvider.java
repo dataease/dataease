@@ -483,14 +483,43 @@ public class CalciteProvider extends Provider {
         var listing = new DatasourceRequest();
         listing.setDatasource(schema);
         var tables = getTables(listing).stream().filter(t -> include.test(t.getTableName(), t.getName())).toList();
-        return new PhysicalTableCatalog(tables, name -> {
+        java.util.function.Function<String, DatasourceRequest> tableRequest = name -> {
             var request = new DatasourceRequest();
             request.setDatasource(schema);
             request.setDsList(Map.of(schema.getId(), schema));
             request.setTable(name);
             // PhysicalTableCatalog.fields verified the exact name in this source's enumeration.
+            return request;
+        };
+        return new PhysicalTableCatalog(tables, name -> fetchFields(tableRequest.apply(name)),
+                (name, columns) -> fetchNamedFields(tableRequest.apply(name), columns));
+    }
+
+    private List<TableField> fetchNamedFields(DatasourceRequest request, List<String> columns) {
+        // These providers have a column catalog with the same physical-name predicate and projections.
+        if (!Set.of("h2", "mysql", "mariadb", "tidb").contains(request.getDatasource().getType().toLowerCase(Locale.ROOT)))
             return fetchFields(request);
-        });
+        var query = getTableFiledSql(request);
+        String sql = query.sql() + " AND COLUMN_NAME IN (" + String.join(",", Collections.nCopies(columns.size(), "?")) + ")";
+        var parameters = new ArrayList<>(query.params());
+        parameters.addAll(columns);
+        try (var connection = getConnectionFromPool(request.getDatasource().getId());
+             var statement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < parameters.size(); i++) statement.setString(i + 1, parameters.get(i));
+            try (var rows = statement.executeQuery()) {
+                var result = new ArrayList<TableField>();
+                while (rows.next()) {
+                    var field = new TableField();
+                    field.setOriginName(rows.getString(1));
+                    field.setFieldType(rows.getString(2).toUpperCase(Locale.ROOT));
+                    field.setName(rows.getString(3));
+                    result.add(field);
+                }
+                return result;
+            }
+        } catch (SQLException failure) {
+            throw DEException.getException(failure.getMessage());
+        }
     }
 
     @Override

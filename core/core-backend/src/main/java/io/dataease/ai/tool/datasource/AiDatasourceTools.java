@@ -176,6 +176,14 @@ public class AiDatasourceTools {
         return projection;
     }
 
+    public TableFields namedFields(Scope scope, String table, List<String> names) {
+        var catalog = directory(scope);
+        if (!catalog.labels().containsKey(table)) throw AiErrors.error("forbidden");
+        var fields = catalog.fields(table, names);
+        authorize(scope);
+        return projectFields(table, fields, true);
+    }
+
     private TableFields projectFields(String table, List<TableField> fields, boolean nativeType) {
         if (fields == null || fields.size() > 256) throw AiErrors.error("output_limit");
         return new TableFields(table, fields.stream().map(field -> new Field(

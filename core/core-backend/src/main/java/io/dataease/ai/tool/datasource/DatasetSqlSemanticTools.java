@@ -34,6 +34,25 @@ public class DatasetSqlSemanticTools {
         });
     }
 
+    public AiTool<AiDatasourceTools.Scope> namedFields() {
+        var definition = new AiToolProtocol.Definition("get_named_table_fields",
+                "Read current metadata for named physical columns of one exact table; use for explicit refresh or missing evidence.",
+                Map.of("table", "Exact table on the current datasource", "fields", "Comma-separated exact column names, at most 32"),
+                AiToolProtocol.RetrySafety.READ_ONLY);
+        return new AiTool<>(definition, (scope, args, active, deadline) -> {
+            String table = args.get("table");
+            var names = Arrays.stream(args.get("fields").split("[,，]", -1)).map(String::strip).distinct().toList();
+            if (names.size() > 32 || names.stream().anyMatch(n -> n.isEmpty() || n.length() > 256))
+                return AiToolProtocol.result(Map.of("status", "INVALID", "code", "fields"));
+            var physical = metadata.namedFields(scope, table, names);
+            active.run();
+            var selected = inspect(scope, table, physical).fields();
+            var found = selected.stream().map(FieldEvidence::name).collect(Collectors.toSet());
+            return AiToolProtocol.result(Map.of("source", "CURRENT_READ", "table", table, "fields", selected,
+                    "absentFields", names.stream().filter(n -> !found.contains(n)).toList()));
+        });
+    }
+
     /** The caller supplies the exact authorized, live structure read for this turn. */
     public TableEvidence inspect(AiDatasourceTools.Scope scope, String table, AiDatasourceTools.TableFields physical) {
         metadata.authorize(scope);

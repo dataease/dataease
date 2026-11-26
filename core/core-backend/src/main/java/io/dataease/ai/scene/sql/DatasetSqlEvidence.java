@@ -45,8 +45,11 @@ final class DatasetSqlEvidence {
     static Map<String, Object> historicalFields(String expectedTable, String result, String question) {
         if (expectedTable == null) return Map.of();
         try {
-            var snapshot = result == null ? new TableEvidence(expectedTable, false, null, null, List.of())
-                    : JSON.readValue(result, TableEvidence.class);
+            var data = result == null ? JSON.createObjectNode().put("table", expectedTable) : JSON.readTree(result);
+            var verifiedAbsent = new HashSet<String>();
+            data.path("absentFields").forEach(field -> verifiedAbsent.add(field.asText()));
+            var snapshot = new TableEvidence(data.path("table").asText(), data.path("inspected").asBoolean(false), null, null,
+                    data.path("fields").isArray() ? Arrays.asList(JSON.treeToValue(data.get("fields"), FieldEvidence[].class)) : List.of());
             if (!expectedTable.equals(snapshot.table()) || snapshot.fields() == null) return Map.of();
             var missing = new LinkedHashSet<String>();
             var hints = IDENTIFIER_HINT.matcher(question);
@@ -72,7 +75,10 @@ final class DatasetSqlEvidence {
             evidence.put("table", snapshot.table());
             evidence.put("coverage", snapshot.inspected() ? "COMPLETE" : "PARTIAL");
             evidence.put("fields", selected);
-            if (!missing.isEmpty()) evidence.put(snapshot.inspected() ? "absentFields" : "unrecordedFields", missing);
+            var absent = missing.stream().filter(name -> snapshot.inspected() || verifiedAbsent.contains(name)).toList();
+            if (!absent.isEmpty()) evidence.put("absentFields", absent);
+            missing.removeAll(absent);
+            if (!missing.isEmpty()) evidence.put("unrecordedFields", missing);
             return evidence;
         } catch (java.io.IOException invalid) {
             return Map.of();

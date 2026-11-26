@@ -150,6 +150,8 @@ export default {
     answer_process: '執行過程',
     step_number: '步驟 {number}',
     fields_count: '{count} 個欄位',
+    find_historical_step: '查找歷史步驟 {object}',
+    read_named_fields: '讀取 {object} 的指定欄位',
     read_table_fields: '讀取 {object} 資料表結構',
     validate_formula_object: '校驗公式 {object}',
     search_semantics: '搜尋業務語意 {object}',

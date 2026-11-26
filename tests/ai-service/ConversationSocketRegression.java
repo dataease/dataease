@@ -41,6 +41,42 @@ public final class ConversationSocketRegression {
     static Long workspace() { return workspace.get(); }
     static final ObjectMapper json = new ObjectMapper();
 
+    static class EditorHttp {
+        private final HttpClient client = HttpClient.newHttpClient();
+
+        HttpResponse<String> request(String method, String path, Object body, String user, String workspace) throws Exception {
+            var builder = HttpRequest.newBuilder(URI.create(path)).header("X-Test-Identity", user)
+                    .header("X-DE-Error-Contract", "2").header("Content-Type", "application/json");
+            if (workspace != null) builder.header("X-Test-Scope", workspace);
+            return client.send(builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
+                    : HttpRequest.BodyPublishers.ofByteArray(json.writeValueAsBytes(body))).build(), HttpResponse.BodyHandlers.ofString());
+        }
+
+        JsonNode ok(String method, String path, Object body) throws Exception {
+            var response = request(method, path, body, "writer", null);
+            if (response.statusCode() != 200) throw new AssertionError(method + " " + path + " -> " + response.statusCode() + " " + response.body());
+            return json.readTree(response.body());
+        }
+
+        String startTurn(String session, String version, String text) throws Exception {
+            String path = session + "/executions";
+            return path + "/" + ok("POST", path, Map.of("contextVersion", version, "text", text)).path("executionId").asText();
+        }
+
+        JsonNode finish(String run) throws Exception {
+            for (int i = 0; i < 240; i++) {
+                var events = ok("GET", run + "/events?after=0", null);
+                if (!"RUNNING".equals(events.path("status").asText())) return events;
+                Thread.sleep(20);
+            }
+            throw new AssertionError("no terminal event for " + run);
+        }
+
+        JsonNode ask(String base, JsonNode session, String text) throws Exception {
+            return finish(startTurn(base + "/" + session.path("sessionId").asText(), session.path("contextVersion").asText(), text));
+        }
+    }
+
     static Long actor(String token) {
         return "writer".equals(token) ? 1L : "other".equals(token) ? 2L : null;
     }

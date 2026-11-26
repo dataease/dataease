@@ -23,7 +23,7 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     private final DatasetSqlGuide guide;
 
     public AiDatasetSqlScene(AiDatasourceTools metadata, DatasetSqlGuide guide, DatasetSqlSemanticTools semantics, DatasourceRelationManage relations) {
-        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), DatasetSqlRelations.tool(metadata, relations), guide.tool(metadata), proposal(metadata)));
+        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), semantics.namedFields(), DatasetSqlRelations.tool(metadata, relations), guide.tool(metadata), proposal(metadata)));
         this.guide = guide;
     }
 
@@ -94,7 +94,7 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     }
 
     @Override public Map<String, Object> historicalEvidence(Context original, HistoricalStep step, String question) {
-        if (!"get_table_fields".equals(step.name())) return Map.of();
+        if (!"get_table_fields".equals(step.name()) && !"get_named_table_fields".equals(step.name())) return Map.of();
         String result = "SUCCEEDED".equals(step.status()) ? step.result() : null;
         return DatasetSqlEvidence.historicalFields(step.parameters().get("table"), result, question);
     }

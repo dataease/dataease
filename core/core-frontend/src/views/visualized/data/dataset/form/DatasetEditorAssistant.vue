@@ -349,6 +349,15 @@ const chooseBasis = (question: string) => {
     (last, turn, i) => (suggestionText(turn.result) ? i + 1 : last),
     0
   )
+  if (
+    selectedBasis.value === undefined &&
+    /(?:重新|再次|再|重)[新做]?\s*(?:校[验驗]|[验驗][证證]|檢查|检查).*?(?:当前|當前|草稿)|(?:revalidate|recheck|validate|check)\s+(?:the\s+)?(?:current|edited|draft)\b/i.test(
+      question
+    )
+  ) {
+    const sql = props.readDraft()
+    return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
+  }
   const requested = selectedBasis.value ?? referencedTurn(question, latest)
   const preview = props.preview
   const asksAboutPreview =
@@ -721,6 +730,10 @@ const send = async () => {
             !active() ||
             turn.stopRequested ||
             opening.previousExecutionId ||
+            previous?.selectedChoice ||
+            /步[骤驟]|第.{1,8}步|第.{1,10}(?:回答|答[复覆]|回[复覆])|(?:刚才|剛才|之前|当时|當時|上一[次轮輪]).*(?:表|字段|欄位|校[验驗]|公式)|\b(?:step|earlier|previous|last (?:validation|formula|table|answer))\b/i.test(
+              question
+            ) ||
             basis.prior ||
             basis.preview ||
             !opening.previousSessionId ||
