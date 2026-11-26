@@ -277,6 +277,7 @@ public class AiRuntimeManage implements AiContextFactory, AiModelProvider {
             var feature = (AiToolConversationFeature) feature(context.feature()); feature.authorizeToolInput(context, input);
             int allocation = budget.allocate();
             var payload = AiToolProtocol.payload(input);
+            if (context.snapshot() != null) payload.putObject("stream_options").put("include_usage", true);
             payload.put("model", model.getModelIdentifier()); payload.put("stream", true); payload.put("n", 1);
             if (allocation > 0) payload.put("MAX_COMPLETION_TOKENS".equals(model.getOutputTokenParameter()) ? "max_completion_tokens" : "max_tokens", allocation);
             String serialized = payload.toString();

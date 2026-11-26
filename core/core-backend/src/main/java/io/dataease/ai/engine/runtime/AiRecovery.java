@@ -12,6 +12,8 @@ import java.util.function.Supplier;
 /** Attempt-scoped recovery: counters/deadline never reset between model or tool steps. */
 public final class AiRecovery {
     public record Progress(String stepId, String stepKind, int technicalRetries, int corrections, String reason) { }
+    private final AiModelUsage usage = new AiModelUsage();
+    public AiModelUsage usage() { return usage; }
     private int stepLimit, attemptLimit, delay;
     private boolean frozen;
     private int retries, corrections, modelSends, toolSends;

@@ -168,7 +168,14 @@ export interface AiAssistanceResult {
   editorId: string
   draftVersion: string
 }
+export interface AiAnswerMetering {
+  elapsedMillis: number
+  inputTokens: number | null
+  outputTokens: number | null
+  usageStatus: 'COMPLETE' | 'PARTIAL' | 'MISSING'
+}
 export interface AiConversationEvents {
+  metering?: AiAnswerMetering | null
   sessionId: string
   executionId: string
   contextVersion: string

@@ -8,6 +8,7 @@ import type { AnswerProcess, ProcessEntry } from './assistantProcess'
 
 const props = defineProps<{
   process: AnswerProcess
+  elapsed?: string
   status: string
   sessionId?: string
   executionId?: string
@@ -67,7 +68,9 @@ const toggleTool = (entry: ProcessEntry) => {
 
 <template>
   <details v-if="process.entries.length" class="assistant-process" :open="expanded">
-    <summary @click.prevent="emit('update:open', !expanded)">{{ tr('answer_process') }}</summary>
+    <summary @click.prevent="emit('update:open', !expanded)">
+      {{ tr('answer_process') }}<span v-if="elapsed"> · {{ elapsed }}</span>
+    </summary>
     <template
       v-for="entry in process.entries"
       :key="entry.sequence + (entry.tool ? '-tool' : '-text')"

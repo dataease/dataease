@@ -89,6 +89,8 @@ public class AiConversationManage implements AiToolConversationFeature {
         final String attemptId = UUID.randomUUID().toString();
         final String sourceAttemptId;
         final int attemptNumber;
+        final long startedNanos;
+        Metering metering;
         boolean replayUnsafe;
         String question;
         final AiRuntimeManage.StreamHandle stream;
@@ -107,7 +109,8 @@ public class AiConversationManage implements AiToolConversationFeature {
         long sequence;
         volatile long lease = System.currentTimeMillis() + LEASE_MILLIS;
         volatile String status = "RUNNING";
-        Run(State state, Task task, AiRuntimeManage.StreamHandle stream) {
+        Run(State state, Task task, AiRuntimeManage.StreamHandle stream, long startedNanos) {
+            this.startedNanos = startedNanos;
             this.state = state; this.task = task; this.question = task.request.text(); this.stream = stream;
             sourceAttemptId = task.latest == null ? null : task.latest.attemptId;
             attemptNumber = task.latest == null ? 1 : task.latest.attemptNumber + 1;
@@ -425,6 +428,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             throw AiErrors.error("concurrency");
         if (state.runs.size() >= 50) throw AiErrors.error("input_limit");
         if (!state.executing.compareAndSet(false, true)) throw AiErrors.error("concurrency");
+        long startedNanos = System.nanoTime();
         try {
             authorized(state, () -> { check(state); return null; });
             String id = state.view.sessionId();
@@ -432,7 +436,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             AiRuntimeManage.StreamHandle stream = !task.toolConversation ? runtime.getObject().stream(code(), scope, task.prompt)
                     : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(task.input), false, null), task.input,
                             scene(state.view.scene()).toolStepLimit());
-            var run = new Run(state, task, stream);
+            var run = new Run(state, task, stream, startedNanos);
             run.tools = scene(state.view.scene()).beginTurn(state.context);
             stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
             if (stream instanceof AiRuntimeManage.ToolStreaming) run.transcript.addAll(task.input.messages());
@@ -532,7 +536,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     private Events view(Run run, long after) {
         var session = run.state.view;
         return new Events(session.sessionId(), run.stream.executionId(), session.contextVersion(), run.status, run.sequence,
-                run.events.stream().filter(event -> event.sequence() > after).toList(), run.result, run.task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId, retryEligible(run), recoveryProgress(run));
+                run.events.stream().filter(event -> event.sequence() > after).toList(), run.result, run.task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId, retryEligible(run), recoveryProgress(run), run.metering);
     }
     /** Checks authority and the immutable source revision; the editor still performs its own draft CAS. */
     public Result checkApplication(String id, String execution, Application request) {
@@ -790,6 +794,7 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     private void terminate(Run run, String status, String error) {
         if (!"RUNNING".equals(run.status)) return;
+        run.metering = run.stream.recovery().usage().snapshot(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - run.startedNanos));
         run.status = status; run.events.add(new Event(++run.sequence, status, null, error));
         if (run.state.single) run.state.singleFinished = true;
         if (run.state.active == run) { run.state.active = null; run.state.executing.set(false); }

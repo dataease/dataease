@@ -114,8 +114,13 @@ public final class AiConversationDtos {
                               @Pattern(regexp = "[0-9]{1,20}") String targetResourceId) {
         public Application(String contextVersion, String draftVersion) { this(contextVersion, draftVersion, null); }
     }
+    public record Metering(long elapsedMillis, Long inputTokens, Long outputTokens, String usageStatus) { }
     public record Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events, Result result,
-                         String taskId, String attemptId, int attemptNumber, String sourceAttemptId, boolean retryEligible, RecoveryProgress recovery) {
+                         String taskId, String attemptId, int attemptNumber, String sourceAttemptId, boolean retryEligible, RecoveryProgress recovery, Metering metering) {
+        public Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events, Result result,
+                      String taskId, String attemptId, int attemptNumber, String sourceAttemptId, boolean retryEligible, RecoveryProgress recovery) {
+            this(sessionId, executionId, contextVersion, status, cursor, events, result, taskId, attemptId, attemptNumber, sourceAttemptId, retryEligible, recovery, null);
+        }
         public Events(String sessionId, String executionId, String contextVersion, String status, long cursor, java.util.List<Event> events, Result result,
                       String taskId, String attemptId, int attemptNumber, String sourceAttemptId, boolean retryEligible) {
             this(sessionId, executionId, contextVersion, status, cursor, events, result, taskId, attemptId, attemptNumber, sourceAttemptId, retryEligible, null);

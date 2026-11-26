@@ -20,6 +20,7 @@ import {
   startConversationExecution,
   stopConversationExecution,
   type AiAssistanceResult,
+  type AiAnswerMetering,
   type AiCalcFieldDraft,
   type AiCalcFieldSuggestion,
   type AiConversationEvents,
@@ -51,6 +52,8 @@ const validationLabel = (validation: AiCalcFieldSuggestion['validation']) => {
   if (validation === 'AGGREGATE_PLACEHOLDER') return tr('aggregate_placeholder')
   return tr(validation === 'DETAIL_PASS' ? 'detail_pass' : 'calc_failed')
 }
+const elapsedLabel = (ms: number) =>
+  tr('elapsed_time') + ' ' + (ms < 1000 ? ms + ' ms' : ms / 1000 + ' s')
 const title = () => tr(props.calcFieldDraft ? 'calc_title' : 'editor_title')
 const newDraftLabel = () => tr(props.calcFieldDraft ? 'new_formula' : 'new_query')
 const suggestionText = (result?: AiAssistanceResult) => result?.calcField?.expression ?? result?.sql
@@ -69,6 +72,7 @@ interface Turn {
   choices?: string[]
   selectedChoice?: string
   process: AnswerProcess
+  metering?: AiAnswerMetering
   session?: AiConversationSession
   cursor?: number
   executionId?: string
@@ -424,6 +428,7 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
       failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
     }
   }
+  if (page.metering) turn.metering = page.metering
   turn.cursor = page.cursor
   turn.status = page.status
   if (page.status === 'COMPLETED' && page.result) {
@@ -798,6 +803,7 @@ const apply = async (turn: Turn) => {
           </details>
           <AssistantProcess
             :process="turn.process"
+            :elapsed="turn.metering && elapsedLabel(turn.metering.elapsedMillis)"
             :status="turn.status"
             :session-id="turn.session?.sessionId"
             :execution-id="turn.executionId"
@@ -908,6 +914,17 @@ const apply = async (turn: Turn) => {
             @click="selectBasis(index + 1)"
             >{{ tr('refer_to_suggestion') }}</el-button
           >
+          <footer v-if="turn.metering" class="answer-metering">
+            <span v-if="!turn.process.entries.length">{{
+              elapsedLabel(turn.metering.elapsedMillis)
+            }}</span>
+            <span v-if="turn.metering.usageStatus === 'MISSING'">{{ tr('usage_missing') }}</span>
+            <template v-else>
+              <span>{{ tr('input_tokens') }} {{ turn.metering.inputTokens ?? '—' }}</span>
+              <span>{{ tr('output_tokens') }} {{ turn.metering.outputTokens ?? '—' }}</span>
+              <span v-if="turn.metering.usageStatus === 'PARTIAL'">{{ tr('usage_partial') }}</span>
+            </template>
+          </footer>
         </article>
       </div>
       <p v-if="failure" role="alert">{{ failure }}</p>
@@ -996,6 +1013,13 @@ const apply = async (turn: Turn) => {
 </template>
 
 <style scoped lang="less">
+.answer-metering {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 12px;
+}
+
 .dataset-sql-assistant {
   width: min(360px, 36vw);
   height: 100%;

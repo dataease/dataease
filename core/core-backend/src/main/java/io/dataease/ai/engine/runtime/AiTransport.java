@@ -194,6 +194,15 @@ public class AiTransport {
             catch (InterruptedException cancelled) { Thread.currentThread().interrupt(); throw AiErrors.error("cancelled"); }
         }
     }
+    // The admission interceptor runs first. Count only requests that reach the actual HTTP send.
+    private AiModelUsage.Request measure(RestClient.Builder builder, AiRecovery recovery) {
+        var usage = recovery.usage().new Request();
+        builder.requestInterceptor((request, bytes, exchange) -> {
+            usage.sent();
+            return exchange.execute(request, bytes);
+        });
+        return usage;
+    }
     /** One controlled interactive upstream stream. No default WebClient, retry or model-side tool execution. */
     public final class Stream implements AutoCloseable {
         private final boolean background, acceptedConversation;
@@ -217,8 +226,10 @@ public class AiTransport {
                         var delivered = new java.util.concurrent.atomic.AtomicBoolean();
                         var budget = new AiToolProtocol.Budget(s.getMaxOutputTokens());
                         recovery.execute("MODEL", deadline, guard, delivered::get, () -> { }, () -> perform(c, s, background, deadline, recheck, cancellation, builder -> {
+                            var usage = measure(builder, recovery);
                             var options = (org.springframework.ai.openai.OpenAiChatOptions) prompt.getOptions();
                             var payload = json.createObjectNode();
+                            if (acceptedConversation) payload.putObject("stream_options").put("include_usage", true);
                             payload.put("model", options.getModel()); payload.put("stream", true); payload.put("n", 1);
                             if (options.getMaxTokens() != null) payload.put("max_tokens", options.getMaxTokens());
                             if (options.getMaxCompletionTokens() != null) payload.put("max_completion_tokens", options.getMaxCompletionTokens());
@@ -238,7 +249,7 @@ public class AiTransport {
                                         if (response.getStatusCode().value() >= 300) throw providerError(response);
                                         MediaType type = response.getHeaders().getContentType();
                                         if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
-                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens() != null ? options.getMaxCompletionTokens() : 0, guard, text -> { delivered.set(true); delta.accept(text); }, budget);
+                                        readEvents(response.getBody(), options.getMaxTokens() != null ? options.getMaxTokens() : options.getMaxCompletionTokens() != null ? options.getMaxCompletionTokens() : 0, guard, text -> { delivered.set(true); delta.accept(text); }, budget, usage);
                                         return Boolean.TRUE;
                                     });
                         }, recovery.audit(), acceptedConversation));
@@ -280,15 +291,17 @@ public class AiTransport {
                         var result = recovery.execute("MODEL", deadline, guard, delivered::get, () -> {
                             int next = budget.allocate(); currentAllocation.set(next);
                             if (next > 0) payload.put(payload.has("max_completion_tokens") ? "max_completion_tokens" : "max_tokens", next);
-                        }, () -> perform(connection, settings, background, deadline, recheck, cancellation, builder ->
-                            builder.baseUrl(connection.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + connection.key()).build()
+                        }, () -> perform(connection, settings, background, deadline, recheck, cancellation, builder -> {
+                            var usage = measure(builder, recovery);
+                            return builder.baseUrl(connection.url()).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + connection.key()).build()
                                 .post().uri(outbound.completionPath(connection.url())).contentType(MediaType.APPLICATION_JSON).body(payload)
                                 .exchange((request, response) -> {
                                     if (response.getStatusCode().value() >= 300) throw providerError(response);
                                     var type = response.getHeaders().getContentType();
                                     if (type == null || !MediaType.TEXT_EVENT_STREAM.isCompatibleWith(type)) throw AiErrors.error("unsupported");
-                                    return readToolEvents(response.getBody(), currentAllocation.get(), budget, guard, text -> { delivered.set(true); delta.accept(text); });
-                                }), recovery.audit(), acceptedConversation));
+                                    return readToolEvents(response.getBody(), currentAllocation.get(), budget, guard, text -> { delivered.set(true); delta.accept(text); }, usage);
+                                });
+                        }, recovery.audit(), acceptedConversation));
                         guard.run(); if (!cancellation.cancelled()) completed.accept(result);
                     } catch (Throwable failure) { if (!cancellation.cancelled()) failed.accept(safeFailure(failure, deadline)); }
                     finally { clearWorker(); }
@@ -303,7 +316,7 @@ public class AiTransport {
     public ToolStream toolStream(boolean background, boolean acceptedConversation) { return new ToolStream(background, acceptedConversation); }
     public ToolStream toolStream(boolean background) { return new ToolStream(background, false); }
     private AiToolProtocol.Step readToolEvents(InputStream input, int allocation, AiToolProtocol.Budget budget, Runnable guard,
-                                               java.util.function.Consumer<String> delta) throws IOException {
+                                               java.util.function.Consumer<String> delta, AiModelUsage.Request usage) throws IOException {
         var bounded = new FilterInputStream(input) {
             @Override public int read() throws IOException { int value = super.read(); if (value != -1) budget.raw(1); return value; }
             @Override public int read(byte[] bytes, int offset, int length) throws IOException { int count = in.read(bytes, offset, length); if (count > 0) budget.raw(count); return count; }
@@ -311,7 +324,7 @@ public class AiTransport {
         var frames = new SseFrames(bounded, guard);
         var text = new StringBuilder(); var arguments = new StringBuilder();
         String id = null, name = null, callType = null, finish = null;
-        Long usage = null; long generated = 0; boolean sawTool = false;
+        long generated = 0; boolean sawTool = false;
         while (true) {
             String event = frames.next(); budget.frame(); guard.run();
             if ("[DONE]".equals(event)) {
@@ -326,12 +339,7 @@ public class AiTransport {
                 root = json.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(parser);
             } catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw AiErrors.error("response_invalid"); }
             if (root == null || !root.isObject() || root.has("error") || !root.path("choices").isArray()) throw AiErrors.error("response_invalid");
-            if (root.hasNonNull("usage")) {
-                var count = root.path("usage").path("completion_tokens");
-                if (!root.path("usage").isObject() || !count.isIntegralNumber() || !count.canConvertToLong() || count.asLong() < 0) throw AiErrors.error("response_invalid");
-                if (allocation > 0 && count.asLong() > allocation) throw AiErrors.error("output_limit");
-                if (usage != null && usage != count.asLong()) throw AiErrors.error("response_invalid"); usage = count.asLong();
-            }
+            usage.report(root.get("usage"), allocation);
             var choices = root.path("choices"); if (choices.isEmpty() && root.path("usage").isObject()) continue;
             if (choices.size() != 1 || !choices.get(0).path("index").isInt() || choices.get(0).path("index").asInt() != 0 || finish != null) throw AiErrors.error("response_invalid");
             var choice = choices.get(0); var chunk = choice.path("delta"); if (!chunk.isObject()) throw AiErrors.error("response_invalid");
@@ -435,7 +443,7 @@ public class AiTransport {
         }
     }
     /** Bounded SSE framing, incrementally decoded UTF-8 including split multibyte characters. */
-    private void readEvents(InputStream input, int maxTokens, Runnable guard, java.util.function.Consumer<String> delta, AiToolProtocol.Budget budget) throws IOException {
+    private void readEvents(InputStream input, int maxTokens, Runnable guard, java.util.function.Consumer<String> delta, AiToolProtocol.Budget budget, AiModelUsage.Request usage) throws IOException {
         var bounded = new FilterInputStream(input) {
             @Override public int read() throws IOException { int value = super.read(); if (value != -1) budget.raw(1); return value; }
             @Override public int read(byte[] bytes, int offset, int length) throws IOException { int count = in.read(bytes, offset, length); if (count > 0) budget.raw(count); return count; }
@@ -453,7 +461,7 @@ public class AiTransport {
             try { root = json.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(event); }
             catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw AiErrors.error("response_invalid"); }
             if (root == null || !root.isObject() || root.has("error") || !root.path("choices").isArray()) throw AiErrors.error("response_invalid");
-            if (maxTokens > 0 && root.path("usage").path("completion_tokens").canConvertToLong() && root.path("usage").path("completion_tokens").asLong() > maxTokens) throw AiErrors.error("output_limit");
+            usage.report(root.get("usage"), maxTokens);
             var choices = root.path("choices");
             if (choices.isEmpty() && root.path("usage").isObject()) continue;
             if (choices.size() != 1 || !choices.get(0).path("index").isInt() || choices.get(0).path("index").asInt() != 0 || finished)
