@@ -25,9 +25,11 @@ public interface PluginApi {
 
     record OperationConfirmation(String password, String action, String target, String digest) { }
 
+    record OperationAuthorization(String sessionId, String ticket, long expiresAt) { }
+
     @DePermit("m:manage")
     @PostMapping("/authorize")
-    String authorize(@RequestBody OperationConfirmation request);
+    OperationAuthorization authorize(@RequestBody OperationConfirmation request);
 
     @Operation(summary = "查询")
     @DePermit("m:read")

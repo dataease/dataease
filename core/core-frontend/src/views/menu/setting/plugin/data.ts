@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { pluginOperationHeaders, type PluginOperationAuthorization } from './operationConfirmation'
 
 export interface PluginItem {
   id: string
@@ -14,9 +15,9 @@ export const loadPluginApi = () => {
   return request.get({ url: '/plugin/query' })
 }
 
-export const unInstallApi = (id, ticket: string) => {
+export const unInstallApi = (id, authorization: PluginOperationAuthorization) => {
   return request.post({
     url: `/plugin/uninstall/${id}`,
-    headers: { 'X-DE-Plugin-Confirmation': ticket }
+    headers: pluginOperationHeaders(authorization)
   })
 }

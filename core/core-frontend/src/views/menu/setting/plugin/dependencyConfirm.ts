@@ -4,7 +4,11 @@
 import { h } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import request from '@/config/axios'
-import { confirmPluginOperation } from './operationConfirmation'
+import {
+  confirmPluginOperation,
+  pluginOperationHeaders,
+  type PluginOperationAuthorization
+} from './operationConfirmation'
 
 /*
  * 上传预检查响应，名称仅用于展示，operation 用于确认或取消暂存安装
@@ -27,7 +31,8 @@ export interface InstallCheck {
  */
 export async function confirmDependencies(
   check: InstallCheck,
-  t: (key: string) => string
+  t: (key: string) => string,
+  authorization: PluginOperationAuthorization
 ): Promise<boolean> {
   const choices: Record<string, 'KEEP' | 'REPLACE'> = {}
   for (const conflict of check.conflicts) {
@@ -116,23 +121,35 @@ export async function confirmDependencies(
     } catch (action) {
       if (action === 'cancel') choices[conflict.name] = 'KEEP'
       else {
-        await request.post({ url: `/plugin/cancel/${check.operation}` })
+        await request.post({
+          url: `/plugin/cancel/${check.operation}`,
+          headers: pluginOperationHeaders(authorization)
+        })
         return false
       }
     }
   }
-  let ticket: string
+  let confirmation: PluginOperationAuthorization
   try {
-    ticket = await confirmPluginOperation('confirm', check.operation, t)
+    confirmation = await confirmPluginOperation(
+      'confirm',
+      check.operation,
+      t,
+      undefined,
+      authorization.sessionId
+    )
   } catch (error) {
-    await request.post({ url: `/plugin/cancel/${check.operation}` })
+    await request.post({
+      url: `/plugin/cancel/${check.operation}`,
+      headers: pluginOperationHeaders(authorization)
+    })
     if (error === 'cancel' || error === 'close') return false
     throw error
   }
   await request.post({
     url: '/plugin/confirm',
     data: { operation: check.operation, choices },
-    headers: { 'X-DE-Plugin-Confirmation': ticket }
+    headers: pluginOperationHeaders(confirmation)
   })
   return true
 }
