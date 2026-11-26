@@ -206,6 +206,7 @@ final class CalcFieldRegression {
                     JSON.writeValueAsString(Map.of("action", "propose_calc_field", "subject", "*", "fields", "*", "selection", "latest")));
             return frame(Map.of("content", "Historical validation"), "stop");
         }
+        if ("calc-history-choices".equals(mode)) return frame(Map.of("content", "Which revenue convention?\n1. UNSELECTED_GROSS_MARKER\n2. Paid orders only"), "stop");
         if ("calc-history".equals(mode)) return frame(Map.of("content", "Historical validation"), "stop");
         String explanation = switch (mode) {
             case "calc-unit-ask" -> "Which Amount do you mean, the source column or the calculated field? What is its unit?";
@@ -441,6 +442,12 @@ final class CalcFieldRegression {
         var first = terminal(mvc, start(mvc, original, "Double the price"));
         if (!"DETAIL_PASS".equals(first.at("/result/calcField/validation").asText())) throw new AssertionError(first);
         int originalPreviews = previews.get();
+        mode.set("calc-history-choices");
+        terminal(mvc, start(mvc, original, "Which revenue convention?"));
+        mode.set("calc-history");
+        terminal(mvc, start(mvc, original, "2"));
+        terminal(mvc, start(mvc, original, "確認：排除退款；接下來都用英文。"));
+        for (int i = 0; i < 6; i++) terminal(mvc, start(mvc, original, "Continue example " + i));
         editor.put("sql", "[Price] + 77");
         editor.put("previousSessionId", original.path("sessionId").asText());
         var edited = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
@@ -451,6 +458,10 @@ final class CalcFieldRegression {
         if (requests.size() != 1 || previews.get() != originalPreviews || !"EXPLANATION".equals(explained.at("/result/type").asText()))
             throw new AssertionError("Historical explanation must not validate or recommend the edited formula");
         var messages = requests.getFirst().path("messages");
+        String outbound = messages.toString();
+        if (messages.size() > 10 || outbound.contains("UNSELECTED_GROSS_MARKER") || !outbound.contains("Paid orders only")
+                || !outbound.contains("排除退款") || !outbound.contains("接下來都用英文"))
+            throw new AssertionError("Long dialogue must compact early turns, preserve confirmed/selected terms and omit discarded options");
         var evidence = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence");
         if (!formula.equals(evidence.path("expression").asText()) || !"DETAIL_PASS".equals(evidence.path("status").asText())
                 || !messages.get(0).path("content").asText().contains("[Price] + 77"))
