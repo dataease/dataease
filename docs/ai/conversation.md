@@ -26,6 +26,18 @@ WebSocket 和 HTTP 指向不同节点时，可由原节点的 HTTP 补齐。
 原节点持续不可达时，编辑器提示状态未确认，恢复联网后可继续核对。
 主动新对话或关闭编辑器会释放旧订阅并结束该会话。
 
+## 按历史步骤追问
+
+数据集 SQL 和计算字段编辑器按每条回答中的实际工具调用顺序编号。
+工具开始、结束或重连补读时沿用同一号码。手动重答另起一条回答，从步骤 1 开始。
+例如，「步骤 1 里的 paid_at 和 created_at」在最近一次回答内查找；
+「第一次回答的第 1 步」指定原回答，即使作者之后重答过也能区分。
+
+服务端在会话有效期内保存原调用的状态和结果。已经完成的步骤可以在回答中止后继续引用。
+取用原结果前复核当前身份、工作空间、场景及原资源权限。
+SQL 追问选取相关字段。计算字段追问返回原步骤提交的公式和当时的校验结论，
+私有字段绑定留在服务端。作者修改草稿后，需要重新校验才能得到新草稿的结论。
+
 前台每次提问（含一次性辅助、同步 turns 和手动重试）受理时重新检查一次当前用户启用状态及 AI 使用资格，校验当前 AI 开关及适用空间策略，并固定模型、凭据、输入/输出限额、超时、恢复及审计配置。该轮模型请求、自动重试和工具续调使用同一快照，不因模型编辑、全局/空间 AI 关闭或关闭后重开而换模或失效；下一次提问和手动重试读取最新配置。已受理操作的幂等重发只核对原执行，不创建新快照。前台增量读取、结果应用和活动巡检不再查询用户启用状态、AI 设置、空间策略或模型配置。打开新上下文及资源列表入口仍检查当前使用资格；继续在同一上下文提问必须重新检查，不以会话已存在代替新提问准入。
 
 后端临时会话扫描每秒先按内存中的有效期清理过期会话；仅对存在活动执行的会话继续检查期限、读取租约及当前身份/资源权限。空闲会话、已退役上下文和已完成的一次性结果不在扫描中查库。HTTP 当前身份/空间不匹配、部署模式变化或资源撤权仍拒绝访问或清理会话；空闲期间在下一次受保护操作发现这些变化。账号中途停用不再通过 AI 自己的巡检终止已受理前台回答，而是在下一次提问/手动重试时拒绝。接口原有登录认证不变。AI 配置变化不清空会话历史，原有停止、关闭、超时和丢失客户端租约处理保持。
@@ -248,7 +260,7 @@ Streaming is an explicit feature opt-in and uses a runtime-owned detached handle
 两个正式数据集编辑器采用上文的 30 秒恢复规则。
 宽限到期后，在原会话有效且仍有权限时，作者可以查看已有内容并主动重新回答。
 
-Sessions are process-local, fixed at 30 minutes, at most 200 per process and four per current identity/workspace, and at most 50 completed turns. Concurrent executions on one session are rejected. Failed/cancelled turns never enter model history. Successful tool rounds atomically retain the complete user → assistant tool_calls → correlated role=tool result(s) → final assistant transcript for follow-up. The compatible synchronous conversation endpoint explicitly refuses a session containing TOOL history; native synchronous SDK policy and its refusal of tools/options are unchanged.
+Sessions are process-local, fixed at 30 minutes, at most 200 per process and four per current identity/workspace, and at most 50 completed turns. Concurrent executions on one session are rejected. Failed/cancelled turns never enter model history. The generic SQL scene retains the complete correlated tool transcript of successful turns. The dataset editors keep the current turn’s tool protocol on its execution and project requested historical evidence on follow-up. The compatible synchronous conversation endpoint explicitly refuses a session containing TOOL history; native synchronous SDK policy and its refusal of tools/options are unchanged.
 
 ## 工具注册与元数据读取
 
