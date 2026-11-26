@@ -75,7 +75,8 @@ final class EditorStepHistory {
         selected.put("action", original.name());
         selected.put("status", original.status());
         if (original.error() != null) selected.put("error", original.error());
-        if ("get_table_fields".equals(original.name())) selected.put("table", original.parameters().get("table"));
+        if ("get_table_fields".equals(original.name()) || "get_named_table_fields".equals(original.name()))
+            selected.put("table", original.parameters().get("table"));
         if (!evidence.isEmpty()) selected.put("evidence", evidence);
         return selected;
     }

@@ -37,6 +37,10 @@ final class DatasetSqlEvidence {
         }
     }
 
+    private static final Pattern FIELD_COUNT_QUESTION = Pattern.compile(
+            "(?:多少|几|幾)\\s*(?:个|個)?\\s*(?:字段|欄位|栏位|列)|(?:字段|欄位|栏位|列)(?:数量|數量|总数|總數)"
+                    + "|\\b(?:how many|(?:the )?number of)\\s+(?:fields?|columns?)\\b|\\b(?:field|column) count\\b",
+            Pattern.CASE_INSENSITIVE);
     private static final Pattern TEMPORAL_QUESTION = Pattern.compile(
             "(?:时间|時間|日期|時刻|时刻)(?:类型的?|類型的?)?(?:字段|欄位|列)|\\b(?:time|date|temporal|timestamp|datetime)[ -]+(?:fields?|columns?)\\b",
             Pattern.CASE_INSENSITIVE);
@@ -62,11 +66,17 @@ final class DatasetSqlEvidence {
         if (expectedTable == null) return Map.of();
         try {
             var data = result == null ? JSON.createObjectNode().put("table", expectedTable) : JSON.readTree(result);
+            if (!expectedTable.equals(data.path("table").asText())) return Map.of();
+            if (FIELD_COUNT_QUESTION.matcher(question).find()) {
+                var fields = data.path("fields");
+                if (!fields.isArray()) return Map.of("coverage", "PARTIAL");
+                return Map.of("coverage", data.path("inspected").asBoolean(false) ? "COMPLETE" : "PARTIAL",
+                        "fieldCount", fields.size());
+            }
             var verifiedAbsent = new HashSet<String>();
             data.path("absentFields").forEach(field -> verifiedAbsent.add(field.asText()));
             var snapshot = new TableEvidence(data.path("table").asText(), data.path("inspected").asBoolean(false), null, null,
                     data.path("fields").isArray() ? Arrays.asList(JSON.treeToValue(data.get("fields"), FieldEvidence[].class)) : List.of());
-            if (!expectedTable.equals(snapshot.table()) || snapshot.fields() == null) return Map.of();
             var missing = new LinkedHashSet<String>();
             var hints = IDENTIFIER_HINT.matcher(question);
             while (hints.find()) {
@@ -220,6 +230,17 @@ final class DatasetSqlEvidence {
                 if ("get_table_fields".equals(tool.name())) {
                     var table = JSON.readValue(tool.result(), TableEvidence.class);
                     if (table.inspected()) inspected.put(table.table(), table);
+                } else if ("get_named_table_fields".equals(tool.name())) {
+                    var read = JSON.readTree(tool.result());
+                    String name = tool.parameters().get("table");
+                    if (name == null || !name.equals(read.path("table").asText()) || !read.path("fields").isArray()) continue;
+                    var previous = inspected.getOrDefault(name, new TableEvidence(name, false, null, null, List.of()));
+                    var fields = new LinkedHashMap<String, FieldEvidence>();
+                    previous.fields().forEach(field -> fields.put(field.name(), field));
+                    read.path("absentFields").forEach(absent -> fields.remove(absent.asText()));
+                    for (var field : JSON.treeToValue(read.get("fields"), FieldEvidence[].class)) fields.put(field.name(), field);
+                    inspected.put(name, new TableEvidence(name, previous.inspected(), previous.description(), previous.grain(),
+                            List.copyOf(fields.values())));
                 } else if ("read_relations".equals(tool.name())) {
                     for (var path : JSON.readTree(tool.result()).path("relations"))
                         relations.add(JSON.treeToValue(path, RelationEvidence.class));
@@ -244,7 +265,7 @@ final class DatasetSqlEvidence {
                         }
                         var names = new HashSet<String>();
                         entry.getValue().forEach(name -> names.add(name.asText()));
-                        used.add(new TableEvidence(table.table(), true, table.description(), table.grain(),
+                        used.add(new TableEvidence(table.table(), table.inspected(), table.description(), table.grain(),
                                 table.fields().stream().filter(f -> names.contains("*") || names.contains(f.name())).toList(), paths));
                     });
                     evidence = List.copyOf(used);
