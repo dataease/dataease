@@ -8,11 +8,14 @@ const port = Number(process.env.AI_BROWSER_TEST_PORT || '4198')
 const require = createRequire(path.join(frontend, 'package.json'))
 const { createServer } = await import(require.resolve('vite'))
 const { default: vue } = await import(require.resolve('@vitejs/plugin-vue'))
+const metadata = process.env.METADATA_TASK_UI === '1'
+const entry = metadata ? 'metadata.js' : 'main.js'
 const server = await createServer({
   configFile: false,
   root: frontend,
   plugins: [
     vue(),
+    ...(metadata ? [require('vite-svg-loader')()] : []),
     {
       name: 'ai-fixture-entry',
       configureServer(server) {
@@ -20,7 +23,7 @@ const server = await createServer({
           if (request.url?.split('?')[0] !== '/') return next()
           const html = (await fs.readFile(path.join(root, 'index.html'), 'utf8')).replace(
             './main.js',
-            '/@fs/' + path.join(root, 'main.js')
+            '/@fs/' + path.join(root, entry)
           )
           response.setHeader('Content-Type', 'text/html')
           response.end(await server.transformIndexHtml('/', html))
@@ -28,8 +31,8 @@ const server = await createServer({
       }
     }
   ],
-  optimizeDeps: { entries: [path.join(root, 'main.js')] },
-  cacheDir: path.join(root, '../../output/ai-vite-cache'),
+  optimizeDeps: { entries: [path.join(root, entry)] },
+  cacheDir: path.join(root, metadata ? '../../output/metadata-vite-cache' : '../../output/ai-vite-cache'),
   resolve: {
     alias: [
       { find: '@/config/axios/error', replacement: path.join(root, 'bridge.js') },
@@ -41,6 +44,7 @@ const server = await createServer({
         find: 'ai-service-page',
         replacement: path.join(frontend, 'src/views/system/ai-service/index.vue')
       },
+      ...(metadata ? [{ find: '@/utils/utils', replacement: path.join(root, 'bridge.js') }] : []),
       { find: '@', replacement: path.join(frontend, 'src') },
       { find: 'vue', replacement: path.join(frontend, 'node_modules/vue/dist/vue.esm-bundler.js') },
       {

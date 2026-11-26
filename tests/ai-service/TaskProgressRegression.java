@@ -16,6 +16,8 @@ import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.ai.tool.sql.AiSqlTools;
 import io.dataease.ai.scene.structure.AiStructureMutexScene;
 import io.dataease.ai.security.identity.AiDeploymentMode;
+import io.dataease.ai.server.AiAvailabilityServer;
+import io.dataease.ai.server.AiConversationServer;
 import io.dataease.ai.server.AiTaskServer;
 import io.dataease.ai.support.AiErrors;
 
@@ -27,6 +29,7 @@ import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.sql.*;
+import io.dataease.datasource.server.MetadataTaskRegression;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.system.manage.CorePermissionManage;
@@ -85,11 +88,13 @@ public final class TaskProgressRegression {
     }
     private static HttpServer api(MockMvc mvc) throws Exception {
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/ai", exchange -> {
+        server.createContext("/", exchange -> {
             try {
                 V3UserUtil.setUid(1L);
                 var request = org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request(org.springframework.http.HttpMethod.valueOf(exchange.getRequestMethod()), exchange.getRequestURI())
                         .contentType("application/json").content(exchange.getRequestBody().readAllBytes());
+                String languages = exchange.getRequestHeaders().getFirst("Accept-Language");
+                if (languages != null) request.locale(Locale.forLanguageTag(Locale.LanguageRange.parse(languages).getFirst().getRange()));
                 var response = mvc.perform(request).andReturn().getResponse(); byte[] bytes = response.getContentAsByteArray();
                 exchange.sendResponseHeaders(response.getStatus(), bytes.length); exchange.getResponseBody().write(bytes);
             } catch (Exception failure) {
@@ -106,6 +111,7 @@ public final class TaskProgressRegression {
     }
     public static void main(String[] args) throws Exception {
         String only = args.length > 0 ? args[0] : "all";
+        var metadataTasks = only.equals("metadata") ? new MetadataTaskRegression() : null;
         int frames = args.length > 1 ? Integer.parseInt(args[1]) : 512;
         int latency = args.length > 2 ? Integer.parseInt(args[2]) : 2;
         int privateChars = args.length > 3 ? Integer.parseInt(args[3]) : 4096;
@@ -117,6 +123,7 @@ public final class TaskProgressRegression {
         upstream.createContext("/v1/chat/completions", exchange -> {
             try {
                 var body = TaskNode.JSON.readTree(exchange.getRequestBody()); lastSent.set(body); sent.incrementAndGet();
+                if (metadataTasks != null) { metadataTasks.answer(exchange, body); return; }
                 String kind = currentCase.get(); boolean tool = kind.startsWith("sql");
                 boolean hasResult = false;
                 for (var message : body.path("messages")) if (message.path("role").asText().equals("tool")) hasResult = true;
@@ -146,6 +153,7 @@ public final class TaskProgressRegression {
                 .addAnnotatedClass(CoreAiTask.class).addAnnotatedClass(CoreAiTaskAttempt.class).addAnnotatedClass(CoreAiTaskNode.class).addAnnotatedClass(CoreAiTaskSchedule.class).addAnnotatedClass(CoreAiTaskResource.class)
                 .setProperty("hibernate.hbm2ddl.auto", "none").setProperty("hibernate.show_sql", "false");
         mapping.getProperties().put("hibernate.connection.datasource", dataSource);
+        if (metadataTasks != null) metadataTasks.schema(mapping);
         try (var factory = mapping.buildSessionFactory()) {
             var em = SharedEntityManagerCreator.createSharedEntityManager(factory); var manager = new JpaTransactionManager(factory);
             var jdbc = new JdbcTemplate(dataSource);
@@ -168,7 +176,7 @@ public final class TaskProgressRegression {
             beans.addBean("permission", (InteractiveAuthApi) Proxy.newProxyInstance(TaskProgressRegression.class.getClassLoader(), new Class<?>[]{InteractiveAuthApi.class}, (proxy, method, a) -> {
                 if (method.getName().equals("checkAuth")) {
                     var check = (io.dataease.api.permissions.auth.dto.BusiPerCheckDTO) a[0];
-                    if (!Objects.equals(check.getId(), 11L) || check.getAuthEnum() != io.dataease.constant.AuthEnum.READ
+                    if (!Objects.equals(check.getId(), 11L) || (check.getAuthEnum() != io.dataease.constant.AuthEnum.READ && !(metadataTasks != null && check.getAuthEnum() == io.dataease.constant.AuthEnum.MANAGE))
                             || check.getBusiEnum() != io.dataease.constant.BusiResourceEnum.DATASOURCE) throw new AssertionError("SQL authority expanded resource scope");
                     return null;
                 }
@@ -195,14 +203,25 @@ public final class TaskProgressRegression {
             org.springframework.test.util.ReflectionTestUtils.setField(configuration, "models", repositories.getRepository(CoreAiModelRepository.class));
             var admission = new AiAdmission("ehcache", "standalone", beans.getBeanProvider(org.springframework.data.redis.connection.RedisConnectionFactory.class), settings, "progress", manager);
             var transport = new AiTransport(new AiOutboundPolicy(), admission, TaskNode.JSON);
+            if (metadataTasks != null) metadataTasks.register(beans, access, metadata, em, manager);
             var conversations = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access); beans.addBean("conversations", conversations);
             var tasks = new AiTaskManage(em, manager, beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), access, TaskNode.JSON); beans.addBean("tasks", tasks);
             var audit = new AiAuditManage(em, manager, access, TaskNode.JSON);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), configuration, repositories.getRepository(CoreAiOrgPolicyRepository.class), TaskNode.secrets(), transport, TaskNode.JSON, access, audit));
-            var mvc = MockMvcBuilders.standaloneSetup(new AiTaskServer(tasks), new io.dataease.ai.server.AiConversationServer(conversations)).build();
+            List<Object> controllers = new ArrayList<>(List.of(new AiTaskServer(tasks), new AiConversationServer(conversations)));
+            if (metadataTasks != null) {
+                controllers.add(new AiAvailabilityServer(access, beans.getBean(AiRuntimeManage.class)));
+                controllers.addAll(metadataTasks.controllers());
+            }
+            var mvc = MockMvcBuilders.standaloneSetup(controllers.toArray()).build();
             var api = api(mvc); int port = api.getAddress().getPort();
             List<String> failures = new ArrayList<>();
             try {
+                if (metadataTasks != null) {
+                    tasks.start();
+                    metadataTasks.verify(port);
+                    return;
+                }
                 if (only.equals("mutex")) {
                     var restricted = Map.of("scene", "structure-mutex", "resourceId", "11", "editorId", "fore-bypass", "sql", "{\"selectedTables\":[\"AI_PROBE\"]}", "text", "Explain structures");
                     for (String route : List.of("/ai/conversations", "/ai/conversations/capabilities/structure-mutex.assist", "/ai/conversations/forged/executions"))
