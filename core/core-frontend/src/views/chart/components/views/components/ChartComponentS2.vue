@@ -628,9 +628,10 @@ const trackClick = trackAction => {
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: state.pointParam.data.quotaList
   }
-  // 明细表 汇总表特殊处理 1.点击维度传递触发字段的值 2.点击指标传递的值非触发的维度字段值
+  // 明细表联动使用点击列的原始值，汇总表点击指标时仍按该行维度联动。
   if (['table-info', 'table-normal'].includes(view.value.type)) {
     linkageParam.quotaList = []
+    const clickedFieldId = param.data.name
     const dimensionIds = []
     const quotaIds = []
     view.value.xAxis.forEach(xd => {
@@ -647,16 +648,18 @@ const trackClick = trackAction => {
         quotaIds.push(xd.id)
       }
     })
-    if (dimensionIds.includes(param.data.name)) {
+    if (
+      dimensionIds.includes(clickedFieldId) ||
+      (view.value.type === 'table-info' && quotaIds.includes(clickedFieldId))
+    ) {
       linkageParam.dimensionList = linkageParam.dimensionList.filter(
-        dimension => dimension.id === param.data.name
+        dimension => dimension.id === clickedFieldId
       )
-    } else if (quotaIds.includes(param.data.name)) {
+    } else if (quotaIds.includes(clickedFieldId)) {
       linkageParam.dimensionList = linkageParam.dimensionList.filter(dimension =>
         dimensionIds.includes(dimension.id)
       )
     }
-    view.value
   }
   const jumpParam = {
     option: 'jump',
