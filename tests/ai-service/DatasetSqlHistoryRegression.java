@@ -15,6 +15,7 @@ import static io.dataease.ai.ToolConversationRegression.*;
 final class DatasetSqlHistoryRegression extends ConversationSocketRegression.EditorHttp {
     private static final String INSPECT = "先读取 orders 再读取 items";
     private static final String QUESTION = "步骤 1 里的 paid_at 和 created_at 各是什么类型？";
+    private static final String OUTCOMES = "核对 SQL 建议、表关联和表搜索";
     final AtomicInteger authorizationChecks = new AtomicInteger();
     final AtomicInteger selectedSnapshots = new AtomicInteger();
     private volatile int snapshotsBeforeNaturalLookup;
@@ -78,6 +79,17 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
             }
             return frame(Map.of("content", "FOUND".equals(record.path("lookup").asText()) ? "当时的时间字段" : "本对话没有记录"), "stop");
         }
+        if (OUTCOMES.equals(question)) {
+            return switch (last.path("tool_call_id").asText("")) {
+                case "" -> call("invalid-query", "propose_sql", "{\"sql\":\"not a query\"}");
+                case "invalid-query" -> call("valid-query", "propose_sql", "{\"sql\":\"SELECT 1 AS original_projection_marker\"}");
+                case "valid-query" -> call("relation", "read_relations", "{\"fromTable\":\"orders\",\"toTable\":\"items\"}");
+                case "relation" -> call("search", "search_physical_tables", "{\"terms\":\"unknown_search_marker\"}");
+                default -> frame(Map.of("content", "已完成核对"), "stop");
+            };
+        }
+        if (question.endsWith("的业务结论？"))
+            return frame(Map.of("content", "当时的结论是 " + envelope.at("/historicalStep/evidence/status").asText("未记录")), "stop");
         if (INSPECT.equals(question)) {
             boolean first = !"tool".equals(last.path("role").asText());
             return call(first ? "order-fields" : "item-fields", "get_table_fields", first ? "{\"table\":\"orders\"}" : "{\"table\":\"items\"}");
@@ -180,6 +192,31 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
         System.out.println("PASS natural SQL history, source ambiguity and selection with zero business reads, current single-field refresh and full table refresh");
     }
 
+    private void verifyHistoricalOutcomes(String base, List<JsonNode> sent, List<String> reads) throws Exception {
+        var opened = ok("POST", base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "sql-outcomes"));
+        String session = base + "/" + opened.path("sessionId").asText();
+        String version = opened.path("contextVersion").asText();
+        var original = finish(startTurn(session, version, OUTCOMES));
+        if (!"SELECT 1 AS original_projection_marker".equals(original.at("/result/sql").asText()))
+            throw new AssertionError("The corrected proposal must remain available to the editor: " + original);
+        int readsBefore = reads.size();
+        var expected = List.of("INVALID", "NOT_RUN", "NO_CONFIRMED_PATH", "NO_MATCH");
+        for (int i = 0; i < expected.size(); i++) {
+            int sentBefore = sent.size();
+            var reply = finish(startTurn(session, version, "第一次回答的第 " + (i + 1) + " 步的业务结论？"));
+            var request = sent.getLast();
+            var messages = request.path("messages");
+            var step = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
+            if (!"SUCCEEDED".equals(step.path("status").asText())
+                    || !step.path("evidence").equals(JSON.valueToTree(Map.of("status", expected.get(i))))
+                    || !("当时的结论是 " + expected.get(i)).equals(reply.at("/result/text").asText())
+                    || sent.size() != sentBefore + 1 || reads.size() != readsBefore
+                    || request.toString().contains("original_projection_marker") || request.toString().contains("unknown_search_marker"))
+                throw new AssertionError("Expected only the original business outcome " + expected.get(i) + ": " + step);
+        }
+        ok("DELETE", session, null);
+    }
+
     void verify(AiConversationManage manage, List<JsonNode> sent, List<String> reads, AtomicBoolean allowed) throws Exception {
         var service = ConversationSocketRegression.editorServer(manage);
         try {
@@ -262,6 +299,7 @@ final class DatasetSqlHistoryRegression extends ConversationSocketRegression.Edi
             allowed.set(true);
             ok("DELETE", session, null);
             verifyNatural(base, sent, reads);
+            verifyHistoricalOutcomes(base, sent, reads);
             if ("1".equals(System.getenv("AI_SQL_HISTORY_BROWSER"))) {
                 secondRead = new CountDownLatch(1); release = new CountDownLatch(1);
                 int browserCalls = sent.size();

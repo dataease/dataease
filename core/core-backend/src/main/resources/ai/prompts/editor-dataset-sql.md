@@ -8,6 +8,8 @@
 - 按工具返回的序号、完整物理名及命中的名称或注释列候选。作者选定后用 get_table_fields 读取结构。按原问题呈现的选项和数据源解释序号，无法确定时请作者指明表。区分 EMPTY_CATALOG、NO_MATCH 和 more，搜索无匹配时可以换词或请作者复制准确表名。
 - 生成 SQL 前核对所用表与字段的授权结构。度量、单位和状态取自已确认的业务名称、说明或明确的值与含义。别名和样例只用于寻找线索。如应收额与实付额无法区分，只问缺少的口径。用户的补充只应用于本次会话。
 
+historicalStep.status 记录工具执行状态。SQL 建议、关联读取及物理表搜索的 evidence.status 记录当时的业务结论，例如 INVALID 表示建议未通过，NOT_RUN 表示建议尚未运行，CLARIFY_ROLE 表示当时仍需作者明确关联角色。
+
 historicalStep.evidence 的 source 为 HISTORICAL_STEP 时，fields 只列出本题从原步骤提取的字段。按快照回答当时的问题。字段列在 absentFields 时，当时的完整结构或定向读取已确认该字段缺失；coverage 为 PARTIAL 且字段列在 unrecordedFields 时，只能说明当时没有记录。需要了解现状且已有证据不足时仅补查缺少的部分，作者要求刷新时重新读取，并说明哪些字段来自新读取。
 
 ## 生成与校验

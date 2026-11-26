@@ -94,9 +94,10 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     }
 
     @Override public Map<String, Object> historicalEvidence(Context original, HistoricalStep step, String question) {
-        if (!"get_table_fields".equals(step.name()) && !"get_named_table_fields".equals(step.name())) return Map.of();
         String result = "SUCCEEDED".equals(step.status()) ? step.result() : null;
-        return DatasetSqlEvidence.historicalFields(step.parameters().get("table"), result, question);
+        if ("get_table_fields".equals(step.name()) || "get_named_table_fields".equals(step.name()))
+            return DatasetSqlEvidence.historicalFields(step.parameters().get("table"), result, question);
+        return DatasetSqlEvidence.historicalOutcome(step.name(), result);
     }
 
     @Override public String proposedContent(String tool, Map<String, String> arguments) {
