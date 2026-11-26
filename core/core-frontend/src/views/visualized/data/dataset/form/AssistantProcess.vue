@@ -100,11 +100,6 @@ const toggleTool = (entry: ProcessEntry) => {
   <details v-if="process.entries.length" class="assistant-process" :open="expanded">
     <summary @click.prevent="emit('update:open', !expanded)">
       {{ tr('answer_process') }}<span v-if="elapsed"> · {{ elapsed }}</span>
-      <template v-if="!expanded">
-        <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
-          <span v-if="entry.kind === 'tool'" class="step-summary">{{ title(entry.tool) }}</span>
-        </template>
-      </template>
     </summary>
     <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
       <details v-if="entry.kind === 'tool'" :open="entry.open ?? active(entry.tool)">
@@ -158,11 +153,6 @@ const toggleTool = (entry: ProcessEntry) => {
 <style scoped>
 .assistant-process {
   overflow-wrap: anywhere;
-}
-
-.step-summary {
-  display: block;
-  margin-inline-start: 1em;
 }
 
 summary {

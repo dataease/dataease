@@ -686,7 +686,13 @@ test("formula correction shows both validation outcomes and keeps the detail bei
   await expect(button(drawer, "应用到当前草稿")).toBeEnabled();
   await expect(process).toHaveAttribute("open", "");
   await expect(rejected).toHaveAttribute("open", "");
-  await expect(process.locator(":scope > summary")).toContainText("总耗时 2.67 s");
+  const summary = process.locator(":scope > summary");
+  await expect(summary).toHaveText("执行过程 · 总耗时 2.67 s");
+  await summary.click();
+  await expect(rejected.locator("summary")).toBeHidden();
+  await expect(summary).toHaveText("执行过程 · 总耗时 2.67 s");
+  await summary.click();
+  await expect(rejected.getByText(/字段不存在/)).toBeVisible();
   const footer = drawer.getByRole("article").locator("footer");
   await expect(footer).toContainText("输入 Token —");
   await expect(footer).toContainText("输出 Token 12");

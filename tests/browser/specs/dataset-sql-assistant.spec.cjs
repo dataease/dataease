@@ -1190,11 +1190,12 @@ test("completed SQL process preserves event order and reads a large field result
     article.getByText("订单字段已核对。", { exact: true })
   ).toBeVisible();
   await expect(process).not.toHaveAttribute("open", "");
-  await expect(process.locator(":scope > summary")).toContainText("总耗时 720 ms");
-  await expect(process.locator(":scope > summary")).toContainText("步骤 2 · 读取 orders 表结构 · 80 个字段");
+  const summary = process.locator(":scope > summary");
+  await expect(summary).toHaveText("执行过程 · 总耗时 720 ms");
   await expect(article.locator("footer")).toContainText("Token 未返回");
   await expect(article.locator("footer")).not.toContainText("总耗时");
-  await process.locator(":scope > summary").click();
+  await summary.click();
+  await expect(summary).toHaveText("执行过程 · 总耗时 720 ms");
   await expect(process.locator(":scope > :is(p,details)")).toHaveText([
     "定位订单表。",
     /search_semantics/,
@@ -1203,6 +1204,9 @@ test("completed SQL process preserves event order and reads a large field result
   ]);
   expect(reads).toBe(0);
   const fields = process.locator("details").last();
+  await expect(fields.locator("summary")).toHaveText(
+    "步骤 2 · 读取 orders 表结构 · 80 个字段"
+  );
   await fields.locator("summary").click();
   await expect(fields.getByText(new RegExp(field))).toBeVisible();
   expect(reads).toBe(1);
