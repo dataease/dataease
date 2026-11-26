@@ -42,6 +42,8 @@ final class CalcFieldRegression {
     final AtomicInteger previews = new AtomicInteger();
     private CountDownLatch previewStarted;
     private CountDownLatch previewRelease;
+    private final CountDownLatch awaitingHistoryStop = new CountDownLatch(1);
+    private final CountDownLatch releaseHistoryReply = new CountDownLatch(1);
     private volatile String previewMode = "";
     private CountDownLatch datasetRead;
     private CountDownLatch releaseRead;
@@ -195,6 +197,10 @@ final class CalcFieldRegression {
     }
 
     String respond(String mode, int step) throws Exception {
+        if ("calc-before-stop".equals(mode) && step == 2) {
+            awaitingHistoryStop.countDown();
+            if (!releaseHistoryReply.await(10, TimeUnit.SECONDS)) throw new AssertionError("unreleased formula reply");
+        }
         if ("calc-history".equals(mode)) return frame(Map.of("content", "Historical validation"), "stop");
         String explanation = switch (mode) {
             case "calc-unit-ask" -> "Which Amount do you mean, the source column or the calculated field? What is its unit?";
@@ -450,7 +456,68 @@ final class CalcFieldRegression {
                     || message.path("content").asText().contains("boundExpression") || message.path("content").asText().contains("[102] * 2"))
                 throw new AssertionError("A historical explanation replayed tool data or private formula bindings");
         }
-        mvc.perform(delete("/ai/conversations/" + edited.path("sessionId").asText()));
+        String id = edited.path("sessionId").asText();
+        requests.clear();
+        writable.set(false);
+        try {
+            try {
+                start(mvc, edited, "第一次回答的第 1 步");
+                throw new AssertionError("A revoked editor requested a historical formula");
+            } catch (jakarta.servlet.ServletException denied) {
+                if (!(denied.getCause() instanceof AiErrors.Failure)) throw denied;
+            }
+            if (!requests.isEmpty() || previews.get() != originalPreviews)
+                throw new AssertionError("Revoked history reached the model or preview");
+        } finally { writable.set(true); }
+        mvc.perform(delete("/ai/conversations/" + id));
+
+        editor.remove("previousSessionId");
+        var fresh = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(editor))).andReturn().getResponse().getContentAsByteArray());
+        requests.clear();
+        terminal(mvc, start(mvc, fresh, "第一次回答的第 1 步"));
+        var freshMessages = requests.getFirst().path("messages");
+        var lookup = JSON.readTree(freshMessages.get(freshMessages.size() - 1).path("content").asText()).path("historicalStep");
+        if (!"MISSING".equals(lookup.path("lookup").asText()) || lookup.has("evidence"))
+            throw new AssertionError("New conversation exposed an earlier formula validation");
+        mvc.perform(delete("/ai/conversations/" + fresh.path("sessionId").asText()));
+        verifyStoppedFormula(mvc, mode, requests, opening);
+    }
+
+    private void verifyStoppedFormula(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+        var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                .content(opening)).andReturn().getResponse().getContentAsByteArray());
+        requests.clear();
+        mode.set("calc-before-stop");
+        var path = start(mvc, session, "Validate the price");
+        JsonNode stopped;
+        try {
+            if (!awaitingHistoryStop.await(5, TimeUnit.SECONDS)) throw new AssertionError("No continuation after validation");
+            stopped = JSON.readTree(mvc.perform(post(path + "/stop")).andReturn().getResponse().getContentAsByteArray());
+            if (!"CANCELLED".equals(stopped.path("status").asText())) throw new AssertionError(stopped);
+        } finally { releaseHistoryReply.countDown(); }
+
+        mode.set("calc-invalid");
+        requests.clear();
+        var retry = JSON.readTree(mvc.perform(post(path + "/retry").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(Map.of("retryKey", "history-retry", "expectedAttemptId", stopped.get("attemptId").asText()))))
+                .andReturn().getResponse().getContentAsByteArray());
+        var rerun = terminal(mvc, "/ai/conversations/" + session.get("sessionId").asText() + "/executions/" + retry.get("executionId").asText());
+        if (!rerun.path("events").toString().contains("Check the field references"))
+            throw new AssertionError("The editor should receive the detailed validation message");
+        var count = previews.get();
+        mode.set("calc-history");
+        for (var entry : List.of(Map.entry(1, "DETAIL_PASS"), Map.entry(2, "INVALID"))) {
+            requests.clear();
+            terminal(mvc, start(mvc, session, "第 " + entry.getKey() + " 次回答的第 1 步原公式结果"));
+            var messages = requests.getFirst().path("messages");
+            var step = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
+            if (!entry.getValue().equals(step.at("/evidence/status").asText()) || previews.get() != count
+                    || requests.toString().contains("Check the field references"))
+                throw new AssertionError("Stopped and retried answers must retain separate model-visible validation facts: " + step);
+        }
+        mvc.perform(delete("/ai/conversations/" + session.get("sessionId").asText()));
+        System.out.println("PASS historical formula A/B, stopped answer and retry, no new preview, editor-only detail, revoked access and new conversation");
     }
 
     private void assertPrivateBindingAbsent(List<JsonNode> requests) {
