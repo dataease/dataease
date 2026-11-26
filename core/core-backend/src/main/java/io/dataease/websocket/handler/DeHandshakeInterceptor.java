@@ -22,6 +22,9 @@ public class DeHandshakeInterceptor implements HandshakeInterceptor {
 
     public static final String AUTH_USER_ID_ATTRIBUTE = DeHandshakeInterceptor.class.getName() + ".AUTH_USER_ID";
 
+    /** Revalidate the credential of this connection before a protected foreground delivery. */
+    public static final String AUTHENTICATED_CONNECTION = DeHandshakeInterceptor.class.getName() + ".AUTHENTICATED_CONNECTION";
+
     private final WebSocketAuthService webSocketAuthService;
     private final List<String> allowedOriginPatterns;
 
@@ -37,12 +40,15 @@ public class DeHandshakeInterceptor implements HandshakeInterceptor {
             response.setStatusCode(HttpStatus.FORBIDDEN);
             return false;
         }
-        Long userId = webSocketAuthService.authenticate(resolveToken(request));
+        String token = resolveToken(request);
+        Long userId = webSocketAuthService.authenticate(token);
         if (userId == null) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
         }
         attributes.put(AUTH_USER_ID_ATTRIBUTE, userId);
+        attributes.put(AUTHENTICATED_CONNECTION, (java.util.function.BooleanSupplier)
+                () -> userId.equals(webSocketAuthService.authenticate(token)));
         return true;
     }
 

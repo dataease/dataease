@@ -4,6 +4,7 @@ const fs = require("node:fs/promises"),
   { pathToFileURL } = require("node:url");
 const frontend = path.resolve(__dirname, "../../../../core/core-frontend"),
   req = createRequire(frontend + "/package.json");
+const transportBackend = process.env.DATASET_ASSISTANT_BACKEND;
 const formalSql = process.env.DATASET_SQL_ASSISTANT_FIXTURE === "1";
 const fsRoot = require("node:fs").realpathSync(frontend);
 const aiBridge = path.resolve(__dirname, "../ai-service/bridge.js");
@@ -24,8 +25,10 @@ import {ref} from 'vue';
 import zh from '${frontend}/src/locales/zh-CN';
 export const useI18n=(prefix='')=>({t:(key)=>(prefix?prefix+'.'+key:key).split('.').reduce((v,k)=>v?.[k],zh)||key});
 export const useAppStoreWithOut=()=>({});export const useEmbedded=()=>({});export const useAppearanceStoreWithOut=()=>({});
-export const useCache=()=>({wsCache:{get(){return undefined},set(){}}});export const useEmitt=()=>({emitter:{emit(){}}});
+export const useCache=()=>({wsCache:{get(key){return ${transportBackend ? "({'user.uid':'1','user.token':'writer'})[key]" : "undefined"}},set(){}}});export const useEmitt=()=>({emitter:{emit(){}}});
 export const useRoute=()=>({query:location.search.includes('create')?{datasourceId:'source'}:{id:'dataset'},params:{}});export const useRouter=()=>({push(value){window.navigations??=[];window.navigations.push(value)}});export const cancelMap={};
+const databaseIds = {dataset:'11',folder:'20',source:'11',second:'12',orders:'30',items:'31',orders1:'40',orders2:'41',items1:'42',items2:'43',calc:'44'};
+const editorData = value => ${transportBackend ? "JSON.parse(JSON.stringify(value,(key,v)=>['id','pid','datasourceId','datasetTableId'].includes(key) && databaseIds[v] || v))" : "value"};
 export const getCSSVariable=()=> '#3370ff';
 const field=(id,name,node)=>({id,name,originName:name,description:'字段说明 '+name,type:'VARCHAR',deType:0,deExtractType:0,extField:0,groupType:'d',checked:true,datasetTableId:node,datasourceId:'source'});
 const nodes=['orders','items'].map((name,i)=>({currentDs:{id:name,tableName:name,datasourceId:'source',type:'db',info:JSON.stringify({table:name,sql:''})},currentDsFields:[field(name+'1',name+'_id',name),field(name+'2',name+'_name',name)],childrenDs:[],unionToParent:{unionType:'left',unionFields:[]}}));nodes[1].unionToParent={unionType:'inner',unionFields:[{parentField:nodes[0].currentDsFields[0],currentField:nodes[1].currentDsFields[0]}]};
@@ -33,15 +36,15 @@ if(location.search.includes('sqlNode')){nodes[1].currentDs.type='sql';nodes[1].c
 nodes[0].childrenDs=[nodes[1]];
 if(location.search.includes('assistantBlank')) nodes[1].currentDs.info=JSON.stringify({table:'items',sql:''});
 if(location.search.includes('singleSql')){nodes.splice(1);nodes[0].childrenDs=[];nodes[0].currentDs.type='sql';nodes[0].currentDs.sqlVariableDetails='[]'}
-const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]};if(location.search.includes('calcAbsent')){delete f.deExtractType}else if(location.search.includes('calcNull')){f.deExtractType=null}return f};export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',isCross:location.search.includes('cross=1'),union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[calcField()]:[])]}));
-export const getDatasourceList=async()=>${
+const calcField=()=>{const f={...field('calc','计算字段','orders'),extField:2,originName:'[orders1]',params:[]};if(location.search.includes('calcAbsent')){delete f.deExtractType}else if(location.search.includes('calcNull')){f.deExtractType=null}return f};export const barInfoApi=async()=>({id:'dataset'});export const getDatasetDetails=async()=>editorData(JSON.parse(sessionStorage.getItem('savedDataset')||'null')||JSON.parse(JSON.stringify({id:'dataset',name:'测试数据集',pid:'0',isCross:location.search.includes('cross=1'),union:[nodes[0]],allFields:[...nodes.flatMap(n=>n.currentDsFields),...(location.search.includes('dependency')?[calcField()]:[])]})));
+export const getDatasourceList=async()=>editorData(${
       formalSql
         ? JSON.stringify([
             { id: "source", name: "Fixture MySQL", type: "mysql", leaf: true },
             { id: "second", name: "Warehouse B" },
           ])
         : "[]"
-    }.map(ds=>ds.id==='source' && location.search.includes('nonMysql')?{...ds,type:'postgresql'}:ds);export const getTables=async()=>['orders','items'].map(tableName=>({tableName,type:'db',datasourceId:'source',name:tableName,...(location.search.includes('sourceSemantics')?{semanticDescription:'源表说明',semanticGrain:'一行订单',semanticConfirmed:true}:{})}));export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
+    }.map(ds=>ds.id==='source' && location.search.includes('nonMysql')?{...ds,type:'postgresql'}:ds));export const getTables=async()=>['orders','items'].map(tableName=>({tableName,type:'db',datasourceId:'source',name:tableName,...(location.search.includes('sourceSemantics')?{semanticDescription:'源表说明',semanticGrain:'一行订单',semanticConfirmed:true}:{})}));export const singleVal=async()=> 'false';export const enumValueDs=async()=>[];
 export const getTableField=async(data)=>{window.fieldRequests??=[];window.fieldRequests.push(data.id);window.fieldRequestDetails??=[];window.fieldRequestDetails.push(data);if(window.failFields){window.failFields=false;throw Error('synthetic field failure')}if(window.holdFieldRequests){await new Promise(resolve=>{window.pendingFields??=[];window.pendingFields.push(resolve)})}else await new Promise(r=>setTimeout(r,data.id==='orders'?120:10));return ['_id','_name','_extra'].map((suffix,i)=>field('',(['orders','items'].includes(data.id)?data.id:data.tableName||data.id)+suffix,data.id)).map(f=>({...f,...(location.search.includes('sourceSemantics')?{semanticBusinessName:'源字段说明',semanticDescription:'字段业务说明',semanticAliases:'别名',semanticValueReferences:'[{\"value\":\"2\",\"meaning\":\"已完成\"}]',semanticConfirmed:true}:{})}))};
 export const getFunction=async()=>[{name:'绝对值',func:'ABS(-1)',desc:'绝对值'}];
 export const getPreviewData=async(data)=>{window.previewRequests??=[];window.previewRequests.push(JSON.parse(JSON.stringify(data)));await new Promise(r=>setTimeout(r,window.previewDelays?.shift()??(data.union[0].currentDs.id==='orders'?180:20)));window.previewCompleted??=[];window.previewCompleted.push(data.union[0].currentDs.id);return {validation:data.previewFieldId?window.manualPreviewValidation:undefined,data:{fields:data.allFields.map(f=>({...f,dataeaseName:f.id})),data:[Object.fromEntries(data.allFields.map(f=>[f.id,data.union[0].currentDs.tableName+':'+f.name]))]}}};
@@ -64,7 +67,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
   );
   await fs.writeFile(
     dir + "/main.ts",
-    `import {createApp} from 'vue';import ElementPlus from 'element-plus-secondary';import 'element-plus-secondary/dist/index.css';import '${frontend}/src/style/index.less';import App from '${frontend}/src/views/pages/visualized/data/dataset/form/index.vue';import {useI18n} from './bridge';history.replaceState({back:null},'');const app=createApp(App);app.config.globalProperties.$t=useI18n().t;app.use(ElementPlus,{namespace:'ed'});app.component('Icon',{template:'<span><slot/></span>'});app.mount('#app');`
+    `import {createApp} from 'vue';import ElementPlus from 'element-plus-secondary';import 'element-plus-secondary/dist/index.css';import '${frontend}/src/style/index.less';import App from '${frontend}/src/views/pages/visualized/data/dataset/form/index.vue';import {useI18n} from './bridge';history.replaceState({back:null},'');const app=createApp(App);${transportBackend ? `import socket from '${frontend}/src/websocket/index.ts';app.use(socket);` : ""}app.config.globalProperties.$t=useI18n().t;app.use(ElementPlus,{namespace:'ed'});app.component('Icon',{template:'<span><slot/></span>'});app.mount('#app');`
   );
   await fs.writeFile(
     dir + "/index.html",
@@ -196,6 +199,14 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
     },
     server: {
       host: "127.0.0.1",
+      proxy: transportBackend ? {
+        "/fixture-api/ai": {
+          target: transportBackend, changeOrigin: true,
+          headers: { "X-Test-Identity": "writer" },
+          rewrite: path => path.replace("/fixture-api", "/de2api")
+        },
+        "/websocket": { target: transportBackend, ws: true, changeOrigin: true }
+      } : undefined,
       port:
         process.env.DATASET_CALC_ASSISTANT_FIXTURE === "1"
           ? Number(process.env.DATASET_CALC_ASSISTANT_PORT || 14278)

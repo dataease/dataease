@@ -1,9 +1,11 @@
 import SockJS from 'sockjs-client/dist/sockjs.min.js'
 import Stomp from 'stompjs'
+import { setConversationSocket } from './conversation'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const { wsCache } = useCache()
-let stompClient: Stomp.Client
+let stompClient: Stomp.Client | undefined
+let connectionIdentity: string | undefined
 import dev from '../../config/dev'
 const env = import.meta.env
 const basePath = env.VITE_API_BASEPATH
@@ -27,11 +29,16 @@ export default {
       return wsCache.get('user.token') && wsCache.get('user.uid')
     }
 
+    const identity = () =>
+      wsCache.get('app.desktop')
+        ? 'desktop'
+        : wsCache.get('user.uid') + ':' + wsCache.get('user.token')
+
     function connection() {
       if (!isLoginStatus()) {
         return
       }
-      if (stompClient && stompClient.connected) {
+      if (stompClient) {
         return
       }
       let prefix = '/'
@@ -51,50 +58,48 @@ export default {
         ? `userId=${userId}`
         : `token=${encodeURIComponent(wsCache.get('user.token') || '')}`
       const socket = new SockJS(prefix + 'websocket?' + query)
-      stompClient = Stomp.over(socket)
+      const client = Stomp.over(socket)
+      client.debug = () => {}
+      stompClient = client
+      connectionIdentity = identity()
       const heads = {
         userId: userId
       }
-      stompClient.connect(
+      client.connect(
         heads,
         () => {
+          if (client !== stompClient) return
+          setConversationSocket(client)
           channels.forEach(channel => {
-            stompClient.subscribe('/user/' + userId + channel.topic, res => {
+            client.subscribe('/user/' + userId + channel.topic, res => {
               res && res.body && useEmitt().emitter.emit(channel.event, res.body)
             })
           })
         },
-        error => {
-          disconnect()
-          console.error('连接失败: ' + error)
+        () => {
+          if (client === stompClient) disconnect()
         }
       )
     }
 
     function disconnect() {
-      if (stompClient && stompClient.connected) {
-        stompClient.disconnect(
-          function () {
-            console.info('断开连接')
-          },
-          function (error) {
-            console.info('断开连接失败: ' + error)
-          }
-        )
-      }
-      stompClient = null
+      const client = stompClient
+      stompClient = undefined
+      connectionIdentity = undefined
+      setConversationSocket()
+      if (client?.connected) client.disconnect(() => {})
+      else if (client && client.ws.readyState < WebSocket.CLOSING) client.ws.close()
     }
 
     function initialize() {
       connection()
-      const timeInterval = setInterval(() => {
+      setInterval(() => {
         if (!isLoginStatus()) {
           disconnect()
           return
         }
-        if (!stompClient || !stompClient.connected) {
-          connection()
-        }
+        if (stompClient && connectionIdentity !== identity()) disconnect()
+        connection()
       }, 5000)
     }
     initialize()

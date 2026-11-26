@@ -34,7 +34,8 @@ const send = async (method, option) => {
       response: { status: response.status, data: body }
     })
   }
-  return { data: await response.json() }
+  const body = await response.text()
+  return { data: body ? JSON.parse(body) : undefined }
 }
 export default Object.fromEntries(
   ['get', 'post', 'put', 'delete'].map((method) => [
