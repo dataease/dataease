@@ -4963,6 +4963,7 @@ export default {
     cleanup_scope: '按所选时间范围清理数据同步和字段变更日志，执行中及仍需恢复的记录将保留'
   },
   sync_maintenance: {
+    execution_needs_attention: '同步结果待核实',
     confirm_precision_alignment: '我已确认实际字段容量满足业务需要，按实际精度更新任务配置',
     precision_unspecified: '未指定精度',
     saved_definition: '任务保存配置',
@@ -5185,7 +5186,7 @@ export default {
     full_submitted: '本次全量同步已提交，请在任务日志中查看执行结果',
     full_submit_error_help:
       '请先查看该任务的执行日志，确认本次同步是否已启动及执行结果，再决定是否重试',
-    full_request_id: '请求编号：{0}。联系管理员时，请提供此编号以定位服务端错误',
+    full_request_id: '请求编号：{0}',
     full_unsupported: '目标连接“{0}”（{1}）当前不支持全量同步一次',
     rules_entry: '修改规则',
     rules_expand_hint: '展开查看支持范围、限制及官方说明。',

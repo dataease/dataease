@@ -1,4 +1,5 @@
 import { isAxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { useI18n } from '@/hooks/web/useI18n'
 
 export interface ErrorBody {
   code?: string | number
@@ -18,6 +19,7 @@ export class DataEaseError extends Error {
   readonly transportCode?: string
   readonly httpStatus?: number
   readonly requestId?: string
+  readonly toastKey?: string
   readonly fieldErrors?: ErrorBody['fieldErrors']
   readonly category?: string
   readonly messageKey?: string
@@ -49,6 +51,24 @@ export class DataEaseError extends Error {
       response?.headers['x-de-request-id'] || response?.headers['X-DE-Request-ID']
     this.requestId =
       body.requestId || (typeof headerRequestId === 'string' ? headerRequestId : undefined)
+    if (/^\/sync\/(?:task|datasource)(?:\/|$)/.test(this.config?.url || '')) {
+      const diagnostic =
+        body.data && typeof body.data === 'object' && 'connectionDiagnostic' in body.data
+          ? body.data.connectionDiagnostic
+          : undefined
+      if (body.category !== 'INTERNAL' && typeof diagnostic === 'string' && diagnostic.trim()) {
+        const details = diagnostic.trim()
+        if (!this.message.includes(details)) {
+          this.message = details.startsWith(this.message) ? details : `${this.message}\n${details}`
+        }
+      }
+      // 同步管理沿用现有消息展示，只保留一个能关联后台日志的编号
+      this.message = this.message.replace(/（诊断编号：[0-9a-f-]{36}）/gi, '')
+      this.toastKey = `sync:${this.message}`
+      if (this.requestId && !this.message.includes(this.requestId)) {
+        this.message += `\n${useI18n().t('sync_maintenance.full_request_id', [this.requestId])}`
+      }
+    }
     this.fieldErrors = body.fieldErrors
     this.category = body.category
     this.messageKey = body.messageKey

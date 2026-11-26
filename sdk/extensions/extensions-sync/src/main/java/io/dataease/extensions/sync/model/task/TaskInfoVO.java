@@ -64,5 +64,6 @@ public class TaskInfoVO {
      */
     private String maintenanceState;
     private boolean maintenanceNeedsAttention;
+    private boolean executionNeedsAttention;
 
 }

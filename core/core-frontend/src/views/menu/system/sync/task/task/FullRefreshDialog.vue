@@ -234,7 +234,10 @@ defineExpose({ open })
           <p v-if="error.isSubmission" class="full-refresh-error-help">
             {{ t('sync_maintenance.full_submit_error_help') }}
           </p>
-          <p v-if="error.requestId" class="full-refresh-error-help">
+          <p
+            v-if="error.requestId && !error.message.includes(error.requestId)"
+            class="full-refresh-error-help"
+          >
             {{ t('sync_maintenance.full_request_id', [error.requestId]) }}
           </p>
         </template>
@@ -289,6 +292,7 @@ defineExpose({ open })
     line-height: 22px;
   }
   .ed-alert__title {
+    white-space: pre-line;
     overflow-wrap: anywhere;
     line-height: 22px;
   }

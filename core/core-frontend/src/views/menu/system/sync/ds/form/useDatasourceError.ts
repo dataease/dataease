@@ -19,14 +19,16 @@ export const useDatasourceError = () => {
   const show = (message: string, diagnostic: string, requestId?: string, saveFailed = false) => {
     clear()
     const details = [
-      diagnostic,
-      requestId ? t('sync_maintenance.full_request_id', [requestId]) : ''
+      diagnostic.startsWith(`${message}\n`) ? diagnostic.slice(message.length + 1) : diagnostic,
+      requestId && !message.includes(requestId) && !diagnostic.includes(requestId)
+        ? t('sync_maintenance.full_request_id', [requestId])
+        : ''
     ]
       .filter(Boolean)
       .join('\n')
     notice = ElMessage({
       type: 'error',
-      customClass: 'de-message-error de-message-export',
+      customClass: 'de-message-error de-message-export sync-task-error-message',
       message: details
         ? h(ConnectionErrorNotice, { message, diagnostic: details, saveFailed })
         : message,
@@ -37,8 +39,10 @@ export const useDatasourceError = () => {
   const present = (error: unknown, options: { fallback?: string; saveFailed?: boolean } = {}) => {
     if (wasErrorPresented(error)) return
     const failure = toDataEaseError(error)
-    const data = errorBody(failure.response?.data).data
+    const body = errorBody(failure.response?.data)
+    const data = body.data
     const diagnostic =
+      failure.category !== 'INTERNAL' &&
       data &&
       typeof data === 'object' &&
       'connectionDiagnostic' in data &&
@@ -46,9 +50,7 @@ export const useDatasourceError = () => {
         ? data.connectionDiagnostic
         : ''
     show(
-      failure.category
-        ? failure.message
-        : options.fallback || t('sync_datasource.operation_failed'),
+      body.msg || failure.message || options.fallback || t('sync_datasource.operation_failed'),
       diagnostic,
       failure.requestId,
       options.saveFailed

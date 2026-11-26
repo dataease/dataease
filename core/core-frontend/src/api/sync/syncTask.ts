@@ -144,6 +144,7 @@ export type SinkKeyPolicy = 'OPTIONAL' | 'REQUIRED' | 'PROVIDER_GENERATED'
 export class ITaskInfoRes {
   maintenanceState?: string
   maintenanceNeedsAttention?: boolean
+  executionNeedsAttention?: boolean
   logStatus?: string
   editable?: boolean
   editableCheckFailed?: boolean
