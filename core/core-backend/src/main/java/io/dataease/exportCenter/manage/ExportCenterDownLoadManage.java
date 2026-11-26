@@ -22,6 +22,7 @@ import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataSearchParam;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
+import io.dataease.chart.manage.ExcelExportContentService;
 import io.dataease.chart.server.ChartDataServer;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.constant.DeTypeConstants;
@@ -123,6 +124,8 @@ public class ExportCenterDownLoadManage {
     private ExportTaskExecutionService exportTaskExecutionService;
     @Resource
     private ExportNodeIdentity exportNodeIdentity;
+    @Resource
+    private ExcelExportContentService excelExportContentService;
     @Resource
     private ExportContentService exportContentService;
     @Resource
@@ -629,15 +632,15 @@ public class ExportCenterDownLoadManage {
                 Sheet detailsSheet;
                 Integer sheetIndex = 1;
                 if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info") || request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
-                    boolean summaryEnabled = !"dataset".equals(request.getDownloadType()) && ChartDataServer.isSummaryEnabled(request.getViewInfo());
-                    ChartDataServer.SummaryConfig summaryConfig = null;
-                    ChartDataServer.SummaryAccumulator summaryAcc = null;
+                    boolean summaryEnabled = !"dataset".equals(request.getDownloadType()) && excelExportContentService.isSummaryEnabled(request.getViewInfo());
+                    ExcelExportContentService.SummaryConfig summaryConfig = null;
+                    ExcelExportContentService.SummaryAccumulator summaryAcc = null;
                     List<ChartViewFieldDTO> allExportColumns = null;
                     Map<String, java.math.BigDecimal> customSumResult = null;
                     if (summaryEnabled) {
-                        summaryConfig = ChartDataServer.parseSummaryConfig(request.getViewInfo());
-                        summaryAcc = new ChartDataServer.SummaryAccumulator();
-                        allExportColumns = ChartDataServer.getAllExportColumns(request.getViewInfo());
+                        summaryConfig = excelExportContentService.parseSummaryConfig(request.getViewInfo());
+                        summaryAcc = new ExcelExportContentService.SummaryAccumulator();
+                        allExportColumns = excelExportContentService.getAllExportColumns(request.getViewInfo());
                     }
 
                     request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
@@ -649,7 +652,7 @@ public class ExportCenterDownLoadManage {
                         details.addAll(request.getDetails());
 
                         if (summaryEnabled) {
-                            ChartDataServer.accumulatePageStats(summaryAcc, request.getDetails(), allExportColumns, summaryConfig);
+                            excelExportContentService.accumulatePageStats(summaryAcc, request.getDetails(), allExportColumns, summaryConfig);
                             if (i == chartViewDTO.getTotalPage() && pageDto.getData() != null && pageDto.getData().get("customSumResult") != null) {
                                 customSumResult = (Map<String, java.math.BigDecimal>) pageDto.getData().get("customSumResult");
                             }
@@ -658,18 +661,18 @@ public class ExportCenterDownLoadManage {
                         if (((details.size() + extractPageSize) > sheetLimit) || i == chartViewDTO.getTotalPage()) {
                             boolean hasSummaryRow = i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0;
                             if (hasSummaryRow) {
-                                Object[] totalRow = ChartDataServer.buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
+                                Object[] totalRow = excelExportContentService.buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
                                 details.add(totalRow);
                             }
 
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
                             ViewDetailField[] detailFields = request.getDetailFields();
-                            Object[] header = ChartDataServer.filterExportHeader(request.getHeader(), request.getViewInfo());
+                            Object[] header = excelExportContentService.filterExportHeader(request.getHeader(), request.getViewInfo());
                             details.add(0, header);
-                            List<Integer> columnIndexs = ChartDataServer.getHiddenExportColumnIndexes(header, request.getViewInfo());
+                            List<Integer> columnIndexs = excelExportContentService.getHiddenExportColumnIndexes(header, request.getViewInfo());
                             removeColumn(details, columnIndexs);
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, request.getViewInfo(), wb, hasSummaryRow);
+                            excelExportContentService.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, request.getViewInfo(), wb, hasSummaryRow);
                             sheetIndex++;
                             details.clear();
                         }
@@ -743,9 +746,9 @@ public class ExportCenterDownLoadManage {
                 Object[] header = request.getHeader();
                 Sheet detailsSheet = wb.createSheet("数据");
                 if (request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
-                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
+                    excelExportContentService.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                 } else {
-                    ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
+                    excelExportContentService.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
                 }
             }
         } else {
@@ -760,7 +763,7 @@ public class ExportCenterDownLoadManage {
                 Object[] header = requestInner.getHeader();
                 //明细sheet
                 Sheet detailsSheet = wb.createSheet("数据 " + (i + 1));
-                ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
+                excelExportContentService.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), null);
             }
         }
     }
