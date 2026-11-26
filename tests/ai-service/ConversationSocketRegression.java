@@ -358,8 +358,11 @@ public final class ConversationSocketRegression {
                 browser.environment().put("DATASET_ASSISTANT_BACKEND", "http://127.0.0.1:" + service.getPort());
                 var process = browser.inheritIO().start();
                 if (!process.waitFor(200, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("editor timeout"); }
-                if (process.exitValue() != 0 || modelRequests.size() - before != 10)
-                    throw new AssertionError("nine editor scenarios must make nine initial model requests and one explicit retry; actual: " + (modelRequests.size() - before));
+                int calls = modelRequests.size() - before;
+                if (process.exitValue() != 0)
+                    throw new AssertionError("editor Playwright suite exited " + process.exitValue() + "; observed model requests: " + calls);
+                if (calls != 10)
+                    throw new AssertionError("nine editor scenarios must make nine initial model requests and one explicit retry; actual: " + calls);
                 System.out.println("PASS both real editors, 9 scenarios: ten-second streams, zero connected progress GETs, gap repair, reconnect, offline completion, explicit retry, stop, new conversation and drawer close; 9 starts + 1 manual retry = 10 model requests");
             }
             System.out.println("PASS authenticated HTTP/STOMP, ten-second controlled generation, private tabs, foreign user and resource revocation");
