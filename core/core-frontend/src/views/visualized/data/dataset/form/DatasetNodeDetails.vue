@@ -641,31 +641,33 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 @import '@/style/mixin.less';
 
 .node-tabs-row {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   flex-shrink: 0;
   margin-top: 0;
   margin-bottom: 16px;
+  border-bottom: 1px solid rgba(31, 35, 41, 0.15);
 }
 .node-tabs {
-  .border-bottom-tab(24px);
+  flex: 1;
+  min-width: 0;
   margin-left: 0;
   :deep(.ed-tabs__header) {
     margin-bottom: 0;
   }
+  :deep(.ed-tabs__nav-wrap::after) {
+    content: none;
+  }
   :deep(.ed-tabs__item) {
     font-size: 14px;
-  }
-  :deep(.ed-tabs__nav-wrap) {
-    padding-right: 256px;
   }
 }
 .details-fullscreen {
   flex-shrink: 0;
 }
 .node-field-search {
-  position: absolute;
-  right: 0;
-  bottom: 12px;
+  flex-shrink: 0;
   width: 240px;
 }
 
