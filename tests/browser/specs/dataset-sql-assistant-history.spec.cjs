@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../fixtures/dataset-editor/conversations.cjs");
 
 test("SQL editor follows up on two fields after stopping a later read", async ({
   page,

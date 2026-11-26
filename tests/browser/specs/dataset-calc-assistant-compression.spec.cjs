@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../fixtures/dataset-editor/conversations.cjs");
 
 async function openSqlEditor(page) {
   await page.getByRole("button", { name: "数据表关联", exact: true }).click();
