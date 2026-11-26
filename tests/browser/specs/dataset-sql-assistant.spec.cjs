@@ -138,7 +138,12 @@ async function backend(page, options = {}) {
     }
     if (path.endsWith("/stop")) {
       state.stops++;
-      return reply({ ...run, status: "CANCELLED", cursor: 1, events: [] });
+      return reply({
+        ...run,
+        status: "CANCELLED",
+        cursor: 1,
+        events: [{ sequence: 1, type: "CANCELLED", error: "cancelled" }],
+      });
     }
     if (path.endsWith("/events")) {
       state.reads++;
@@ -934,23 +939,36 @@ test("stop during continuation keeps the new idle context for the following ques
 test("recovers transient event reads and resumes the same execution after an outage", async ({
   page,
 }) => {
-  const state = await backend(page, { readFailures: 1 });
+  await page.clock.install();
+  const state = await backend(page, { readFailures: Infinity });
   await enter(page);
   await expand(page);
+  const recovering = control(page, "panel").getByText("连接中断，正在恢复", {
+    exact: true,
+  });
   await ask(page);
+  await expect(recovering).toBeVisible();
+  await page.clock.fastForward(18000);
+  await expect(recovering).toBeVisible();
+  await expect(control(page, "resume")).toHaveCount(0);
+  state.readFailures = 0;
   await expect(control(page, "apply")).toHaveCount(1);
   expect(state.starts).toBe(1);
-  state.readFailures = 9;
+
+  state.readFailures = Infinity;
   await ask(page, "continue");
-  await expect(control(page, "resume")).toBeVisible({ timeout: 15000 });
+  await expect(recovering).toBeVisible();
+  await page.clock.fastForward(31000);
+  await expect(control(page, "resume")).toBeVisible();
   expect(state.starts).toBe(2);
   state.readFailures = 0;
   await control(page, "resume").click();
   await expect(control(page, "apply")).toHaveCount(2);
   expect(state.starts).toBe(2);
-  state.readFailures = 9;
+
+  state.readFailures = Infinity;
   await ask(page, "continue again");
-  await expect(control(page, "panel").getByRole("alert")).toBeVisible();
+  await expect(recovering).toBeVisible();
   await control(page, "stop").click();
   await expect(control(page, "send")).toBeVisible();
   expect(state.stops).toBe(1);
