@@ -63,12 +63,19 @@ final class EditorStepHistory {
         Answer answer = answers.get(answerNumber - 1);
         scene.authorize(answer.context());
         HistoricalStep original = answer.steps().get(stepNumber - 1);
+        return found(answerNumber, answer.context(), original, scene.historicalEvidence(answer.context(), original, question));
+    }
+
+    static Map<String, Object> found(int answerNumber, Context context, HistoricalStep original, Map<String, Object> evidence) {
+        var selected = new LinkedHashMap<String, Object>();
+        selected.put("answerNumber", answerNumber);
+        selected.put("stepNumber", original.number());
+        selected.put("resourceName", context.resourceName());
         selected.put("lookup", "FOUND");
         selected.put("action", original.name());
         selected.put("status", original.status());
         if (original.error() != null) selected.put("error", original.error());
         if ("get_table_fields".equals(original.name())) selected.put("table", original.parameters().get("table"));
-        var evidence = scene.historicalEvidence(answer.context(), original, question);
         if (!evidence.isEmpty()) selected.put("evidence", evidence);
         return selected;
     }

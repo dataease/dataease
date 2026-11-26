@@ -194,6 +194,7 @@ public class AiCalcFieldScene implements AiConversationScene {
     }
 
     @Override public String modelToolResult(String name, String result) {
+        if (!PROPOSE.equals(name)) return result;
         try {
             var feedback = CalcFieldCanvas.JSON.readTree(result);
             if ("CLARIFY_FIELD".equals(feedback.path("status").asText())) return result;

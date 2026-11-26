@@ -201,6 +201,11 @@ final class CalcFieldRegression {
             awaitingHistoryStop.countDown();
             if (!releaseHistoryReply.await(10, TimeUnit.SECONDS)) throw new AssertionError("unreleased formula reply");
         }
+        if ("calc-history-latest".equals(mode)) {
+            if (step == 1) return call("find-validation", "find_historical_step",
+                    JSON.writeValueAsString(Map.of("action", "propose_calc_field", "subject", "*", "fields", "*", "selection", "latest")));
+            return frame(Map.of("content", "Historical validation"), "stop");
+        }
         if ("calc-history".equals(mode)) return frame(Map.of("content", "Historical validation"), "stop");
         String explanation = switch (mode) {
             case "calc-unit-ask" -> "Which Amount do you mean, the source column or the calculated field? What is its unit?";
@@ -456,6 +461,16 @@ final class CalcFieldRegression {
                     || message.path("content").asText().contains("boundExpression") || message.path("content").asText().contains("[102] * 2"))
                 throw new AssertionError("A historical explanation replayed tool data or private formula bindings");
         }
+        mode.set("calc-history-latest");
+        requests.clear();
+        var lastValidation = terminal(mvc, start(mvc, edited, "上一次校验的公式是什么？"));
+        if (!"COMPLETED".equals(lastValidation.path("status").asText()) || requests.size() != 2 || previews.get() != originalPreviews)
+            throw new AssertionError("Looking up the last validation must return its evidence without another preview: " + lastValidation);
+        var lookupMessage = requests.getLast().path("messages").get(requests.getLast().path("messages").size() - 1);
+        var found = JSON.readTree(lookupMessage.path("content").asText());
+        if (!"tool".equals(lookupMessage.path("role").asText()) || !formula.equals(found.at("/evidence/expression").asText())
+                || !"DETAIL_PASS".equals(found.at("/evidence/status").asText()) || found.path("answerNumber").asInt() != 1)
+            throw new AssertionError("Last validation must skip intervening explanations and identify the exact proposal: " + found);
         mode.set("retry-truncated");
         requests.clear();
         String interrupted = start(mvc, edited, "第一次回答的第 1 步校验结果");
