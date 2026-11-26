@@ -2,9 +2,29 @@
 
 本文描述数据集自定义 SQL 编辑器和开发 Demo 的多轮会话、工具执行与增量输出，以及数据源详情页的[表关联与语义后台任务](#数据源表关联与语义后台任务)。同步 `ChatModel.call` 接入另见 [基础 AI SDK](sdk-handoff.md)。以下源码路径相对于仓库根目录，数值边界以当前实现为准。运行回归前读取 [AI 服务验证说明](../../tests/ai-service/README.md#对话助手回归)。
 
-自定义 SQL 编辑器和计算字段抽屉使用平台已认证的 WebSocket 接收前台增量。提问、停止、手动重试、应用核验沿用 HTTP。STOMP 订阅 `/app/ai/conversation` 时，服务端向该连接的订阅返回一次性凭据。浏览器通过 `POST /ai/conversations/{id}/executions/{execution}/subscriptions` 提交凭据、编辑器 ID 和已有游标，服务端核验当前 HTTP 身份、执行归属、资源权限及握手凭据。每批内容经原执行的交付权限校验后，定向发送到对应连接及订阅。事件序号用于去重、排序及缺口补读。超过单帧大小的内容由同一鉴权事件接口补读。执行状态和订阅保存在所属进程内存中，多节点部署应将编辑活动的 HTTP 和 WebSocket 路由至同一节点。推送断开时，编辑器先从已读游标查询原执行。运行期间按新内容调整补读间隔（0.5 至 2 秒），并定期重试订阅。WebSocket 和 HTTP 指向不同节点时，可由原节点的 HTTP 补齐。事件请求落到其他节点会收到可重试的路由错误。
+自定义 SQL 编辑器和计算字段抽屉使用平台已认证的 WebSocket 接收前台增量。
+提问、停止、手动重试、应用核验沿用 HTTP。
+STOMP 订阅 `/app/ai/conversation` 时，服务端向该连接的订阅返回一次性凭据。
+浏览器调用
+`POST /ai/conversations/{id}/executions/{execution}/subscriptions`
+提交凭据、编辑器 ID 和已有游标，服务端核验当前 HTTP 身份、执行归属、资源权限及握手凭据。
+每批内容经原执行的交付权限校验后，定向发送到对应连接及订阅。
+事件序号用于去重、排序及缺口补读。
+超过单帧大小的内容由同一鉴权事件接口补读。
+执行状态和订阅保存在所属进程内存中，多节点部署应将编辑活动的 HTTP 和 WebSocket 路由至同一节点。
+推送断开时，编辑器先从已读游标查询原执行。
+运行期间按新内容调整补读间隔（0.5 至 2 秒），并定期重试订阅。
+WebSocket 和 HTTP 指向不同节点时，可由原节点的 HTTP 补齐。
+事件请求落到其他节点会收到可重试的路由错误。
 
-收起助手保留订阅。连接断开时给予原执行 30 秒宽限，服务端继续遵守原模型调用期限。通过已绑定连接收到的回执和通过鉴权的游标读取可以续约。宽限先到时，服务端结束执行，保留已授权的部分回答及手动重答入口。原调用先到期时记录模型超时。进程重启会丢失临时执行；原节点持续不可达时，编辑器提示状态未确认，恢复联网后可继续核对。主动新对话或关闭编辑器会释放旧订阅并结束该会话。
+收起助手保留订阅。
+连接断开时给予原执行 30 秒宽限，服务端继续遵守原模型调用期限。
+通过已绑定连接收到的回执和通过鉴权的游标读取可以续约。
+宽限先到时，服务端结束执行，保留已授权的部分回答及手动重答入口。
+原调用先到期时记录模型超时。
+进程重启会丢失临时执行。
+原节点持续不可达时，编辑器提示状态未确认，恢复联网后可继续核对。
+主动新对话或关闭编辑器会释放旧订阅并结束该会话。
 
 Demo 的可用性、后台任务和完成通知在页面可见且在线时同步：首次进入、重新聚焦、恢复可见或网络恢复时立即读取；空闲时每 30 秒同步一次，有进行中后台任务或待追加原对话的结果时每 2 秒更新后台进度。提交、重试或定位任务会唤醒后台读取，同一组件不并发启动重复轮询；同轮已读到的任务状态直接复用。隐藏标签页或断网暂停这些定时读取，离开页面清理定时器及事件监听；暂停读取不取消持久后台任务。前台执行仅在运行中读取增量，有新内容时间隔 500 毫秒，无新内容时逐步放缓至 2 秒；隐藏标签页时保留 5 秒读取以续租，确认终态后停止。空闲页的配置开关变化最迟在下一次同步反映，实际调用和结果交付仍由后端即时鉴权。
 
@@ -174,7 +194,25 @@ The temporary UI lives in `core/core-frontend/src/views/demo/ai-assistant/sql/`;
 
 ## HTTP 契约与事件
 
-The shared SDK exposes `/ai/conversations`: `GET /resources`, `POST` to open a context, the compatible synchronous `POST /{id}/turns`, and `DELETE /{id}`. Streaming uses `POST /{id}/executions`, authenticated `GET /{id}/executions/{execution}/events?after=N` and `POST /{id}/executions/{execution}/stop`. All browser requests use the existing Axios/security wrapper. Events include session/execution/context IDs, monotonic sequence/cursor, text or safe terminal/error codes. Actual program tools emit a typed TOOL payload with callId, registered name, STARTED/RUNNING/SUCCEEDED/FAILED/CANCELLED status, validated parameters and a safe result projection. Model text cannot create tool events. If the user stops a running tool, it receives CANCELLED. A deadline or expired editor connection lease gives the tool FAILED. Each terminal tool event retains the original call ID and safe error code and precedes the execution terminal event. The Vue page renders these as escaped text, separate from assistant text, and deduplicates the same call through its progress states. The UI deduplicates cursor replay and suppresses late old-generation responses. If stop finds an already completed execution, the UI drains missing events before showing it as complete. Timeout, unsupported capability, malformed response and permission failures use the existing safe error translations.
+The shared SDK exposes `/ai/conversations`: `GET /resources`, `POST` to open a
+context, the compatible synchronous `POST /{id}/turns`, and `DELETE /{id}`.
+Streaming uses `POST /{id}/executions`, authenticated
+`GET /{id}/executions/{execution}/events?after=N` and
+`POST /{id}/executions/{execution}/stop`. All browser requests use the existing
+Axios/security wrapper. Events include session/execution/context IDs, monotonic
+sequence/cursor, text or safe terminal/error codes. Actual program tools emit a
+typed TOOL payload with callId, registered name,
+STARTED/RUNNING/SUCCEEDED/FAILED/CANCELLED status, validated parameters and a
+safe result projection. Model text cannot create tool events. If the user stops
+a running tool, it receives CANCELLED. A deadline or expired editor connection
+lease gives the tool FAILED. Each terminal tool event retains the original call
+ID and safe error code and precedes the execution terminal event. The Vue page
+renders these as escaped text, separate from assistant text, and deduplicates
+the same call through its progress states. The UI deduplicates cursor replay and
+suppresses late old-generation responses. If stop finds an already completed
+execution, the UI drains missing events before showing it as complete. Timeout,
+unsupported capability, malformed response and permission failures use the
+existing safe error translations.
 
 Demo 的页面聊天保持连续对话：普通追问复用当前会话；选择、切换或清空数据源，以及修改 SQL 草稿时，通过 `POST /ai/conversations` 的可选 `previousSessionId` 由后端续接已完成的文本/工具历史，并更新执行上下文快照。历史消息按范围记录原数据源，系统提示区分历史来源与当前目标；在开头唯一的 system 消息中提供本轮权威选择状态（NONE/SELECTED），明确对应本次请求的最新用户问题，短追问以此解释。普通流式、同步 turns 与工具调用均不在历史消息中间追加 system 消息，兼容要求 system 只能位于开头的模型接口。续接后的最新 user 消息使用服务端生成的 JSON 将 `currentTarget` 与原始 `userMessage` 绑定；模型按该状态解释短追问，重新读取请求需调用当前允许的工具，不能用旧回答声称已重新查询。用户输入始终作为字符串转义，不能覆盖服务端选择；完成历史仍保存用户原文，手动重试保留原任务请求快照。工具协议没有当前可用工具时显式发送 `tool_choice: none`，避免模型从历史工具消息推断仍可调用；后端继续拒绝任何未授权工具。该提示仅属于当前请求，不写入完成历史或改变历史范围索引；旧表信息不能被当成当前库的元数据或访问授权。工具定义、实际执行和新结果仅绑定当前目标；清空数据源后不提供资源工具，但保留工具调用及结果历史用于纯对话。旧结果仍绑定原目标，客户端不上传或拼装历史。续接必须同身份、同编辑器、同场景，来源未关闭、未过期、未退役且没有正在执行的请求。当前范围和历史涉及的资源范围在模型、工具及交付边界重新鉴权，重复资源范围合并检查，退役快照的旧结果及重试也保留历史资源鉴权信息；历史资源撤权或版本失效时拒绝继续使用并清理会话，不能通过切库绕过。身份/工作空间变化和显式结束仍清理会话，单次辅助按钮不参与聊天历史。续接保留原过期时间和累计轮次，不借更新目标延长会话或绕过轮次限制。需要独立会话的业务入口显式不传 `previousSessionId`；数据源变化本身不自动定义会话边界。旧客户端不传该字段时沿用原 Open 行为，新前端须配套新 SDK/后端；未改动 XPack 契约或实现。
 
@@ -202,9 +240,14 @@ Streaming is an explicit feature opt-in and uses a runtime-owned detached handle
 
 ## 取消、租约与会话
 
-每次执行从受理起使用固定期限，排队时间计入其中。停止、关闭会话或关闭应用会中止任务及上游 HTTP 请求，响应关闭后释放并发名额。每秒的扫描也会处理阻塞读取期间的执行到期和会话过期。
+每次执行从受理起使用固定期限，排队时间计入其中。
+停止、关闭会话或关闭应用会中止任务及上游 HTTP 请求，响应关闭后释放并发名额。
+每秒的扫描也会处理阻塞读取期间的执行到期和会话过期。
 
-开发 Demo 的读取租约为 15 秒，由鉴权的进度读取续约。租约过期会取消执行、移除会话历史并释放名额。两个正式数据集编辑器采用上文的 30 秒恢复规则。宽限到期后，在原会话有效且仍有权限时，作者可以查看已有内容并主动重新回答。
+开发 Demo 的读取租约为 15 秒，由鉴权的进度读取续约。
+租约过期会取消执行、移除会话历史并释放名额。
+两个正式数据集编辑器采用上文的 30 秒恢复规则。
+宽限到期后，在原会话有效且仍有权限时，作者可以查看已有内容并主动重新回答。
 
 Sessions are process-local, fixed at 30 minutes, at most 200 per process and four per current identity/workspace, and at most 50 completed turns. Concurrent executions on one session are rejected. Failed/cancelled turns never enter model history. Successful tool rounds atomically retain the complete user → assistant tool_calls → correlated role=tool result(s) → final assistant transcript for follow-up. The compatible synchronous conversation endpoint explicitly refuses a session containing TOOL history; native synchronous SDK policy and its refusal of tools/options are unchanged.
 
