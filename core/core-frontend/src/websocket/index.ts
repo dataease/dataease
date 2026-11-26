@@ -59,7 +59,7 @@ export default {
         : `token=${encodeURIComponent(wsCache.get('user.token') || '')}`
       const socket = new SockJS(prefix + 'websocket?' + query)
       const client = Stomp.over(socket)
-      client.debug = () => {}
+      client.debug = () => undefined
       stompClient = client
       connectionIdentity = identity()
       const heads = {
@@ -87,7 +87,7 @@ export default {
       stompClient = undefined
       connectionIdentity = undefined
       setConversationSocket()
-      if (client?.connected) client.disconnect(() => {})
+      if (client?.connected) client.disconnect(() => undefined)
       else if (client && client.ws.readyState < WebSocket.CLOSING) client.ws.close()
     }
 

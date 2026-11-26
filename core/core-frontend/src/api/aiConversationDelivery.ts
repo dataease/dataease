@@ -24,7 +24,6 @@ export function followConversationSocket(options: ConversationDelivery): Promise
     if (signal.aborted) return resolve(true)
     let closed = false
     let timer: number
-    let unsubscribe: (() => void) | undefined
     const read = new AbortController()
     const finish = (done: boolean) => {
       if (closed) return
@@ -88,7 +87,7 @@ export function followConversationSocket(options: ConversationDelivery): Promise
     }
     // Serialize initial catch-up, push batches and gap reads so a late response cannot rewind a turn.
     let handling = Promise.resolve()
-    unsubscribe = subscribeConversationSocket(
+    const unsubscribe = subscribeConversationSocket(
       body => {
         if (closed) return
         deadline(8500)
