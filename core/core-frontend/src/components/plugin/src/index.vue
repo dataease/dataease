@@ -7,7 +7,7 @@ import configGlobal from '@/components/config-global/src/ConfigGlobal.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
-import axios from 'axios'
+import { pluginAxios } from './pluginAxios'
 import * as Pinia from 'pinia'
 import * as echarts from 'echarts'
 import router from '@/router'
@@ -123,7 +123,7 @@ onMounted(async () => {
     } else if (!window._de_xpack_not_loaded) {
       window._de_xpack_not_loaded = true
       window['VueDe'] = Vue
-      window['AxiosDe'] = axios
+      window['AxiosDe'] = pluginAxios
       window['PiniaDe'] = Pinia
       window['vueRouterDe'] = router
       window['MittAllDe'] = useEmitt().emitter.all
