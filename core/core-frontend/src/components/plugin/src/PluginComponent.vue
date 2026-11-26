@@ -1,165 +1,138 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs, onMounted, shallowRef, nextTick, watch } from 'vue'
-import { execute, randomKey, formatArray } from './convert'
-import { loadPluginApi, xpackModelApi } from '@/api/plugin'
-import { useCache } from '@/hooks/web/useCache'
-import { i18n } from '@/plugins/vue-i18n'
-import * as Vue from 'vue'
-import { pluginAxios } from './pluginAxios'
-import * as Pinia from 'pinia'
-import router from '@/router'
-import { useEmitt } from '@/hooks/web/useEmitt'
-import request from '@/config/axios'
-const { wsCache } = useCache()
-import { isNull } from '@/utils/utils'
-
-const plugin = shallowRef()
-
-const loading = ref(false)
+import { ref, useAttrs, onMounted, shallowRef, nextTick, onBeforeUnmount, watch } from 'vue'
+import {
+  PluginLoadError,
+  PluginMethodQueue,
+  isUnavailablePluginError,
+  toPluginLoadError
+} from './loader'
+import type { PluginCallParam, PluginFailPayload, PluginInstanceState } from './loader'
+import { loadPluginComponent } from './adapters'
 
 const attrs = useAttrs()
+const emits = defineEmits<{
+  (event: 'loadFail', payload: PluginFailPayload): void
+}>()
 
-const showNolic = () => {
-  plugin.value = noLic
-  loading.value = false
+const plugin = shallowRef()
+const pluginProxy = ref()
+const state = ref<PluginInstanceState>('loading')
+const methods = new PluginMethodQueue()
+
+let disposed = false
+let loadFailEmitted = false
+let readyTimer: ReturnType<typeof setTimeout> | null = null
+let loadGeneration = 0
+
+const clearReadyTimer = () => {
+  if (!readyTimer) return
+  clearTimeout(readyTimer)
+  readyTimer = null
 }
-const generateRamStr = (len: number) => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let randomStr = ''
-  for (var i = 0; i < len; i++) {
-    randomStr += chars.charAt(Math.floor(Math.random() * chars.length))
+
+const callPlugin = (param: PluginCallParam) => {
+  const proxy = pluginProxy.value as any
+  if (!proxy) throw new PluginLoadError('LOAD_FAILED', 'plugin component is not mounted')
+  if (typeof proxy.invokeMethod === 'function') return proxy.invokeMethod(param)
+  const method = proxy[param.methodName]
+  if (typeof method !== 'function') {
+    throw new PluginLoadError(
+      'METHOD_NOT_FOUND',
+      `plugin method is not available: ${param.methodName}`
+    )
   }
-  return randomStr
+  return method(...(param.args || []))
 }
 
-const importProxy = (bytesArray: any[]) => {
-  const promise = import(
-    `../../../../../../../extensions/${formatArray(bytesArray[8])}/${formatArray(
-      bytesArray[9]
-    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}/${formatArray(
-      bytesArray[12]
-    )}.vue`
-  )
-  promise
-    .then((res: any) => {
-      plugin.value = res.default
-    })
-    .catch(e => {
-      console.error(e)
-      showNolic()
-    })
-}
-
-const getModuleName = () => {
-  const jsPath = window.atob(attrs.jsname.toString())
-  return jsPath.split('/')[0]
-}
-const loadComponent = () => {
-  const moduleName = getModuleName()
-  loading.value = true
-  const byteArray = wsCache.get(`de-plugin-proxy-${moduleName}`)
-  if (byteArray) {
-    importProxy(JSON.parse(byteArray))
-    loading.value = false
-    return
-  }
-  const key = generateRamStr(randomKey())
-  const moduleNameKey = window.btoa(moduleName)
-  const saltKey = `${key},${moduleNameKey}`
-  loadPluginApi(saltKey)
-    .then(response => {
-      let code = response.data
-      const byteArray = execute(code, key)
-      storeCacheProxy(byteArray)
-      importProxy(byteArray)
-    })
-    .catch(() => {
-      emits('loadFail')
-      showNolic()
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
-const storeCacheProxy = byteArray => {
-  const result = []
-  byteArray.forEach(item => {
-    result.push([...item])
+const bindProxy = () => {
+  if (disposed || !pluginProxy.value) return
+  if (state.value !== 'loading' && state.value !== 'ready') return
+  clearReadyTimer()
+  state.value = 'ready'
+  methods.bind(callPlugin)
+  // 挂载前积压的调用放到本轮渲染之后；插件 mounted 中发起的调用仍走同步契约
+  nextTick(() => {
+    if (!disposed) methods.drain()
   })
-  const moduleName = getModuleName()
-  wsCache.set(`de-plugin-proxy-${moduleName}`, JSON.stringify(result))
 }
-const pluginProxy = ref(null)
-const pendingMethods = []
-const invokeMethod = param => {
-  if (!pluginProxy.value) {
-    pendingMethods.push(param)
-    return
-  }
-  if (pluginProxy.value['invokeMethod']) {
-    pluginProxy.value['invokeMethod'](param)
-  } else {
-    pluginProxy.value[param.methodName]?.(...param.args)
-  }
-}
-const flushPendingMethods = () => {
-  if (!pendingMethods.length) return
-  const pending = pendingMethods.splice(0)
-  pending.forEach(invokeMethod)
-}
-watch(plugin, () => {
-  nextTick(flushPendingMethods)
-})
 
-onMounted(async () => {
-  const key = 'xpack-model-distributed'
-  let distributed = false
-  // In dev mode, set xpack-model-distributed to false by default
-  if (import.meta.env.MODE === 'dev') {
-    distributed = false
-    wsCache.set('xpack-model-distributed', 'false')
-  } else if (wsCache.get(key) === null) {
-    const res = await xpackModelApi()
-    wsCache.set('xpack-model-distributed', isNull(res.data) ? 'null' : res.data)
-    distributed = res.data
-  } else {
-    distributed = wsCache.get(key)
+const fail = (error: unknown) => {
+  if (disposed) return
+  clearReadyTimer()
+  const failure = toPluginLoadError(error)
+  const failedState = isUnavailablePluginError(failure) ? 'unavailable' : 'failed'
+  state.value = failedState
+  plugin.value = noLic
+  methods.close(failure)
+  if (!loadFailEmitted) {
+    loadFailEmitted = true
+    emits('loadFail', {
+      state: failedState,
+      code: failure.code,
+      message: failure.message
+    })
   }
-  if (isNull(distributed)) {
-    setTimeout(() => {
-      emits('loadFail')
-      loading.value = false
-    }, 1000)
-    return
-  }
-  if (distributed) {
-    const moduleName = getModuleName()
-    if (window[moduleName]) {
-      const xpack = await window[moduleName].mapping[attrs.jsname]
-      plugin.value = xpack.default
-    } else {
-      window['VueDe'] = Vue
-      window['AxiosDe'] = pluginAxios
-      window['PiniaDe'] = Pinia
-      window['vueRouterDe'] = router
-      window['MittAllDe'] = useEmitt().emitter.all
-      window['I18nDe'] = i18n
-      const url = `/xpackComponent/pluginStaticInfo/${moduleName}`
-      request.get({ url }).then(async res => {
-        new Function(res.data || res)()
-        const xpack = await window[moduleName].mapping[attrs.jsname]
-        plugin.value = xpack.default
-      })
+}
+
+const invokeMethod = (param: PluginCallParam) => {
+  const result = methods.push(param)
+  // 调用方多为 fire-and-forget，内部标记已处理以避免未处理拒绝告警
+  result.catch(() => undefined)
+  return result
+}
+
+const startLoad = async (jsname: unknown) => {
+  const generation = ++loadGeneration
+  clearReadyTimer()
+  methods.reset(new PluginLoadError('LOAD_FAILED', 'plugin component switched'))
+  loadFailEmitted = false
+  state.value = 'loading'
+  plugin.value = null
+  try {
+    const component = await loadPluginComponent(jsname)
+    if (disposed || generation !== loadGeneration) return
+    plugin.value = component
+    await nextTick()
+    if (disposed || generation !== loadGeneration) return
+    bindProxy()
+    if (state.value === 'loading') {
+      readyTimer = setTimeout(() => {
+        readyTimer = null
+        fail(new PluginLoadError('LOAD_FAILED', 'plugin component did not mount'))
+      }, 10000)
     }
-  } else {
-    loadComponent()
+  } catch (error) {
+    if (disposed || generation !== loadGeneration) return
+    fail(error)
   }
+}
+
+// 同步绑定：插件子组件在 mounted 中触发的调用也需要走同步契约
+watch(pluginProxy, bindProxy, { flush: 'sync' })
+watch(
+  () => attrs.jsname,
+  jsname => {
+    if (!disposed && jsname) startLoad(jsname)
+  }
+)
+
+onMounted(() => {
+  if (attrs.jsname) startLoad(attrs.jsname)
 })
 
-const emits = defineEmits(['loadFail'])
+onBeforeUnmount(() => {
+  disposed = true
+  clearReadyTimer()
+  state.value = 'disposed'
+  methods.close(new PluginLoadError('DISPOSED', 'plugin component disposed'))
+  methods.unbind()
+  plugin.value = null
+})
+
 defineExpose({
-  invokeMethod
+  invokeMethod,
+  getState: () => state.value
 })
 </script>
 
@@ -168,7 +141,7 @@ defineExpose({
     :key="attrs.jsname"
     ref="pluginProxy"
     :is="plugin"
-    v-loading="loading"
+    v-loading="state === 'loading'"
     v-bind="attrs"
   ></component>
 </template>
