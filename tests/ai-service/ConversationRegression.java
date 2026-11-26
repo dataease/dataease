@@ -384,6 +384,8 @@ public final class ConversationRegression {
                     beans.addBean(editor, new AiConversationScene() {
                         public String code() { return editor; }
                         public boolean editorConversation() { return true; }
+                        public List<AiToolProtocol.Definition> tools() { return scene.tools(); }
+                        public String execute(Context context, String tool, Map<String, String> args) { return scene.execute(context, tool, args); }
                         public List<Resource> resources() { return scene.resources(); }
                         public Context resolve(String id, String sql) { return scene.resolve(id, sql); }
                         public void authorize(Context context) { scene.authorize(context); }

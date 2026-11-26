@@ -518,19 +518,19 @@ for (const [status, error, label, reason] of [
     const process = drawer.locator(".assistant-process");
     const detail = process.locator("details");
     const summary = detail.locator("summary");
-    await expect(summary).toHaveText("校验公式 · 执行中");
+    await expect(summary).toHaveText("步骤 1 · 校验公式 " + first + " · 执行中");
     await expect(detail).toHaveAttribute("open", "");
     if (status === "CANCELLED") {
       // Reopen the tool explicitly so the final event preserves the author's choice.
       await summary.click();
       await summary.click();
       await button(drawer, "停止生成").click();
-      await expect(summary).toHaveText("校验公式 · " + label);
+      await expect(summary).toHaveText("步骤 1 · 校验公式 " + first + " · " + label);
       await expect(process).toHaveAttribute("open", "");
       await expect(detail).toHaveAttribute("open", "");
     } else {
       finish = true;
-      await expect(summary).toHaveText("校验公式 · " + label);
+      await expect(summary).toHaveText("步骤 1 · 校验公式 " + first + " · " + label);
       await expect(process).not.toHaveAttribute("open", "");
       await expect(detail).not.toHaveAttribute("open", "");
       await process.locator(":scope > summary").click();
@@ -616,11 +616,11 @@ test("formula correction shows both validation outcomes and keeps the detail bei
     .first();
   const rejected = drawer
     .locator("details")
-    .filter({ has: page.locator("summary", { hasText: "校验公式 · 未通过" }) })
+    .filter({ has: page.locator("summary", { hasText: "步骤 1 · 校验公式 [missing] · 未通过" }) })
     .last();
   const running = drawer
     .locator("details")
-    .filter({ has: page.locator("summary", { hasText: "校验公式 · 执行中" }) })
+    .filter({ has: page.locator("summary", { hasText: "步骤 2 · 校验公式 [orders_id] · 执行中" }) })
     .last();
   try {
     await expect(rejected.locator("summary")).toBeVisible({ timeout: 3000 });
@@ -642,7 +642,7 @@ test("formula correction shows both validation outcomes and keeps the detail bei
   await expect(footer).toContainText("用量不完整");
   await expect(process.locator("details")).toHaveCount(2);
   const passed = process.locator("details").last();
-  await expect(passed.locator("summary")).toHaveText("校验公式 · 通过");
+  await expect(passed.locator("summary")).toHaveText("步骤 2 · 校验公式 [orders_id] · 通过");
   await expect(passed).not.toHaveAttribute("open", "");
   await expect(process).not.toContainText("已校验修正后的公式。");
   await expect(

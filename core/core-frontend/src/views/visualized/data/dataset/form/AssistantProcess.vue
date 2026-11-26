@@ -60,8 +60,33 @@ const verdict = (tool: AiConversationTool) => {
   }
 }
 const title = (tool: AiConversationTool) => {
-  const name = tool.name === 'propose_calc_field' ? tr('validate_formula') : tool.name
-  return name + ' · ' + verdict(tool)
+  const params = tool.parameters
+  const labels: Record<string, [string, string | undefined]> = {
+    get_table_fields: ['read_table_fields', params.table],
+    propose_calc_field: ['validate_formula_object', params.name || params.expression],
+    search_semantics: ['search_semantics', params.terms],
+    search_physical_tables: ['search_physical_tables', params.terms],
+    read_sql_guide: ['read_sql_guide', params.topic],
+    read_relations: [
+      'read_relations',
+      [params.fromTable, params.toTable].filter(Boolean).join(' → ')
+    ],
+    propose_sql: ['propose_sql', params.sql]
+  }
+  const label = labels[tool.name]
+  const object = (label?.[1] ?? '').replace(/\s+/g, ' ').trim()
+  const action = label
+    ? t(`ai_conversation.${label[0]}`, {
+        object: object.length > 64 ? object.slice(0, 63) + '…' : object
+      }).trim()
+    : tool.name
+  const summary =
+    tool.status === 'SUCCEEDED' && tool.fieldCount != null
+      ? t('ai_conversation.fields_count', { count: tool.fieldCount })
+      : verdict(tool)
+  return [t('ai_conversation.step_number', { number: tool.stepNumber }), action, summary].join(
+    ' · '
+  )
 }
 const toggleTool = (entry: ProcessEntry) => {
   if (entry.kind === 'tool') entry.open = !(entry.open ?? active(entry.tool))
@@ -72,6 +97,11 @@ const toggleTool = (entry: ProcessEntry) => {
   <details v-if="process.entries.length" class="assistant-process" :open="expanded">
     <summary @click.prevent="emit('update:open', !expanded)">
       {{ tr('answer_process') }}<span v-if="elapsed"> · {{ elapsed }}</span>
+      <template v-if="!expanded">
+        <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
+          <span v-if="entry.kind === 'tool'" class="step-summary">{{ title(entry.tool) }}</span>
+        </template>
+      </template>
     </summary>
     <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
       <details v-if="entry.kind === 'tool'" :open="entry.open ?? active(entry.tool)">
@@ -125,6 +155,11 @@ const toggleTool = (entry: ProcessEntry) => {
 <style scoped>
 .assistant-process {
   overflow-wrap: anywhere;
+}
+
+.step-summary {
+  display: block;
+  margin-inline-start: 1em;
 }
 
 summary {

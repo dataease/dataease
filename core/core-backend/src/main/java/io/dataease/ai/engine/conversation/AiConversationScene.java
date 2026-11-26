@@ -42,6 +42,13 @@ public interface AiConversationScene {
     default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
     /** A formal editor presents and retains each answer and its author-visible process. */
     default boolean editorConversation() { return false; }
+    /** Internal immutable snapshot. Parameters and raw results are never serialized into model history by default. */
+    record HistoricalStep(int number, String callId, String name, String status, Map<String, String> parameters,
+                          String result, String error) {
+        public HistoricalStep { parameters = Map.copyOf(parameters); }
+    }
+    /** The original scope has just been reauthorized. Return only model-visible facts needed by the question. */
+    default Map<String, Object> historicalEvidence(Context original, HistoricalStep step, String question) { return Map.of(); }
     /** The authored SQL/formula offered by a proposal tool, without internal application bindings. */
     default String proposedContent(String tool, Map<String, String> arguments) { return null; }
     /** Projection shared with the model and retained in its conversation history. */

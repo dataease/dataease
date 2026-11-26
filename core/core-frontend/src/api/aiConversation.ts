@@ -126,6 +126,8 @@ export const aiRecoveryReasonKey = (reason: string) => {
   }
 }
 export interface AiConversationTool {
+  stepNumber?: number
+  fieldCount?: number
   callId: string
   name: string
   status: 'STARTED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED'
