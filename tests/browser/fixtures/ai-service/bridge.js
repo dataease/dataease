@@ -25,11 +25,16 @@ const send = async (method, option) => {
     body: option.data === undefined ? undefined : JSON.stringify(option.data),
     headers: { 'Content-Type': 'application/json' },
     signal: option.signal
+  }).catch(error => {
+    if (error.name === 'AbortError') throw error
+    throw Object.assign(error, { transportCode: 'ERR_NETWORK' })
   })
   if (!response.ok) {
     const body = await response.json().catch(() => ({}))
     throw Object.assign(new Error(body.msg || 'Synthetic API error'), {
       messageKey: body.messageKey,
+      category: body.category,
+      requestId: body.requestId,
       httpStatus: response.status,
       response: { status: response.status, data: body }
     })
@@ -44,4 +49,4 @@ export default Object.fromEntries(
   ])
 )
 
-export const isRequestError = (error) => Boolean(error?.response)
+export const isRequestError = (error) => Boolean(error?.response || error?.transportCode)

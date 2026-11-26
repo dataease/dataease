@@ -8,6 +8,7 @@ export default {
     tool_step: 'Tool execution failed',
     execution_step: 'Answer failed',
     validation_step: 'Validation failed',
+    stopped_step: 'Answer stopped',
     submission_step: 'Submission failed',
     unknown_failure: 'The specific cause is unknown.',
     no_formula: 'No formula was generated.',

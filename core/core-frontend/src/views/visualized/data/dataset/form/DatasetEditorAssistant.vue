@@ -84,7 +84,10 @@ interface Turn {
   executionId?: string
   attemptId?: string
   retryEligible?: boolean
+  admit?: (read: AbortController) => Promise<void>
+  stopRequested?: boolean
   retryKey?: string
+  isRetry?: boolean
   issue?: AnswerFailure
   recovery?: AiConversationEvents['recovery']
   result?: AiAssistanceResult
@@ -95,6 +98,7 @@ const expanded = ref(false)
 const input = ref('')
 const composing = ref(false)
 const failure = ref('')
+const boundaryIssue = ref<AnswerFailure>()
 const turns = ref<Turn[]>([])
 const questionGroups = computed(() => {
   const groups = new Map<string, { turn: Turn; index: number }[]>()
@@ -133,8 +137,10 @@ if (props.calcFieldDraft) {
   )
 }
 
-const sessions = new Set<string>()
+const sessions = new Map<string, string>()
 let latestSession: AiConversationSession | undefined
+const pendingRetry = ref<Turn>()
+let latestRetryExecution: string | undefined
 let request: AbortController | undefined
 let availabilityRead: AbortController | undefined
 let availabilityTimer: number | undefined
@@ -142,12 +148,42 @@ let expiryTimer: number | undefined
 let version = 0
 let disposed = false
 
-const close = (id: string) => void closeConversation(id).catch(() => undefined)
+const identityScope = () =>
+  JSON.stringify([user.uid, user.oid, user.proxyInfo?.proxy, user.proxyInfo?.proxyOid])
+const uncertainResponse = (error: unknown) => {
+  if (!isRequestError(error)) return false
+  if (!error.response) {
+    const code = 'transportCode' in error ? error.transportCode : error.code
+    return ['ERR_NETWORK', 'ECONNABORTED', 'ETIMEDOUT', 'ECONNRESET'].includes(String(code))
+  }
+  if ('messageKey' in error && error.messageKey)
+    return error.messageKey === 'i18n_ai_execution_route_unavailable'
+  return [502, 503, 504].includes(error.response.status)
+}
+async function replayOperation<T>(operation: () => Promise<T>, current: () => boolean): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await operation()
+    } catch (error) {
+      if (attempt >= 2 || !current() || !uncertainResponse(error)) throw error
+      await new Promise(resolve => window.setTimeout(resolve, attempt === 0 ? 200 : 800))
+      if (!current()) throw error
+    }
+  }
+}
+const close = (id: string, owner = identityScope()) => {
+  const sameOwner = () => owner === identityScope()
+  if (sameOwner())
+    void replayOperation(() => closeConversation(id), sameOwner).catch(() => undefined)
+}
 const clearHistory = () => {
   window.clearTimeout(expiryTimer)
-  sessions.forEach(close)
+  sessions.forEach((owner, id) => close(id, owner))
   sessions.clear()
+  boundaryIssue.value = undefined
+  pendingRetry.value = undefined
   latestSession = undefined
+  latestRetryExecution = undefined
   selectedBasis.value = undefined
   includeBasis.value = true
   showFullBasis.value = false
@@ -202,7 +238,7 @@ const cancelAvailability = () => {
   availabilityRead = undefined
 }
 watch(
-  () => [user.uid, user.oid, user.proxyInfo?.proxyOid],
+  () => [user.uid, user.oid, user.proxyInfo?.proxy, user.proxyInfo?.proxyOid],
   () => {
     cancelAvailability()
     reset()
@@ -230,32 +266,48 @@ const accessLost = (error: unknown) =>
   isRequestError(error) &&
   ([401, 403, 404].includes(error.response?.status) ||
     ('messageKey' in error && error.messageKey === 'i18n_ai_scope_changed'))
+const publicFailure = (error: unknown, fallback: string) => {
+  if (!isRequestError(error)) return { reason: fallback, requestId: undefined }
+  const body = error.response?.data
+  const code = 'messageKey' in error ? error.messageKey?.replace(/^i18n_ai_/, '') : undefined
+  const key = aiFailureKey(code || null)
+  let reason = key === 'test_failed' ? fallback : t('ai_service.' + key)
+  if (
+    'category' in error &&
+    error.category &&
+    body &&
+    typeof body === 'object' &&
+    'msg' in body &&
+    typeof body.msg === 'string' &&
+    body.msg === error.message
+  )
+    reason = body.msg
+  const id = 'requestId' in error ? error.requestId : undefined
+  return { reason, requestId: id && /^[a-f0-9]{32}$/i.test(id) ? id : undefined }
+}
 const fail = (error: unknown, turn?: Turn) => {
   if (accessLost(error) || (error instanceof Error && error.message === 'scope_changed')) {
     emit('invalidate-preview')
     clearHistory()
   }
-  let message =
-    isRequestError(error) && error.response?.status === 403
-      ? t('ai_service.failure_forbidden')
-      : tr('failed')
+  let message = tr('failed')
+  if (isRequestError(error) && error.response?.status === 403)
+    message = t('ai_service.failure_forbidden')
   if (
     isRequestError(error) &&
     'messageKey' in error &&
     error.messageKey === 'i18n_ai_calc_sql_manual'
   )
     message = tr('calc_sql_manual')
-  if (turn && turns.value.includes(turn)) {
-    const code =
-      isRequestError(error) && 'messageKey' in error
-        ? error.messageKey?.replace(/^i18n_ai_/, '')
-        : undefined
-    const key = aiFailureKey(code || null)
-    turn.issue = {
+  const diagnostic = publicFailure(error, message)
+  if (turn) {
+    const issue: AnswerFailure = {
       step: turn.executionId ? 'progress_step' : 'submission_step',
-      reason: key === 'test_failed' ? message : t('ai_service.' + key)
+      ...diagnostic
     }
-  } else failure.value = message
+    if (turns.value.includes(turn)) turn.issue = issue
+    else boundaryIssue.value = issue
+  } else failure.value = diagnostic.reason
   void refresh()
 }
 // Displayed turn numbers also work as references in a free-text follow-up.
@@ -330,6 +382,14 @@ const chooseBasis = (question: string) => {
     }
   }
   if (requested === 'preview') return
+  const last = turns.value.at(-1)
+  if (requested === undefined && last?.isRetry && last.choices) {
+    if (last.draftRevision === revision && last.session?.resourceId === props.resourceId) {
+      return { label: last.basis, sql: last.baseSql }
+    }
+    const sql = props.readDraft()
+    return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
+  }
   const index = (requested ?? latest) - 1
   const prior = turns.value[index]
   if (requested !== undefined && !suggestionText(prior?.result)) return
@@ -464,29 +524,24 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
       const key = aiFailureKey(event.error ?? null)
       const tool = turn.process.entries.filter(entry => entry.tool).at(-1)?.tool
       const kind = turn.recovery?.stepKind
-      turn.issue = {
-        step:
-          event.error === 'connection_interrupted'
-            ? 'progress_step'
-            : kind === 'TOOL'
-            ? 'tool_step'
-            : kind === 'MODEL'
-            ? 'model_step'
-            : 'execution_step',
-        tool: kind === 'TOOL' ? tool?.name : undefined,
-        reason:
-          event.error === 'connection_interrupted'
-            ? tr('connection_interrupted')
-            : key === 'test_failed'
-            ? tr('unknown_failure')
-            : t(`ai_service.${key}`)
-      }
+      let step: AnswerFailure['step'] = 'execution_step'
+      let reason = key === 'test_failed' ? tr('unknown_failure') : t(`ai_service.${key}`)
+      if (event.error === 'connection_interrupted') {
+        step = 'progress_step'
+        reason = tr('connection_interrupted')
+      } else if (kind === 'TOOL') step = 'tool_step'
+      else if (kind === 'MODEL') step = 'model_step'
+      turn.issue = { step, reason, tool: kind === 'TOOL' ? tool?.name : undefined }
     }
   }
   if (page.metering) turn.metering = page.metering
   turn.cursor = page.cursor
   turn.status = page.status
   if (page.status === 'COMPLETED' && page.result) {
+    if (turn.isRetry) {
+      latestSession = turn.session
+      latestRetryExecution = turn.executionId
+    }
     turn.result = page.result
     if (failedFormula(turn.result)) {
       turn.issue = {
@@ -497,6 +552,9 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
     const options = page.result.type === 'EXPLANATION' && clarification(page.result.text)
     turn.answer = options ? options.question : page.result.text
     if (options) turn.choices = options.choices
+  }
+  if (page.status === 'CANCELLED' && page.retryEligible) {
+    turn.issue = { step: 'stopped_step', reason: tr('incomplete') }
   }
   if (page.status === 'FAILED') {
     turn.issue ??= { step: 'execution_step', reason: tr('unknown_failure') }
@@ -532,7 +590,21 @@ const poll = async (turn: Turn, read: AbortController) => {
     turn.recovering = false
   }
 }
+const admissionError = (turn: Turn, error: unknown) => {
+  if (turn.admit && uncertainResponse(error)) {
+    turn.status = 'UNREACHABLE'
+    turn.issue = { step: 'progress_step', reason: tr('submission_unknown') }
+  } else {
+    turn.admit = undefined
+    turn.status = 'FAILED'
+    fail(error, turn)
+  }
+}
 const resumeLast = () => {
+  if (pendingRetry.value) {
+    void retryAnswer(pendingRetry.value)
+    return
+  }
   const turn = turns.value.at(-1)
   if (turn?.status === 'UNREACHABLE') void resume(turn)
 }
@@ -543,9 +615,10 @@ const resume = async (turn: Turn) => {
   busy.value = true
   failure.value = ''
   try {
-    await poll(turn, read)
+    if (turn.admit) await turn.admit(read)
+    else await poll(turn, read)
   } catch (error) {
-    if (!read.signal.aborted) fail(error, turn)
+    if (!read.signal.aborted) admissionError(turn, error)
   } finally {
     if (!read.signal.aborted) {
       busy.value = false
@@ -557,6 +630,7 @@ const send = async () => {
   const question = input.value.trim()
   if (
     !question ||
+    pendingRetry.value ||
     busy.value ||
     applying.value ||
     !available.value ||
@@ -598,13 +672,14 @@ const send = async () => {
     }) - 1
   const turn = turns.value[index]
   busy.value = true
+  boundaryIssue.value = undefined
   failure.value = input.value = ''
   try {
     const sql = basis.prior
       ? suggestionText(await checkedSuggestion(basis.prior, source, true))!
       : basis.sql
     if (!current()) return
-    const opening = {
+    let opening = {
       scene: calcField ? ('dataset-calc-field' as const) : ('dataset-sql' as const),
       calcField,
       resourceId: basis.preview?.resourceId ?? source,
@@ -622,69 +697,78 @@ const send = async () => {
       editorId,
       sql,
       openKey: uuid.v4(),
-      previousSessionId: latestSession?.sessionId
+      previousSessionId: latestSession?.sessionId,
+      previousExecutionId: latestRetryExecution
     }
-    let session: AiConversationSession
-    try {
-      session = await openConversation(opening)
-    } catch (error) {
-      // An inaccessible source in the retained history must not block a fresh question on B.
-      if (
-        !current() ||
-        basis.prior ||
-        basis.preview ||
-        !opening.previousSessionId ||
-        latestSession?.resourceId === source ||
-        !accessLost(error)
+    const owner = identityScope()
+    const submissionKey = uuid.v4()
+    let submitted = false
+    turn.admit = async read => {
+      const sameOwner = () => owner === identityScope()
+      const active = () => token === version && sameOwner()
+      const open = () => replayOperation(() => openConversation(opening), sameOwner)
+      let session = turn.session
+      if (!session) {
+        try {
+          session = await open()
+        } catch (error) {
+          if (
+            !active() ||
+            turn.stopRequested ||
+            opening.previousExecutionId ||
+            basis.prior ||
+            basis.preview ||
+            !opening.previousSessionId ||
+            latestSession?.resourceId === source ||
+            !accessLost(error)
+          )
+            throw error
+          clearHistory()
+          turns.value.push(turn)
+          failure.value = tr('history_unavailable')
+          opening = { ...opening, previousSessionId: undefined, openKey: uuid.v4() }
+          session = await open()
+        }
+        if (!active()) {
+          close(session.sessionId, owner)
+          return
+        }
+        turn.session = latestSession = session
+        latestRetryExecution = undefined
+        sessions.set(session.sessionId, owner)
+        window.clearTimeout(expiryTimer)
+        expiryTimer = window.setTimeout(() => {
+          const wasExpanded = expanded.value
+          reset()
+          expanded.value = wasExpanded
+          failure.value = tr('history_unavailable')
+        }, Math.max(0, session.expiresAt - Date.now()))
+      }
+      if (turn.stopRequested && !submitted) {
+        turn.admit = undefined
+        turn.status = 'CANCELLED'
+        return
+      }
+      submitted = true
+      const { sessionId, contextVersion } = session
+      const run = await replayOperation(
+        () => startConversationExecution(sessionId, contextVersion, question, submissionKey),
+        active
       )
-        throw error
-      clearHistory()
-      turns.value.push(turn)
-      failure.value = tr('history_unavailable')
-      session = await openConversation({
-        ...opening,
-        previousSessionId: undefined,
-        openKey: uuid.v4()
-      })
+      if (!active()) {
+        close(sessionId, owner)
+        return
+      }
+      turn.admit = undefined
+      turn.executionId = run.executionId
+      turn.attemptId = run.attemptId
+      turn.deadline = run.deadline
+      if (turn.stopRequested) await stopRun(turn, token)
+      else await poll(turn, read)
     }
-    if (token !== version) {
-      close(session.sessionId)
-      return
-    }
-    turn.session = latestSession = session
-    sessions.add(session.sessionId)
-    window.clearTimeout(expiryTimer)
-    expiryTimer = window.setTimeout(() => {
-      const wasExpanded = expanded.value
-      reset()
-      expanded.value = wasExpanded
-      failure.value = tr('history_unavailable')
-    }, Math.max(0, session.expiresAt - Date.now()))
-    // Opening the continuation retires its predecessor even when the user stops before submission.
-    if (!current()) return
-    const run = await startConversationExecution(
-      session.sessionId,
-      session.contextVersion,
-      question,
-      uuid.v4()
-    )
-    if (token !== version) {
-      await stopConversationExecution(session.sessionId, run.executionId).catch(() => undefined)
-      return
-    }
-    turn.executionId = run.executionId
-    turn.attemptId = run.attemptId
-    turn.deadline = run.deadline
-    if (!current()) {
-      await stopRun(turn, token)
-      return
-    }
-    await poll(turn, read)
+    await turn.admit(read)
   } catch (error) {
-    if (current()) {
-      turn.status = 'FAILED'
-      fail(error, turn)
-    }
+    if (current()) admissionError(turn, error)
   } finally {
     if (current() || (token === version && request === read && !turn.executionId)) {
       busy.value = false
@@ -698,6 +782,7 @@ const retryAnswer = async (source: Turn) => {
     busy.value ||
     applying.value ||
     turns.value.at(-1)?.status === 'UNREACHABLE' ||
+    (pendingRetry.value && pendingRetry.value !== source) ||
     !source.retryEligible ||
     !source.attemptId ||
     !source.executionId ||
@@ -711,19 +796,22 @@ const retryAnswer = async (source: Turn) => {
   const key = (source.retryKey ??= uuid.v4())
   let next: Turn | undefined
   try {
-    const run = await retryConversationExecution(
-      session.sessionId,
-      source.executionId,
-      source.attemptId,
-      key
+    pendingRetry.value = source
+    const owner = identityScope()
+    const { executionId, attemptId } = source
+    const run = await replayOperation(
+      () => retryConversationExecution(session.sessionId, executionId!, attemptId!, key),
+      () => token === version && owner === identityScope()
     )
-    if (token !== version || read.signal.aborted) {
-      await stopConversationExecution(session.sessionId, run.executionId).catch(() => undefined)
+    if (token !== version) {
+      close(session.sessionId, owner)
       return
     }
+    pendingRetry.value = undefined
     source.retryEligible = false
     const index =
       turns.value.push({
+        isRetry: true,
         questionId: source.questionId,
         question: source.question,
         basis: source.basis,
@@ -739,20 +827,31 @@ const retryAnswer = async (source: Turn) => {
         status: 'RUNNING'
       }) - 1
     next = turns.value[index]
-    await poll(next, read)
+    if (source.stopRequested) await stopRun(next, token)
+    else await poll(next, read)
   } catch (error) {
     if (token !== version || read.signal.aborted) return
-    if (!next && !accessLost(error) && source.issue) {
-      const code =
-        isRequestError(error) && 'messageKey' in error
-          ? error.messageKey?.replace(/^i18n_ai_/, '')
-          : undefined
-      const key = aiFailureKey(code || null)
-      source.issue.retryMessage =
-        key === 'test_failed' ? tr('retry_unknown') : t('ai_service.' + key)
+    if (!uncertainResponse(error)) {
+      source.retryKey = undefined
+      source.stopRequested = false
+    }
+    if (!next && source.issue) {
+      const diagnostic = publicFailure(
+        error,
+        uncertainResponse(error) ? tr('submission_unknown') : tr('failed')
+      )
+      if (accessLost(error)) {
+        fail(error)
+        failure.value = ''
+        boundaryIssue.value = { step: 'submission_step', ...diagnostic }
+      } else {
+        source.issue.retryMessage = diagnostic.reason
+        source.issue.retryRequestId = diagnostic.requestId
+      }
     } else if (next && !accessLost(error)) unreachable(next)
     else fail(error)
   } finally {
+    if (pendingRetry.value === source && !source.retryKey) pendingRetry.value = undefined
     if (token === version && request === read && !read.signal.aborted) {
       busy.value = false
       request = undefined
@@ -808,14 +907,23 @@ const stopRun = async (turn: Turn, token: number) => {
 }
 const stop = async () => {
   const turn = turns.value.at(-1)
-  if (!turn || turn.status === 'STOPPING' || (!busy.value && turn.status !== 'UNREACHABLE')) return
-  request?.abort()
-  // A retry POST can be in flight before the new execution ID is available.
-  if (turn.status === 'FAILED' || turn.status === 'COMPLETED') {
-    busy.value = false
-    request = undefined
+  if (
+    !turn ||
+    turn.status === 'STOPPING' ||
+    (!busy.value && !pendingRetry.value && turn.status !== 'UNREACHABLE')
+  )
+    return
+  if (pendingRetry.value) {
+    pendingRetry.value.stopRequested = true
+    if (!busy.value) await retryAnswer(pendingRetry.value)
     return
   }
+  if (turn.admit) {
+    turn.stopRequested = true
+    if (!busy.value) await resume(turn)
+    return
+  }
+  request?.abort()
   if (!turn.session || !turn.executionId) {
     turn.status = 'CANCELLED'
     return
@@ -1087,6 +1195,12 @@ const apply = async (turn: Turn) => {
           </component>
         </article>
       </div>
+      <AssistantFailure
+        v-if="boundaryIssue"
+        :issue="boundaryIssue"
+        :disabled="false"
+        :no-formula="false"
+      />
       <p v-if="failure" role="alert">{{ failure }}</p>
       <div v-if="(props.preview || selectedBasis !== undefined) && !busy">
         <el-button
@@ -1149,13 +1263,15 @@ const apply = async (turn: Turn) => {
       />
       <small>{{ tr('send_shortcut') }}</small>
       <el-button
-        v-if="!busy && turns.at(-1)?.status === 'UNREACHABLE'"
+        v-if="!busy && (pendingRetry || turns.at(-1)?.status === 'UNREACHABLE')"
         data-testid="dataset-sql-assistant-resume"
-        @click="resume(turns.at(-1)!)"
-        >{{ tr('resume_progress') }}</el-button
+        @click="resumeLast"
+        >{{
+          tr(pendingRetry || turns.at(-1)?.admit ? 'resume_submission' : 'resume_progress')
+        }}</el-button
       >
       <el-button
-        v-if="busy || turns.at(-1)?.status === 'UNREACHABLE'"
+        v-if="busy || pendingRetry || turns.at(-1)?.status === 'UNREACHABLE'"
         data-testid="dataset-sql-assistant-stop"
         @click="stop"
         >{{ tr('stop') }}</el-button

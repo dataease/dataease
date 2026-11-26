@@ -126,7 +126,9 @@ public final class ToolConversationRegression {
                     exchange.getResponseBody().write(rejected); exchange.close(); return;
                 }
                 String content;
-                if (mode.get().startsWith("text-clarification-")) {
+                if (mode.get().equals("retry-truncated")) {
+                    content = frame(Map.of("content", "Incomplete answer"), "length");
+                } else if (mode.get().startsWith("text-clarification-")) {
                     var delta = new LinkedHashMap<String, Object>();
                     delta.put("content", "您想查询哪些数据？");
                     if (mode.get().endsWith("empty")) delta.put("tool_calls", List.of());
@@ -390,6 +392,50 @@ public final class ToolConversationRegression {
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
             calculated.verify(mvc, mode, sent, secondResourceAllowed);
+            for (String resource : List.of("", "11")) {
+                mode.set("general");
+                var opening = new LinkedHashMap<>(Map.of("scene", "dataset-sql", "resourceId", resource, "editorId", "retry-envelope", "sql", "SELECT 42"));
+                var first = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(opening))).andReturn().getResponse().getContentAsString());
+                terminal(mvc, start(mvc, first, "Explain SELECT"));
+                opening.put("previousSessionId", first.path("sessionId").asText());
+                var second = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(opening))).andReturn().getResponse().getContentAsString());
+                mode.set("retry-truncated");
+                var path = start(mvc, second, "Clarify the column");
+                var failed = terminal(mvc, path);
+                if (!failed.path("retryEligible").asBoolean()) throw new AssertionError("truncated answer should be retryable: " + failed);
+                opening.put("previousSessionId", second.path("sessionId").asText());
+                var unrelated = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(opening))).andReturn().getResponse().getContentAsString());
+                mode.set("general"); terminal(mvc, start(mvc, unrelated, "UNRELATED B QUESTION"));
+                mode.set("text-clarification-omitted"); sent.clear();
+                var retry = JSON.readTree(mvc.perform(post(path + "/retry").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(Map.of("retryKey", "retry-envelope", "expectedAttemptId", failed.path("attemptId").asText()))))
+                        .andReturn().getResponse().getContentAsString());
+                terminal(mvc, "/ai/conversations/" + second.path("sessionId").asText() + "/executions/" + retry.path("executionId").asText());
+                var messages = sent.getFirst().path("messages");
+                var input = JSON.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                        .readTree(messages.get(messages.size() - 1).path("content").asText());
+                if (!"Clarify the column".equals(input.path("userMessage").asText())
+                        || !resource.equals(input.at("/currentTarget/resourceId").asText())
+                        || !input.path("previousAttemptDiagnostics").hasNonNull("reason")
+                        || !input.at("/previousAttemptDiagnostics/proposal").isNull() || sent.size() != 1)
+                    throw new AssertionError("retry needs the original question, target and prior failure in one JSON message: " + input);
+                opening.put("previousExecutionId", retry.path("executionId").asText());
+                var continued = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.writeValueAsBytes(opening))).andReturn().getResponse().getContentAsString());
+                mode.set("general"); sent.clear();
+                terminal(mvc, start(mvc, continued, "Option 2"));
+                String history = sent.getFirst().path("messages").toString();
+                if (!history.contains("Clarify the column") || !history.contains("Explain SELECT") || !history.contains("您想查询哪些数据？")
+                        || history.contains("UNRELATED B QUESTION") || history.contains("previousAttemptDiagnostics"))
+                    throw new AssertionError("answering a retry must preserve its original conversation and the retried answer: " + history);
+                mvc.perform(delete("/ai/conversations/" + unrelated.path("sessionId").asText()));
+                mvc.perform(delete("/ai/conversations/" + continued.path("sessionId").asText()));
+                mvc.perform(delete("/ai/conversations/" + second.path("sessionId").asText()));
+                mvc.perform(delete("/ai/conversations/" + first.path("sessionId").asText()));
+            }
             for (String shape : List.of("omitted", "empty")) {
                 mode.set("text-clarification-" + shape);
                 sent.clear();

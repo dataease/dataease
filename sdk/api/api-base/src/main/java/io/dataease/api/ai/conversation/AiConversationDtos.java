@@ -21,7 +21,12 @@ public final class AiConversationDtos {
                        @NotBlank @Size(max = 100) String editorId,
                        @Size(max = 30000) String sql, @Size(max = 100) String openKey,
                        @Size(max = 100) String previousSessionId, Boolean isCross,
-                       @Size(max = 64) java.util.List<@NotBlank @Size(max = 256) String> systemVariableNames, SqlPreview preview, CalcFieldDraft calcField) {
+                       @Size(max = 64) java.util.List<@NotBlank @Size(max = 256) String> systemVariableNames, SqlPreview preview, CalcFieldDraft calcField,
+                       @Size(max = 100) String previousExecutionId) {
+        public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId, Boolean isCross,
+                    java.util.List<String> systemVariableNames, SqlPreview preview, CalcFieldDraft calcField) {
+            this(scene, resourceId, editorId, sql, openKey, previousSessionId, isCross, systemVariableNames, preview, calcField, null);
+        }
         public Open(String scene, String resourceId, String editorId, String sql, String openKey, String previousSessionId, Boolean isCross,
                     java.util.List<String> systemVariableNames, SqlPreview preview) {
             this(scene, resourceId, editorId, sql, openKey, previousSessionId, isCross, systemVariableNames, preview, null);

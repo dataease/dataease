@@ -173,13 +173,18 @@ public final class ConversationSocketRegression {
                         || response.body().contains("星河") || misplaced.messages.peek() != null)
                     throw new AssertionError("a different JVM must report a temporary route failure without disclosing execution state");
             }
+            var otherSession = URI.create(run.session.replace(":" + origin + "/", ":" + other + "/"));
+            var closeOnPeer = HttpClient.newHttpClient().send(HttpRequest.newBuilder(otherSession)
+                    .header("X-DE-Error-Contract", "2").header("X-Test-Identity", "writer").DELETE().build(), HttpResponse.BodyHandlers.ofString());
+            if (closeOnPeer.statusCode() != 502 || !closeOnPeer.body().contains("i18n_ai_execution_route_unavailable"))
+                throw new AssertionError("closing on a peer must report that the origin session is still open");
             release.get().countDown();
             try (var restored = Tab.open(origin, client, "writer")) {
                 var page = bindAndRead(run, restored, cursor);
                 if (!page.toString().contains("继续") || page.path("events").get(0).path("sequence").asLong() != cursor + 1)
                     throw new AssertionError("restoring the origin route resumes the same cursor");
             }
-            close(run);
+            close(run); close(run);
             if (modelRequests.size() - before != 1) throw new AssertionError("cross-node repair regenerated an answer");
             String peerBase = base.replace(":" + origin + "/", ":" + other + "/");
             Accepted community = start(peerBase, "community-owner", "community scope");
