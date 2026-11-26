@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--audit-recovery', action='store_true', help='audit termination after a real worker JVM is killed')
     parser.add_argument('--recovery-schema', action='store_true', help='public recovery migration with real vendor dialect registries on owned H2')
     parser.add_argument('--task-upgrade', action='store_true', help='isolated startup migration from dev-v3 and legacy AI versions')
+    parser.add_argument('--metadata-tasks', action='store_true', help='English datasource pages through real background tasks and persisted suggestions')
     parser.add_argument('--task-structure', action='store_true', help='public controlled structure scene with authorized SQL metadata')
     parser.add_argument('--task-structure-nodes', action='store_true', help='actual SQL/structure scenes across independent JVM map iteration seeds')
     parser.add_argument('--task-mutex', action='store_true', help='public resource occupancy across independent JVMs')
@@ -95,9 +96,7 @@ def main():
         classes = work / 'classes'
         classes.mkdir()
         classpath = os.pathsep.join(map(str, [classes, root/'core/core-backend/src/main/resources', *[path for path in libraries if path.is_dir()], boot, *list((root/'sdk').glob('**/target/classes')), *list((root/'de-xpack').glob('**/target/classes')), *libraries]))
-        # The isolated task fixture supplies its own business scenes. The product datasource
-        # scene is compiled by the backend build together with the current datasource classes.
-        product_only = {'AiBaseService.java', 'AiDatasourceMetadataScenes.java'}
+        product_only = {'AiBaseService.java'}
         sources = [file for file in (root/'core/core-backend/src/main/java/io/dataease/ai').rglob('*.java')
                    if file.name not in product_only]
         sources.extend((root/'sdk/api/api-base/src/main/java/io/dataease/api/ai').rglob('*.java'))
@@ -127,6 +126,14 @@ def main():
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceApi.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceRelationApi.java',
             'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceSemanticApi.java',
+            'sdk/api/api-base/src/main/java/io/dataease/api/ds/DatasourceMetadataAiApi.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceMetadataAiServer.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceSemanticServer.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceRelationServer.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/manage/DatasourceMetadataAccess.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/manage/DatasourceRelationManage.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/repository/CoreDatasourceRelationRepository.java',
+            'core/core-backend/src/main/java/io/dataease/datasource/dao/auto/repository/CoreDatasourceTableSemanticRepository.java',
             'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceMetadataSource.java',
             'core/core-backend/src/main/java/io/dataease/datasource/server/DatasourceServer.java',
             'core/core-backend/src/main/java/io/dataease/datasource/provider/PhysicalTableCatalog.java',
@@ -237,6 +244,8 @@ def main():
         commands = [['javac', '-parameters', '-encoding', 'UTF-8', '-processor', 'lombok.launch.AnnotationProcessorHider$AnnotationProcessor',
                      '-cp', classpath, '-d', str(classes), *map(str, sources)],
                     [*java, '-cp', classpath, *(['io.dataease.ai.TaskStructureNodeRegression'] if args.task_structure_nodes else ['io.dataease.ai.TaskProgressRegression', 'mutex'] if args.task_structure else ['io.dataease.ai.TaskProgressRegression', args.progress_case, str(args.progress_frames), str(args.progress_delay_ms), str(args.progress_private_chars), args.progress_delay_scope] if args.task_progress else ['io.dataease.ai.TaskMigrationRegression'] if args.task_upgrade else ['io.dataease.ai.RecoverySchemaRegression'] if args.recovery_schema else ['io.dataease.ai.TaskClusterRegression'] if args.task_policy or args.task_scheduling or args.task_idle or args.task_mutex or args.disabled_errors or args.conflict_errors else ['io.dataease.ai.Regression'])]]
+        if args.metadata_tasks:
+            commands[1] = [*java, '-cp', classpath, 'io.dataease.ai.TaskProgressRegression', 'metadata']
         if args.recovery_tools:
             commands.append([*java, '-cp', classpath, 'io.dataease.ai.CalcFieldPreviewRegression'])
         if args.task_structure:

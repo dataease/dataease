@@ -5,9 +5,10 @@ import tw from '@/locales/tw'
 import en from '@/locales/en'
 const uiLocale = new URLSearchParams(location.search).get('language') || 'zh-CN'
 const language = { 'zh-CN': zh, tw, en }[uiLocale] ?? zh
-export const useI18n = () => ({
+export const useI18n = (namespace) => ({
   t: (key, args = {}) => {
-    const text = key.split('.').reduce((value, part) => value?.[part], language) ?? key
+    const path = namespace ? namespace + '.' + key : key
+    const text = path.split('.').reduce((value, part) => value?.[part], language) ?? key
     return text.replace(/\{(\w+)\}/g, (_, name) => String(args[name] ?? `{${name}}`))
   }
 })
@@ -52,3 +53,6 @@ export default Object.fromEntries(
 )
 
 export const isRequestError = (error) => Boolean(error?.response || error?.transportCode)
+
+// Metadata tests only list tables. Writes to the datasource configuration are outside the fixture.
+export const nameTrim = () => { throw new Error('Unexpected datasource configuration write') }
