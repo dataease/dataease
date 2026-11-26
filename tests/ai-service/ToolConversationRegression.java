@@ -112,6 +112,7 @@ public final class ToolConversationRegression {
         var toolRelease = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
         var transientMetadata = new AtomicInteger();
         var calculated = new CalcFieldRegression();
+        var fieldHistory = new DatasetSqlHistoryRegression();
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         var providerWorkers = Executors.newFixedThreadPool(4); server.setExecutor(providerWorkers);
         server.createContext("/v1/chat/completions", exchange -> {
@@ -126,7 +127,9 @@ public final class ToolConversationRegression {
                     exchange.getResponseBody().write(rejected); exchange.close(); return;
                 }
                 String content;
-                if (mode.get().equals("retry-truncated")) {
+                if (mode.get().equals("sql-field-history")) {
+                    content = fieldHistory.respond(body);
+                } else if (mode.get().equals("retry-truncated")) {
                     content = frame(Map.of("content", "Incomplete answer"), "length");
                 } else if (mode.get().startsWith("text-clarification-")) {
                     var delta = new LinkedHashMap<String, Object>();
@@ -299,6 +302,12 @@ public final class ToolConversationRegression {
                     if (Set.of("slow", "validate-stop", "slow-editor").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
+                    if (mode.get().equals("sql-field-history")) {
+                        for (String name : List.of("orders", "items")) {
+                            var table = new DatasetTableDTO(); table.setTableName(name); table.setName(name); tables.add(table);
+                        }
+                        yield tables;
+                    }
                     if (mode.get().equals("dataset-channel")) {
                         for (String name : List.of("channel_archive", "channel_live", "orders")) {
                             var t = new DatasetTableDTO(); t.setTableName(name); t.setName(name.startsWith("channel") ? "渠道" : "销售订单"); tables.add(t);
@@ -320,6 +329,10 @@ public final class ToolConversationRegression {
                     yield tables; }
                 case "getTableField" -> {
                     var request = (DatasetTableFieldRequest) args[0];
+                    if (mode.get().equals("sql-field-history") && request.getDatasourceId() == 11L) {
+                        reads.add(request.getTableName());
+                        yield fieldHistory.fields(request.getTableName());
+                    }
                     if (mode.get().equals("dataset-channel") && request.getDatasourceId() == 11L && "channel_live".equals(request.getTableName())) {
                         reads.add(request.getTableName());
                         var f = new TableField(); f.setOriginName("channel_id"); f.setFieldType("BIGINT"); yield List.of(f);
@@ -371,6 +384,7 @@ public final class ToolConversationRegression {
                 }
                 if (method.getName().equals("checkAuth")) {
                     var request = (BusiPerCheckDTO) args[0];
+                    if ("sql-field-history".equals(mode.get())) fieldHistory.authorizationChecks.incrementAndGet();
                     if (!operationAllowed.get() || !Set.of(11L, 12L).contains(request.getId()) || Objects.equals(request.getId(), 11L) && !firstResourceAllowed.get() || Objects.equals(request.getId(), 12L) && !secondResourceAllowed.get() || request.getBusiEnum() != BusiResourceEnum.DATASOURCE || request.getAuthEnum() != AuthEnum.READ) throw AiErrors.error("forbidden");
                     return null;
                 }
@@ -378,7 +392,13 @@ public final class ToolConversationRegression {
             }));
             var dialogueAccess = new SyntheticAccess(beans.getBeanProvider(InteractiveAuthApi.class), null) {
                 public AiDeploymentMode.State mode() { return access.mode(); }
-                public Identity capture() { Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null; return new Identity(V3UserUtil.getUid(), proxy, proxy, access.mode()); }
+                public Identity capture() {
+                    Long actor = V3UserUtil.getUid();
+                    Long proxy = V3UserUtil.getProxy().isProxy() ? V3UserUtil.getProxy().getProxyOid() : null;
+                    Long workspace = io.dataease.ai.security.identity.AiOwnerContext.organization(actor,
+                            proxy == null ? ConversationSocketRegression.workspace() : proxy);
+                    return new Identity(actor, workspace, proxy, access.mode());
+                }
             };
             var metadata = new AiDatasourceTools(datasource, beans.getBeanProvider(InteractiveAuthApi.class), dialogueAccess, new CorePermissionManage()) {
                 @Override protected io.dataease.datasource.provider.PhysicalTableCatalog openCatalog(long id) {
@@ -392,10 +412,18 @@ public final class ToolConversationRegression {
             beans.addBean("scene", scene);
             beans.addBean("calcField", calculated.scene(metadata));
             var joinPaths = new ArrayList<>(List.of(DatasetSqlRelationRegression.buyer()));
-            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)));
+            beans.addBean("datasetSql", new io.dataease.ai.scene.sql.AiDatasetSqlScene(metadata, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new io.dataease.ai.tool.datasource.DatasetSqlSemanticTools(metadata, DatasetSqlSemanticRegression.registry()), DatasetSqlRelationRegression.registry(joinPaths)) {
+                @Override public Map<String, Object> historicalEvidence(Context context, HistoricalStep step, String question) {
+                    if ("sql-field-history".equals(mode.get())) fieldHistory.selectedSnapshots.incrementAndGet();
+                    return super.historicalEvidence(context, step, question);
+                }
+            });
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            mode.set("sql-field-history");
+            fieldHistory.verify(manage, sent, reads, firstResourceAllowed);
+            mode.set("general"); sent.clear(); reads.clear(); readTargets.clear();
             calculated.verify(mvc, mode, sent, secondResourceAllowed);
             for (String resource : List.of("", "11")) {
                 mode.set("general");

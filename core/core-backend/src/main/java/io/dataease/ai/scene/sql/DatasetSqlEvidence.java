@@ -14,11 +14,61 @@ import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /** Attribute a proposal to its own tool reads. Failure to extract lineage never blocks applying a draft. */
 final class DatasetSqlEvidence {
     private static final ObjectMapper JSON = new ObjectMapper();
     private DatasetSqlEvidence() {}
+
+    private static final Pattern TEMPORAL_QUESTION = Pattern.compile(
+            "(?:时间|時間|日期|時刻|时刻)(?:类型的?|類型的?)?(?:字段|欄位|列)|\\b(?:time|date|temporal|timestamp|datetime)[ -]+(?:fields?|columns?)\\b",
+            Pattern.CASE_INSENSITIVE);
+    private static final Pattern TEMPORAL_TYPE = Pattern.compile(
+            "\\b(?:date(?:32|64)?|(?:small)?datetime(?:2|64|offset)?|timestamp(?:tz|_(?:ltz|ntz|tz))?|timetz|time|year)\\b",
+            Pattern.CASE_INSENSITIVE);
+    // Quoted identifiers and physical snake_case names are distinguishable from ordinary prose.
+    private static final Pattern IDENTIFIER_HINT = Pattern.compile(
+            "[`\"]([^`\"\\r\\n]{1,256})[`\"]|\\[([^\\]\\r\\n]{1,256})\\]|(?<![a-zA-Z0-9_$])([a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)+)(?![a-zA-Z0-9_$])");
+
+    /** An interrupted table read has no recorded columns. Completed reads use the original structure. */
+    static Map<String, Object> historicalFields(String expectedTable, String result, String question) {
+        if (expectedTable == null) return Map.of();
+        try {
+            var snapshot = result == null ? new TableEvidence(expectedTable, false, null, null, List.of())
+                    : JSON.readValue(result, TableEvidence.class);
+            if (!expectedTable.equals(snapshot.table()) || snapshot.fields() == null) return Map.of();
+            var named = snapshot.fields().stream().filter(field -> mentioned(question, field.name())).toList();
+            var missing = new LinkedHashSet<String>();
+            var hints = IDENTIFIER_HINT.matcher(question);
+            while (hints.find()) {
+                String name = hints.group();
+                if (name.startsWith("`") || name.startsWith("\"") || name.startsWith("["))
+                    name = name.substring(1, name.length() - 1);
+                if (!name.equalsIgnoreCase(expectedTable)) missing.add(name);
+            }
+            for (var field : named) missing.removeIf(field.name()::equalsIgnoreCase);
+            boolean temporal = named.isEmpty() && missing.isEmpty() && TEMPORAL_QUESTION.matcher(question).find();
+            if (!temporal && named.isEmpty() && missing.isEmpty()) return Map.of();
+            var selected = temporal ? snapshot.fields().stream().filter(field -> field.type() != null
+                    && TEMPORAL_TYPE.matcher(field.type()).find()).toList() : named;
+            var evidence = new LinkedHashMap<String, Object>();
+            evidence.put("source", "HISTORICAL_STEP");
+            evidence.put("table", snapshot.table());
+            evidence.put("coverage", snapshot.inspected() ? "COMPLETE" : "PARTIAL");
+            evidence.put("fields", selected);
+            if (!missing.isEmpty()) evidence.put(snapshot.inspected() ? "absentFields" : "unrecordedFields", missing);
+            return evidence;
+        } catch (java.io.IOException invalid) {
+            return Map.of();
+        }
+    }
+
+    private static boolean mentioned(String question, String name) {
+        if (name == null || name.isBlank()) return false;
+        return Pattern.compile("(?<![a-zA-Z0-9_$])" + Pattern.quote(name) + "(?![a-zA-Z0-9_$])",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(question).find();
+    }
 
     static Map<String, Object> lineage(String sql) {
         try {

@@ -244,11 +244,11 @@ public final class ConversationSocketRegression {
         if (process.exitValue() != 0) throw new AssertionError("editor browser exited " + process.exitValue() + ": " + spec);
     }
 
-    static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode, java.util.function.IntConsumer timeout) throws Exception {
+    static org.springframework.boot.web.server.WebServer editorServer(AiConversationManage manage) throws Exception {
         var factory = new TomcatServletWebServerFactory(0);
         factory.setAddress(InetAddress.getByName("127.0.0.1"));
         factory.addContextCustomizers(ctx -> ctx.addServletContainerInitializer(new WsSci(), Set.of()));
-        var service = factory.getWebServer(servlet -> {
+        return factory.getWebServer(servlet -> {
             var context = new GenericWebApplicationContext(servlet);
             context.getBeanFactory().registerSingleton("conversation", manage);
             context.getBeanFactory().registerSingleton("socketIdentity", (WebSocketAuthService) ConversationSocketRegression::actor);
@@ -267,6 +267,10 @@ public final class ConversationSocketRegression {
             });
             filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/de2api/*");
         });
+    }
+
+    static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode, java.util.function.IntConsumer timeout) throws Exception {
+        var service = editorServer(manage);
         var client = new WebSocketStompClient(new StandardWebSocketClient());
         client.setMessageConverter(new MappingJackson2MessageConverter());
         try {
