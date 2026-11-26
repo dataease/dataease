@@ -127,7 +127,9 @@ public final class ToolConversationRegression {
                     exchange.getResponseBody().write(rejected); exchange.close(); return;
                 }
                 String content;
-                if (mode.get().equals("sql-field-history")) {
+                if (mode.get().equals("editor-compaction")) {
+                    content = EditorCompressionRegression.respond(body);
+                } else if (mode.get().equals("sql-field-history")) {
                     content = fieldHistory.respond(body);
                 } else if (mode.get().equals("retry-truncated")) {
                     content = frame(Map.of("content", "Incomplete answer"), "length");
@@ -427,6 +429,12 @@ public final class ToolConversationRegression {
             fieldHistory.verify(manage, sent, reads, firstResourceAllowed);
             mode.set("general"); sent.clear(); reads.clear(); readTargets.clear();
             calculated.verify(manage, mvc, mode, sent, secondResourceAllowed);
+            if ("1".equals(System.getenv("AI_EDITOR_COMPRESSION_BROWSER"))) {
+                mode.set("editor-compaction");
+                calculated.previewMode = "editor-compaction";
+                EditorCompressionRegression.verify(manage, sent);
+                calculated.previewMode = "";
+            }
             for (String resource : List.of("", "11")) {
                 mode.set("general");
                 var opening = new LinkedHashMap<>(Map.of("scene", "dataset-sql", "resourceId", resource, "editorId", "retry-envelope", "sql", "SELECT 42"));

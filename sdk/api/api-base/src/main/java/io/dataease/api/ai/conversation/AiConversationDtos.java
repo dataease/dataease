@@ -50,8 +50,12 @@ public final class AiConversationDtos {
             this(sessionId, contextVersion, scene, resourceId, resourceName, editorId, expiresAt, null, null);
         }
     }
+    public enum BasisKind { DRAFT, SUGGESTION, MANUAL_PREVIEW, NONE }
+    /** Display provenance of the author's frozen Open.sql. Carries no additional editor content or authority. */
+    public record GenerationBasis(BasisKind kind, Integer number, boolean matchesDraft) { }
     public record Turn(@NotBlank @Size(max = 100) String contextVersion,
-                       @NotBlank @Size(max = 30000) String text, @Size(max = 100) String submissionKey) {
+                       @NotBlank @Size(max = 30000) String text, @Size(max = 100) String submissionKey, GenerationBasis generationBasis) {
+        public Turn(String contextVersion, String text, String submissionKey) { this(contextVersion, text, submissionKey, null); }
         public Turn(String contextVersion, String text) { this(contextVersion, text, null); }
     }
     public record Invoke(@NotBlank @Pattern(regexp = "sql") String scene,
