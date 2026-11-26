@@ -25,7 +25,15 @@ const { toClipboard } = useClipboard()
 const copy = async () => {
   try {
     await toClipboard(
-      [title.value, props.issue.reason, props.noFormula && tr('no_formula'), props.executionId]
+      [
+        title.value,
+        props.issue.reason,
+        props.noFormula && tr('no_formula'),
+        props.executionId,
+        props.issue.requestId,
+        props.issue.retryMessage,
+        props.issue.retryRequestId
+      ]
         .filter(Boolean)
         .join('\n')
     )
@@ -43,7 +51,9 @@ const copy = async () => {
     <p v-if="noFormula">{{ tr('no_formula') }}</p>
     <p>{{ action }}</p>
     <small v-if="executionId">{{ executionId }}</small>
+    <small v-if="issue.requestId">{{ issue.requestId }}</small>
     <p v-if="issue.retryMessage">{{ issue.retryMessage }}</p>
+    <small v-if="issue.retryRequestId">{{ issue.retryRequestId }}</small>
     <div>
       <el-button text @click="copy">{{ tr('copy_diagnostic') }}</el-button>
       <el-button v-if="canRetry" :disabled="disabled" @click="$emit('retry')">{{
@@ -55,12 +65,13 @@ const copy = async () => {
 
 <style scoped>
 .assistant-failure {
-  margin: 8px 0;
   padding: 8px 12px;
+  margin: 8px 0;
   border-inline-start: 3px solid var(--ed-color-danger);
   background: var(--ed-color-danger-light-9);
   overflow-wrap: anywhere;
 }
+
 .assistant-failure p {
   margin: 4px 0;
 }

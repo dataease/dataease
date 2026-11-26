@@ -51,6 +51,7 @@ public class AiConversationManage implements AiToolConversationFeature {
         int turns;
         long historyVersion;
         volatile boolean retired;
+        String retryContinuation;
         Invoke invocation;
         final Map<String, Task> tasks = new LinkedHashMap<>();
         final Set<OperationKey> operations = new HashSet<>();
@@ -195,6 +196,10 @@ public class AiConversationManage implements AiToolConversationFeature {
             opening = fingerprint("preview", opening, request.preview());
         }
         if (request.previousSessionId() != null) opening = fingerprint("continue", opening, request.previousSessionId());
+        if (request.previousExecutionId() != null) {
+            if (request.previousSessionId() == null) throw AiErrors.error("invalid");
+            opening = fingerprint("continue-retry", opening, request.previousExecutionId());
+        }
         var priorOpening = operation(owner, "open", request.openKey(), opening);
         if (priorOpening != null) { State previous = priorOpening.state; if (previous == null) throw AiErrors.error("scope_changed"); check(previous); return previous.view; }
         var scene = scene(request.scene());
@@ -227,7 +232,9 @@ public class AiConversationManage implements AiToolConversationFeature {
                 long now = System.currentTimeMillis();
                 for (var state : sessions.values()) if (state.view.expiresAt() <= now) invalidate(state);
                 if (source != null) synchronized (source) {
-                    if (source.closed || source.retired || System.currentTimeMillis() >= source.view.expiresAt())
+                    if (source.closed || System.currentTimeMillis() >= source.view.expiresAt()
+                            || source.retired && request.previousExecutionId() == null
+                            || request.previousExecutionId() != null && !request.previousExecutionId().equals(source.retryContinuation))
                         throw AiErrors.error("scope_changed");
                     if (source.executing.get() || source.historyVersion != sourceHistory) throw AiErrors.error("concurrency");
                     created.history.addAll(source.history); created.toolHistory.addAll(source.toolHistory);
@@ -242,7 +249,8 @@ public class AiConversationManage implements AiToolConversationFeature {
                 if (!single) for (State previous : sessions.values()) {
                     if (previous.single || !same(previous.owner, owner) || !previous.view.editorId().equals(request.editorId())) continue;
                     synchronized (previous) {
-                        if (previous.retired || previous.executing.get()) continue;
+                        if (previous.executing.get() || previous.retired && previous.retryContinuation == null) continue;
+                        previous.retryContinuation = null;
                         previous.retired = true; previous.history.clear(); previous.toolHistory.clear();
                         // Frozen results/retries still depend on every historical resource's authority.
                         for (Run old : previous.runs.values()) { old.text = new StringBuilder(); old.events = new ArrayList<>(); }
@@ -302,19 +310,19 @@ public class AiConversationManage implements AiToolConversationFeature {
     private boolean retryEligible(Run run) {
         return !run.replayUnsafe && (Set.of("FAILED", "CANCELLED").contains(run.status) || rejectedFormula(run));
     }
-    private AiToolProtocol.Input retryInput(Task task) {
+    private String retryQuestion(Task task) {
         Run source = task.latest;
-        if (source == null || !scene(task.state.view.scene()).editorConversation()) return task.input;
+        if (source == null || !scene(task.state.view.scene()).editorConversation()) return null;
         var previous = JSON.createObjectNode();
         String kind = source.stream.recovery().progress().stepKind();
         previous.put("step", rejectedFormula(source) || "TOOL".equals(kind) ? Objects.toString(source.lastTool, "TOOL") : Objects.toString(kind, "EXECUTION"));
         previous.put("reason", rejectedFormula(source) ? source.result.calcField().reason() : source.failureCode);
         previous.put("proposal", rejectedFormula(source) ? source.result.calcField().expression() : source.proposedContent);
-        var messages = new ArrayList<>(task.input.messages());
-        String original = messages.getLast().content();
-        messages.set(messages.size() - 1, AiToolProtocol.Message.text("user", original
-                + "\nPrevious attempt diagnostics (data for this retry; a null proposal means none was produced):\n" + previous));
-        return new AiToolProtocol.Input(messages, task.input.tools());
+        var question = JSON.createObjectNode();
+        question.put("userMessage", task.request.text());
+        question.set("currentTarget", JSON.valueToTree(targetData(task.state.context)));
+        question.set("previousAttemptDiagnostics", previous);
+        return question.toString();
     }
     private RecoveryProgress recoveryProgress(Run run) {
         var progress = run.stream.recovery().progress();
@@ -460,11 +468,27 @@ public class AiConversationManage implements AiToolConversationFeature {
         try {
             authorized(state, () -> { check(state); return null; });
             String id = state.view.sessionId();
-            var input = retryInput(task);
-            var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(task.prompt), false, null);
-            AiRuntimeManage.StreamHandle stream = !task.toolConversation ? runtime.getObject().stream(code(), scope, task.prompt)
-                    : runtime.getObject().streamTools(code(), new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(input), false, null), input,
-                            scene(state.view.scene()).toolStepLimit());
+            String retry = retryQuestion(task);
+            var input = task.input;
+            AiRuntimeManage.StreamHandle stream;
+            if (task.toolConversation) {
+                if (retry != null) {
+                    var messages = new ArrayList<>(input.messages());
+                    messages.set(messages.size() - 1, AiToolProtocol.Message.text("user", retry));
+                    input = new AiToolProtocol.Input(messages, input.tools());
+                }
+                var scope = new AiDataScope(id, state.view.contextVersion(), AiToolProtocol.fingerprint(input), false, null);
+                stream = runtime.getObject().streamTools(code(), scope, input, scene(state.view.scene()).toolStepLimit());
+            } else {
+                var prompt = task.prompt;
+                if (retry != null) {
+                    var messages = new ArrayList<>(prompt.getInstructions());
+                    messages.set(messages.size() - 1, new UserMessage(retry));
+                    prompt = new Prompt(messages);
+                }
+                var scope = new AiDataScope(id, state.view.contextVersion(), AiPromptFingerprint.of(prompt), false, null);
+                stream = runtime.getObject().stream(code(), scope, prompt);
+            }
             var run = new Run(state, task, stream, startedNanos, !state.single && scene(state.view.scene()).editorConversation());
             run.tools = scene(state.view.scene()).beginTurn(state.context);
             stream.recovery().link(new AiExecutionLink(task.id, run.attemptId, run.attemptNumber, run.sourceAttemptId));
@@ -621,22 +645,29 @@ public class AiConversationManage implements AiToolConversationFeature {
                 authorized(run.state, () -> { run.stream.verifyDelivery(); return null; });
                 progress(run);
                 if (!terminalToolResult && run.text.toString().isBlank()) throw AiErrors.error("response_invalid");
-                if (run.state.single) {
-                    // One-shot callers retain only their result/lease, never a conversational transcript.
-                    run.state.history.clear(); run.state.toolHistory.clear();
-                } else if (!run.state.retired && run.task.historyVersion == run.state.historyVersion && run.stream instanceof AiRuntimeManage.ToolStreaming) {
-                    // System state notices belong to this request, never to completed conversational history.
-                    run.state.history.clear(); run.state.toolHistory.clear();
-                    var completed = new ArrayList<>(run.transcript);
-                    // Only the latest question carries the current selection; history keeps the user's original text.
-                    completed.set(run.task.input.messages().size() - 1, AiToolProtocol.Message.text("user", run.question));
-                    run.state.toolHistory.addAll(completed.stream().filter(message -> !"system".equals(message.role())).toList());
-                } else if (!run.state.retired && run.task.historyVersion == run.state.historyVersion) {
-                    run.state.history.add(new UserMessage(run.question)); run.state.history.add(new AssistantMessage(run.text.toString()));
+                boolean editorRetry = run.sourceAttemptId != null && scene(run.state.view.scene()).editorConversation();
+                boolean recordHistory = !run.state.single && (run.state.retired ? editorRetry : run.task.historyVersion == run.state.historyVersion);
+                if (run.state.single || recordHistory) {
+                    run.state.history.clear();
+                    run.state.toolHistory.clear();
+                }
+                if (recordHistory) {
+                    // A retry can finish after this editor has moved to another question. Rebuild
+                    // its branch from the original task, including the answer to which a user can reply.
+                    if (run.stream instanceof AiRuntimeManage.ToolStreaming) {
+                        var completed = new ArrayList<>(run.transcript);
+                        completed.set(run.task.input.messages().size() - 1, AiToolProtocol.Message.text("user", run.question));
+                        run.state.toolHistory.addAll(completed.stream().filter(message -> !"system".equals(message.role())).toList());
+                    } else {
+                        var original = run.task.prompt.getInstructions();
+                        run.state.history.addAll(original.subList(1, original.size() - 1));
+                        run.state.history.add(new UserMessage(run.question));
+                        run.state.history.add(new AssistantMessage(run.text.toString()));
+                    }
+                    run.state.retryContinuation = editorRetry ? run.stream.executionId() : null;
+                    run.task.historyVersion = ++run.state.historyVersion;
                 }
                 run.state.turns++;
-                if (!run.state.single && !run.state.retired && run.task.historyVersion == run.state.historyVersion)
-                    run.task.historyVersion = ++run.state.historyVersion;
                 var target = run.state.view;
                 var scene = scene(target.scene());
                 String answer = finalText != null && scene.editorConversation() ? finalText : run.text.toString();
@@ -867,7 +898,19 @@ public class AiConversationManage implements AiToolConversationFeature {
             state.history.clear(); state.toolHistory.clear(); state.historyTargets = List.of(); state.runs.clear(); state.tasks.clear(); sessions.remove(state.view.sessionId(), state);
         }
     }
-    public void close(String id) { if (sessions.containsKey(id)) invalidate(owned(id)); else identity(); }
+    public void close(String id) {
+        synchronized (sessions) {
+            if (sessions.containsKey(id)) invalidate(owned(id));
+            else {
+                identity();
+                requireOrigin(id);
+            }
+        }
+    }
+    private void requireOrigin(String id) {
+        if (id.length() == 45 && id.charAt(8) == '.' && !id.startsWith(editorRoute))
+            throw AiErrors.error("execution_route_unavailable");
+    }
     @Override public void authorize(AiExecutionContext context) {
         State state = sessions.get(context.scope().reference());
         if (state == null || !Objects.equals(context.scope().permissionVersion(), state.view.contextVersion())
@@ -919,8 +962,7 @@ public class AiConversationManage implements AiToolConversationFeature {
             throw failure;
         }
         if (state == null) {
-            if (id.length() == 45 && id.charAt(8) == '.' && !id.startsWith(editorRoute))
-                throw AiErrors.error("execution_route_unavailable");
+            requireOrigin(id);
             throw AiErrors.error("forbidden");
         }
         if (!same(owner, state.owner)) {

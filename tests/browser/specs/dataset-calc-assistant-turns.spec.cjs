@@ -358,7 +358,7 @@ for (const scope of ["user", "expiry"]) {
       if (scope === "user") await page.evaluate(() => window.aiSwitchUser());
       await expect(drawer.getByRole("article")).toHaveCount(0);
       await expect(drawer.locator(".cm-content")).toHaveText(manual);
-      await expect.poll(() => state.closed).toEqual(["s1"]);
+      await expect.poll(() => state.closed).toEqual(scope === "user" ? [] : ["s1"]);
     }
   );
 }
@@ -648,4 +648,309 @@ test("formula correction shows both validation outcomes and keeps the detail bei
   await expect(
     drawer.getByText("已校验修正后的公式。", { exact: true })
   ).toBeVisible();
+});
+
+test("rejected HTTP admission shows the public reason and request ID in the copied diagnostic", async ({
+  page,
+  context,
+}) => {
+  await serveTurns(page);
+  const requestId = "deadbeef00112233445566778899aabb";
+  await page.route("**/s1/executions", (route) =>
+    route.fulfill({
+      status: 409,
+      json: {
+        code: 50005,
+        category: "CONFLICT",
+        messageKey: "i18n_ai_conflict",
+        msg: "编辑版本已更新，请确认后重新提问。",
+        requestId,
+        data: { privateValue: "internal-fixture-only" },
+      },
+    })
+  );
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "检查版本");
+  const error = drawer.getByRole("alert");
+  await expect(error).toContainText("编辑版本已更新，请确认后重新提问。", {
+    timeout: 3000,
+  });
+  await expect(error).toContainText(requestId);
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await button(error, "复制诊断信息").click();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toContain(requestId);
+  expect(copied).toContain("编辑版本已更新");
+  expect(copied).not.toContain("internal-fixture-only");
+});
+
+test("new conversation retries the exact old session close after a route error", async ({
+  page,
+}) => {
+  const state = await serveTurns(page);
+  const closes = [];
+  await page.route("**/ai/conversations/s1", (route) => {
+    closes.push(route.request().url());
+    if (closes.length === 1)
+      return route.fulfill({
+        status: 502,
+        json: {
+          category: "UPSTREAM",
+          messageKey: "i18n_ai_execution_route_unavailable",
+          msg: "Origin unavailable",
+        },
+      });
+    return route.fallback();
+  });
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "旧会话");
+  await completed(drawer, 1);
+  await button(drawer, "新对话").click();
+  await ask(drawer, "新会话");
+  await completed(drawer, 1);
+  await expect.poll(() => state.closed, { timeout: 4000 }).toEqual(["s1"]);
+  expect(closes).toHaveLength(2);
+  expect(state.opens).toHaveLength(2);
+});
+
+test("lost open, submission and retry responses reconcile once and a reply follows the retried question", async ({
+  page,
+}) => {
+  const state = await serveTurns(page);
+  const accepted = new Map();
+  const keys = new Map();
+  const seen = new Set();
+  await page.route("**/fixture-api/ai/conversations**", async (route) => {
+    if (route.request().method() !== "POST") return route.fallback();
+    const path = new URL(route.request().url()).pathname;
+    const body = route.request().postDataJSON();
+    const kind =
+      path.endsWith("/conversations") && !body.previousSessionId
+        ? "open"
+        : path.endsWith("/s1/executions")
+        ? "ask"
+        : path.endsWith("/e1/retry")
+        ? "retry"
+        : undefined;
+    if (!kind) return route.fallback();
+    const key = body.openKey ?? body.submissionKey ?? body.retryKey;
+    keys.set(kind, [...(keys.get(kind) ?? []), key]);
+    if (!accepted.has(key)) {
+      if (kind === "open") {
+        state.opens.push(body);
+        accepted.set(key, {
+          ...body,
+          sessionId: "s1",
+          contextVersion: "v1",
+          expiresAt: Date.now() + 300000,
+        });
+      } else
+        accepted.set(key, {
+          executionId: kind === "retry" ? "er" : "e1",
+          attemptId: kind === "retry" ? "ar" : "a1",
+          status: "RUNNING",
+        });
+    }
+    if (!seen.has(kind)) {
+      seen.add(kind);
+      return route.abort("connectionreset");
+    }
+    return route.fulfill({ json: accepted.get(key) });
+  });
+  await page.route("**/s1/executions/e1/events?*", (route) =>
+    route.fulfill({
+      json: {
+        sessionId: "s1",
+        executionId: "e1",
+        contextVersion: "v1",
+        attemptId: "a1",
+        retryEligible: true,
+        status: "FAILED",
+        cursor: 1,
+        events: [{ sequence: 1, type: "FAILED", error: "timeout" }],
+      },
+    })
+  );
+  await page.route("**/s1/executions/er/events?*", (route) =>
+    route.fulfill({
+      json: {
+        sessionId: "s1",
+        executionId: "er",
+        contextVersion: "v1",
+        attemptId: "ar",
+        status: "COMPLETED",
+        cursor: 1,
+        events: [],
+        result: {
+          type: "EXPLANATION",
+          text: "按哪个期间？\n1. 上月\n2. 去年同期",
+        },
+      },
+    })
+  );
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await drawer.locator(".cm-content").fill(manual);
+  await ask(drawer, "增长率 A");
+  const old = drawer.getByRole("article").first();
+  await expect(button(old, "重试")).toBeEnabled({ timeout: 4000 });
+  await ask(drawer, "回答 B");
+  await completed(drawer, 2);
+  await button(old, "重试").click();
+  await button(old, "上月").click({ timeout: 4000 });
+  await completed(drawer, 3);
+  expect(state.opens[2]).toMatchObject({
+    previousSessionId: "s1",
+    previousExecutionId: "er",
+    sql: manual,
+  });
+  for (const kind of ["open", "ask", "retry"]) {
+    const [first, replay] = keys.get(kind);
+    expect(first).toBeTruthy();
+    expect(replay).toBe(first);
+  }
+  expect(accepted.size).toBe(3);
+});
+
+test("stopping a pending manual retry records that attempt and the next retry has a fresh key", async ({
+  page,
+}) => {
+  await serveTurns(page);
+  const keys = [];
+  let release;
+  const hold = new Promise((resolve) => {
+    release = resolve;
+  });
+  let offline = true;
+  const failed = {
+    sessionId: "s1",
+    executionId: "e1",
+    contextVersion: "v1",
+    attemptId: "a1",
+    retryEligible: true,
+    status: "FAILED",
+    cursor: 1,
+    events: [{ sequence: 1, type: "FAILED", error: "timeout" }],
+  };
+  await page.route("**/e1/events?*", (route) =>
+    route.fulfill({ json: failed })
+  );
+  await page.route("**/e1/retry", async (route) => {
+    keys.push(route.request().postDataJSON());
+    await hold;
+    if (offline) return route.abort("connectionreset");
+    return route.fulfill({
+      json: { executionId: "er", attemptId: "ar", status: "RUNNING" },
+    });
+  });
+  await page.route("**/er/stop", (route) =>
+    route.fulfill({
+      json: {
+        ...failed,
+        executionId: "er",
+        attemptId: "ar",
+        status: "CANCELLED",
+        events: [{ sequence: 1, type: "CANCELLED" }],
+      },
+    })
+  );
+  await page.route("**/er/retry", (route) => {
+    keys.push(route.request().postDataJSON());
+    return route.fulfill({
+      json: { executionId: "er2", attemptId: "ar2", status: "RUNNING" },
+    });
+  });
+  await page.route("**/er2/events?*", (route) =>
+    route.fulfill({
+      json: {
+        ...failed,
+        executionId: "er2",
+        attemptId: "ar2",
+        retryEligible: false,
+        status: "COMPLETED",
+        events: [],
+        result: { type: "EXPLANATION", text: "本次回答已完成。" },
+      },
+    })
+  );
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "按月汇总");
+  await button(drawer, "重试").click();
+  try {
+    await expect.poll(() => keys.length).toBe(1);
+    await button(drawer, "停止生成").click();
+  } finally {
+    release();
+  }
+  await expect.poll(() => keys.length, { timeout: 4000 }).toBe(3);
+  await expect(button(drawer, "核对同次提交")).toBeEnabled();
+  await expect(button(drawer, "发送")).toHaveCount(0);
+  offline = false;
+  await page.evaluate(() => window.dispatchEvent(new Event("online")));
+  await expect(drawer.getByText("回答已停止", { exact: true })).toBeVisible({
+    timeout: 3000,
+  });
+  await button(drawer, "重试").click();
+  await expect(drawer.getByText("本次回答已完成。")).toBeVisible();
+  expect(keys.map((k) => k.expectedAttemptId)).toEqual([
+    "a1",
+    "a1",
+    "a1",
+    "a1",
+    "ar",
+  ]);
+  expect(new Set(keys.slice(0, 4).map((k) => k.retryKey)).size).toBe(1);
+  expect(keys[0].retryKey).not.toBe(keys[4].retryKey);
+});
+
+test("a definite retry rejection has its own copyable public reason and request ID", async ({
+  page,
+  context,
+}) => {
+  await serveTurns(page);
+  await page.route("**/e1/events?*", (route) =>
+    route.fulfill({
+      json: {
+        sessionId: "s1",
+        contextVersion: "v1",
+        executionId: "e1",
+        attemptId: "a1",
+        status: "FAILED",
+        cursor: 1,
+        retryEligible: true,
+        events: [{ sequence: 1, type: "FAILED", error: "timeout" }],
+      },
+    })
+  );
+  const requestId = "abc00112233445566778899aabbccdde";
+  await page.route("**/e1/retry", (route) =>
+    route.fulfill({
+      status: 409,
+      json: {
+        category: "CONFLICT",
+        messageKey: "i18n_ai_conflict",
+        msg: "这次重答的上下文已更新。",
+        requestId,
+        data: { private: "hidden-retry-detail" },
+      },
+    })
+  );
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "计算");
+  const error = drawer.getByRole("alert");
+  await button(error, "重试").click();
+  await expect(error).toContainText("这次重答的上下文已更新。", {
+    timeout: 3000,
+  });
+  await expect(error).toContainText(requestId);
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await button(error, "复制诊断信息").click();
+  const info = await page.evaluate(() => navigator.clipboard.readText());
+  expect(info).toContain(requestId);
+  expect(info).toContain("这次重答的上下文已更新。");
+  expect(info).not.toContain("hidden-retry-detail");
 });

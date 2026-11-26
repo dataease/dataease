@@ -8,6 +8,7 @@ export default {
     tool_step: '工具執行失敗',
     execution_step: '回答失敗',
     validation_step: '業務校驗未通過',
+    stopped_step: '回答已停止',
     submission_step: '提交問題失敗',
     unknown_failure: '尚未確認具體原因。',
     no_formula: '尚未產生公式。',

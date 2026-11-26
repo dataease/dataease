@@ -84,6 +84,7 @@ export const openConversation = (value: {
   }
   openKey?: string
   previousSessionId?: string
+  previousExecutionId?: string
 }) => data<AiConversationSession>(request.post({ url: '/ai/conversations', data: value }))
 export const sendConversationTurn = (id: string, contextVersion: string, text: string) =>
   data<AiConversationAnswer>(
