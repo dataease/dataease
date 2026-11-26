@@ -70,6 +70,7 @@ interface Turn {
   questionId: string
   basis: string
   baseSql: string
+  generationBasis: AiGenerationBasis
   calcScope?: string
   draftRevision: number
   question: string
@@ -400,7 +401,7 @@ const chooseBasis = (question: string) => {
   const last = turns.value.at(-1)
   if (requested === undefined && last?.isRetry && last.choices) {
     if (last.draftRevision === revision && last.session?.resourceId === props.resourceId) {
-      return { label: last.basis, sql: last.baseSql }
+      return { label: last.basis, sql: last.baseSql, frozenBasis: last.generationBasis }
     }
     const sql = props.readDraft()
     return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
@@ -657,7 +658,7 @@ const send = async () => {
     failure.value = tr('unavailable_reference')
     return
   }
-  const generationBasis: AiGenerationBasis = {
+  const generationBasis: AiGenerationBasis = basis.frozenBasis ?? {
     kind: basis.prior
       ? 'SUGGESTION'
       : basis.preview
@@ -690,6 +691,7 @@ const send = async () => {
       question,
       basis: basis.label,
       baseSql: basis.sql,
+      generationBasis,
       calcScope: calcScope(calcField),
       draftRevision: props.draftRevision,
       process: { entries: [] },
@@ -853,6 +855,7 @@ const retryAnswer = async (source: Turn) => {
         question: source.question,
         basis: source.basis,
         baseSql: source.baseSql,
+        generationBasis: source.generationBasis,
         draftRevision: source.draftRevision,
         calcScope: source.calcScope,
         session,
