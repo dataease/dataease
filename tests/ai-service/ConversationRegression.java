@@ -275,7 +275,7 @@ public final class ConversationRegression {
                     case "unknown-write" -> "data: {\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"uncertain\",\"type\":\"function\",\"function\":{\"name\":\"controlled_write\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n";
                     case "balance-rate" -> "{\"error\":{\"code\":\"insufficient_quota\"}}";
                     case "json" -> "{\"choices\":[]}";
-                    case "eof" -> chunk("partial", null);
+                    case "eof" -> chunk("partial", null) + "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":0}}\n\n";
                     case "done-only" -> "data: [DONE]\n\n";
                     case "length" -> chunk("partial", "length") + "data: [DONE]\n\n";
                     case "filter" -> chunk("partial", "content_filter") + "data: [DONE]\n\n";
@@ -289,7 +289,7 @@ public final class ConversationRegression {
                     case "framed" -> ": comment\r\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\"}}]}\r\n\r\n"
                             + "data: {\"choices\":[{\"index\":0,\n"
                             + "data: \"delta\":{\"content\":\"多字节\"},\"finish_reason\":\"stop\"}]}\n\n"
-                            + "data: {\"choices\":[],\"usage\":{\"completion_tokens\":3}}\n\ndata: [DONE]\n\n";
+                            + "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":7,\"completion_tokens\":3}}\n\ndata: [DONE]\n\n";
                     default -> "provider-secret-key";
                 };
                 exchange.getResponseHeaders().set("Content-Type", "json".equals(kind) ? "application/json" : "text/event-stream");
@@ -434,6 +434,10 @@ public final class ConversationRegression {
             String retryExecutions = "/ai/conversations/" + retrySession.path("sessionId").asText() + "/executions";
             String failedPath = start(mvc, json, retryExecutions, retrySession, "Original frozen task");
             var failedAttempt = await(mvc, json, failedPath + "/events", "FAILED", "partial");
+            var failedMeter = failedAttempt.path("metering");
+            if (!"PARTIAL".equals(failedMeter.path("usageStatus").asText()) || failedMeter.path("inputTokens").asLong(-1) != 0
+                    || failedMeter.hasNonNull("outputTokens") || failedMeter.path("elapsedMillis").asLong(-1) < 0)
+                throw new AssertionError("Failed attempt retains even a zero input-only report: " + failedMeter);
             var alternateDraft = configuration.draft(); var alternate = new Candidate();
             alternate.setId(alternateDraft.id()); alternate.setDraftHandle(alternateDraft.draftHandle()); alternate.setName("New attempt model");
             alternate.setProvider("OPENAI_COMPATIBLE"); alternate.setBaseUrl("http://127.0.0.1:" + server.getAddress().getPort() + "/v1"); alternate.setModelIdentifier("new-attempt-model"); alternate.setApiKey("synthetic-new-key");
@@ -455,6 +459,12 @@ public final class ConversationRegression {
             var recovered = await(mvc, json, retriedPath + "/events", "COMPLETED", "多字节");
             if (!failedAttempt.path("taskId").equals(recovered.path("taskId")) || recovered.path("attemptNumber").asInt() != 2
                     || !failedAttempt.path("attemptId").equals(recovered.path("sourceAttemptId"))) throw new AssertionError("manual retry preserves task and links an independent attempt");
+            var retryMeter = recovered.path("metering");
+            if (!"COMPLETE".equals(retryMeter.path("usageStatus").asText()) || retryMeter.path("inputTokens").asLong() != 7
+                    || retryMeter.path("outputTokens").asLong() != 3 || retryMeter.path("elapsedMillis").asLong(-1) < 0
+                    || !failedMeter.equals(json.readTree(mvc.perform(get(failedPath + "/events").param("after", "0"))
+                            .andReturn().getResponse().getContentAsString()).path("metering")))
+                throw new AssertionError("Manual retry receives its own metering and leaves the source attempt frozen: " + retryMeter);
             var frozen = sent.get(sent.size() - 1).path("messages");
             if (frozen.size() != 2 || !frozen.get(1).path("content").asText().equals("Original frozen task") || !sent.get(sent.size() - 1).path("model").asText().equals("new-attempt-model")) throw new AssertionError("retry must use first complete input snapshot, never later history");
             identityAllowed.set(false); int beforeReplay = requestIdentityChecks.get();
@@ -476,7 +486,10 @@ public final class ConversationRegression {
             for (int wait = 0; wait < 100 && sent.isEmpty(); wait++) Thread.sleep(10);
             if (sent.isEmpty()) throw new AssertionError("initial retryable HTTP request never reached provider");
             enable(configuration, false); identityAllowed.set(false);
-            await(mvc, json, transientPath + "/events", "COMPLETED", "多字节");
+            var retryUsage = await(mvc, json, transientPath + "/events", "COMPLETED", "多字节").path("metering");
+            if (!"PARTIAL".equals(retryUsage.path("usageStatus").asText()) || retryUsage.path("inputTokens").asLong() != 7
+                    || retryUsage.path("outputTokens").asLong() != 3 || retryUsage.path("elapsedMillis").asLong() < 1000)
+                throw new AssertionError("The 503 request has missing usage and the retry wait belongs to this answer: " + retryUsage);
             enable(configuration, true); identityAllowed.set(true);
             if (sent.size() != 2 || !sent.get(0).equals(sent.get(1)) || System.currentTimeMillis() - retryStarted < 1000) throw new AssertionError("temporary model failure retries original model/input after bounded wait");
 
@@ -537,6 +550,10 @@ public final class ConversationRegression {
             String retiredRun = start(mvc, json, "/ai/conversations/" + retiredSource.path("sessionId").asText() + "/executions", retiredSource, "Frozen retired task");
             await(mvc, json, retiredRun + "/events", "RUNNING", "星河");
             var cancelledRetired = json.readTree(mvc.perform(post(retiredRun + "/stop")).andReturn().getResponse().getContentAsString());
+            var stoppedMeter = cancelledRetired.path("metering");
+            if (!"MISSING".equals(stoppedMeter.path("usageStatus").asText()) || stoppedMeter.hasNonNull("inputTokens")
+                    || stoppedMeter.hasNonNull("outputTokens") || stoppedMeter.path("elapsedMillis").asLong(-1) < 0)
+                throw new AssertionError("Stop freezes duration and preserves unreported usage: " + stoppedMeter);
             streamRelease.get().countDown();
             occupied.clear(); occupied.add(open(mvc, json, "retired-quota"));
             for (int slot = 1; slot < 4; slot++) occupied.add(open(mvc, json, "retired-active-" + slot));

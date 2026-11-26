@@ -467,6 +467,7 @@ test("formula correction shows both validation outcomes and keeps the detail bei
         ...scope,
         status: "COMPLETED",
         cursor: 8,
+        metering: { elapsedMillis: 2670, usageStatus: "PARTIAL", inputTokens: null, outputTokens: 12 },
         events: [
           tool(6, "two", "SUCCEEDED", "[orders_id]", { status: "DETAIL_PASS" }),
           { sequence: 7, type: "TEXT", text: "已校验修正后的公式。" },
@@ -508,6 +509,11 @@ test("formula correction shows both validation outcomes and keeps the detail bei
   await expect(button(drawer, "应用到当前草稿")).toBeEnabled();
   await expect(process).toHaveAttribute("open", "");
   await expect(rejected).toHaveAttribute("open", "");
+  await expect(process.locator(":scope > summary")).toContainText("总耗时 2.67 s");
+  const footer = drawer.getByRole("article").locator("footer");
+  await expect(footer).toContainText("输入 Token —");
+  await expect(footer).toContainText("输出 Token 12");
+  await expect(footer).toContainText("用量不完整");
   await expect(process.locator("details")).toHaveCount(2);
   const passed = process.locator("details").last();
   await expect(passed.locator("summary")).toHaveText("校验公式 · 通过");

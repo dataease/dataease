@@ -119,6 +119,7 @@ public final class ToolConversationRegression {
                     delta.put("content", "您想查询哪些数据？");
                     if (mode.get().endsWith("empty")) delta.put("tool_calls", List.of());
                     content = frame(delta, "stop");
+                    if (mode.get().endsWith("empty")) content += "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":0,\"completion_tokens\":0}}\n\n";
                 } else if (mode.get().startsWith("calc-")) {
                     content = calculated.respond(mode.get(), sent.size());
                 } else if (mode.get().equals("selection-followup")) {
@@ -249,6 +250,12 @@ public final class ToolConversationRegression {
                     content = frame(Map.of("tool_calls", List.of(Map.of("index", 0, "id", "call-tables", "type", "function", "function", Map.of("name", "list_tables", "arguments", "{}")))), "tool_calls");
                 } else content = frame(Map.of("content", mode.get().equals("framed-tools") ? "多字节工具结果" : "AI_PROBE metadata received"), "stop");
                 if (sent.size() == 1 && mode.get().equals("tables")) content = "data: {\"choices\":[{\"index\":0,\"delta\":{\"reasoning\":\"private-tool-only-sentinel\"}}]}\n\n" + content;
+                if (mode.get().equals("correction")) {
+                    if (sent.size() == 2) Thread.sleep(60);
+                    String usage = "data: " + JSON.writeValueAsString(Map.of("choices", List.of(), "usage",
+                            Map.of("prompt_tokens", 9 + 2 * (sent.size() - 1), "completion_tokens", sent.size() - 1))) + "\n\n";
+                    content += usage + usage;
+                }
                 content += "data: [DONE]\n\n";
                 if (mode.get().equals("framed-tools")) {
                     content = ": comment\r\n" + content.replace("data: {\"choices\":", "data: {\n" + "data: \"choices\":").replace("\n", "\r\n");
@@ -377,7 +384,14 @@ public final class ToolConversationRegression {
                 var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                         .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11",
                                 "editorId", "clarify-" + shape, "sql", "")))).andReturn().getResponse().getContentAsString());
-                var reply = terminal(mvc, start(mvc, session, "查询")).path("result");
+                var answer = terminal(mvc, start(mvc, session, "查询"));
+                var meter = answer.path("metering");
+                if (shape.equals("empty")) {
+                    if (!"COMPLETE".equals(meter.path("usageStatus").asText()) || meter.path("inputTokens").asLong(-1) != 0
+                            || meter.path("outputTokens").asLong(-1) != 0) throw new AssertionError("Explicit zero usage: " + meter);
+                } else if (!"MISSING".equals(meter.path("usageStatus").asText()) || meter.hasNonNull("inputTokens")
+                        || meter.hasNonNull("outputTokens")) throw new AssertionError("No usage reported: " + meter);
+                var reply = answer.path("result");
                 if (sent.size() != 1 || !"EXPLANATION".equals(reply.path("type").asText())
                         || !"您想查询哪些数据？".equals(reply.path("text").asText()) || reply.hasNonNull("sql"))
                     throw new AssertionError("Plain clarification with " + shape + " tool calls must reach the author: " + reply);
@@ -875,6 +889,11 @@ public final class ToolConversationRegression {
                     || !sent.get(1).toString().contains("INVALID") || !sent.get(2).toString().contains("PASS")
                     || !result.toString().contains("validate_sql") || !result.toString().contains("PASS"))
                 throw new AssertionError("static validation must return INVALID to model then revalidate corrected SQL as PASS: " + result);
+            var metering = result.path("metering");
+            if (metering.path("elapsedMillis").asLong() < 60 || !metering.path("usageStatus").asText().equals("COMPLETE")
+                    || metering.path("inputTokens").asLong(-1) != 33 || metering.path("outputTokens").asLong(-1) != 3
+                    || sent.stream().anyMatch(request -> !request.at("/stream_options/include_usage").asBoolean()))
+                throw new AssertionError("Corrected answer must include elapsed time and one usage report per actual request: " + metering);
             if (!reads.equals(List.of("tables", "fields", "tables", "fields"))) throw new AssertionError("validator must read authorized metadata only");
             mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             for (String invalid : List.of("unknown", "extra", "extra-order", "duplicate", "trailing", "outside", "batch", "index", "conflict", "length", "negative-usage", "tool-failure", "missing-id", "private-limit", "usage-allocation")) {

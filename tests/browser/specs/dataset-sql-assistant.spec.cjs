@@ -161,6 +161,7 @@ async function backend(page, options = {}) {
         status: "COMPLETED",
         cursor: 1,
         events: [{ sequence: 1, type: "COMPLETED" }],
+        metering: state.metering,
         result,
       });
     }
@@ -277,12 +278,18 @@ for (const cross of [false, true]) {
   );
 }
 test("only a suggestion applies to a blank draft", async ({ page }) => {
-  const state = await backend(page, { explain: true });
+  const state = await backend(page, { explain: true, metering: {
+    elapsedMillis: 1250, usageStatus: "COMPLETE", inputTokens: 0, outputTokens: 0,
+  } });
   await enter(page, "&assistantBlank=1");
   await expand(page);
   await ask(page);
   await expect(control(page, "panel")).toContainText("已核对两笔已支付订单。");
   await expect(control(page, "panel").locator(".assistant-process")).toHaveCount(0);
+  const footer = control(page, "panel").getByRole("article").locator("footer");
+  await expect(footer).toContainText("总耗时 1.25 s");
+  await expect(footer).toContainText("输入 Token 0");
+  await expect(footer).toContainText("输出 Token 0");
   await expect(control(page, "apply")).toHaveCount(0);
   await assertUnrun(page, state);
   state.explain = false;
@@ -1083,6 +1090,7 @@ test("completed SQL process preserves event order and reads a large field result
         ...scope,
         status: "COMPLETED",
         cursor: 6,
+        metering: { elapsedMillis: 720, usageStatus: "MISSING", inputTokens: null, outputTokens: null },
         events: [
           { sequence: 1, type: "TEXT", text: "定位订单表。" },
           {
@@ -1124,6 +1132,9 @@ test("completed SQL process preserves event order and reads a large field result
     article.getByText("订单字段已核对。", { exact: true })
   ).toBeVisible();
   await expect(process).not.toHaveAttribute("open", "");
+  await expect(process.locator(":scope > summary")).toContainText("总耗时 720 ms");
+  await expect(article.locator("footer")).toContainText("Token 未返回");
+  await expect(article.locator("footer")).not.toContainText("总耗时");
   await process.locator(":scope > summary").click();
   await expect(process.locator(":scope > :is(p,details)")).toHaveText([
     "定位订单表。",
