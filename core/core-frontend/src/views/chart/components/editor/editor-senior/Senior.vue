@@ -2,6 +2,7 @@
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import FunctionCfg from '@/views/chart/components/editor/editor-senior/components/FunctionCfg.vue'
 import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/ScrollCfg.vue'
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
@@ -211,27 +212,35 @@ const linkJumpActiveChange = () => {
     dvMainStore.setNowPanelJumpInfo(rsp.data)
   })
 }
-const linkageActiveChange = () => {
-  const params = {
-    dvId: dvInfo.value.id,
-    sourceViewId: chart.value.id,
-    activeStatus: chart.value.linkageActive
-  }
-  updateLinkageActive(params).then(rsp => {
-    dvMainStore.setNowPanelTrackInfo(rsp.data)
-  })
+const refreshLinkageAfterChange = async (
+  change: (dvId: typeof dvInfo.value.id, sourceViewId: ChartObj['id']) => Promise<unknown>
+) => {
+  const canvas = dvInfo.value
+  const { id } = canvas
+  const sourceViewId = chart.value.id
+  const isCurrent = () => dvInfo.value === canvas && canvas.id === id
+  if (id == null || sourceViewId == null) return
+  await change(id, sourceViewId)
+  if (!isCurrent()) return
+  dvMainStore.clearViewLinkage(sourceViewId)
+  useEmitt().emitter.emit('clearPanelLinkage', { viewId: sourceViewId })
+  const { data } = await getPanelAllLinkageInfo(id)
+  if (isCurrent()) dvMainStore.setNowPanelTrackInfo(data)
 }
+
+const linkageActiveChange = () =>
+  refreshLinkageAfterChange((dvId, sourceViewId) =>
+    updateLinkageActive({
+      dvId,
+      sourceViewId,
+      activeStatus: chart.value.linkageActive
+    })
+  )
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
-const removeLinkageSenior = () => {
-  removeLinkage({ dvId: dvInfo.value.id, sourceViewId: chart.value.id }).then(rsp => {
-    // 刷新联动信息
-    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
-      dvMainStore.setNowPanelTrackInfo(rsp.data)
-    })
-  })
-}
+const removeLinkageSenior = () =>
+  refreshLinkageAfterChange((dvId, sourceViewId) => removeLinkage({ dvId, sourceViewId }))
 
 const removeJumpSenior = () => {
   removeJumpSet({ sourceDvId: dvInfo.value.id, sourceViewId: chart.value.id }).then(rspCur => {

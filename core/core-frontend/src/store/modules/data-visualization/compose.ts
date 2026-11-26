@@ -248,7 +248,7 @@ export const composeStore = defineStore('compose', {
         }
         parentGroupStyle = curComponent.value.groupStyle
       }
-      dvMainStore.deleteComponentById(curComponent.value.id, decomposeComponentData)
+      dvMainStore.deleteComponentById(curComponent.value.id, decomposeComponentData, false, true)
       components.forEach(component => {
         decomposeComponent(component, editorRect, parentStyle, canvasId, parentGroupStyle)
         dvMainStore.addComponent({

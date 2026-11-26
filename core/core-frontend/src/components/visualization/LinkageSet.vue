@@ -313,6 +313,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { fieldType } from '@/utils/attr'
 import {
   getPanelAllLinkageInfo,
@@ -559,30 +560,40 @@ const saveLinkageSetting = () => {
     return
   }
 
+  const canvas = dvInfo.value
+  const sourceComponent = curComponent.value
+  const linkageActive = customLinkageActive.value.linkageActive
   const request = {
-    dvId: dvInfo.value.id,
+    dvId: canvas.id,
     sourceViewId: state.viewId,
     linkageInfo: curLinkageTargetViewsInfo.value
   }
+  const isCurrent = () => dvInfo.value === canvas && canvas.id === request.dvId
   loading.value = true
   saveLinkage(request)
     .then(() => {
-      curComponent.value.actionSelection.linkageActive = customLinkageActive.value.linkageActive
+      if (!isCurrent()) return
+      dvMainStore.clearViewLinkage(request.sourceViewId)
+      useEmitt().emitter.emit('clearPanelLinkage', { viewId: request.sourceViewId })
+      if (sourceComponent?.id === request.sourceViewId) {
+        sourceComponent.actionSelection.linkageActive = linkageActive
+      }
       snapshotStore.recordSnapshotCache('saveLinkageSetting')
       ElMessage.success('保存成功')
       // 刷新联动信息
-      getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
-        dvMainStore.setNowPanelTrackInfo(rsp.data)
+      getPanelAllLinkageInfo(request.dvId).then(rsp => {
+        if (isCurrent()) dvMainStore.setNowPanelTrackInfo(rsp.data)
       })
       cancelLinkageSetting()
       // 刷新跳转信息
-      queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
+      queryVisualizationJumpInfo(request.dvId).then(rsp => {
+        if (!isCurrent()) return
         dvMainStore.setNowPanelJumpInfo(rsp.data)
         cancel()
       })
-      loading.value = false
     })
-    .catch(() => {
+    .catch(() => undefined)
+    .finally(() => {
       loading.value = false
     })
 }

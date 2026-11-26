@@ -2,6 +2,11 @@ import { hasErrorContract } from '@/config/axios/error'
 import { checkCanvasRevision } from '@/api/visualization/canvasRevision'
 import { saveWithConflict } from '@/utils/canvasSaveConflict'
 import { captureCanvasSave, failCanvasEditSession } from '@/utils/canvasEditSession'
+import {
+  clearCanvasLinkageFilters,
+  clearCanvasViewLinkageFilters,
+  forEachCanvasComponent
+} from '@/utils/canvasComponentTree'
 import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
@@ -466,6 +471,9 @@ export function historyAdaptor(
   attachInfo,
   canvasVersion
 ) {
+  // 旧版画布可能将运行时联动写入组件或图表请求，进入查询前统一清除。
+  clearCanvasLinkageFilters(canvasDataResult)
+  clearCanvasViewLinkageFilters(canvasInfo?.canvasViewInfo)
   // 防止出现主画布canvasId 不一致情况
   if (attachInfo?.resourceTable === 'snapshot') {
     canvasDataResult.forEach(componentItem => {
@@ -953,7 +961,10 @@ export async function recoverPublishedCanvas() {
   await recoverToPublished({ id, type, name, ...checkCanvasRevision(contentId) })
   if (!isCurrentCanvasRevision(revision)) return
   await snapshotStore.clearCanvasDraft(id)
-  if (isCurrentCanvasRevision(revision)) return { id, pid }
+  if (isCurrentCanvasRevision(revision)) {
+    dvMainStore.restorePanelTrackInfo({})
+    return { id, pid }
+  }
 }
 
 export async function canvasSave(
@@ -971,26 +982,15 @@ export async function canvasSaveWithParams(params, callBack) {
   nameTrim(savingDvInfo, t('components.length_1_64_characters'))
   dvMainStore.removeGroupArea()
   const componentDataToSave = cloneDeep(componentData.value)
-  componentDataToSave.forEach(item => {
-    if (item.component === 'UserView') {
-      item.linkageFilters = []
-    } else if (item.component === 'Group') {
-      item.propValue?.forEach(groupItem => {
-        groupItem.linkageFilters = []
-      })
-    } else if (item.component === 'DeTabs') {
-      item.propValue?.forEach(tabItem => {
-        tabItem.componentData?.forEach(tabComponent => {
-          tabComponent.linkageFilters = []
-        })
-      })
-    }
-  })
+  const canvasViewInfoToSave = cloneDeep(canvasViewInfo.value)
+  const invalidatedLinkageViewIds = { ...dvMainStore.invalidatedLinkageViewIds }
+  clearCanvasLinkageFilters(componentDataToSave)
+  clearCanvasViewLinkageFilters(canvasViewInfoToSave)
   const newContentId = guid()
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentDataToSave),
-    canvasViewInfo: cloneDeep(canvasViewInfo.value),
+    canvasViewInfo: canvasViewInfoToSave,
     appData: cloneDeep(appData.value),
     ...cloneDeep(savingDvInfo),
     checkVersion: wsCache.get('x-de-execute-version'),
@@ -1061,6 +1061,7 @@ export async function canvasSaveWithParams(params, callBack) {
     } else {
       dvMainStore.updateDvInfoCall(0, res.data, newContentId)
     }
+    dvMainStore.confirmLinkageChanges(invalidatedLinkageViewIds)
     save.saved(curDvInfo.value.id)
     if (canvasInfo.materialBundle) {
       delete curDvInfo.value.materialBundle
@@ -1337,19 +1338,9 @@ export function canvasChangeAdaptor(component, matrixBase, usePointShadow = fals
 }
 
 export function findAllViewsId(componentData, idArray) {
-  componentData.forEach(item => {
-    if (item.component === 'UserView' && item.innerType != 'VQuery') {
+  forEachCanvasComponent(componentData, item => {
+    if (item.component === 'UserView' && item.innerType !== 'VQuery' && item.id != null) {
       idArray.push(item.id)
-    } else if (item.component === 'Group') {
-      item.propValue?.forEach(groupItem => {
-        idArray.push(groupItem.id)
-      })
-    } else if (item.component === 'DeTabs') {
-      item.propValue?.forEach(tabItem => {
-        tabItem.componentData?.forEach(tabComponent => {
-          idArray.push(tabComponent.id)
-        })
-      })
     }
   })
 }
@@ -1415,6 +1406,8 @@ export async function decompressionPre(params, callBack, isCurrent = () => true)
   if (!isCurrent()) return
   const deTemplateDataTemp = response.data
   const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
+  const canvasViewInfo = deTemplateDataTemp['canvasViewInfo']
+  clearCanvasViewLinkageFilters(canvasViewInfo)
   const appData = deTemplateDataTemp['appData']
   const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
   sourceComponentData.forEach(componentItem => {
@@ -1434,7 +1427,7 @@ export async function decompressionPre(params, callBack, isCurrent = () => true)
   const deTemplateData = {
     canvasStyleData: sourceCanvasStyle,
     componentData: sourceComponentData,
-    canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
+    canvasViewInfo,
     appData: appData,
     materialBundle: deTemplateDataTemp.materialBundle,
     materialSourceTemplateId: deTemplateDataTemp.materialSourceTemplateId,

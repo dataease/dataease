@@ -36,7 +36,12 @@ import {
 } from '@/utils/componentUtils'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
+import { forEachCanvasComponent } from '@/utils/canvasComponentTree'
 const { t } = useI18n()
+
+type LinkageTrackInfo = Record<string, string[]>
+const linkageViewId = (key: string) => key.split('#')[0]
+let linkageChangeSequence = 0
 
 const BATCH_MISC_EXCLUDE_PROPS: Record<string, string[]> = {
   gauge: ['gaugeMinType', 'gaugeMinField', 'gaugeMin', 'gaugeMaxType', 'gaugeMaxField', 'gaugeMax'],
@@ -181,7 +186,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 和当前组件联动的目标组件
       targetLinkageInfo: [],
       // 当前仪表板联动 下钻 上卷等信息
-      nowPanelTrackInfo: {},
+      nowPanelTrackInfo: {} as LinkageTrackInfo,
+      // 数据集及组件的未保存变更优先于服务端的联动配置。
+      invalidatedLinkageViewIds: {} as Record<string, number>,
       // 当前仪表板的跳转信息基础信息
       nowPanelJumpInfo: {},
       // 当前仪表板的跳转信息(只包括仪表板)
@@ -724,27 +731,32 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
 
-    deleteComponentById(componentId, componentData = this.componentData, deep = false) {
+    deleteComponentById(
+      componentId,
+      componentData = this.componentData,
+      deep = false,
+      preserveLinkage = false
+    ) {
       if (componentId) {
         const indexResult = []
         componentData.forEach((component, index) => {
           if (componentId === component.id) {
             indexResult.push(index)
           } else if (deep && component.component === 'Group') {
-            this.deleteComponentById(componentId, component.propValue || [])
-          } else if (deep && component.innerType === 'DeTabs') {
+            this.deleteComponentById(componentId, component.propValue || [], true, preserveLinkage)
+          } else if (deep && ['DeTabs', 'DeScreen'].includes(component.component)) {
             component.propValue.forEach(ele => {
-              this.deleteComponentById(componentId, ele.componentData || [])
+              this.deleteComponentById(componentId, ele.componentData || [], true, preserveLinkage)
             })
           }
         })
         indexResult.forEach(indexItem => {
-          this.deleteComponent(indexItem, componentData)
+          this.deleteComponent(indexItem, componentData, preserveLinkage)
         })
       }
     },
 
-    deleteComponent(index?, componentData = this.componentData) {
+    deleteComponent(index?, componentData = this.componentData, preserveLinkage = false) {
       if (index === undefined) {
         index = this.curComponentIndex
       }
@@ -753,11 +765,17 @@ export const dvMainStore = defineStore('dataVisualization', {
         const deletedComponent = componentData[index]
         this.curComponentIndex = null
         componentData.splice(index, 1)
+        if (deletedComponent && !preserveLinkage) {
+          this.removeCanvasComponentLinkage(deletedComponent)
+        }
         // VQuery 组件
         checkFilterRemove(deletedComponent)
       }
     },
     updateCurDvInfo(dvInfo) {
+      if (String(this.dvInfo.id) !== String(dvInfo.id)) {
+        this.invalidatedLinkageViewIds = {}
+      }
       this.dvInfo = dvInfo
       this.curOriginThemes = dvInfo.type === 'dashboard' ? 'light' : 'dark'
     },
@@ -770,38 +788,15 @@ export const dvMainStore = defineStore('dataVisualization', {
         component.style.top = baseHeight * (component.y - 1) + baseMarginTop
       })
     },
-    clearTargetViewLinkage(viewId, item) {
-      if (item.linkageFilters && item.linkageFilters.length > 0) {
-        const historyLinkageFiltersLength = item.linkageFilters.length
-        const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
-        item.linkageFilters.splice(0, item.linkageFilters.length)
-        // 重新push 可保证数组指针不变 可以watch到
-        if (newList.length > 0) {
-          newList.forEach(newLinkage => {
-            item.linkageFilters.push(newLinkage)
-          })
-        }
-        // 如果linkageFilters内容长度有变化 则需要重新查询
-        if (historyLinkageFiltersLength !== newList.length) {
-          useEmitt().emitter.emit('query-data-' + item.id)
-        }
-      }
-    },
-    // 清除相同sourceViewId 的 联动条件
     clearViewLinkage(viewId) {
-      this.componentData.forEach(item => {
-        if (item.component === 'UserView' && item.innerType != 'VQuery') {
-          this.clearTargetViewLinkage(viewId, item)
-        } else if (item.component === 'Group') {
-          item.propValue?.forEach(groupItem => {
-            this.clearTargetViewLinkage(viewId, groupItem)
-          })
-        } else if (item.component === 'DeTabs') {
-          item.propValue?.forEach(tabItem => {
-            tabItem.componentData?.forEach(tabComponent => {
-              this.clearTargetViewLinkage(viewId, tabComponent)
-            })
-          })
+      const id = String(viewId)
+      forEachCanvasComponent(this.componentData, item => {
+        const filters = item.linkageFilters
+        if (!filters?.length) return
+        const remaining = filters.filter(filter => String(filter.sourceViewId) !== id)
+        if (remaining.length !== filters.length) {
+          filters.splice(0, filters.length, ...remaining)
+          useEmitt().emitter.emit('query-data-' + item.id)
         }
       })
     },
@@ -1165,8 +1160,38 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.curLinkageView = null
       this.targetLinkageInfo = []
     },
-    setNowPanelTrackInfo(trackInfo) {
-      this.nowPanelTrackInfo = trackInfo
+    setNowPanelTrackInfo(trackInfo: LinkageTrackInfo) {
+      const invalidated = this.invalidatedLinkageViewIds
+      const chartIds = new Set<string>()
+      forEachCanvasComponent(this.componentData, item => {
+        if (item.component === 'UserView' && item.innerType !== 'VQuery' && item.id != null) {
+          chartIds.add(String(item.id))
+        }
+      })
+      const isCurrentChart = (key: string) => {
+        const id = linkageViewId(key)
+        return chartIds.has(id) && !invalidated[id]
+      }
+      const filtered: LinkageTrackInfo = {}
+      Object.entries(trackInfo ?? {}).forEach(([source, targets]) => {
+        if (!isCurrentChart(source)) return
+        const remaining = targets.filter(isCurrentChart)
+        if (remaining.length) filtered[source] = remaining
+      })
+      this.nowPanelTrackInfo = filtered
+    },
+    restorePanelTrackInfo(trackInfo: LinkageTrackInfo, invalidated: Record<string, number> = {}) {
+      this.invalidatedLinkageViewIds = { ...invalidated }
+      // 本地草稿可能来自另一次浏览器会话，后续变更使用更新的编号。
+      linkageChangeSequence = Math.max(linkageChangeSequence, ...Object.values(invalidated))
+      this.setNowPanelTrackInfo(trackInfo)
+    },
+    confirmLinkageChanges(saved: Record<string, number>) {
+      Object.entries(saved).forEach(([id, generation]) => {
+        if (this.invalidatedLinkageViewIds[id] === generation) {
+          delete this.invalidatedLinkageViewIds[id]
+        }
+      })
     },
     setNowPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfo = jumpInfo.baseJumpInfoMap
@@ -1183,7 +1208,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     // 添加联动 下钻 等查询组件
     addViewTrackFilter(data, sourceData?) {
-      const viewId = data.viewId
+      const viewId = String(data.viewId)
       let trackInfo
       if (data.option === 'linkage') {
         // 维度日期类型转换
@@ -1195,7 +1220,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       } else {
         trackInfo = this.nowPanelJumpInfoTargetPanel
       }
-      const preActiveComponentIds = []
+      const affectedTargetIds = new Set<string>()
+      let applied = false
       const checkQDList = [...data.dimensionList, ...data.quotaList]
       // 仅箱线图联动维度支持精确空值条件，跳转和指标沿用原有规则
       const boxPlotDimensions =
@@ -1203,58 +1229,23 @@ export const dvMainStore = defineStore('dataVisualization', {
           ? data.dimensionList
           : []
       const customFilterInfo = data.customFilter
-      for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
-        const element = this.componentData[indexOuter]
-        if (element.id !== viewId) {
-          if (['UserView', 'VQuery'].includes(element.component)) {
-            this.trackFilterCursor(
-              element,
-              checkQDList,
-              trackInfo,
-              preActiveComponentIds,
-              viewId,
-              customFilterInfo,
-              boxPlotDimensions
-            )
-            this.componentData[indexOuter] = element
-          } else if (element.component === 'Group') {
-            element.propValue?.forEach((groupItem, index) => {
-              if (groupItem.id !== viewId) {
-                this.trackFilterCursor(
-                  groupItem,
-                  checkQDList,
-                  trackInfo,
-                  preActiveComponentIds,
-                  viewId,
-                  customFilterInfo,
-                  boxPlotDimensions
-                )
-                element.propValue[index] = groupItem
-              }
-            })
-          } else if (element.component === 'DeTabs') {
-            element.propValue?.forEach(tabItem => {
-              tabItem.componentData?.forEach((tabComponent, index) => {
-                if (tabComponent.id !== viewId) {
-                  this.trackFilterCursor(
-                    tabComponent,
-                    checkQDList,
-                    trackInfo,
-                    preActiveComponentIds,
-                    viewId,
-                    customFilterInfo,
-                    boxPlotDimensions
-                  )
-                  tabItem.componentData[index] = tabComponent
-                }
-              })
-            })
-          }
+      forEachCanvasComponent(this.componentData, element => {
+        if (String(element.id) === viewId || !['UserView', 'VQuery'].includes(element.component)) {
+          return
         }
-      }
-      preActiveComponentIds.forEach(viewId => {
-        useEmitt().emitter.emit('query-data-' + viewId)
+        const targetApplied = this.trackFilterCursor(
+          element,
+          checkQDList,
+          trackInfo,
+          affectedTargetIds,
+          viewId,
+          customFilterInfo,
+          boxPlotDimensions
+        )
+        applied ||= targetApplied
       })
+      affectedTargetIds.forEach(id => useEmitt().emitter.emit('query-data-' + id))
+      return applied
     },
     addWebParamsFilter(params, curComponentData = this.componentData) {
       if (params) {
@@ -1613,34 +1604,18 @@ export const dvMainStore = defineStore('dataVisualization', {
       element,
       checkQDList,
       trackInfo,
-      preActiveComponentIds,
+      affectedTargetIds: Set<string>,
       viewId,
       customFilter?,
       boxPlotDimensions = []
     ) {
-      let currentFilters = element.linkageFilters || [] // 当前联动filter
-      if (['table-info', 'table-normal'].includes(element.innerType)) {
-        currentFilters = []
-      }
-      if (currentFilters.length) {
-        for (let i = currentFilters.length - 1; i >= 0; i--) {
-          if (currentFilters[i].filterType === 3) {
-            currentFilters.splice(i, 1)
-          }
-        }
-      }
-      let sourceLinkageChanged = false
-      if (element.component === 'UserView' && currentFilters.length) {
-        for (let i = currentFilters.length - 1; i >= 0; i--) {
-          if (currentFilters[i].sourceViewId === viewId) {
-            currentFilters.splice(i, 1)
-            sourceLinkageChanged = true
-          }
-        }
-      }
-      if (sourceLinkageChanged) {
-        preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
-      }
+      const previousFilters = element.linkageFilters || []
+      // 每个来源只替换自己的条件，表格和指标过滤沿用同样的规则。
+      const currentFilters = previousFilters.filter(
+        filter => String(filter.sourceViewId) !== viewId
+      )
+      let applied = false
+      let appliedCustomFilter = false
       // 联动的图表情况历史条件
       const skipEmptyValue = this.canvasViewInfo[viewId]?.type === 'multi-scatter'
       checkQDList.forEach(QDItem => {
@@ -1652,19 +1627,19 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
         const sourceInfo = viewId + '#' + QDItem.id
         // 获取所有目标联动信息
-        const targetInfoList = trackInfo[sourceInfo] || []
+        const targetInfoList = trackInfo?.[sourceInfo] || []
         const paramValue = [QDItem.value]
         targetInfoList.forEach(targetInfo => {
           const targetInfoArray = targetInfo.split('#')
           const targetViewId = targetInfoArray[0] // 目标图表
-          if (element.component === 'UserView' && element.id === targetViewId) {
+          if (element.component === 'UserView' && String(element.id) === targetViewId) {
             // 如果含有customFilter 仅加入customFilter
             if (customFilter && checkIsSameDs(this.canvasViewInfo, viewId, element.id)) {
-              currentFilters.push({
-                filterType: 3,
-                customFilter: customFilter,
-                sourceViewId: viewId
-              })
+              if (!appliedCustomFilter && customFilter.items?.length) {
+                currentFilters.push({ filterType: 3, customFilter, sourceViewId: viewId })
+                appliedCustomFilter = true
+                applied = true
+              }
             } else {
               // 如果目标图表 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标图表列ID
@@ -1679,7 +1654,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+              } else if (hasTimeRange) {
                 // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
                 condition = {
                   fieldId: targetFieldId,
@@ -1688,10 +1663,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else if (
-                (QDItem.value !== null && QDItem.value !== '') ||
-                (boxPlotDimension && QDItem.value === '')
-              ) {
+              } else if (hasValue || (boxPlotDimension && QDItem.value === '')) {
                 condition = {
                   fieldId: targetFieldId,
                   operator: 'eq',
@@ -1711,21 +1683,21 @@ export const dvMainStore = defineStore('dataVisualization', {
                   // 兼容性准备 viewIds 只会存放一个值
                   if (
                     targetFieldId === filter.fieldId &&
-                    filter.viewIds.includes(targetViewId) &&
-                    (!filter.sourceViewId || filter.sourceViewId === viewId)
+                    filter.viewIds?.some(id => String(id) === targetViewId) &&
+                    (!filter.sourceViewId || String(filter.sourceViewId) === viewId)
                   ) {
                     currentFilters.splice(j, 1)
                   }
                 }
                 // 不存在该条件 且 条件有效 直接保存该条件
                 currentFilters.push(condition)
+                applied = true
               }
             }
-            preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery' && Array.isArray(element.propValue)) {
             element.propValue?.forEach(filterItem => {
-              if (filterItem.id === targetViewId) {
+              if (String(filterItem.id) === targetViewId) {
                 if (
                   ['H_m_s', 'M_d'].includes(QDItem.linkageDateStyle) &&
                   ['1', '7'].includes(filterItem.displayType)
@@ -1787,37 +1759,27 @@ export const dvMainStore = defineStore('dataVisualization', {
                   filterItem['conditionValueF'] = queryParams[0]
                   filterItem['defaultConditionValueF'] = queryParams[0]
                 }
+                applied = true
               }
             })
           }
         })
       })
-      element.linkageFilters = currentFilters
+      if (
+        element.component === 'UserView' &&
+        (applied || previousFilters.length !== currentFilters.length)
+      ) {
+        element.linkageFilters = currentFilters
+        affectedTargetIds.add(String(element.id))
+      }
+      return applied
     },
 
     clearPanelLinkageInfo() {
-      this.componentData.forEach(item => {
-        if (item.component === 'UserView') {
-          if (item.linkageFilters && item.linkageFilters.length > 0) {
-            item.linkageFilters.splice(0, item.linkageFilters.length)
-            useEmitt().emitter.emit('query-data-' + item.id)
-          }
-        } else if (item.component === 'Group') {
-          item.propValue?.forEach(groupItem => {
-            if (groupItem.linkageFilters && groupItem.linkageFilters.length > 0) {
-              groupItem.linkageFilters.splice(0, groupItem.linkageFilters.length)
-              useEmitt().emitter.emit('query-data-' + groupItem.id)
-            }
-          })
-        } else if (item.component === 'DeTabs') {
-          item.propValue?.forEach(tabItem => {
-            tabItem.componentData?.forEach(tabComponent => {
-              if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
-                tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
-                useEmitt().emitter.emit('query-data-' + tabComponent.id)
-              }
-            })
-          })
+      forEachCanvasComponent(this.componentData, item => {
+        if (item.linkageFilters?.length) {
+          item.linkageFilters.splice(0)
+          useEmitt().emitter.emit('query-data-' + item.id)
         }
       })
     },
@@ -1837,6 +1799,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.tabMoveOutComponentId = componentId
     },
     resetDvInfo() {
+      this.invalidatedLinkageViewIds = {}
       this.dvInfo = {
         dataState: null,
         optType: null,
@@ -1965,34 +1928,60 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = []
       this.canvasViewInfo = {}
     },
-    removeLinkageInfo(viewId) {
-      if (!viewId || !this.nowPanelTrackInfo) return []
-      const id = String(viewId)
-      const trackInfo = this.nowPanelTrackInfo as Record<string, string[]>
-      const changedSourceIds = new Set<string>()
-      const activeSourceIds = new Set<string>()
+    invalidateChartLinkage(viewId: string | number) {
+      if (viewId) this.invalidateChartLinkages(new Set([String(viewId)]))
+    },
+    removeCanvasComponentLinkage(component: Parameters<typeof forEachCanvasComponent>[0][number]) {
+      const viewIds = new Set<string>()
+      const sourceIds = new Set<string>()
+      forEachCanvasComponent([component], item => {
+        if (item.component !== 'UserView' || !item.id) return
+        viewIds.add(String(item.id))
+        item.linkageFilters?.forEach(filter => {
+          if (filter.sourceViewId) sourceIds.add(String(filter.sourceViewId))
+        })
+      })
+      this.invalidateChartLinkages(viewIds, sourceIds)
+    },
+    invalidateChartLinkages(viewIds: Set<string>, sourceIds = new Set<string>()) {
+      if (!viewIds.size) return
+      const trackInfo: LinkageTrackInfo = this.nowPanelTrackInfo
+      viewIds.forEach(id => {
+        this.invalidatedLinkageViewIds[id] = ++linkageChangeSequence
+      })
       Object.entries(trackInfo).forEach(([source, targets]) => {
-        const sourceId = source.split('#')[0]
-        if (sourceId === id) {
-          delete trackInfo[source]
-          return
-        }
-        const remaining = targets.filter(target => target.split('#')[0] !== id)
-        if (remaining.length !== targets.length) {
-          changedSourceIds.add(sourceId)
-        }
-        if (!remaining.length) {
-          delete trackInfo[source]
-        } else {
-          activeSourceIds.add(sourceId)
-          if (remaining.length !== targets.length) {
-            trackInfo[source] = remaining
-          }
+        if (targets.some(target => viewIds.has(linkageViewId(target)))) {
+          sourceIds.add(linkageViewId(source))
         }
       })
-      return [...changedSourceIds].filter(sourceId => !activeSourceIds.has(sourceId))
+      this.setNowPanelTrackInfo(trackInfo)
+
+      const remainingSources = new Set<string>()
+      const emitter = useEmitt().emitter
+      forEachCanvasComponent(this.componentData, item => {
+        const filters = item.linkageFilters
+        if (!filters?.length) return
+        if (viewIds.has(String(item.id))) {
+          filters.forEach(filter => {
+            if (filter.sourceViewId) sourceIds.add(String(filter.sourceViewId))
+          })
+          filters.splice(0)
+          return
+        }
+        const remaining = filters.filter(filter => !viewIds.has(String(filter.sourceViewId)))
+        remaining.forEach(filter => remainingSources.add(String(filter.sourceViewId)))
+        if (remaining.length !== filters.length) {
+          filters.splice(0, filters.length, ...remaining)
+          emitter.emit('query-data-' + item.id)
+        }
+      })
+      sourceIds.forEach(id => {
+        if (!remainingSources.has(id)) viewIds.add(id)
+      })
+      viewIds.forEach(viewId => emitter.emit('clearPanelLinkage', { viewId }))
     },
     canvasDataInit() {
+      this.invalidatedLinkageViewIds = {}
       this.canvasViewInfo = {}
       this.componentData = []
       this.componentDataMultiply = []

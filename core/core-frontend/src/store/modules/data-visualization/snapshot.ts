@@ -9,6 +9,11 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
+  clearCanvasLinkageFilters,
+  clearCanvasViewLinkageFilters,
+  forEachCanvasComponent
+} from '@/utils/canvasComponentTree'
+import {
   discardCanvasDraft,
   flushCanvasDraft,
   queueCanvasDraft,
@@ -56,6 +61,7 @@ const {
   curOriginThemes,
   dataPrepareState,
   nowPanelTrackInfo,
+  invalidatedLinkageViewIds,
   nowPanelJumpInfo,
   mobileInPc
 } = storeToRefs(dvMainStore)
@@ -183,6 +189,21 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
     snapshotPublish(snapshotInfo) {
+      const filteredViewIds = new Set<string | number>()
+      forEachCanvasComponent(componentData.value, component => {
+        const id = component.id
+        if (
+          id != null &&
+          (component.linkageFilters?.length ||
+            dvMainStore.lastViewRequestInfo[id]?.linkageFilters?.length)
+        ) {
+          filteredViewIds.add(id)
+        }
+      })
+      const { emitter } = useEmitt()
+      emitter.emit('clearPanelLinkage', { viewId: 'all' })
+      clearCanvasLinkageFilters(snapshotInfo.componentData)
+      clearCanvasViewLinkageFilters(snapshotInfo.canvasViewInfo)
       // Keep an unfinished package outside undo snapshots; binary originals can be large.
       if (dvInfo.value.materialBundle)
         snapshotInfo.dvInfo.materialBundle = dvInfo.value.materialBundle
@@ -192,7 +213,10 @@ export const snapshotStore = defineStore('snapshot', {
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)
       dvMainStore.setNowPanelJumpInfoInner(snapshotInfo.nowPanelJumpInfo)
-      dvMainStore.setNowPanelTrackInfo(snapshotInfo.nowPanelTrackInfo)
+      dvMainStore.restorePanelTrackInfo(
+        snapshotInfo.nowPanelTrackInfo,
+        snapshotInfo.invalidatedLinkageViewIds
+      )
       const curCacheViewIdInfo = deepCopy(this.cacheViewIdInfo)
       this.cacheViewIdInfo = snapshotInfo.cacheViewIdInfo
 
@@ -220,10 +244,13 @@ export const snapshotStore = defineStore('snapshot', {
       }
 
       const paramCacheViewInfo = {
-        snapshotCacheViewCalc: [
-          ...curCacheViewIdInfo.snapshotCacheViewCalc,
-          ...this.cacheViewIdInfo.snapshotCacheViewCalc
-        ],
+        snapshotCacheViewCalc: Array.from(
+          new Set([
+            ...curCacheViewIdInfo.snapshotCacheViewCalc,
+            ...this.cacheViewIdInfo.snapshotCacheViewCalc,
+            ...filteredViewIds
+          ])
+        ),
         snapshotCacheViewRender: [
           ...curCacheViewIdInfo.snapshotCacheViewRender,
           ...this.cacheViewIdInfo.snapshotCacheViewRender
@@ -235,7 +262,7 @@ export const snapshotStore = defineStore('snapshot', {
         paramCacheViewInfo.snapshotCacheViewCalc.length > 0 ||
         paramCacheViewInfo.snapshotCacheViewRender.length > 0
       ) {
-        useEmitt().emitter.emit('snapshotChangeToView', paramCacheViewInfo)
+        emitter.emit('snapshotChangeToView', paramCacheViewInfo)
       }
     },
 
@@ -270,14 +297,18 @@ export const snapshotStore = defineStore('snapshot', {
       if (dataPrepareState.value && !mobileInPc.value && Date.now() > this.snapshotDisableTime) {
         this.styleChangeTimes = ++this.styleChangeTimes
         const snapshotComponentData = deepCopy(componentData.value)
+        const snapshotCanvasViewInfo = deepCopy(canvasViewInfo.value)
         dvMainStore.removeGroupArea(snapshotComponentData)
+        clearCanvasLinkageFilters(snapshotComponentData)
+        clearCanvasViewLinkageFilters(snapshotCanvasViewInfo)
         // 添加新的快照
         const newSnapshot = {
           componentData: snapshotComponentData,
           canvasStyleData: deepCopy(canvasStyleData.value),
-          canvasViewInfo: deepCopy(canvasViewInfo.value),
+          canvasViewInfo: snapshotCanvasViewInfo,
           cacheViewIdInfo: deepCopy(this.cacheViewIdInfo),
           nowPanelTrackInfo: deepCopy(nowPanelTrackInfo.value),
+          invalidatedLinkageViewIds: { ...invalidatedLinkageViewIds.value },
           nowPanelJumpInfo: deepCopy(nowPanelJumpInfo.value),
           dvInfo: deepCopy(
             Object.fromEntries(

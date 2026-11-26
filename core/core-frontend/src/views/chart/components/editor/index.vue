@@ -413,17 +413,7 @@ const recordSnapshotInfo = type => {
 }
 
 const changeDataset = () => {
-  const viewId = view.value.id
-  if (viewId) {
-    const sourceIds = dvMainStore.removeLinkageInfo(viewId)
-    dvMainStore.clearViewLinkage(viewId)
-    for (const id of [viewId, ...sourceIds]) {
-      emitter.emit('clearPanelLinkage', { viewId: id })
-    }
-    if (curComponent.value?.id === viewId) {
-      curComponent.value['linkageFilters'] = []
-    }
-  }
+  dvMainStore.invalidateChartLinkage(view.value.id)
   view.value['calParams'] = []
   recordSnapshotInfo('calcData')
 }

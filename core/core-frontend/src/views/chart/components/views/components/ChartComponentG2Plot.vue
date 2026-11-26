@@ -128,11 +128,22 @@ const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
-const linkageActiveHistory = ref(false)
-// 箱线图的生效联动独立于最近点击，下钻和打开菜单不能覆盖已提交的联动条件
-const boxPlotLinkageData = shallowRef(null)
 // G2 重绘后只用这些原始字段回放选中，避免旧 datum 的对象引用参与匹配
-const LINKAGE_REPLAY_FIELDS = ['field', 'name', 'category', 'group', 'value', 'x', 'y', 'path']
+const LINKAGE_REPLAY_FIELDS = [
+  'field',
+  'name',
+  'category',
+  'group',
+  'value',
+  'x',
+  'y',
+  'path'
+] as const
+type LinkageSelection = {
+  replayData: Partial<Record<(typeof LINKAGE_REPLAY_FIELDS)[number], string | number | boolean>>
+  boxPlotDimensions: { id: string | number; value: unknown }[]
+}
+let linkageSelection: LinkageSelection | null = null
 
 const dataVMobile = !isDashboard() && isMobile()
 
@@ -147,7 +158,6 @@ const state = reactive({
     left: '50px',
     top: '50px'
   },
-  linkageActiveParam: null,
   pointParam: null,
   data: { fields: [] } // 图表数据
 })
@@ -185,7 +195,14 @@ const chartStroke = computed(() => {
     : stroke
 })
 const LINKAGE_STYLE_CACHE = '__deLinkageStyleCache__'
-const LINKAGE_STYLE_KEYS = ['opacity', 'stroke', 'lineWidth']
+const LINKAGE_STYLE_KEYS = [
+  'opacity',
+  'stroke',
+  'lineWidth',
+  'strokeOpacity',
+  'linkStroke',
+  'linkStrokeOpacity'
+]
 const LINKAGE_SELECTED_STYLE = computed(() => ({
   stroke: chartStroke.value,
   lineWidth: 1,
@@ -204,81 +221,61 @@ const LINKAGE_IGNORE_MARK_TYPES = ['lineX', 'lineY']
 const LINKAGE_IGNORE_CLASS_REG = /crosshair|tooltip/
 
 const clearLinkage = () => {
-  linkageActiveHistory.value = false
-  boxPlotLinkageData.value = null
+  const hadSelection = !!linkageSelection
+  linkageSelection = null
   try {
     resetLinkageElementState()
-    myChart?.emit('element:unselect', { nativeEvent: false })
-    myChart?.emit('element:unhighlight', { nativeEvent: false })
-    resetLinkageContentOpacity()
+    if (hadSelection) flushG2Canvas()
   } catch (e) {
     console.warn('clearLinkage error', e)
   }
 }
-const reDrawView = () => {
-  linkageActiveHistory.value = false
-}
-const linkageActivePre = () => {
-  if (linkageActiveHistory.value) {
-    reDrawView()
-  }
-  nextTick(() => {
-    linkageActive()
-  })
-}
-const linkageActive = () => {
-  linkageActiveHistory.value = true
+const applyLinkageSelection = (selection: LinkageSelection) => {
+  if (selection !== linkageSelection || chartComponentUnmounted) return
+  const chart = myChart
   try {
-    const replayData = getLinkageReplayData()
-    if (!replayData) {
-      return
-    }
-    if (view.value.type === 'box-plot') {
-      // 箱线图先恢复原样式，避免 G2 将联动淡化值缓存为取消选中后的原始值
-      resetLinkageElementState()
-    } else {
-      applyLinkageElementState()
-    }
-    // elementSelect 单选会切换已选元素；回放前先清空，避免重复选中时被反向取消
-    myChart?.emit('element:unselect', { nativeEvent: false })
-    myChart?.emit('element:select', {
+    // G2 会缓存首次选中前的样式，必须先恢复原样式，再触发选中。
+    resetLinkageElementState()
+    if (chart !== myChart || selection !== linkageSelection) return
+    const elements = getG2Elements().filter(isLinkageDataElement)
+    elements.forEach(element => eachElementShape(element, backupShapeStyle))
+    chart?.emit?.('element:select', {
       nativeEvent: false,
-      data: { data: [replayData] }
+      data: { data: [selection.replayData] }
     })
-    const chart = myChart
-    if (chart === myChart && linkageActiveHistory.value) {
-      applyLinkageElementState(true)
+    if (chart === myChart && selection === linkageSelection) {
+      applyLinkageElementState(elements)
     }
   } catch (err) {
     console.warn('linkageActive error', err)
   }
 }
 // 只收集 primitive 字段，G2 selectElementByData 使用严格相等匹配
-const getLinkageReplayData = () => {
-  const data = view.value.type === 'box-plot' ? boxPlotLinkageData.value : state.pointParam?.data
-  if (!data) {
-    return null
-  }
-  const replayData: Record<string, any> = {}
+const getLinkageSelection = (data): LinkageSelection | null => {
+  const replayData: LinkageSelection['replayData'] = {}
   LINKAGE_REPLAY_FIELDS.forEach(key => {
-    const value = data[key]
-    if (['string', 'number', 'boolean'].includes(typeof value) && !Number.isNaN(value)) {
+    const value: unknown = data[key]
+    if (
+      typeof value === 'string' ||
+      typeof value === 'boolean' ||
+      (typeof value === 'number' && !Number.isNaN(value))
+    ) {
       replayData[key] = value
     }
   })
-  return Object.keys(replayData).length ? replayData : null
+  if (!Object.keys(replayData).length) return null
+  return {
+    replayData,
+    boxPlotDimensions: view.value.type === 'box-plot' ? cloneDeep(data.dimensionList) : []
+  }
 }
 // renderG2 和 forceFit 共用回放逻辑，覆盖图例和标题显隐两类路径
 const replayLinkageActive = () => {
-  if (!linkageActiveHistory.value || !state.linkageActiveParam) {
-    return
-  }
+  const selection = linkageSelection
+  if (!selection) return
   const chart = myChart
   requestAnimationFrame(() => {
-    if (chart !== myChart || !linkageActiveHistory.value) {
-      return
-    }
-    linkageActive()
+    if (chart === myChart) applyLinkageSelection(selection)
   })
 }
 const getG2Elements = () => {
@@ -346,7 +343,6 @@ const backupShapeStyle = shape => {
 }
 const applyElementStyle = (element, style) => {
   eachElementShape(element, shape => {
-    backupShapeStyle(shape)
     Object.entries(style).forEach(([key, value]) => setShapeAttr(shape, key, value))
   })
 }
@@ -409,32 +405,15 @@ const resetElementStyle = element => {
   })
 }
 const resetLinkageElementState = () => {
-  getG2Elements().forEach(resetElementStyle)
+  try {
+    myChart?.emit?.('element:unselect', { nativeEvent: false })
+    myChart?.emit?.('element:unhighlight', { nativeEvent: false })
+  } finally {
+    getG2Elements().forEach(resetElementStyle)
+  }
 }
-const resetLinkageContentOpacity = () => {
-  let changed = false
-  getG2Elements().forEach(element => {
-    const isBoxPlotBox = view.value.type === 'box-plot' && element?.markType === 'box'
-    if (!isLinkageDataElement(element) || (!isLinkageOpacityElement(element) && !isBoxPlotBox)) {
-      return
-    }
-    eachElementShape(element, shape => {
-      const opacity = Number(getShapeAttr(shape, 'opacity'))
-      if (opacity !== 0 && opacity < 1) {
-        setShapeAttr(shape, 'opacity', 1)
-        changed = true
-      }
-    })
-  })
-  changed && flushG2Canvas()
-}
-const applyLinkageElementState = (flush = false) => {
-  const elements = getG2Elements()
-  resetLinkageElementState()
+const applyLinkageElementState = elements => {
   elements.forEach(element => {
-    if (!isLinkageDataElement(element)) {
-      return
-    }
     const datum = getElementDatum(element)
     if (!datum || Array.isArray(datum)) {
       return
@@ -444,13 +423,13 @@ const applyLinkageElementState = (flush = false) => {
     const style = getLinkageElementStyle(element, selected)
     applyElementStyle(element, style)
   })
-  flush && flushG2Canvas()
+  flushG2Canvas()
 }
 const checkSelected = param => {
   if (view.value.type === 'box-plot') {
     // 箱线图按已映射维度的原始值匹配，空值和 0 不转换成展示占位符
     const dimensions =
-      boxPlotLinkageData.value?.dimensionList?.filter(
+      linkageSelection?.boxPlotDimensions.filter(
         item => nowPanelTrackInfo.value[`${view.value.id}#${String(item.id)}`]?.length
       ) ?? []
     return (
@@ -472,7 +451,7 @@ const checkSelected = param => {
         .map(item => item?.id)
         .filter(id =>
           Object.keys(nowPanelTrackInfo.value).some(
-            key => key.startsWith(view.value.id) && key.split('#')[1] === id
+            key => key.startsWith(`${view.value.id}#`) && key.split('#')[1] === id
           )
         )
     )
@@ -482,7 +461,9 @@ const checkSelected = param => {
     view.value[key].find(item => mappingFieldIds.includes(item.id))
   )
   // 选中字段数据
-  const { group, name, category } = state.linkageActiveParam
+  const group = linkageSelection?.replayData.group || 'NO_DATA'
+  const name = linkageSelection?.replayData.name || 'NO_DATA'
+  const category = linkageSelection?.replayData.category || 'NO_DATA'
   // 选中字段数据匹配
   if (view.value.type === 'sankey') {
     // 桑基图联动只选中实际点击的连接，不选中起止节点
@@ -501,7 +482,7 @@ const checkSelected = param => {
     // pack 图元使用 d3 hierarchy 节点包装原始数据，联动匹配需读取节点的 data
     const treeData = param?.data ?? param
     const treePath = typeof treeData?.path === 'string' ? treeData.path : ''
-    if (treePath.startsWith(name) || name === t('commons.all')) {
+    if (treePath.startsWith(String(name)) || name === t('commons.all')) {
       return true
     }
     return name === treeData?.name
@@ -1040,15 +1021,6 @@ const action = param => {
   pointClickTrans()
   // 保留嵌入点击回调，放大和复用视图沿用禁用交互的规则，避免误报最后一级
   if (['multiplexing', 'viewDialog'].includes(showPosition.value)) return
-  // 下钻 联动 跳转
-  state.linkageActiveParam = {
-    ...(view.value.type === 'box-plot'
-      ? { dimensionList: cloneDeep(state.pointParam.data.dimensionList) }
-      : {}),
-    category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
-    name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
-    group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
-  }
   if (trackMenu.value.length < 2) {
     if (view.value.drillFields.length > 0 && trackMenu.value.length === 0) {
       ElMessage.error(t('chart.last_layer'))
@@ -1199,28 +1171,29 @@ const trackClick = trackAction => {
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
   }
-  if (view.value.type === 'box-plot' && ['linkage', 'linkageAndDrill'].includes(trackAction)) {
-    // 与提交过滤条件使用同一份原始维度，后续点击和下钻参数的修改不影响回放
-    boxPlotLinkageData.value = cloneDeep(state.pointParam.data)
-  }
   switch (trackAction) {
     case 'pointClick':
       emit('onPointClick', clickParams)
-      break
-    case 'linkageAndDrill':
-      if (view.value.type === 'box-plot') {
-        linkageActivePre()
-      }
-      dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
-      emit('onChartClick', param)
       break
     case 'drill':
       emit('onChartClick', param)
       break
     case 'linkage':
-      linkageActivePre()
-      dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
+    case 'linkageAndDrill': {
+      const showSelection =
+        trackAction === 'linkage' || view.value.type === 'box-plot' || !!linkageSelection
+      // 点击菜单、下钻和过滤值转换不应改写上一次生效的联动点。
+      const selection = showSelection ? getLinkageSelection(param.data) : null
+      const applied = dvMainStore.addViewTrackFilter(linkageParam, chartRuntime.data || null)
+      if (applied && selection) {
+        linkageSelection = selection
+        nextTick(() => applyLinkageSelection(selection))
+      } else if (linkageSelection) {
+        clearLinkage()
+      }
+      if (trackAction === 'linkageAndDrill') emit('onChartClick', param)
       break
+    }
     case 'jump':
       if (mobileInPc.value && !inMobile.value) return
       emit('onJumpClick', jumpParam)

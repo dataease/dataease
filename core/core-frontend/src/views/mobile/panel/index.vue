@@ -3,6 +3,10 @@ import { onBeforeMount, ref, onBeforeUnmount, defineAsyncComponent, nextTick } f
 import { useEmitt } from '@/hooks/web/useEmitt'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import {
+  clearCanvasLinkageFilters,
+  clearCanvasViewLinkageFilters
+} from '@/utils/canvasComponentTree'
 import DePreviewMobile from './MobileInPc.vue'
 import { findComponentById, initTabMobileLayout, mobileViewStyleSwitch } from '@/utils/canvasUtils'
 import { deepCopy } from '@/utils/utils'
@@ -88,6 +92,9 @@ const syncTabPcDesign = (mobileComponent, component, viewInfos) => {
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
+    // 手机设计画布没有 PC 图表的交互选中状态，只接收设计配置。
+    clearCanvasLinkageFilters(componentData)
+    clearCanvasViewLinkageFilters(canvasViewInfo)
     componentData.forEach(ele => {
       const { mx, my, mSizeX, mSizeY, mStyle, mCommonBackground, mEvents } = ele
       ele.x = mx

@@ -30,6 +30,7 @@ import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.factory.PluginsChartFactory;
+import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.extensions.view.plugin.AbstractChartPlugin;
 import io.dataease.extensions.view.util.FieldUtil;
@@ -305,16 +306,19 @@ public class ChartDataManage {
         }
 
         List<ChartExtFilterDTO> filters = new ArrayList<>();
-        FilterTreeObj customLinkageFilter = null;
+        List<FilterTreeObj> customLinkageFilters = new ArrayList<>();
         // 联动条件
         if (ObjectUtils.isNotEmpty(chartExtRequest.getLinkageFilters())) {
             for (ChartExtFilterDTO linkageFilter : chartExtRequest.getLinkageFilters()) {
-                if(linkageFilter != null){
-                    if (3 == linkageFilter.getFilterType()) {
-                        customLinkageFilter = linkageFilter.getCustomFilter();
-                    } else {
-                        filters.add(linkageFilter);
+                if (linkageFilter == null) {
+                    continue;
+                }
+                if (3 == linkageFilter.getFilterType()) {
+                    if (linkageFilter.getCustomFilter() != null) {
+                        customLinkageFilters.add(linkageFilter.getCustomFilter());
                     }
+                } else {
+                    filters.add(linkageFilter);
                 }
             }
         }
@@ -443,12 +447,7 @@ public class ChartDataManage {
         if (ObjectUtils.isEmpty(xAxis) && ObjectUtils.isEmpty(yAxis)) {
             return emptyChartViewDTO(view);
         }
-        // 字段过滤器
-        FilterTreeObj fieldCustomFilter = view.getCustomFilter();
-        // 指标表联动时 使用的CustomFilter
-        if (customLinkageFilter != null) {
-            fieldCustomFilter = customLinkageFilter;
-        }
+        FilterTreeObj fieldCustomFilter = resolveCustomFilter(view.getCustomFilter(), customLinkageFilters);
         chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
         fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
         // 获取dsMap,union sql
@@ -611,6 +610,25 @@ public class ChartDataManage {
             BeanUtils.copyBean(dto, ele);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    private static FilterTreeObj resolveCustomFilter(FilterTreeObj chartFilter, List<FilterTreeObj> linkageFilters) {
+        if (linkageFilters.isEmpty()) {
+            return chartFilter;
+        }
+        if (linkageFilters.size() == 1) {
+            return linkageFilters.getFirst();
+        }
+        // 指标联动继续替换目标的自定义过滤，多个来源取交集并保留各自树内的逻辑。
+        FilterTreeObj combined = new FilterTreeObj();
+        combined.setLogic("and");
+        combined.setItems(linkageFilters.stream().map(filter -> {
+            FilterTreeItem item = new FilterTreeItem();
+            item.setType("tree");
+            item.setSubTree(filter);
+            return item;
+        }).toList());
+        return combined;
     }
 
     // 对结果排序
