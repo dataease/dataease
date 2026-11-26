@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import { createApp, h, ref } from "vue";
+      import { installDirective } from "@/directive";
+      import Icon from "@/components/icon-custom/src/Icon.vue";
+      const content = ref(
+        '<svg viewBox="0 0 32 32"><path d="M2 30L16 2L30 30Z" fill="blue"/></svg>'
+      );
+      const app = createApp({
+        setup: () => () => h(Icon, { staticContent: content.value }),
+      });
+      installDirective(app);
+      app.mount("#app");
+      window.setIcon = (value) => {
+        content.value = value;
+      };
+    </script>
+  </body>
+</html>

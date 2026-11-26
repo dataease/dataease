@@ -21,6 +21,7 @@ import type { UploadRequestOptions, UploadProps } from 'element-plus-secondary'
 import request from '@/config/axios'
 import { propTypes } from '@/utils/propTypes'
 
+import { confirmPluginOperation } from './operationConfirmation'
 import { confirmDependencies, type InstallCheck } from './dependencyConfirm'
 
 const props = defineProps({
@@ -39,6 +40,12 @@ const setFile = async (options: UploadRequestOptions) => {
   busy.value = true
   cancelled.value = false
   try {
+    const ticket = await confirmPluginOperation(
+      'prepare',
+      props.isEdit ? props.id : '',
+      t,
+      options.file
+    )
     const data = new FormData()
     data.append('file', options.file)
     if (props.isEdit) {
@@ -50,6 +57,7 @@ const setFile = async (options: UploadRequestOptions) => {
     const response = await request.post({
       url: '/plugin/prepare',
       headersType: 'multipart/form-data;',
+      headers: { 'X-DE-Plugin-Confirmation': ticket },
       data
     })
     const check = response.data as InstallCheck

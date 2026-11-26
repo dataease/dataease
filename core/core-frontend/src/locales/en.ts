@@ -4865,6 +4865,26 @@ export default {
     back_parent: 'Back to the previous level'
   },
   plugin: {
+    current_password: 'Current account password',
+    close: 'Close',
+    password_incorrect_install: 'Incorrect account password. Re-enter it to upload the plugin.',
+    password_incorrect_update: 'Incorrect account password. Re-enter it to update the plugin.',
+    password_incorrect_uninstall:
+      'Incorrect account password. Re-enter it to uninstall the plugin.',
+    password_incorrect_confirm:
+      'Incorrect account password. Re-enter it to confirm plugin installation.',
+    password_locked:
+      'Too many password verification attempts for plugin operations. Please try again later.',
+    password_unavailable:
+      'This account uses external authentication. Password verification for plugin operations is unavailable.',
+    verification_failed:
+      'Unable to verify your identity for this plugin operation. Please try again later.',
+    operation_forbidden: 'Your account does not have permission to perform this plugin operation.',
+
+    verify_continue: 'Verify and continue',
+    confirm_title: 'Confirm plugin operation',
+    confirm_warning:
+      'Plugins execute code on the server. Confirm the source and enter your current account password. Confirmation does not verify plugin safety.',
     'flag-all': 'All',
     'flag-ds': 'Datasource plug-in',
     'flag-view': 'Chart plug-in',

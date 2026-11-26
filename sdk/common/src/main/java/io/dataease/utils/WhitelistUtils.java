@@ -123,7 +123,6 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/contentPlugin/")
-                || matchSinglePathVariable(requestURI, "/xpackComponent/pluginStaticInfo/")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
                 || StringUtils.equals(requestURI, "/websocket")
                 || StringUtils.startsWith(requestURI, "/websocket/")

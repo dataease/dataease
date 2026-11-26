@@ -131,6 +131,7 @@ import { loadPluginApi, PluginItem, unInstallApi } from '@/views/menu/setting/pl
 import { useI18n } from '@/hooks/web/useI18n'
 import nothingNone from '@/assets/img/nothing-none-gray.png'
 import nothingSearch from '@/assets/img/nothing-tree.png'
+import { confirmPluginOperation } from '@/views/menu/setting/plugin/operationConfirmation'
 import PluginUpload from '@/views/menu/setting/plugin/PluginUpload.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { formatDate } from '@/utils/DateUtil'
@@ -218,10 +219,12 @@ const uninstall = item => {
       )}</span>`,
     showClose: false
   }).then(() => {
-    unInstallApi(item['id']).then(() => {
-      loadPlugin()
-      ElMessage.success(t('system.uninstall_successful'))
-    })
+    confirmPluginOperation('uninstall', item['id'], t)
+      .then(ticket => unInstallApi(item['id'], ticket))
+      .then(() => {
+        loadPlugin()
+        ElMessage.success(t('system.uninstall_successful'))
+      })
   })
 }
 

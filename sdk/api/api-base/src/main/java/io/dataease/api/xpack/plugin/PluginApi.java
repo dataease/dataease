@@ -8,6 +8,7 @@ import io.dataease.auth.DePermit;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -15,12 +16,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static io.dataease.constant.AuthResourceEnum.SYSTEM;
+import static io.dataease.constant.AuthResourceEnum.PLUGIN;
 
 @Tag(name = "系统设置:插件管理")
 @ApiSupport(order = 2)
-@DeApiPath(value = "/plugin", rt = SYSTEM)
+@DeApiPath(value = "/plugin", rt = PLUGIN)
 public interface PluginApi {
+
+    record OperationConfirmation(String password, String action, String target, String digest) { }
+
+    @DePermit("m:manage")
+    @PostMapping("/authorize")
+    String authorize(@RequestBody OperationConfirmation request);
 
     @Operation(summary = "查询")
     @DePermit("m:read")

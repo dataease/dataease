@@ -103,7 +103,6 @@ npm --prefix tests/browser test -- --config=playwright.mfa.config.mjs
 
 覆盖一次回车、长按回车、同步连续点击、回车后点击、校验失败后重试、过期挑战拒绝、成功后页面卸载前的防重、移动端成功事件、个人资料绑定及卸载清理。修复前“一次回车”用例实测收到两条请求，修复后应为一条。全局和个人 MFA 策略由后端判定，进入本组件后使用相同提交路径；这里不验证真实全局配置、TOTP、缓存或实际 Token 鉴权。
 
-
 ## 阈值告警接收对象标签字号回归
 
 ```sh
@@ -131,3 +130,19 @@ npm --prefix tests/browser test -- --config=playwright.watermark-spacing.config.
 ```
 
 独立配置不启动应用服务，通过主前端已安装的 TypeScript 提取并执行真实水印 DOM 渲染函数，在浏览器内使用合成容器和水印文字。覆盖单行、单列、极小容器、普通画布和长仪表板的坐标有效性与覆盖范围，不连接业务后端，也不验证用户 API 或整页水印权限。
+
+## div 嵌入插件图标回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.plugin-icon.config.mjs
+```
+
+独立夹具监听 `127.0.0.1:4198`，加载实际 `installDirective` 和 `Icon.vue`，按嵌入入口的共享注册流程挂载 Vue 应用。仅替换无关的交互权限 Store，使用合成 SVG，不连接业务后端。覆盖插件 SVG 显示、更新，以及脚本和事件属性净化。缺少共享净化指令注册时，图标容器为空，显示用例失败。此回归不代表旧插件包的 HMAC 请求兼容性或完整仪表板编辑已验证。
+
+## 插件 Axios 兼容回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.plugin-axios.config.mjs
+```
+
+夹具监听 `127.0.0.1:4196`，加载实际插件 Axios 适配层及 HMAC V2 客户端，通过合成 RSA-OAEP/AES-GCM 密钥信封和独立的服务端 HMAC 计算验证请求签名。认证 Store、刷新与提示边界使用合成状态，不连接业务后端。覆盖旧插件拦截器之后签名、响应结构、CAS/OIDC 路径、div 嵌入和代理/分享上下文、绝对地址与嵌套实例、HMAC 关闭及初始化失败、外部地址隔离、上传/Blob、自定义 adapter 和取消。该回归不替代实际部署后的完整登录刷新及全部第三方插件兼容验证。
