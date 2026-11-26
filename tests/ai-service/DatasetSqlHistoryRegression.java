@@ -151,7 +151,13 @@ final class DatasetSqlHistoryRegression {
             if (!"paid_at TIMESTAMP, created_at DATETIME".equals(answered.at("/result/text").asText())) throw new AssertionError(answered);
             finish(startTurn(session, version, "请解释 SQL"));
             String unrelated = sent.getLast().toString();
-            if (unrelated.contains(marker(0)) || unrelated.contains("historicalStep") || unrelated.contains("tool_call_id"))
+            var unrelatedMessages = sent.getLast().path("messages");
+            boolean replaysStep = false;
+            for (var message : unrelatedMessages) {
+                String text = message.path("content").asText();
+                if ("user".equals(message.path("role").asText()) && text.startsWith("{") && JSON.readTree(text).has("historicalStep")) replaysStep = true;
+            }
+            if (unrelated.contains(marker(0)) || replaysStep || unrelated.contains("tool_call_id"))
                 throw new AssertionError("Unrelated question must not replay past evidence or calls");
             for (String question : List.of("第一次回答的第 1 步中有哪些时间字段？", "第一次回答的第 1 步里是否有 missing_code 和 paid_at？")) {
                 finish(startTurn(session, version, question));
