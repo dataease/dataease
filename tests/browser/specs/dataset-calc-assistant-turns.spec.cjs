@@ -45,7 +45,10 @@ async function serveTurns(page, lifetime = 300000) {
     }
     if (path.endsWith("/executions"))
       return reply({ executionId, status: "RUNNING" });
-    const result = {
+    const result = state.clarification && n === 1 ? {
+      type: "EXPLANATION",
+      text: state.clarification,
+    } : {
       type: "CALC_FIELD_SUGGESTION",
       text: "已生成公式。",
       calcField: {
@@ -100,6 +103,24 @@ async function completed(drawer, index) {
   await expect(button(turn, "应用到当前草稿")).toBeEnabled();
   return turn;
 }
+
+test("clarification accepts a free-text calculation period before suggesting a formula", async ({ page }) => {
+  const state = await serveTurns(page);
+  state.clarification = "增长率应对比哪个期间？\n1. 上月\n2. 去年同期";
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "算增长率");
+  const question = drawer.getByRole("article").first();
+  await expect(button(question, "上月")).toBeEnabled();
+  await expect(button(question, "应用到当前草稿")).toHaveCount(0);
+  const input = drawer.locator("textarea");
+  await input.fill("使用上周的订单量");
+  await input.press("Enter");
+  await completed(drawer, 2);
+  await expect(button(question, "上月")).toBeDisabled();
+  await expect(button(question, "上月")).toHaveAttribute("aria-pressed", "false");
+  expect(state.opens[1].previousSessionId).toBe("s1");
+});
 
 test("long conversations scroll inside the calculated field drawer", async ({
   page,

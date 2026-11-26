@@ -1,5 +1,6 @@
 export default {
   ai_conversation: {
+    send_shortcut: 'Enter to send, Shift+Enter for a new line',
     calc_title: 'Calculated field assistant',
     ambiguous_field:
       'Several references have this name. Select a specific field or parameter from the list.',

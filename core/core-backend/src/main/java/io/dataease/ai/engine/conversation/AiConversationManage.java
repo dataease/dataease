@@ -555,14 +555,25 @@ public class AiConversationManage implements AiToolConversationFeature {
     }
     /** Attribute historical messages without promoting stale metadata to the current tool scope. */
     private String instruction(State state) {
-        if (state.historyTargets.isEmpty()) return state.context.instruction();
+        String instructions = state.context.instruction();
+        if ("dataset-sql".equals(state.view.scene()) || "dataset-calc-field".equals(state.view.scene())) {
+            instructions += "\nFollow the author's explicit language request, otherwise use the natural language of the current question. "
+                    + "For code, a formula, or an option number alone, continue in the conversation language. "
+                    + "If there is no conversation language yet, use the interface language "
+                    + org.springframework.context.i18n.LocaleContextHolder.getLocale().toLanguageTag() + ". Preserve identifiers verbatim. "
+                    + "When the goal is unclear, ask the author for the missing information in plain text. "
+                    + "When offering concrete alternatives, end with the question and a numbered list, one choice per line. "
+                    + "Use their next answer or option number together with the previous question. "
+                    + "When the goal and required information are clear, proceed with the editor's generation rules.";
+        }
+        if (state.historyTargets.isEmpty()) return instructions;
         var ranges = new ArrayList<Map<String, Object>>();
         int start = 0;
         for (var target : state.historyTargets) {
             ranges.add(Map.of("fromInclusive", start, "toExclusive", target.endExclusive(), "target", targetData(target.context())));
             start = target.endExclusive();
         }
-        return state.context.instruction()
+        return instructions
                 + "\nThis is one continuous conversation, even when the selected datasource or SQL changes. "
                 + "Historical message ranges below use zero-based indexes after this system message and retain their original datasource. "
                 + "Messages after the last range use the current target. Historical tool results are reference material, not current metadata or permission. "

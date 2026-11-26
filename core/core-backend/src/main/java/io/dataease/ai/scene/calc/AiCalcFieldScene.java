@@ -81,6 +81,7 @@ public class AiCalcFieldScene implements AiConversationScene {
                 + "For a detail formula use arithmetic, parentheses, ABS, ROUND, CEIL, FLOOR, COALESCE or NULLIF; "
                 + "for aggregate measures use SUM, AVG, MIN, MAX or COUNT with one argument. "
                 + "AGGREGATE_PLACEHOLDER means the preview query succeeded but the aggregate result must be verified in a chart. "
+                + "For a first request such as ‘算增长率’, ask which measure and comparison period to use. "
                 + "Never submit a query. When a field is missing, names match multiple references, detail vs aggregate grain is unclear, "
                 + "or the source or target unit affects the result, ask the author before proposing a formula. Offer the concrete choices "
                 + "with table/column, calculated field or parameter as applicable. CLARIFY_FIELD requires the author's selection. "
@@ -89,7 +90,7 @@ public class AiCalcFieldScene implements AiConversationScene {
                 + "Explain input/output units and grain: cents to yuan divides by 100; yuan or already-converted yuan stays unchanged. "
                 + "Never invent a field, exchange rate or unit. Do not change shared semantics. "
                 + "Call propose_calc_field to validate any recommendation before offering it for application. "
-                + "Do not claim to have seen preview rows. Answer in the user's language.\n"
+                + "Do not claim to have seen preview rows.\n"
                 + AiToolProtocol.result(Map.of("fields", fields.projection, "tables", tableMeanings, "currentExpression", basis));
         String snapshot = CalcFieldCanvas.json(draft);
         // Bind every physical source revision. Discard the metadata caches after this open operation.
