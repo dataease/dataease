@@ -456,6 +456,23 @@ final class CalcFieldRegression {
                     || message.path("content").asText().contains("boundExpression") || message.path("content").asText().contains("[102] * 2"))
                 throw new AssertionError("A historical explanation replayed tool data or private formula bindings");
         }
+        mode.set("retry-truncated");
+        requests.clear();
+        String interrupted = start(mvc, edited, "第一次回答的第 1 步校验结果");
+        var failure = terminal(mvc, interrupted);
+        var frozenMessages = requests.getFirst().path("messages");
+        var frozenStep = JSON.readTree(frozenMessages.get(frozenMessages.size() - 1).path("content").asText()).path("historicalStep");
+        requests.clear();
+        mode.set("calc-history");
+        var retry = JSON.readTree(mvc.perform(post(interrupted + "/retry").contentType(MediaType.APPLICATION_JSON)
+                .content(JSON.writeValueAsBytes(Map.of("retryKey", "retry-history-question", "expectedAttemptId", failure.get("attemptId").asText()))))
+                .andReturn().getResponse().getContentAsByteArray());
+        terminal(mvc, "/ai/conversations/" + edited.get("sessionId").asText() + "/executions/" + retry.get("executionId").asText());
+        var retryMessages = requests.getFirst().path("messages");
+        var retryInput = JSON.readTree(retryMessages.get(retryMessages.size() - 1).path("content").asText());
+        if (!frozenStep.path("evidence").has("expression") || !frozenStep.equals(retryInput.path("historicalStep"))
+                || !retryInput.path("previousAttemptDiagnostics").hasNonNull("reason") || previews.get() != originalPreviews)
+            throw new AssertionError("Retrying a historical question must preserve its original evidence alongside the failure diagnostic");
         String id = edited.path("sessionId").asText();
         requests.clear();
         writable.set(false);
