@@ -19,6 +19,7 @@ export interface AiSqlPreview {
   revision: number
 }
 export interface AiCalcFieldDraft {
+  currentExpression?: string
   preserveType?: boolean
   fieldId: string
   dataset: {

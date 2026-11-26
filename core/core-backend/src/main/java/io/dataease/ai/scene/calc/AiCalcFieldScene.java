@@ -87,7 +87,8 @@ public class AiCalcFieldScene implements AiConversationScene {
         String revision = AiPromptFingerprint.of(new Prompt(snapshot + CalcFieldCanvas.json(fields.projection) + CalcFieldCanvas.json(tableMeanings)
                 + CalcFieldCanvas.json(sources) + grant.savedVersion() + input.fieldId()));
         return new Context(resource.id(), resource.name(), revision, instruction, null, isCross, null,
-                new Draft(input.fieldId(), snapshot, sources, Map.copyOf(canvas.columns), grant, Boolean.TRUE.equals(input.preserveType()), basis));
+                new Draft(input.fieldId(), snapshot, sources, Map.copyOf(canvas.columns), grant, Boolean.TRUE.equals(input.preserveType()),
+                        Objects.toString(input.currentExpression(), basis)));
     }
 
     @Override public void authorize(Context context) {

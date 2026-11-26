@@ -125,6 +125,10 @@ for (const editor of ["SQL", "计算字段"]) {
       await first.getByRole("button", { name: "基于此建议追问" }).click();
       await ask("现在呢？", "本輪依據為建議一，草稿另有修改");
       await expect(code).toHaveText(manual);
+      if (editor === "计算字段") {
+        await first.getByRole("button", { name: "基于此建议追问" }).click();
+        await ask("重新校验当前公式", "当前草稿预览无数据");
+      }
       await panel.getByRole("checkbox", { name: "本轮引用" }).uncheck();
       await ask("仅沿用已确认口径", "只沿用已確認口徑");
       await ask("换个话题，解释采购", "Purchase definition");

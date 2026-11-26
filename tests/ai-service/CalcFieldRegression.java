@@ -127,6 +127,7 @@ final class CalcFieldRegression {
                     return "DETAIL_PASS";
                 }
                 if ("editor-compaction".equals(previewMode)) {
+                    if ("[102] + 77".equals(value)) return "NO_PREVIEW_ROWS";
                     if (!"[102] * 2".equals(value)) throw new AssertionError("Unexpected bound browser formula " + value);
                     return "DETAIL_PASS";
                 }

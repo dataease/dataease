@@ -13,7 +13,9 @@ public final class AiConversationDtos {
     public enum PreviewOutcome { SUCCESS, UNKNOWN_COLUMN, UNKNOWN_TABLE, AMBIGUOUS_COLUMN, SYNTAX, TIMEOUT, FAILED }
     public record SqlPreview(String resourceId, Boolean isCross, PreviewOutcome outcome, Integer revision, Integer currentRevision,
                              String currentResourceId, Boolean currentIsCross) { }
-    public record CalcFieldDraft(Long fieldId, DatasetGroupInfoDTO dataset, Boolean preserveType) {
+    /** currentExpression freezes the editor's visible text when it differs from the selected Open.sql basis. */
+    public record CalcFieldDraft(Long fieldId, DatasetGroupInfoDTO dataset, Boolean preserveType, String currentExpression) {
+        public CalcFieldDraft(Long fieldId, DatasetGroupInfoDTO dataset, Boolean preserveType) { this(fieldId, dataset, preserveType, null); }
         public CalcFieldDraft(Long fieldId, DatasetGroupInfoDTO dataset) { this(fieldId, dataset, null); }
     }
     public record Open(@NotBlank @Pattern(regexp = "sql|dataset-sql|dataset-calc-field") String scene,
