@@ -156,6 +156,12 @@ public final class ToolConversationRegression {
                     content = frame(Map.of("content", basis.contains("SUCCESS") && basis.contains("cardinality")
                             ? "一对多关联可能使订单行重复。请手动按订单键分组计数核对。"
                             : "请先提供预览上下文。"), "stop");
+                } else if (mode.get().equals("historical-status")) {
+                    var messages = body.path("messages");
+                    var selected = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
+                    String reply = "MISSING".equals(selected.path("lookup").asText()) ? "请指明哪一次回答。"
+                            : "当时的步骤状态是 " + selected.path("status").asText();
+                    content = frame(Map.of("content", reply), "stop");
                 } else if (mode.get().equals("general")) {
                     content = frame(Map.of("content", "SELECT reads data; choose a datasource for schema-specific SQL."), "stop");
                 } else if (Set.of("dataset-tool-detail", "slow-editor").contains(mode.get())) {
@@ -170,17 +176,16 @@ public final class ToolConversationRegression {
                     var last = messages.get(messages.size() - 1);
                     if ("tool".equals(last.path("role").asText())) {
                         var data = JSON.readTree(last.path("content").asText());
-                        content = data.has("candidates") ? frame(Map.of("content", "保留 orders，选择渠道：" +
-                                data.path("candidates").get(0).path("table").asText() + " 或 " +
+                        content = data.has("candidates") ? frame(Map.of("content", "保留 orders，选择渠道：\n1. " +
+                                data.path("candidates").get(0).path("table").asText() + "\n2. " +
                                 data.path("candidates").get(1).path("table").asText()), "stop")
                                 : frame(Map.of("content", "已读取 " + data.path("table").asText()), "stop");
                     } else if (last.path("content").asText().contains("第 2 个")) {
                         String chosen = null;
                         for (var message : messages) {
-                            if ("tool".equals(message.path("role").asText())) {
-                                var earlier = JSON.readTree(message.path("content").asText());
-                                if (earlier.has("candidates")) chosen = earlier.path("candidates").get(1).path("table").asText();
-                            }
+                            if ("assistant".equals(message.path("role").asText()))
+                                for (var line : message.path("content").asText().split("\\R"))
+                                    if (line.startsWith("2. ")) chosen = line.substring(3);
                         }
                         content = call("choice", "get_table_fields", JSON.writeValueAsString(Map.of("table", chosen)));
                     } else content = call("channels", "search_physical_tables", "{\"terms\":\"渠道\"}");
@@ -479,10 +484,33 @@ public final class ToolConversationRegression {
                     || !"Reading the fields.".equals(detailEvents.get(0).path("text").asText())
                     || !"The fields are ready.".equals(detailPage.at("/result/text").asText()))
                 throw new AssertionError("Large field details must be available separately, and the final answer must contain only its own text");
+            if (detailEvents.findParents("callId").stream().anyMatch(tool -> tool.path("stepNumber").asInt() != 1)
+                    || succeeded.path("fieldCount").asInt() != 16)
+                throw new AssertionError("The editor must receive one stable step number and field count across tool transitions");
             String detailPath = detailRun + "/tools/" + succeeded.path("resultSequence").asLong();
+            var originalMessages = sent.getLast().path("messages");
+            mode.set("historical-status");
+            var detailFollowup = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "detail-editor",
+                            "sql", "SELECT 1", "previousSessionId", detailSession.path("sessionId").asText()))))
+                    .andReturn().getResponse().getContentAsString());
+            for (var reference : List.of("第 1 步完成了吗", "第 1 步完成了吗", "第一次回答的第 1 步完成了吗")) {
+                int requestCount = sent.size();
+                var answer = terminal(mvc, start(mvc, detailFollowup, reference));
+                var inputs = sent.getLast().path("messages");
+                if (!"COMPLETED".equals(answer.path("status").asText()) || inputs.toString().contains("tool_call_id")
+                        || inputs.toString().contains("ID15") || sent.size() != requestCount + 1)
+                    throw new AssertionError("A status follow-up must not replay field details or call new tools");
+                var selected = JSON.readTree(inputs.get(inputs.size() - 1).path("content").asText()).path("historicalStep");
+                if (requestCount == 3 ? !"请指明哪一次回答。".equals(answer.at("/result/text").asText()) || !"MISSING".equals(selected.path("lookup").asText())
+                        : selected.path("answerNumber").asInt() != 1 || selected.path("stepNumber").asInt() != 1
+                        || !"SUCCEEDED".equals(selected.path("status").asText()))
+                    throw new AssertionError("A bare step is local to the last answer; an explicit answer selects its original step: " + selected);
+            }
+            mvc.perform(delete("/ai/conversations/" + detailFollowup.path("sessionId").asText()));
             mvc.perform(detailOpening); // another question retires this context
             var detail = JSON.readTree(mvc.perform(get(detailPath)).andReturn().getResponse().getContentAsString());
-            var modelMessages = sent.getLast().path("messages");
+            var modelMessages = originalMessages;
             if (!JSON.readTree(detail.path("result").asText()).equals(JSON.readTree(modelMessages.get(modelMessages.size() - 1).path("content").asText()))
                     || !detail.path("parameters").path("table").asText().equals("AI_PROBE"))
                 throw new AssertionError("Author did not receive the complete authorized tool projection");
@@ -1002,6 +1030,25 @@ public final class ToolConversationRegression {
                             || !reason.equals(stopAfterExpiry.at("/events/0/error").asText()))
                         throw new AssertionError("a racing stop must return the original tool failure: " + stopAfterExpiry.path("events"));
                 } finally { toolRelease.get().countDown(); }
+                if (timeout) {
+                    var source = terminal(mvc, expired);
+                    sent.clear(); mode.set("dataset-tool-detail");
+                    var retried = JSON.readTree(mvc.perform(post(expired + "/retry").contentType(MediaType.APPLICATION_JSON)
+                            .content(JSON.writeValueAsBytes(Map.of("retryKey", "after-timeout", "expectedAttemptId", source.path("attemptId").asText()))))
+                            .andReturn().getResponse().getContentAsString());
+                    String path = "/ai/conversations/" + session.path("sessionId").asText() + "/executions/";
+                    var replay = terminal(mvc, path + retried.path("executionId").asText());
+                    if (!"COMPLETED".equals(replay.path("status").asText())
+                            || replay.path("events").findParents("callId").stream().anyMatch(t -> t.path("stepNumber").asInt() != 1))
+                        throw new AssertionError("Manual retry starts its own numbered steps");
+                    mode.set("historical-status");
+                    for (var number : List.of(1, 2)) {
+                        var historical = terminal(mvc, start(mvc, session, "第" + number + "次回答的第1步完成了吗"));
+                        String expected = number == 1 ? "FAILED" : "SUCCEEDED";
+                        if (!historical.at("/result/text").asText().equals("当时的步骤状态是 " + expected))
+                            throw new AssertionError("Retry and late completion must preserve each original execution");
+                    }
+                }
                 mvc.perform(delete("/ai/conversations/" + session.path("sessionId").asText()));
             }
             for (String boundary : List.of("slow", "validate-stop")) {

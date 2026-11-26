@@ -313,7 +313,7 @@ public final class ConversationSocketRegression {
             release.get().countDown();
             toolMode.accept(true);
             try (var toolTab = Tab.open(service.getPort(), client, "writer")) {
-                var session = post(base, Map.of("scene", "sql", "resourceId", "11", "editorId", "tool-tab"), true);
+                var session = post(base, Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "tool-tab"), true);
                 String path = base + "/" + session.path("sessionId").asText() + "/executions";
                 var execution = post(path, Map.of("contextVersion", session.path("contextVersion").asText(), "text", "use tool"), true);
                 post(path + "/" + execution.path("executionId").asText() + "/subscriptions",
@@ -325,13 +325,27 @@ public final class ConversationSocketRegression {
                     if (page == null) throw new AssertionError("tool batch missing");
                     for (var event : page.path("events")) {
                         if (event.path("sequence").asLong() != ++sequence) throw new AssertionError("noncontiguous tool events");
+                        if (event.hasNonNull("tool") && event.at("/tool/stepNumber").asInt() != 1)
+                            throw new AssertionError("The same tool must retain step 1 on each delivery");
                         statuses.add(event.hasNonNull("tool") ? event.path("tool").path("status").asText() : event.path("type").asText());
                     }
                     if (!"RUNNING".equals(page.path("status").asText())) break;
                 }
                 if (!statuses.equals(List.of("STARTED", "RUNNING", "FAILED", "FAILED")))
                     throw new AssertionError("each state of the real tool and the final execution appear once: " + statuses);
-                System.out.println("PASS same execution delivered every tool state and terminal exactly once");
+                toolMode.accept(false);
+                String sessionUrl = base + "/" + session.path("sessionId").asText();
+                String version = session.path("contextVersion").asText();
+                var followup = post(path, Map.of("contextVersion", version, "text", "第 1 步完成了吗"), true);
+                var current = new Accepted(sessionUrl, path + "/" + followup.path("executionId").asText(), "tool-tab", version);
+                for (int i = 0; i < 200 && "RUNNING".equals(read(current, 0).path("status").asText()); i++) Thread.sleep(30);
+                var messages = modelRequests.getLast().path("messages");
+                var step = json.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
+                if (!"COMPLETED".equals(read(current, 0).path("status").asText()) || step.path("stepNumber").asInt() != 1
+                        || !"FAILED".equals(step.path("status").asText()) || messages.toString().contains("tool_call_id"))
+                    throw new AssertionError("Public HTTP follow-up must locate the failed step, without replaying its protocol");
+                close(current);
+                System.out.println("PASS stable numbered tool states over STOMP and a status-only follow-up over HTTP");
             } finally { toolMode.accept(false); }
             grace(base, service.getPort(), client, modelRequests, release);
             changedScope(base, service.getPort(), client, modelRequests, release);

@@ -28,7 +28,7 @@ export function applyProcessEvent(
   const entries = turn.process.entries
   const entry = entries.find(item => item.tool?.callId === tool.callId)
   if (entry?.kind === 'tool') {
-    entry.tool = tool
+    entry.tool = { ...tool, stepNumber: tool.stepNumber ?? entry.tool.stepNumber }
     entry.error = event.error
     return
   }
@@ -36,5 +36,11 @@ export function applyProcessEvent(
     entries.push({ kind: 'text', sequence: event.sequence, text: turn.answer })
     turn.answer = ''
   }
-  entries.push({ kind: 'tool', sequence: event.sequence, tool, error: event.error })
+  const stepNumber = tool.stepNumber ?? entries.filter(item => item.kind === 'tool').length + 1
+  entries.push({
+    kind: 'tool',
+    sequence: event.sequence,
+    tool: { ...tool, stepNumber },
+    error: event.error
+  })
 }

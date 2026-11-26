@@ -1153,6 +1153,8 @@ test("completed SQL process preserves event order and reads a large field result
               status: "SUCCEEDED",
               parameters: { table: "orders" },
               resultSequence: 4,
+              stepNumber: 2,
+              fieldCount: 80,
             },
           },
           { sequence: 5, type: "TEXT", text: "订单字段已核对。" },
@@ -1172,6 +1174,7 @@ test("completed SQL process preserves event order and reads a large field result
   ).toBeVisible();
   await expect(process).not.toHaveAttribute("open", "");
   await expect(process.locator(":scope > summary")).toContainText("总耗时 720 ms");
+  await expect(process.locator(":scope > summary")).toContainText("步骤 2 · 读取 orders 表结构 · 80 个字段");
   await expect(article.locator("footer")).toContainText("Token 未返回");
   await expect(article.locator("footer")).not.toContainText("总耗时");
   await process.locator(":scope > summary").click();
