@@ -179,9 +179,15 @@ public class AiDatasourceTools {
     public TableFields namedFields(Scope scope, String table, List<String> names) {
         var catalog = directory(scope);
         if (!catalog.labels().containsKey(table)) throw AiErrors.error("forbidden");
-        var fields = catalog.fields(table, names);
+        if (names.isEmpty()) return new TableFields(table, List.of());
+        scope.turnCatalog.fields.remove(table);
+        var fields = catalog.fields(table);
         authorize(scope);
-        return projectFields(table, fields, true);
+        if (fields == null) throw AiErrors.error("output_limit");
+        var selected = fields.stream()
+                .filter(field -> names.contains(Objects.toString(field.getOriginName(), field.getName())))
+                .toList();
+        return projectFields(table, selected, true);
     }
 
     private TableFields projectFields(String table, List<TableField> fields, boolean nativeType) {

@@ -36,7 +36,7 @@ public class DatasetSqlSemanticTools {
 
     public AiTool<AiDatasourceTools.Scope> namedFields() {
         var definition = new AiToolProtocol.Definition("get_named_table_fields",
-                "Read current metadata for named physical columns of one exact table; use for explicit refresh or missing evidence.",
+                "Refresh metadata for known physical column names on one exact table. Use get_table_fields to identify columns by spelling or business meaning.",
                 Map.of("table", "Exact table on the current datasource", "fields", "Comma-separated exact column names, at most 32"),
                 AiToolProtocol.RetrySafety.READ_ONLY);
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
