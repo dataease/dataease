@@ -31,6 +31,16 @@ final class DatasetSqlEvidence {
     private static final Pattern IDENTIFIER_HINT = Pattern.compile(
             "[`\"]([^`\"\\r\\n]{1,256})[`\"]|\\[([^\\]\\r\\n]{1,256})\\]|(?<![a-zA-Z0-9_$])([a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)+)(?![a-zA-Z0-9_$])");
 
+    // Leave bare physical names in place, including "type" in "the type of type".
+    // Plural "date columns" asks about a category; singular "the date column" may name a column.
+    private static final Pattern ENGLISH_FIELD_SYNTAX = Pattern.compile(
+            "\\b(?:step\\s*#?\\s*\\d+|(?:first|second|third|\\d+(?:st|nd|rd|th)?)\\s+(?:answer|reply|response)"
+                    + "|(?:answer|reply|response)\\s*#?\\s*\\d+|(?:date|time|temporal|timestamp|datetime)[ -]+(?:fields|columns)"
+                    + "|(?:data\\s+)?(?:types?|names?|units?|formats?|meanings?|descriptions?|status)\\s+(?:of|for)"
+                    + "|(?:what|which)\\s+(?:data\\s+)?types?\\b|what|which|the|a|an|is|are|was|were|do|does|did"
+                    + "|there|any|and|or|in|on|at|from|of|for|columns?|fields?)\\b",
+            Pattern.CASE_INSENSITIVE);
+
     /** An interrupted table read has no recorded columns. Completed reads use the original structure. */
     static Map<String, Object> historicalFields(String expectedTable, String result, String question) {
         if (expectedTable == null) return Map.of();
@@ -38,15 +48,20 @@ final class DatasetSqlEvidence {
             var snapshot = result == null ? new TableEvidence(expectedTable, false, null, null, List.of())
                     : JSON.readValue(result, TableEvidence.class);
             if (!expectedTable.equals(snapshot.table()) || snapshot.fields() == null) return Map.of();
-            var named = snapshot.fields().stream().filter(field -> mentioned(question, field.name())).toList();
             var missing = new LinkedHashSet<String>();
             var hints = IDENTIFIER_HINT.matcher(question);
             while (hints.find()) {
                 String name = hints.group();
                 if (name.startsWith("`") || name.startsWith("\"") || name.startsWith("["))
                     name = name.substring(1, name.length() - 1);
-                if (!name.equalsIgnoreCase(expectedTable)) missing.add(name);
+                missing.add(name);
             }
+            var identifiers = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+            identifiers.addAll(missing);
+            String prose = ENGLISH_FIELD_SYNTAX.matcher(hints.replaceAll(" ")).replaceAll(" ");
+            var named = snapshot.fields().stream()
+                    .filter(field -> identifiers.contains(field.name()) || mentioned(prose, field.name())).toList();
+            missing.removeIf(expectedTable::equalsIgnoreCase);
             for (var field : named) missing.removeIf(field.name()::equalsIgnoreCase);
             boolean temporal = named.isEmpty() && missing.isEmpty() && TEMPORAL_QUESTION.matcher(question).find();
             if (!temporal && named.isEmpty() && missing.isEmpty()) return Map.of();
