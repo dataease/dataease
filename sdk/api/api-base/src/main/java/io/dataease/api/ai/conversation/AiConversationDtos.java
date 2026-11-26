@@ -71,7 +71,12 @@ public final class AiConversationDtos {
             this(sessionId, executionId, contextVersion, status, deadline, null);
         }
     }
-    public record Tool(String callId, String name, String status, java.util.Map<String, String> parameters, String result) { }
+    public record Tool(String callId, String name, String status, java.util.Map<String, String> parameters, String result,
+                       Long resultSequence, String outcome) {
+        public Tool(String callId, String name, String status, java.util.Map<String, String> parameters, String result) {
+            this(callId, name, status, parameters, result, null, null);
+        }
+    }
     public record Event(long sequence, String type, String text, String error, Tool tool) {
         public Event(long sequence, String type, String text, String error) { this(sequence, type, text, error, null); }
     }

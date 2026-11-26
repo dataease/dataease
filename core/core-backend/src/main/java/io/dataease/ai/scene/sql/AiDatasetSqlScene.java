@@ -31,7 +31,7 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
 
     @Override public String code() { return "dataset-sql"; }
     @Override public AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DATASET_SQL; }
-    @Override public boolean retainEveryTurn() { return true; }
+    @Override public boolean editorConversation() { return true; }
     @Override public void authorizeCopyTarget(String target) {
         if (!target.matches("[0-9]{1,20}")) throw AiErrors.error("invalid");
         var source = metadata.resolve(target);

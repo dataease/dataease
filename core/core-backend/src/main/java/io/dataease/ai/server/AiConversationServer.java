@@ -17,6 +17,7 @@ public class AiConversationServer implements AiConversationApi {
     public Execution start(String id, Turn request) { return manage.start(id, request); }
     public Execution retry(String id, String execution, Retry request) { return manage.retry(id, execution, request); }
     public Events events(String id, String execution, long after) { return manage.events(id, execution, after); }
+    public Tool toolDetail(String id, String execution, long sequence) { return manage.toolDetail(id, execution, sequence); }
     public Events stop(String id, String execution) { return manage.stop(id, execution); }
     public Result checkApplication(String id, String execution, Application request) { return manage.checkApplication(id, execution, request); }
     public void close(String id) { manage.close(id); }

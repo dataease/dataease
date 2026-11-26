@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
+import AssistantProcess from './AssistantProcess.vue'
+import { applyProcessEvent, type AnswerProcess } from './assistantProcess'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
@@ -64,6 +66,7 @@ interface Turn {
   answer: string
   choices?: string[]
   selectedChoice?: string
+  process: AnswerProcess
   session?: AiConversationSession
   cursor?: number
   executionId?: string
@@ -412,7 +415,7 @@ const applyPage = (turn: Turn, page: AiConversationEvents) => {
     throw new Error('scope_changed')
   for (const event of page.events) {
     if (event.sequence <= (turn.cursor ?? 0)) continue
-    if (event.type === 'TEXT') turn.answer += event.text ?? ''
+    applyProcessEvent(turn, event)
     if (event.type === 'FAILED') {
       const key = aiFailureKey(event.error ?? null)
       failure.value = key === 'test_failed' ? tr('failed') : t(`ai_service.${key}`)
@@ -528,6 +531,7 @@ const send = async () => {
       baseSql: basis.sql,
       calcScope: calcScope(calcField),
       draftRevision: props.draftRevision,
+      process: { entries: [] },
       answer: '',
       status: 'RUNNING'
     }) - 1
@@ -780,6 +784,14 @@ const apply = async (turn: Turn) => {
               >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
             >
           </details>
+          <AssistantProcess
+            :process="turn.process"
+            :status="turn.status"
+            :session-id="turn.session?.sessionId"
+            :execution-id="turn.executionId"
+            @update:open="turn.process.open = $event"
+            @detail-error="error => accessLost(error) && fail(error)"
+          />
           <p v-if="turn.answer">{{ turn.answer }}</p>
           <div v-if="turn.choices" class="clarification-choices">
             <el-button

@@ -15,6 +15,7 @@ public interface AiConversationApi {
     @PostMapping("/{id}/executions") Execution start(@PathVariable String id, @Valid @RequestBody Turn request);
     @PostMapping("/{id}/executions/{execution}/retry") Execution retry(@PathVariable String id, @PathVariable String execution, @Valid @RequestBody Retry request);
     @GetMapping("/{id}/executions/{execution}/events") Events events(@PathVariable String id, @PathVariable String execution, @RequestParam(defaultValue = "0") long after);
+    @GetMapping("/{id}/executions/{execution}/tools/{sequence}") Tool toolDetail(@PathVariable String id, @PathVariable String execution, @PathVariable long sequence);
     @PostMapping("/{id}/executions/{execution}/stop") Events stop(@PathVariable String id, @PathVariable String execution);
     @PostMapping("/{id}/executions/{execution}/check-application") Result checkApplication(@PathVariable String id, @PathVariable String execution, @Valid @RequestBody Application request);
     @DeleteMapping("/{id}") void close(@PathVariable String id);
