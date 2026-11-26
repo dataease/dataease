@@ -71,6 +71,7 @@ interface Turn {
   basis: string
   baseSql: string
   generationBasis: AiGenerationBasis
+  preview?: Parameters<typeof openConversation>[0]['preview']
   calcScope?: string
   draftRevision: number
   question: string
@@ -338,8 +339,13 @@ const selectBasis = (basis: number | 'preview') => {
   selectedBasis.value = basis
   includeBasis.value = true
 }
-const chooseBasis = (question: string) => {
+const selectedChoice = (turn: Turn, question: string) =>
+  turn.choices?.find((choice, i) => question === choice || question === String(i + 1))
+const chooseBasis = (inputText: string) => {
   const revision = props.draftRevision
+  const last = turns.value.at(-1)
+  // A retry choice may itself say "preview". Its label does not select the latest preview.
+  const question = last?.isRetry && selectedChoice(last, inputText) ? '' : inputText
   if (
     /(?:^|[，,。.!！?？;；]\s*)(?:(?:请|請|帮我|幫我|麻烦|麻煩|这次|這次)\s*)*(?:另写|另寫|从头写|從頭寫|重新写一|重新寫一)|(?:^|[,.!?]\s*)(?:please\s+)?(?:from scratch|start (?:over|afresh|from scratch)|(?:write|rewrite|generate|create)\b[^.!?]*?\bfrom scratch)/i.test(
       question
@@ -398,10 +404,20 @@ const chooseBasis = (question: string) => {
     }
   }
   if (requested === 'preview') return
-  const last = turns.value.at(-1)
   if (requested === undefined && last?.isRetry && last.choices) {
-    if (last.draftRevision === revision && last.session?.resourceId === props.resourceId) {
-      return { label: last.basis, sql: last.baseSql, frozenBasis: last.generationBasis }
+    if (
+      last.draftRevision === revision &&
+      last.session?.resourceId === props.resourceId &&
+      (!last.preview ||
+        (last.preview.currentResourceId === props.resourceId &&
+          last.preview.currentIsCross === props.isCross))
+    ) {
+      return {
+        label: last.basis,
+        sql: last.baseSql,
+        frozenBasis: last.generationBasis,
+        preview: last.preview
+      }
     }
     const sql = props.readDraft()
     return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
@@ -682,9 +698,7 @@ const send = async () => {
   const isCross = props.isCross
   const previous = turns.value.at(-1)
   if (previous?.choices) {
-    previous.selectedChoice = previous.choices.find(
-      (label, index) => question === label || question === String(index + 1)
-    )
+    previous.selectedChoice = selectedChoice(previous, question)
   }
   const index =
     turns.value.push({
@@ -693,6 +707,7 @@ const send = async () => {
       basis: basis.label,
       baseSql: basis.sql,
       generationBasis,
+      preview: basis.preview,
       calcScope: calcScope(calcField),
       draftRevision: props.draftRevision,
       process: { entries: [] },
@@ -858,6 +873,7 @@ const retryAnswer = async (source: Turn) => {
         basis: source.basis,
         baseSql: source.baseSql,
         generationBasis: source.generationBasis,
+        preview: source.preview,
         draftRevision: source.draftRevision,
         calcScope: source.calcScope,
         session,

@@ -14,7 +14,8 @@ record EditorDialogue(List<Message> original, int omitted, List<Map<String, Obje
     private static final Pattern OPTION = Pattern.compile("^\\s*(\\d{1,2})[.)、]\\s*(\\S.*)$");
     private static final Pattern AGREED = Pattern.compile("(?iu)^(?:yes|ok|okay|sure|agreed|correct|confirmed|exactly|是的?|对的?|對的?|没错|沒錯|同意|确认|確認)[.!。！\\s]*$");
     private static final Pattern LANGUAGE = Pattern.compile("(?iu)(?:回答|答复|答覆|回[复覆應应]|[中英法德日西韩韓]文|中文|[体體][字中]|\\b(?:reply|respond|answer|speak|language|english|chinese)\\b)");
-    private static final Pattern ONCE = Pattern.compile("(?iu)(?:仅?这[一轮次]|僅?這[一輪次]|本[轮輪次]|this (?:time|reply|answer|turn)|just (?:this|for now))");
+    private static final Pattern ONCE = Pattern.compile("(?iu)(?:(?:仅|僅|只|就)?[这這]一?[轮輪次]|本[轮輪次]|(?:(?:just|only) )?(?:for )?this (?:time|reply|answer|response|turn|question|message|once|one)(?: only)?|just for now)");
+    private static final Pattern CLAUSE_BREAK = Pattern.compile("(?iu)[，,]|\\s+(?:and|but)\\s+|[并並]且?");
     private static final Pattern CONTINUATION = Pattern.compile("(?iu)^(?:continue(?: please| example)?|tell me more|next(?: example)?|再举例|再舉例|请解释|請解釋|继续|繼續)(?:\\s*#?\\d+)?[。.!！]?$");
     private static final Pattern QUESTION = Pattern.compile("(?iu)^(?:how|what|why|when|where|which|can|could|would|please explain|continue|explain|show me)\\b|[?？]$");
 
@@ -79,6 +80,28 @@ record EditorDialogue(List<Message> original, int omitted, List<Map<String, Obje
                 && selected != null && selected.length() <= NOTE_CHARACTERS ? selected : null;
     }
 
+    private static String withoutOneTurnLanguage(String sentence) {
+        if (!ONCE.matcher(sentence).find() || !LANGUAGE.matcher(sentence).find()) return sentence;
+        String[] clauses = CLAUSE_BREAK.splitWithDelimiters(sentence, 0);
+        var omit = new boolean[clauses.length];
+        for (int i = 0; i < clauses.length; i += 2) {
+            String clause = clauses[i].strip();
+            if (!ONCE.matcher(clause).find()) continue;
+            // "For this turn, reply in English" and "reply in English, just this time".
+            if (ONCE.matcher(clause.replaceFirst("[.!。！]+$", "")).matches()) {
+                int adjacent = i + 2 < clauses.length && LANGUAGE.matcher(clauses[i + 2]).find() ? i + 2 : i - 2;
+                if (adjacent >= 0 && LANGUAGE.matcher(clauses[adjacent]).find()) omit[i] = omit[adjacent] = true;
+            } else if (LANGUAGE.matcher(clause).find()) omit[i] = true;
+        }
+        var retained = new StringBuilder();
+        for (int i = 0; i < clauses.length; i += 2) {
+            if (omit[i]) continue;
+            if (!retained.isEmpty()) retained.append(omit[i - 2] ? " " : clauses[i - 1]);
+            retained.append(clauses[i]);
+        }
+        return retained.toString().strip();
+    }
+
     // Extract intact short statements. Never turn a shortened code block or an identifier fragment into a business fact.
     private static String excerpt(String text, boolean keepQuestions) {
         var result = new StringJoiner(" ");
@@ -91,10 +114,9 @@ record EditorDialogue(List<Message> original, int omitted, List<Map<String, Obje
                 sentences.setText(clause);
                 int start = sentences.first();
                 for (int end = sentences.next(); end != BreakIterator.DONE; start = end, end = sentences.next()) {
-                    String part = clause.substring(start, end).strip();
-                    boolean language = LANGUAGE.matcher(part).find();
+                    String part = withoutOneTurnLanguage(clause.substring(start, end).strip());
                     if (part.isBlank() || CONTINUATION.matcher(part).matches() || result.length() + part.length() > NOTE_CHARACTERS
-                            || language && ONCE.matcher(part).find() || !keepQuestions && QUESTION.matcher(part).find()) continue;
+                            || !keepQuestions && QUESTION.matcher(part).find()) continue;
                     result.add(part);
                 }
             }

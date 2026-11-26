@@ -30,12 +30,19 @@ final class EditorCompressionRegression {
         } else if (question.equals("Confirmed: exclude chargebacks. 接下来都用英文。")) {
             reply = "Which convention?\n1. UNSELECTED_GROSS_MARKER\n2. Paid orders only";
         } else if (question.startsWith("第一次回答") || question.equals("现在呢？")) {
+            String notes = envelope.path("earlierDialogue").toString();
+            if (!List.of("已确认退款订单不计入收入", "已确认净收入以元计", "units are cents", "exclude archived orders")
+                    .stream().allMatch(notes::contains))
+                return frame(Map.of("content", "与一次性语言同句的业务口径丢失"), "stop");
+            if (List.of("这次用英文", "用日文", "French", "German", "For this turn")
+                    .stream().anyMatch(notes::contains))
+                return frame(Map.of("content", "一次性回答语言仍在请求中"), "stop");
             if (messages.size() > 8 || !envelope.path("earlierDialogue").isArray()
                     || !envelope.path("earlierDialogue").toString().contains("exclude chargebacks")
                     || !envelope.path("earlierDialogue").toString().contains("Paid orders only")
                     || !envelope.path("earlierDialogue").toString().contains("接下来都用英文")
                     || !envelope.path("earlierDialogue").toString().contains("用繁體中文回答")
-                    || messages.toString().contains("UNSELECTED_GROSS_MARKER") || messages.toString().contains("这次用日文")
+                    || messages.toString().contains("UNSELECTED_GROSS_MARKER")
                     || messages.toString().contains("old-schema") || messages.toString().contains("old-validation")
                     || messages.toString().contains("boundExpression") || messages.toString().contains("tool_call_id"))
                 return frame(Map.of("content", "历史未压缩或口径丢失"), "stop");
@@ -65,13 +72,25 @@ final class EditorCompressionRegression {
                 reply = "no_preview_rows".equals(JSON.readTree(last.path("content").asText()).path("code").asText())
                         ? "当前草稿预览无数据" : "校验了其它公式";
             }
+        } else if (question.equals("解释刚才手动预览的问题")) {
+            if (!envelope.has("previousAttemptDiagnostics")) return frame(Map.of("content", "未完成"), "length");
+            reply = "按哪个期间？\n1. 按上月的预览统计\n2. 按本年统计";
+        } else if (question.equals("按上月的预览统计")) {
+            reply = "MANUAL_PREVIEW".equals(envelope.at("/generationBasis/kind").asText())
+                    && "MANUAL_PREVIEW".equals(envelope.at("/currentTarget/basis").asText())
+                    && system.contains("UNKNOWN_COLUMN") && system.contains("SELECT unknown_amount FROM AI_PROBE")
+                    ? "按原失败预览分析" : "缺少原预览状态";
+        } else if (question.equals("解释当前 SQL 草稿")) {
+            reply = "DRAFT".equals(envelope.at("/generationBasis/kind").asText())
+                    && !envelope.path("currentTarget").has("basis") && system.contains("SELECT 77 AS n")
+                    ? "按当前草稿分析" : "缺少当前 SQL";
         } else if (question.equals("仅沿用已确认口径")) {
             reply = "NONE".equals(envelope.at("/generationBasis/kind").asText()) && !envelope.has("selectedSuggestion")
                     && envelope.path("earlierDialogue").toString().contains("exclude chargebacks")
                     ? "只沿用已確認口徑" : "空依据带入了旧建议";
         } else if (question.equals("换个话题，解释采购")) {
             String past = envelope.path("earlierDialogue").toString();
-            reply = past.contains("接下来都用英文") && past.contains("用繁體中文回答") && !past.contains("这次用日文")
+            reply = past.contains("接下来都用英文") && past.contains("用繁體中文回答") && !past.contains("这次用英文")
                     && system.contains("跨话题沿用") ? "Purchase definition" : "Missing conversation preference";
         } else if (question.equals("新会话的步骤 1？")) {
             reply = !envelope.has("earlierDialogue") && !envelope.has("selectedSuggestion")
@@ -87,7 +106,7 @@ final class EditorCompressionRegression {
             service.start();
             ConversationSocketRegression.browserSuite(service.getPort(), "dataset-calc-assistant-compression.spec.cjs");
             int calls = requests.size() - first;
-            if (calls != 37) throw new AssertionError("Expected exactly 37 accepted model calls for the two editor scenarios: " + calls);
+            if (calls != 41) throw new AssertionError("Expected exactly 41 accepted model calls for the editor scenarios: " + calls);
             var evidenceFile = System.getenv("AI_EDITOR_COMPRESSION_EVIDENCE");
             if (evidenceFile != null) {
                 var evidence = new ArrayList<Object>();
@@ -105,7 +124,7 @@ final class EditorCompressionRegression {
                 }
                 java.nio.file.Files.writeString(java.nio.file.Path.of(evidenceFile), JSON.writerWithDefaultPrettyPrinter().writeValueAsString(evidence));
             }
-            System.out.println("PASS both Chrome editors via real HTTP and production scenes: 37 received model requests, selected suggestion, compacted business and language context, historical field/original validation, workspace denial and new chat");
+            System.out.println("PASS both Chrome editors via real HTTP and production scenes: 41 received model requests, selected suggestion, compacted business and language context, historical field/original validation, current draft revalidation, retried manual preview, workspace denial and new chat");
         } finally { service.stop(); service.destroy(); }
     }
 }
