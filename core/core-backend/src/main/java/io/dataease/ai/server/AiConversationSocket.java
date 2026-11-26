@@ -130,7 +130,12 @@ public class AiConversationSocket implements AiConversationSubscriptionApi {
     }
     private void disconnect(String session, String subscription) {
         clients.values().stream().filter(c -> c.session.equals(session) && (subscription == null || c.subscription.equals(subscription)))
-                .forEach(this::remove);
+                .forEach(client -> {
+                    synchronized (client) {
+                        if (client.delivery != null) client.delivery.disconnected();
+                        remove(client);
+                    }
+                });
     }
     private void remove(Client client) {
         synchronized (client) {

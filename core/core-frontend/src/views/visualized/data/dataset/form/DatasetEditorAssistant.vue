@@ -11,7 +11,7 @@ import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { followConversationSocket } from '@/api/aiConversationDelivery'
+import { followConversation } from '@/api/aiConversationDelivery'
 import { aiFailureKey } from '@/api/aiService'
 import {
   checkSqlApplication,
@@ -79,6 +79,8 @@ interface Turn {
   metering?: AiAnswerMetering
   session?: AiConversationSession
   cursor?: number
+  deadline?: number
+  recovering?: boolean
   executionId?: string
   attemptId?: string
   retryEligible?: boolean
@@ -212,12 +214,14 @@ watch(
 onMounted(() => {
   void refresh()
   window.addEventListener('focus', refresh)
+  window.addEventListener('online', resumeLast)
   document.addEventListener('visibilitychange', refresh)
 })
 onBeforeUnmount(() => {
   disposed = true
   cancelAvailability()
   window.removeEventListener('focus', refresh)
+  window.removeEventListener('online', resumeLast)
   document.removeEventListener('visibilitychange', refresh)
   reset()
 })
@@ -504,50 +508,22 @@ const unreachable = (turn: Turn) => {
   turn.issue = { step: 'progress_step', reason: tr('progress_unreachable') }
 }
 const poll = async (turn: Turn, read: AbortController) => {
-  const finished = await followConversationSocket({
+  const finished = await followConversation({
     session: turn.session!,
     executionId: turn.executionId!,
     cursor: () => turn.cursor ?? 0,
     update: page => applyPage(turn, page),
     signal: read.signal
+  }, turn.deadline, turn.status === 'UNREACHABLE', value => { turn.recovering = value }, error => {
+    const status = isRequestError(error) && error.response?.status
+    return accessLost(error) || Boolean(status && status >= 400 && status < 500 && status !== 429)
   })
-  if (finished) return
-  let failures = 0
-  while (!read.signal.aborted) {
-    let page: AiConversationEvents
-    const attempt = new AbortController()
-    const abort = () => attempt.abort()
-    read.signal.addEventListener('abort', abort, { once: true })
-    const timer = window.setTimeout(abort, 2500)
-    try {
-      page = await getConversationEvents(
-        turn.session!.sessionId,
-        turn.executionId!,
-        turn.cursor ?? 0,
-        attempt.signal
-      )
-    } catch (error) {
-      if (read.signal.aborted) return
-      const status = isRequestError(error) && error.response?.status
-      if (accessLost(error) || (status && status < 500)) throw error
-      if (++failures > 3) {
-        unreachable(turn)
-        return
-      }
-      turn.issue = { step: 'progress_step', reason: tr('progress_recovering') }
-      await new Promise(resolve => window.setTimeout(resolve, failures * 400))
-      continue
-    } finally {
-      window.clearTimeout(timer)
-      read.signal.removeEventListener('abort', abort)
-    }
-    if (read.signal.aborted) return
-    if (failures) failure.value = ''
-    failures = 0
-    applyPage(turn, page)
-    if (page.status !== 'RUNNING') return
-    await new Promise(resolve => window.setTimeout(resolve, 500))
-  }
+  turn.recovering = false
+  if (!finished && !read.signal.aborted) unreachable(turn)
+}
+const resumeLast = () => {
+  const turn = turns.value.at(-1)
+  if (turn?.status === 'UNREACHABLE') void resume(turn)
 }
 const resume = async (turn: Turn) => {
   if (busy.value || turn.status !== 'UNREACHABLE') return
@@ -687,6 +663,7 @@ const send = async () => {
     }
     turn.executionId = run.executionId
     turn.attemptId = run.attemptId
+    turn.deadline = run.deadline
     if (!current()) {
       await stopRun(turn, token)
       return
@@ -745,6 +722,7 @@ const retryAnswer = async (source: Turn) => {
         session,
         executionId: run.executionId,
         attemptId: run.attemptId,
+        deadline: run.deadline,
         process: { entries: [] },
         answer: '',
         status: 'RUNNING'
@@ -790,9 +768,14 @@ const keydown = (event: KeyboardEvent) => {
 const stopRun = async (turn: Turn, token: number) => {
   turn.status = 'STOPPING'
   try {
-    const page = await stopConversationExecution(turn.session!.sessionId, turn.executionId!)
+    let page = await stopConversationExecution(turn.session!.sessionId, turn.executionId!)
     if (token !== version) return
     if (page.status === 'RUNNING') throw new Error('response_invalid')
+    const after = turn.cursor ?? 0
+    if (page.cursor > after && page.events[0]?.sequence !== after + 1) {
+      page = await getConversationEvents(turn.session!.sessionId, turn.executionId!, after, new AbortController().signal)
+      if (token !== version) return
+    }
     failure.value = ''
     applyPage(turn, page)
   } catch (error) {
@@ -966,7 +949,8 @@ const apply = async (turn: Turn) => {
                 >{{ choice }}</el-button
               >
             </div>
-            <p v-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
+            <p v-if="turn.recovering" role="status">{{ tr('editor_recovering') }}</p>
+            <p v-else-if="turn.status === 'RUNNING'">{{ tr('running') }}</p>
             <p v-if="turn.status === 'CANCELLED'">{{ tr('incomplete') }}</p>
             <p v-if="turn.recovery?.technicalRetries || turn.recovery?.corrections">
               {{ tr('technical_retries') }} {{ turn.recovery.technicalRetries }} ·
