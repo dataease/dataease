@@ -508,18 +508,29 @@ const unreachable = (turn: Turn) => {
   turn.issue = { step: 'progress_step', reason: tr('progress_unreachable') }
 }
 const poll = async (turn: Turn, read: AbortController) => {
-  const finished = await followConversation({
-    session: turn.session!,
-    executionId: turn.executionId!,
-    cursor: () => turn.cursor ?? 0,
-    update: page => applyPage(turn, page),
-    signal: read.signal
-  }, turn.deadline, turn.status === 'UNREACHABLE', value => { turn.recovering = value }, error => {
-    const status = isRequestError(error) && error.response?.status
-    return accessLost(error) || Boolean(status && status >= 400 && status < 500 && status !== 429)
-  })
-  turn.recovering = false
-  if (!finished && !read.signal.aborted) unreachable(turn)
+  try {
+    const finished = await followConversation({
+      session: turn.session!,
+      executionId: turn.executionId!,
+      cursor: () => turn.cursor ?? 0,
+      update: page => applyPage(turn, page),
+      signal: read.signal,
+      modelDeadline: turn.deadline,
+      readFirst: turn.status === 'UNREACHABLE',
+      recovering: value => {
+        turn.recovering = value
+      },
+      terminalReadError: error => {
+        const status = isRequestError(error) && error.response?.status
+        return (
+          accessLost(error) || Boolean(status && status >= 400 && status < 500 && status !== 429)
+        )
+      }
+    })
+    if (!finished && !read.signal.aborted) unreachable(turn)
+  } finally {
+    turn.recovering = false
+  }
 }
 const resumeLast = () => {
   const turn = turns.value.at(-1)
@@ -773,7 +784,12 @@ const stopRun = async (turn: Turn, token: number) => {
     if (page.status === 'RUNNING') throw new Error('response_invalid')
     const after = turn.cursor ?? 0
     if (page.cursor > after && page.events[0]?.sequence !== after + 1) {
-      page = await getConversationEvents(turn.session!.sessionId, turn.executionId!, after, new AbortController().signal)
+      page = await getConversationEvents(
+        turn.session!.sessionId,
+        turn.executionId!,
+        after,
+        new AbortController().signal
+      )
       if (token !== version) return
     }
     failure.value = ''

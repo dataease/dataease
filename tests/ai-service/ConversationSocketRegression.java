@@ -37,6 +37,8 @@ public final class ConversationSocketRegression {
     @EnableWebMvc
     @EnableWebSocketMessageBroker
     static class WebConfiguration { }
+    private static final ThreadLocal<Long> workspace = new ThreadLocal<>();
+    static Long workspace() { return workspace.get(); }
     static final ObjectMapper json = new ObjectMapper();
 
     static Long actor(String token) {
@@ -54,13 +56,21 @@ public final class ConversationSocketRegression {
 
     private record Tab(StompSession socket, BlockingQueue<JsonNode> messages, String challenge) implements AutoCloseable {
         static Tab open(int port, WebSocketStompClient client, String actor) throws Exception {
+            return open(port, client, actor, false);
+        }
+        static Tab open(int port, WebSocketStompClient client, String actor, boolean acknowledge) throws Exception {
             var socket = client.connectAsync("ws://127.0.0.1:" + port + "/websocket/websocket?token=" + actor,
                     new StompSessionHandlerAdapter() {}).get(8, TimeUnit.SECONDS);
             var messages = new LinkedBlockingQueue<JsonNode>();
+            var binding = new java.util.concurrent.atomic.AtomicReference<String>();
             socket.subscribe("/app/ai/conversation", new StompFrameHandler() {
                 public Type getPayloadType(StompHeaders headers) { return JsonNode.class; }
                 public void handleFrame(StompHeaders headers, Object body) {
-                    messages.add((JsonNode) body);
+                    var frame = (JsonNode) body;
+                    if (frame.has("subscription")) binding.set(frame.path("subscription").asText());
+                    if (acknowledge && "RUNNING".equals(frame.path("status").asText()))
+                        socket.send("/app/ai/conversation/received", Map.of("subscription", binding.get()));
+                    messages.add(frame);
                 }
             });
             var ready = messages.poll(5, TimeUnit.SECONDS);
@@ -108,18 +118,24 @@ public final class ConversationSocketRegression {
         release.set(new CountDownLatch(1));
         Accepted expires = start(base, "lost-route", "hold beyond grace");
         Accepted resumes = start(base, "resumed-route", "hold beyond grace");
+        Accepted live = start(base, "live-route", "hold beyond grace");
         long resumeAfter;
-        try (var first = Tab.open(port, client, "writer"); var second = Tab.open(port, client, "writer")) {
-            if (!bindAndRead(expires, first, 0).toString().contains("星河")) throw new AssertionError("first partial answer");
-            resumeAfter = bindAndRead(resumes, second, 0).path("cursor").asLong();
+        try (var silent = Tab.open(port, client, "writer"); var liveTab = Tab.open(port, client, "writer", true)) {
+            if (!bindAndRead(expires, silent, 0).toString().contains("星河")) throw new AssertionError("first partial answer");
+            bindAndRead(live, liveTab, 0);
+            try (var second = Tab.open(port, client, "writer")) {
+                resumeAfter = bindAndRead(resumes, second, 0).path("cursor").asLong();
+            }
+            Thread.sleep(18000);
+            if (!"RUNNING".equals(read(resumes, resumeAfter).path("status").asText())) throw new AssertionError("original run survives 18 seconds offline");
+            Thread.sleep(13000);
+            var interrupted = read(expires, 0);
+            if (!"FAILED".equals(interrupted.path("status").asText()) || !interrupted.toString().contains("星河")
+                    || !interrupted.toString().contains("connection_interrupted") || !interrupted.path("retryEligible").asBoolean())
+                throw new AssertionError("sending to a silent socket cannot renew the grace period");
+            if (!"RUNNING".equals(read(live, 0).path("status").asText()))
+                throw new AssertionError("the original editor's receipts keep a healthy execution alive");
         }
-        Thread.sleep(18000);
-        if (!"RUNNING".equals(read(resumes, resumeAfter).path("status").asText())) throw new AssertionError("original run survives 18 seconds offline");
-        Thread.sleep(13000);
-        var interrupted = read(expires, 0);
-        if (!"FAILED".equals(interrupted.path("status").asText()) || !interrupted.toString().contains("星河")
-                || !interrupted.toString().contains("connection_interrupted") || !interrupted.path("retryEligible").asBoolean())
-            throw new AssertionError("confirmed interruption retains the authorized partial answer and explicit retry");
         release.get().countDown();
         try (var restored = Tab.open(port, client, "writer")) {
             var page = bindAndRead(resumes, restored, resumeAfter);
@@ -127,9 +143,9 @@ public final class ConversationSocketRegression {
                     || page.path("events").get(0).path("sequence").asLong() != resumeAfter + 1)
                 throw new AssertionError("completed original run replays only unread events");
         }
-        if (modelRequests.size() - before != 2) throw new AssertionError("two accepted questions produce exactly two model requests");
-        close(expires); close(resumes);
-        System.out.println("PASS real 18s reconnect, 31s lease interruption, one model request per accepted question");
+        if (modelRequests.size() - before != 3) throw new AssertionError("three accepted questions produce exactly three model requests");
+        close(expires); close(resumes); close(live);
+        System.out.println("PASS real 18s reconnect, 31s silent socket interruption, healthy socket receipts, one model request per accepted question");
     }
 
     private static void crossNode(String base, int origin, WebSocketStompClient client, List<JsonNode> modelRequests,
@@ -165,12 +181,49 @@ public final class ConversationSocketRegression {
             }
             close(run);
             if (modelRequests.size() - before != 1) throw new AssertionError("cross-node repair regenerated an answer");
+            String peerBase = base.replace(":" + origin + "/", ":" + other + "/");
+            Accepted community = start(peerBase, "community-owner", "community scope");
+            try (var writer = Tab.open(other, client, "writer")) {
+                if (!bindAndRead(community, writer, 0).toString().contains("星河")) throw new AssertionError("community owner reads own answer");
+                for (String token : List.of("other", "writer")) {
+                    var request = HttpRequest.newBuilder(URI.create(community.execution + "/events?after=0")).header("X-Test-Identity", token);
+                    if ("writer".equals(token)) request.header("X-Test-Scope", "proxy");
+                    var deny = HttpClient.newHttpClient().send(request.GET().build(), HttpResponse.BodyHandlers.ofString());
+                    if (deny.statusCode() != 403 || deny.body().contains("星河")) throw new AssertionError("community ownership/unsupported proxy");
+                }
+            }
+            System.out.println("PASS independent community-mode node, owner delivery, different user and unsupported proxy refused, one accepted model request");
             System.out.println("PASS two independent JVM HTTP/STOMP nodes, origin delivery, wrong route rejected and cursor replay, one accepted model request");
         } finally {
             peer.getOutputStream().close();
-            try { if (!peer.waitFor(8, TimeUnit.SECONDS)) peer.destroyForcibly().waitFor(); }
+            try {
+                if (!peer.waitFor(8, TimeUnit.SECONDS)) peer.destroyForcibly().waitFor();
+            }
             finally { Files.deleteIfExists(ready); }
         }
+        if (peer.exitValue() != 0) throw new AssertionError("independent node failed its model-count check");
+    }
+
+    private static void changedScope(String base, int port, WebSocketStompClient client, List<JsonNode> modelRequests,
+                                     java.util.concurrent.atomic.AtomicReference<CountDownLatch> release) throws Exception {
+        int before = modelRequests.size();
+        for (String context : List.of("workspace", "proxy")) {
+            release.set(new CountDownLatch(1));
+            Accepted run = start(base, "changed-" + context, "context switch");
+            try (var tab = Tab.open(port, client, "writer")) {
+                long cursor = bindAndRead(run, tab, 0).path("cursor").asLong();
+                var request = HttpRequest.newBuilder(URI.create(run.execution + "/events?after=" + cursor))
+                        .header("X-Test-Identity", "writer").header("X-Test-Scope", context).GET().build();
+                var denied = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+                if (denied.statusCode() != 403 || denied.body().contains("星河")) throw new AssertionError("changed " + context + " cannot read original execution");
+                release.get().countDown();
+                var notice = tab.messages.poll(5, TimeUnit.SECONDS);
+                if (notice == null || !notice.path("denied").asBoolean() || notice.has("events"))
+                    throw new AssertionError("changed " + context + " retires original socket");
+            }
+        }
+        if (modelRequests.size() - before != 2) throw new AssertionError("workspace/proxy switch caused a new generation");
+        System.out.println("PASS actual HTTP/STOMP rejects changed workspace and proxy identities, two questions / two model requests");
     }
 
     static void run(AiConversationManage manage, AtomicBoolean resourceAllowed, List<JsonNode> modelRequests, java.util.concurrent.atomic.AtomicReference<CountDownLatch> release, java.util.function.Consumer<Boolean> toolMode, java.util.function.IntConsumer timeout) throws Exception {
@@ -189,7 +242,10 @@ public final class ConversationSocketRegression {
                 Long uid = actor(token);
                 if (uid == null) { ((HttpServletResponse) res).sendError(401); return; }
                 V3UserUtil.setUid(uid);
-                try { chain.doFilter(req, res); } finally { V3UserUtil.clear(); }
+                String scope = ((HttpServletRequest) req).getHeader("X-Test-Scope");
+                if ("proxy".equals(scope)) V3UserUtil.setProxy(9001L);
+                if ("workspace".equals(scope)) workspace.set(9002L);
+                try { chain.doFilter(req, res); } finally { V3UserUtil.clear(); workspace.remove(); }
             });
             filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/de2api/*");
         });
@@ -201,7 +257,7 @@ public final class ConversationSocketRegression {
             if (ready != null) {
                 Files.writeString(Path.of(ready), Integer.toString(service.getPort()));
                 System.in.read();
-                if (!modelRequests.isEmpty()) throw new AssertionError("misrouted reads must never reach the model");
+                if (modelRequests.size() != 1) throw new AssertionError("peer serves only its own explicit community request");
                 return;
             }
             String base = "http://127.0.0.1:" + service.getPort() + "/de2api/ai/conversations";
@@ -273,6 +329,7 @@ public final class ConversationSocketRegression {
                 System.out.println("PASS same execution delivered every tool state and terminal exactly once");
             } finally { toolMode.accept(false); }
             grace(base, service.getPort(), client, modelRequests, release);
+            changedScope(base, service.getPort(), client, modelRequests, release);
             crossNode(base, service.getPort(), client, modelRequests, release);
             timeout.accept(5);
             release.set(new CountDownLatch(1));
@@ -295,10 +352,10 @@ public final class ConversationSocketRegression {
                 browser.directory(new java.io.File("tests/browser"));
                 browser.environment().put("DATASET_ASSISTANT_BACKEND", "http://127.0.0.1:" + service.getPort());
                 var process = browser.inheritIO().start();
-                if (!process.waitFor(170, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("editor timeout"); }
-                if (process.exitValue() != 0 || modelRequests.size() - before != 6)
-                    throw new AssertionError("each editor scenario should accept one model request, including after gap recovery");
-                System.out.println("PASS both real editors, ten-second model streams, zero progress GETs while connected, duplicate/out-of-order delivery and single cursor repair");
+                if (!process.waitFor(200, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("editor timeout"); }
+                if (process.exitValue() != 0 || modelRequests.size() - before != 10)
+                    throw new AssertionError("nine editor scenarios must make nine initial model requests and one explicit retry; actual: " + (modelRequests.size() - before));
+                System.out.println("PASS both real editors, 9 scenarios: ten-second streams, zero connected progress GETs, gap repair, reconnect, offline completion, explicit retry, stop, new conversation and drawer close; 9 starts + 1 manual retry = 10 model requests");
             }
             System.out.println("PASS authenticated HTTP/STOMP, ten-second controlled generation, private tabs, foreign user and resource revocation");
         } finally { release.get().countDown(); resourceAllowed.set(true); client.stop(); service.stop(); service.destroy(); manage.destroy(); }

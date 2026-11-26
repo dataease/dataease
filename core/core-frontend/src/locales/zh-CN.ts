@@ -74,6 +74,7 @@ export default {
     retry_configuration_confirm:
       '请先核实并修复模型认证、余额或配置。确认已修复后，将以当前配置为原任务创建新尝试。',
     progress_unreachable: '暂时无法读取进度；原执行状态尚未确认。',
+    answer_again: '重新回答',
     editor_recovering: '连接中断，正在恢复',
     connection_interrupted: '连接中断超过 30 秒，本次回答已结束。已收到的内容保留在这里。',
     progress_recovering: '正在恢复原执行进度',
