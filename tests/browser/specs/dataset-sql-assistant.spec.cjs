@@ -153,6 +153,16 @@ async function backend(page, options = {}) {
       }
       if (state.onRead) await state.onRead();
       if (state.slow) return reply({ ...run, cursor: 0, events: [] });
+      if (state.truncated)
+        return reply({
+          ...run,
+          status: "FAILED",
+          cursor: 2,
+          events: [
+            { sequence: 1, type: "TEXT", text: "部分 SQL 解释" },
+            { sequence: 2, type: "FAILED", error: "response_truncated" },
+          ],
+        });
       if (state.failed)
         return reply({
           ...run,
@@ -1176,4 +1186,16 @@ test("completed SQL process preserves event order and reads a large field result
   await fields.locator("summary").click();
   await expect(fields.getByText(new RegExp(field))).toBeVisible();
   expect(reads).toBe(1);
+});
+
+test("a truncated response keeps its partial SQL explanation and gives the reason", async ({ page }) => {
+  await backend(page, { truncated: true });
+  await enter(page);
+  await expand(page);
+  await ask(page, "解释当前 SQL");
+  const answer = control(page, "panel").getByRole("article");
+  await expect(answer).toContainText("部分 SQL 解释");
+  await expect(answer.getByRole("alert")).toContainText("回答已被截断");
+  await expect(control(page, "apply")).toHaveCount(0);
+  await expect(editor(page).locator(".cm-content")).toHaveText(initial);
 });
