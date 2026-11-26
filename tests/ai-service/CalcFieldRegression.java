@@ -578,10 +578,11 @@ final class CalcFieldRegression {
                 || boundary.toString().contains("UNRELATED_LONG_PASTE") || boundary.toString().contains("UNSELECTED_GROSS_MARKER"))
             throw new AssertionError("The compacted clarification must still resolve the first retained numeric reply");
         http.ok("DELETE", base + "/" + fresh.path("sessionId").asText(), null);
-        verifyStoppedFormula(mvc, mode, requests, opening);
+        verifyStoppedFormula(mvc, mode, requests, opening, base);
     }
 
-    private void verifyStoppedFormula(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening) throws Exception {
+    private void verifyStoppedFormula(MockMvc mvc, AtomicReference<String> mode, List<JsonNode> requests, String opening, String base) throws Exception {
+        var http = new ConversationSocketRegression.EditorHttp();
         var session = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
                 .content(opening)).andReturn().getResponse().getContentAsByteArray());
         requests.clear();
@@ -606,7 +607,7 @@ final class CalcFieldRegression {
         mode.set("calc-history");
         for (var entry : List.of(Map.entry(1, "DETAIL_PASS"), Map.entry(2, "INVALID"))) {
             requests.clear();
-            terminal(mvc, start(mvc, session, "第 " + entry.getKey() + " 次回答的第 1 步原公式结果"));
+            http.ask(base, session, entry.getKey() == 1 ? "第1轮回答的第 1 步原公式结果" : "第二輪回答的第 1 步原公式结果");
             var messages = requests.getFirst().path("messages");
             var step = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).path("historicalStep");
             if (!entry.getValue().equals(step.at("/evidence/status").asText()) || previews.get() != count

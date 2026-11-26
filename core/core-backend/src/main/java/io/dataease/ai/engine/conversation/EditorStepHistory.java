@@ -14,7 +14,7 @@ final class EditorStepHistory {
 
     private static final String NUMBER = "([0-9]+|[零〇一二兩两三四五六七八九十]+)";
     private static final Pattern STEP = Pattern.compile("(?:第\\s*" + NUMBER + "\\s*步|(?:步[骤驟]|\\bstep)\\s*#?\\s*" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
-    private static final Pattern ANSWER = Pattern.compile("(?:第\\s*" + NUMBER + "\\s*(?:次|个|個|条|條)?\\s*(?:回答|答复|答覆|回复|回覆)|\\b(first|second|third|[0-9]+)(?:st|nd|rd|th)?\\s+(?:answer|response|reply)\\b|\\b(?:answer|response|reply)\\s*#?\\s*([0-9]+))", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ANSWER = Pattern.compile("(?:第\\s*" + NUMBER + "\\s*(?:次|个|個|条|條|轮|輪)?\\s*(?:回答|答复|答覆|回复|回覆)|\\b(first|second|third|[0-9]+)(?:st|nd|rd|th)?\\s+(?:answer|response|reply)\\b|\\b(?:answer|response|reply)\\s*#?\\s*([0-9]+))", Pattern.CASE_INSENSITIVE);
 
     // Frozen contexts of the same editor conversation share answer order, even when the user
     // manually retries an older execution. The dialogue prompt for a retry still uses its own branch.
