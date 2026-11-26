@@ -1108,13 +1108,6 @@ const apply = async (turn: Turn) => {
               >
             </template>
             <template v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
-              <small
-                >{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small
-              >
-              <pre>{{ turn.result.sql }}</pre>
-              <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
-                {{ tr('copy_sql') }}
-              </el-button>
               <details>
                 <summary>{{ tr('sql_evidence') }}</summary>
                 <p v-if="!turn.result.evidence?.length">{{ tr('no_sql_evidence') }}</p>
@@ -1164,6 +1157,13 @@ const apply = async (turn: Turn) => {
                   </ul>
                 </div>
               </details>
+              <small
+                >{{ tr('numbered_suggestion') }} #{{ index + 1 }} · {{ tr('unrun_sql') }}</small
+              >
+              <pre>{{ turn.result.sql }}</pre>
+              <el-button text :disabled="busy || applying" @click="copySuggestion(turn)">
+                {{ tr('copy_sql') }}
+              </el-button>
               <el-button
                 data-testid="dataset-sql-assistant-apply"
                 :disabled="busy || applying"
