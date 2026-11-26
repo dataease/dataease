@@ -5172,6 +5172,7 @@ export default {
       'Clear data synchronization and field change logs in the selected time range. Records in progress or needed for recovery are retained.'
   },
   sync_maintenance: {
+    execution_needs_attention: 'Sync result needs verification',
     confirm_precision_alignment:
       'I confirm the actual column capacity meets business needs and agree to update the task configuration to match',
     precision_unspecified: 'precision unspecified',
@@ -5428,8 +5429,7 @@ export default {
     full_submitted: 'Full synchronization submitted. Check task logs for execution results.',
     full_submit_error_help:
       'Check this task’s execution logs to confirm whether synchronization started and its result before retrying.',
-    full_request_id:
-      'Request ID: {0}. Provide this ID to an administrator to locate the server error.',
+    full_request_id: 'Request ID: {0}',
     full_unsupported:
       'Target connection {0} ({1}) does not currently support one-time full synchronization',
     rules_entry: 'Modification rules',

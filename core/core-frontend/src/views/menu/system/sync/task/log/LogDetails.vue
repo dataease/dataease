@@ -3,6 +3,7 @@ import { Loading } from '@element-plus/icons-vue'
 import { computed, onUnmounted, ref } from 'vue'
 import { checkTaskLogConnectionApi, getTaskLogDetailApi } from '@/api/sync/syncTaskLog'
 import { useI18n } from '@/hooks/web/useI18n'
+import { getErrorMessage } from '@/config/axios/error'
 
 const { t } = useI18n()
 const vScrollBottom = {
@@ -85,7 +86,8 @@ const pullLog = async () => {
     if (session !== logSession || requestLogId !== logId.value) return
     stopInterval()
     readFailed.value = true
-    if (typeof error === 'string') appendLogContent(`\n[${error}]`)
+    const message = getErrorMessage(error)
+    if (message) appendLogContent(`\n[${message}]`)
   } finally {
     if (session === logSession) loading.value = false
   }

@@ -24,6 +24,7 @@ import FieldChangeLogDetails from './FieldChangeLogDetails.vue'
 import { isTaskEventLogActive, taskLogStatusKeys } from './logStatus'
 import ClearJobLogForm from './ClearJobLogForm.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { getErrorMessage } from '@/config/axios/error'
 import { propTypes } from '@/utils/propTypes'
 import { convertFilterText, FilterText } from '@/components/filter-text'
 
@@ -266,7 +267,7 @@ const clearLogForm = reactive({
 const cleanupResult = ref<TaskLogClearResult | null>(null)
 const cleanupVisible = ref(false)
 const cleanupSubmitting = ref(false)
-const cleanupReadFailed = ref(false)
+const cleanupReadError = ref('')
 const cleanupActive = computed(() =>
   ['QUEUED', 'RUNNING'].includes(cleanupResult.value?.status ?? '')
 )
@@ -285,12 +286,12 @@ const loadCleanupResult = async () => {
     if (cleanupDisposed || generation !== cleanupGeneration) return
     const wasActive = cleanupActive.value
     cleanupResult.value = data
-    cleanupReadFailed.value = false
+    cleanupReadError.value = ''
     if (wasActive && !cleanupActive.value) search()
     if (cleanupActive.value) cleanupTimer = setTimeout(loadCleanupResult, 3000)
-  } catch {
+  } catch (error) {
     if (cleanupDisposed || generation !== cleanupGeneration) return
-    cleanupReadFailed.value = true
+    cleanupReadError.value = getErrorMessage(error, t('sync_task.cleanup_read_failed'))
   }
 }
 const showCleanupResult = () => {
@@ -315,7 +316,7 @@ const clearJobLog = (clearTypeLabel: string) => {
         cleanupGeneration++
         stopCleanupPolling()
         cleanupResult.value = data
-        cleanupReadFailed.value = false
+        cleanupReadError.value = ''
         clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
         ElMessage.success(
           t(data.status === 'SUCCEEDED' ? 'sync_task.cleanup_empty' : 'sync_task.cleanup_submitted')
@@ -606,7 +607,7 @@ const drawerMainClose = () => {
   </div>
   <el-dialog v-model="cleanupVisible" :title="t('sync_task.cleanup_result')" width="620px">
     <p>{{ t('sync_task.cleanup_retention') }}</p>
-    <p v-if="cleanupReadFailed">{{ t('sync_task.cleanup_read_failed') }}</p>
+    <p v-if="cleanupReadError" class="cleanup-error-message">{{ cleanupReadError }}</p>
     <template v-if="cleanupResult">
       <p>
         {{ t('sync_task.cleanup_status') }}：{{
@@ -620,7 +621,7 @@ const drawerMainClose = () => {
         cleanupResult.message
       }}</pre>
     </template>
-    <p v-else-if="!cleanupReadFailed">{{ t('sync_task.cleanup_no_result') }}</p>
+    <p v-else-if="!cleanupReadError">{{ t('sync_task.cleanup_no_result') }}</p>
     <template #footer>
       <el-button @click="loadCleanupResult">{{ t('sync_task.cleanup_refresh') }}</el-button>
       <el-button @click="cleanupVisible = false">{{ t('sync_task.cleanup_close') }}</el-button>

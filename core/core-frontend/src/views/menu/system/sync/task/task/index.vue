@@ -48,6 +48,7 @@ const fullRefreshRef = ref<InstanceType<typeof FullRefreshDialog>>()
 const maintenanceBlocked = (row: ITaskInfoRes) =>
   !!row.maintenanceState && row.maintenanceState !== 'DONE'
 const maintenanceLabel = (row: ITaskInfoRes) => {
+  if (row.executionNeedsAttention) return t('sync_maintenance.execution_needs_attention')
   if (row.maintenanceNeedsAttention) return t('sync_maintenance.needs_attention')
   if (row.maintenanceState === 'REINIT_REQUIRED' && row.logStatus === 'RUNNING')
     return t('sync_maintenance.initializing_short')
@@ -636,6 +637,7 @@ const partDataUpdate = () => {
         item.lastExecuteStatus = resItem.lastExecuteStatus
         item.maintenanceState = resItem.maintenanceState
         item.maintenanceNeedsAttention = resItem.maintenanceNeedsAttention
+        item.executionNeedsAttention = resItem.executionNeedsAttention
         if (maintenanceBlocked(resItem)) isRunning = true
         if (item.currentTime) {
           if (item.currentTime > resItem.executorStartTime || resItem.status === 'running') {
@@ -753,14 +755,20 @@ const copyInfo = async val => {
                 class="task-span-link"
                 :class="{
                   'maintenance-task-name':
-                    maintenanceBlocked(scope.row) || scope.row.maintenanceNeedsAttention
+                    maintenanceBlocked(scope.row) ||
+                    scope.row.maintenanceNeedsAttention ||
+                    scope.row.executionNeedsAttention
                 }"
               >
                 <span class="task-name-text" :title="scope.row.name" @click="edit(scope.row)">{{
                   scope.row.name
                 }}</span>
                 <el-button
-                  v-if="maintenanceBlocked(scope.row) || scope.row.maintenanceNeedsAttention"
+                  v-if="
+                    maintenanceBlocked(scope.row) ||
+                    scope.row.maintenanceNeedsAttention ||
+                    scope.row.executionNeedsAttention
+                  "
                   class="maintenance-status"
                   link
                   type="warning"

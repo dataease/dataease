@@ -3,6 +3,7 @@ package io.dataease.extensions.sync.provider;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
 import io.dataease.extensions.sync.exception.SyncSqlException;
 import io.dataease.extensions.sync.model.datasource.ConnectionObj;
 import io.dataease.extensions.sync.model.datasource.DatasourceRequest;
@@ -133,6 +134,8 @@ public abstract class SyncProvider {
                     operationType, executeTime, errorCode, e.getMessage());
             throw new SyncSqlException(errorMsg, e, configuration, statementCompleted);
         } catch (Exception e) {
+            if (e instanceof DEException existing
+                    && (existing.getCategory() != null || existing.getCause() == null)) throw existing;
             long executeTime = System.currentTimeMillis() - startTime;
             String errorMsg = String.format("%s operation exception, execution time: %dms, exception message: %s",
                     operationType, executeTime, e.getMessage());
@@ -178,7 +181,7 @@ public abstract class SyncProvider {
             stat.setQueryTimeout(queryTimeout);
         } catch (Exception e) {
             logger.error("Failed to get statement!", e);
-            DEException.throwException(e.getMessage());
+            DEException.throwException(e);
         }
         return stat;
     }
@@ -263,23 +266,22 @@ public abstract class SyncProvider {
      */
     public Session initSession(DatasourceConfiguration configuration) throws Exception {
         JSch jsch = new JSch();
-        Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
-        if (!"password".equalsIgnoreCase(configuration.getSshType())) {
-            session.setConfig("PreferredAuthentications", "publickey");
-            jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
-        }
-        if ("password".equalsIgnoreCase(configuration.getSshType())) {
-            session.setPassword(configuration.getSshPassword());
-        }
-        session.setConfig("StrictHostKeyChecking", "no");
         try {
+            Session session = jsch.getSession(configuration.getSshUserName(), configuration.getSshHost(), configuration.getSshPort());
+            if (!"password".equalsIgnoreCase(configuration.getSshType())) {
+                session.setConfig("PreferredAuthentications", "publickey");
+                jsch.addIdentity("sshkey", configuration.getSshKey().getBytes(StandardCharsets.UTF_8), null, configuration.getSshKeyPassword() == null ? null : configuration.getSshKeyPassword().getBytes(StandardCharsets.UTF_8));
+            }
+            if ("password".equalsIgnoreCase(configuration.getSshType())) {
+                session.setPassword(configuration.getSshPassword());
+            }
+            session.setConfig("StrictHostKeyChecking", "no");
             session.connect(1000 * 5);
-        } catch (Exception e) {
-            logger.error("Failed to connect to ssh server!", e);
-            DEException.throwException("SSH 连接失败：" + e.getMessage());
-        }
-        session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
+            session.setPortForwardingL(configuration.getLPort(), configuration.getHost(), configuration.getPort());
 
-        return session;
+            return session;
+        } catch (com.jcraft.jsch.JSchException e) {
+            throw new SyncSqlException("SSH 连接失败", e, configuration, ErrorCategory.UPSTREAM);
+        }
     }
 }

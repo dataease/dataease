@@ -275,6 +275,7 @@ const rejectBusinessResponse = (
   }
 ) => {
   const failure = new DataEaseError(response)
+  const syncOperation = /^\/sync\/(?:task|datasource)(?:\/|$)/.test(response.config?.url || '')
   const legacySessionFailure = response.data.code === 80001 && !response.data.category
   if (legacySessionFailure && revalidateLink(response.config)) {
     return Promise.reject(failure)
@@ -283,16 +284,23 @@ const rejectBusinessResponse = (
     !response?.config?.url.startsWith('/xpackComponent/contentPlugin/') &&
     response?.data?.code !== 60003
   ) {
-    let errMsg = response.data.msg
+    let errMsg = syncOperation ? failure.message : response.data.msg
     if (errMsg?.includes('rsa info has been changed')) {
       wsCache.delete('DataEaseKey')
       errMsg = useI18n().t('common.secret_changed_tips')
     }
     const local = response.config.handleErrorLocally
     if (!(typeof local === 'function' ? local(failure) : local)) {
-      if (!isErrorToastRecentlyShown(errMsg)) {
-        ElMessage({ type: 'error', message: errMsg, showClose: true, grouping: true })
-        markErrorToastShown(errMsg)
+      const toastKey = failure.toastKey || errMsg
+      if (!isErrorToastRecentlyShown(toastKey)) {
+        ElMessage({
+          type: 'error',
+          message: errMsg,
+          showClose: true,
+          grouping: true,
+          customClass: syncOperation ? 'sync-task-error-message' : undefined
+        })
+        markErrorToastShown(toastKey)
       }
       failure.presented = true
     }
@@ -333,6 +341,7 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     }
   }
   const normalized = toDataEaseError(error)
+  const syncOperation = /^\/sync\/(?:task|datasource)(?:\/|$)/.test(error.config?.url || '')
   const local = error.config?.handleErrorLocally
   if (typeof local === 'function' ? local(normalized) : local) return Promise.reject(normalized)
   if (error.message?.includes('timeout of')) {
@@ -346,6 +355,16 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
   }
 
   if (!error?.response) {
+    if (syncOperation && !normalized.presented) {
+      ElMessage({
+        type: 'error',
+        message: normalized.message,
+        showClose: true,
+        grouping: true,
+        customClass: 'sync-task-error-message'
+      })
+      normalized.presented = true
+    }
     return Promise.reject(normalized)
   }
 
@@ -382,7 +401,9 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     wsCache.delete('DataEaseKey')
     normalized.message = useI18n().t('common.secret_changed_tips')
   }
-  if (normalized.code === 50005 && normalized.httpStatus === 409) return Promise.reject(normalized)
+  if (!syncOperation && normalized.code === 50005 && normalized.httpStatus === 409) {
+    return Promise.reject(normalized)
+  }
   const gatewayFailure = header.has('DE-GATEWAY-FLAG') || reason === 'UNAUTHENTICATED'
   const embeddedRequest = AxiosHeaders.from(error.config?.headers).has('X-EMBEDDED-TOKEN')
   if (embeddedRequest && (gatewayFailure || normalized.httpStatus === 401)) {
@@ -403,14 +424,16 @@ const rejectHttpResponse = async (error: AxiosErrorWidthLoading<AxiosError<unkno
     !forbiddenFailure &&
     !gatewayFailure
   ) {
-    if (!isErrorToastRecentlyShown(normalized.message)) {
+    const toastKey = normalized.toastKey || normalized.message
+    if (!isErrorToastRecentlyShown(toastKey)) {
       ElMessage({
         type: 'error',
         message: normalized.message,
         showClose: true,
-        grouping: true
+        grouping: true,
+        customClass: syncOperation ? 'sync-task-error-message' : undefined
       })
-      markErrorToastShown(normalized.message)
+      markErrorToastShown(toastKey)
     }
   } else if (error?.config?.url.startsWith('/xpackComponent/contentPlugin/')) {
     console.error(

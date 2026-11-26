@@ -4946,6 +4946,7 @@ export default {
     cleanup_scope: '按所選時間範圍清理資料同步和欄位變更日誌，執行中及仍需復原的記錄將保留'
   },
   sync_maintenance: {
+    execution_needs_attention: '同步結果待核實',
     confirm_precision_alignment: '我已確認實際欄位容量符合業務需求，依實際精度更新任務設定',
     precision_unspecified: '未指定精度',
     saved_definition: '任務已儲存設定',
@@ -5169,7 +5170,7 @@ export default {
     full_submitted: '本次全量同步已提交，請在任務日誌中查看執行結果',
     full_submit_error_help:
       '請先查看該任務的執行日誌，確認本次同步是否已啟動及執行結果，再決定是否重試',
-    full_request_id: '請求編號：{0}。聯絡管理員時，請提供此編號以定位伺服器錯誤',
+    full_request_id: '請求編號：{0}',
     full_unsupported: '目標連線「{0}」（{1}）目前不支援全量同步一次',
     rules_entry: '修改規則',
     rules_expand_hint: '展開查看支援範圍、限制及官方說明。',
