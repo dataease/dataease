@@ -61,11 +61,9 @@ for (const editor of ["SQL", "计算字段"]) {
         await page
           .getByRole("button", { name: "数据表关联", exact: true })
           .click();
-        const row = page
-          .locator(".node-items .node-item")
-          .filter({
-            has: page.getByRole("button", { name: "items", exact: true }),
-          });
+        const row = page.locator(".node-items .node-item").filter({
+          has: page.getByRole("button", { name: "items", exact: true }),
+        });
         await row.locator(".hover-icon").click();
         await page
           .locator(".menu-more_popper:visible")

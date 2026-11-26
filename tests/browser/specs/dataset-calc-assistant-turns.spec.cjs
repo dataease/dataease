@@ -1005,3 +1005,67 @@ test("a definite retry rejection has its own copyable public reason and request 
   expect(info).toContain("这次重答的上下文已更新。");
   expect(info).not.toContain("hidden-retry-detail");
 });
+
+test("a clarification after retry keeps the selected suggestion as its basis", async ({
+  page,
+}) => {
+  await serveTurns(page);
+  await page.route("**/e2/events?*", (route) =>
+    route.fulfill({
+      json: {
+        sessionId: "s2",
+        executionId: "e2",
+        contextVersion: "v2",
+        attemptId: "a2",
+        status: "FAILED",
+        retryEligible: true,
+        cursor: 1,
+        events: [{ sequence: 1, type: "FAILED", error: "timeout" }],
+      },
+    })
+  );
+  await page.route("**/e2/retry", (route) =>
+    route.fulfill({
+      json: {
+        sessionId: "s2",
+        executionId: "er",
+        contextVersion: "v2",
+        attemptId: "ar",
+        status: "RUNNING",
+      },
+    })
+  );
+  await page.route("**/er/events?*", (route) =>
+    route.fulfill({
+      json: {
+        sessionId: "s2",
+        executionId: "er",
+        contextVersion: "v2",
+        status: "COMPLETED",
+        cursor: 1,
+        events: [],
+        result: {
+          type: "EXPLANATION",
+          text: "按哪个期间？\n1. 上月\n2. 去年同期",
+        },
+      },
+    })
+  );
+  await page.goto("/");
+  const drawer = await openDrawer(page);
+  await ask(drawer, "生成公式");
+  const initial = await completed(drawer, 1);
+  await drawer.locator(".cm-content").fill(manual);
+  await button(initial, "基于此建议追问").click();
+  await ask(drawer, "计算增长率");
+  await button(drawer.getByRole("article").last(), "重试").click();
+  const submission = page.waitForRequest((request) =>
+    request.url().endsWith("/s3/executions")
+  );
+  await button(drawer, "上月").click();
+  expect((await submission).postDataJSON().generationBasis).toEqual({
+    kind: "SUGGESTION",
+    number: 1,
+    matchesDraft: false,
+  });
+});
