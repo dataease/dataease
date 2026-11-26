@@ -5733,6 +5733,11 @@ export default {
     add_field: 'Add field',
     edit_field: 'Edit field',
     add_all_field: 'Add all fields',
+    doris_batch_size: 'Rows per write batch',
+    doris_batch_size_inherit: 'Inherit system configuration',
+    doris_batch_size_tip:
+      'Leave blank to inherit the main service configuration (100000 rows when not configured). A value applies only to this task; clear it to restore inheritance. Changes apply on the next execution without recreating the target table.',
+    doris_batch_size_invalid: 'Enter an integer from 1 to 2147483647',
     fault_tolerance_rate: 'Fault tolerance rate',
     fault_tolerance_rate_tip:
       '0～1, the default is 0, which means that when there is an error data in the synchronization batch data, the import task of the entire batch will fail. ',

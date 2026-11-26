@@ -1,9 +1,15 @@
 package io.dataease.extensions.sync.model.task;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.dataease.extensions.sync.model.TableFieldDTO;
 import io.dataease.extensions.sync.model.datasource.DatasourceDTO;
 import lombok.Data;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -32,6 +38,11 @@ public class Target {
     private String remarks;
     private Long incrementOffset;
     private String incrementOffsetUnit;
+    /**
+     * 空值表示继承部署配置，不将系统默认值固化为任务配置
+     */
+    @JsonDeserialize(using = DorisBatchSizeDeserializer.class)
+    private Integer dorisBatchSize;
 
     public Target() {
     }
@@ -53,5 +64,19 @@ public class Target {
         this.remarks = target.remarks;
         this.incrementOffset = target.incrementOffset;
         this.incrementOffsetUnit = target.incrementOffsetUnit;
+        this.dorisBatchSize = target.dorisBatchSize;
+    }
+
+    /**
+     * 拒绝小数和字符串强制转换，避免非法批次在进入 Provider 前被截断
+     */
+    public static class DorisBatchSizeDeserializer extends JsonDeserializer<Integer> {
+        @Override
+        public Integer deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+            if (!parser.hasToken(JsonToken.VALUE_NUMBER_INT)) {
+                return (Integer) context.handleUnexpectedToken(Integer.class, parser);
+            }
+            return parser.getIntValue();
+        }
     }
 }
