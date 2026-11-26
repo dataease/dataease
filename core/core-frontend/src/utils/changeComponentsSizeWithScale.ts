@@ -2,7 +2,7 @@ import { deepCopy } from './utils'
 import { divide, multiply } from 'mathjs'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { groupItemStyleAdaptor, groupSizeStyleAdaptor } from '@/utils/style'
+import { groupSizeStyleAdaptor } from '@/utils/style'
 import { nextTick } from 'vue'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -22,12 +22,12 @@ const needToChangeDirectionAttrs = {
   height: ['top', 'height']
 }
 
-export function changeSizeWithScaleAdaptor(scale) {
+export function changeSizeWithScale(scale) {
   return changeComponentsSizeWithScale(scale)
 }
 
-export function changeSizeWithScale(scale) {
-  return changeComponentsSizeWithScale(scale)
+function changeTabItemsSizeWithScale(tab, scale) {
+  tab.propValue?.forEach(item => changeComponentsSizeWithScaleCircle(item.componentData, scale))
 }
 
 function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
@@ -56,33 +56,27 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
         }
       })
     }
-    if (['Group'].includes(component.component)) {
+    if (component.component === 'Group') {
       groupSizeStyleAdaptor(component)
-      const parentStyle = component.style
-      component.propValue.forEach(componentInner => {
-        if (['DeTabs'].includes(componentInner.component)) {
-          componentInner.propValue.forEach(tabItem => {
-            changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
-          })
-        } else {
-          changeComponentsSizeWithScaleCircle(componentInner.propValue, scale)
-          groupItemStyleAdaptor(componentInner, parentStyle)
+      component.propValue.forEach(child => {
+        if (child.component === 'DeTabs') {
+          changeTabItemsSizeWithScale(child, scale)
+        } else if (child.component === 'Group') {
+          changeComponentsSizeWithScaleCircle(child.propValue, scale)
         }
       })
-    } else if (['DeTabs'].includes(component.component)) {
-      component.propValue.forEach(tabItem => {
-        changeComponentsSizeWithScaleCircle(tabItem.componentData, scale)
-      })
+    } else if (component.component === 'DeTabs') {
+      changeTabItemsSizeWithScale(component, scale)
     }
-    // 如果是分组组件 则要进行分组内部组件groupStyle进行深度计算
-    // 计算逻辑 Group 中样式 * groupComponent.groupStyle[sonKey].
-    if (['Group', 'DeTabs'].includes(component.component)) {
-      try {
-        nextTick(() => groupSizeStyleAdaptor(component))
-      } catch (e) {
-        // 旧Group适配
-        console.error('group adaptor error:' + e)
-      }
+  })
+}
+
+function adaptTabItemsSize(components) {
+  components.forEach(component => {
+    if (component.component === 'Group') {
+      adaptTabItemsSize(component.propValue)
+    } else if (component.component === 'DeTabs') {
+      groupSizeStyleAdaptor(component)
     }
   })
 }
@@ -103,6 +97,14 @@ function changeComponentsSizeWithScale(scale) {
     scaleWidth: scale,
     scaleHeight: scale,
     scale
+  })
+
+  // 等选项卡容器完成渲染后，用当前内容区尺寸计算内部组件的位置和大小。
+  const scaledComponents = componentData.value
+  nextTick(() => {
+    if (componentData.value === scaledComponents) {
+      adaptTabItemsSize(scaledComponents)
+    }
   })
 }
 export function changeRefComponentsSizeWithScale(componentDataRef, canvasStyleDataRef, scale) {

@@ -256,20 +256,22 @@ export function createGroupStyle(groupComponent) {
   })
 }
 
+function getTabContentSize({ width, height, showTabTitle }) {
+  return { width, height: Math.max(0, height - (showTabTitle ? 46 : 0)) }
+}
+
 function dataVTabSizeStyleAdaptor(tabComponent) {
-  const parentStyleAdaptor = { ...tabComponent.style }
-  const offset = parentStyleAdaptor.showTabTitle ? 46 : 0
   const domId =
     dvMainStore.editMode === 'edit'
       ? 'component' + tabComponent.id
-      : 'enlarge-inner-content' + tabComponent.id
+      : 'enlarge-inner-content-' + tabComponent.id
   const tabDom = document.getElementById(domId)
-  if (tabDom) {
-    parentStyleAdaptor.height = tabDom.clientHeight - offset
-    parentStyleAdaptor.width = tabDom.clientWidth
-  } else {
-    parentStyleAdaptor.height = parentStyleAdaptor.height - offset
-  }
+  const { width, height, showTabTitle } = tabComponent.style
+  const parentStyleAdaptor = getTabContentSize({
+    width: tabDom?.clientWidth || width,
+    height: tabDom?.clientHeight || height,
+    showTabTitle
+  })
 
   tabComponent.propValue?.forEach(tabItem => {
     tabItem.componentData?.forEach(tabComponent => {
@@ -302,9 +304,9 @@ export function groupStyleRevertBatch(groupComponent, parentStyle) {
 }
 
 export function tabInnerStyleRevert(tabOuterComponent) {
-  const parentStyle = {
-    width: tabOuterComponent.style.width,
-    height: tabOuterComponent.style.height - (tabOuterComponent.style.showTabTitle ? 46 : 0)
+  const parentStyle = getTabContentSize(tabOuterComponent.style)
+  if (!parentStyle.width || !parentStyle.height) {
+    return
   }
   tabOuterComponent.propValue?.forEach(tabItem => {
     tabItem.componentData?.forEach(tabComponent => {
@@ -336,8 +338,6 @@ export function dataVTabComponentAdd(innerComponent, parentComponent) {
   //do dataVTabComponentAdd
   innerComponent.style.top = 0
   innerComponent.style.left = 0
-  const parentStyleAdaptor = { ...parentComponent.style }
-  // 去掉tab头部高度
-  parentStyleAdaptor.height = parentStyleAdaptor.height - (parentComponent.showTabTitle ? 46 : 0)
-  groupStyleRevert(innerComponent, parentStyleAdaptor)
+  const parentStyle = getTabContentSize(parentComponent.style)
+  groupStyleRevert(innerComponent, parentStyle.height ? parentStyle : parentComponent.style)
 }
