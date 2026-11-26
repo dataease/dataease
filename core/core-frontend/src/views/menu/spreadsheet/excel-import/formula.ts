@@ -28,16 +28,15 @@ const externalFunctions = new Set<string>([
   ...Object.values(FUNCTION_NAMES_CUBE)
 ])
 
-type SheetContext = ReadonlyMap<
-  string,
-  {
-    name: string
-    renamed: boolean
-    rows: number
-    columns: number
-    hasDefinedName: (upperName: string) => boolean
-  }
->
+interface TargetSheet {
+  name: string
+  renamed: boolean
+  rows: number
+  columns: number
+  hasDefinedName: (upperName: string) => boolean
+}
+type SheetContext = ReadonlyMap<string, TargetSheet>
+type SheetExpansion = { sheet: TargetSheet; rows: number; columns: number }
 type FormulaReason =
   | 'unsupported'
   | 'array'
@@ -48,9 +47,10 @@ type FormulaReason =
   | 'unknownFunction'
   | 'dynamicReference'
   | 'namedReference'
+type RejectedFormula = { reason: FormulaReason; sheet?: string }
 type FormulaResult =
-  | { formula: string; reason?: never; sheet?: never; warning?: 'unknownFunction' }
-  | { formula?: never; reason: FormulaReason; sheet?: string; warning?: never }
+  | { formula: string; expansions: SheetExpansion[]; warning?: 'unknownFunction' }
+  | RejectedFormula
 type ExcelFormulaModel = CellModel & { shareType?: string }
 
 const unsupported = { reason: 'unsupported' } as const
@@ -66,10 +66,11 @@ function rewriteReference(
   token: string,
   currentSheet: string,
   context: SheetContext,
+  expansions: SheetExpansion[],
   rowOffset: number,
   columnOffset: number,
   linkTarget = false
-): FormulaResult {
+): { formula: string } | RejectedFormula {
   if (/[\[\]]/.test(token)) return { reason: 'external' }
   if (token.endsWith('#') || token.startsWith('@')) return { reason: 'array' }
   const separator = token.lastIndexOf('!')
@@ -106,9 +107,9 @@ function rewriteReference(
     const column = point.column + (columnAbsolute ? 0 : columnOffset)
     if (
       row < 0 ||
-      row >= Math.min(sheet.rows, IMPORT_LIMITS.sheetRows) ||
+      row >= IMPORT_LIMITS.sheetRows ||
       column < 0 ||
-      column >= Math.min(sheet.columns, IMPORT_LIMITS.referenceColumns)
+      column >= IMPORT_LIMITS.referenceColumns
     ) {
       return { reason: 'range' }
     }
@@ -118,6 +119,9 @@ function rewriteReference(
     } else {
       const size = (Math.abs(row - start.row) + 1) * (Math.abs(column - start.column) + 1)
       if (size > IMPORT_LIMITS.workbookCells) return { reason: 'range' }
+    }
+    if (row >= sheet.rows || column >= sheet.columns) {
+      expansions.push({ sheet, rows: row + 1, columns: column + 1 })
     }
     if (row === point.row && column === point.column) {
       translated.push(part)
@@ -169,6 +173,7 @@ export function analyzeFormula(
 
     let source = ''
     let formula = '='
+    const expansions: SheetExpansion[] = []
     let hasUnknownFunction = false
     let textTarget: { node: ISequenceNode; name: 'SHEET' | 'HYPERLINK' } | undefined
     const currentSheet = context.get(cell.worksheet.name.toLowerCase())
@@ -205,10 +210,11 @@ export function analyzeFormula(
             token,
             cell.worksheet.name,
             context,
+            expansions,
             rowOffset,
             columnOffset
           )
-          if (reference.reason) return reference
+          if ('reason' in reference) return reference
           rewritten = node.token.replace(token, () => reference.formula)
           break
         }
@@ -225,8 +231,16 @@ export function analyzeFormula(
               if (sheet.renamed) target = sheet.name
             } else if (value.startsWith('#')) {
               // 字符串里的 A1 不随共享公式平移。
-              const ref = rewriteReference(value.slice(1), cell.worksheet.name, context, 0, 0, true)
-              if (ref.reason) return ref
+              const ref = rewriteReference(
+                value.slice(1),
+                cell.worksheet.name,
+                context,
+                expansions,
+                0,
+                0,
+                true
+              )
+              if ('reason' in ref) return ref
               target = '#' + ref.formula
             }
             textTarget = undefined
@@ -299,11 +313,8 @@ export function analyzeFormula(
     const tree = lexer.treeBuilder(formula)
     if (!tree || typeof tree !== 'object') return unsupported
     // 未知函数不能提前返回，还要核对其余参数是否依赖未选工作表。
-    if (hasUnknownFunction) {
-      if (mode === 'all') return { formula, warning: 'unknownFunction' }
-      return { reason: 'unknownFunction' }
-    }
-    return { formula }
+    if (hasUnknownFunction && mode !== 'all') return { reason: 'unknownFunction' }
+    return { formula, expansions, warning: hasUnknownFunction ? 'unknownFunction' : undefined }
   } catch {
     return unsupported
   }

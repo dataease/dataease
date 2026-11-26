@@ -1314,6 +1314,7 @@ onBeforeUnmount(() => {
         }
 
         .custom-icon {
+          font-size: 20px;
           position: relative;
           &.btn {
             color: var(--ed-color-primary);
@@ -1329,7 +1330,7 @@ onBeforeUnmount(() => {
               position: absolute;
               top: 50%;
               left: 50%;
-              border-radius: 4px;
+              border-radius: 6px;
               transform: translate(-50%, -50%);
             }
           }
