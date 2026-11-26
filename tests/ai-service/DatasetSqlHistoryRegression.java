@@ -32,9 +32,10 @@ final class DatasetSqlHistoryRegression {
         }
         if (!"orders".equals(table)) throw new AssertionError(table);
         var fields = new ArrayList<TableField>();
+        var names = List.of("paid_at", "created_at", "type", "step", "date", "id", "and");
         for (int i = 0; i < 80; i++) {
             var field = new TableField();
-            field.setOriginName(i == 0 ? "paid_at" : i == 1 ? "created_at" : "other_column_" + i);
+            field.setOriginName(i < names.size() ? names.get(i) : "other_column_" + i);
             field.setName(marker(i));
             field.setFieldType(i == 0 ? "TIMESTAMP" : i == 1 ? "DATETIME" : "INTEGER");
             fields.add(field);
@@ -149,6 +150,18 @@ final class DatasetSqlHistoryRegression {
             verifyRequests("http", List.copyOf(sent.subList(first, sent.size())), reads.size() - count,
                     authorizationChecks.get() - checks, selectedSnapshots.get() - snapshots);
             if (!"paid_at TIMESTAMP, created_at DATETIME".equals(answered.at("/result/text").asText())) throw new AssertionError(answered);
+            for (var query : List.of(
+                    Map.entry("What is the type of paid_at and created_at in step 1 of the first answer?", List.of("paid_at", "created_at")),
+                    Map.entry("Are there any date fields in step 1 of the first answer?", List.of("paid_at", "created_at")),
+                    Map.entry("What are the types of type and id in step 1 of the first answer?", List.of("type", "id")),
+                    Map.entry("In step 1 of the first answer, describe the columns `and` and `step`.", List.of("step", "and")),
+                    Map.entry("Is the date column in step 1 of the first answer an integer?", List.of("date")))) {
+                finish(startTurn(session, version, query.getKey()));
+                var messages = sent.getLast().path("messages");
+                var fields = JSON.readTree(messages.get(messages.size() - 1).path("content").asText()).at("/historicalStep/evidence/fields");
+                if (!fields.findValuesAsText("name").equals(query.getValue()) || reads.size() != count)
+                    throw new AssertionError("Unexpected historical fields for " + query.getKey() + ": " + fields.findValuesAsText("name"));
+            }
             finish(startTurn(session, version, "请解释 SQL"));
             String unrelated = sent.getLast().toString();
             var unrelatedMessages = sent.getLast().path("messages");
