@@ -106,7 +106,12 @@ function inspectFormulas(selection: Selection, mode: FormulaMode) {
   for (const { info, formulas, missingGroupCaches } of selection) {
     for (const cell of formulas) {
       const result = analyzeFormula(cell, context, mode)
-      if (result.formula) {
+      if ('formula' in result) {
+        // 整条公式确认保留后才扩展被引用页，转为缓存值的公式不占用额外行列。
+        for (const { sheet, rows, columns } of result.expansions) {
+          sheet.rows = Math.max(sheet.rows, rows)
+          sheet.columns = Math.max(sheet.columns, columns)
+        }
         retained.set(cell, result.formula)
         analysis.kept++
         if (result.warning) {
