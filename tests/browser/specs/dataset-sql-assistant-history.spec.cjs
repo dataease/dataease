@@ -34,11 +34,14 @@ test("SQL editor follows up on two fields after stopping a later read", async ({
   await control("stop").click();
   const trace = original.locator(".assistant-process");
   const summary = trace.locator(":scope > summary");
-  await expect(summary).toContainText(
-    "步骤 1 · 读取 orders 表结构 · 80 个字段"
-  );
+  const processTitle = /^\s*执行过程(?: · 总耗时 \d+(?:\.\d+)? (?:ms|s))?\s*$/;
+  await expect(trace).not.toHaveAttribute("open", "");
+  await expect(summary).toHaveText(processTitle);
   await summary.click();
-  await trace.locator("details").first().locator("summary").click();
+  await expect(summary).toHaveText(processTitle);
+  const orders = trace.locator("details").first().locator("summary");
+  await expect(orders).toHaveText("步骤 1 · 读取 orders 表结构 · 80 个字段");
+  await orders.click();
   await expect(original.getByText(/column-marker-79!/)).toBeVisible();
   await control("input").fill(
     "步骤 1 里的 paid_at 和 created_at 各是什么类型？"
