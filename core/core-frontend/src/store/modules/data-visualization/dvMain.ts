@@ -1965,23 +1965,32 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = []
       this.canvasViewInfo = {}
     },
-    removeLinkageInfo(targetId) {
-      if (!!targetId && !!this.nowPanelTrackInfo) {
-        Object.keys(this.nowPanelTrackInfo).forEach(trackId => {
-          const targetInfo = this.nowPanelTrackInfo[trackId]
-          for (let i = 0; i < targetInfo.length; i++) {
-            if (targetInfo[i].indexOf(targetId) > -1) {
-              targetInfo.splice(i, 1)
-              i--
-            }
+    removeLinkageInfo(viewId) {
+      if (!viewId || !this.nowPanelTrackInfo) return []
+      const id = String(viewId)
+      const trackInfo = this.nowPanelTrackInfo as Record<string, string[]>
+      const changedSourceIds = new Set<string>()
+      const activeSourceIds = new Set<string>()
+      Object.entries(trackInfo).forEach(([source, targets]) => {
+        const sourceId = source.split('#')[0]
+        if (sourceId === id) {
+          delete trackInfo[source]
+          return
+        }
+        const remaining = targets.filter(target => target.split('#')[0] !== id)
+        if (remaining.length !== targets.length) {
+          changedSourceIds.add(sourceId)
+        }
+        if (!remaining.length) {
+          delete trackInfo[source]
+        } else {
+          activeSourceIds.add(sourceId)
+          if (remaining.length !== targets.length) {
+            trackInfo[source] = remaining
           }
-        })
-        Object.keys(this.nowPanelTrackInfo).forEach(trackId => {
-          if (trackId.indexOf(targetId) > -1 || this.nowPanelTrackInfo[trackId].length === 0) {
-            delete this.nowPanelTrackInfo[trackId]
-          }
-        })
-      }
+        }
+      })
+      return [...changedSourceIds].filter(sourceId => !activeSourceIds.has(sourceId))
     },
     canvasDataInit() {
       this.canvasViewInfo = {}

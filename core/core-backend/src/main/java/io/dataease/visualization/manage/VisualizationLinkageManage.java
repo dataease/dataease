@@ -2,13 +2,15 @@ package io.dataease.visualization.manage;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.dto.LinkageInfoDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
 import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.dao.auto.entity.QCoreChartView;
+import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.visualization.dao.auto.entity.*;
@@ -33,15 +35,9 @@ public class VisualizationLinkageManage {
     private VisualizationLinkageFieldRepository linkageFieldRepository;
 
     @Resource
-    private CoreChartViewRepository coreChartViewRepository;
-
-    @Resource
     private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
 
 
-
-    @Resource
-    private SnapshotCoreChartViewRepository snapshotCoreChartViewRepository;
 
     @Resource
     private SnapshotVisualizationLinkageRepository snapshotLinkageRepository;
@@ -343,81 +339,55 @@ public class VisualizationLinkageManage {
     }
 
     public List<LinkageInfoDTO> getPanelAllLinkageInfo(Long dvId) {
-        // 1. 查询符合条件的联动信息
-        List<VisualizationLinkage> linkages = linkageRepository.findByDvIdAndLinkageActive(dvId, true);
-        // 2. 创建分组Map
-        Map<String, List<String>> groupedResults = new HashMap<>();
-        List<Long> sourceViewIds = linkages.stream()
-                .map(VisualizationLinkage::getSourceViewId)
-                .toList();
-        List<Long> linkageIds = linkages.stream()
-                .map(VisualizationLinkage::getId)
-                .toList();
-        List<Long> sourceViewIdsActive = coreChartViewRepository.findIdsByIdInAndLinkageActive(sourceViewIds,true);
-
-        List<VisualizationLinkageField> linkageFields = linkageFieldRepository.findByLinkageIdIn(linkageIds);
-        Map<Long, List<VisualizationLinkageField>> groupedLinkageFields = linkageFields.stream()
-                .collect(Collectors.groupingBy(
-                        VisualizationLinkageField::getLinkageId,
-                        Collectors.toList()
-                ));
-        // 3. 填充分组数据
-        linkages.stream()
-                .filter(linkage -> sourceViewIdsActive.contains(linkage.getSourceViewId()))
-                .forEach(linkage -> {
-                    groupedLinkageFields.getOrDefault(linkage.getId(), Collections.emptyList()).stream()
-                            .filter(field -> field.getId() != null)
-                            .forEach(field -> {
-                                String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
-                                String targetValue = linkage.getTargetViewId() + "#" + field.getTargetField();
-                                groupedResults.computeIfAbsent(sourceKey, k -> new ArrayList<>()).add(targetValue);
-                            });
-                });
-
-        // 4. 转换为 LinkageInfoDTO 列表
-        return groupedResults.entrySet().stream()
-                .map(entry -> {
-                    LinkageInfoDTO dto = new LinkageInfoDTO();
-                    dto.setSourceInfo(entry.getKey());
-                    dto.setTargetInfoList(entry.getValue());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        QVisualizationLinkage linkage = QVisualizationLinkage.visualizationLinkage;
+        QVisualizationLinkageField linkageField = QVisualizationLinkageField.visualizationLinkageField;
+        QCoreChartView sourceView = new QCoreChartView("sourceView");
+        QCoreChartView targetView = new QCoreChartView("targetView");
+        QCoreDatasetTableField sourceField = new QCoreDatasetTableField("sourceField");
+        QCoreDatasetTableField targetField = new QCoreDatasetTableField("targetField");
+        return collectLinkageInfo(queryFactory
+                .select(sourceView.id, sourceField.id, targetView.id, targetField.id)
+                .from(linkage, linkageField, sourceView, targetView, sourceField, targetField)
+                .where(linkage.dvId.eq(dvId), linkage.linkageActive.isTrue(), linkageField.linkageId.eq(linkage.id),
+                        sourceView.id.eq(linkage.sourceViewId), sourceView.sceneId.eq(dvId), sourceView.linkageActive.isTrue(),
+                        targetView.id.eq(linkage.targetViewId), targetView.sceneId.eq(dvId),
+                        sourceField.id.eq(linkageField.sourceField), sourceFieldMatchesChart(sourceField, sourceView.id, sourceView.tableId),
+                        targetField.id.eq(linkageField.targetField), targetField.datasetGroupId.eq(targetView.tableId))
+                .fetch());
     }
 
     public List<LinkageInfoDTO> getPanelAllLinkageInfoSnapshot(Long dvId) {
-        // 1. 查询符合条件的联动信息
-        List<SnapshotVisualizationLinkage> linkages = snapshotLinkageRepository.findByDvIdAndLinkageActive(dvId, true);
-        // 2. 创建分组Map
+        QSnapshotVisualizationLinkage linkage = QSnapshotVisualizationLinkage.snapshotVisualizationLinkage;
+        QSnapshotVisualizationLinkageField linkageField = QSnapshotVisualizationLinkageField.snapshotVisualizationLinkageField;
+        QSnapshotCoreChartView sourceView = new QSnapshotCoreChartView("sourceView");
+        QSnapshotCoreChartView targetView = new QSnapshotCoreChartView("targetView");
+        QCoreDatasetTableField sourceField = new QCoreDatasetTableField("sourceField");
+        QCoreDatasetTableField targetField = new QCoreDatasetTableField("targetField");
+        return collectLinkageInfo(queryFactory
+                .select(sourceView.id, sourceField.id, targetView.id, targetField.id)
+                .from(linkage, linkageField, sourceView, targetView, sourceField, targetField)
+                .where(linkage.dvId.eq(dvId), linkage.linkageActive.isTrue(), linkageField.linkageId.eq(linkage.id),
+                        sourceView.id.eq(linkage.sourceViewId), sourceView.sceneId.eq(dvId), sourceView.linkageActive.isTrue(),
+                        targetView.id.eq(linkage.targetViewId), targetView.sceneId.eq(dvId),
+                        sourceField.id.eq(linkageField.sourceField), sourceFieldMatchesChart(sourceField, sourceView.id, sourceView.tableId),
+                        targetField.id.eq(linkageField.targetField), targetField.datasetGroupId.eq(targetView.tableId))
+                .fetch());
+    }
+
+    private BooleanExpression sourceFieldMatchesChart(QCoreDatasetTableField field, NumberPath<Long> chartId, NumberPath<Long> tableId) {
+        BooleanExpression sameDataset = field.datasetGroupId.eq(tableId);
+        // 历史图表计算字段可能没有数据集 ID，仍可作为所属图表的联动来源。
+        return field.chartId.isNull().and(sameDataset)
+                .or(field.chartId.eq(chartId).and(sameDataset.or(field.datasetGroupId.isNull())));
+    }
+
+    private List<LinkageInfoDTO> collectLinkageInfo(List<Tuple> fields) {
         Map<String, List<String>> groupedResults = new HashMap<>();
-        List<Long> sourceViewIds = linkages.stream()
-                .map(SnapshotVisualizationLinkage::getSourceViewId)
-                .toList();
-        List<Long> linkageIds = linkages.stream()
-                .map(SnapshotVisualizationLinkage::getId)
-                .toList();
-        List<Long> sourceViewIdsActive = snapshotCoreChartViewRepository.findIdsByIdInAndLinkageActive(sourceViewIds,true);
-
-        List<SnapshotVisualizationLinkageField> linkageFields = snapshotVisualizationLinkageFieldRepository.findByLinkageIdIn(linkageIds);
-        Map<Long, List<SnapshotVisualizationLinkageField>> groupedLinkageFields = linkageFields.stream()
-                .collect(Collectors.groupingBy(
-                        SnapshotVisualizationLinkageField::getLinkageId,
-                        Collectors.toList()
-                ));
-        // 3. 填充分组数据
-        linkages.stream()
-                .filter(linkage -> sourceViewIdsActive.contains(linkage.getSourceViewId()))
-                .forEach(linkage -> {
-                    groupedLinkageFields.getOrDefault(linkage.getId(), Collections.emptyList()).stream()
-                            .filter(field -> field.getId() != null)
-                            .forEach(field -> {
-                                String sourceKey = linkage.getSourceViewId() + "#" + field.getSourceField();
-                                String targetValue = linkage.getTargetViewId() + "#" + field.getTargetField();
-                                groupedResults.computeIfAbsent(sourceKey, k -> new ArrayList<>()).add(targetValue);
-                            });
-                });
-
-        // 4. 转换为 LinkageInfoDTO 列表
+        for (Tuple field : fields) {
+            String sourceKey = field.get(0, Long.class) + "#" + field.get(1, Long.class);
+            String targetValue = field.get(2, Long.class) + "#" + field.get(3, Long.class);
+            groupedResults.computeIfAbsent(sourceKey, key -> new ArrayList<>()).add(targetValue);
+        }
         return groupedResults.entrySet().stream()
                 .map(entry -> {
                     LinkageInfoDTO dto = new LinkageInfoDTO();
@@ -425,6 +395,6 @@ public class VisualizationLinkageManage {
                     dto.setTargetInfoList(entry.getValue());
                     return dto;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 }
