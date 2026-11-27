@@ -1580,7 +1580,23 @@ const handleBeforeClose = () => {
   dialogVisible.value = false
 }
 const emits = defineEmits(['queryData', 'reRenderAll'])
+// 仅清洗空/空白条件名，不影响已有有效名称与其它配置
+const normalizeConditionName = (ele, index = 0) => {
+  if (!ele) return
+  if (ele.name == null || typeof ele.name !== 'string' || !ele.name.trim()) {
+    ele.name = ele.field?.name || `${t('v_query.unnamed')}${index + 1}`
+  } else {
+    ele.name = ele.name.trim()
+  }
+}
+// 条件切换世代号：丢弃过期异步回写，避免串写把名称/字段打空
+let conditionSwitchToken = 0
+
 const confirmClick = () => {
+  // 退出重命名态，避免未提交的空名称残留
+  activeConditionForRename.id = ''
+  // 落库前强制清洗空名称，杜绝脏数据再次写入
+  conditions.value.forEach((ele, index) => normalizeConditionName(ele, index))
   if (validate()) return
   defaultConfigurationRef.value?.mult()
   defaultConfigurationRef.value?.single()
@@ -1696,7 +1712,10 @@ const init = (queryId: string) => {
   initDataset()
   relationshipChartIndex.value = 0
   renameInput.value = []
+  activeConditionForRename.id = ''
   handleCondition({ id: queryId })
+  // 以 handleCondition 内生成的 token 为准，避免 init 异步回写打到已切换的条件
+  const initToken = conditionSwitchToken
   cascadeArr = cloneDeep(queryElement.value.cascade || [])
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
@@ -1720,6 +1739,7 @@ const init = (queryId: string) => {
   if (!params.length) return
   Promise.all([getDsDetailsWithPerm(params), getSqlParams(params)])
     .then(([dq, p]) => {
+      if (conditionSwitchToken !== initToken) return
       dq.filter(ele => !!ele).forEach(ele => {
         ele.activelist = 'dimensionList'
         ele.fields.parameterList = p.filter(
@@ -1738,15 +1758,18 @@ const init = (queryId: string) => {
           const activeCom = datasetMap[ele.tableId].fields || {}
           const activelist = setActiveSelectTab(
             [activeCom.dimensionList, activeCom.quotaList, activeCom.parameterList],
-            curComponent.value.checkedFieldsMap[ele.id]
+            curComponent.value?.checkedFieldsMap?.[ele.id]
           )
           return { ...datasetMap[ele.tableId], componentId: ele.id, activelist }
         })
         .filter(ele => !!ele)
     })
     .finally(() => {
+      // 打开弹窗后用户可能已切换条件，避免把字段变更写到错误条件上
+      if (conditionSwitchToken !== initToken || !curComponent.value) return
       if (!curComponent.value.treeDatasetId) {
         nextTick(() => {
+          if (conditionSwitchToken !== initToken) return
           setTreeDefault()
         })
       }
@@ -1829,6 +1852,9 @@ const parameterCompletion = ele => {
     ele.timeRange.relativeToCurrentRange = 'custom'
   }
 
+  // 打开配置时自动修复历史空名称
+  normalizeConditionName(ele)
+
   return ele
 }
 let fastClickId
@@ -1871,6 +1897,8 @@ const handleCondition = (item, idx = 0) => {
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
   const obj = conditions.value.find(ele => ele.id === item.id)
+  if (!obj) return
+  normalizeConditionName(obj)
   if (!obj.checkedFieldsMapArr) {
     obj.checkedFieldsMapArr = {}
     obj.checkedFieldsMapArrNum = {}
@@ -1880,14 +1908,20 @@ const handleCondition = (item, idx = 0) => {
     obj.checkedFieldsMapEndNum = {}
     obj.parametersArr = {}
   }
+  const switchToken = ++conditionSwitchToken
+  const targetId = obj.id
   curComponent.value = obj
   curComponent.value.dataset.fields = []
   nextTick(() => {
-    defaultConfigurationRef.value.changeMultiple(curComponent.value.multiple)
+    if (conditionSwitchToken !== switchToken || activeCondition.value !== targetId) return
+    defaultConfigurationRef.value?.changeMultiple(curComponent.value.multiple)
   })
   if (curComponent.value.dataset.id) {
-    listFieldsWithPermissions(curComponent.value.dataset.id).then(res => {
-      curComponent.value.dataset.fields = res.data
+    const datasetId = curComponent.value.dataset.id
+    listFieldsWithPermissions(datasetId).then(res => {
+      // 仅当仍停留在发起请求的条件时才回写，避免异步串写
+      if (conditionSwitchToken !== switchToken || activeCondition.value !== targetId) return
+      obj.dataset.fields = res.data
     })
   }
   if (!curComponent.value.checkedFieldsMapStart) {
@@ -1976,7 +2010,10 @@ const handleCondition = (item, idx = 0) => {
 }
 
 const getOptions = (id, component) => {
+  const targetId = component?.id
+  const token = conditionSwitchToken
   listFieldsWithPermissions(id).then(res => {
+    if (conditionSwitchToken !== token || activeCondition.value !== targetId) return
     component.dataset.fields = res.data
   })
 }
@@ -2396,10 +2433,13 @@ const addOperation = (cmd, condition, index) => {
     case 'rename':
       clearTimeout(fastDbClickId)
       renameInput.value = []
-      Object.assign(activeConditionForRename, condition)
+      // 只拷贝展示所需字段，避免 Object.assign 整对象浅拷贝造成引用污染
+      activeConditionForRename.id = condition.id
+      activeConditionForRename.name = condition.name || ''
+      activeConditionForRename.visible = !!condition.visible
       fastDbClickId = setTimeout(() => {
         nextTick(() => {
-          renameInput.value[0].focus()
+          renameInput.value[0]?.focus()
         })
       }, 400)
       break
@@ -2425,9 +2465,10 @@ const dfs = arr => {
 }
 
 const renameInputBlur = () => {
+  // 名称为空时取消重命名并退出编辑，避免输入框一直盖住列表项
   if (activeConditionForRename.name.trim() === '') {
     ElMessage.error(t('v_query.cannot_be_empty_name'))
-    renameInput.value[0]?.focus()
+    activeConditionForRename.id = ''
     return
   }
   conditions.value.some(ele => {
