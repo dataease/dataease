@@ -56,7 +56,7 @@ const verdict = (tool: AiConversationTool) => {
       return tr('tool_succeeded')
   }
 }
-const title = (tool: AiConversationTool) => {
+const actionLabel = (tool: AiConversationTool) => {
   const params = tool.parameters
   const labels: Record<string, [string, string | undefined]> = {
     get_table_fields: ['read_table_fields', params.table],
@@ -76,19 +76,16 @@ const title = (tool: AiConversationTool) => {
   }
   const label = labels[tool.name]
   const object = (label?.[1] ?? '').replace(/\s+/g, ' ').trim()
-  const action = label
+  return label
     ? t(`ai_conversation.${label[0]}`, {
         object: object.length > 64 ? object.slice(0, 63) + '…' : object
       }).trim()
     : tool.name
-  const summary =
-    tool.status === 'SUCCEEDED' && tool.fieldCount != null
-      ? t('ai_conversation.fields_count', { count: tool.fieldCount })
-      : verdict(tool)
-  return [t('ai_conversation.step_number', { number: tool.stepNumber }), action, summary].join(
-    ' · '
-  )
 }
+const outcomeLabel = (tool: AiConversationTool) =>
+  tool.status === 'SUCCEEDED' && tool.fieldCount != null
+    ? t('ai_conversation.fields_count', { count: tool.fieldCount })
+    : verdict(tool)
 const toggleTool = (entry: ProcessEntry) => {
   if (entry.kind === 'tool') entry.open = !entry.open
 }
@@ -100,28 +97,36 @@ const toggleTool = (entry: ProcessEntry) => {
       {{ tr('answer_process') }}<span v-if="elapsed"> · {{ elapsed }}</span>
     </summary>
     <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
-      <details v-if="entry.kind === 'tool'" :open="entry.open">
+      <details v-if="entry.kind === 'tool'" class="tool-step" :open="entry.open">
         <summary @click.prevent="toggleTool(entry)">
-          {{ title(entry.tool) }}
+          <span>{{ t('ai_conversation.step_number', { number: entry.tool.stepNumber }) }} · </span>
+          <strong>{{ actionLabel(entry.tool) }}</strong>
+          <span> · {{ outcomeLabel(entry.tool) }}</span>
         </summary>
-        <dl>
-          <dt>{{ tr('tool') }}</dt>
-          <dd>{{ entry.tool.name }}</dd>
-          <dt>{{ tr('tool_parameters') }}</dt>
-          <dd>
-            <pre>{{ format(entry.tool.parameters) }}</pre>
-          </dd>
-          <template v-if="entry.tool.result">
-            <dt>{{ tr('tool_result') }}</dt>
+        <dl class="tool-detail">
+          <div class="tool-name">
+            <dt>{{ tr('tool') }}</dt>
             <dd>
+              <code>{{ entry.tool.name }}</code>
+            </dd>
+          </div>
+          <div>
+            <dt>{{ tr('tool_parameters') }}</dt>
+            <dd class="tool-value">
+              <pre>{{ format(entry.tool.parameters) }}</pre>
+            </dd>
+          </div>
+          <div v-if="entry.tool.result">
+            <dt>{{ tr('tool_result') }}</dt>
+            <dd class="tool-value">
               <pre>{{ format(parseToolResult(entry.tool.result)) }}</pre>
             </dd>
-          </template>
-          <template
+          </div>
+          <div
             v-if="entry.tool.resultSequence && sessionId && executionId && expanded && entry.open"
           >
             <dt>{{ tr('tool_result') }}</dt>
-            <dd>
+            <dd class="tool-value">
               <AssistantToolResult
                 :session-id="sessionId"
                 :execution-id="executionId"
@@ -129,8 +134,8 @@ const toggleTool = (entry: ProcessEntry) => {
                 @detail-error="emit('detail-error', $event)"
               />
             </dd>
-          </template>
-          <template v-if="entry.error">
+          </div>
+          <div v-if="entry.error">
             <dt>{{ tr('tool_end_reason') }}</dt>
             <dd>
               {{
@@ -140,10 +145,10 @@ const toggleTool = (entry: ProcessEntry) => {
               }}
               ({{ entry.error }})
             </dd>
-          </template>
+          </div>
         </dl>
       </details>
-      <p v-else>{{ entry.text }}</p>
+      <p v-else-if="entry.text.trim()" class="process-note">{{ entry.text.trim() }}</p>
     </template>
   </details>
 </template>
@@ -157,17 +162,95 @@ summary {
   cursor: pointer;
 }
 
-details details {
-  margin: 0.4em 0 0.4em 0.6em;
+.process-note {
+  margin: 4px 0;
+  white-space: pre-wrap;
 }
 
-dd {
-  margin-inline-start: 0.6em;
+.tool-step {
+  margin: 2px 0;
+  border-radius: 6px;
 }
 
-pre,
-p {
-  margin-block: 6px;
+.tool-step[open],
+.tool-step > summary:hover {
+  background: var(--ed-fill-color-light);
+}
+
+.tool-step > summary {
+  position: relative;
+  display: block;
+  padding: 2px 8px 2px 22px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--ed-text-color-secondary);
+  border-radius: inherit;
+}
+
+.tool-step > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-step > summary::before {
+  position: absolute;
+  top: 9px;
+  width: 5px;
+  height: 5px;
+  border: solid currentcolor;
+  border-width: 0 1.5px 1.5px 0;
+  content: '';
+  transform: rotate(-45deg);
+  inset-inline-start: 8px;
+}
+
+.tool-step[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.tool-step strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ed-text-color-primary);
+}
+
+.tool-detail {
+  display: grid;
+  padding: 4px 10px 10px 22px;
+  margin: 0;
+  gap: 8px;
+}
+
+.tool-detail dt {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--ed-text-color-regular);
+}
+
+.tool-detail dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.tool-name {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px;
+}
+
+.tool-detail .tool-value {
+  max-height: 160px;
+  padding: 5px 8px;
+  margin-top: 2px;
+  overflow: auto;
+  background: var(--ed-bg-color);
+  border: 1px solid var(--ed-border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.tool-value :deep(pre) {
+  margin: 0;
   white-space: pre-wrap;
 }
 </style>

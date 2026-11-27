@@ -22,24 +22,31 @@ test("switch from a suggestion to the edited SQL and keep that exact basis on th
     { timeout: 4000 }
   );
   const editor = page.locator(".sql-drawer-fullscreen:visible .cm-content");
-  await editor.fill("SELECT order_id\n  FROM orders");
+  const sql =
+    "SELECT\n" +
+    Array.from({ length: 24 }, (_, i) => "  order_id AS col_" + i).join(",\n") +
+    "\nFROM orders";
+  await editor.fill(sql);
   await source.selectOption({ label: "编辑器当前 SQL" });
   await button(panel, "查看 SQL").press("Enter");
-  expect(await panel.locator("footer pre").textContent()).toBe(
-    "SELECT order_id\n  FROM orders"
-  );
+  expect(await panel.locator("footer pre").textContent()).toBe(sql);
   await ask(panel, "解释这次修改");
   const basis = panel
     .getByRole("article")
     .nth(1)
     .locator("details")
     .filter({ hasText: "生成依据" });
-  await basis.locator("summary").click();
+  const snapshot = basis.locator("pre");
+  await expect(snapshot).toBeHidden();
+  await basis.locator("summary").press("Enter");
+  await expect(basis.getByText(/Fixture MySQL/)).toBeVisible();
+  await snapshot.focus();
+  await expect(snapshot).toBeFocused();
+  await snapshot.press("End");
+  await expect.poll(() => snapshot.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
   await editor.fill("SELECT 42");
-  expect(await basis.locator("pre").textContent()).toBe(
-    "SELECT order_id\n  FROM orders"
-  );
-  expect(openings[1].sql).toBe("SELECT order_id\n  FROM orders");
+  expect(await snapshot.textContent()).toBe(sql);
+  expect(openings[1].sql).toBe(sql);
   await source.selectOption({ label: "不引用 SQL" });
   await expect(button(panel, "查看 SQL")).toBeHidden();
   await ask(panel, "请解释表结构");

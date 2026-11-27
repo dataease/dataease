@@ -4,6 +4,7 @@ import { uuid } from 'vue-uuid'
 import AssistantConversationPanel from '@/components/assistant/AssistantConversationPanel.vue'
 import AssistantReference from '@/components/assistant/AssistantReference.vue'
 import AssistantProcess from './AssistantProcess.vue'
+import AssistantSqlEvidence from './AssistantSqlEvidence.vue'
 import AssistantAnswer from '@/components/assistant/AssistantAnswer.vue'
 import AssistantFailure from './AssistantFailure.vue'
 import type { AnswerFailure } from './assistantFailure'
@@ -1101,13 +1102,6 @@ const apply = async (turn: Turn) => {
         · {{ turn.issue ? tr(turn.issue.step) : tr('incomplete') }}</template
       >
       <template #attempt="{ turn, index }">
-        <details v-if="turn.baseSql.trim()">
-          <summary>{{ tr('generated_from') }} · {{ turn.basis }}</summary>
-          <pre>{{ turn.baseSql }}</pre>
-          <small v-if="turn.session"
-            >{{ turn.session.resourceName }} ({{ turn.session.resourceId }})</small
-          >
-        </details>
         <p v-if="turn.recovering" class="answer-status" role="status">
           {{ tr('editor_recovering') }}
         </p>
@@ -1119,6 +1113,45 @@ const apply = async (turn: Turn) => {
           {{ tr('technical_retries') }} {{ turn.recovery.technicalRetries }} ·
           {{ tr('corrections') }} {{ turn.recovery.corrections }}
         </p>
+        <div
+          v-if="
+            turn.baseSql.trim() ||
+            turn.process.entries.length ||
+            (turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql)
+          "
+          class="answer-details"
+        >
+          <details v-if="turn.baseSql.trim()" class="generation-basis">
+            <summary :title="turn.basis">{{ tr('generated_from') }} · {{ turn.basis }}</summary>
+            <div class="basis-snapshot">
+              <div class="basis-heading">
+                <strong>{{ tr(calcFieldDraft ? 'referenced_formula' : 'referenced_sql') }}</strong>
+                <small v-if="turn.session?.resourceName || turn.session?.resourceId">
+                  {{ tr('resource') }} · {{ turn.session.resourceName }}
+                  <span v-if="turn.session.resourceId">({{ turn.session.resourceId }})</span>
+                </small>
+              </div>
+              <pre
+                tabindex="0"
+                role="region"
+                :aria-label="tr(calcFieldDraft ? 'referenced_formula' : 'referenced_sql')"
+              ><code>{{ turn.baseSql }}</code></pre>
+            </div>
+          </details>
+          <AssistantProcess
+            :process="turn.process"
+            :elapsed="turn.metering && elapsedLabel(turn.metering.elapsedMillis)"
+            :status="turn.status"
+            :session-id="turn.session?.sessionId"
+            :execution-id="turn.executionId"
+            @update:open="turn.process.open = $event"
+            @detail-error="error => accessLost(error) && fail(error)"
+          />
+          <AssistantSqlEvidence
+            v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql"
+            :tables="turn.result.evidence"
+          />
+        </div>
         <AssistantAnswer
           v-if="turn.answer"
           :text="turn.answer"
@@ -1188,59 +1221,6 @@ const apply = async (turn: Turn) => {
           "
           @retry="retryAnswer(turn)"
         />
-        <AssistantProcess
-          :process="turn.process"
-          :elapsed="turn.metering && elapsedLabel(turn.metering.elapsedMillis)"
-          :status="turn.status"
-          :session-id="turn.session?.sessionId"
-          :execution-id="turn.executionId"
-          @update:open="turn.process.open = $event"
-          @detail-error="error => accessLost(error) && fail(error)"
-        />
-        <details v-if="turn.result?.type === 'SQL_SUGGESTION' && turn.result.sql">
-          <summary>{{ tr('sql_evidence') }}</summary>
-          <p v-if="!turn.result.evidence?.length">{{ tr('no_sql_evidence') }}</p>
-          <div v-for="table in turn.result.evidence" :key="table.table">
-            <strong>{{ table.table }}</strong>
-            <small>{{ tr(table.inspected ? 'verified_structure' : 'sql_reference') }}</small>
-            <p v-if="table.description">{{ table.description }}</p>
-            <p v-if="table.grain">{{ table.grain }}</p>
-            <div v-for="relation in table.relations" :key="JSON.stringify(relation)">
-              <p>{{ tr('confirmed_join') }} · {{ relation.name }} · {{ relation.cardinality }}</p>
-              <code
-                >{{ relation.leftTable }} {{ relation.joinType }} JOIN
-                {{ relation.rightTable }}</code
-              >
-              <p v-if="relation.actual">
-                {{ tr('actual_join') }} ·
-                <code
-                  >{{ relation.actual.leftTable }} {{ relation.actual.joinType }} JOIN
-                  {{ relation.actual.rightTable }}</code
-                >
-              </p>
-              <p v-for="pair in relation.conditions" :key="pair.leftField + '=' + pair.rightField">
-                {{ relation.leftTable }}.{{ pair.leftField }} = {{ relation.rightTable }}.{{
-                  pair.rightField
-                }}
-              </p>
-            </div>
-            <ul v-if="table.fields.length">
-              <li v-for="field in table.fields" :key="field.name">
-                <code>{{ field.name }}</code> {{ field.type }}
-                <span v-if="field.comment && field.comment !== field.name">{{
-                  field.comment
-                }}</span>
-                <p v-if="field.businessName || field.description">
-                  {{ tr('confirmed_meaning') }} · {{ field.businessName }}
-                  {{ field.description }}
-                </p>
-                <p v-for="value in field.values" :key="value.value">
-                  {{ value.value }} → {{ value.meaning }}
-                </p>
-              </li>
-            </ul>
-          </div>
-        </details>
         <footer v-if="turn.metering" class="answer-metering">
           <span v-if="!turn.process.entries.length">{{
             elapsedLabel(turn.metering.elapsedMillis)
@@ -1300,6 +1280,57 @@ const apply = async (turn: Turn) => {
 </template>
 
 <style scoped lang="less">
+.answer-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+
+  :deep(> details > summary) {
+    color: var(--ed-text-color-regular);
+    font-size: 13px;
+    line-height: 22px;
+  }
+}
+.generation-basis {
+  min-width: 0;
+  summary {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.basis-snapshot {
+  margin: 4px 0;
+  border: 1px solid var(--ed-border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  pre {
+    max-height: min(160px, 24vh);
+    box-sizing: border-box;
+    padding: 8px 10px;
+    overflow: auto;
+    white-space: pre;
+    &:focus-visible {
+      outline: 2px solid var(--ed-color-primary);
+      outline-offset: -2px;
+    }
+  }
+}
+.basis-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 8px;
+  padding: 4px 10px;
+  background: var(--ed-fill-color-light);
+  border-bottom: 1px solid var(--ed-border-color);
+  font-size: 12px;
+  line-height: 18px;
+  strong {
+    font-weight: 600;
+  }
+}
 .suggestion,
 .suggestion-code {
   min-width: 0;
