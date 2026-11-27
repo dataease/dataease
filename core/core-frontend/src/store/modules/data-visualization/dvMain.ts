@@ -1293,6 +1293,17 @@ export const dvMainStore = defineStore('dataVisualization', {
           paramValueStr = params[sourceInfo]
           parmaValueSource = params[sourceInfo]
         }
+        const rawTreePaths = outerParamsVersion === 'v2' ? params[sourceInfo].treePaths : undefined
+        const treePaths = Array.isArray(rawTreePaths)
+          ? rawTreePaths
+              .filter(
+                path =>
+                  Array.isArray(path) &&
+                  path.length &&
+                  path.every(level => typeof level === 'string')
+              )
+              .map(path => path.join('-de-'))
+          : []
         let operator = 'in'
         if (paramValue && !Array.isArray(paramValue)) {
           paramValue = [paramValue]
@@ -1346,17 +1357,23 @@ export const dvMainStore = defineStore('dataVisualization', {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
                 const isTree = filterItem.displayType === '9'
+                const originalPaths = isTree && treePaths.length ? treePaths : undefined
+                if (!isTree && treePaths.length && !paramValue?.length) {
+                  return
+                }
                 const targetMatchMode = targetInfoArray[2] // 目标匹配模式
                 if (targetMatchMode === 'filter') {
-                  queryParams = paramValue.map(option => {
-                    if (isTree && option != null) {
-                      return normalizeOuterTreePath(String(option))
-                    }
-                    if (typeof option === 'string' && option.includes(',')) {
-                      return option.replace(/,/g, '-de-')
-                    }
-                    return option
-                  })
+                  queryParams =
+                    originalPaths ||
+                    paramValue.map(option => {
+                      if (isTree && option != null) {
+                        return normalizeOuterTreePath(String(option))
+                      }
+                      if (typeof option === 'string' && option.includes(',')) {
+                        return option.replace(/,/g, '-de-')
+                      }
+                      return option
+                    })
                   // do filter
                   filterItem['optionFilter'] = queryParams
                   if (filterItem.defaultValueCheck) {
@@ -1372,7 +1389,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     }
                   }
                 } else {
-                  if (!['1', '7'].includes(filterItem.displayType)) {
+                  if (!originalPaths && !['1', '7'].includes(filterItem.displayType)) {
                     // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
                     queryParams = paramValue.map(number => String(number))
                   }
@@ -1414,7 +1431,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     filterItem['conditionValueF'] = parmaValueSource + ''
                     filterItem['defaultConditionValueF'] = parmaValueSource + ''
                   } else if (isTree) {
-                    const paths = queryParams.map(normalizeOuterTreePath)
+                    const paths = originalPaths || queryParams.map(normalizeOuterTreePath)
                     if (filterItem.multiple) {
                       // multiple === true 多选
                       filterItem['selectValue'] = paths
@@ -1430,7 +1447,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     filterItem['numValueStart'] = queryParams[0]
                     filterItem['numValueEnd'] = queryParams[1]
                   }
-                  if ('DE_EMPTY' === paramValueStr) {
+                  if (!originalPaths && 'DE_EMPTY' === paramValueStr) {
                     filterItem['selectValue'] = null
                     filterItem['defaultValue'] = null
                     filterItem['conditionValueF'] = null

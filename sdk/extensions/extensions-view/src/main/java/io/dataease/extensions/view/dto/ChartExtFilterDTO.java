@@ -19,6 +19,8 @@ public class ChartExtFilterDTO {
     private List<SqlVariableDetails> parameters;
     private DatasetTableFieldDTO datasetTableField;
     private Boolean isTree = false;
+    // Each tuple matches the ordered field IDs for a structured tree IN condition.
+    private List<List<String>> treePaths;
     // Tree IN clauses from the same selection are alternatives when their field paths differ.
     private String treeFilterGroup;
     private List<DatasetTableFieldDTO> datasetTableFieldList;

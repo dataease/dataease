@@ -52,6 +52,10 @@ public class ExtWhere2Str {
             for (ChartExtFilterDTO request : fields) {
                 List<String> value = request.getValue();
                 String operator = request.getOperator();
+                List<List<String>> treePaths = request.getTreePaths();
+                if (treePaths != null && (!Boolean.TRUE.equals(request.getIsTree()) || !"in".equals(operator))) {
+                    DEException.throwException("Invalid tree filter operator");
+                }
                 boolean compoundCondition = StringUtils.contains(operator, "-");
                 // 复合条件仅支持两个文本匹配项，必须在 SQL 拼接前校验完整格式及值数量。
                 if (compoundCondition) {
@@ -69,13 +73,16 @@ public class ExtWhere2Str {
                 List<String> whereNameList = new ArrayList<>();
                 List<DatasetTableFieldDTO> fieldList = new ArrayList<>();
                 if (request.getIsTree()) {
+                    if (treePaths != null && ObjectUtils.isEmpty(request.getDatasetTableFieldList())) {
+                        DEException.throwException("Invalid tree filter fields");
+                    }
                     fieldList.addAll(request.getDatasetTableFieldList());
                 } else {
                     fieldList.add(request.getDatasetTableField());
                 }
 
                 for (DatasetTableFieldDTO field : fieldList) {
-                    if ((!nullCondition && ObjectUtils.isEmpty(value)) || ObjectUtils.isEmpty(field)) {
+                    if ((treePaths == null && !nullCondition && ObjectUtils.isEmpty(value)) || ObjectUtils.isEmpty(field)) {
                         continue;
                     }
                     String whereName = "";
@@ -156,6 +163,18 @@ public class ExtWhere2Str {
                         whereName = originName;
                     }
                     whereNameList.add(whereName);
+                }
+
+                if (treePaths != null) {
+                    if (whereNameList.size() != fieldList.size()
+                            || (StringUtils.isNotBlank(request.getFieldId())
+                            && whereNameList.size() != request.getFieldId().split(",", -1).length)) {
+                        DEException.throwException("Invalid tree filter fields");
+                    }
+                    boolean sqlServer = !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType());
+                    String predicate = renderTreePaths(treePaths, fieldList, whereNameList, sqlServer, backslashEscapes);
+                    appendPredicate(request, predicate, predicateGroups, treeFilterGroups);
+                    continue;
                 }
 
                 String whereName = "";
@@ -372,17 +391,7 @@ public class ExtWhere2Str {
                     }
                 }
                 String predicate = "(" + whereName + " " + whereTerm + whereValue + ")";
-                if (Boolean.TRUE.equals(request.getIsTree()) && "in".equals(operator)
-                        && StringUtils.isNotBlank(request.getTreeFilterGroup())) {
-                    String groupKey = request.getComponentId() + ":" + request.getTreeFilterGroup();
-                    treeFilterGroups.computeIfAbsent(groupKey, key -> {
-                        List<String> group = new ArrayList<>();
-                        predicateGroups.add(group);
-                        return group;
-                    }).add(predicate);
-                } else {
-                    predicateGroups.add(List.of(predicate));
-                }
+                appendPredicate(request, predicate, predicateGroups, treeFilterGroups);
             }
             if (predicateGroups.isEmpty()) {
                 meta.setExtWheres(null);
@@ -394,6 +403,53 @@ public class ExtWhere2Str {
             }
         }
         meta.setExtWheresDialect(fieldsDialect);
+    }
+
+    private static String renderTreePaths(List<List<String>> paths, List<DatasetTableFieldDTO> fields,
+                                          List<String> fieldNames, boolean sqlServer, boolean backslashEscapes) {
+        if (paths.isEmpty() || fieldNames.stream().anyMatch(StringUtils::isBlank)) {
+            DEException.throwException("Invalid tree filter paths");
+        }
+        List<String> alternatives = new ArrayList<>();
+        for (List<String> path : paths) {
+            if (path == null || path.size() != fieldNames.size() || path.stream().anyMatch(StringUtils::isEmpty)) {
+                DEException.throwException("Invalid tree filter path");
+            }
+            List<String> comparisons = new ArrayList<>();
+            for (int i = 0; i < path.size(); i++) {
+                comparisons.add(treePathComparison(fieldNames.get(i), fields.get(i), path.get(i), sqlServer, backslashEscapes));
+            }
+            alternatives.add("(" + String.join(" AND ", comparisons) + ")");
+        }
+        return "(" + String.join(" OR ", alternatives) + ")";
+    }
+
+    private static String treePathComparison(String fieldName, DatasetTableFieldDTO field, String value,
+                                             boolean sqlServer, boolean backslashEscapes) {
+        if (field.getDeType() == 2 || field.getDeType() == 3) {
+            String number = value.trim();
+            // The tree can map labels from a text field to a numeric chart field.
+            return NUMBER_PATTERN.matcher(number).matches() ? fieldName + " = " + number : "1 = 0";
+        }
+        boolean unicode = sqlServer && (StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"));
+        String literal = unicode ? toSqlServerNQuotedValue(value, backslashEscapes) : toQuotedValue(value, backslashEscapes);
+        return fieldName + " = " + literal;
+    }
+
+    private static void appendPredicate(ChartExtFilterDTO request, String predicate, List<List<String>> predicateGroups,
+                                        Map<String, List<String>> treeFilterGroups) {
+        if (Boolean.TRUE.equals(request.getIsTree()) && "in".equals(request.getOperator())
+                && StringUtils.isNotBlank(request.getTreeFilterGroup())) {
+            String groupKey = request.getComponentId() + ":" + request.getTreeFilterGroup();
+            treeFilterGroups.computeIfAbsent(groupKey, key -> {
+                List<String> group = new ArrayList<>();
+                predicateGroups.add(group);
+                return group;
+            }).add(predicate);
+        } else {
+            predicateGroups.add(List.of(predicate));
+        }
     }
 
     private static String getValue(String term, String value, boolean backslashEscapes) {

@@ -95,26 +95,26 @@ const getDayEnd = timestamp => {
   ]
 }
 
+const getTreePaths = (value: unknown) =>
+  (Array.isArray(value) ? value : [value])
+    .filter((path): path is string => typeof path === 'string' && !!path)
+    .map(path => path.split('-de-'))
+
 const appendTreeFilters = (
   filter,
-  paths: unknown,
+  paths: string[][],
   treeFieldIds: (string | undefined)[],
   source: { filterId: string; componentId: string; filterFrom?: 'optionFilter' }
 ) => {
   // 各条路径只匹配自己包含的层级，同一规则下的匹配组取并集。
-  const valuesByFields = new Map<string, Set<string>>()
-  for (const path of Array.isArray(paths) ? paths : [paths]) {
-    if (typeof path !== 'string' || !path) {
-      continue
-    }
-
-    const segments = path.split('-de-')
-    const fields = []
-    const values = []
+  const pathsByFields = new Map<string, Map<string, string[]>>()
+  for (const path of paths) {
+    const fields: string[] = []
+    const values: string[] = []
     treeFieldIds.forEach((fieldId, index) => {
-      if (fieldId && segments[index]) {
+      if (fieldId && path[index]) {
         fields.push(fieldId)
-        values.push(segments[index])
+        values.push(path[index])
       }
     })
     if (!fields.length) {
@@ -122,22 +122,22 @@ const appendTreeFilters = (
     }
 
     const fieldId = fields.join(',')
-    if (!valuesByFields.has(fieldId)) {
-      valuesByFields.set(fieldId, new Set())
+    if (!pathsByFields.has(fieldId)) {
+      pathsByFields.set(fieldId, new Map())
     }
-    valuesByFields.get(fieldId).add(values.join(','))
+    pathsByFields.get(fieldId).set(JSON.stringify(values), values)
   }
 
   const treeFilterGroup =
-    valuesByFields.size > 1
+    pathsByFields.size > 1
       ? `${source.componentId}:${source.filterId}:${source.filterFrom || 'selection'}`
       : undefined
-  valuesByFields.forEach((values, fieldId) => {
+  pathsByFields.forEach((paths, fieldId) => {
     filter.push({
       ...source,
       fieldId,
       operator: 'in',
-      value: [...values],
+      treePaths: [...paths.values()],
       parameters: [],
       isTree: true,
       treeFilterGroup
@@ -178,6 +178,7 @@ export const useFilter = (curComponentId: string, firstLoad = false, showPositio
   // 弹窗区域过滤组件是否生效
   const popupAvailable = canvasStyleData.value.popupAvailable
   const filter = []
+  const treeSelections: Record<string, string[][]> = {}
   const componentDataCustom =
     showPosition === 'multiplexing' ? componentDataMultiply.value : componentData.value
   const queryComponentList = componentDataCustom.filter(
@@ -185,7 +186,7 @@ export const useFilter = (curComponentId: string, firstLoad = false, showPositio
       ele.component === 'VQuery' &&
       (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
   )
-  searchQuery(queryComponentList, filter, curComponentId, firstLoad)
+  searchQuery(queryComponentList, filter, curComponentId, firstLoad, treeSelections)
   componentDataCustom.forEach(ele => {
     if (ele.component === 'Group') {
       const list = ele.propValue.filter(
@@ -193,7 +194,7 @@ export const useFilter = (curComponentId: string, firstLoad = false, showPositio
           item.innerType === 'VQuery' &&
           (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
       )
-      searchQuery(list, filter, curComponentId, firstLoad)
+      searchQuery(list, filter, curComponentId, firstLoad, treeSelections)
 
       list.forEach(element => {
         if (element.innerType === 'DeTabs') {
@@ -203,7 +204,7 @@ export const useFilter = (curComponentId: string, firstLoad = false, showPositio
                 item.innerType === 'VQuery' &&
                 (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
             )
-            searchQuery(elementArr, filter, curComponentId, firstLoad)
+            searchQuery(elementArr, filter, curComponentId, firstLoad, treeSelections)
           })
         }
       })
@@ -216,7 +217,7 @@ export const useFilter = (curComponentId: string, firstLoad = false, showPositio
                 item.innerType === 'VQuery' &&
                 (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
             )
-            searchQuery(elementArr, filter, curComponentId, firstLoad)
+            searchQuery(elementArr, filter, curComponentId, firstLoad, treeSelections)
           })
         }
       })
@@ -231,17 +232,18 @@ export const useFilter = (curComponentId: string, firstLoad = false, showPositio
                 item.innerType === 'VQuery' &&
                 (popupAvailable || (!popupAvailable && v.category !== 'hidden'))
             )
-            searchQuery(listGroup, filter, curComponentId, firstLoad)
+            searchQuery(listGroup, filter, curComponentId, firstLoad, treeSelections)
           }
         })
 
         const arr = itx.componentData.filter(item => item.innerType === 'VQuery')
-        searchQuery(arr, filter, curComponentId, firstLoad)
+        searchQuery(arr, filter, curComponentId, firstLoad, treeSelections)
       })
     }
   })
   return {
-    filter
+    filter,
+    treeSelections
   }
 }
 
@@ -328,7 +330,13 @@ const duplicateRemoval = arr => {
   return objList
 }
 
-export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
+export const searchQuery = (
+  queryComponentList,
+  filter,
+  curComponentId,
+  firstLoad,
+  treeSelections: Record<string, string[][]> = {}
+) => {
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
       ele.propValue.forEach(item => {
@@ -354,7 +362,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             return
           }
           const source = { filterId: item.id, componentId: ele.id }
-          appendTreeFilters(filter, item.optionFilter, treeFieldIds, {
+          appendTreeFilters(filter, getTreePaths(item.optionFilter), treeFieldIds, {
             ...source,
             filterFrom: 'optionFilter'
           })
@@ -366,7 +374,11 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
           if (dvMainStore.canvasAttachInfo?.taskId) {
             rememberQueryDefault(item, selected, firstLoad)
           }
-          appendTreeFilters(filter, selected, treeFieldIds, source)
+          const selectedPaths = getTreePaths(selected)
+          if (selectedPaths.length) {
+            treeSelections[item.id] = selectedPaths
+          }
+          appendTreeFilters(filter, selectedPaths, treeFieldIds, source)
           return
         }
         if (item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]) {

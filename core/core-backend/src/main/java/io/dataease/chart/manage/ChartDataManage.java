@@ -158,6 +158,10 @@ public class ChartDataManage {
                 if (request.getIsTree() == null) {
                     request.setIsTree(false);
                 }
+                boolean hasTreePaths = request.getTreePaths() != null;
+                if (hasTreePaths && (!request.getIsTree() || StringUtils.isBlank(fieldId))) {
+                    DEException.throwException("Invalid tree filter fields");
+                }
 
                 boolean hasParameters = false;
                 if (CollectionUtils.isNotEmpty(sqlVariables)) {
@@ -175,6 +179,9 @@ public class ChartDataManage {
                 }
 
                 if (hasParameters) {
+                    if (hasTreePaths) {
+                        DEException.throwException("Invalid tree filter fields");
+                    }
                     continue;
                 }
 
@@ -200,6 +207,10 @@ public class ChartDataManage {
                                     filterRequest.getDatasetTableFieldList().add(datasetTableField);
                                 }
                             }
+                        }
+                        if (hasTreePaths && (CollectionUtils.isEmpty(request.getViewIds()) || request.getViewIds().contains(view.getId()))
+                                && filterRequest.getDatasetTableFieldList().size() != fieldIds.size()) {
+                            DEException.throwException("Invalid tree filter fields");
                         }
                         if (ObjectUtils.isNotEmpty(filterRequest.getDatasetTableFieldList())) {
                             extFilterList.add(filterRequest);
