@@ -29,6 +29,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { deepCopy, isMobile, isTablet, nameTrim } from '@/utils/utils'
+import { mergeReportFilterWithLive } from '@/utils/CanvasInfoTransUtils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 const dvMainStore = dvMainStoreWithOut()
@@ -321,7 +322,7 @@ export function historyItemAdaptor(
   if (componentItem.component === 'VQuery') {
     componentItem['freeze'] = componentItem['freeze'] || false // 冻结字段适配
   }
-  // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
+  // 定时报告过滤组件适配：只套用报告中的筛选值，图表关联以当前画布为准
   if (
     componentItem.component === 'VQuery' &&
     attachInfo?.source === 'report' &&
@@ -330,11 +331,10 @@ export function historyItemAdaptor(
   ) {
     componentItem.propValue?.forEach((filterItem, index) => {
       if (reportFilterInfo[filterItem.id]) {
-        const mergeItem = JSON.parse(reportFilterInfo[filterItem.id].filterInfo)
-        if (mergeItem['defaultValueCheck']) {
-          mergeItem['defaultValueFirstItem'] = false
-        }
-        componentItem.propValue[index] = mergeItem
+        componentItem.propValue[index] = mergeReportFilterWithLive(
+          filterItem,
+          reportFilterInfo[filterItem.id].filterInfo
+        )
       }
     })
   }
