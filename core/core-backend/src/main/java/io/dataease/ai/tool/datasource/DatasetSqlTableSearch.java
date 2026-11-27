@@ -55,9 +55,7 @@ public final class DatasetSqlTableSearch {
     }
 
     public static AiTool<AiDatasourceTools.Scope> tool(AiDatasourceTools metadata) {
-        var definition = new AiToolProtocol.Definition("search_physical_tables",
-                "Find physical table candidates by business terms and likely physical names, after checking registered descriptions. Inspect promising candidates to identify the requested entity. No fields or rows are read by this search.",
-                Map.of("terms", "Up to 12 comma-separated business terms or physical names, 512 characters total"), AiToolProtocol.RetrySafety.READ_ONLY);
+        var definition = AiTool.readOnly("tools/dataset-sql.md", "search_physical_tables", "terms");
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
             var terms = Arrays.stream(args.get("terms").split("[,，]")).map(String::strip)
                     .filter(term -> !term.isEmpty()).distinct().map(Term::new).toList();

@@ -3,6 +3,7 @@ package io.dataease.ai.configuration;
 import io.dataease.ai.engine.runtime.AiTransport;
 import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiPromptResources;
 
 import io.dataease.api.ai.config.AiConfigDtos.*;
 import org.springframework.ai.chat.prompt.*;
@@ -14,6 +15,8 @@ import java.util.*;
 
 @Component
 public class AiModelTestManage {
+    private static final String BASIC_PROBE = AiPromptResources.section("model-test.md", "basic");
+    private static final String STRUCTURED_PROBE = AiPromptResources.section("model-test.md", "structured");
     private final AiConfigurationManage configuration;
     private final AiTransport transport;
     private final AiAccess access;
@@ -39,18 +42,18 @@ public class AiModelTestManage {
         try {
             OpenAiChatOptions options = OpenAiChatOptions.builder().model(connection.identifier()).maxTokens(probeTokens).internalToolExecutionEnabled(false).build();
             try {
-                transport.call(connection, settings, new Prompt("Reply with the word OK.", options), false, deadline, recheck);
+                transport.call(connection, settings, new Prompt(BASIC_PROBE, options), false, deadline, recheck);
             } catch (AiErrors.Failure failure) {
                 if (!"max_tokens_unsupported".equals(failure.safeCode())) throw failure;
                 // 仅明确参数不支持时有限协商一次，非通用重试；每次实际 HTTP 仍独立准入和鉴权。
                 parameter = "MAX_COMPLETION_TOKENS";
                 options.setMaxTokens(null); options.setMaxCompletionTokens(probeTokens);
-                transport.call(connection, settings, new Prompt("Reply with the word OK.", options), false, deadline, recheck);
+                transport.call(connection, settings, new Prompt(BASIC_PROBE, options), false, deadline, recheck);
             }
             basic = true;
             // OpenAI 兼容不等于支持原生 JSON Schema；使用 JSON 模式并由 DE 严格校验结构。
             options.setResponseFormat(ResponseFormat.builder().type(ResponseFormat.Type.JSON_OBJECT).build());
-            var result = transport.call(connection, settings, new Prompt("Return only this JSON object, with exactly one boolean field and no extra text: {\"ok\":true}", options), false, deadline, recheck);
+            var result = transport.call(connection, settings, new Prompt(STRUCTURED_PROBE, options), false, deadline, recheck);
             com.fasterxml.jackson.databind.JsonNode parsed;
             try {
                 parsed = json.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS)

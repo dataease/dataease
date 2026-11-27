@@ -5,8 +5,6 @@ import io.dataease.ai.tool.AiTool;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 /** Shared SQL validation tools; the calling scene decides how a proposal may be applied. */
 @Component
 public class AiSqlTools implements AutoCloseable {
@@ -16,13 +14,11 @@ public class AiSqlTools implements AutoCloseable {
     public AiSqlTools(AiDatasourceTools metadata) { this.metadata = metadata; }
 
     public AiTool<AiDatasourceTools.Scope> validateSql() {
-        return tool(new AiToolProtocol.Definition("validate_sql", "Statically check candidate SQL against current authorized metadata, without executing it. " + AiSqlStaticValidator.SCOPE,
-                Map.of("sql", "Whole candidate SQL; correct INVALID references and validate the correction again; UNSUPPORTED is not validated."), AiToolProtocol.RetrySafety.READ_ONLY));
+        return tool(AiTool.readOnly("tools/sql-validation.md", "validate_sql", "sql"));
     }
 
     public AiTool<AiDatasourceTools.Scope> proposeSql() {
-        return tool(new AiToolProtocol.Definition("propose_sql", "Propose SQL for explicit user application to the original editor draft. Runs the same static validation; only PASS produces an applicable SQL suggestion. Never saves or executes SQL.",
-                Map.of("sql", "Complete SQL suggestion within the declared validation subset"), AiToolProtocol.RetrySafety.READ_ONLY));
+        return tool(AiTool.readOnly("tools/sql-validation.md", "propose_sql", "sql"));
     }
 
     private AiTool<AiDatasourceTools.Scope> tool(AiToolProtocol.Definition definition) {

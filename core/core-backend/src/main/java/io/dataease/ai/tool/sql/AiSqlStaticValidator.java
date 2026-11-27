@@ -1,6 +1,7 @@
 package io.dataease.ai.tool.sql;
 
 import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiPromptResources;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.*;
@@ -15,7 +16,8 @@ import java.util.concurrent.*;
 
 /** Static analysis only: this module has no connection, Provider or SQL execution capability. */
 public final class AiSqlStaticValidator implements AutoCloseable {
-    public static final String SCOPE = "MySQL only; one SELECT from one exact-case table; explicit columns with optional aliases, WHERE comparisons (=, <>, >, >=, <, <=), AND/OR/NOT, ORDER BY real columns. No comments, functions, star, joins, subqueries, aggregates, LIMIT or other dialects. PASS checks only this subset and authorized references, never database executability or data types.";
+    private static final String PROMPTS = "tools/sql-validation.md";
+    public static final String SCOPE = AiPromptResources.section(PROMPTS, "validate_sql");
     public record Result(String status, String code, String message, String scope) { }
     /** Null means absent table; empty fields mean metadata cannot be unambiguously validated. */
     @FunctionalInterface public interface Metadata { List<String> fields(String exactTable); }
@@ -30,12 +32,11 @@ public final class AiSqlStaticValidator implements AutoCloseable {
     private static void unsupported() { throw new Rejected("UNSUPPORTED", "subset"); }
     private static void invalid() { throw new Rejected("INVALID", "reference"); }
     private static Result result(String status, String code) {
-        return new Result(status, code, switch (code) {
-            case "verified" -> "Supported syntax and authorized table/column references checked. SQL was not executed.";
-            case "reference" -> "Unknown exact table, column or table qualifier in authorized metadata. Correct the reference and validate again.";
-            case "parse" -> "Cannot parse the whole input within this tool's supported syntax; database syntax was not verified.";
-            default -> "Outside the declared static validation subset. SQL was not executed.";
-        }, SCOPE);
+        String section = switch (code) {
+            case "verified", "reference", "parse" -> code;
+            default -> "unsupported";
+        };
+        return new Result(status, code, AiPromptResources.section(PROMPTS, section), SCOPE);
     }
     public Result validate(String sql, String dialect, Metadata metadata, Runnable active) {
         return validate(sql, dialect, metadata, active, System.currentTimeMillis() + 750);

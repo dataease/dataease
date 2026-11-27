@@ -2,6 +2,7 @@ package io.dataease.ai.scene.calc;
 
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.tool.AiTool;
 import io.dataease.ai.support.AiErrors;
 import io.dataease.ai.support.AiPromptResources;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
@@ -17,15 +18,9 @@ import java.util.*;
 public class AiCalcFieldScene implements AiConversationScene {
     private static final String INSTRUCTION = AiPromptResources.read("editor-calc-field.md");
     private static final String REVALIDATE = "revalidate_current_formula";
-    private static final AiToolProtocol.Definition CURRENT_FORMULA = new AiToolProtocol.Definition(REVALIDATE,
-            "Preview the unchanged current editor formula on explicit request, using this question's frozen draft.",
-            Map.of(), AiToolProtocol.RetrySafety.READ_ONLY);
+    private static final AiToolProtocol.Definition CURRENT_FORMULA = AiTool.readOnly("tools/editor.md", REVALIDATE);
     private static final String PROPOSE = "propose_calc_field";
-    private static final AiToolProtocol.Definition TOOL = new AiToolProtocol.Definition(PROPOSE,
-            "Propose one detail or aggregate calculated field. Preview checks this expression in a private copy of the current dataset.",
-            Map.of("expression", "Calculated-field expression using the exact [reference] provided for each field or parameter", "name", "Suggested field name",
-                    "groupType", "d for dimension, q for measure", "deType", "0 text, 1 date, 2 integer, 3 decimal, 5 geography or 7 URL"),
-            AiToolProtocol.RetrySafety.READ_ONLY);
+    private static final AiToolProtocol.Definition TOOL = AiTool.readOnly("tools/editor.md", PROPOSE, "expression", "name", "groupType", "deType");
     private record Draft(long target, String dataset, List<ResourceRevision> sources, Map<Long, CalcFieldAccess.Column> columns,
                          CalcFieldAccess.Grant grant, boolean preserveType, String currentExpression) implements SceneState { }
 

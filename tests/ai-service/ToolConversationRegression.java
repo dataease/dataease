@@ -17,6 +17,7 @@ import io.dataease.ai.security.identity.AiAccess;
 import io.dataease.ai.security.identity.AiDeploymentMode;
 import io.dataease.ai.server.AiConversationServer;
 import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiPromptResources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
@@ -620,14 +621,21 @@ public final class ToolConversationRegression {
                                     "editorId", "native-or-cross", "sql", "", "isCross", cross))))
                             .andReturn().getResponse().getContentAsString());
                     var result = terminal(mvc, start(mvc, node, question));
+                    var definition = sent.getFirst().path("tools").findValues("function").stream()
+                            .filter(tool -> "read_sql_guide".equals(tool.path("name").asText())).findFirst().orElseThrow();
+                    if (!AiPromptResources.section("tools/dataset-sql.md", "read_sql_guide").equals(definition.path("description").asText())
+                            || !AiPromptResources.section("tools/dataset-sql.md", "read_sql_guide.topic").equals(
+                                    definition.at("/parameters/properties/topic/description").asText()))
+                        throw new AssertionError("The provider must receive the guide's tool and topic descriptions");
                     var messages = sent.getLast().path("messages");
                     var guide = JSON.readTree(messages.get(messages.size() - 1).path("content").asText());
                     boolean monthly = question.contains("monthly");
                     String expected = monthly ? (cross ? "TO MONTH" : "DATE_FORMAT") : "SELECT column_name FROM table_name";
                     if (!"COMPLETED".equals(result.path("status").asText())
                             || !(cross ? "Apache Calcite" : DatasourceType.mysql.getName()).equals(guide.path("dialect").asText())
+                            || !(monthly ? "monthly" : "projection").equals(guide.path("topic").asText())
                             || !guide.path("example").asText().contains(expected)
-                            || !guide.path("rules").asText().contains("separate nodes"))
+                            || !guide.path("rules").asText().contains("画布"))
                         throw new AssertionError("The editor request must bind the dialect and scope of the model's tool response: " + guide);
                     mvc.perform(delete("/ai/conversations/" + node.path("sessionId").asText()));
                 }
@@ -740,7 +748,7 @@ public final class ToolConversationRegression {
             String previewMessages = sent.getFirst().path("messages").toString();
             if (!"EXPLANATION".equals(explanation.path("result").path("type").asText())
                     || !explanation.path("result").path("text").asText().contains("可能")
-                    || previewMessages.contains("SQL basis for this request (not executed)")
+                    || previewMessages.contains("用户提供的 SQL 草稿（尚未执行）")
                     || !previewMessages.contains("SUCCESS") || !previewMessages.contains("关系基数") || !previewMessages.contains("区分观察与推测")
                     || previewMessages.contains("private-row-value") || previewMessages.contains("private-variable-value") || previewMessages.contains("private-driver-password"))
                 throw new AssertionError("success explanation must distinguish evidence from hypotheses and exclude preview row, variables and raw driver errors");
@@ -874,7 +882,12 @@ public final class ToolConversationRegression {
             var correctionSession = open(mvc);
             var correctionResult = terminal(mvc, start(mvc, correctionSession, "Fix invalid tool arguments"));
             if (!correctionResult.path("status").asText().equals("COMPLETED") || sent.size() != 3
-                    || !sent.get(1).toString().contains("INVALID") || !reads.equals(List.of("tables", "fields"))) throw new AssertionError("invalid registered arguments are corrected once without executing malformed input: " + correctionResult);
+                    || !reads.equals(List.of("tables", "fields"))) throw new AssertionError("invalid registered arguments are corrected once without executing malformed input: " + correctionResult);
+            var correctionMessages = sent.get(1).path("messages");
+            var feedback = JSON.readTree(correctionMessages.get(correctionMessages.size() - 1).path("content").asText());
+            if (!"INVALID".equals(feedback.path("status").asText()) || !"arguments".equals(feedback.path("code").asText())
+                    || !feedback.path("message").asText().equals(io.dataease.ai.support.AiPromptResources.read("tool-argument-correction.md")))
+                throw new AssertionError("the next model call must receive the argument correction with its protocol status and code");
             mvc.perform(delete("/ai/conversations/" + correctionSession.path("sessionId").asText()));
             sent.clear(); reads.clear();
             mode.set("suggest");
@@ -958,7 +971,7 @@ public final class ToolConversationRegression {
                 throw new AssertionError("clearing the target must explain missing selection instead of replaying historical tools: " + terminal(mvc, clearedRun));
             var clearedInput = sent.get(0).path("messages");
             var currentState = clearedInput.get(0);
-            if (!"system".equals(currentState.path("role").asText()) || !currentState.path("content").asText().contains("CURRENT APPLICATION STATE")
+            if (!"system".equals(currentState.path("role").asText()) || !currentState.path("content").asText().contains("本轮应用状态")
                     || !currentState.path("content").asText().contains("\"selection\":\"NONE\""))
                 throw new AssertionError("cleared selection must be explicit in the leading system message despite historical metadata");
             sent.clear();
@@ -967,7 +980,7 @@ public final class ToolConversationRegression {
             int systemCount = 0;
             for (var message : followupInput) if ("system".equals(message.path("role").asText())) systemCount++;
             if (systemCount != 1 || !followupInput.get(0).path("content").asText().contains("\"selection\":\"NONE\"")
-                    || followupInput.get(0).path("content").asText().split("CURRENT APPLICATION STATE", -1).length != 2)
+                    || followupInput.get(0).path("content").asText().split("本轮应用状态", -1).length != 2)
                 throw new AssertionError("ephemeral current-state notice must not accumulate in completed history");
             boolean originalQuestionRetained = false;
             for (var message : followupInput) if ("user".equals(message.path("role").asText())

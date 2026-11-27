@@ -13,7 +13,7 @@ public final class SqlStaticValidationRegression {
     private static void verdict(AiSqlStaticValidator validator, String sql, String expected) {
         var result = validator.validate(sql, "MySQL", table -> "AI_PROBE".equals(table) ? FIELDS : null, () -> { });
         if (!expected.equals(result.status())) throw new AssertionError(expected + " expected for " + sql + ": " + result);
-        if (!result.scope().contains("never database executability")) throw new AssertionError("missing static scope");
+        if (!result.scope().contains("数据库可执行性")) throw new AssertionError("missing static scope");
         assertions++;
     }
     public static void run() throws Exception {

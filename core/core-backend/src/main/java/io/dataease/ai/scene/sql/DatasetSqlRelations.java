@@ -14,10 +14,7 @@ final class DatasetSqlRelations {
                         List<Condition> conditions, Cardinality cardinality, JoinType joinType) {}
 
     static AiTool<AiDatasourceTools.Scope> tool(AiDatasourceTools metadata, DatasourceRelationManage registry) {
-        var definition = new AiToolProtocol.Definition("read_relations",
-                "Read confirmed same-source relationships between two exact physical tables, oriented from the first table.",
-                Map.of("fromTable", "Starting table, usually the rows to preserve", "toTable", "Other selected table"),
-                AiToolProtocol.RetrySafety.READ_ONLY);
+        var definition = AiTool.readOnly("tools/dataset-sql.md", "read_relations", "fromTable", "toTable");
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
             metadata.authorize(scope);
             String from = args.get("fromTable"), to = args.get("toTable");
