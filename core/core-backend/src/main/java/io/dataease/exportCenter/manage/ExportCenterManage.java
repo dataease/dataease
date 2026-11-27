@@ -14,6 +14,9 @@ import io.dataease.constant.LogST;
 import io.dataease.dao.auto.entity.CoreExportTask;
 import io.dataease.dataset.manage.*;
 import io.dataease.exception.DEException;
+import io.dataease.datasource.dao.auto.repository.QrtzSchedulerStateRepository;
+import io.dataease.datasource.manage.DatabaseTimeManage;
+import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportDownloadTask;
 import io.dataease.exportCenter.util.ExportFileNameUtils;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskRepository;
@@ -55,9 +58,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional(rollbackFor = Exception.class)
@@ -81,6 +86,11 @@ public class ExportCenterManage implements BaseExportApi {
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
     @Resource
     private ExportTaskExecutionService exportTaskExecutionService;
+    @Resource
+    private QrtzSchedulerStateRepository qrtzSchedulerStateRepository;
+    @Resource
+    private DatabaseTimeManage databaseTimeManage;
+    private boolean isRecoveringOrphanExportTasks = false;
     @Autowired(required = false)
     private DataFillingApi dataFillingApi = null;
 
@@ -496,6 +506,55 @@ public class ExportCenterManage implements BaseExportApi {
         }
         coreExportDownloadTaskRepository.deleteById(id);
         return exportTask;
+    }
+
+    public void recoverOrphanExportTasks() {
+        if (isRecoveringOrphanExportTasks) {
+            return;
+        }
+        isRecoveringOrphanExportTasks = true;
+        try {
+            doRecoverOrphanExportTasks();
+        } catch (Exception e) {
+            LogUtil.error(e);
+        } finally {
+            isRecoveringOrphanExportTasks = false;
+        }
+    }
+
+    /**
+     * 参考 DatasourceServer.updateStopJobStatus：用数据库时间 + Quartz 心跳判断存活节点，
+     * 周期性把失联节点上的未完成导出任务恢复为可重试或完成取消。
+     */
+    private void doRecoverOrphanExportTasks() {
+        Timestamp dbNow = databaseTimeManage.getCurrentDatabaseTime();
+        List<String> activeInstances = qrtzSchedulerStateRepository.findAll().stream()
+                .filter(state -> state.getLastCheckinTime() != null && state.getCheckinInterval() != null)
+                .filter(state -> state.getLastCheckinTime() + state.getCheckinInterval() + 1000 > dbNow.getTime())
+                .map(QrtzSchedulerState::getInstanceName)
+                .map(ExportNodeIdentity::normalizeQuartzInstanceName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        String currentNodeId = exportNodeIdentity.currentInstanceId();
+        List<CoreExportTask> unfinishedTasks = coreExportTaskRepository.findByExportStatusIn(List.of("PENDING", "IN_PROGRESS"));
+        for (CoreExportTask task : unfinishedTasks) {
+            String owner = task.getExportMachineName();
+            if (StringUtils.isBlank(owner) || owner.equals(currentNodeId)) {
+                continue;
+            }
+            if (activeInstances.contains(ExportNodeIdentity.normalizeQuartzInstanceName(owner))) {
+                continue;
+            }
+            if (Boolean.TRUE.equals(task.getCancelFlag())) {
+                int deleted = coreExportTaskRepository.deleteCancelRequestedIfOwned(task.getId(), owner);
+                if (deleted > 0) {
+                    deleteExportTaskDirectory(resolveExportTaskDirectory(validateExportTaskId(task.getId())));
+                }
+            } else {
+                coreExportTaskRepository.markExportTaskFailedIfOwned(task.getId(), owner, "执行节点失联，任务已标记失败，可重试");
+            }
+        }
     }
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
