@@ -31,7 +31,7 @@ public final class DatasetSqlGuide {
     AiTool<AiDatasourceTools.Scope> tool(AiDatasourceTools metadata) {
         var definition = new AiToolProtocol.Definition("read_sql_guide",
                 "Read the DataEase rules, bound execution dialect and one relevant topic. Never choose a dialect yourself.",
-                Map.of("topic", "projection (plain columns), monthly (calendar aggregation), aggregate, join or parameters (dashboard filters and system variables)"),
+                Map.of("topic", "projection (plain columns), monthly (calendar aggregation), aggregate, join or parameters (filter inputs and system variables)"),
                 AiToolProtocol.RetrySafety.READ_ONLY);
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
             var source = metadata.authorize(scope);
@@ -54,18 +54,27 @@ public final class DatasetSqlGuide {
                         """;
                 case "monthly" -> monthly(dialect);
                 case "parameters" -> """
-                        Preserve relevant existing dashboard parameter names and syntax when revising SQL.
-                        For an explicitly requested new dashboard filter use a single-line optional WHERE predicate,
-                        e.g. WHERE $DE_PARAM{status_code = $[status]}. Put AND/OR outside the blocks.
-                        In a legacy query with ${status}, retain the legacy form for all dashboard parameters;
-                        never mix it with $DE_PARAM blocks. Never invent filters or parameter defaults.
-                        For a system variable, insert $f2cde[exact editor display name] in a WHERE predicate;
-                        in block syntax put the whole predicate inside $DE_PARAM{...}. Use only the supplied names.
-                        If no matching name is supplied, ask for the exact editor label instead of inventing it.
-                        The editor maps display names to runtime identifiers; never request user variable values.
-                        Explain that Parameter settings reuses same-name configuration and sets types and defaults.
-                        Editor preview uses applicable defaults; a block with a missing parameter becomes true.
-                        Actual dashboard filter values are supplied when the dashboard runs.
+                        When the author filters by a field and leaves its value open, create a dashboard parameter.
+                        Put the verified column on the left. Use the requested parameter name on the right,
+                        or choose a name without the table alias, as in this new account filter.
+                        WHERE $DE_PARAM{o.account = $[account]}
+                        Put each optional predicate in its own single-line block. Place AND or OR between blocks
+                        according to the requested logic. A block missing its input is true, including under OR.
+                        For a fixed filter value, compare the column with the supplied value directly.
+
+                        On edits, reuse relevant parameter names from sqlBasis so their settings still apply.
+                        If sqlBasis already uses legacy dashboard parameters, keep that form for every dashboard input.
+                        WHERE o.account = ${account}
+
+                        For “查询当前登录账户的信息”, use the exact account label from systemVariableNames.
+                        With the label 账号 and a column that stores login accounts, the predicate is
+                        WHERE $DE_PARAM{o.account = $f2cde[账号]}
+                        In a legacy query use the same system variable directly in the predicate. For other system
+                        variables, match the requested label to the same list. If absent, ask for its editor label.
+                        The editor maps display names to runtime identifiers. System variable values stay in DataEase.
+
+                        The author configures types and defaults in Parameter settings. Preview uses applicable
+                        defaults. The dashboard supplies filter values when it runs.
                         """;
                 default -> throw AiErrors.error("invalid");
             };

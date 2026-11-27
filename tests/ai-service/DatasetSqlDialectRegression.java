@@ -5,10 +5,14 @@ import io.dataease.ai.scene.sql.AiDatasetSqlScene;
 import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.api.ai.conversation.AiConversationDtos;
+import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
+import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -51,9 +55,7 @@ public final class DatasetSqlDialectRegression {
                 || !projection.path("example").asText().contains("SELECT"))
             throw new AssertionError("Simple projection must read only the native projection guide: " + projection);
         var parameters = json.readTree(scene.execute(context, "read_sql_guide", Map.of("topic", "parameters")));
-        var syntax = parameters.path("example").asText();
-        for (String text : List.of("$DE_PARAM{", "$[", "${", "$f2cde[", "preview", "dashboard"))
-            if (!syntax.contains(text)) throw new AssertionError("Missing editor parameter semantics: " + text);
+        checkParameterExamples(parameters.path("example").asText());
         for (var binding : List.of(
                 List.of("dm", "达梦"),
                 List.of("hive", "Apache Hive"),
@@ -87,6 +89,41 @@ public final class DatasetSqlDialectRegression {
             if (imported && (!nativeContext.instruction().contains("\"executionDialect\":\"PostgreSQL\"")
                     || !guide.path("example").asText().contains("DATE_TRUNC")))
                 throw new AssertionError("Imported data must use the configured DE engine: " + guide);
+        }
+    }
+
+    private static void checkParameterExamples(String guide) throws Exception {
+        var datasource = new DatasourceSchemaDTO();
+        datasource.setType("mysql");
+        var user = new UserFormVO();
+        user.setAccount("current-user");
+        String settings = """
+                [{"variableName":"account","type":["TEXT"],"defaultValue":"dashboard-user","defaultValueScope":"EDIT"}]
+                """;
+        var expectedAccounts = Map.of("$[account]", "dashboard-user", "${account}", "dashboard-user",
+                "$f2cde[账号]", "current-user");
+        try (var db = DriverManager.getConnection("jdbc:h2:mem:dataset_sql_guide;MODE=MySQL");
+             var setup = db.createStatement()) {
+            setup.execute("CREATE TABLE orders (account VARCHAR(32))");
+            setup.execute("INSERT INTO orders VALUES ('current-user'), ('dashboard-user')");
+            for (var example : expectedAccounts.entrySet()) {
+                String where = guide.lines().map(String::strip)
+                        .filter(line -> line.startsWith("WHERE ") && line.contains(example.getKey()))
+                        .findFirst().orElseThrow(() -> new AssertionError("Missing WHERE example for " + example.getKey()));
+                // The editor sends the built-in account ID for the visible label.
+                String sql = "SELECT o.account FROM orders o " + where.replace("$f2cde[账号]", "$f2cde[sysParams.userId]");
+                var preview = new SqlparserUtils().handleVariableDefaultValueWithPreparedParams(
+                        sql, settings, true, true, null, false, Map.of(1L, datasource), null, user);
+                var bindings = preview.getTableFieldWithValues();
+                if (bindings.size() != 1) throw new AssertionError("Expected one bound account for " + where);
+                try (var query = db.prepareStatement(preview.getSql())) {
+                    query.setObject(1, bindings.getFirst().getValue());
+                    try (var rows = query.executeQuery()) {
+                        if (!rows.next() || !example.getValue().equals(rows.getString(1)) || rows.next())
+                            throw new AssertionError("Expected only " + example.getValue() + " for " + where);
+                    }
+                }
+            }
         }
     }
 }
