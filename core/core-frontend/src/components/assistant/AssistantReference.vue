@@ -16,7 +16,15 @@ const emit = defineEmits<{ (event: 'locate', questionId: string): void }>()
 const { t } = useI18n()
 const sourceId = useId()
 const detailId = useId()
+const hintId = useId()
 const open = ref(false)
+const toggle = ref<HTMLButtonElement>()
+const closeOnEscape = (event: KeyboardEvent) => {
+  if (!open.value) return
+  event.stopPropagation()
+  open.value = false
+  toggle.value?.focus()
+}
 watch(source, () => {
   open.value = false
 })
@@ -28,44 +36,48 @@ const summary = computed(() => {
 </script>
 
 <template>
-  <div class="assistant-reference" @keydown.esc="open = false">
+  <div class="assistant-reference" @keydown.esc="closeOnEscape">
     <div class="reference-bar">
       <label :for="sourceId">{{ t('ai_conversation.include_basis') }}</label>
       <select
         :id="sourceId"
         v-model="source"
         :aria-label="t('ai_conversation.basis_source')"
-        :title="hint"
+        :aria-describedby="props.hint ? hintId : undefined"
+        :title="props.hint"
       >
-        <option v-for="option in options" :key="option.value" :value="option.value">
+        <option v-for="option in props.options" :key="option.value" :value="option.value">
           {{ option.label }}
         </option>
       </select>
       <button
         v-if="summary"
+        ref="toggle"
         type="button"
         :aria-expanded="open"
         :aria-controls="detailId"
         @click="open = !open"
       >
-        {{ open ? hideLabel : showLabel }}
+        {{ open ? props.hideLabel : props.showLabel }}
       </button>
     </div>
     <code v-if="summary && !open" class="reference-line">{{ summary }}</code>
     <div v-if="open && summary" :id="detailId" class="reference-detail">
-      <strong v-if="origin"
+      <strong v-if="props.origin"
         ><button
           type="button"
-          :aria-label="t('ai_conversation.locate_question', { suggestion: origin.numberLabel })"
-          @click="emit('locate', origin.questionId)"
+          :aria-label="
+            t('ai_conversation.locate_question', { suggestion: props.origin.numberLabel })
+          "
+          @click="emit('locate', props.origin.questionId)"
         >
-          {{ origin.numberLabel }}</button
-        >{{ caption.slice(origin.numberLabel.length) }}</strong
+          {{ props.origin.numberLabel }}</button
+        >{{ props.caption.slice(props.origin.numberLabel.length) }}</strong
       >
-      <strong v-else>{{ caption }}</strong>
-      <pre tabindex="0">{{ text }}</pre>
+      <strong v-else>{{ props.caption }}</strong>
+      <pre tabindex="0">{{ props.text }}</pre>
     </div>
-    <small v-if="hint">{{ hint }}</small>
+    <small v-if="props.hint" :id="hintId">{{ props.hint }}</small>
   </div>
 </template>
 

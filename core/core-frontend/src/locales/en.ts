@@ -30,6 +30,7 @@ export default {
     current_formula: 'Current editor formula',
     no_sql_reference: 'No SQL reference',
     no_formula_reference: 'No formula reference',
+    from_scratch_hint: 'Your message asks to start from scratch, so this turn uses no reference.',
     view_sql: 'View SQL',
     hide_sql: 'Hide SQL',
     view_formula: 'View formula',

@@ -1,4 +1,73 @@
 const { test, expect } = require("@playwright/test");
+const {
+  ask,
+  button,
+  openAssistant,
+  serveAnswers,
+} = require("../fixtures/dataset-editor/reference.cjs");
+
+test("retrying an earlier SQL question keeps its progress in view above a long later answer", async ({
+  page,
+}) => {
+  const laterAnswer = "逐个说明订单字段。\n".repeat(90) + "说明结束。";
+  await serveAnswers(page, [null, { type: "EXPLANATION", text: laterAnswer }]);
+  const firstExecution = {
+    sessionId: "s1",
+    executionId: "e1",
+    contextVersion: "v1",
+    attemptId: "a1",
+  };
+  await page.route("**/executions/e1/events?*", (route) =>
+    route.fulfill({
+      json: {
+        ...firstExecution,
+        status: "FAILED",
+        cursor: 1,
+        retryEligible: true,
+        events: [{ sequence: 1, type: "FAILED", error: "timeout" }],
+      },
+    })
+  );
+  const retry = { ...firstExecution, executionId: "retry1", attemptId: "a2" };
+  await page.route("**/executions/e1/retry", (route) =>
+    route.fulfill({ json: { ...retry, status: "RUNNING" } })
+  );
+  let complete;
+  const retryPending = new Promise((resolve) => (complete = resolve));
+  await page.route("**/executions/retry1/events?*", async (route) => {
+    await retryPending;
+    await route.fulfill({
+      json: {
+        ...retry,
+        status: "COMPLETED",
+        cursor: 1,
+        events: [],
+        result: { type: "EXPLANATION", text: "重试回答已完成。" },
+      },
+    });
+  });
+
+  const panel = await openAssistant(page, "SQL 助手");
+  await ask(panel, "统计每天的订单");
+  const first = panel.getByRole("article").first();
+  const retryButton = button(first, "重试");
+  await expect(retryButton).toBeVisible();
+  await ask(panel, "说明每个订单字段");
+  const second = panel.getByRole("article").nth(1);
+  await expect(second).toContainText("说明结束。");
+  await expect(retryButton).not.toBeInViewport();
+  await retryButton.click();
+  try {
+    await expect(first.getByRole("status")).toBeInViewport({ ratio: 1 });
+  } finally {
+    complete();
+  }
+  await expect(first.getByText("重试回答已完成。")).toBeInViewport({
+    ratio: 1,
+  });
+  await expect(panel.getByRole("article")).toHaveCount(2);
+  await expect(second).toContainText("说明结束。");
+});
 
 test("the shared panel accepts ordinary questions and answers without editor data", async ({
   page,

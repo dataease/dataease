@@ -49,10 +49,13 @@ const conversation = ref<HTMLElement>()
 const logId = useId()
 const locatedQuestion = ref<string>()
 let highlightTimer: number | undefined
+const questionGroup = (log: HTMLElement, id: string) =>
+  log.querySelector<HTMLElement>(`[data-question-id="${CSS.escape(id)}"]`)
 const locateQuestion = (id: string) => {
   const log = conversation.value
-  const question = log?.querySelector<HTMLElement>(`[data-question-id="${CSS.escape(id)}"]`)
-  if (!log || !question) return
+  if (!log) return
+  const question = questionGroup(log, id)?.querySelector<HTMLElement>('.question')
+  if (!question) return
   const top =
     log.scrollTop + question.getBoundingClientRect().top - log.getBoundingClientRect().top - 12
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -64,16 +67,30 @@ const locateQuestion = (id: string) => {
     locatedQuestion.value = undefined
   }, 1600)
 }
-const toEnd = () => {
-  if (conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight
+const latestScrollTop = (log: HTMLElement) => {
+  const latest = props.turns.at(-1)
+  if (latest && latest.questionId !== groups.value.at(-1)?.[0].turn.questionId) {
+    const group = questionGroup(log, latest.questionId)
+    if (group) {
+      return Math.max(
+        0,
+        log.scrollTop + group.getBoundingClientRect().bottom - log.getBoundingClientRect().bottom
+      )
+    }
+  }
+  return Math.max(0, log.scrollHeight - log.clientHeight)
+}
+const scrollToLatest = () => {
+  const log = conversation.value
+  if (log) log.scrollTop = latestScrollTop(log)
 }
 watch(
   [() => props.turns.length, () => props.progress, () => props.disabled],
   async ([count], [previous]) => {
     const log = conversation.value
-    if (log && count === previous && log.scrollHeight - log.scrollTop - log.clientHeight > 4) return
+    if (log && count === previous && Math.abs(latestScrollTop(log) - log.scrollTop) > 4) return
     await nextTick()
-    toEnd()
+    scrollToLatest()
   }
 )
 
@@ -92,7 +109,7 @@ watch(width, size => emit('resize', size))
 watch(() => props.editorReserve, measure)
 let observer: ResizeObserver | undefined
 onMounted(() => {
-  toEnd()
+  scrollToLatest()
   if (props.workspace) {
     measure()
     observer = new ResizeObserver(measure)
@@ -160,12 +177,12 @@ const resizeKey = (event: KeyboardEvent) => {
       <slot name="header-actions" />
     </header>
     <div :id="logId" ref="conversation" class="conversation" role="log">
-      <article v-for="group in groups" :key="group[0].turn.questionId">
-        <p
-          class="question"
-          :class="{ located: locatedQuestion === group[0].turn.questionId }"
-          :data-question-id="group[0].turn.questionId"
-        >
+      <article
+        v-for="group in groups"
+        :key="group[0].turn.questionId"
+        :data-question-id="group[0].turn.questionId"
+      >
+        <p class="question" :class="{ located: locatedQuestion === group[0].turn.questionId }">
           {{ group[0].turn.question }}
         </p>
         <component

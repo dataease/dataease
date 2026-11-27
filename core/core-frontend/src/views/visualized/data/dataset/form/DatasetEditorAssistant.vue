@@ -7,7 +7,7 @@ import AssistantProcess from './AssistantProcess.vue'
 import AssistantAnswer from '@/components/assistant/AssistantAnswer.vue'
 import AssistantFailure from './AssistantFailure.vue'
 import type { AnswerFailure } from './assistantFailure'
-import { applyProcessEvent, type AnswerProcess } from './assistantProcess'
+import { applyProcessEvent, hasFormulaProposal, type AnswerProcess } from './assistantProcess'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { isRequestError } from '@/config/axios/error'
@@ -330,13 +330,13 @@ const chooseBasis = (inputText: string, selection?: BasisSource) => {
   // A retry choice may itself say "preview". Its label does not select the latest preview.
   const question = last?.isRetry && selectedChoice(last, inputText) ? '' : inputText
   if (
-    selection === 'none' ||
     /(?:^|[，,。.!！?？;；]\s*)(?:(?:请|請|帮我|幫我|麻烦|麻煩|这次|這次)\s*)*(?:另写|另寫|从头写|從頭寫|重新写一|重新寫一)|(?:^|[,.!?]\s*)(?:please\s+)?(?:from scratch|start (?:over|afresh|from scratch)|(?:write|rewrite|generate|create)\b[^.!?]*?\bfrom scratch)/i.test(
       question
     )
   ) {
-    return { label: noneLabel(), sql: '' }
+    return { label: noneLabel(), sql: '', fromScratch: true }
   }
+  if (selection === 'none') return { label: noneLabel(), sql: '' }
   if (selection === 'draft') return { label: draftLabel(), sql: props.readDraft() }
   const latest = turns.value.reduce(
     (last, turn, i) => (suggestionText(turn.result) ? i + 1 : last),
@@ -430,6 +430,10 @@ const currentBasis = computed(() =>
     ? automaticBasis.value
     : chooseBasis(input.value.trim(), selectedBasis.value)
 )
+const referenceHint = computed(() => {
+  if (currentBasis.value?.fromScratch) return tr('from_scratch_hint')
+  return currentBasis.value?.preview ? tr('preview_reference_hint') : undefined
+})
 const referenceOrigin = computed(() => {
   const basis = currentBasis.value
   const index = basis?.prior
@@ -1180,10 +1184,7 @@ const apply = async (turn: Turn) => {
             !!calcFieldDraft &&
             turn.status === 'FAILED' &&
             !turn.result?.calcField &&
-            !turn.process.entries.some(
-              entry =>
-                entry.tool?.name === 'propose_calc_field' && entry.tool.status === 'SUCCEEDED'
-            )
+            !hasFormulaProposal(turn.process)
           "
           @retry="retryAnswer(turn)"
         />
@@ -1264,15 +1265,18 @@ const apply = async (turn: Turn) => {
       <template #reference="{ locateQuestion }">
         <AssistantReference
           v-if="!busy"
-          v-model="selectedBasis"
-          :options="referenceOptions"
+          :model-value="currentBasis?.fromScratch ? 'none' : selectedBasis"
+          @update:model-value="selectedBasis = $event"
+          :options="
+            currentBasis?.fromScratch ? [{ value: 'none', label: noneLabel() }] : referenceOptions
+          "
           :text="currentBasis?.sql"
           :origin="referenceOrigin"
           @locate="locateQuestion"
           :caption="currentBasis?.label ?? ''"
           :show-label="tr(calcFieldDraft ? 'view_formula' : 'view_sql')"
           :hide-label="tr(calcFieldDraft ? 'hide_formula' : 'hide_sql')"
-          :hint="currentBasis?.preview ? tr('preview_reference_hint') : undefined"
+          :hint="referenceHint"
         />
       </template>
       <template v-if="busy || pendingRetry || turns.at(-1)?.status === 'UNREACHABLE'" #actions>
