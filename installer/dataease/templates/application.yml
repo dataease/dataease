@@ -33,7 +33,7 @@ dataease:
   dataease-servers: ${DE_SERVERS}
   playwright-server: ${DE_PLAYWRIGHT_SERVER}
 quartz:
-    properties.org.quartz.scheduler.instanceId: ${DE_INSTANCE_ID:AUTO}
+    properties.org.quartz.scheduler.instanceId: ${DE_INSTANCE_ID}
 task:
   executor:
     address: http://sync-task-actuator:9001
