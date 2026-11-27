@@ -249,7 +249,8 @@ const resizeKey = (event: KeyboardEvent) => {
 
   :deep(pre),
   :deep(code) {
-    font: 13px/20px ui-monospace, SFMono-Regular, Consolas, monospace;
+    @codeFontFamily: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font: 13px/20px @codeFontFamily;
   }
   :deep(pre) {
     margin: 0;
