@@ -1,21 +1,21 @@
 # 方言参考
 
-## calcite
+## mysql.identifiers
 
-DataEase 的 Calcite 使用 JAVA 词法规则。需要引用物理标识符时使用反引号。
+需要引用表名或列名时，使用反引号，例如 `` `column_name` ``。
 
-## dm
+## mysql.month
 
-需要引用物理标识符时使用双引号。
+DATE_FORMAT(date_column, '%Y-%m')
 
-## quoted_column
+## calcite.identifiers
 
-按当前方言引用标识符，例如 {{quoted_column}}。
+DataEase 的 Calcite 使用 JAVA 词法规则。需要引用表名或列名时，使用反引号。
 
-## plugin
+## calcite.month
 
-使用简单物理标识符。采用插件扩展语法前，先确认该连接器的能力。
+FLOOR(date_column TO MONTH)
 
-## unknown_month
+## unsupported
 
-当前插件尚未登记按月汇总的示例。请先确认插件支持的日期函数。
+向作者说明当前执行方言尚未适配 SQL 生成。可以解释已有查询，或协助核对可访问的表和字段。

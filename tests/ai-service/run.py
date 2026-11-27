@@ -110,6 +110,7 @@ def main():
             'core/core-backend/src/main/java/io/dataease/dataset/manage/DatasetDataManage.java',
             'core/core-backend/src/main/java/io/dataease/engine/trans/Field2SQLObj.java',
             'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/vo/DatasourceConfiguration.java',
+            'sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/vo/XpackPluginsDatasourceVO.java',
             'sdk/common/src/main/java/io/dataease/result/ResultCode.java',
             'sdk/common/src/main/java/io/dataease/exception/DEException.java',
             'sdk/common/src/main/java/io/dataease/exception/ErrorCategory.java',
