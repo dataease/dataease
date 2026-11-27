@@ -1117,9 +1117,7 @@ test.describe("touch reference inspection", () => {
   });
 });
 
-test("completed SQL process preserves event order and reads a large field result when expanded", async ({
-  page,
-}) => {
+async function checkCompletedSqlProcess(page, searchTool) {
   await backend(page);
   const scope = {
     sessionId: "session-1",
@@ -1154,7 +1152,7 @@ test("completed SQL process preserves event order and reads a large field result
             type: "TOOL",
             tool: {
               callId: "tables",
-              name: "search_semantics",
+              name: searchTool,
               status: "SUCCEEDED",
               parameters: { terms: "订单" },
               result: '{"tables":["orders"]}',
@@ -1198,10 +1196,13 @@ test("completed SQL process preserves event order and reads a large field result
   await expect(summary).toHaveText("执行过程 · 总耗时 720 ms");
   await expect(process.locator(":scope > :is(p,details)")).toHaveText([
     "定位订单表。",
-    /search_semantics/,
+    new RegExp(searchTool),
     "核对订单表字段。",
     /get_table_fields/,
   ]);
+  await expect(process.locator("details").first().locator("summary")).toHaveText(
+    "步骤 1 · 查找已登记的表 订单 · 成功"
+  );
   expect(reads).toBe(0);
   const fields = process.locator("details").last();
   await expect(fields.locator("summary")).toHaveText(
@@ -1210,7 +1211,13 @@ test("completed SQL process preserves event order and reads a large field result
   await fields.locator("summary").click();
   await expect(fields.getByText(new RegExp(field))).toBeVisible();
   expect(reads).toBe(1);
-});
+}
+
+for (const searchTool of ["search_registered_tables", "search_semantics"]) {
+  test(`completed SQL process renders ${searchTool} and reads a large field result when expanded`, async ({ page }) => {
+    await checkCompletedSqlProcess(page, searchTool);
+  });
+}
 
 test("a truncated response keeps its partial SQL explanation and gives the reason", async ({ page }) => {
   await backend(page, { truncated: true });

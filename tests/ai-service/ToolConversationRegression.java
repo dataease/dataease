@@ -217,7 +217,7 @@ public final class ToolConversationRegression {
                 } else if (mode.get().startsWith("dataset-join")) {
                     String previous = body.path("messages").get(body.path("messages").size() - 1).path("content").asText();
                     content = switch (sent.size()) {
-                        case 1 -> call("search", "search_semantics", "{\"terms\":\"订单\"}");
+                        case 1 -> call("search", "search_registered_tables", "{\"terms\":\"订单\"}");
                         case 2 -> call("orders", "get_table_fields", "{\"table\":\"orders\"}");
                         case 3 -> call("customers", "get_table_fields", "{\"table\":\"customers\"}");
                         case 4 -> call("guide", "read_sql_guide", "{\"topic\":\"join\"}");
@@ -240,7 +240,7 @@ public final class ToolConversationRegression {
                 } else if (mode.get().startsWith("dataset-meaning")) {
                     var previous = body.path("messages").get(body.path("messages").size() - 1).path("content").asText();
                     content = switch (sent.size()) {
-                        case 1 -> call("semantic-search", "search_semantics", "{\"terms\":\"订单,实付金额,已支付\"}");
+                        case 1 -> call("semantic-search", "search_registered_tables", "{\"terms\":\"订单,实付金额,已支付\"}");
                         case 2 -> previous.contains("orders") ? call("selected-table", "get_table_fields", "{\"table\":\"orders\"}")
                                 : frame(Map.of("content", "未找到登记表"), "stop");
                         case 3 -> {
