@@ -57,4 +57,13 @@ public class CoreDatasourceSaveExecution {
     @Comment("更新时间")
     @Column(name = "update_time")
     private Long updateTime;
+
+    @Size(max = 128)
+    @Comment("执行节点标识")
+    @Column(name = "node_id", length = 128)
+    private String nodeId;
+
+    @Comment("租约到期时间")
+    @Column(name = "lease_time")
+    private Long leaseTime;
 }

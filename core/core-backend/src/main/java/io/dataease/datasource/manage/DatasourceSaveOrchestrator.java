@@ -3,6 +3,7 @@ package io.dataease.datasource.manage;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceSaveExecution;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceSaveExecutionRepository;
+import io.dataease.exportCenter.manage.ExportNodeIdentity;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
@@ -22,10 +23,15 @@ public class DatasourceSaveOrchestrator {
     public static final String STATUS_SUCCESS = "SUCCESS";
     public static final String STATUS_FAILED = "FAILED";
 
+    /** 保存执行租约时长：超过该时间未续约才允许其他节点启动恢复。 */
+    public static final long LEASE_MILLIS = 30 * 60 * 1000L;
+
     @Resource
     private DataSourceManage dataSourceManage;
     @Resource
     private CoreDatasourceSaveExecutionRepository executionRepository;
+    @Resource
+    private ExportNodeIdentity exportNodeIdentity;
 
     @Transactional
     public Long commitCreate(DatasourceDTO dto) {
@@ -52,6 +58,8 @@ public class DatasourceSaveOrchestrator {
             execution.setStep("COMMIT");
             execution.setStatus(STATUS_PENDING);
             execution.setConfigVersion(configVersion);
+            execution.setNodeId(currentNodeId());
+            execution.setLeaseTime(newLeaseTime());
             execution.setUpdateTime(System.currentTimeMillis());
             executionRepository.save(execution);
         }
@@ -83,6 +91,8 @@ public class DatasourceSaveOrchestrator {
             execution.setStep("COMMIT");
             execution.setStatus(STATUS_PENDING);
             execution.setConfigVersion(record.getUpdateTime() == null ? null : String.valueOf(record.getUpdateTime()));
+            execution.setNodeId(currentNodeId());
+            execution.setLeaseTime(newLeaseTime());
             execution.setUpdateTime(System.currentTimeMillis());
             executionRepository.save(execution);
         }
@@ -94,36 +104,30 @@ public class DatasourceSaveOrchestrator {
         if (executionId == null) {
             return;
         }
-        CoreDatasourceSaveExecution execution = executionRepository.findById(executionId).orElse(null);
-        if (execution == null) {
-            return;
-        }
-        execution.setStep(step);
-        execution.setStatus(status);
-        execution.setResult(result);
-        execution.setUpdateTime(System.currentTimeMillis());
-        executionRepository.save(execution);
+        long now = System.currentTimeMillis();
+        executionRepository.markPendingExecution(executionId, currentNodeId(), step, status, result, now, now + LEASE_MILLIS);
     }
 
-    /** 只在当前不是 FAILED 时写失败，保留首个失败步骤与原因。 */
+    /** 只在当前节点仍拥有该 PENDING 记录时写失败，保留首个失败步骤与原因。 */
     @Transactional
     public void markFailure(Long executionId, String step, String result) {
         if (executionId == null) {
             return;
         }
-        CoreDatasourceSaveExecution execution = executionRepository.findById(executionId).orElse(null);
-        if (execution == null || STATUS_FAILED.equals(execution.getStatus())) {
-            return;
-        }
-        execution.setStep(step);
-        execution.setStatus(STATUS_FAILED);
-        execution.setResult(result);
-        execution.setUpdateTime(System.currentTimeMillis());
-        executionRepository.save(execution);
+        executionRepository.markPendingExecutionFailed(executionId, currentNodeId(), step, result, System.currentTimeMillis());
     }
 
-    public List<CoreDatasourceSaveExecution> pendingExecutions() {
-        return executionRepository.findByStatus(STATUS_PENDING);
+    public List<CoreDatasourceSaveExecution> expiredPendingExecutions(long now) {
+        return executionRepository.findByStatusAndLeaseTimeLessThan(STATUS_PENDING, now);
+    }
+
+    /** 启动恢复：仅当租约已过期且记录仍为 PENDING 时原子标记失败。 */
+    @Transactional
+    public int markExpiredPendingFailed(Long executionId, String result, long now) {
+        if (executionId == null) {
+            return 0;
+        }
+        return executionRepository.markExpiredPendingFailed(executionId, result, now, now);
     }
 
     private void saveExecution(Long executionId, Long dsId, String configVersion, String step, String status, String result) {
@@ -135,8 +139,19 @@ public class DatasourceSaveOrchestrator {
         execution.setStatus(status);
         execution.setResult(result);
         execution.setRetryCount(0);
-        execution.setCreateTime(System.currentTimeMillis());
-        execution.setUpdateTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        execution.setCreateTime(now);
+        execution.setUpdateTime(now);
+        execution.setNodeId(currentNodeId());
+        execution.setLeaseTime(now + LEASE_MILLIS);
         executionRepository.save(execution);
+    }
+
+    private String currentNodeId() {
+        return exportNodeIdentity.currentInstanceId();
+    }
+
+    private long newLeaseTime() {
+        return System.currentTimeMillis() + LEASE_MILLIS;
     }
 }

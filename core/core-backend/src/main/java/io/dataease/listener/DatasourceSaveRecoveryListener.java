@@ -23,10 +23,13 @@ public class DatasourceSaveRecoveryListener implements ApplicationListener<Appli
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        List<CoreDatasourceSaveExecution> pending = orchestrator.pendingExecutions();
-        for (CoreDatasourceSaveExecution execution : pending) {
-            orchestrator.mark(execution.getId(), "RECOVERY", DatasourceSaveOrchestrator.STATUS_FAILED, "进程重启导致执行中断，请根据步骤与结果重试");
-            LogUtil.warn("Recovered datasource save execution: " + execution.getId() + " for ds " + execution.getDsId());
+        long now = System.currentTimeMillis();
+        List<CoreDatasourceSaveExecution> expired = orchestrator.expiredPendingExecutions(now);
+        for (CoreDatasourceSaveExecution execution : expired) {
+            int updated = orchestrator.markExpiredPendingFailed(execution.getId(), "进程重启导致执行中断，请根据步骤与结果重试", now);
+            if (updated > 0) {
+                LogUtil.warn("Recovered datasource save execution: " + execution.getId() + " for ds " + execution.getDsId());
+            }
         }
     }
 }
