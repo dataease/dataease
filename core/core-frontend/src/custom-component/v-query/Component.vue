@@ -1119,6 +1119,8 @@ const autoStyle = computed(() => {
   :deep(.text-search-select .ed-input__wrapper),
   :deep(.text-search-select .ed-select__wrapper) {
     height: v-bind(boxHeight);
+    /* clip the value when its font size exceeds the configured height */
+    overflow: hidden;
   }
 
   /* element-plus hardcodes line-height/height at 24px, which clips the custom font size */
