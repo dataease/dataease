@@ -56,6 +56,8 @@ import type { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { cloneDeep, filter, forEach, forIn, includes, join, map, some } from 'lodash-es'
 import treeSort from '@/utils/treeSortUtils'
+import { useResourceTreeSearch } from '@/utils/resourceTreeSearch'
+import { getHighlightSegments } from '@/utils/utils'
 import { useCache } from '@/hooks/web/useCache'
 import InfoDetail from '@/views/menu/data/data-filling/manage/InfoDetail.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -424,8 +426,8 @@ const handleNodeClick = data => {
 const dsListTree = ref()
 const expandedKey = ref([])
 const dsListTreeShow = ref(true)
-watch(dsName, (val: string) => {
-  dsListTree.value.filter(val)
+const { filterNode } = useResourceTreeSearch(dsListTree, dsName, {
+  canView: data => data.weight > 0
 })
 const updateTreeExpand = () => {
   dsListTreeShow.value = false
@@ -447,11 +449,6 @@ const nodeCollapse = data => {
   if (data.id) {
     expandedKey.value.splice(expandedKey.value.indexOf(data.id), 1)
   }
-}
-
-const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true
-  return data.name?.toLowerCase().includes(value.toLowerCase())
 }
 
 const handleEdit = async data => {
@@ -1161,7 +1158,15 @@ function getMultipleValueList(data) {
                     :title="node.label"
                     class="label-tooltip ellipsis"
                     :class="data.type === 'Excel' && 'excel'"
-                    >{{ node.label }}</span
+                    ><template
+                      v-for="(segment, index) in getHighlightSegments(node.label, dsName)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template></span
                   >
                 </el-tooltip>
                 <span
@@ -1169,7 +1174,15 @@ function getMultipleValueList(data) {
                   :title="node.label"
                   class="label-tooltip ellipsis"
                   :class="data.type === 'Excel' && 'excel'"
-                  >{{ node.label }}</span
+                  ><template
+                    v-for="(segment, index) in getHighlightSegments(node.label, dsName)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="resource-tree-highlight">{{
+                      segment.text
+                    }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template></span
                 >
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
