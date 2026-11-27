@@ -932,79 +932,140 @@ public class AiConversationManage implements AiToolConversationFeature {
                 synchronized (run.state) { progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); }
                 complete(run, false, step.text()); return;
             }
-            if (step.calls().size() != 1 || run.toolSteps >= stream.maxToolSteps()) throw AiErrors.error("output_limit");
-            var call = step.calls().get(0); var scene = scene(run.state.view.scene());
-            var definition = run.task.input.tools().stream().filter(tool -> tool.name().equals(call.name())).findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
-            Map<String, String> arguments;
-            try { arguments = AiToolProtocol.arguments(definition, call); }
-            catch (AiErrors.Failure malformed) {
-                if (!"invalid".equals(malformed.safeCode())) throw malformed;
-                String feedback = AiToolProtocol.correction(call, stream.recovery(), run.invalidRequests); stream.result(feedback);
-                synchronized (run.state) {
-                    progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, feedback));
-                }
-                stream.send(new AiToolProtocol.Input(run.transcript, run.task.input.tools()), () -> progress(run), text -> append(run, text), next -> toolStep(run, next), failure -> fail(run, failure));
-                return;
-            }
-            String canonical = call.name() + ":" + new TreeMap<>(arguments);
-            AiConversationScene.ToolExecution tools;
+            var scene = scene(run.state.view.scene());
+            List<PreparedCall> requests;
             synchronized (run.state) {
                 progress(run);
-                tools = run.tools;
-                Tool previous = run.retainedFailures.get(canonical);
-                if (previous != null) {
-                    // Select the original failed proposal without recording a second execution of the tool.
-                    run.resultTools.add(previous);
-                    complete(run, true, "");
-                    return;
-                }
-                if (!run.toolIds.add(call.id()) || !run.toolRequests.add(canonical)) throw AiErrors.error("output_limit");
-                run.toolSteps++;
+                requests = prepareCalls(run, stream, scene, step.calls());
             }
-            toolEvent(run, call, "STARTED", arguments, null, null);
-            String result = null;
-            String modelResult;
+            var results = new HashMap<String, String>();
             boolean finish = false;
-            boolean retained;
-            try {
-                if (definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN) run.replayUnsafe = true;
-                java.util.function.Supplier<String> execute = () -> authorized(run.state, () -> {
-                    progress(run); check(run.state); stream.verifyStep();
-                    toolEvent(run, call, "RUNNING", arguments, null, null);
-                    String value = EditorStepSearch.TOOL.name().equals(call.name())
-                            ? AiToolProtocol.result(EditorStepSearch.find(run.state.stepHistory.answers().subList(0, run.task.priorAnswers),
-                                    scene, arguments))
-                            : tools.execute(call.name(), arguments, () -> progress(run), run.stream.deadline());
-                    progress(run); check(run.state); stream.verifyStep(); return value;
-                });
-                result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
-                        () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, () -> stream.recovery().tool(call.id(), call.name(), arguments, execute));
-                progress(run);
-                modelResult = scene.modelToolResult(call.name(), result);
-                stream.result(modelResult);
-                retained = scene.retainToolFailure(call.name(), result);
-                if (AiToolProtocol.invalidResult(result)) {
-                    if (!stream.recovery().correct(canonical)) {
-                        if (!retained) throw AiErrors.error("invalid");
-                        finish = true;
-                    }
-                } else if (retained) finish = true;
-            } catch (RuntimeException failure) {
-                if (!(failure instanceof AiErrors.Failure known) || !Set.of("forbidden", "scope_changed", "conflict").contains(known.safeCode()))
-                    toolEvent(run, call, "FAILED", arguments, result, failure instanceof AiErrors.Failure reason ? reason.safeCode() : "upstream_failed");
-                if (run.replayUnsafe) throw AiErrors.error("outcome_unknown");
-                throw failure;
+            for (var request : requests) {
+                // The first call was authorized at receipt. Recheck before even exposing the next tool's STARTED event.
+                if (!results.isEmpty())
+                    authorized(run.state, () -> { check(run.state); stream.verifyStep(); return null; });
+                String result = request.feedback();
+                if (result == null) {
+                    var outcome = executeTool(run, stream, scene, request);
+                    // Reselecting a retained failure has no new invocation or transcript entry.
+                    if (outcome == null) { complete(run, true, ""); return; }
+                    result = outcome.modelResult();
+                    finish |= outcome.terminal();
+                } else {
+                    stream.result(result);
+                }
+                results.put(request.call().id(), result);
             }
             synchronized (run.state) {
-                progress(run); run.transcript.add(AiToolProtocol.Message.assistant(step)); run.transcript.add(AiToolProtocol.Message.result(call, modelResult));
-                toolEvent(run, call, "SUCCEEDED", arguments, result, null);
-                if (retained) run.retainedFailures.put(canonical, run.resultTools.getLast());
+                progress(run);
+                run.transcript.add(AiToolProtocol.Message.assistant(step));
+                for (var call : step.calls())
+                    run.transcript.add(AiToolProtocol.Message.result(call, results.get(call.id())));
             }
             if (finish) { complete(run, true, ""); return; }
             // The previous response/permit is already closed. Enqueue the next step, without waiting on this worker.
             var input = new AiToolProtocol.Input(run.transcript, run.task.input.tools());
             stream.send(input, () -> progress(run), text -> append(run, text), next -> toolStep(run, next), failure -> fail(run, failure));
         } catch (RuntimeException failure) { fail(run, failure); }
+    }
+    private record PreparedCall(AiToolProtocol.Call call, AiToolProtocol.Definition definition,
+                                Map<String, String> arguments, String canonical, String feedback) {}
+
+    /** Check the whole response before any of its tools touch business metadata. Called under the state lock. */
+    private List<PreparedCall> prepareCalls(Run run, AiRuntimeManage.ToolStreaming stream, AiConversationScene scene,
+                                             List<AiToolProtocol.Call> calls) {
+        int maxCalls = scene.toolStepLimit().maxCallsPerStep();
+        if (calls.size() > maxCalls || calls.size() > stream.maxToolSteps() - run.toolSteps) throw AiErrors.error("output_limit");
+        var prepared = new ArrayList<PreparedCall>(calls.size());
+        for (var call : calls) {
+            var definition = run.task.input.tools().stream().filter(tool -> tool.name().equals(call.name()))
+                    .findFirst().orElseThrow(() -> AiErrors.error("unsupported"));
+            // A rejected or deferred SQL call may reuse its ID after correction. Executed calls cannot.
+            if (maxCalls > 1 && run.toolIds.contains(call.id())) throw AiErrors.error("output_limit");
+            Map<String, String> arguments;
+            try { arguments = AiToolProtocol.arguments(definition, call); }
+            catch (AiErrors.Failure malformed) {
+                if (!"invalid".equals(malformed.safeCode())) throw malformed;
+                String feedback = AiToolProtocol.correction(call, stream.recovery(), run.invalidRequests);
+                prepared.add(new PreparedCall(call, definition, Map.of(), null, feedback));
+                continue;
+            }
+            String canonical = call.name() + ":" + new TreeMap<>(arguments);
+            String feedback = null;
+            if (calls.size() > 1 && (definition.retrySafety() != AiToolProtocol.RetrySafety.READ_ONLY
+                    || scene.proposedContent(call.name(), arguments) != null)) {
+                // A proposal submitted alongside a read cannot have incorporated that read's result.
+                feedback = AiToolProtocol.result(Map.of("status", "DEFERRED", "message",
+                        "Review the tool results, then submit this call on its own if it is still needed."));
+            }
+            if (feedback == null && !run.retainedFailures.containsKey(canonical)) {
+                if (!run.toolIds.add(call.id()) || !run.toolRequests.add(canonical))
+                    throw AiErrors.error("output_limit");
+            }
+            prepared.add(new PreparedCall(call, definition, arguments, canonical, feedback));
+        }
+        if (calls.size() > 1) prepared.sort(Comparator.comparingInt(request -> scene.toolBatchOrder(request.call().name())));
+        return prepared;
+    }
+
+    private record CompletedCall(String modelResult, boolean terminal) {}
+
+    private CompletedCall executeTool(Run run, AiRuntimeManage.ToolStreaming stream, AiConversationScene scene, PreparedCall request) {
+        var call = request.call();
+        var arguments = request.arguments();
+        var definition = request.definition();
+        String canonical = request.canonical();
+        AiConversationScene.ToolExecution tools;
+        synchronized (run.state) {
+            progress(run);
+            tools = run.tools;
+            Tool previous = run.retainedFailures.get(canonical);
+            if (previous != null) {
+                run.resultTools.add(previous);
+                return null;
+            }
+            run.toolSteps++;
+        }
+        toolEvent(run, call, "STARTED", arguments, null, null);
+        String result = null;
+        String modelResult;
+        boolean finish = false;
+        boolean retained;
+        try {
+            if (definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN) run.replayUnsafe = true;
+            java.util.function.Supplier<String> execute = () -> authorized(run.state, () -> {
+                progress(run); check(run.state); stream.verifyStep();
+                toolEvent(run, call, "RUNNING", arguments, null, null);
+                String value = EditorStepSearch.TOOL.name().equals(call.name())
+                        ? AiToolProtocol.result(EditorStepSearch.find(run.state.stepHistory.answers().subList(0, run.task.priorAnswers),
+                                scene, arguments))
+                        : tools.execute(call.name(), arguments, () -> progress(run), run.stream.deadline());
+                progress(run); check(run.state); stream.verifyStep(); return value;
+            });
+            result = stream.recovery().execute("TOOL", stream.deadline(), () -> progress(run),
+                    () -> definition.retrySafety() == AiToolProtocol.RetrySafety.UNKNOWN, () -> { }, () -> stream.recovery().tool(call.id(), call.name(), arguments, execute));
+            progress(run);
+            modelResult = scene.modelToolResult(call.name(), result);
+            stream.result(modelResult);
+            retained = scene.retainToolFailure(call.name(), result);
+            if (AiToolProtocol.invalidResult(result)) {
+                if (!stream.recovery().correct(canonical)) {
+                    if (!retained) throw AiErrors.error("invalid");
+                    finish = true;
+                }
+            } else if (retained) finish = true;
+        } catch (RuntimeException failure) {
+            if (!(failure instanceof AiErrors.Failure known) || !Set.of("forbidden", "scope_changed", "conflict").contains(known.safeCode()))
+                toolEvent(run, call, "FAILED", arguments, result, failure instanceof AiErrors.Failure reason ? reason.safeCode() : "upstream_failed");
+            if (run.replayUnsafe) throw AiErrors.error("outcome_unknown");
+            throw failure;
+        }
+        synchronized (run.state) {
+            progress(run);
+            toolEvent(run, call, "SUCCEEDED", arguments, result, null);
+            if (retained) run.retainedFailures.put(canonical, run.resultTools.getLast());
+        }
+        return new CompletedCall(modelResult, finish);
     }
     private void fail(Run run, Throwable failure) {
         synchronized (run.state) {
