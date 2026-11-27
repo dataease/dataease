@@ -12,6 +12,7 @@ import java.io.IOException;
 /** The model supplies the author's clues; only matching records from this conversation may leave it. */
 final class EditorStepSearch {
     private static final ObjectMapper JSON = new ObjectMapper();
+    private static final Set<String> REGISTERED_TABLE_SEARCH_NAMES = Set.of("search_registered_tables", "search_semantics");
     static final AiToolProtocol.Definition TOOL = new AiToolProtocol.Definition("find_historical_step",
             "Look up an earlier step of this conversation by number or clues. Use the author's requested evidence; no business query.",
             Map.of("action", "Original tool name, or * for an exact step number when its action is unknown",
@@ -84,6 +85,7 @@ final class EditorStepSearch {
             int answerNumber = i + 1;
             for (var step : answer.steps().reversed()) {
                 boolean sameAction = "*".equals(action) || action.equals(step.name())
+                        || REGISTERED_TABLE_SEARCH_NAMES.contains(action) && REGISTERED_TABLE_SEARCH_NAMES.contains(step.name())
                         || "propose_calc_field".equals(action) && "revalidate_current_formula".equals(step.name())
                         || "get_table_fields".equals(action) && "get_named_table_fields".equals(step.name());
                 if (!sameAction) continue;

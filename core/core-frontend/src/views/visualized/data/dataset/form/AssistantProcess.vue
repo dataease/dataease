@@ -67,7 +67,8 @@ const title = (tool: AiConversationTool) => {
     find_historical_step: ['find_historical_step', params.subject === '*' ? '' : params.subject],
     revalidate_current_formula: ['validate_formula', undefined],
     propose_calc_field: ['validate_formula_object', params.name || params.expression],
-    search_semantics: ['search_semantics', params.terms],
+    search_semantics: ['search_registered_tables', params.terms],
+    search_registered_tables: ['search_registered_tables', params.terms],
     search_physical_tables: ['search_physical_tables', params.terms],
     read_sql_guide: ['read_sql_guide', params.topic],
     read_relations: [

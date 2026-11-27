@@ -1,6 +1,7 @@
 package io.dataease.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.ai.engine.conversation.RegisteredTableHistoryRegression;
 import io.dataease.ai.scene.sql.AiDatasetSqlScene;
 import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
@@ -37,7 +38,10 @@ public final class DatasetSqlSemanticRegression {
         };
         var scene = new AiDatasetSqlScene(source, new DatasetSqlGuide(new io.dataease.datasource.manage.EngineManage(), null), new DatasetSqlSemanticTools(source, registry()), DatasetSqlRelationRegression.registry(List.of()));
         var context = scene.resolve("11", "");
-        var found = json.readTree(scene.execute(context, "search_semantics", Map.of("terms", "订单,已支付,实付金额")));
+        RegisteredTableHistoryRegression.verify(scene, context);
+        if (scene.tools(context).stream().anyMatch(tool -> tool.name().equals("search_semantics")))
+            throw new AssertionError("Historical tool name was advertised for new searches");
+        var found = json.readTree(scene.execute(context, "search_registered_tables", Map.of("terms", "订单,已支付,实付金额")));
         if (found.path("tables").size() != 1 || !found.path("tables").toString().contains("orders")) throw new AssertionError(found);
         var details = scene.execute(context, "get_table_fields", Map.of("table", "orders"));
         if (!details.contains("实付金额") || !details.contains("已支付") || !details.contains("每订单一行")

@@ -81,8 +81,8 @@ public class DatasetSqlSemanticTools {
     private record Match(String table, List<String> matchedTerms, boolean exact) {}
 
     public AiTool<AiDatasourceTools.Scope> search() {
-        var definition = new AiToolProtocol.Definition("search_semantics",
-                "Search only local registered structure and confirmed semantic metadata. Results are leads; inspect selected tables before using semantics.",
+        var definition = new AiToolProtocol.Definition("search_registered_tables",
+                "Find candidate tables registered on the current datasource by physical names, comments or confirmed business descriptions. Use get_table_fields to inspect a selected table.",
                 Map.of("terms", "Comma-separated exact table names and distinct business terms from this question"),
                 AiToolProtocol.RetrySafety.READ_ONLY);
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
