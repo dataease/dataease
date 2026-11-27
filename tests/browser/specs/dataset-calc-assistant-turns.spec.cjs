@@ -570,10 +570,9 @@ for (const [status, error, label, reason] of [
     const detail = process.locator("details");
     const summary = detail.locator("summary");
     await expect(summary).toHaveText("步骤 1 · 校验公式 " + first + " · 执行中");
-    await expect(detail).toHaveAttribute("open", "");
+    await expect(detail).not.toHaveAttribute("open", "");
     if (status === "CANCELLED") {
-      // Reopen the tool explicitly so the final event preserves the author's choice.
-      await summary.click();
+      // The author explicitly expands the tool before stopping generation.
       await summary.click();
       await button(drawer, "停止生成").click();
       await expect(summary).toHaveText("步骤 1 · 校验公式 " + first + " · " + label);
@@ -676,7 +675,7 @@ test("formula correction shows both validation outcomes and keeps the detail bei
   try {
     await expect(rejected.locator("summary")).toBeVisible({ timeout: 3000 });
     await expect(rejected).not.toHaveAttribute("open", "");
-    await expect(running).toHaveAttribute("open", "");
+    await expect(running).not.toHaveAttribute("open", "");
     await rejected.locator("summary").click();
     await expect(rejected).toContainText("字段不存在");
     await waiting;

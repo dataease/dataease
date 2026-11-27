@@ -1,5 +1,7 @@
 export default {
   ai_conversation: {
+    diagnostic_details: 'Diagnostic details',
+    resize_panel: 'Resize assistant panel',
     copy_code: 'Copy code',
     copy_sql: 'Copy SQL',
     copy_code_failed: 'Copy failed',

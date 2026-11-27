@@ -50,10 +50,13 @@ const copy = async () => {
     <p>{{ issue.reason }}</p>
     <p v-if="noFormula">{{ tr('no_formula') }}</p>
     <p>{{ action }}</p>
-    <small v-if="executionId">{{ executionId }}</small>
-    <small v-if="issue.requestId">{{ issue.requestId }}</small>
     <p v-if="issue.retryMessage">{{ issue.retryMessage }}</p>
-    <small v-if="issue.retryRequestId">{{ issue.retryRequestId }}</small>
+    <details v-if="executionId || issue.requestId || issue.retryRequestId">
+      <summary>{{ tr('diagnostic_details') }}</summary>
+      <small v-if="executionId">{{ executionId }}</small>
+      <small v-if="issue.requestId">{{ issue.requestId }}</small>
+      <small v-if="issue.retryRequestId">{{ issue.retryRequestId }}</small>
+    </details>
     <div>
       <el-button text @click="copy">{{ tr('copy_diagnostic') }}</el-button>
       <el-button v-if="canRetry" :disabled="disabled" @click="$emit('retry')">{{
@@ -70,6 +73,10 @@ const copy = async () => {
   border-inline-start: 3px solid var(--ed-color-danger);
   background: var(--ed-color-danger-light-9);
   overflow-wrap: anywhere;
+}
+
+.assistant-failure small {
+  display: block;
 }
 
 .assistant-failure p {

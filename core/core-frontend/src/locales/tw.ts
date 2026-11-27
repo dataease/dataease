@@ -1,5 +1,7 @@
 export default {
   ai_conversation: {
+    diagnostic_details: '診斷詳情',
+    resize_panel: '調整助手寬度',
     copy_code: '複製程式碼',
     copy_sql: '複製 SQL',
     copy_code_failed: '複製失敗',
