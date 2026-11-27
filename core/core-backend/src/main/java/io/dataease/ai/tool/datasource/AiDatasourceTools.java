@@ -133,8 +133,11 @@ public class AiDatasourceTools {
     }
     public List<Table> tables(Scope scope) {
         if (scope.turnCatalog != null)
-            return directory(scope).labels().entrySet().stream().map(e -> new Table(e.getKey(), e.getValue())).toList();
+            return editorTableLabels(scope).entrySet().stream().map(e -> new Table(e.getKey(), e.getValue())).toList();
         return authorizedTables(scope).stream().map(table -> new Table(safe(table.getTableName(), 256), safe(table.getName(), 512))).toList();
+    }
+    Map<String, String> editorTableLabels(Scope scope) {
+        return directory(scope).labels();
     }
     /** Preserve validator semantics: absent exact table is null; ambiguous case is an empty list. */
     public List<String> validationFields(Scope scope, String table, Runnable active) {
