@@ -477,10 +477,9 @@ public class ExportCenterDownLoadManage {
                     List<List<String>> details = new ArrayList<>();
                     for (Long p = 0L; p < pageSize; p++) {
                         int beforeCount = (int) ((s - 1) * sheetLimit);
-                        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, beforeCount + p.intValue() * extractPageSize, extractPageSize);
-                        if (pageSize == 1) {
-                            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, sheetSize.intValue());
-                        }
+                        int offset = beforeCount + p.intValue() * extractPageSize;
+                        int limit = (p + 1 < pageSize) ? extractPageSize : (int) (sheetSize - p * extractPageSize);
+                        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, offset, limit);
                         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
                         DatasourceRequest datasourceRequest = new DatasourceRequest();
                         datasourceRequest.setQuery(querySQL);
@@ -962,10 +961,9 @@ public class ExportCenterDownLoadManage {
                 List<List<String>> details = new ArrayList<>();
                 for (Long p = 0L; p < pageSize; p++) {
                     int beforeCount = (int) ((s - 1) * sheetLimit);
-                    String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, beforeCount + p.intValue() * extractPageSize, extractPageSize);
-                    if (pageSize == 1) {
-                        querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, sheetSize.intValue());
-                    }
+                    int offset = beforeCount + p.intValue() * extractPageSize;
+                    int limit = (p + 1 < pageSize) ? extractPageSize : (int) (sheetSize - p * extractPageSize);
+                    String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, offset, limit);
                     querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
                     DatasourceRequest datasourceRequest = new DatasourceRequest();
                     datasourceRequest.setQuery(querySQL);
