@@ -111,6 +111,7 @@ public class DatasetSqlCompiler {
                 if (parameter.getDatasetTableId().equals(datasetTableId)) {
                     parameter.setValue(filterDTO.getValue());
                     parameter.setOperator(filterDTO.getOperator());
+                    parameter.setTimeZone(filterDTO.getTimeZone());
                     parameters.add(parameter);
                 }
             }

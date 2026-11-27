@@ -5,6 +5,7 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.exception.DEException;
+import io.dataease.exception.ErrorCategory;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.dto.TableFieldWithValue;
@@ -34,6 +35,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1062,7 +1065,7 @@ public class SqlparserUtils {
     private List<String> resolvePreparedValues(SqlVariableDetails sqlVariableDetails) {
         if (StringUtils.equals(sqlVariableDetails.getOperator(), "in")) {
             if (sqlVariableDetails.getDeType() == 1) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
+                SimpleDateFormat simpleDateFormat = dateParameterFormat(sqlVariableDetails);
                 if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
                     return Collections.singletonList(simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1)))));
                 }
@@ -1072,7 +1075,7 @@ public class SqlparserUtils {
         }
         if (StringUtils.equals(sqlVariableDetails.getOperator(), "between") || StringUtils.equals(sqlVariableDetails.getOperator(), "eq")) {
             if (sqlVariableDetails.getDeType() == 1) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
+                SimpleDateFormat simpleDateFormat = dateParameterFormat(sqlVariableDetails);
                 if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
                     return Collections.singletonList(simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1)))));
                 }
@@ -1084,6 +1087,22 @@ public class SqlparserUtils {
             return Collections.singletonList(sqlVariableDetails.getValue().get(0));
         }
         return CollectionUtils.isEmpty(sqlVariableDetails.getValue()) ? Collections.emptyList() : Collections.singletonList(sqlVariableDetails.getValue().get(0));
+    }
+
+    /**
+     * 按日期值来源时区恢复用户选择的日期，兼容未携带时区的旧请求
+     */
+    static SimpleDateFormat dateParameterFormat(SqlVariableDetails sqlVariableDetails) {
+        SimpleDateFormat format = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1
+                ? sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
+        if (StringUtils.isNotEmpty(sqlVariableDetails.getTimeZone())) {
+            try {
+                format.setTimeZone(TimeZone.getTimeZone(ZoneId.of(sqlVariableDetails.getTimeZone())));
+            } catch (DateTimeException e) {
+                throw DEException.of(ErrorCategory.VALIDATION, "i18n_error_invalid_parameter");
+            }
+        }
+        return format;
     }
 
     public static int resolveDeType(SqlVariableDetails sqlVariableDetails) {
