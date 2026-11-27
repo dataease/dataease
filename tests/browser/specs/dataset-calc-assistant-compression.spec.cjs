@@ -135,7 +135,11 @@ for (const editor of ["SQL", "计算字段"]) {
         await first.getByRole("button", { name: "基于此建议追问" }).click();
         await ask("重新校验当前公式", "当前草稿预览无数据");
       }
-      await panel.getByRole("checkbox", { name: "本轮引用" }).uncheck();
+      await panel
+        .getByRole("combobox", { name: "本轮引用来源" })
+        .selectOption({
+          label: editor === "SQL" ? "不引用 SQL" : "不引用公式",
+        });
       await ask("仅沿用已确认口径", "只沿用已確認口徑");
       await ask("换个话题，解释采购", "Purchase definition");
       const denied = await page.request.post(latest.url(), {

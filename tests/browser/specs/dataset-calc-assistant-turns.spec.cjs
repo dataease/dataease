@@ -237,7 +237,9 @@ test("the current formula or any selected turn is frozen as the basis of each qu
   await ask(drawer, "除以十");
   await completed(drawer, 4);
   expect(state.opens[3]).toMatchObject({ previousSessionId: "s3", sql: first });
-  await drawer.getByRole("checkbox", { name: "本轮引用" }).uncheck();
+  await drawer
+    .getByRole("combobox", { name: "本轮引用来源" })
+    .selectOption({ label: "不引用公式" });
   await ask(drawer, "每条记录计为一");
   await completed(drawer, 5);
   expect(state.opens[4].sql).toBe("");
@@ -448,20 +450,21 @@ test("a single blank basis keeps the discussion and recomputes the next formula 
   await page.goto("/");
   const drawer = await openDrawer(page);
   await drawer.locator(".cm-content").fill(manual);
-  const checkbox = drawer.getByRole("checkbox", { name: "本轮引用" });
-  const reference = drawer.getByRole("button", { name: /查看完整引用/ });
-  await expect(reference).toContainText(manual);
+  const source = drawer.getByRole("combobox", { name: "本轮引用来源" });
+  const firstLine = drawer.locator("footer code.reference-line");
+  await expect(source.locator("option:checked")).toContainText("编辑器当前公式");
+  await expect(firstLine).toContainText(manual);
   await ask(drawer, "按订单统计");
   const original = await completed(drawer, 1);
-  await expect(reference).toContainText("建议 #1");
-  await expect(reference).toContainText(first);
-  await checkbox.uncheck();
+  await expect(source.locator("option:checked")).toContainText("建议 #1");
+  await expect(firstLine).toContainText(first);
+  await source.selectOption({ label: "不引用公式" });
   await ask(drawer, "沿用这个业务口径");
   const without = await completed(drawer, 2);
   expect(state.opens[1]).toMatchObject({ previousSessionId: "s1", sql: "" });
   await expect(without.getByText(/生成依据/)).toHaveCount(0);
-  await expect(checkbox).toBeChecked();
-  await expect(reference).toContainText(second);
+  await expect(source.locator("option:checked")).toContainText("建议 #2");
+  await expect(firstLine).toContainText(second);
   await button(original, "基于此建议追问").click();
   await ask(drawer, "请从头写，沿用刚才确定的口径");
   const scratch = await completed(drawer, 3);
@@ -495,8 +498,8 @@ test("new conversation closes a running formula reply and starts from the curren
     await expect.poll(() => state.closed).toEqual(["s1"]);
     await expect(drawer.locator(".cm-content")).toHaveText(manual);
     await expect(
-      drawer.getByRole("checkbox", { name: "本轮引用" })
-    ).toBeChecked();
+      drawer.getByRole("combobox", { name: "本轮引用来源" }).locator("option:checked")
+    ).toContainText("编辑器当前公式");
     await ask(drawer, "新的问题");
     await completed(drawer, 1);
     expect(state.opens[1]).toMatchObject({

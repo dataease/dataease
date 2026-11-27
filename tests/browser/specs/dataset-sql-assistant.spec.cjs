@@ -469,8 +469,8 @@ test("the author can choose an older basis or start another query with the same 
   await expect(control(page, "apply")).toHaveCount(2);
   expect(state.opens[1].sql).toBe(proposal);
   await control(page, "panel")
-    .getByRole("checkbox", { name: "本轮引用" })
-    .uncheck();
+    .getByRole("combobox", { name: "本轮引用来源" })
+    .selectOption({ label: "不引用 SQL" });
   await ask(page);
   await expect(control(page, "apply")).toHaveCount(3);
   expect(state.opens[2]).toMatchObject({
@@ -599,7 +599,7 @@ test("each suggestion expands its own table and field evidence", async ({
   await expect(cards.first()).toContainText("每笔订单一行");
   for (const [index, sql] of [proposal, state.query].entries()) {
     await expect(cards.nth(index).locator("summary, small, pre")).toContainText([
-      `建议 #${index + 1} · 建议 SQL（未运行）`,
+      `建议 #${index + 1} · 按已确认支付口径汇总实付金额 · 建议 SQL（未运行）`,
       sql,
       "用表与字段依据",
     ]);
@@ -777,9 +777,11 @@ test("a manual preview failure can be repaired after editing and manually rerun"
   await expand(page);
   const panel = control(page, "panel");
   await panel.getByRole("textbox").fill("刚才为什么报错");
-  const reference = panel.getByRole("button", { name: /查看完整引用/ });
-  await expect(reference).toContainText("失败预览");
-  await expect(reference).toContainText(failedSql);
+  const selected = panel.getByRole("combobox", { name: "本轮引用来源" });
+  await expect(selected.locator("option:checked")).toContainText("失败");
+  await expect(panel.locator("footer code.reference-line")).toContainText(
+    failedSql
+  );
   await control(page, "send").click();
   await expect(control(page, "apply")).toHaveCount(1);
   expect(state.opens[0]).toMatchObject({
@@ -795,7 +797,7 @@ test("a manual preview failure can be repaired after editing and manually rerun"
   );
   expect(JSON.stringify(state.opens)).not.toContain("error-private");
   await expect(control(page, "panel").locator("article").first()).toContainText(
-    "失败预览"
+    /失败/
   );
   await expect(control(page, "panel").locator("article").first()).toContainText(
     "草稿已修改"
@@ -1039,8 +1041,11 @@ test("a new custom SQL node can apply its first suggestion before preview or sav
   await panel.getByRole("button", { name: "新对话" }).click();
   await expect(panel.getByRole("article")).toHaveCount(0);
   await expect(
-    panel.getByRole("button", { name: /查看完整引用/ })
-  ).toContainText(proposal);
+    panel.getByRole("combobox", { name: "本轮引用来源" }).locator("option:checked")
+  ).toContainText("编辑器当前 SQL");
+  await expect(panel.locator("footer code.reference-line")).toContainText(
+    proposal
+  );
   await ask(page, "解释当前 SQL");
   await expect(control(page, "apply")).toHaveCount(1);
   expect(state.opens[1]).toMatchObject({ sql: proposal, resourceId: "source" });
@@ -1061,24 +1066,30 @@ test("inspect the selected SQL before sending and keep its exact snapshot on the
   await draft.press("Enter");
   await expand(page);
   const panel = control(page, "panel");
-  const check = panel.getByRole("checkbox", { name: "本轮引用" });
-  const reference = panel.getByRole("button", { name: /查看完整引用/ });
-  await expect(check).toBeChecked();
-  await expect(reference).toContainText("编辑器草稿");
-  await expect(reference).toContainText("SELECT actual_amt…");
+  const source = panel.getByRole("combobox", { name: "本轮引用来源" });
+  const reference = panel.getByRole("button", {
+    name: "查看 SQL",
+    exact: true,
+  });
+  const full = panel.locator("footer pre");
+  await expect(source.locator("option:checked")).toContainText("编辑器当前 SQL");
+  await expect(panel.locator("footer code.reference-line")).toContainText(
+    "SELECT actual_amt"
+  );
   await reference.hover();
-  const full = panel.getByRole("tooltip");
-  await expect(full).toBeVisible();
-  expect(await full.textContent()).toBe(sql);
-  await check.hover();
   await expect(full).toBeHidden();
   await reference.focus();
+  await expect(full).toBeHidden();
+  await reference.press("Enter");
   await expect(full).toBeVisible();
-  await reference.press("Escape");
+  expect(await full.textContent()).toBe(sql);
+  await panel
+    .getByRole("button", { name: "收起 SQL", exact: true })
+    .press("Enter");
   await expect(full).toBeHidden();
   await reference.click();
   await expect(full).toBeVisible();
-  await expect(check).toBeChecked();
+  await expect(source.locator("option:checked")).toContainText("编辑器当前 SQL");
   await ask(page);
   const turn = panel.getByRole("article");
   const snapshot = turn.locator("details").filter({ hasText: "生成依据" });
@@ -1098,8 +1109,11 @@ test.describe("touch reference inspection", () => {
     await editor(page).locator(".cm-content").fill(sql);
     await expand(page);
     const panel = control(page, "panel");
-    const reference = panel.getByRole("button", { name: /查看完整引用/ });
-    const line = reference.locator("code");
+    const reference = panel.getByRole("button", {
+      name: "查看 SQL",
+      exact: true,
+    });
+    const line = panel.locator("footer code.reference-line");
     expect(
       await line.evaluate(
         (el) =>
@@ -1108,12 +1122,12 @@ test.describe("touch reference inspection", () => {
       )
     ).toBe(true);
     await reference.tap();
-    const full = panel.getByRole("tooltip");
+    const full = panel.locator("footer pre");
     await expect(full).toBeVisible();
     expect(await full.textContent()).toBe(sql);
     await expect(
-      panel.getByRole("checkbox", { name: "本轮引用" })
-    ).toBeChecked();
+      panel.getByRole("combobox", { name: "本轮引用来源" }).locator("option:checked")
+    ).toContainText("编辑器当前 SQL");
   });
 });
 

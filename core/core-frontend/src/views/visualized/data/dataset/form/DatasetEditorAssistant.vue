@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { uuid } from 'vue-uuid'
 import AssistantConversationPanel from '@/components/assistant/AssistantConversationPanel.vue'
+import AssistantReference from '@/components/assistant/AssistantReference.vue'
 import AssistantProcess from './AssistantProcess.vue'
 import AssistantAnswer from '@/components/assistant/AssistantAnswer.vue'
 import AssistantFailure from './AssistantFailure.vue'
@@ -62,7 +63,6 @@ const validationLabel = (validation: AiCalcFieldSuggestion['validation']) => {
 const elapsedLabel = (ms: number) =>
   tr('elapsed_time') + ' ' + (ms < 1000 ? ms + ' ms' : ms / 1000 + ' s')
 const title = () => tr(props.calcFieldDraft ? 'calc_title' : 'editor_title')
-const newDraftLabel = () => tr(props.calcFieldDraft ? 'new_formula' : 'new_query')
 const suggestionText = (result?: AiAssistanceResult) => result?.calcField?.expression ?? result?.sql
 const failedFormula = (result?: AiAssistanceResult) =>
   result?.calcField?.validation === 'INVALID' || result?.calcField?.validation === 'PREVIEW_FAILED'
@@ -106,9 +106,8 @@ const failure = ref('')
 const boundaryIssue = ref<AnswerFailure>()
 const turns = ref<Turn[]>([])
 // Positive numbers identify displayed turns.
-const selectedBasis = ref<number | 'preview'>()
-const includeBasis = ref(true)
-const showFullBasis = ref(false)
+type BasisSource = number | 'draft' | 'preview' | 'none'
+const selectedBasis = ref<BasisSource | 'auto'>('auto')
 const busy = ref(false)
 const applying = ref(false)
 let latestSession: AiConversationSession | undefined
@@ -158,9 +157,7 @@ const clearHistory = () => {
   pendingRetry.value = undefined
   latestSession = undefined
   latestRetryExecution = undefined
-  selectedBasis.value = undefined
-  includeBasis.value = true
-  showFullBasis.value = false
+  selectedBasis.value = 'auto'
   turns.value = []
 }
 const newConversation = () => {
@@ -306,38 +303,55 @@ const referencedTurn = (question: string, latest: number) => {
   if (/\bfirst (?:proposal|suggestion|version)\b/i.test(question)) return 1
   if (/上一[轮輪版条條]|(?:previous|last) (?:suggestion|proposal)/i.test(question)) return latest
 }
-const selectBasis = (basis: number | 'preview') => {
-  selectedBasis.value = basis
-  includeBasis.value = true
+const draftLabel = () => tr(props.calcFieldDraft ? 'current_formula' : 'current_sql')
+const noneLabel = () => tr(props.calcFieldDraft ? 'no_formula_reference' : 'no_sql_reference')
+const suggestionNumber = (index: number) => tr('numbered_suggestion') + ' #' + (index + 1)
+const segmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter() : undefined
+const questionExcerpt = (question: string) => {
+  const line = question.trim().replace(/\s+/g, ' ')
+  const characters = segmenter
+    ? Array.from(segmenter.segment(line), part => part.segment)
+    : Array.from(line)
+  return characters.length <= 20
+    ? line
+    : characters.slice(0, 8).join('') + '…' + characters.slice(-11).join('')
+}
+const suggestionLabel = (index: number) => {
+  const turn = turns.value[index]
+  const number = suggestionNumber(index)
+  const title = turn.result?.calcField ? turn.result.calcField.name : questionExcerpt(turn.question)
+  return title ? number + ' · ' + title : number
 }
 const selectedChoice = (turn: Turn, question: string) =>
   turn.choices?.find((choice, i) => question === choice || question === String(i + 1))
-const chooseBasis = (inputText: string) => {
+const chooseBasis = (inputText: string, selection?: BasisSource) => {
   const revision = props.draftRevision
   const last = turns.value.at(-1)
   // A retry choice may itself say "preview". Its label does not select the latest preview.
   const question = last?.isRetry && selectedChoice(last, inputText) ? '' : inputText
   if (
+    selection === 'none' ||
     /(?:^|[，,。.!！?？;；]\s*)(?:(?:请|請|帮我|幫我|麻烦|麻煩|这次|這次)\s*)*(?:另写|另寫|从头写|從頭寫|重新写一|重新寫一)|(?:^|[,.!?]\s*)(?:please\s+)?(?:from scratch|start (?:over|afresh|from scratch)|(?:write|rewrite|generate|create)\b[^.!?]*?\bfrom scratch)/i.test(
       question
     )
   ) {
-    return { label: newDraftLabel(), sql: '' }
+    return { label: noneLabel(), sql: '' }
   }
+  if (selection === 'draft') return { label: draftLabel(), sql: props.readDraft() }
   const latest = turns.value.reduce(
     (last, turn, i) => (suggestionText(turn.result) ? i + 1 : last),
     0
   )
   if (
-    selectedBasis.value === undefined &&
+    selection === undefined &&
     /(?:重新|再次|再|重)[新做]?\s*(?:校[验驗]|[验驗][证證]|檢查|检查).*?(?:当前|當前|草稿)|(?:revalidate|recheck|validate|check)\s+(?:the\s+)?(?:current|edited|draft)\b/i.test(
       question
     )
   ) {
     const sql = props.readDraft()
-    return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
+    return { label: sql ? draftLabel() : noneLabel(), sql }
   }
-  const requested = selectedBasis.value ?? referencedTurn(question, latest)
+  const requested = selection ?? referencedTurn(question, latest)
   const preview = props.preview
   const asksAboutPreview =
     /预览|預覽|报错|報錯|出错|出錯|错误|錯誤|失败|失敗|(?:为什么|為什麼|为何|為何|怎么|怎麼).*(?:重复|重複)|刚才.*运行|剛才.*執行|\b(preview|error|failed|failure|duplicate[sd]?)\b/i.test(
@@ -391,7 +405,7 @@ const chooseBasis = (inputText: string) => {
       }
     }
     const sql = props.readDraft()
-    return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
+    return { label: sql ? draftLabel() : noneLabel(), sql }
   }
   const index = (requested ?? latest) - 1
   const prior = turns.value[index]
@@ -402,29 +416,55 @@ const chooseBasis = (inputText: string) => {
       (prior.session?.resourceId === props.resourceId && prior.draftRevision === revision))
   ) {
     return {
-      label: tr('numbered_suggestion') + ' #' + (index + 1),
+      label: suggestionLabel(index),
       sql: suggestionText(prior.result)!,
       prior
     }
   }
   const sql = props.readDraft()
-  return { label: sql ? tr('editor_draft') : newDraftLabel(), sql }
+  return { label: sql ? draftLabel() : noneLabel(), sql }
 }
-const currentBasis = computed(() => chooseBasis(input.value.trim()))
-const leaveBasis = (event: FocusEvent | MouseEvent) => {
-  const container = event.currentTarget as HTMLElement
-  const focus = event.type === 'focusout' ? event.relatedTarget : document.activeElement
-  if (!(focus instanceof Node) || !container.contains(focus)) showFullBasis.value = false
-}
-const firstLine = (text: string) => {
-  const lines = text.split(/\r\n|\r|\n/)
-  const index = lines.findIndex(line => line.trim())
-  return index < 0 ? '' : lines[index].trim() + (index < lines.length - 1 ? '…' : '')
-}
+const automaticBasis = computed(() => chooseBasis(input.value.trim()))
+const currentBasis = computed(() =>
+  selectedBasis.value === 'auto'
+    ? automaticBasis.value
+    : chooseBasis(input.value.trim(), selectedBasis.value)
+)
+const referenceOrigin = computed(() => {
+  const basis = currentBasis.value
+  const index = basis?.prior
+    ? turns.value.indexOf(basis.prior)
+    : (basis?.frozenBasis?.number ?? 0) - 1
+  const turn = turns.value[index]
+  return turn && { numberLabel: suggestionNumber(index), questionId: turn.questionId }
+})
+const suggestionOptions = computed(() =>
+  turns.value.flatMap((turn, index) =>
+    suggestionText(turn.result) ? [{ value: index + 1, label: suggestionLabel(index) }] : []
+  )
+)
+const referenceOptions = computed(() => [
+  {
+    value: 'auto' as const,
+    label:
+      tr('automatic_basis') + ' · ' + (automaticBasis.value?.label ?? tr('unavailable_reference'))
+  },
+  { value: 'draft' as const, label: draftLabel() },
+  ...(props.preview && props.resourceId
+    ? [
+        {
+          value: 'preview' as const,
+          label: tr(props.preview.outcome === 'SUCCESS' ? 'successful_preview' : 'failed_preview')
+        }
+      ]
+    : []),
+  ...suggestionOptions.value,
+  { value: 'none' as const, label: noneLabel() }
+])
 watch(
   () => props.preview,
   () => {
-    if (selectedBasis.value === 'preview') selectedBasis.value = undefined
+    if (selectedBasis.value === 'preview') selectedBasis.value = 'auto'
   }
 )
 // The draft formula and its proposed attributes may change after a turn. References,
@@ -640,7 +680,7 @@ const send = async () => {
     turns.value.at(-1)?.status === 'UNREACHABLE'
   )
     return
-  const basis = includeBasis.value ? currentBasis.value : { label: newDraftLabel(), sql: '' }
+  const basis = currentBasis.value
   if (!basis) {
     failure.value = tr('unavailable_reference')
     return
@@ -661,9 +701,7 @@ const send = async () => {
   const read = new AbortController()
   request = read
   const current = () => token === version && !read.signal.aborted
-  selectedBasis.value = undefined
-  includeBasis.value = true
-  showFullBasis.value = false
+  selectedBasis.value = 'auto'
   const source = props.resourceId
   const calcField = props.calcFieldDraft?.()
   const isCross = props.isCross
@@ -1097,9 +1135,7 @@ const apply = async (turn: Turn) => {
           <div class="suggestion-code">
             <div class="suggestion-heading">
               <small>
-                <strong class="suggestion-title"
-                  >{{ tr('numbered_suggestion') }} #{{ index + 1 }}</strong
-                >
+                <strong class="suggestion-title">{{ suggestionLabel(index) }}</strong>
                 ·
                 <span>{{
                   turn.result.calcField
@@ -1129,7 +1165,7 @@ const apply = async (turn: Turn) => {
               text
               :disabled="busy || applying"
               data-testid="dataset-sql-assistant-reference"
-              @click="selectBasis(index + 1)"
+              @click="selectedBasis = index + 1"
               >{{ tr('refer_to_suggestion') }}</el-button
             >
           </div>
@@ -1225,56 +1261,19 @@ const apply = async (turn: Turn) => {
         />
         <p v-if="failure" role="alert">{{ failure }}</p>
       </template>
-      <template #reference>
-        <div v-if="(props.preview || selectedBasis !== undefined) && !busy">
-          <el-button
-            v-if="props.preview && selectedBasis === undefined"
-            text
-            @click="selectBasis('preview')"
-            >{{ tr('refer_to_preview') }}</el-button
-          >
-          <el-tag v-if="selectedBasis !== undefined" closable @close="selectedBasis = undefined">
-            {{
-              selectedBasis === 'preview'
-                ? tr('refer_to_preview')
-                : tr('numbered_suggestion') + ' #' + selectedBasis
-            }}
-          </el-tag>
-        </div>
-        <div v-if="!busy && currentBasis?.sql.trim()" class="basis-row">
-          <label>
-            <input v-model="includeBasis" type="checkbox" />
-            {{ tr('include_basis') }}
-          </label>
-          <div
-            class="basis-content"
-            @mouseenter="showFullBasis = true"
-            @mouseleave="leaveBasis"
-            @focusin="showFullBasis = true"
-            @focusout="leaveBasis"
-            @keydown.esc.stop="showFullBasis = false"
-          >
-            <button
-              type="button"
-              class="basis-preview"
-              :aria-label="tr('view_full_basis') + ' · ' + currentBasis.label"
-              :aria-expanded="showFullBasis"
-              :aria-describedby="showFullBasis ? editorId + '-basis' : undefined"
-              @click="showFullBasis = true"
-            >
-              <span>{{ currentBasis.label }}</span>
-              <code>{{ firstLine(currentBasis.sql) }}</code>
-            </button>
-            <pre
-              v-if="showFullBasis"
-              role="tooltip"
-              class="basis-full"
-              tabindex="0"
-              :id="editorId + '-basis'"
-              >{{ currentBasis.sql }}</pre
-            >
-          </div>
-        </div>
+      <template #reference="{ locateQuestion }">
+        <AssistantReference
+          v-if="!busy"
+          v-model="selectedBasis"
+          :options="referenceOptions"
+          :text="currentBasis?.sql"
+          :origin="referenceOrigin"
+          @locate="locateQuestion"
+          :caption="currentBasis?.label ?? ''"
+          :show-label="tr(calcFieldDraft ? 'view_formula' : 'view_sql')"
+          :hide-label="tr(calcFieldDraft ? 'hide_formula' : 'hide_sql')"
+          :hint="currentBasis?.preview ? tr('preview_reference_hint') : undefined"
+        />
       </template>
       <template v-if="busy || pendingRetry || turns.at(-1)?.status === 'UNREACHABLE'" #actions>
         <el-button
@@ -1342,57 +1341,5 @@ const apply = async (turn: Turn) => {
   flex-wrap: wrap;
   gap: 4px 12px;
   font-size: 12px;
-}
-
-.dataset-sql-assistant {
-  .basis-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    label {
-      display: inline-flex;
-      align-items: center;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-  }
-  .basis-content {
-    position: relative;
-    flex: 1;
-    min-width: 0;
-  }
-  .basis-preview {
-    width: 100%;
-    min-width: 0;
-    padding: 4px 8px;
-    text-align: left;
-    background: var(--ed-fill-color-light);
-    color: inherit;
-    border: 1px solid var(--ed-border-color);
-    border-radius: 4px;
-    cursor: pointer;
-    span,
-    code {
-      display: block;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-  }
-  .basis-full {
-    position: absolute;
-    bottom: 100%;
-    right: 0;
-    width: max-content;
-    max-width: min(440px, 80vw);
-    max-height: 35vh;
-    overflow: auto;
-    margin: 0;
-    padding: 8px;
-    z-index: 1;
-    background: var(--ed-bg-color-overlay);
-    border: 1px solid var(--ed-border-color);
-    border-radius: 4px;
-  }
 }
 </style>

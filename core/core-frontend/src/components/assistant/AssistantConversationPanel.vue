@@ -47,6 +47,23 @@ const keydown = (event: KeyboardEvent) => {
 }
 const conversation = ref<HTMLElement>()
 const logId = useId()
+const locatedQuestion = ref<string>()
+let highlightTimer: number | undefined
+const locateQuestion = (id: string) => {
+  const log = conversation.value
+  const question = log?.querySelector<HTMLElement>(`[data-question-id="${CSS.escape(id)}"]`)
+  if (!log || !question) return
+  const top =
+    log.scrollTop + question.getBoundingClientRect().top - log.getBoundingClientRect().top - 12
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reducedMotion) log.scrollTop = top
+  else log.scrollTo({ top, behavior: 'smooth' })
+  locatedQuestion.value = id
+  window.clearTimeout(highlightTimer)
+  highlightTimer = window.setTimeout(() => {
+    locatedQuestion.value = undefined
+  }, 1600)
+}
 const toEnd = () => {
   if (conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight
 }
@@ -84,6 +101,7 @@ onMounted(() => {
   }
 })
 onBeforeUnmount(() => {
+  window.clearTimeout(highlightTimer)
   observer?.disconnect()
   window.removeEventListener('resize', measure)
 })
@@ -143,7 +161,11 @@ const resizeKey = (event: KeyboardEvent) => {
     </header>
     <div :id="logId" ref="conversation" class="conversation" role="log">
       <article v-for="group in groups" :key="group[0].turn.questionId">
-        <p class="question" :data-question-id="group[0].turn.questionId">
+        <p
+          class="question"
+          :class="{ located: locatedQuestion === group[0].turn.questionId }"
+          :data-question-id="group[0].turn.questionId"
+        >
           {{ group[0].turn.question }}
         </p>
         <component
@@ -165,7 +187,7 @@ const resizeKey = (event: KeyboardEvent) => {
       <slot name="notice" />
     </div>
     <footer class="composer">
-      <slot name="reference" />
+      <slot name="reference" :locate-question="locateQuestion" />
       <el-input
         type="textarea"
         :data-testid="inputTestId"
@@ -273,6 +295,10 @@ article + article {
   border-radius: 10px 10px 3px 10px;
   background: color-mix(in srgb, var(--ed-color-primary) 12%, var(--ed-bg-color));
   white-space: pre-wrap;
+}
+.question.located {
+  outline: 2px solid var(--ed-color-primary);
+  outline-offset: 2px;
 }
 .attempt[open] > summary {
   margin-bottom: 10px;
