@@ -34,6 +34,9 @@ import { formatterItem } from '@/views/chart/components/js/formatter'
 import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 const { t } = useI18n()
 
+const normalizeOuterTreePath = (path: string) =>
+  path.includes('-de-') ? path : path.replace(/,/g, '-de-')
+
 const collectComponentIds = (component, ids = new Set<string>()) => {
   if (!component) {
     return ids
@@ -1342,15 +1345,18 @@ export const dvMainStore = defineStore('dataVisualization', {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
+                const isTree = filterItem.displayType === '9'
                 const targetMatchMode = targetInfoArray[2] // 目标匹配模式
                 if (targetMatchMode === 'filter') {
-                  paramValue = paramValue.map(option => {
+                  queryParams = paramValue.map(option => {
+                    if (isTree && option != null) {
+                      return normalizeOuterTreePath(String(option))
+                    }
                     if (typeof option === 'string' && option.includes(',')) {
                       return option.replace(/,/g, '-de-')
                     }
                     return option
                   })
-                  queryParams = paramValue
                   // do filter
                   filterItem['optionFilter'] = queryParams
                   if (filterItem.defaultValueCheck) {
@@ -1407,16 +1413,16 @@ export const dvMainStore = defineStore('dataVisualization', {
                     // 8 文本搜索
                     filterItem['conditionValueF'] = parmaValueSource + ''
                     filterItem['defaultConditionValueF'] = parmaValueSource + ''
-                  } else if (filterItem.displayType === '9') {
-                    // 9 下拉树
+                  } else if (isTree) {
+                    const paths = queryParams.map(normalizeOuterTreePath)
                     if (filterItem.multiple) {
                       // multiple === true 多选
-                      filterItem['selectValue'] = queryParams
-                      filterItem['defaultValue'] = queryParams
+                      filterItem['selectValue'] = paths
+                      filterItem['defaultValue'] = paths
                     } else {
                       // 单选
-                      filterItem['selectValue'] = queryParams[0]
-                      filterItem['defaultValue'] = queryParams[0]
+                      filterItem['selectValue'] = paths[0]
+                      filterItem['defaultValue'] = paths[0]
                     }
                   } else if (filterItem.displayType === '22') {
                     filterItem['defaultNumValueStart'] = queryParams[0]

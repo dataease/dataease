@@ -532,8 +532,10 @@ const jumpClick = param => {
                 if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
                   const outerFilterItem = filterOuterParams[targetViewInfo.outerParamsName]
                   if (outerFilterItem) {
-                    // 当前已经存在 根据arrayType 放置位置
-                    if (filterItem['arrayType'] === 'END') {
+                    if (filterItem.treeFilterGroup) {
+                      // 下拉树按层级拆分的条件都要随跳转传递。
+                      outerFilterItem.value = [...outerFilterItem.value, ...filterItem.value]
+                    } else if (filterItem['arrayType'] === 'END') {
                       outerFilterItem.value[outerFilterItem.value.length - 1] = filterItem.value[0]
                     } else {
                       outerFilterItem.value[0] = filterItem.value[0]

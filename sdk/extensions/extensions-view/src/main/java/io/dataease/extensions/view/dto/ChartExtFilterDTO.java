@@ -19,6 +19,8 @@ public class ChartExtFilterDTO {
     private List<SqlVariableDetails> parameters;
     private DatasetTableFieldDTO datasetTableField;
     private Boolean isTree = false;
+    // Tree IN clauses from the same selection are alternatives when their field paths differ.
+    private String treeFilterGroup;
     private List<DatasetTableFieldDTO> datasetTableFieldList;
     private String dateStyle;
     private String datePattern;
