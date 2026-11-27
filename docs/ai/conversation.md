@@ -55,7 +55,9 @@ SQL 追问选取相关字段。计算字段追问返回原步骤提交的公式�
 
 正式编辑器在提问受理时标记依据来自草稿、编号建议、手动预览或空引用，并记录它当时与草稿是否一致。选回先前建议时只发送本轮引用的 SQL 或公式。后续有依据的追问可沿用上次选定建议的编号及原文；超过 2048 字符的建议只保留编号和省略标记，作者选回它即可按本轮依据提供全文。取消本轮引用仍可沿用早先确认的口径。
 
-三份 UTF-8 Markdown 资源位于 `core/core-backend/src/main/resources/ai/prompts`。维护共通的澄清、回答语言和步骤引用规则时修改 `editor-shared.md`；SQL 和计算字段专属规则分别在 `editor-dataset-sql.md` 和 `editor-calc-field.md`。
+给模型的固定指令用中文编写，集中维护在 [ai/prompts](../../core/core-backend/src/main/resources/ai/prompts) 的 UTF-8 Markdown 文件中。编辑器共用的澄清、回答语言和步骤引用规则在 `editor-shared.md`，SQL 和计算字段的场景指令分别在 `editor-dataset-sql.md` 和 `editor-calc-field.md`。数据源语义、表关联、模型连接测试及演示场景各自使用对应的资源。
+
+修改 SQL 写法或示例时，编辑 [dataset-sql-guide](../../core/core-backend/src/main/resources/ai/prompts/dataset-sql-guide) 中对应主题。修改工具用途或入参说明时，编辑 [tools](../../core/core-backend/src/main/resources/ai/prompts/tools) 下的 Markdown。二级标题 `## 工具名` 和 `## 工具名.参数名` 是 Java 读取对应片段的键。工具名、必填参数、允许的操作和运行时数据由 Java 定义。资源随应用打包，Maven 原样保留 SQL 占位符。
 
 按编号、名称、字段或执行动作追问时，模型根据用户的语言把线索作为参数传给 `find_historical_step`。第一次模型请求不附加步骤快照。工具核对原资源权限，在同一会话内定位原步骤，再把所问内容交给模型继续回答。只指定步骤号时查最近一次回答，指定回答号时查对应回答。同名数据源或不同公式版本可用来源名或回答与步骤号区分。询问最后一次校验时跳过中间的解释。作者要求重新校验当前公式时，`revalidate_current_formula` 直接校验发问时固定的草稿。
 
@@ -142,7 +144,7 @@ sequenceDiagram
     end
 ```
 
-场景指令要求模型在生成或修改 SQL 前调用 `read_sql_guide`。提示词与工具共用方言名称解析逻辑。内置连接器取数据源枚举的名称，已加载的插件取配置中的 `name`。例如达梦单源查询的执行方言是“达梦”，同一个连接器在跨源模式下的执行方言是 Apache Calcite。Excel 和 API 数据源使用配置的数据引擎方言。[场景指令](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AiDatasetSqlScene.java) · [方言指南](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/DatasetSqlGuide.java)
+场景指令要求模型在生成或修改 SQL 前调用 `read_sql_guide`。工具只返回本次所选主题、通用规则和当前方言的标识符写法。内置连接器取数据源枚举的名称，已加载的插件取配置中的 `name`。例如达梦单源查询的执行方言是“达梦”，同一个连接器在跨源模式下的执行方言是 Apache Calcite。Excel 和 API 数据源使用配置的数据引擎方言。[场景指令](../../core/core-backend/src/main/resources/ai/prompts/editor-dataset-sql.md) · [执行方言选择](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/DatasetSqlGuide.java)
 
 图中的 `propose_sql` 属于正式编辑器的 `dataset-sql` 场景。`NOT_RUN` 表示候选 SQL 已通过单条只读规则，可供作者应用；实际数据库执行由作者点击“运行”触发。通用 `sql` 场景注册了另一个同名工具，使用静态校验器的 `PASS` 作为可应用条件。[建议结果组装](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AbstractSqlConversationScene.java) · [通用 SQL 工具定义](../../core/core-backend/src/main/java/io/dataease/ai/tool/sql/AiSqlTools.java)
 

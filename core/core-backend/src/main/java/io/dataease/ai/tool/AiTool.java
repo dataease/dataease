@@ -2,7 +2,9 @@ package io.dataease.ai.tool;
 
 import io.dataease.ai.engine.runtime.AiToolProtocol;
 import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiPromptResources;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +19,15 @@ public record AiTool<C>(AiToolProtocol.Definition definition, Action<C> action) 
     public AiTool {
         Objects.requireNonNull(definition);
         Objects.requireNonNull(action);
+    }
+
+    public static AiToolProtocol.Definition readOnly(String resource, String name, String... parameterNames) {
+        var parameters = new HashMap<String, String>();
+        for (String parameter : parameterNames) {
+            parameters.put(parameter, AiPromptResources.section(resource, name + "." + parameter));
+        }
+        return new AiToolProtocol.Definition(name, AiPromptResources.section(resource, name),
+                parameters, AiToolProtocol.RetrySafety.READ_ONLY);
     }
 
     public String execute(C scope, Map<String, String> arguments, Runnable active, long deadline) {

@@ -106,14 +106,12 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     }
 
     private static AiTool<AiDatasourceTools.Scope> proposal(AiDatasourceTools metadata) {
-        var definition = new AiToolProtocol.Definition("propose_sql",
-                "Offer one complete read-only query as an unrun editor draft. No execution, preview, or save.",
-                Map.of("sql", "Complete query to offer for explicit application"), AiToolProtocol.RetrySafety.READ_ONLY);
+        var definition = AiTool.readOnly("tools/dataset-sql.md", "propose_sql", "sql");
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
             metadata.authorize(scope);
             return AiToolProtocol.result(SqlUtil.isSingleReadQuery(arguments.get("sql"))
                     ? DatasetSqlEvidence.lineage(arguments.get("sql"))
-                    : Map.of("status", "INVALID", "message", "Propose one complete read-only SELECT or WITH query."));
+                    : Map.of("status", "INVALID", "message", AiPromptResources.section("tools/dataset-sql.md", "propose_sql.invalid")));
         });
     }
 }

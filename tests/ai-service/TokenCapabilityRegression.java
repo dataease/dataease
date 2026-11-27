@@ -66,6 +66,11 @@ public final class TokenCapabilityRegression {
             if(!bodies.get(0).has("max_tokens")||bodies.get(1).has("max_tokens")||!bodies.get(2).has("max_completion_tokens"))throw new AssertionError("schema must use negotiated field");
             var format=bodies.get(2).path("response_format");
             if(!"json_object".equals(format.path("type").asText())||format.has("json_schema"))throw new AssertionError("OpenAI compatible JSON mode");
+            String basicPrompt = bodies.get(0).at("/messages/0/content").asText();
+            String structuredPrompt = bodies.get(2).at("/messages/0/content").asText();
+            if (!basicPrompt.contains("只回复 OK") || !basicPrompt.equals(bodies.get(1).at("/messages/0/content").asText())
+                    || !structuredPrompt.contains("JSON") || !structuredPrompt.contains("{\"ok\":true}"))
+                throw new AssertionError("Negotiation must preserve the basic probe; JSON mode needs its keyword and exact target object");
             String proof=result.testProof();String[] parts=proof.split("\\.");String payload=new String(Base64.getUrlDecoder().decode(parts[1]),StandardCharsets.UTF_8).replace("MAX_COMPLETION_TOKENS","MAX_TOKENS");
             c.setTestProof(parts[0]+"."+Base64.getUrlEncoder().withoutPadding().encodeToString(payload.getBytes(StandardCharsets.UTF_8))+"."+parts[2]);
             try{config.save(c,true);throw new AssertionError("tampered capability accepted");}catch(AiErrors.Failure expected){}

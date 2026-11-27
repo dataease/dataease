@@ -22,10 +22,7 @@ public class DatasetSqlSemanticTools {
     }
 
     public AiTool<AiDatasourceTools.Scope> fields() {
-        var definition = new AiToolProtocol.Definition("get_table_fields",
-                "Inspect live fields on one exact table. Only confirmed business names, descriptions and explicit value/meaning pairs establish semantics. Physical comments and aliases are hints.",
-                Map.of("table", "Exact table named in the request, existing SQL, or search results"),
-                AiToolProtocol.RetrySafety.READ_ONLY);
+        var definition = AiTool.readOnly("tools/dataset-sql.md", "get_table_fields", "table");
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
             String table = args.get("table");
             var structure = metadata.fields(scope, table, true);
@@ -35,10 +32,7 @@ public class DatasetSqlSemanticTools {
     }
 
     public AiTool<AiDatasourceTools.Scope> namedFields() {
-        var definition = new AiToolProtocol.Definition("get_named_table_fields",
-                "Refresh metadata for known physical column names on one exact table. Use get_table_fields to identify columns by spelling or business meaning.",
-                Map.of("table", "Exact table on the current datasource", "fields", "Comma-separated exact column names, at most 32"),
-                AiToolProtocol.RetrySafety.READ_ONLY);
+        var definition = AiTool.readOnly("tools/dataset-sql.md", "get_named_table_fields", "table", "fields");
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
             String table = args.get("table");
             var names = Arrays.stream(args.get("fields").split("[,，]", -1)).map(String::strip).distinct().toList();
@@ -81,10 +75,7 @@ public class DatasetSqlSemanticTools {
     private record Match(String table, List<String> matchedTerms, boolean exact) {}
 
     public AiTool<AiDatasourceTools.Scope> search() {
-        var definition = new AiToolProtocol.Definition("search_registered_tables",
-                "Find candidate tables registered on the current datasource by physical names, comments or confirmed business descriptions. Use get_table_fields to inspect a selected table.",
-                Map.of("terms", "Comma-separated exact table names and distinct business terms from this question"),
-                AiToolProtocol.RetrySafety.READ_ONLY);
+        var definition = AiTool.readOnly("tools/dataset-sql.md", "search_registered_tables", "terms");
         return new AiTool<>(definition, (scope, args, active, deadline) -> {
             metadata.authorize(scope);
             var id = Long.valueOf(scope.resourceId());

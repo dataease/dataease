@@ -345,7 +345,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <includes>
-                    <include>ai/prompts/*.md</include>
+                    <include>ai/prompts/**/*.md</include>
                     <include>static/**/*.*</include>
                 </includes>
             </resource>

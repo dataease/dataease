@@ -3,6 +3,7 @@ package io.dataease.ai.engine.conversation;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.ai.engine.runtime.AiToolProtocol;
+import io.dataease.ai.tool.AiTool;
 import io.dataease.ai.engine.conversation.AiConversationScene.HistoricalFields;
 import io.dataease.ai.engine.conversation.AiConversationScene.HistoricalStep;
 import io.dataease.ai.engine.conversation.EditorStepHistory.Answer;
@@ -13,13 +14,7 @@ import java.io.IOException;
 final class EditorStepSearch {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final Set<String> REGISTERED_TABLE_SEARCH_NAMES = Set.of("search_registered_tables", "search_semantics");
-    static final AiToolProtocol.Definition TOOL = new AiToolProtocol.Definition("find_historical_step",
-            "Look up an earlier step of this conversation by number or clues. Use the author's requested evidence; no business query.",
-            Map.of("action", "Original tool name, or * for an exact step number when its action is unknown",
-                    "subject", "Exact table, proposed formula name or expression; * when unspecified",
-                    "fields", "Use exact physical names (up to 32, comma-separated), temporal for date/time fields, #count for the recorded column count, #names for recorded names, or * for status. For literal names with commas or reserved words, pass a string encoding a JSON array of names.",
-                    "selection", "last.N for step N of the most recent answer; A.N for step N of answer A. Otherwise any, latest for the last matching action, source:<exact datasource name>, or an answer number."),
-            AiToolProtocol.RetrySafety.READ_ONLY);
+    static final AiToolProtocol.Definition TOOL = AiTool.readOnly("tools/editor.md", "find_historical_step", "action", "subject", "fields", "selection");
 
     private record Match(int answer, Answer original, HistoricalStep step, Map<String, Object> evidence) {
         Map<String, Object> label() {

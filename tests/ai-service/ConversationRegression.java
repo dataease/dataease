@@ -148,7 +148,7 @@ public final class ConversationRegression {
                 .andReturn().getResponse();
         messages = sent.get(sent.size() - 1).path("messages");
         if (synchronous.getStatus() != 200 || messages.size() != 12
-                || !messages.get(0).path("content").asText().contains("CURRENT APPLICATION STATE")
+                || !messages.get(0).path("content").asText().contains("本轮应用状态")
                 || !messages.get(0).path("content").asText().contains("\"selection\":\"NONE\""))
             throw new AssertionError("synchronous continuation preserves history and current state in the leading system message");
         mvc.perform(delete("/ai/conversations/" + unbound.path("sessionId").asText()));

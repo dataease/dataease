@@ -1,6 +1,7 @@
 package io.dataease.ai.engine.runtime;
 
 import io.dataease.ai.support.AiErrors;
+import io.dataease.ai.support.AiPromptResources;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
@@ -14,6 +15,7 @@ public final class AiToolProtocol {
     private AiToolProtocol() { }
     public static final int MAX_MODEL_STEPS = 5, MAX_ARGUMENTS = 8192, MAX_RESULTS = 32768;
     private static final ObjectMapper JSON = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+    private static final String ARGUMENT_CORRECTION = AiPromptResources.read("tool-argument-correction.md");
     static {
         JSON.getFactory().setStreamReadConstraints(com.fasterxml.jackson.core.StreamReadConstraints.builder()
                 .maxNestingDepth(12).maxStringLength(65536).maxNumberLength(20).build());
@@ -90,7 +92,7 @@ public final class AiToolProtocol {
         try { canonical = call.name() + ":" + JSON.writer().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(JSON.convertValue(JSON.readTree(call.arguments()), Object.class)); }
         catch (Exception ignored) { }
         if (!invalid.add(canonical) || !recovery.correct(canonical)) throw AiErrors.error("invalid");
-        return result(Map.of("status", "INVALID", "code", "arguments", "message", "Use exactly the registered argument names with nonempty string values. No tool was executed."));
+        return result(Map.of("status", "INVALID", "code", "arguments", "message", ARGUMENT_CORRECTION));
     }
     public static boolean invalidResult(String result) {
         try { return "INVALID".equals(JSON.readTree(result).path("status").asText()); }
