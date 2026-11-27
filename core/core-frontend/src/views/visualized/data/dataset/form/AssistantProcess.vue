@@ -4,7 +4,12 @@ import AssistantToolResult from './AssistantToolResult.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { AiConversationTool } from '@/api/aiConversation'
 import { aiFailureKey } from '@/api/aiService'
-import type { AnswerProcess, ProcessEntry } from './assistantProcess'
+import {
+  parseToolResult,
+  toolOutcome,
+  type AnswerProcess,
+  type ProcessEntry
+} from './assistantProcess'
 
 const props = defineProps<{
   process: AnswerProcess
@@ -27,21 +32,13 @@ const expanded = computed(
       props.status === 'UNREACHABLE' ||
       props.process.entries.some(item => item.kind === 'tool' && item.open))
 )
-const parseResult = (value?: string) => {
-  if (!value) return value
-  try {
-    return JSON.parse(value)
-  } catch {
-    return value
-  }
-}
 const format = (value: unknown) =>
   typeof value === 'string' ? value : JSON.stringify(value, null, 2)
 const verdict = (tool: AiConversationTool) => {
   if (active(tool)) return tr('tool_running')
   if (tool.status === 'CANCELLED') return tr('tool_cancelled')
   if (tool.status === 'FAILED') return tr('tool_failed')
-  switch (tool.outcome ?? parseResult(tool.result)?.status) {
+  switch (toolOutcome(tool)) {
     case 'INVALID':
     case 'PREVIEW_FAILED':
       return tr('validation_rejected')
@@ -117,7 +114,7 @@ const toggleTool = (entry: ProcessEntry) => {
           <template v-if="entry.tool.result">
             <dt>{{ tr('tool_result') }}</dt>
             <dd>
-              <pre>{{ format(parseResult(entry.tool.result)) }}</pre>
+              <pre>{{ format(parseToolResult(entry.tool.result)) }}</pre>
             </dd>
           </template>
           <template

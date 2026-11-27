@@ -106,16 +106,12 @@ for (const [assistant, view, editorSelector] of [
       const source = panel.getByRole("combobox", { name: "本轮引用来源" });
       const inspect = button(panel, view);
       const label = panel.getByText("本轮引用", { exact: true });
+      const grip = panel.getByRole("separator", { name: "调整助手宽度" });
       for (const width of [1440, 800]) {
+        if (width === 800) await grip.press("Home");
         await page.setViewportSize({ width, height: 780 });
-        if (width === 1440)
-          await panel
-            .getByRole("separator", { name: "调整助手宽度" })
-            .press("End");
-        else {
-          const grip = panel.getByRole("separator", { name: "调整助手宽度" });
-          if (await grip.isVisible()) await grip.press("Home");
-        }
+        if (width === 1440) await grip.press("End");
+        else await expect(panel).toHaveCSS("width", "288px");
         const [left, center, right] = await Promise.all(
           [label, source, inspect].map((el) => el.boundingBox())
         );

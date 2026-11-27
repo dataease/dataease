@@ -6,6 +6,28 @@ const {
   serveAnswers,
 } = require("../fixtures/dataset-editor/reference.cjs");
 
+test("Escape collapses the formula preview and returns control to the drawer", async ({
+  page,
+}) => {
+  await serveAnswers(page, []);
+  const panel = await openAssistant(page, "计算字段助手");
+  await page.locator(".calc-field-drawer .cm-content").fill("[orders_id]");
+  const drawer = page.getByRole("dialog");
+  await drawer.evaluate((el) => {
+    el.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") el.dataset.escape = "received";
+    });
+  });
+  const inspect = button(panel, "查看公式");
+  await inspect.press("Enter");
+  await panel.locator("footer pre").press("Escape");
+  await expect(inspect).toBeFocused();
+  await expect(inspect).toHaveAttribute("aria-expanded", "false");
+  await expect(drawer).not.toHaveAttribute("data-escape", "received");
+  await inspect.press("Escape");
+  await expect(drawer).toHaveAttribute("data-escape", "received");
+});
+
 test("locate the original formula question from its retry suggestion while keeping the follow-up", async ({
   page,
 }) => {
@@ -106,4 +128,36 @@ test("locate the original formula question from its retry suggestion while keepi
   );
   await expect(origin).toHaveCount(0);
   expect(openings.map((opening) => opening.sql)).toEqual(["[orders_id]", ""]);
+});
+
+test("starting from scratch shows the effective source before sending and resets it for the next turn", async ({
+  page,
+}) => {
+  const openings = await serveAnswers(page, [
+    {
+      type: "CALC_FIELD_SUGGESTION",
+      calcField: {
+        name: "订单数",
+        expression: "[orders_id]",
+        validation: "DETAIL_PASS",
+      },
+    },
+    { type: "EXPLANATION", text: "已说明。" },
+  ]);
+  const panel = await openAssistant(page, "计算字段助手");
+  await ask(panel, "算订单");
+  const source = panel.getByRole("combobox", { name: "本轮引用来源" });
+  await source.selectOption({ label: "建议 #1 · 订单数" });
+  const input = panel.getByRole("textbox");
+  await input.fill("请从头写");
+  await expect(source.locator("option:checked")).toHaveText("不引用公式");
+  const hint = panel.getByText("提问要求从头写，本轮不引用。", { exact: true });
+  await expect(hint).toBeVisible();
+  await expect(button(panel, "查看公式")).toBeHidden();
+  await input.fill("修改这个建议");
+  await expect(hint).toBeHidden();
+  await expect(source.locator("option:checked")).toHaveText("建议 #1 · 订单数");
+  await ask(panel, "请从头写");
+  expect(openings[1]).toMatchObject({ previousSessionId: "s1", sql: "" });
+  await expect(source.locator("option:checked")).toContainText("自动");
 });

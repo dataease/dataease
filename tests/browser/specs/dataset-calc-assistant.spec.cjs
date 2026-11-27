@@ -1,4 +1,8 @@
 const { test, expect } = require("@playwright/test");
+const {
+  ask,
+  openAssistant,
+} = require("../fixtures/dataset-editor/reference.cjs");
 
 async function backend(page, options = {}) {
   const state = { opens: [], checks: 0 };
@@ -381,6 +385,63 @@ for (const search of ["nonMysql", "cross=1&sqlNode"]) {
         )
       ).toBe("7 + 2");
       expect(state.opens).toHaveLength(sql ? 1 : 0);
+    }
+  );
+}
+
+for (const [name, feedback, missing] of [
+  [
+    "field clarification after correction",
+    [{ outcome: "INVALID" }, { outcome: "CLARIFY_FIELD" }],
+    true,
+  ],
+  [
+    "legacy role clarification",
+    [{ result: '{"status":"CLARIFY_ROLE"}' }],
+    true,
+  ],
+  ["validated expression", [{ outcome: "DETAIL_PASS" }], false],
+  ["legacy invalid expression", [{ result: '{"status":"INVALID"}' }], false],
+]) {
+  test(
+    "formula availability after a model failure following " + name,
+    async ({ page }) => {
+      await backend(page);
+      const events = feedback.map((verdict, index) => ({
+        sequence: index + 1,
+        type: "TOOL",
+        tool: {
+          callId: "validation-" + index,
+          name: "propose_calc_field",
+          status: "SUCCEEDED",
+          parameters: { expression: "[orders_id]" },
+          ...verdict,
+        },
+      }));
+      events.push({
+        sequence: events.length + 1,
+        type: "FAILED",
+        error: "timeout",
+      });
+      await page.route("**/executions/e1/events?*", (route) =>
+        route.fulfill({
+          json: {
+            sessionId: "s1",
+            executionId: "e1",
+            contextVersion: "v1",
+            status: "FAILED",
+            recovery: { stepKind: "MODEL" },
+            cursor: events.length,
+            events,
+          },
+        })
+      );
+      const panel = await openAssistant(page, "计算字段助手");
+      await ask(panel, "生成订单公式");
+      const failure = panel.getByRole("alert");
+      await expect(failure).toContainText("模型调用");
+      if (missing) await expect(failure).toContainText("尚未生成公式");
+      else await expect(failure).not.toContainText("尚未生成公式");
     }
   );
 }

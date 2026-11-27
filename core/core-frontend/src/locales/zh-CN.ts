@@ -29,6 +29,7 @@ export default {
     current_formula: '编辑器当前公式',
     no_sql_reference: '不引用 SQL',
     no_formula_reference: '不引用公式',
+    from_scratch_hint: '提问要求从头写，本轮不引用。',
     view_sql: '查看 SQL',
     hide_sql: '收起 SQL',
     view_formula: '查看公式',
