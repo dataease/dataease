@@ -507,6 +507,15 @@ defineExpose({ commit, selectNode, hasPendingChanges })
               ></el-icon>
             </template>
           </el-input>
+          <el-button
+            v-show="activeTab === 'preview'"
+            class="node-preview-refresh"
+            :disabled="!fieldsLoaded || !selectedNode.currentDsFields.length"
+            :loading="previewLoading"
+            secondary
+            @click="preview"
+            >{{ t('data_set.refresh_data') }}</el-button
+          >
         </div>
         <div v-show="activeTab === 'fields'" class="node-fields">
           <div v-if="driftCount" class="node-review" role="status">
@@ -610,13 +619,6 @@ defineExpose({ commit, selectNode, hasPendingChanges })
           </union-field-list>
         </div>
         <div v-show="activeTab === 'preview'" v-loading="previewLoading" class="node-preview">
-          <el-button
-            :disabled="!fieldsLoaded || !selectedNode.currentDsFields.length"
-            :loading="previewLoading"
-            secondary
-            @click="preview"
-            >{{ t('data_set.refresh_data') }}</el-button
-          >
           <el-table :data="previewRows" height="100%" border>
             <el-table-column
               v-for="field in previewFields"
@@ -645,16 +647,27 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
-  margin-top: 0;
+  /* 表头高对齐数据集预览页：控件 32px + 上下各 12px；负 margin 抵消加高，分割线保持原位 */
+  height: 56px;
+  margin-top: -10px;
   margin-bottom: 16px;
+  box-sizing: border-box;
   border-bottom: 1px solid rgba(31, 35, 41, 0.15);
 }
 .node-tabs {
   flex: 1;
   min-width: 0;
-  margin-left: 0;
+  align-self: stretch;
+  :deep(.ed-tabs__header),
+  :deep(.ed-tabs__nav-wrap),
+  :deep(.ed-tabs__nav-scroll),
+  :deep(.ed-tabs__nav),
+  :deep(.ed-tabs__item) {
+    height: 100%;
+  }
   :deep(.ed-tabs__header) {
     margin-bottom: 0;
+    align-items: stretch;
   }
   :deep(.ed-tabs__nav-wrap::after) {
     content: none;
@@ -666,8 +679,11 @@ defineExpose({ commit, selectNode, hasPendingChanges })
 .details-fullscreen {
   flex-shrink: 0;
 }
-.node-field-search {
+.node-field-search,
+.node-preview-refresh {
   flex-shrink: 0;
+}
+.node-field-search {
   width: 240px;
 }
 
@@ -866,8 +882,6 @@ defineExpose({ commit, selectNode, hasPendingChanges })
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: flex-start;
   .ed-table {
     flex: 1;
     min-height: 0;
