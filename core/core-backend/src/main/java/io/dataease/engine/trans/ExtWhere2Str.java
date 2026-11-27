@@ -35,7 +35,8 @@ public class ExtWhere2Str {
             return;
         }
         Map<String, String> paramMap = Utils.mergeParam(fieldParam, chartParam);
-        List<SQLObj> list = new ArrayList<>();
+        List<List<String>> predicateGroups = new ArrayList<>();
+        Map<String, List<String>> treeFilterGroups = new HashMap<>();
         Map<String, String> fieldsDialect = new HashMap<>();
 
         String dsType = null;
@@ -370,14 +371,27 @@ public class ExtWhere2Str {
                         }
                     }
                 }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
+                String predicate = "(" + whereName + " " + whereTerm + whereValue + ")";
+                if (Boolean.TRUE.equals(request.getIsTree()) && "in".equals(operator)
+                        && StringUtils.isNotBlank(request.getTreeFilterGroup())) {
+                    String groupKey = request.getComponentId() + ":" + request.getTreeFilterGroup();
+                    treeFilterGroups.computeIfAbsent(groupKey, key -> {
+                        List<String> group = new ArrayList<>();
+                        predicateGroups.add(group);
+                        return group;
+                    }).add(predicate);
+                } else {
+                    predicateGroups.add(List.of(predicate));
+                }
             }
-            List<String> strList = new ArrayList<>();
-            list.forEach(ele -> strList.add("(" + ele.getWhereField() + " " + ele.getWhereTermAndValue() + ")"));
-            meta.setExtWheres(ObjectUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null);
+            if (predicateGroups.isEmpty()) {
+                meta.setExtWheres(null);
+            } else {
+                List<String> predicates = predicateGroups.stream()
+                        .map(group -> group.size() == 1 ? group.getFirst() : "(" + String.join(" OR ", group) + ")")
+                        .toList();
+                meta.setExtWheres("(" + String.join(" AND ", predicates) + ")");
+            }
         }
         meta.setExtWheresDialect(fieldsDialect);
     }
