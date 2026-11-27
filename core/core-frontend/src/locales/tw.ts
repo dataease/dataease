@@ -5542,6 +5542,7 @@ export default {
     execute_log: '執行日誌',
     done: '完成',
     log_read_finished: '日誌讀取結束',
+    execution_log_unavailable: '本次執行日誌無法取得，可能已被清理',
     connection_lost: '連線斷開',
     task_name: '任務名稱',
     es_params_label: '查詢參數',
