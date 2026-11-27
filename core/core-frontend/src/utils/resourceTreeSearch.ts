@@ -64,6 +64,17 @@ export const useResourceTreeSearch = (
 
   let expandedSnapshot: Set<string | number> | null = null
 
+  const captureExpansion = () => {
+    if (expandedSnapshot) return
+    const root = treeRef.value?.store?.root as TreeStoreNode | undefined
+    if (!root) return
+    const snapshot = new Set<string | number>()
+    walk(root, node => {
+      if (node.expanded && node.data?.id != null) snapshot.add(node.data.id)
+    })
+    expandedSnapshot = snapshot
+  }
+
   const applyExpansion = (value?: string | null) => {
     const root = treeRef.value?.store?.root as TreeStoreNode | undefined
     if (!root) return
@@ -82,12 +93,6 @@ export const useResourceTreeSearch = (
       })
       return
     }
-    if (!expandedSnapshot) {
-      expandedSnapshot = new Set()
-      walk(root, node => {
-        if (node.expanded && node.data?.id != null) expandedSnapshot.add(node.data.id)
-      })
-    }
     walk(root, node => {
       if (node.isLeaf || !node.expand || !node.collapse) return
       if (matches(node.data, search) || hasMatchingDescendant(node, search)) {
@@ -101,6 +106,8 @@ export const useResourceTreeSearch = (
   const applyFilter = (value?: string | null) => {
     const tree = treeRef.value
     if (!tree) return
+    // el-tree 的 filter 会自动展开命中节点，快照必须在过滤前采集
+    if (normalize(value)) captureExpansion()
     tree.filter(normalize(value))
     nextTick(() => applyExpansion(value))
   }
