@@ -40,6 +40,8 @@ public interface AiConversationScene {
     default List<AiToolProtocol.Definition> tools() { return List.of(); }
     default List<AiToolProtocol.Definition> tools(Context context) { return tools(); }
     default AiToolProtocol.StepLimit toolStepLimit() { return AiToolProtocol.StepLimit.DEFAULT; }
+    /** Lower values execute first when a model groups independent reads in the same reply. */
+    default int toolBatchOrder(String tool) { return 0; }
     /** A formal editor presents and retains each answer and its author-visible process. */
     default boolean editorConversation() { return false; }
     /** Internal immutable snapshot. Parameters and raw results are never serialized into model history by default. */

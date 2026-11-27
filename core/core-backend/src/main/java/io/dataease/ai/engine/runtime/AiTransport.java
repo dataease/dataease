@@ -22,10 +22,15 @@ import org.springframework.http.client.*;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.*;
 
 @Component
@@ -322,15 +327,24 @@ public class AiTransport {
             @Override public int read(byte[] bytes, int offset, int length) throws IOException { int count = in.read(bytes, offset, length); if (count > 0) budget.raw(count); return count; }
         };
         var frames = new SseFrames(bounded, guard);
-        var text = new StringBuilder(); var arguments = new StringBuilder();
-        String id = null, name = null, callType = null, finish = null;
-        long generated = 0; boolean sawTool = false;
+        var text = new StringBuilder();
+        var pending = new TreeMap<Integer, StreamedCall>();
+        String finish = null;
+        long generated = 0;
         while (true) {
             String event = frames.next(); budget.frame(); guard.run();
             if ("[DONE]".equals(event)) {
-                if ("stop".equals(finish) && !sawTool && !text.toString().isBlank()) return new AiToolProtocol.Step(text.toString(), List.of());
-                if ("tool_calls".equals(finish) && id != null && name != null && "function".equals(callType) && !arguments.isEmpty())
-                    return new AiToolProtocol.Step(text.toString(), List.of(new AiToolProtocol.Call(id, name, arguments.toString())));
+                if ("stop".equals(finish) && pending.isEmpty() && !text.toString().isBlank()) return new AiToolProtocol.Step(text.toString(), List.of());
+                if ("tool_calls".equals(finish) && !pending.isEmpty()) {
+                    var calls = new ArrayList<AiToolProtocol.Call>(pending.size());
+                    var ids = new HashSet<String>();
+                    for (var entry : pending.entrySet()) {
+                        var call = entry.getValue().complete();
+                        if (entry.getKey() != calls.size() || !ids.add(call.id())) throw AiErrors.error("response_invalid");
+                        calls.add(call);
+                    }
+                    return new AiToolProtocol.Step(text.toString(), calls);
+                }
                 throw AiErrors.error("response_invalid");
             }
             com.fasterxml.jackson.databind.JsonNode root;
@@ -355,24 +369,16 @@ public class AiTransport {
             }
             var calls = chunk.path("tool_calls");
             if (chunk.hasNonNull("tool_calls") && !(calls.isArray() && calls.isEmpty())) {
-                sawTool = true;
-                // Deliberate first capability: one serial tool per model step. Never mis-correlate a batch.
-                if (!calls.isArray() || calls.size() != 1 || !calls.get(0).path("index").isInt() || calls.get(0).path("index").asInt() != 0) throw AiErrors.error("unsupported");
-                var call = calls.get(0);
-                for (String generatedField : List.of("id", "type")) if (call.path(generatedField).isTextual()) budget.generated(call.path(generatedField).asText().length());
-                if (call.path("function").path("name").isTextual()) budget.generated(call.path("function").path("name").asText().length());
-                rejectUnknown(call, java.util.Set.of("index", "id", "type", "function"));
-                if (call.hasNonNull("id")) id = stable(id, call.path("id"), "[A-Za-z0-9_-]{1,128}");
-                if (call.hasNonNull("type")) callType = stable(callType, call.path("type"), "function");
-                if (call.hasNonNull("function")) {
-                    var function = call.path("function"); if (!function.isObject()) throw AiErrors.error("response_invalid");
-                    rejectUnknown(function, java.util.Set.of("name", "arguments"));
-                    if (function.hasNonNull("name")) name = stable(name, function.path("name"), "[A-Za-z0-9_-]{1,64}");
-                    if (function.hasNonNull("arguments")) {
-                        var part = function.path("arguments"); if (!part.isTextual() || arguments.length() + part.asText().length() > AiToolProtocol.MAX_ARGUMENTS) throw AiErrors.error("response_invalid");
-                        arguments.append(part.asText()); generated += part.asText().length(); budget.generated(part.asText().length());
-                        if (allocation > 0 && generated > allocation * 16L) throw AiErrors.error("output_limit");
-                    }
+                if (!calls.isArray() || calls.size() > budget.maxCallsPerStep()) throw AiErrors.error("unsupported");
+                var frameIndices = new HashSet<Integer>();
+                for (var call : calls) {
+                    var index = call.path("index");
+                    if (!index.isInt() || index.intValue() < 0 || index.intValue() >= budget.maxCallsPerStep())
+                        throw AiErrors.error("unsupported");
+                    if (!frameIndices.add(index.intValue())) throw AiErrors.error("response_invalid");
+                    var partial = pending.computeIfAbsent(index.intValue(), ignored -> new StreamedCall());
+                    generated += partial.append(call, budget);
+                    if (allocation > 0 && generated > allocation * 16L) throw AiErrors.error("output_limit");
                 }
             }
             if (choice.hasNonNull("finish_reason")) {
@@ -382,10 +388,47 @@ public class AiTransport {
             }
         }
     }
-    private void rejectUnknown(com.fasterxml.jackson.databind.JsonNode node, java.util.Set<String> allowed) {
+    /** Each index has independent fragments even when several calls share the same response frame. */
+    private static final class StreamedCall {
+        private final StringBuilder arguments = new StringBuilder();
+        private String id, type, name;
+
+        int append(JsonNode call, AiToolProtocol.Budget budget) {
+            rejectUnknown(call, Set.of("index", "id", "type", "function"));
+            if (call.hasNonNull("id")) {
+                id = stable(id, call.path("id"), "[A-Za-z0-9_-]{1,128}");
+                budget.generated(id.length());
+            }
+            if (call.hasNonNull("type")) {
+                type = stable(type, call.path("type"), "function");
+                budget.generated(type.length());
+            }
+            if (!call.hasNonNull("function")) return 0;
+            var fn = call.path("function");
+            if (!fn.isObject()) throw AiErrors.error("response_invalid");
+            rejectUnknown(fn, Set.of("name", "arguments"));
+            if (fn.hasNonNull("name")) {
+                name = stable(name, fn.path("name"), "[A-Za-z0-9_-]{1,64}");
+                budget.generated(name.length());
+            }
+            if (!fn.hasNonNull("arguments")) return 0;
+            var part = fn.path("arguments");
+            if (!part.isTextual() || arguments.length() + part.textValue().length() > AiToolProtocol.MAX_ARGUMENTS)
+                throw AiErrors.error("response_invalid");
+            arguments.append(part.textValue());
+            budget.generated(part.textValue().length());
+            return part.textValue().length();
+        }
+
+        AiToolProtocol.Call complete() {
+            if (id == null || name == null || !"function".equals(type) || arguments.isEmpty()) throw AiErrors.error("response_invalid");
+            return new AiToolProtocol.Call(id, name, arguments.toString());
+        }
+    }
+    private static void rejectUnknown(com.fasterxml.jackson.databind.JsonNode node, java.util.Set<String> allowed) {
         var names = node.fieldNames(); while (names.hasNext()) if (!allowed.contains(names.next())) throw AiErrors.error("unsupported");
     }
-    private String stable(String previous, com.fasterxml.jackson.databind.JsonNode value, String pattern) {
+    private static String stable(String previous, com.fasterxml.jackson.databind.JsonNode value, String pattern) {
         if (!value.isTextual() || !value.asText().matches(pattern) || previous != null && !previous.equals(value.asText())) throw AiErrors.error("response_invalid");
         return value.asText();
     }

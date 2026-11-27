@@ -22,6 +22,7 @@ public final class AiToolProtocol {
         DEFAULT(MAX_MODEL_STEPS), DATASET_SQL(12);
         public final int modelSteps;
         StepLimit(int modelSteps) { this.modelSteps = modelSteps; }
+        public int maxCallsPerStep() { return this == DATASET_SQL ? modelSteps - 1 : 1; }
     }
     public enum RetrySafety { READ_ONLY, IDEMPOTENT, UNKNOWN }
     public record Definition(String name, String description, Map<String, String> parameters, RetrySafety retrySafety) {
@@ -110,6 +111,7 @@ public final class AiToolProtocol {
         private final StepLimit limit;
         public Budget(int output) { this(output, StepLimit.DEFAULT); }
         public Budget(int output, StepLimit limit) { this.output = output; this.limit = limit; }
+        int maxCallsPerStep() { return limit.maxCallsPerStep(); }
         public synchronized int allocate() {
             if (steps >= limit.modelSteps || output < 0) throw AiErrors.error("output_limit");
             steps++; return output;

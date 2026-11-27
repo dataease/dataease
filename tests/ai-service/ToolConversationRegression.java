@@ -133,7 +133,9 @@ public final class ToolConversationRegression {
                     exchange.getResponseBody().write(rejected); exchange.close(); return;
                 }
                 String content;
-                if (mode.get().equals("editor-compaction")) {
+                if (mode.get().startsWith("batch-")) {
+                    content = DatasetSqlBatchRegression.respond(mode.get(), body);
+                } else if (mode.get().equals("editor-compaction")) {
                     content = EditorCompressionRegression.respond(body);
                 } else if (mode.get().equals("sql-field-history")) {
                     content = fieldHistory.respond(body);
@@ -321,9 +323,13 @@ public final class ToolConversationRegression {
                     if (mode.get().equals("chain-retry") && transientMetadata.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw AiErrors.error("connection_failed");
                     if (mode.get().equals("preview-revoke")) secondResourceAllowed.set(false);
                     if (mode.get().equals("tool-failure")) throw new IllegalStateException("connection-secret");
-                    if (Set.of("slow", "validate-stop", "slow-editor").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
+                    if (Set.of("slow", "validate-stop", "slow-editor", "batch-stop").contains(mode.get())) { toolEntered.get().countDown(); boolean done = false; while (!done) try { done = toolRelease.get().await(5, TimeUnit.SECONDS); } catch (InterruptedException ignored) { } }
                     if (Set.of("revoke", "validate-revoke").contains(mode.get())) operationAllowed.set(false);
                     var tables = new ArrayList<DatasetTableDTO>();
+                    if (mode.get().startsWith("batch-")) {
+                        var users = new DatasetTableDTO(); users.setTableName("per_user"); users.setName("平台用户");
+                        yield List.of(users);
+                    }
                     if (mode.get().equals("sql-field-history")) {
                         for (String name : List.of("orders", "items")) {
                             var table = new DatasetTableDTO(); table.setTableName(name); table.setName(name); tables.add(table);
@@ -351,6 +357,10 @@ public final class ToolConversationRegression {
                     yield tables; }
                 case "getTableField" -> {
                     var request = (DatasetTableFieldRequest) args[0];
+                    if (mode.get().startsWith("batch-") && request.getDatasourceId() == 11L && "per_user".equals(request.getTableName())) {
+                        reads.add("per_user");
+                        var field = new TableField(); field.setOriginName("id"); field.setFieldType("BIGINT"); yield List.of(field);
+                    }
                     if (mode.get().equals("sql-field-history")) {
                         reads.add(request.getTableName());
                         var observed = fieldHistory.fields(request.getTableName());
@@ -445,6 +455,7 @@ public final class ToolConversationRegression {
             manage = new AiConversationManage(beans.getBeanProvider(AiConversationScene.class), beans.getBeanProvider(AiRuntimeManage.class), dialogueAccess); beans.addBean("conversation", manage);
             beans.addBean("runtime", new AiRuntimeManage(beans.getBeanProvider(AiFeature.class), config, policies, keys, transport, JSON, dialogueAccess));
             var mvc = MockMvcBuilders.standaloneSetup(new AiConversationServer(manage)).build();
+            DatasetSqlBatchRegression.verify(mvc, mode, sent, reads, toolEntered, toolRelease);
             mode.set("sql-field-history");
             fieldHistory.verify(manage, sent, reads, firstResourceAllowed);
             mode.set("general"); sent.clear(); reads.clear(); readTargets.clear();

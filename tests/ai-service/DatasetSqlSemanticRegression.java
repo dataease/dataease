@@ -87,7 +87,8 @@ public final class DatasetSqlSemanticRegression {
             @Override public Semantics list(Long id) {
                 return new Semantics(List.of(new TableSemantic(1L, "orders", "销售订单", "每订单一行",
                         true, "销售", true, true, 6, 5),
-                        new TableSemantic(2L, "old_orders", "旧订单", "", true, "", false, true, 0, 0)));
+                        new TableSemantic(2L, "old_orders", "旧订单", "", true, "", false, true, 0, 0),
+                        new TableSemantic(3L, "per_user", "平台用户表", "每个用户一行", true, "", true, true, 1, 0)));
             }
             @Override public List<FieldSemantic> registeredFields(Long id) {
                 return List.of(field("actual_amt", "实付金额", "DECIMAL", true, List.of()),
@@ -97,7 +98,7 @@ public final class DatasetSqlSemanticRegression {
                         field("dropped", "obsolete-column-meaning", "CHAR", true, List.of()),
                         field("pending", "pending-meaning", "CHAR", false, List.of()));
             }
-            @Override public TableDetails detail(Long id, Long tableId) { return new TableDetails(registeredFields(id), 0); }
+            @Override public TableDetails detail(Long id, Long tableId) { return new TableDetails(tableId == 1L ? registeredFields(id) : List.of(), 0); }
         };
     }
 
