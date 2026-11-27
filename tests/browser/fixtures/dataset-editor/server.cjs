@@ -131,6 +131,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "DatasetEditorAssistant.vue",
               "AssistantChatFixture.vue",
               "AssistantConversationPanel.vue",
+              "AssistantReference.vue",
               "AssistantProcess.vue",
               "AssistantAnswer.vue",
               "AssistantFailure.vue",
