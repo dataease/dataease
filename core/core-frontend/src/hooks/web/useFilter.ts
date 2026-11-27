@@ -546,6 +546,9 @@ export const searchQuery = (
             )
 
             if (result?.length) {
+              const timeZone = [1, 7].includes(+displayType)
+                ? Intl.DateTimeFormat().resolvedOptions().timeZone
+                : undefined
               const fieldId = item.checkedFieldsMap[curComponentId]
               let parametersFilter = duplicateRemoval(
                 parameters.reduce((pre, next) => {
@@ -586,6 +589,7 @@ export const searchQuery = (
                   operator,
                   value: resultEnd,
                   parameters: parametersFilterEnd,
+                  timeZone,
                   isTree: false
                 })
               }
@@ -634,6 +638,7 @@ export const searchQuery = (
                 operator,
                 value: result,
                 parameters: parametersFilter,
+                timeZone,
                 isTree: false
               })
             }

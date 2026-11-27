@@ -15,6 +15,8 @@ public class ChartExtFilterDTO {
     private String fieldId;
     private String operator;
     private List<String> value;
+    // 日期值来源时区，未传时沿用服务端默认时区
+    private String timeZone;
     private List<Long> viewIds;
     private List<SqlVariableDetails> parameters;
     private DatasetTableFieldDTO datasetTableField;

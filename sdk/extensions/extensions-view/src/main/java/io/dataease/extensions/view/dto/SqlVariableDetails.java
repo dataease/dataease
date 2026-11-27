@@ -24,6 +24,8 @@ public class SqlVariableDetails {
     private boolean required;
     private String operator;
     private List<String> value;
+    // 查询日期值来源时区，未传时沿用服务端默认时区
+    private String timeZone;
     private String datasetFullName;
     public enum DefaultValueScope {
         EDIT("EDIT"),

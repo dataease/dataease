@@ -576,7 +576,7 @@ public class DeSqlparserUtils {
     private List<String> resolvePreparedValues(SqlVariableDetails sqlVariableDetails) {
         if (StringUtils.equals(sqlVariableDetails.getOperator(), "in")) {
             if (sqlVariableDetails.getDeType() == 1) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
+                SimpleDateFormat simpleDateFormat = SqlparserUtils.dateParameterFormat(sqlVariableDetails);
                 if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
                     return Collections.singletonList(simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1)))));
                 }
@@ -586,7 +586,7 @@ public class DeSqlparserUtils {
         }
         if (StringUtils.equals(sqlVariableDetails.getOperator(), "between") || StringUtils.equals(sqlVariableDetails.getOperator(), "eq")) {
             if (sqlVariableDetails.getDeType() == 1) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
+                SimpleDateFormat simpleDateFormat = SqlparserUtils.dateParameterFormat(sqlVariableDetails);
                 if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
                     return Collections.singletonList(simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1)))));
                 }
