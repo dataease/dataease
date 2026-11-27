@@ -274,7 +274,6 @@ public class AiDatasourceMetadataScenes {
     private <T> T generate(AiBusinessTaskScene.Execution execution, String instructions, Object input, Class<T> type) {
         try {
             String data = json.writeValueAsString(input);
-            if (data.length() > 64_000) throw AiErrors.error("invalid");
             var options = new OpenAiChatOptions();
             options.setResponseFormat(ResponseFormat.builder().type(ResponseFormat.Type.JSON_OBJECT).build());
             var prompt = new Prompt(List.of(new SystemMessage(instructions), new UserMessage(data)), options);
