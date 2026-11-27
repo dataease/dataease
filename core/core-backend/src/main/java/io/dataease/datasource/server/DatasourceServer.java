@@ -371,14 +371,22 @@ public class DatasourceServer implements DatasourceApi {
             checkParams(dataSourceDTO.getConfiguration());
         }
 
+        dataSourceManage.checkName(dataSourceDTO);
+
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        Long executionId = datasourceSaveOrchestrator.commitCreate(dataSourceDTO);
+        DatasourceWriteStrategy writeStrategy = strategyFor(dataSourceDTO.getType());
+        Long executionId = datasourceSaveOrchestrator.begin(dataSourceDTO.getId(), String.valueOf(dataSourceDTO.getUpdateTime()));
         try {
-            strategyFor(dataSourceDTO.getType()).executeCreate(dataSourceDTO, coreDatasource, executionId);
+            writeStrategy.executeCreate(dataSourceDTO, coreDatasource, executionId);
+            datasourceSaveOrchestrator.commitCreate(dataSourceDTO, executionId);
             datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         } catch (Exception e) {
             datasourceSaveOrchestrator.markFailure(executionId, "EXECUTE", e.getMessage());
+            try {
+                writeStrategy.cleanupCreate(dataSourceDTO, coreDatasource);
+            } catch (Exception ignore) {
+            }
             if (e instanceof DEException de) {
                 throw de;
             }
@@ -434,14 +442,13 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         dataSourceManage.checkName(dataSourceDTO);
-        boolean excel = dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name());
-        Long executionId = excel ? datasourceSaveOrchestrator.begin(dataSourceDTO.getId(), null) : datasourceSaveOrchestrator.commitEdit(requestDatasource);
+        Long executionId = datasourceSaveOrchestrator.begin(dataSourceDTO.getId(), String.valueOf(dataSourceDTO.getUpdateTime()));
         try {
             strategyFor(dataSourceDTO.getType()).executeUpdate(dataSourceDTO, sourceData, requestDatasource, executionId);
-            if (excel) {
+            if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
                 ExcelUtils.mergeSheets(requestDatasource, sourceData);
-                datasourceSaveOrchestrator.commitEdit(requestDatasource, executionId);
             }
+            datasourceSaveOrchestrator.commitEdit(requestDatasource, executionId);
             datasourceSaveOrchestrator.mark(executionId, "CONFIRM", DatasourceSaveOrchestrator.STATUS_SUCCESS, null);
         } catch (Exception e) {
             datasourceSaveOrchestrator.markFailure(executionId, "EXECUTE", e.getMessage());

@@ -64,4 +64,12 @@ public class NormalDbWriteStrategy implements DatasourceWriteStrategy {
         LogUtil.error(e);
         DEException.throwException(e.getMessage());
     }
+
+    @Override
+    public void cleanupCreate(DatasourceDTO dto, CoreDatasource coreDatasource) {
+        try {
+            calciteProvider.delete(coreDatasource);
+        } catch (Exception ignore) {
+        }
+    }
 }

@@ -35,6 +35,29 @@ public class DatasourceSaveOrchestrator {
         return executionId;
     }
 
+    /**
+     * 在外部操作成功后提交新建数据源配置，复用已有执行记录，避免失败时残留新配置。
+     */
+    @Transactional
+    public Long commitCreate(DatasourceDTO dto, Long executionId) {
+        if (executionId == null) {
+            return commitCreate(dto);
+        }
+        dataSourceManage.innerSave(dto);
+        String configVersion = dto.getUpdateTime() == null ? null : String.valueOf(dto.getUpdateTime());
+        CoreDatasourceSaveExecution execution = executionRepository.findById(executionId).orElse(null);
+        if (execution == null) {
+            saveExecution(executionId, dto.getId(), configVersion, "COMMIT", STATUS_PENDING, null);
+        } else {
+            execution.setStep("COMMIT");
+            execution.setStatus(STATUS_PENDING);
+            execution.setConfigVersion(configVersion);
+            execution.setUpdateTime(System.currentTimeMillis());
+            executionRepository.save(execution);
+        }
+        return executionId;
+    }
+
     @Transactional
     public Long begin(Long dsId, String configVersion) {
         Long executionId = IDUtils.snowID();

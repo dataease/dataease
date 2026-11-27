@@ -26,15 +26,15 @@
 
 ```
 Plan    → 预校验 + 生成执行计划（纯计算，不产生副作用）
-Commit  → 短事务：写元数据（innerSave/innerEdit）+ 落执行记录（executionId/configVersion/steps/status）
-Execute → 事务提交后：外部建表、导入、调度 upsert、连接池更新（幂等步骤，逐步回写执行记录）
-Confirm → 回写数据源 status、任务状态；失败时记录可定位的失败步骤
+Execute → 准备外部资源（建新表/临时表、导入、调度）；失败清理临时资源，元数据与旧资源保持不变
+Commit  → 短事务：写元数据（innerSave/innerEdit）+ 回写执行记录（executionId/configVersion/steps/status）
+Confirm → 回写数据源状态、任务状态；失败时记录可定位的失败步骤
 ```
 
 规则：
 
 1. `DatasourceServer.save/update` 对外签名与返回值不变。
-2. 元数据事务只包含 `innerSave/innerEdit` 与执行记录写入；外部操作一律在事务提交后执行。
+2. 外部操作成功后才提交元数据；任一外部步骤失败，新建数据源不落库，更新数据源保留旧配置、旧表与原调度。
 3. 每个外部步骤写入执行记录（step/status/result），进程重启后可扫描未完成记录重试或标记失败。
 4. 破坏性替换（删表/重导）采用 prepare-then-switch：先建临时资源、成功后切换、失败清理临时资源。
 
@@ -42,11 +42,12 @@ Confirm → 回写数据源 status、任务状态；失败时记录可定位的�
 
 | 失败点 | 用户可见 | 恢复入口 |
 | --- | --- | --- |
-| 配置提交失败 | 保存失败 | 无残留：执行记录 `COMMIT_FAILED` |
-| 外部建表失败 | 保存成功、状态 Error | 执行记录 `TABLE_CREATE_FAILED`，重试该步骤 |
-| 导入失败 | 保存成功、状态 Error | 执行记录 `IMPORT_FAILED`，重试导入 |
-| 调度失败 | 保存成功、状态 Error | 执行记录 `SCHEDULE_FAILED`，重试 upsert |
-| 连接池更新失败 | 保存成功、状态 Error | 执行记录 `CALCITE_UPDATE_FAILED`，重试 |
+| 预校验失败 | 保存失败 | 无残留 |
+| 外部建表失败 | 保存失败、元数据不变 | 执行记录 `TABLE_CREATE_FAILED`，清理已建临时表 |
+| 导入失败 | 保存失败、元数据不变 | 执行记录 `IMPORT_FAILED`，清理已建表 |
+| 调度失败 | 保存失败、旧调度保留 | 执行记录 `SCHEDULE_FAILED`，重试 upsert |
+| 连接池更新失败 | 保存失败、元数据不变 | 执行记录 `CALCITE_UPDATE_FAILED`，重试 |
+| 元数据提交失败 | 保存失败 | 执行记录 `COMMIT_FAILED`，清理已准备资源 |
 | 进程重启 | — | 启动扫描未完成执行记录，续跑或标记失败 |
 
 ## 4. 执行记录模型（建议）
@@ -64,7 +65,7 @@ Confirm → 回写数据源 status、任务状态；失败时记录可定位的�
 
 ## 5. 逐类型策略
 
-- 普通数据库：Commit 后 `calciteProvider.update`；失败写 `status=Error` 并记录。
-- Excel：建表与导入幂等；replace 先准备临时表/文件，成功后切换；add_scope 沿用既有追加语义。
-- ExcelRemote：建表 + 调度 upsert 幂等。
-- API：`toCreate/toDelete/toRecreate` 计划化，删表/建表/调度逐步回写；调度 upsert 幂等。
+- 普通数据库：`calciteProvider.update` 成功后再提交元数据；失败不写配置。
+- Excel：建表与导入成功后再提交元数据；replace 先准备临时表，成功后切换；add_scope 沿用既有追加语义。
+- ExcelRemote：建表 + 调度成功后提交元数据；更新采用 prepare-then-switch（先建新表/临时表，再批量 replace 与删除旧表），失败清理临时资源并保留旧表与旧调度。
+- API：`toCreate/toDelete/toRecreate` 计划化，建表/换表/调度成功后提交元数据；换表使用临时表 + `replaceEngineTable`，失败清理临时表并保留旧表。

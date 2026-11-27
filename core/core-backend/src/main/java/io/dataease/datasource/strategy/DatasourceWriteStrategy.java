@@ -14,4 +14,11 @@ public interface DatasourceWriteStrategy {
     void executeCreate(DatasourceDTO dto, CoreDatasource coreDatasource, Long executionId) throws Exception;
 
     void executeUpdate(DatasourceDTO dto, DatasourceDTO sourceData, CoreDatasource requestDatasource, Long executionId) throws Exception;
+
+    /**
+     * 创建失败时的资源清理。默认无资源可清理（普通数据库等）。
+     */
+    default void cleanupCreate(DatasourceDTO dto, CoreDatasource coreDatasource) throws Exception {
+        // no-op by default
+    }
 }

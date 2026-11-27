@@ -335,7 +335,17 @@ public class DatasourceSyncManage {
     }
 
     public void replaceEngineTable(String tableName) throws Exception {
-        replaceTable(tableName);
+        replaceTables(Collections.singletonList(tableName));
+    }
+
+    /** 在同一连接事务内批量换表，尽量让多个表的结构切换原子化。 */
+    public void replaceEngineTables(List<String> tableNames) throws Exception {
+        switchTables(tableNames, Collections.emptyList());
+    }
+
+    /** 在同一连接事务内批量换表并删除旧表，尽量让结构切换与清理原子化。 */
+    public void switchEngineTables(List<String> replacedTables, List<String> dropTables) throws Exception {
+        switchTables(replacedTables, dropTables);
     }
 
     public void restoreEngineTable(String tableName) {
@@ -362,21 +372,44 @@ public class DatasourceSyncManage {
     }
 
     private void replaceTable(String tableName) throws Exception {
+        replaceTables(Collections.singletonList(tableName));
+    }
+
+    private void replaceTables(List<String> tableNames) throws Exception {
+        switchTables(tableNames, Collections.emptyList());
+    }
+
+    private void switchTables(List<String> replacedTables, List<String> dropTables) throws Exception {
+        List<String> replaces = replacedTables == null ? Collections.emptyList() : replacedTables;
+        List<String> drops = dropTables == null ? Collections.emptyList() : dropTables;
+        if (replaces.isEmpty() && drops.isEmpty()) {
+            return;
+        }
         CoreDeEngine engine = engineConfigManage.info();
         Provider provider = ProviderFactory.getProvider(engine.getType());
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
-        String[] replaceTableSql = engineProvider.replaceTable(tableName, engine).split(";");
         DatasourceDTO coreDatasource = new DatasourceDTO();
         BeanUtils.copyBean(coreDatasource, engine);
         try (ConnectionObj conObj = provider.getConnection(coreDatasource)) {
             Connection connection = conObj.getConnection();
             boolean autoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
             try {
-                for (String sql : replaceTableSql) {
-                    if (StringUtils.isNotEmpty(sql)) {
-                        try (Statement statement = connection.createStatement()) {
-                            statement.execute(sql);
+                connection.setAutoCommit(false);
+                for (String tableName : replaces) {
+                    for (String sql : engineProvider.replaceTable(tableName, engine).split(";")) {
+                        if (StringUtils.isNotEmpty(sql)) {
+                            try (Statement statement = connection.createStatement()) {
+                                statement.execute(sql);
+                            }
+                        }
+                    }
+                }
+                for (String tableName : drops) {
+                    for (String sql : engineProvider.dropTable(tableName, engine).split(";")) {
+                        if (StringUtils.isNotEmpty(sql)) {
+                            try (Statement statement = connection.createStatement()) {
+                                statement.execute(sql);
+                            }
                         }
                     }
                 }
@@ -385,7 +418,10 @@ public class DatasourceSyncManage {
                 connection.rollback();
                 throw e;
             } finally {
-                connection.setAutoCommit(autoCommit);
+                try {
+                    connection.setAutoCommit(autoCommit);
+                } catch (Exception ignore) {
+                }
             }
         }
     }
