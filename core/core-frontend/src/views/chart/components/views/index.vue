@@ -2,7 +2,11 @@
 import { useQueryScope } from '@/hooks/web/useQueryScope'
 const queryScope = useQueryScope()
 const canvasRuntime = useCanvasRuntime()
-import { provideChartRuntimeCache, useCanvasRuntime } from '@/hooks/web/useChartRuntimeCache'
+import {
+  provideChartRuntimeCache,
+  useCanvasRuntime,
+  type ChartRuntimeCache
+} from '@/hooks/web/useChartRuntimeCache'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_linkRecord_outlined from '@/assets/svg/icon_link-record_outlined.svg'
 import icon_viewinchat_outlined from '@/assets/svg/icon_viewinchat_outlined.svg'
@@ -480,10 +484,10 @@ const chartClick = param => {
 }
 
 // 仪表板和大屏所有额外过滤参数都在此处
-const filter = (firstLoad?: boolean) => {
-  let filter: ReturnType<typeof useFilter>['filter']
+const filter = (firstLoad?: boolean, updateTreeSelections = true) => {
+  let query: ReturnType<typeof useFilter>
   try {
-    filter = useFilter(view.value.id, firstLoad, showPosition.value, canvasRuntime?.()).filter
+    query = useFilter(view.value.id, firstLoad, showPosition.value, canvasRuntime?.())
   } catch (error) {
     if (!(error instanceof FixedTimeError)) throw error
     ElMessage.error({ message: t(error.key), grouping: true })
@@ -491,7 +495,7 @@ const filter = (firstLoad?: boolean) => {
   }
   const result = {
     user: wsCache.get('user.uid'),
-    filter,
+    filter: query.filter,
     linkageFilters: element.value.linkageFilters,
     outerParamsFilters: element.value.outerParamsFilters,
     webParamsFilters: element.value.webParamsFilters,
@@ -509,6 +513,9 @@ const filter = (firstLoad?: boolean) => {
     }
     filterObj[view.value.id] = result
     window[`de-report-filter-${sceneId}`] = JSON.stringify(filterObj)
+  }
+  if (updateTreeSelections) {
+    chartRuntime.treeSelections = query.treeSelections
   }
   return result
 }
@@ -541,6 +548,40 @@ const windowsJump = (url, jumpType, size = 'middle') => {
   } catch (e) {
     console.warn(t('visualization.url_check_error') + ':' + url)
   }
+}
+
+const collectJumpOuterParams = (
+  { request, treeSelections }: Pick<ChartRuntimeCache, 'request' | 'treeSelections'>,
+  targets: { sourceFieldActiveId: string; outerParamsName?: string }[]
+) => {
+  const outerParams: Record<
+    string,
+    { operator: string; value: unknown[]; treePaths?: string[][] }
+  > = Object.create(null)
+  for (const { sourceFieldActiveId, outerParamsName } of targets) {
+    if (!outerParamsName) continue
+
+    const selection = treeSelections?.[sourceFieldActiveId]
+    const filters = (request?.filter || []).filter(
+      item => item.filterId === sourceFieldActiveId && item.filterFrom === selection?.filterFrom
+    )
+    if (selection?.paths.length) {
+      outerParams[outerParamsName] = {
+        operator: 'in',
+        // 普通筛选器或直接绑定图表时，继续接收原有的标量参数。
+        value: filters.flatMap(item => (item.treePaths || []).map(path => path.join(','))),
+        treePaths: selection.paths
+      }
+      continue
+    }
+
+    for (const item of filters) {
+      if (!item.treePaths) {
+        outerParams[outerParamsName] = { operator: item.operator, value: item.value }
+      }
+    }
+  }
+  return Object.keys(outerParams).length ? { ...outerParams, outerParamsVersion: 'v2' } : undefined
 }
 
 const jumpClick = param => {
@@ -630,34 +671,10 @@ const jumpClick = param => {
         const editPreviewParams = ['canvas', 'edit-preview'].includes(showPosition.value)
           ? '&editPreview=true'
           : ''
-        const filterOuterParams = {}
-        const curFilter = chartRuntime.request
-        const targetViewInfoList = jumpInfo.targetViewInfoList
-        if (
-          curFilter &&
-          curFilter.filter &&
-          curFilter.filter.length > 0 &&
-          targetViewInfoList &&
-          targetViewInfoList.length > 0
-        ) {
-          // do filter
-          curFilter.filter.forEach(filterItem => {
-            targetViewInfoList.forEach(targetViewInfo => {
-              if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                filterOuterParams[targetViewInfo.outerParamsName] = {
-                  operator: filterItem.operator,
-                  value: filterItem.value
-                }
-              }
-            })
-          })
-        }
-        let attachParamsInfo
-        if (Object.keys(filterOuterParams).length > 0) {
-          filterOuterParams['outerParamsVersion'] = 'v2'
-          attachParamsInfo =
-            '&attachParams=' + encodeURIComponent(Base64.encode(JSON.stringify(filterOuterParams)))
-        }
+        const attachParams = collectJumpOuterParams(chartRuntime, jumpInfo.targetViewInfoList || [])
+        const attachParamsInfo = attachParams
+          ? '&attachParams=' + encodeURIComponent(Base64.encode(JSON.stringify(attachParams)))
+          : ''
         // 携带外部参数
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
@@ -685,7 +702,9 @@ const jumpClick = param => {
           localStorage.setItem('beforeJumpUrl', currentUrl)
           if (divSelf || iframeSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
-            embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
+            embeddedStore.setJumpInfoParam(
+              encodeURIComponent(Base64.encode(JSON.stringify({ ...param, attachParams })))
+            )
             divEmbedded('Preview')
             return
           }
@@ -752,16 +771,17 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
   const searched = queryScope
     ? queryScope.loadedCharts.has(element.value.id)
     : dvMainStore.firstLoadMap.includes(element.value.id)
+  const useCachedRequest = showPosition.value.includes('viewDialog') || autoRefresh
   let queryFilter
   try {
-    queryFilter = filter(searched ? false : firstLoad)
+    queryFilter = filter(searched ? false : firstLoad, !useCachedRequest)
   } catch (error) {
     if (!(error instanceof DynamicTimeError)) throw error
     ElMessage.error({ message: t(error.key), grouping: true })
     return
   }
   if (!queryFilter) return
-  if (showPosition.value.includes('viewDialog') || autoRefresh) {
+  if (useCachedRequest) {
     queryFilter = chartRuntime.request
   }
   let params = cloneDeep(view.value)

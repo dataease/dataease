@@ -1,5 +1,6 @@
 import { inject, onBeforeUnmount, provide, shallowReactive, watch, type InjectionKey } from 'vue'
 import type { SpreadSheet } from '@antv/s2'
+import type { TreeSelections } from '@/hooks/web/useFilter'
 import { cloneDeep } from 'lodash-es'
 
 export interface CanvasIdentity {
@@ -18,6 +19,7 @@ export interface ChartRuntimeSnapshot {
 }
 export interface ChartRuntimeCache extends ChartRuntimeSnapshot {
   id: string
+  treeSelections?: TreeSelections
   originData?: Partial<Chart['data']>
   pureData?: Partial<Chart['data']>
   pageInfo?: { currentPage: number; pageSize: number; total?: number }
@@ -86,6 +88,7 @@ export const provideChartRuntimeCache = (
     cache.originData = undefined
     cache.pureData = undefined
     cache.request = getView()?.chartExtRequest
+    cache.treeSelections = undefined
     cache.instance = undefined
     cache.pageInfo = undefined
   }

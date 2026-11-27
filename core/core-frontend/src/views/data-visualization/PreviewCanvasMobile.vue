@@ -81,7 +81,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   const hasTicketArgs = argsObject && Object.keys(argsObject)
 
   // 添加外部参数
-  let attachParam
+  let attachParam = jumpParam?.attachParams
   try {
     await getOuterParamsInfo(dvId).then(rsp => {
       dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
