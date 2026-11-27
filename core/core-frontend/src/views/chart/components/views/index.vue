@@ -408,7 +408,7 @@ const chartClick = param => {
 
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = (firstLoad?: boolean) => {
-  const { filter } = useFilter(view.value.id, firstLoad, showPosition.value)
+  const { filter, treeSelections } = useFilter(view.value.id, firstLoad, showPosition.value)
   const result = {
     user: wsCache.get('user.uid'),
     filter,
@@ -430,7 +430,7 @@ const filter = (firstLoad?: boolean) => {
     filterObj[view.value.id] = result
     window[`de-report-filter-${sceneId}`] = JSON.stringify(filterObj)
   }
-  return result
+  return Object.keys(treeSelections).length ? { ...result, treeSelections } : result
 }
 
 const onDrillFilters = param => {
@@ -465,6 +465,52 @@ const windowsJump = (url, jumpType, size = 'middle') => {
   } catch (e) {
     console.warn(t('visualization.url_check_error') + ':' + url)
   }
+}
+
+const collectJumpOuterParams = (
+  curFilter,
+  targetViewInfoList: { sourceFieldActiveId: string; outerParamsName?: string }[]
+) => {
+  const filterOuterParams: Record<
+    string,
+    { operator: string; value: unknown[]; treePaths?: string[][] }
+  > = Object.create(null)
+  for (const filterItem of curFilter?.filter || []) {
+    if (filterItem.filterFrom === 'optionFilter') {
+      continue
+    }
+    const value = filterItem.treePaths
+      ? filterItem.treePaths.map(path => path.join(','))
+      : filterItem.value || []
+    for (const target of targetViewInfoList) {
+      if (target.sourceFieldActiveId !== filterItem.filterId || !target.outerParamsName) {
+        continue
+      }
+      const outerFilterItem = filterOuterParams[target.outerParamsName]
+      if (!outerFilterItem) {
+        filterOuterParams[target.outerParamsName] = {
+          operator: filterItem.operator,
+          value: [...value]
+        }
+      } else if (filterItem.treeFilterGroup) {
+        outerFilterItem.value.push(...value)
+      } else if (filterItem.arrayType === 'END') {
+        outerFilterItem.value[outerFilterItem.value.length - 1] = value[0]
+      } else {
+        outerFilterItem.value[0] = value[0]
+      }
+    }
+  }
+  for (const target of targetViewInfoList) {
+    const treePaths = curFilter?.treeSelections?.[target.sourceFieldActiveId]
+    if (target.outerParamsName && treePaths?.length) {
+      filterOuterParams[target.outerParamsName] = {
+        ...(filterOuterParams[target.outerParamsName] || { operator: 'in', value: [] }),
+        treePaths
+      }
+    }
+  }
+  return filterOuterParams
 }
 
 const jumpClick = param => {
@@ -515,47 +561,18 @@ const jumpClick = param => {
         const editPreviewParams = ['canvas', 'edit-preview'].includes(showPosition.value)
           ? '&editPreview=true'
           : ''
-        const filterOuterParams = {}
         const curFilter = dvMainStore.getLastViewRequestInfo(param.viewId)
-        const targetViewInfoList = jumpInfo.targetViewInfoList
-        if (
-          curFilter &&
-          curFilter.filter &&
-          curFilter.filter.length > 0 &&
-          targetViewInfoList &&
-          targetViewInfoList.length > 0
-        ) {
-          // do filter
-          curFilter.filter.forEach(filterItem => {
-            if (filterItem.filterFrom !== 'optionFilter') {
-              targetViewInfoList.forEach(targetViewInfo => {
-                if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                  const outerFilterItem = filterOuterParams[targetViewInfo.outerParamsName]
-                  if (outerFilterItem) {
-                    if (filterItem.treeFilterGroup) {
-                      // 下拉树按层级拆分的条件都要随跳转传递。
-                      outerFilterItem.value = [...outerFilterItem.value, ...filterItem.value]
-                    } else if (filterItem['arrayType'] === 'END') {
-                      outerFilterItem.value[outerFilterItem.value.length - 1] = filterItem.value[0]
-                    } else {
-                      outerFilterItem.value[0] = filterItem.value[0]
-                    }
-                  } else {
-                    filterOuterParams[targetViewInfo.outerParamsName] = {
-                      operator: filterItem.operator,
-                      value: filterItem.value
-                    }
-                  }
-                }
-              })
-            }
-          })
-        }
+        const filterOuterParams = collectJumpOuterParams(
+          curFilter,
+          jumpInfo.targetViewInfoList || []
+        )
         let attachParamsInfo
         if (Object.keys(filterOuterParams).length > 0) {
-          filterOuterParams['outerParamsVersion'] = 'v2'
           attachParamsInfo =
-            '&attachParams=' + encodeURIComponent(Base64.encode(JSON.stringify(filterOuterParams)))
+            '&attachParams=' +
+            encodeURIComponent(
+              Base64.encode(JSON.stringify({ ...filterOuterParams, outerParamsVersion: 'v2' }))
+            )
         }
         // 携带外部参数
         if (publicLinkStatus.value) {
