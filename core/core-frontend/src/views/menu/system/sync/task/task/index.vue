@@ -601,6 +601,18 @@ const delHandler = (row: ITaskInfoRes) => {
 const logStatus = ref()
 const jobLogDetailRef = ref()
 const showLogDetail = async row => {
+  // 最近执行结果独立于日志保留，不能用清理后剩余的旧日志替代
+  const isCurrentLog =
+    row.logId &&
+    (row.status === 'running'
+      ? row.logStatus === 'RUNNING'
+      : row.triggerLastTime != null &&
+        row.executorStartTime != null &&
+        row.triggerLastTime === row.executorStartTime)
+  if (!isCurrentLog) {
+    ElMessage.warning(t('sync_task.execution_log_unavailable'))
+    return
+  }
   logStatus.value = row.logStatus
   if (await jobLogDetailRef.value?.openLog(row.logId)) stopInterval()
 }
@@ -632,9 +644,12 @@ const partDataUpdate = () => {
       const resItem = resDataMap[item.id]
       if (resItem) {
         item.logId = resItem.logId
+        item.executorStartTime = resItem.executorStartTime
         item.status = resItem.status
         item.logStatus = resItem.logStatus
         item.lastExecuteStatus = resItem.lastExecuteStatus
+        item.triggerLastTime = resItem.triggerLastTime
+        item.triggerNextTime = resItem.triggerNextTime
         item.maintenanceState = resItem.maintenanceState
         item.maintenanceNeedsAttention = resItem.maintenanceNeedsAttention
         item.executionNeedsAttention = resItem.executionNeedsAttention
@@ -646,9 +661,6 @@ const partDataUpdate = () => {
           item.currentTime = undefined
         } else if (resItem.status === 'running' || resItem.logStatus === 'RUNNING') {
           isRunning = true
-        } else {
-          item.triggerLastTime = resItem.triggerLastTime
-          item.triggerNextTime = resItem.triggerNextTime
         }
       }
     })
@@ -842,10 +854,9 @@ const copyInfo = async val => {
                   @click="showLogDetail(scope.row)"
                   class="error-info"
                   v-if="
-                    ((scope.row.lastExecuteStatus !== null &&
-                      scope.row.lastExecuteStatus !== 'SUCCESS') ||
-                      scope.row.status === 'running') &&
-                    scope.row.logId
+                    scope.row.status === 'running' ||
+                    ((scope.row.lastExecuteStatus ?? scope.row.logStatus) &&
+                      (scope.row.lastExecuteStatus ?? scope.row.logStatus) !== 'SUCCESS')
                   "
                 >
                   <icon name="icon-maybe_outlined">

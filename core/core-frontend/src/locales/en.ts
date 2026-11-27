@@ -5840,6 +5840,8 @@ export default {
     execute_log: 'Execution log',
     done: 'Done',
     log_read_finished: 'Log reading finished',
+    execution_log_unavailable:
+      'The log for this execution is unavailable and may have been cleared',
     connection_lost: 'Disconnected',
     task_name: 'Task name',
     es_params_label: 'Query Parameters',

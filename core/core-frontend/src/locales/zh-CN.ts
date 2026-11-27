@@ -5559,6 +5559,7 @@ export default {
     execute_log: '执行日志',
     done: '完成',
     log_read_finished: '日志读取结束',
+    execution_log_unavailable: '本次执行日志不可用，可能已被清理',
     connection_lost: '连接断开',
     task_name: '任务名称',
     es_params_label: '查询参数',
