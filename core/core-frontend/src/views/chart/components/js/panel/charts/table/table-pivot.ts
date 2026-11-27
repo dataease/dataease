@@ -17,7 +17,8 @@ import {
   LayoutResult,
   RowCell,
   PivotFacet,
-  Node
+  Node,
+  SortParam
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -168,6 +169,22 @@ class CustomPivotFacet extends PivotFacet {
     return layout
   }
 }
+/**
+ * 首维度按字段数值类型比较，空值保持原有位置
+ */
+const sortNumericDimension: SortParam['sortFunc'] = ({ data, sortMethod }) => {
+  const direction = sortMethod === 'ASC' ? 1 : -1
+  return (data as string[]).sort((a, b) => {
+    if (a.trim() === '' || b.trim() === '') {
+      return a.localeCompare(b, 'zh') * direction
+    }
+    const difference = Number(a) - Number(b)
+    // 沿用后续数值维度的减法比较，浮点数无法区分大小时再精确比较
+    const result = difference === 0 ? new Decimal(a.trim()).comparedTo(b.trim()) : difference
+    return result * direction
+  })
+}
+
 /**
  * 透视表
  */
@@ -408,15 +425,21 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         if (valueFieldMap[f]?.sort === 'none') {
           return
         }
-        const sort = {
+        const sort: SortParam = {
           sortFieldId: f
         }
-        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
+        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase() as Uppercase<Axis['sort']>
         if (sortMethod === 'CUSTOM_SORT') {
           sort.sortBy = valueFieldMap[f].customSort
         } else {
           if (i === 0) {
             sort.sortMethod = sortMethod
+            if (
+              [2, 3].includes(valueFieldMap[f]?.deType) &&
+              (sortMethod === 'ASC' || sortMethod === 'DESC')
+            ) {
+              sort.sortFunc = sortNumericDimension
+            }
           } else {
             const fieldValues = newData.map(item => item[f])
             const uniqueValues = [...new Set(fieldValues)]
@@ -448,15 +471,21 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         if (valueFieldMap[f]?.sort === 'none') {
           return
         }
-        const sort = {
+        const sort: SortParam = {
           sortFieldId: f
         }
-        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
+        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase() as Uppercase<Axis['sort']>
         if (sortMethod === 'CUSTOM_SORT') {
           sort.sortBy = valueFieldMap[f].customSort
         } else {
           if (i === 0) {
             sort.sortMethod = sortMethod
+            if (
+              [2, 3].includes(valueFieldMap[f]?.deType) &&
+              (sortMethod === 'ASC' || sortMethod === 'DESC')
+            ) {
+              sort.sortFunc = sortNumericDimension
+            }
           } else {
             const fieldValues = newData.map(item => item[f])
             const uniqueValues = [...new Set(fieldValues)]
