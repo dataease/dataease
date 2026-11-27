@@ -130,6 +130,8 @@ const creatDsFolder = ref()
 const editCalcField = ref(false)
 const calcEdit = ref()
 const calcAssistantHost = ref<HTMLElement>()
+// The formula editor sits beside two 214px reference lists, each with a 12px gutter.
+const calcEditorMinimum = 300 + 2 * (214 + 12)
 const readCalcDraft = (): AiCalcFieldDraft => {
   const field = calcEdit.value!.draftField()
   const union = []
@@ -3124,6 +3126,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           supportsCalcAssistant
         "
         :host="calcAssistantHost"
+        :editor-reserve="calcEditorMinimum + 12"
         :is-cross="isCross"
         :system-variable-names="[]"
         :resource-id="String(currentDsId)"
@@ -3139,7 +3142,12 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
-    <div v-if="editCalcField" class="calc-field-workspace" ref="calcAssistantHost">
+    <div
+      v-if="editCalcField"
+      class="calc-field-workspace"
+      ref="calcAssistantHost"
+      :style="{ '--calc-editor-minimum': calcEditorMinimum + 'px' }"
+    >
       <calc-field-edit ref="calcEdit" dataset-references :crossDs="crossDatasources" />
     </div>
   </el-drawer>
@@ -4201,6 +4209,10 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
     display: flex;
     flex: 1;
     min-width: 0;
+
+    &:has(> aside) .calcu-cont {
+      min-width: var(--calc-editor-minimum);
+    }
 
     > .calcu-field {
       flex: 1;

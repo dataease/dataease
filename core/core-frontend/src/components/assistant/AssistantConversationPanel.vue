@@ -271,7 +271,7 @@ article + article {
   padding: 7px 12px;
   margin: 0;
   border-radius: 10px 10px 3px 10px;
-  background: var(--ed-color-primary-light-9);
+  background: color-mix(in srgb, var(--ed-color-primary) 12%, var(--ed-bg-color));
   white-space: pre-wrap;
 }
 .attempt[open] > summary {
