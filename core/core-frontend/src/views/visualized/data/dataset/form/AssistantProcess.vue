@@ -93,7 +93,7 @@ const title = (tool: AiConversationTool) => {
   )
 }
 const toggleTool = (entry: ProcessEntry) => {
-  if (entry.kind === 'tool') entry.open = !(entry.open ?? active(entry.tool))
+  if (entry.kind === 'tool') entry.open = !entry.open
 }
 </script>
 
@@ -103,7 +103,7 @@ const toggleTool = (entry: ProcessEntry) => {
       {{ tr('answer_process') }}<span v-if="elapsed"> · {{ elapsed }}</span>
     </summary>
     <template v-for="entry in process.entries" :key="entry.sequence + '-' + entry.kind">
-      <details v-if="entry.kind === 'tool'" :open="entry.open ?? active(entry.tool)">
+      <details v-if="entry.kind === 'tool'" :open="entry.open">
         <summary @click.prevent="toggleTool(entry)">
           {{ title(entry.tool) }}
         </summary>
@@ -170,6 +170,7 @@ dd {
 
 pre,
 p {
+  margin-block: 6px;
   white-space: pre-wrap;
 }
 </style>

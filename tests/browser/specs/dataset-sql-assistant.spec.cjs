@@ -599,9 +599,9 @@ test("each suggestion expands its own table and field evidence", async ({
   await expect(cards.first()).toContainText("每笔订单一行");
   for (const [index, sql] of [proposal, state.query].entries()) {
     await expect(cards.nth(index).locator("summary, small, pre")).toContainText([
-      "用表与字段依据",
       `建议 #${index + 1} · 建议 SQL（未运行）`,
       sql,
+      "用表与字段依据",
     ]);
   }
   await assertUnrun(page, state);

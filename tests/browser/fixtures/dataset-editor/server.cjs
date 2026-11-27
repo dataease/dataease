@@ -76,6 +76,12 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
     dir + "/index.html",
     '<style>*{box-sizing:border-box}body{margin:0}</style><div id="app"></div><script type="module" src="/main.ts"></script>'
   );
+  if (formalSql) {
+    await fs.writeFile(dir + "/assistant-chat.html",
+      '<div id="app" style="height:600px"></div><script type="module" src="/assistant-chat.ts"></script>');
+    await fs.writeFile(dir + "/assistant-chat.ts",
+      `import { createApp } from 'vue'; import ElementPlus from 'element-plus-secondary'; import 'element-plus-secondary/dist/index.css'; import '${frontend}/src/style/index.less'; import Chat from '${__dirname}/AssistantChatFixture.vue'; createApp(Chat).use(ElementPlus,{namespace:'ed'}).mount('#app');`);
+  }
   const { createServer } = await import(
     pathToFileURL(req.resolve("vite")).href
   );
@@ -123,6 +129,8 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "AddSql.vue",
               "CodeMirror.vue",
               "DatasetEditorAssistant.vue",
+              "AssistantChatFixture.vue",
+              "AssistantConversationPanel.vue",
               "AssistantProcess.vue",
               "AssistantAnswer.vue",
               "AssistantFailure.vue",

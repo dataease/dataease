@@ -76,6 +76,7 @@ const { t } = useI18n()
 const activeName = ref('')
 const myCm = ref()
 const codeCom = ref()
+const assistantWidth = ref(360)
 const assistantHost = ref<HTMLDivElement>()
 const draftRevision = ref(0)
 const readDraft = (): string => codeCom.value.state.doc.toString()
@@ -785,6 +786,8 @@ const mousedownDrag = () => {
       <DatasetEditorAssistant
         v-if="assistantHost && codeCom"
         :host="assistantHost"
+        :editor-reserve="220 + (showLeft ? LeftWidth : 0)"
+        @resize="assistantWidth = $event"
         :is-cross="isCross"
         :system-variable-names="systemVariableNames"
         :resource-id="String(sqlNode.datasourceId ?? '')"
@@ -1310,7 +1313,7 @@ const mousedownDrag = () => {
   right: 0;
 }
 .sql-eidtor:has(+ .assistant-host > aside) {
-  width: calc(100% - min(360px, 36vw));
+  width: calc(100% - v-bind(assistantWidth) * 1px);
 }
 .sql-eidtor {
   width: 100%;

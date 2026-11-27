@@ -106,6 +106,13 @@ const copyExample = async (event: MouseEvent) => {
   overflow-x: auto;
   overflow-wrap: anywhere;
 
+  :deep(> :first-child) {
+    margin-top: 0;
+  }
+  :deep(> :last-child) {
+    margin-bottom: 0;
+  }
+
   :deep(pre) {
     white-space: pre;
     overflow-x: auto;
