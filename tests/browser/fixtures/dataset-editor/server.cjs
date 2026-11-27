@@ -133,6 +133,7 @@ const save=()=>{emit('save',{...props.sqlNode,sql:props.sqlNode.sql+' /* edited 
               "AssistantConversationPanel.vue",
               "AssistantReference.vue",
               "AssistantProcess.vue",
+              "AssistantSqlEvidence.vue",
               "AssistantAnswer.vue",
               "AssistantFailure.vue",
               "AssistantToolResult.vue",

@@ -568,7 +568,9 @@ test("each suggestion expands its own table and field evidence", async ({
           {
             name: "pay_code",
             type: "CHAR",
+            comment: "支付状态",
             businessName: "支付状态",
+            description: "订单当前的付款状态",
             values: [{ value: "P", meaning: "已支付" }],
           },
         ],
@@ -584,8 +586,20 @@ test("each suggestion expands its own table and field evidence", async ({
     has: page.locator("summary", { hasText: "用表与字段依据" }),
   });
   await evidence.first().locator("summary").click();
-  await expect(cards.first()).toContainText("pay_code");
-  await expect(cards.first()).toContainText("P → 已支付");
+  const fields = evidence.first().getByRole("table", { name: "orders" });
+  await expect(fields.getByRole("columnheader")).toHaveText([
+    "字段名",
+    "字段类型",
+    "已确认业务语义",
+  ]);
+  const field = fields.getByRole("row").filter({
+    has: page.getByRole("rowheader", { name: "pay_code", exact: true }),
+  });
+  await expect(field.getByRole("cell").first()).toHaveText("CHAR");
+  const meaning = field.getByRole("cell").last();
+  await expect(meaning).toContainText("订单当前的付款状态");
+  await expect(meaning).toContainText("P → 已支付");
+  await expect(fields.getByText("支付状态", { exact: true })).toHaveCount(1);
   for (const label of ["下单客户", "orders LEFT JOIN customers", "customers INNER JOIN orders", "MANY_TO_ONE",
     "orders.tenant_id = customers.tenant_id", "orders.buyer_id = customers.cid"]) {
     await expect(evidence.first()).toContainText(label);
@@ -599,9 +613,9 @@ test("each suggestion expands its own table and field evidence", async ({
   await expect(cards.first()).toContainText("每笔订单一行");
   for (const [index, sql] of [proposal, state.query].entries()) {
     await expect(cards.nth(index).locator("summary, small, pre")).toContainText([
+      "用表与字段依据",
       `建议 #${index + 1} · 按已确认支付口径汇总实付金额 · 建议 SQL（未运行）`,
       sql,
-      "用表与字段依据",
     ]);
   }
   await assertUnrun(page, state);
@@ -1148,7 +1162,11 @@ async function checkCompletedSqlProcess(page, searchTool) {
         name: "get_table_fields",
         status: "SUCCEEDED",
         parameters: { table: "orders" },
-        result: JSON.stringify({ fields: [{ name: field }] }),
+        result: JSON.stringify({
+          fields: Array.from({ length: 80 }, (_, i) => ({
+            name: i === 79 ? field : `order_field_${i}`,
+          })),
+        }),
       },
     });
   });
@@ -1160,7 +1178,7 @@ async function checkCompletedSqlProcess(page, searchTool) {
         cursor: 6,
         metering: { elapsedMillis: 720, usageStatus: "MISSING", inputTokens: null, outputTokens: null },
         events: [
-          { sequence: 1, type: "TEXT", text: "定位订单表。" },
+          { sequence: 1, type: "TEXT", text: "\n定位订单表。\n\n\n" },
           {
             sequence: 2,
             type: "TOOL",
@@ -1189,7 +1207,12 @@ async function checkCompletedSqlProcess(page, searchTool) {
           { sequence: 5, type: "TEXT", text: "订单字段已核对。" },
           { sequence: 6, type: "COMPLETED" },
         ],
-        result: { type: "EXPLANATION", text: "订单字段已核对。" },
+        result: {
+          type: "SQL_SUGGESTION",
+          text: "订单字段已核对。",
+          sql: "SELECT order_id FROM orders",
+          evidence: [{ table: "orders", inspected: true, fields: [] }],
+        },
       },
     })
   );
@@ -1204,6 +1227,17 @@ async function checkCompletedSqlProcess(page, searchTool) {
   await expect(process).not.toHaveAttribute("open", "");
   const summary = process.locator(":scope > summary");
   await expect(summary).toHaveText("执行过程 · 总耗时 720 ms");
+  const evidence = article.getByText("用表与字段依据", { exact: true });
+  const answer = article.getByText("订单字段已核对。", { exact: true });
+  await expect(summary.or(evidence).or(answer)).toHaveText([
+    "执行过程 · 总耗时 720 ms",
+    "用表与字段依据",
+    "订单字段已核对。",
+  ]);
+  const answerTop = (await answer.boundingBox()).y;
+  for (const disclosure of [summary, evidence]) {
+    expect((await disclosure.boundingBox()).y).toBeLessThan(answerTop);
+  }
   await expect(article.locator("footer")).toContainText("Token 未返回");
   await expect(article.locator("footer")).not.toContainText("总耗时");
   await summary.click();
@@ -1217,6 +1251,11 @@ async function checkCompletedSqlProcess(page, searchTool) {
   await expect(process.locator("details").first().locator("summary")).toHaveText(
     "步骤 1 · 查找已登记的表 订单 · 成功"
   );
+  const narration = process.getByText("定位订单表。", { exact: true });
+  const lineCount = await narration.evaluate(
+    (p) => p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight)
+  );
+  expect(lineCount).toBeCloseTo(1, 1);
   expect(reads).toBe(0);
   const fields = process.locator("details").last();
   await expect(fields.locator("summary")).toHaveText(
@@ -1224,6 +1263,8 @@ async function checkCompletedSqlProcess(page, searchTool) {
   );
   await fields.locator("summary").click();
   await expect(fields.getByText(new RegExp(field))).toBeVisible();
+  const result = fields.locator("dd").filter({ hasText: field });
+  expect(await result.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
   expect(reads).toBe(1);
 }
 

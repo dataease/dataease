@@ -67,6 +67,8 @@ export default {
     numbered_suggestion: 'Suggestion',
     editor_draft: 'Editor draft',
     generated_from: 'Generated from',
+    referenced_sql: 'Referenced SQL',
+    referenced_formula: 'Referenced formula',
     source_copy: 'Copy from datasource to current datasource',
     overwrite_edits: 'This will overwrite edits made after this suggestion was requested.',
     unavailable_reference: 'The referenced suggestion is unavailable.',

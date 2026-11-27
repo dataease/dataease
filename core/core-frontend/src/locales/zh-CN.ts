@@ -60,6 +60,8 @@ export default {
     numbered_suggestion: '建议',
     editor_draft: '编辑器草稿',
     generated_from: '生成依据',
+    referenced_sql: '引用 SQL',
+    referenced_formula: '引用公式',
     source_copy: '从原数据源复制到当前数据源',
     overwrite_edits: '这会覆盖发问后对草稿的修改。',
     unavailable_reference: '所指建议不可用。',

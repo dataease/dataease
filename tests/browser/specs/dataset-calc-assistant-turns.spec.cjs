@@ -217,6 +217,13 @@ test("the current formula or any selected turn is frozen as the basis of each qu
   page,
 }) => {
   const state = await serveTurns(page);
+  const suggestedFormula = Array(24).fill(first).join(" +\n  ");
+  state.expressions[0] = suggestedFormula;
+  let finishFollowUp;
+  const followUpResult = new Promise((resolve) => {
+    finishFollowUp = resolve;
+  });
+  state.beforeResult = (n) => (n === 2 ? followUpResult : undefined);
   await page.goto("/");
   const drawer = await openDrawer(page);
   await ask(drawer, "逐行生成差额");
@@ -225,10 +232,26 @@ test("the current formula or any selected turn is frozen as the basis of each qu
   await expect(drawer.getByRole("log")).toBeHidden();
   await button(drawer, "计算字段助手").click();
   await ask(drawer, "再改成毛利率");
-  const followUp = await completed(drawer, 2);
-  expect(state.opens[1]).toMatchObject({ previousSessionId: "s1", sql: first });
-  await followUp.locator("summary").click();
-  await expect(followUp.locator("details pre")).toHaveText(first);
+  const followUp = drawer.getByRole("article").nth(1);
+  const basis = followUp.locator("details").filter({ hasText: "生成依据" });
+  await expect(followUp.getByText("正在生成", { exact: true })).toBeVisible();
+  await basis.locator("summary").click();
+  await expect(basis.getByText(/Fixture MySQL/)).toBeVisible();
+  const snapshot = basis.locator("pre");
+  expect(await snapshot.textContent()).toBe(suggestedFormula);
+  const scroll = await snapshot.evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+    return el.scrollTop;
+  });
+  expect(scroll).toBeGreaterThan(0);
+  finishFollowUp();
+  await completed(drawer, 2);
+  expect(state.opens[1]).toMatchObject({
+    previousSessionId: "s1",
+    sql: suggestedFormula,
+  });
+  await expect(basis).toHaveAttribute("open", "");
+  expect(await snapshot.evaluate((el) => el.scrollTop)).toBe(scroll);
   await drawer.locator(".cm-content").fill(manual);
   await ask(drawer, "保留两位小数");
   const manualTurn = await completed(drawer, 3);
@@ -236,7 +259,10 @@ test("the current formula or any selected turn is frozen as the basis of each qu
   await button(initial, "基于此建议追问").click({ timeout: 3000 });
   await ask(drawer, "除以十");
   await completed(drawer, 4);
-  expect(state.opens[3]).toMatchObject({ previousSessionId: "s3", sql: first });
+  expect(state.opens[3]).toMatchObject({
+    previousSessionId: "s3",
+    sql: suggestedFormula,
+  });
   await drawer
     .getByRole("combobox", { name: "本轮引用来源" })
     .selectOption({ label: "不引用公式" });
@@ -626,7 +652,7 @@ test("formula correction shows both validation outcomes and keeps the detail bei
         json: {
           ...scope,
           status: "RUNNING",
-          cursor: 5,
+          cursor: 6,
           events: [
             { sequence: 1, type: "TEXT", text: "检查原公式。" },
             tool(2, "one", "STARTED", "[missing]"),
@@ -636,6 +662,7 @@ test("formula correction shows both validation outcomes and keeps the detail bei
             }),
             { sequence: 4, type: "TEXT", text: "改用订单字段。" },
             tool(5, "two", "RUNNING", "[orders_id]"),
+            { sequence: 6, type: "TEXT", text: "正在确认修正结果。" },
           ],
         },
       });
@@ -645,12 +672,12 @@ test("formula correction shows both validation outcomes and keeps the detail bei
       json: {
         ...scope,
         status: "COMPLETED",
-        cursor: 8,
+        cursor: 9,
         metering: { elapsedMillis: 2670, usageStatus: "PARTIAL", inputTokens: null, outputTokens: 12 },
         events: [
-          tool(6, "two", "SUCCEEDED", "[orders_id]", { status: "DETAIL_PASS" }),
-          { sequence: 7, type: "TEXT", text: "已校验修正后的公式。" },
-          { sequence: 8, type: "COMPLETED" },
+          tool(7, "two", "SUCCEEDED", "[orders_id]", { status: "DETAIL_PASS" }),
+          { sequence: 8, type: "TEXT", text: "已校验修正后的公式。" },
+          { sequence: 9, type: "COMPLETED" },
         ],
         result: {
           type: "CALC_FIELD_SUGGESTION",
@@ -675,10 +702,14 @@ test("formula correction shows both validation outcomes and keeps the detail bei
     .locator("details")
     .filter({ has: page.locator("summary", { hasText: "步骤 2 · 校验公式 [orders_id] · 执行中" }) })
     .last();
+  const summary = process.locator(":scope > summary");
+  const answer = drawer.locator(".assistant-answer");
   try {
     await expect(rejected.locator("summary")).toBeVisible({ timeout: 3000 });
     await expect(rejected).not.toHaveAttribute("open", "");
     await expect(running).not.toHaveAttribute("open", "");
+    await expect(answer).toHaveText("正在确认修正结果。");
+    expect((await summary.boundingBox()).y).toBeLessThan((await answer.boundingBox()).y);
     await rejected.locator("summary").click();
     await expect(rejected).toContainText("字段不存在");
     await waiting;
@@ -688,8 +719,9 @@ test("formula correction shows both validation outcomes and keeps the detail bei
   await expect(button(drawer, "应用到当前草稿")).toBeEnabled();
   await expect(process).toHaveAttribute("open", "");
   await expect(rejected).toHaveAttribute("open", "");
-  const summary = process.locator(":scope > summary");
   await expect(summary).toHaveText("执行过程 · 总耗时 2.67 s");
+  await expect(answer).toHaveText("已校验修正后的公式。");
+  expect((await summary.boundingBox()).y).toBeLessThan((await answer.boundingBox()).y);
   await summary.click();
   await expect(rejected.locator("summary")).toBeHidden();
   await expect(summary).toHaveText("执行过程 · 总耗时 2.67 s");
