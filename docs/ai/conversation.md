@@ -144,7 +144,9 @@ sequenceDiagram
     end
 ```
 
-场景指令要求模型在生成或修改 SQL 前调用 `read_sql_guide`。工具只返回本次所选主题、通用规则和当前方言的标识符写法。内置连接器取数据源枚举的名称，已加载的插件取配置中的 `name`。例如达梦单源查询的执行方言是“达梦”，同一个连接器在跨源模式下的执行方言是 Apache Calcite。Excel 和 API 数据源使用配置的数据引擎方言。[场景指令](../../core/core-backend/src/main/resources/ai/prompts/editor-dataset-sql.md) · [执行方言选择](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/DatasetSqlGuide.java)
+生成或修改 SQL 时，`read_sql_guide` 按本轮主题提供示例和标识符写法。服务端按节点的实际执行引擎选择适配。跨源节点使用 Apache Calcite，单源 MySQL 使用 MySQL，Excel 和 API 等导入源取当前配置的数据引擎。其他单源方言可解释已有 SQL、核对元数据。生成工具遇到尚未适配的执行方言时返回 `UNSUPPORTED_DIALECT`，作者仍可在编辑器中手写和运行查询。[场景指令](../../core/core-backend/src/main/resources/ai/prompts/editor-dataset-sql.md) · [执行方言选择](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/DatasetSqlGuide.java)
+
+增加内置方言时，在 `DatasetSqlGuide` 的适配列表登记执行引擎类型，在 `dialect.md` 中提供标识符规则和按月表达式，并在方言回归中验证专题示例。数据源插件验证其原生执行语法与已适配方言兼容后，可在插件描述的 `config` 中声明 `aiSqlBaseDialect`，例如 `"aiSqlBaseDialect": "mysql"`。服务端从已注册的插件读取此值。缺省或未登记的基础方言均按未适配处理。插件专属专题文件的加载留待后续扩展。[方言资源](../../core/core-backend/src/main/resources/ai/prompts/dataset-sql-guide/dialect.md) · [插件配置契约](../../sdk/extensions/extensions-datasource/src/main/java/io/dataease/extensions/datasource/vo/XpackPluginsDatasourceVO.java) · [方言回归](../../tests/ai-service/DatasetSqlDialectRegression.java)
 
 图中的 `propose_sql` 属于正式编辑器的 `dataset-sql` 场景。`NOT_RUN` 表示候选 SQL 已通过单条只读规则，可供作者应用；实际数据库执行由作者点击“运行”触发。通用 `sql` 场景注册了另一个同名工具，使用静态校验器的 `PASS` 作为可应用条件。[建议结果组装](../../core/core-backend/src/main/java/io/dataease/ai/scene/sql/AbstractSqlConversationScene.java) · [通用 SQL 工具定义](../../core/core-backend/src/main/java/io/dataease/ai/tool/sql/AiSqlTools.java)
 

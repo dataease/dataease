@@ -11,6 +11,7 @@ import io.dataease.api.ai.conversation.AiConversationDtos;
 import io.dataease.utils.JsonUtil;
 import io.dataease.datasource.manage.DatasourceRelationManage;
 import io.dataease.extensions.datasource.utils.SqlUtil;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     private final DatasetSqlGuide guide;
 
     public AiDatasetSqlScene(AiDatasourceTools metadata, DatasetSqlGuide guide, DatasetSqlSemanticTools semantics, DatasourceRelationManage relations) {
-        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), semantics.namedFields(), DatasetSqlRelations.tool(metadata, relations), guide.tool(metadata), proposal(metadata)));
+        super(metadata, List.of(semantics.search(), DatasetSqlTableSearch.tool(metadata), semantics.fields(), semantics.namedFields(), DatasetSqlRelations.tool(metadata, relations), guide.tool(metadata), proposal(metadata, guide)));
         this.guide = guide;
     }
 
@@ -76,14 +77,15 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
     }
 
     @Override protected String unboundInstruction(String sql) {
-        return INSTRUCTION + "\n" + JsonUtil.toJSONString(Map.of("selection", "NONE", "sqlBasis", sql));
+        return INSTRUCTION + "\n" + JsonUtil.toJSONString(Map.of("selection", "NONE", "sqlGenerationSupported", false, "sqlBasis", sql));
     }
 
     @Override protected String instruction(AiDatasourceTools.Datasource source, String sql, boolean isCross) {
-        String connector = guide.displayName(source.type());
-        String dialectType = guide.executionType(source.type(), isCross);
-        String dialect = dialectType.equalsIgnoreCase(source.type()) ? connector : guide.displayName(dialectType);
-        return INSTRUCTION + "\n" + JsonUtil.toJSONString(Map.of("sourceConnector", connector, "executionDialect", dialect, "sqlBasis", sql));
+        var dialect = guide.resolveDialect(source.type(), isCross);
+        String connector = isCross || DatasourceConfiguration.usesDeEngine(source.type())
+                ? guide.displayName(source.type()) : dialect.displayName();
+        return INSTRUCTION + "\n" + JsonUtil.toJSONString(Map.of("sourceConnector", connector, "executionDialect", dialect.displayName(),
+                "sqlGenerationSupported", dialect.supported(), "sqlBasis", sql));
     }
 
     @Override public AiConversationDtos.Result result(Context context, String text, List<AiConversationDtos.Tool> tools,
@@ -105,10 +107,12 @@ public class AiDatasetSqlScene extends AbstractSqlConversationScene {
         return "propose_sql".equals(tool) ? arguments.get("sql") : null;
     }
 
-    private static AiTool<AiDatasourceTools.Scope> proposal(AiDatasourceTools metadata) {
+    private static AiTool<AiDatasourceTools.Scope> proposal(AiDatasourceTools metadata, DatasetSqlGuide guide) {
         var definition = AiTool.readOnly("tools/dataset-sql.md", "propose_sql", "sql");
         return new AiTool<>(definition, (scope, arguments, active, deadline) -> {
-            metadata.authorize(scope);
+            var source = metadata.authorize(scope);
+            var dialect = guide.resolveDialect(source.type(), scope.isCross());
+            if (!dialect.supported()) return AiToolProtocol.result(dialect.unsupportedResult());
             return AiToolProtocol.result(SqlUtil.isSingleReadQuery(arguments.get("sql"))
                     ? DatasetSqlEvidence.lineage(arguments.get("sql"))
                     : Map.of("status", "INVALID", "message", AiPromptResources.section("tools/dataset-sql.md", "propose_sql.invalid")));

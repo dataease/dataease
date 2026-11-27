@@ -23,7 +23,7 @@ final class DatasetSqlEvidence {
     private DatasetSqlEvidence() {}
 
     private static final Map<String, Set<String>> HISTORICAL_OUTCOMES = Map.of(
-            "propose_sql", Set.of("INVALID", "NOT_RUN"),
+            "propose_sql", Set.of("INVALID", "NOT_RUN", "UNSUPPORTED_DIALECT"),
             "read_relations", Set.of("CONFIRMED", "NO_CONFIRMED_PATH", "CLARIFY_ROLE"),
             "search_physical_tables", Set.of("MATCHED", "NO_MATCH", "EMPTY_CATALOG"));
 

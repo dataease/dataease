@@ -259,7 +259,7 @@ public final class ToolConversationRegression {
                     };
                 } else if (mode.get().equals("preview-revoke") && sent.size() == 1) {
                     content = call("preview-fields", "get_table_fields", "{\"table\":\"AI_PROBE\"}");
-                } else if (mode.get().equals("dataset-suggest") && sent.size() == 1) {
+                } else if (Set.of("dataset-suggest", "unsupported-dialect").contains(mode.get()) && sent.size() == 1) {
                     content = call("proposal", "propose_sql", JSON.writeValueAsString(Map.of("sql", editorProposal.get())));
                 } else if (mode.get().equals("suggest") && sent.size() == 1) {
                     content = call("proposal", "propose_sql", "{\"sql\":\"SELECT ID FROM AI_PROBE\"}");
@@ -319,7 +319,7 @@ public final class ToolConversationRegression {
             if (!Objects.equals(V3UserUtil.getUid(), 1L)) throw new AssertionError("metadata lost trusted actor");
             return switch (method.getName()) {
                 case "tree" -> { var nodes = new ArrayList<BusiNodeVO>(); for (long id : List.of(11L, 12L)) { var node = new BusiNodeVO(); node.setId(id); node.setLeaf(true); node.setName("Probe " + id); nodes.add(node); } yield nodes; }
-                case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId((Long) args[0]); ds.setName("Probe " + args[0]); ds.setType("MySQL"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
+                case "getSimpleDs" -> { var ds = new DatasourceDTO(); ds.setId((Long) args[0]); ds.setName("Probe " + args[0]); ds.setType(mode.get().equals("unsupported-dialect") ? "pg" : "mysql"); ds.setUpdateTime(sourceRevision.get()); yield ds; }
                 case "getTables" -> { var request = (DatasetTableDTO) args[0]; if (!Set.of(11L, 12L).contains(request.getDatasourceId()) || request.getInfo() != null || request.getType() != null) throw new AssertionError("metadata request expanded scope"); reads.add("tables"); readTargets.add(request.getDatasourceId());
                     if (mode.get().equals("chain-retry") && transientMetadata.getAndUpdate(value -> Math.max(0, value - 1)) > 0) throw AiErrors.error("connection_failed");
                     if (mode.get().equals("preview-revoke")) secondResourceAllowed.set(false);
@@ -640,6 +640,20 @@ public final class ToolConversationRegression {
                     mvc.perform(delete("/ai/conversations/" + node.path("sessionId").asText()));
                 }
             }
+            sent.clear();
+            mode.set("unsupported-dialect");
+            var unsupportedEditor = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
+                    .content(JSON.writeValueAsBytes(Map.of("scene", "dataset-sql", "resourceId", "11", "editorId", "unadapted", "sql", ""))))
+                    .andReturn().getResponse().getContentAsString());
+            var unsupportedRun = terminal(mvc, start(mvc, unsupportedEditor, "Propose an account query"));
+            var proposalMessages = sent.getLast().path("messages");
+            var proposalFeedback = JSON.readTree(proposalMessages.get(proposalMessages.size() - 1).path("content").asText());
+            if (!"COMPLETED".equals(unsupportedRun.path("status").asText()) || sent.size() != 2
+                    || !sent.getFirst().at("/messages/0/content").asText().contains("\"sqlGenerationSupported\":false")
+                    || !"UNSUPPORTED_DIALECT".equals(proposalFeedback.path("status").asText()) || proposalFeedback.has("sql")
+                    || !"EXPLANATION".equals(unsupportedRun.at("/result/type").asText()) || unsupportedRun.path("result").hasNonNull("sql"))
+                throw new AssertionError("A model's proposal on an unsupported native engine must stay explanatory: " + proposalFeedback);
+            mvc.perform(delete("/ai/conversations/" + unsupportedEditor.path("sessionId").asText()));
             sent.clear();
             mode.set("dataset-suggest");
             var editor = JSON.readTree(mvc.perform(post("/ai/conversations").contentType(MediaType.APPLICATION_JSON)
