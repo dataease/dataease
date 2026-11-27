@@ -39,6 +39,19 @@ import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 import { forEachCanvasComponent } from '@/utils/canvasComponentTree'
 const { t } = useI18n()
 
+const normalizeOuterTreePath = (path: string) =>
+  path.includes('-de-') ? path : path.replace(/,/g, '-de-')
+
+const getOuterTreePaths = (value: unknown): string[] =>
+  Array.isArray(value)
+    ? value
+        .filter(
+          path =>
+            Array.isArray(path) && path.length && path.every(level => typeof level === 'string')
+        )
+        .map(path => path.join('-de-'))
+    : []
+
 type LinkageTrackInfo = Record<string, string[]>
 const linkageViewId = (key: string) => key.split('#')[0]
 let linkageChangeSequence = 0
@@ -1415,6 +1428,8 @@ export const dvMainStore = defineStore('dataVisualization', {
           paramValueStr = params[sourceInfo]
           parmaValueSource = params[sourceInfo]
         }
+        const treePaths =
+          outerParamsVersion === 'v2' ? getOuterTreePaths(params[sourceInfo].treePaths) : []
         let operator = 'in'
         if (paramValue && !Array.isArray(paramValue)) {
           paramValue = [paramValue]
@@ -1466,16 +1481,24 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (element.component === 'VQuery') {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
-                let queryParams = paramValue
+                const isTree = filterItem.displayType === '9'
+                const originalPaths = isTree && treePaths.length ? treePaths : undefined
+                let queryParams = originalPaths || paramValue
+                if (!queryParams || (!isTree && treePaths.length && !paramValue?.length)) return
+
                 const targetMatchMode = targetInfoArray[2] // 目标匹配模式
                 if (targetMatchMode === 'filter') {
-                  paramValue = paramValue.map(option => {
-                    if (typeof option === 'string' && option.includes(',')) {
-                      return option.replace(/,/g, '-de-')
-                    }
-                    return option
-                  })
-                  queryParams = paramValue
+                  if (!originalPaths) {
+                    queryParams = paramValue.map(option => {
+                      if (isTree && option != null) {
+                        return normalizeOuterTreePath(String(option))
+                      }
+                      if (typeof option === 'string' && option.includes(',')) {
+                        return option.replace(/,/g, '-de-')
+                      }
+                      return option
+                    })
+                  }
                   // do filter
                   filterItem['optionFilter'] = queryParams
                   if (filterItem.defaultValueCheck) {
@@ -1491,7 +1514,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     }
                   }
                 } else {
-                  if (!['1', '7'].includes(filterItem.displayType)) {
+                  if (!originalPaths && !['1', '7'].includes(filterItem.displayType)) {
                     // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
                     queryParams = paramValue.map(number => String(number))
                   }
@@ -1532,16 +1555,14 @@ export const dvMainStore = defineStore('dataVisualization', {
                     // 8 文本搜索
                     filterItem['conditionValueF'] = parmaValueSource + ''
                     filterItem['defaultConditionValueF'] = parmaValueSource + ''
-                  } else if (filterItem.displayType === '9') {
-                    // 9 下拉树
+                  } else if (isTree) {
+                    const paths = originalPaths || queryParams.map(normalizeOuterTreePath)
                     if (filterItem.multiple) {
-                      // multiple === true 多选
-                      filterItem['selectValue'] = queryParams
-                      filterItem['defaultValue'] = queryParams
+                      filterItem['selectValue'] = paths
+                      filterItem['defaultValue'] = paths
                     } else {
-                      // 单选
-                      filterItem['selectValue'] = queryParams[0]
-                      filterItem['defaultValue'] = queryParams[0]
+                      filterItem['selectValue'] = paths[0]
+                      filterItem['defaultValue'] = paths[0]
                     }
                   } else if (filterItem.displayType === '22') {
                     filterItem['defaultNumValueStart'] = queryParams[0]
@@ -1549,7 +1570,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     filterItem['numValueStart'] = queryParams[0]
                     filterItem['numValueEnd'] = queryParams[1]
                   }
-                  if ('DE_EMPTY' === paramValueStr) {
+                  if (!originalPaths && 'DE_EMPTY' === paramValueStr) {
                     filterItem['selectValue'] = null
                     filterItem['defaultValue'] = null
                     filterItem['conditionValueF'] = null

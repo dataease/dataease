@@ -101,22 +101,68 @@ const getDayEnd = timestamp => {
   ]
 }
 
-const getFieldId = (arr, result, relationshipChartIndex, ids) => {
-  const [obj] = [...result].reverse()
-  const valArr = obj.split(',')
-  const idArr = arr.map(ele => ele.id)
-  const indexArr = relationshipChartIndex.filter(ele => valArr[ele])
-  if (!relationshipChartIndex.length) {
-    return [idArr.slice(0, valArr.length).join(','), [...new Set(result)]]
-  } else {
-    for (const key in result) {
-      result[key] = indexArr.map(ele => result[key].split(',')[ele]).join(',')
+export type TreeSelections = Record<string, { paths: string[][]; filterFrom?: 'optionFilter' }>
+type TreeFilterSource = {
+  filterId: string
+  componentId: string
+  filterFrom?: 'optionFilter'
+}
+type TreeQueryFilter = TreeFilterSource & {
+  fieldId: string
+  operator: 'in'
+  parameters: []
+  isTree: true
+  treePaths: string[][]
+  treeFilterGroup?: string
+}
+
+const getTreePaths = (value: unknown): string[][] =>
+  (Array.isArray(value) ? value : [value])
+    .filter((path): path is string => typeof path === 'string' && path.length > 0)
+    .map(path => path.split('-de-'))
+
+const appendTreeFilters = (
+  filter: TreeQueryFilter[],
+  paths: string[][],
+  treeFieldIds: (string | undefined)[],
+  source: TreeFilterSource
+) => {
+  // 同一规则内的选中节点取并集，各条路径只匹配自己实际绑定的层级。
+  const pathsByFields = new Map<string, Map<string, string[]>>()
+  for (const path of paths) {
+    const fields: string[] = []
+    const values: string[] = []
+    treeFieldIds.forEach((fieldId, index) => {
+      if (fieldId && path[index]) {
+        fields.push(fieldId)
+        values.push(path[index])
+      }
+    })
+    if (!fields.length) continue
+
+    const fieldId = fields.join(',')
+    if (!pathsByFields.has(fieldId)) {
+      pathsByFields.set(fieldId, new Map())
     }
-    return [
-      indexArr.map(ele => ids[ele]).join(','),
-      result.filter(ele => !ele.endsWith(',') && !!ele)
-    ]
+    pathsByFields.get(fieldId).set(JSON.stringify(values), values)
   }
+
+  const treeFilterGroup =
+    pathsByFields.size > 1
+      ? `${source.componentId}:${source.filterId}:${source.filterFrom || 'selection'}`
+      : undefined
+  pathsByFields.forEach((paths, fieldId) => {
+    filter.push({
+      ...source,
+      fieldId,
+      operator: 'in',
+      parameters: [],
+      isTree: true,
+      treePaths: [...paths.values()],
+      treeFilterGroup
+    })
+  })
+  return pathsByFields.size > 0
 }
 
 const getValueByDefaultValueCheckOrFirstLoad = (
@@ -131,20 +177,6 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   displayType: string,
   displayId: string
 ) => {
-  if (+displayType === 9) {
-    if (firstLoad) {
-      return defaultValueCheck
-        ? multiple
-          ? defaultValue.map(ele => ele.split('-de-').join(','))
-          : (defaultValue || '').split('-de-').join(',')
-        : []
-    }
-    return selectValue?.length
-      ? multiple
-        ? selectValue.map(ele => ele.split('-de-').join(','))
-        : (selectValue || '').split('-de-').join(',')
-      : []
-  }
   if (
     optionValueSource === 1 &&
     (defaultMapValue?.length || displayId) &&
@@ -171,6 +203,7 @@ export const useFilter = (
   // 弹窗区域过滤组件是否生效
   const popupAvailable = (context?.canvasStyleData || canvasStyleData.value).popupAvailable
   const filter = []
+  const treeSelections: TreeSelections = Object.create(null)
   const componentDataCustom = context?.componentData
     ? (context.componentData as typeof componentData.value)
     : showPosition === 'multiplexing'
@@ -181,7 +214,7 @@ export const useFilter = (
       ele.component === 'VQuery' &&
       (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
   )
-  searchQuery(queryComponentList, filter, curComponentId, firstLoad)
+  searchQuery(queryComponentList, filter, curComponentId, firstLoad, treeSelections)
   componentDataCustom.forEach(ele => {
     if (ele.component === 'Group') {
       const list = ele.propValue.filter(
@@ -189,7 +222,7 @@ export const useFilter = (
           item.innerType === 'VQuery' &&
           (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
       )
-      searchQuery(list, filter, curComponentId, firstLoad)
+      searchQuery(list, filter, curComponentId, firstLoad, treeSelections)
 
       list.forEach(element => {
         if (element.innerType === 'DeTabs') {
@@ -199,7 +232,7 @@ export const useFilter = (
                 item.innerType === 'VQuery' &&
                 (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
             )
-            searchQuery(elementArr, filter, curComponentId, firstLoad)
+            searchQuery(elementArr, filter, curComponentId, firstLoad, treeSelections)
           })
         }
       })
@@ -212,7 +245,7 @@ export const useFilter = (
                 item.innerType === 'VQuery' &&
                 (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
             )
-            searchQuery(elementArr, filter, curComponentId, firstLoad)
+            searchQuery(elementArr, filter, curComponentId, firstLoad, treeSelections)
           })
         }
       })
@@ -227,17 +260,18 @@ export const useFilter = (
                 item.innerType === 'VQuery' &&
                 (popupAvailable || (!popupAvailable && v.category !== 'hidden'))
             )
-            searchQuery(listGroup, filter, curComponentId, firstLoad)
+            searchQuery(listGroup, filter, curComponentId, firstLoad, treeSelections)
           }
         })
 
         const arr = itx.componentData.filter(item => item.innerType === 'VQuery')
-        searchQuery(arr, filter, curComponentId, firstLoad)
+        searchQuery(arr, filter, curComponentId, firstLoad, treeSelections)
       })
     }
   })
   return {
-    filter
+    filter,
+    treeSelections
   }
 }
 
@@ -292,10 +326,6 @@ const getOperator = (
   conditionValueS,
   firstLoad
 ) => {
-  if (+displayType === 9) {
-    return 'in'
-  }
-
   if (+displayType === 22) {
     return 'between'
   }
@@ -336,29 +366,53 @@ const duplicateRemoval = arr => {
   return objList
 }
 
-export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
+export const searchQuery = (
+  queryComponentList,
+  filter,
+  curComponentId,
+  firstLoad,
+  treeSelections: TreeSelections = Object.create(null)
+) => {
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
       ele.propValue?.forEach(item => {
-        let shouldSearch = false
-        const relationshipChartIndex = []
-        const ids = Array(5).fill(1)
-        if (item.displayType === '9' && item.treeCheckedList?.length) {
-          item.treeCheckedList.forEach((itx, idx) => {
-            if (
-              itx.checkedFields.includes(curComponentId) &&
-              itx.checkedFieldsMap[curComponentId] &&
-              idx < item.treeFieldList.length
-            ) {
-              relationshipChartIndex.push(idx)
-              ids[idx] = itx.checkedFieldsMap[curComponentId]
+        if (String(item.displayType) === '9') {
+          const treeFieldIds = (item.treeFieldList || []).map((field, index) => {
+            if (item.treeCheckedList?.length) {
+              const level = item.treeCheckedList[index]
+              return level?.checkedFields?.includes(curComponentId)
+                ? level.checkedFieldsMap?.[curComponentId]
+                : undefined
             }
+            return item.checkedFields?.includes(curComponentId) &&
+              item.checkedFieldsMap?.[curComponentId]
+              ? field.id
+              : undefined
           })
-        } else {
-          shouldSearch =
-            item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]
+          if (!treeFieldIds.some(Boolean)) return
+
+          const source = { filterId: item.id, componentId: ele.id }
+          const optionPaths = getTreePaths(item.optionFilter)
+          const optionsApplied = appendTreeFilters(filter, optionPaths, treeFieldIds, {
+            ...source,
+            filterFrom: 'optionFilter'
+          })
+          const selected = firstLoad
+            ? item.defaultValueCheck && item.defaultValue
+            : item.selectValue
+          if (dvMainStore.canvasAttachInfo?.taskId) {
+            rememberQueryDefault(item, selected || [], firstLoad)
+          }
+          const selectedPaths = getTreePaths(selected)
+          if (selectedPaths.length) {
+            treeSelections[item.id] = { paths: selectedPaths }
+          } else if (optionsApplied) {
+            treeSelections[item.id] = { paths: optionPaths, filterFrom: 'optionFilter' }
+          }
+          appendTreeFilters(filter, selectedPaths, treeFieldIds, source)
+          return
         }
-        if (shouldSearch || relationshipChartIndex.length) {
+        if (item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]) {
           let selectValue
           const {
             id,
@@ -371,7 +425,6 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             conditionType = 0,
             conditionSeparatorType = 'comma',
             conditionSeparatorCustom = '',
-            treeFieldList = [],
             defaultConditionValueOperatorF = 'eq',
             defaultConditionValueF = '',
             defaultConditionValueOperatorS = 'like',
@@ -394,29 +447,15 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             optionFilter
           } = item
 
-          const isTree = +displayType === 9
           if (optionFilter) {
-            let fieldIdOption = item.checkedFieldsMap[curComponentId]
-            const optionFilterValue = isTree
-              ? optionFilter.map(itemOption => itemOption.replace(/-de-/g, ','))
-              : optionFilter
-            if (isTree) {
-              const [i, r] = getFieldId(
-                treeFieldList,
-                optionFilterValue,
-                relationshipChartIndex,
-                ids
-              )
-              fieldIdOption = i
-            }
             filter.push({
               filterId: id,
               componentId: ele.id,
-              fieldId: fieldIdOption,
+              fieldId: item.checkedFieldsMap[curComponentId],
               operator: 'in',
-              value: optionFilterValue,
+              value: optionFilter,
               parameters: [],
-              isTree
+              isTree: false
             })
           }
 
@@ -507,12 +546,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             )
 
             if (result?.length) {
-              let fieldId = item.checkedFieldsMap[curComponentId]
-              if (isTree) {
-                const [i, r] = getFieldId(treeFieldList, result, relationshipChartIndex, ids)
-                fieldId = i
-                result = r
-              }
+              const fieldId = item.checkedFieldsMap[curComponentId]
               let parametersFilter = duplicateRemoval(
                 parameters.reduce((pre, next) => {
                   if (next.id === fieldId && !pre.length) {
@@ -552,7 +586,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   operator,
                   value: resultEnd,
                   parameters: parametersFilterEnd,
-                  isTree
+                  isTree: false
                 })
               }
 
@@ -586,7 +620,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   operator,
                   value: resultEnd,
                   parameters: parametersFilterEnd,
-                  isTree
+                  isTree: false
                 })
               }
 
@@ -600,7 +634,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 operator,
                 value: result,
                 parameters: parametersFilter,
-                isTree
+                isTree: false
               })
             }
           }

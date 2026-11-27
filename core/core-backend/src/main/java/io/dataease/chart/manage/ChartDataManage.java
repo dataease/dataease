@@ -210,6 +210,7 @@ public class ChartDataManage {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
+        Set<Long> permittedFieldIds = columnPermissionFields.stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toSet());
         //计数字段
         dataeaseNames.add("*");
         AxisFormatResult formatResult = chartHandler.formatAxis(view);
@@ -232,10 +233,14 @@ public class ChartDataManage {
                 if (request.getIsTree() == null) {
                     request.setIsTree(false);
                 }
+                boolean structuredTree = request.getTreePaths() != null;
+                if (structuredTree && (!request.getIsTree() || StringUtils.isBlank(fieldId))) {
+                    DEException.throwException("Invalid tree filter fields");
+                }
 
                 boolean hasParameters = false;
                 if (CollectionUtils.isNotEmpty(sqlVariables)) {
-                    if(fieldId.indexOf("|DE|")>-1){
+                    if (StringUtils.contains(fieldId, "|DE|")) {
                         hasParameters = true;
                     }else{
                         for (SqlVariableDetails parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
@@ -249,31 +254,32 @@ public class ChartDataManage {
                 }
 
                 if (hasParameters) {
+                    if (structuredTree) {
+                        DEException.throwException("Invalid tree filter fields");
+                    }
                     continue;
                 }
 
                 if (StringUtils.isNotEmpty(fieldId)) {
-                    List<Long> fieldIds = Arrays.stream(fieldId.split(",")).map(Long::valueOf).collect(Collectors.toList());
+                    List<Long> fieldIds = Arrays.stream(fieldId.split(",", structuredTree ? -1 : 0)).map(Long::valueOf).toList();
 
                     if (request.getIsTree()) {
+                        if (CollectionUtils.isNotEmpty(request.getViewIds()) && !request.getViewIds().contains(view.getId())) {
+                            continue;
+                        }
                         ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
                         BeanUtils.copyBean(filterRequest, request);
                         filterRequest.setFilterType(0);
                         filterRequest.setDatasetTableFieldList(new ArrayList<>());
                         for (Long fId : fieldIds) {
                             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
-                            if (datasetTableField == null) {
-                                continue;
+                            if (datasetTableField != null && Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
+                                filterRequest.getDatasetTableFieldList().add(datasetTableField);
                             }
-                            if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
-                                if (ObjectUtils.isNotEmpty(filterRequest.getViewIds())) {
-                                    if (filterRequest.getViewIds().contains(view.getId())) {
-                                        filterRequest.getDatasetTableFieldList().add(datasetTableField);
-                                    }
-                                } else {
-                                    filterRequest.getDatasetTableFieldList().add(datasetTableField);
-                                }
-                            }
+                        }
+                        if (structuredTree && (filterRequest.getDatasetTableFieldList().size() != fieldIds.size()
+                                || !permittedFieldIds.containsAll(fieldIds))) {
+                            DEException.throwException("Invalid tree filter fields");
                         }
                         if (ObjectUtils.isNotEmpty(filterRequest.getDatasetTableFieldList())) {
                             extFilterList.add(filterRequest);

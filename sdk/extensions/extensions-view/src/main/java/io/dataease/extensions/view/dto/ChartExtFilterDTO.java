@@ -19,6 +19,10 @@ public class ChartExtFilterDTO {
     private List<SqlVariableDetails> parameters;
     private DatasetTableFieldDTO datasetTableField;
     private Boolean isTree = false;
+    // Each path uses the same ordered fields as fieldId.
+    private List<List<String>> treePaths;
+    // Paths of different depths from the same selection are alternatives.
+    private String treeFilterGroup;
     private List<DatasetTableFieldDTO> datasetTableFieldList;
     private String dateStyle;
     private String datePattern;
