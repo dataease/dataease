@@ -5,11 +5,13 @@ import io.dataease.ai.scene.sql.AiDatasetSqlScene;
 import io.dataease.ai.scene.sql.DatasetSqlGuide;
 import io.dataease.ai.tool.datasource.AiDatasourceTools;
 import io.dataease.ai.tool.datasource.DatasetSqlSemanticTools;
+import io.dataease.ai.tool.datasource.DatasetSqlTableSearch;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.PhysicalTableCatalog;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.ai.engine.conversation.AiConversationScene;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.*;
 
 public final class DatasetSqlPhysicalRegression {
@@ -89,6 +91,45 @@ public final class DatasetSqlPhysicalRegression {
         var next = scene.beginTurn(scene.resolve("11", ""));
         if (!call(next, "search_physical_tables", "terms", "渠道").contains("EMPTY_CATALOG")
                 || !reads.equals(List.of("directory", "Channel_Live", "T300", "T304", "directory"))) throw new AssertionError(reads);
+        for (int size : List.of(591, 10_000, 100_000)) verifyBusinessAndPhysicalNames(size);
+    }
+
+    private static void verifyBusinessAndPhysicalNames(int size) throws Exception {
+        var opens = new AtomicInteger();
+        var metadata = new AiDatasourceTools(null, null, null, null) {
+            @Override public Datasource authorize(Scope scope) { return new Datasource("11", "fixture", "1", "mysql"); }
+            @Override protected PhysicalTableCatalog openCatalog(long id) {
+                opens.incrementAndGet();
+                var tables = new ArrayList<DatasetTableDTO>(size);
+                for (int index = 0; index < size - 6; index++) {
+                    var table = new DatasetTableDTO();
+                    table.setTableName("api_组织" + index + "_用户表");
+                    tables.add(table);
+                }
+                for (var name : List.of("per_auth_busi_user", "per_user_role", "per_user_variable",
+                        "per_user_platform", "per_user_mfa", "per_user")) {
+                    var table = new DatasetTableDTO();
+                    table.setTableName(name);
+                    tables.add(table);
+                }
+                return new PhysicalTableCatalog(tables, name -> { throw new AssertionError("Discovery read fields: " + name); });
+            }
+        };
+        var scope = AiDatasourceTools.Scope.editor("11", "1", false);
+        var search = DatasetSqlTableSearch.tool(metadata);
+        var json = new ObjectMapper();
+        var result = json.readTree(search.execute(scope, Map.of("terms", "用户,用户表,user,users,账号"),
+                () -> {}, Long.MAX_VALUE));
+        var candidates = result.path("candidates");
+        if (candidates.size() != 5 || !result.path("more").asBoolean()
+                || !candidates.findValuesAsText("table").contains("per_user")
+                || candidates.findValuesAsText("table").stream().noneMatch(name -> name.contains("用户表"))) {
+            throw new AssertionError("Expected both physical and business-name candidates in " + size + " tables: " + result);
+        }
+        var exact = json.readTree(search.execute(scope, Map.of("terms", "用户,PER_USER,USER"), () -> {}, Long.MAX_VALUE));
+        if (!"per_user".equals(exact.at("/candidates/0/table").asText()) || opens.get() != 1) {
+            throw new AssertionError("Expected an exact physical name and one authorized directory read: " + exact);
+        }
     }
 
     private static String call(AiConversationScene.ToolExecution turn, String name, String key, String value) {
