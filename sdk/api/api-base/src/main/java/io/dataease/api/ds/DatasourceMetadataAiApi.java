@@ -16,9 +16,11 @@ public interface DatasourceMetadataAiApi {
                 @RequestBody List<String> tables);
 
     @DePermit({"#p0+':manage'"})
-    @GetMapping("/{datasourceId}/ai/{kind}")
+    @PostMapping("/{datasourceId}/ai/{kind}/status")
     Task status(@PathVariable("datasourceId") Long datasourceId, @PathVariable("kind") Kind kind,
-                @RequestParam(value = "taskId", required = false) String taskId);
+                @RequestBody StatusRequest request);
+
+    record StatusRequest(String taskId) {}
 
     enum Kind { RELATION, SEMANTIC }
     enum Status { QUEUED, RUNNING, SUCCESS, PARTIAL, FAILED }

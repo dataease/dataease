@@ -22,7 +22,7 @@ public class DatasourceMetadataAiServer implements DatasourceMetadataAiApi {
     }
 
     @Override
-    public Task status(Long datasourceId, Kind kind, String taskId) {
-        return scenes.status(datasourceId, kind, taskId);
+    public Task status(Long datasourceId, Kind kind, StatusRequest request) {
+        return scenes.status(datasourceId, kind, request.taskId());
     }
 }

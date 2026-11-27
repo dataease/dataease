@@ -13,9 +13,9 @@ export interface MetadataAiTask {
 const path = (id: string, kind: MetadataAiKind) => `/datasource/metadata/${id}/ai/${kind}`
 
 export const getMetadataAiTask = (id: string, kind: MetadataAiKind, taskId?: string) =>
-  request.get<Promise<{ data: MetadataAiTask | null }>>({
-    url: path(id, kind),
-    params: { taskId }
+  request.post<Promise<{ data: MetadataAiTask | null }>>({
+    url: `${path(id, kind)}/status`,
+    data: { taskId }
   })
 
 export const submitMetadataAiTask = (id: string, kind: MetadataAiKind, tables: string[]) =>
